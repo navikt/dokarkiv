@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,12 +24,11 @@ import static no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder.getDokument
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
-
 public class Rjoark920IT extends AbstractHentjournalsakinfoItest {
 	private static final String HENTJOURNALSAKINFO_HENTDOKUMENT = "/hentjournalsakinfo/hentdokument/";
 	private static final String UUID = FilDetaljer.generateUuid();

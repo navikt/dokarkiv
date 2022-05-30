@@ -12,27 +12,22 @@ import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FerdigstillJournalpostValidatorTest {
 
-	private FerdigstillJournalpostValidator validator = new FerdigstillJournalpostValidator();
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
+	private final FerdigstillJournalpostValidator validator = new FerdigstillJournalpostValidator();
 
 	@Test
 	public void shouldThrowExceptionIfJournalpoststatusIsNotMidlertidig() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.J);
 
-		expectedException.expect(JournalpostIkkeMidlertidigException.class);
-
-		validator.validateJournalpostTilstand(journalpost);
+		assertThrows(JournalpostIkkeMidlertidigException.class,
+				() -> validator.validateJournalpostTilstand(journalpost));
 	}
 
 	@Test
@@ -41,9 +36,8 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.getSaksrelasjon().setFeilregistrert(Boolean.TRUE);
 
-		expectedException.expect(JournalpostIkkeMidlertidigException.class);
-
-		validator.validateJournalpostTilstand(journalpost);
+		assertThrows(JournalpostIkkeMidlertidigException.class,
+				() -> validator.validateJournalpostTilstand(journalpost));
 	}
 
 	@Test
@@ -52,9 +46,8 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setDokumentstatus(DokumentStatusCode.UNDER_REDIGERING);
 
-		expectedException.expect(DokumentUnderRedigeringException.class);
-
-		validator.validateJournalpostTilstand(journalpost);
+		assertThrows(DokumentUnderRedigeringException.class,
+				() -> validator.validateJournalpostTilstand(journalpost));
 	}
 
 	@Test
@@ -63,9 +56,8 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-
-		validator.validateJournalpostStruktur(journalpost);
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validateJournalpostStruktur(journalpost));
 	}
 
 	@Test
@@ -75,9 +67,8 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo()
 				.getFildetaljerListe().iterator().next().setVariantFormat(VariantFormatCode.SKANNING_META);
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-
-		validator.validateJournalpostStruktur(journalpost);
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validateJournalpostStruktur(journalpost));
 	}
 
 	@Test
@@ -92,9 +83,8 @@ public class FerdigstillJournalpostValidatorTest {
 						.filUuid("1337")
 						.build());
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-
-		validator.validateJournalpostStruktur(journalpost);
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validateJournalpostStruktur(journalpost));
 	}
 
 	@Test
@@ -103,10 +93,9 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.setInnhold(null);
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-		expectedException.expectMessage("Journalpost.innhold");
-
-		validator.validatePaakrevdeFelter(journalpost);
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validatePaakrevdeFelter(journalpost),
+				"Journalpost.innhold");
 	}
 
 	@Test
@@ -115,10 +104,9 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.setFagomrade(null);
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-		expectedException.expectMessage("Journalpost.fagomrade");
-
-		validator.validatePaakrevdeFelter(journalpost);
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validatePaakrevdeFelter(journalpost),
+				"Journalpost.fagomrade");
 	}
 
 	@Test
@@ -127,10 +115,9 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.setAvsenderMottaker(null);
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-		expectedException.expectMessage("Journalpost.avsendMottaker");
-
-		validator.validatePaakrevdeFelter(journalpost);
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validatePaakrevdeFelter(journalpost),
+				"Journalpost.avsendMottaker");
 	}
 
 	@Test
@@ -139,10 +126,10 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.setSaksrelasjon(null);
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-		expectedException.expectMessage("må ha en saksrelasjon");
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validateJournalpostStruktur(journalpost),
+				"må ha en saksrelasjon");
 
-		validator.validateJournalpostStruktur(journalpost);
 	}
 
 	@Test
@@ -151,10 +138,9 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.getSaksrelasjon().setSakId(null);
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-		expectedException.expectMessage("Saksrelasjon.sakId");
-
-		validator.validatePaakrevdeFelter(journalpost);
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validatePaakrevdeFelter(journalpost),
+				"Saksrelasjon.sakId");
 	}
 
 	@Test
@@ -163,10 +149,9 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.getSaksrelasjon().setFagsystem(null);
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-		expectedException.expectMessage("Saksrelasjon.fagsystem");
-
-		validator.validatePaakrevdeFelter(journalpost);
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validatePaakrevdeFelter(journalpost),
+				"Saksrelasjon.fagsystem");
 	}
 
 	@Test
@@ -175,10 +160,9 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.clearBrukere();
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-		expectedException.expectMessage("må knyttes til en bruker");
-
-		validator.validateJournalpostStruktur(journalpost);
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validateJournalpostStruktur(journalpost),
+				"må knyttes til en bruker");
 	}
 
 	@Test
@@ -187,10 +171,10 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.getBrukere().iterator().next().setBrukerId(null);
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-		expectedException.expectMessage("Bruker.brukerId");
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validatePaakrevdeFelter(journalpost),
+				"Bruker.brukerId");
 
-		validator.validatePaakrevdeFelter(journalpost);
 	}
 
 	@Test
@@ -199,10 +183,9 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.getBrukere().iterator().next().setBrukerType(null);
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-		expectedException.expectMessage("Bruker.brukerType");
-
-		validator.validatePaakrevdeFelter(journalpost);
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validatePaakrevdeFelter(journalpost),
+				"Bruker.brukerType");
 	}
 
 	@Test
@@ -211,10 +194,9 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setTittel(null);
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-		expectedException.expectMessage("DokumentInfo.tittel");
-
-		validator.validatePaakrevdeFelter(journalpost);
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validatePaakrevdeFelter(journalpost),
+				"DokumentInfo.tittel");
 	}
 
 	@Test
@@ -224,10 +206,9 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalposttype(JournalpostTypeCode.I);
 		journalpost.setMottakskanal(null);
 
-		expectedException.expect(KanIkkeFerdigstilleException.class);
-		expectedException.expectMessage("Journalpost.mottakskanal");
-
-		validator.validatePaakrevdeFelter(journalpost);
+		assertThrows(KanIkkeFerdigstilleException.class,
+				() -> validator.validatePaakrevdeFelter(journalpost),
+				"Journalpost.mottakskanal");
 	}
 
 

@@ -1,6 +1,29 @@
 package no.nav.dokarkiv.rjoark102;
 
 
+import no.nav.dokarkiv.AbstractAdminIT;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.apache.commons.collections15.IteratorUtils;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.transaction.TestTransaction;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_FIL_FIL_UUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_AV;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT_DATO;
@@ -20,32 +43,9 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import no.nav.dokarkiv.AbstractAdminIT;
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
-import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import org.apache.commons.collections15.IteratorUtils;
-import org.junit.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.transaction.TestTransaction;
-
-import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Rjoark102IT extends AbstractAdminIT {
 
@@ -89,7 +89,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(2L));
 		assertTrue(dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId()).get().isRelatedToMultipleJournalposts());
 
-		ResponseEntity responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_KASSERDOKUMENT,
 				HttpMethod.DELETE,
 				new HttpEntity<>(createKasserDokumentRequest(dokumentInfoSomSkalKasseres
@@ -204,7 +204,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertFalse(dokumentInfoSomSkalKasseres.isRelatedToMultipleJournalposts());
 		assertFalse(dokumentInfoSomSkalKasseres.getFildetaljerListe().isEmpty());
 
-		ResponseEntity responseEntity = restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_KASSERDOKUMENT,
 				HttpMethod.DELETE,
 				new HttpEntity<>(createKasserDokumentRequest(dokumentInfoRep.get()

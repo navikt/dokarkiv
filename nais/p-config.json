@@ -191,6 +191,21 @@
       "app": "bidrag-dokument-arkiv",
       "namespace": "bidrag",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "soknadsarkiverer",
+      "namespace": "team-soknad",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "k9-joark",
+      "namespace": "dusseldorf",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "k9-joark",
+      "namespace": "dusseldorf",
+      "cluster": "prod-gcp"
     }
   ]
 }

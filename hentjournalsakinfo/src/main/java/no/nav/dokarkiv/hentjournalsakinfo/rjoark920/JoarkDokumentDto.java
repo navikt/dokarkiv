@@ -5,12 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 
 @Data
 @Builder
 @AllArgsConstructor
 class JoarkDokumentDto {
 	private Long journalpostId;
+	private JournalpostTypeCode journalposttype;
 	private String filUuid;
 	private String ondemandId;
 	private FilTypeCode filtype;

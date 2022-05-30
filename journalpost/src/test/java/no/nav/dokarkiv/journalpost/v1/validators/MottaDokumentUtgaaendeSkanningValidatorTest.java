@@ -16,15 +16,15 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MottaDokumentUtgaaendeSkanningValidatorTest {
     MottaDokumentUtgaaendeSkanningValidator mottaDokumentUtgaaendeSkanningValidator = new MottaDokumentUtgaaendeSkanningValidator();

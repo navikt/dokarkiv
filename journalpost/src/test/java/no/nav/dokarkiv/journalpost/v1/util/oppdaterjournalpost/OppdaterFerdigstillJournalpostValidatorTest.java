@@ -8,13 +8,9 @@ import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
-import no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator;
-import org.junit.Rule;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.rules.ExpectedException;
 
 import java.sql.Date;
 import java.util.Collections;
@@ -48,19 +44,17 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottak
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createSak;
+import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OppdaterFerdigstillJournalpostValidatorTest {
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 
 	private OppdaterJournalpostRequest oppdaterJournalpostRequest;
 
 	@Test
 	public void happyPath() {
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
 	}
 
 	@Test
@@ -70,7 +64,8 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(AO01).build())
 				.build();
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
 	}
 
 	@Test
@@ -80,7 +75,8 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(GENERELL_SAK).build())
 				.build();
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
 	}
 
 	@Test
@@ -92,7 +88,8 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.arkivsaksystem(GSAK)
 						.build())
 				.build();
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
 	}
 
 	@Test
@@ -102,7 +99,8 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(GENERELL_SAK).build())
 				.build();
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
 	}
 
 	@Test
@@ -112,7 +110,8 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(GENERELL_SAK).build())
 				.build();
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
 	}
 
 	@Test
@@ -122,10 +121,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(AO01).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Sak.arkivsaksnummer");
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
 
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I),
+				"Sak.arkivsaksnummer");
 	}
 
 	@Test
@@ -135,9 +134,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(GENERELL_SAK).fagsakId(FAGSAK_ID).build())
 				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Sak.fagsakId");
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I),
+				"Sak.fagsakId");
 	}
 
 	@Test
@@ -150,9 +150,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.fagsakId(FAGSAK_ID)
 						.build())
 				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Sak.fagsakId");
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I),
+				"Sak.fagsakId");
 	}
 
 
@@ -163,8 +164,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.build();
+
 		assertThrows(InputValideringFeiletException.class, () ->
-				OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.valueOf(input), U));
+				validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.valueOf(input), U));
 	}
 
 	@ParameterizedTest
@@ -173,8 +175,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.build();
+
 		assertThrows(InputValideringFeiletException.class, () ->
-				OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.valueOf(input), N));
+				validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.valueOf(input), N));
 	}
 
 	@Test
@@ -182,7 +185,8 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.build();
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, J, U);
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, J, U);
 	}
 
 	@ParameterizedTest
@@ -191,8 +195,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.tittel("tittel")
 				.build();
+
 		assertThrows(InputValideringFeiletException.class, () ->
-				OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.valueOf(input), U));
+				validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.valueOf(input), U));
 	}
 
 	@ParameterizedTest
@@ -201,7 +206,8 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.tittel("tittel")
 				.build();
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.valueOf(input), N);
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.valueOf(input), N);
 	}
 
 	// Det skal alltid være lov til å endre brevkode. Se commit.
@@ -213,7 +219,8 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 								.brevkode("oppdatert")
 								.dokumentInfoId(DOKUMENTINFO_ID1)
 								.build())).build();
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U);
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U);
 	}
 
 	@Test
@@ -221,8 +228,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.bruker(createBrukerPerson())
 				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, J, I);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, J, I));
 	}
 
 	@Test
@@ -230,8 +238,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.sak(createSak())
 				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, J, I);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, J, I));
 	}
 
 	@Test
@@ -242,23 +251,26 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.arkivsaksystem(GSAK)
 						.build())
 				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Sak.arkivsaksnummer");
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I),
+				"Sak.arkivsaksnummer");
 	}
 
 	@Test
 	public void shouldFailIfJournalFoerendeEnhetSetForStatusJ() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().journalfoerendeEnhet(JOURNALFOERENDE_ENHET).build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, J, I);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, J, I));
 	}
 
 	@Test
 	public void shouldFailIfTemaSetForStatusJ() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().tema(TEMA_FOR).build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, J, I);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, J, I));
 	}
 
 	@Test
@@ -266,8 +278,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.bruker(createBrukerPerson())
 				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U));
 	}
 
 	@Test
@@ -275,29 +288,33 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.sak(createSak())
 				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U));
 	}
 
 	@Test
 	public void shouldFailIfJournalFoerendeEnhetSetForStatusFS() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().journalfoerendeEnhet(JOURNALFOERENDE_ENHET).build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U));
 	}
 
 	@Test
 	public void shouldFailIfTemaSetForStatusFS() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().tema(TEMA_FOR).build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U));
 	}
 
 	@Test
 	public void shouldFailIfDatoReturSetForStatusFSAndNotat() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().datoRetur(Date.valueOf(LOCAL_DATE_TIME.toLocalDate())).build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, FS, N);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS, N));
 	}
 
 	@Test
@@ -316,7 +333,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.idType(AvsenderMottakerIdType.HPRNR)
 						.build())
 				.build();
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, D, I);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, D, I);
 	}
 
 	@Test
@@ -330,8 +347,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.fagsaksystem(AO01)
 						.build())
 				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, D, I);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I));
 	}
 
 	@Test
@@ -348,9 +366,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.idType(AvsenderMottakerIdType.HPRNR)
 						.build())
 				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Bruker.id må være 9 siffer for ORGNR.");
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, D, I);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I),
+				"Bruker.id må være 9 siffer for ORGNR.");
 	}
 
 	@Test
@@ -366,10 +385,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.build())
 				.build();
 
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Bruker.id");
-
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, D, I);
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I),
+				"Bruker.id");
 	}
 
 	@Test
@@ -385,10 +403,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.build())
 				.build();
 
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Bruker.id");
-
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, D, I);
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I),
+				"Bruker.id");
 	}
 
 	@Test
@@ -404,10 +421,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.build())
 				.build();
 
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Bruker.id");
-
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, D, I);
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I),
+				"Bruker.id");
 	}
 
 	@Test
@@ -423,10 +439,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.build())
 				.build();
 
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Bruker.id");
-
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, D, I);
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I),
+				"Bruker.id");
 	}
 
 	@Test
@@ -440,8 +455,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.fagsaksystem(AO01)
 						.build())
 				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, D, I);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I));
 	}
 
 	@Test
@@ -452,9 +468,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(GENERELL_SAK).build())
 				.build();
-		expectedException.expect(InputValideringFeiletException.class);
-		expectedException.expectMessage("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=bb3333");
-		OppdaterJournalpostValidator.validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I),
+				"Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=bb3333");
 	}
 
 }

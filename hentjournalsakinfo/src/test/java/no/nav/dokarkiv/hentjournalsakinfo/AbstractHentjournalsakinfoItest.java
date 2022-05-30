@@ -12,8 +12,8 @@ import no.nav.dokarkiv.core.security.LdapConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -25,7 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -35,7 +35,7 @@ import javax.inject.Named;
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, HentJournalsakinfoConfig.class, LdapConfig.class,
 				AbstractHentjournalsakinfoItest.Config.class, TokenGeneratorConfiguration.class},
@@ -52,7 +52,7 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 															  @Value("${ldap.basedn}") String baseDn,
 															  @Value("${ldap.serviceuser.basedn}") String serviceuserBaseDn) {
 			// kan ikke teste gruppemedlemskap pga embedded unboundid ldap server ikke støtter det.
-			return new BasicAuthRestInterceptor(baseDn, serviceuserBaseDn,  null, ldapTemplate, cacheManager);
+			return new BasicAuthRestInterceptor(baseDn, serviceuserBaseDn, null, ldapTemplate, cacheManager);
 		}
 	}
 
@@ -77,7 +77,7 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 	@Inject
 	protected ObjectMapper objectMapper;
 
-	@Before
+	@BeforeEach
 	public void setUpItest() {
 		entityManager.createNativeQuery("DROP ALIAS IF EXISTS TO_NUMBER; " +
 				"CREATE ALIAS TO_NUMBER AS " +

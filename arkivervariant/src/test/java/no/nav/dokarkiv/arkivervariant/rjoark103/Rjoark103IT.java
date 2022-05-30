@@ -1,19 +1,5 @@
 package no.nav.dokarkiv.arkivervariant.rjoark103;
 
-import static no.nav.dokarkiv.arkivervariant.util.TestUtils.FIL;
-import static no.nav.dokarkiv.arkivervariant.util.TestUtils.opprettHoveddokumentForIT;
-import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HEADER;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FILUUID;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertTrue;
-
 import no.nav.dokarkiv.arkivervariant.AbstractArkiverVariantIT;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
@@ -27,7 +13,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections15.IteratorUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -37,6 +23,17 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static no.nav.dokarkiv.arkivervariant.util.TestUtils.FIL;
+import static no.nav.dokarkiv.arkivervariant.util.TestUtils.opprettHoveddokumentForIT;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FILUUID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Rjoark103IT extends AbstractArkiverVariantIT {
 
@@ -58,7 +55,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon());
+		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjon());
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -137,7 +134,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon());
+		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjon());
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -156,7 +153,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity2 = new HttpEntity(request, createHeadersWithAksjon());
+		var httpEntity2 = new HttpEntity<>(request, createHeadersWithAksjon());
 
 		ResponseEntity<RestConsumerExceptionResponse> responseEntity2 = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -177,7 +174,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
-		HttpEntity httpEntity = new HttpEntity(request, createHeadersWithAksjon());
+		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjon());
 
 		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -200,7 +197,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		HttpEntity httpEntity = new HttpEntity(Base64.encodeBase64String(FIL), createHeadersWithServiceUserToken(NO_ACCESS_SERVICE_USER_ID));
+		var httpEntity = new HttpEntity<>(Base64.encodeBase64String(FIL), createHeadersWithServiceUserToken(NO_ACCESS_SERVICE_USER_ID));
 
 		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
 				URL_ARKIVERVARIANT,

@@ -1,11 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -17,7 +11,7 @@ import no.nav.dokarkiv.journalpost.v1.api.ArsakKode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -30,7 +24,13 @@ import org.springframework.util.Base64Utils;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
@@ -68,7 +68,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-		ResponseEntity responseEntity = restTemplate.exchange(
+		var responseEntity= restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		endTransaction();
@@ -286,7 +286,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.toString()));
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-		ResponseEntity responseEntity = restTemplate.exchange(
+		var responseEntity= restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
 		TestTransaction.end();
@@ -310,7 +310,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		);
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-		ResponseEntity responseEntity = restTemplate.exchange(
+		var responseEntity= restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		TestTransaction.end();
@@ -349,7 +349,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(createDokumentVedleggList(sourceJournalpostId, dokumentInfoId
 				.toString()));
 
-		HttpEntity requestHttpEntity = new HttpEntity<>(request, headers);
+		var requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 
@@ -374,7 +374,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(createDokumentVedleggList(sourceJournalpostId, dokumentInfoId
 				.toString()));
 
-		HttpEntity requestHttpEntity = new HttpEntity<>(request, headers);
+		var requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
@@ -397,7 +397,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(createDokumentVedleggList(sourceJournalpostId, "200000345"));
 
-		HttpEntity requestHttpEntity = new HttpEntity<>(request, headers);
+		var requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
@@ -413,17 +413,17 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertEquals(sourceDokumentInfo.getBrevkode(), dokumentInfoKopi.getBrevkode());
 		assertEquals(sourceDokumentInfo.getDokumenttypeId(), dokumentInfoKopi.getDokumenttypeId());
 		assertEquals(sourceDokumentInfo.getBrevgruppe(), dokumentInfoKopi.getBrevgruppe());
-		assertEquals(null, dokumentInfoKopi.getOriginalJournalpost());
+		assertNull(dokumentInfoKopi.getOriginalJournalpost());
 		assertEquals(sourceDokumentInfo.getSensitivt(), dokumentInfoKopi.getSensitivt());
 		assertEquals(sourceDokumentInfo.getInnskrenketPartsinnsyn(), dokumentInfoKopi.getInnskrenketPartsinnsyn());
 		assertEquals(sourceDokumentInfo.getInnskrenketPartsinnsynFraTredjepart(), dokumentInfoKopi.getInnskrenketPartsinnsynFraTredjepart());
 		assertEquals(sourceDokumentInfo.getOrganInternt(), dokumentInfoKopi.getOrganInternt());
 		assertEquals(sourceDokumentInfo.getKonvertertFraSystem(), dokumentInfoKopi.getKonvertertFraSystem());
-		assertEquals(null, dokumentInfoKopi.getEndretAvNavn());
+		assertNull(dokumentInfoKopi.getEndretAvNavn());
 		assertEquals(sourceDokumentInfo.getKassertAvNavn(), dokumentInfoKopi.getKassertAvNavn());
 		assertEquals(sourceDokumentInfo.getDatoKassert(), dokumentInfoKopi.getDatoKassert());
 		assertThat(dokumentInfoKopi.getOpprettetKildeNavn(), is(GYLDIG_CONSUMER));
-		assertEquals(null, dokumentInfoKopi.getEndretKildeNavn());
+		assertNull(dokumentInfoKopi.getEndretKildeNavn());
 
 	}
 
@@ -438,7 +438,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertEquals(sourceFilDetaljer.getFilnavn(), filDetaljerKopi.getFilnavn());
 		assertEquals(sourceFilDetaljer.getFilstorrelse(), filDetaljerKopi.getFilstorrelse());
 		assertEquals(sourceFilDetaljer.getSkjermingType(), filDetaljerKopi.getSkjermingType());
-		assertEquals(null, filDetaljerKopi.getEndretKildeNavn());
+		assertNull(filDetaljerKopi.getEndretKildeNavn());
 	}
 
 	private void assertDokumentFil(DokumentFil sourceDokumentFil, DokumentFil dokumentFilKopi) {
@@ -517,14 +517,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		TestTransaction.start();
-	}
-
-	public void saveFil(Set<FilDetaljer> fd) {
-		fd.stream().forEach(filDetaljer -> {
-			DokumentFil dokumentFil = filDetaljer.createDokumentFil();
-			dokumentFil.setOpprettetKildeNavn("kildenavn");
-			dokumentFilRepository.save(dokumentFil);
-		});
 	}
 
 }

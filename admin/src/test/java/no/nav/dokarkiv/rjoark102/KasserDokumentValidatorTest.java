@@ -8,7 +8,7 @@ import org.junit.rules.ExpectedException;
 
 public class KasserDokumentValidatorTest {
 
-	private KasserDokumentValidator validator = new KasserDokumentValidator();
+	private final KasserDokumentValidator validator = new KasserDokumentValidator();
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();

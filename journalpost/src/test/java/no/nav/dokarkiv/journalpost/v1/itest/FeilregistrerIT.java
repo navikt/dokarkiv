@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import org.apache.commons.collections15.IteratorUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 
@@ -25,7 +25,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATU
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import static org.springframework.http.HttpStatus.OK;
@@ -44,7 +44,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + FEILREGISTRER_SAKSTILKNYTNING, PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -77,7 +77,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING, PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -110,7 +110,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -143,7 +143,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
 
 		assertEquals(METHOD_NOT_ALLOWED, response.getStatusCode());
@@ -160,7 +160,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		HttpEntity requestEntity = new HttpEntity(createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());

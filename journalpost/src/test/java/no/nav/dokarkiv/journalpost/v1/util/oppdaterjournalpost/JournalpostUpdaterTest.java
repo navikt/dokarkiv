@@ -6,11 +6,11 @@ import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 
 import java.util.Date;
@@ -28,14 +28,14 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJou
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JournalpostUpdaterTest {
-    @Mock
+	@Mock
 	private BrukerRepository brukerRepositoryMock;
 
 	private OppdaterJournalpostRequest oppdaterJournalpostRequest;

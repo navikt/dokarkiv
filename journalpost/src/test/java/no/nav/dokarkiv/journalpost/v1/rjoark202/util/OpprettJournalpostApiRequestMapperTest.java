@@ -29,18 +29,16 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiRequestMapper;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_L;
@@ -83,18 +81,16 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanal;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OpprettJournalpostApiRequestMapperTest {
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 
 	@Mock
 	private IdentConsumer identConsumerMock;
@@ -200,7 +196,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.datoMottatt(DATO_MOTTATT)
 				.build();
 		Journalpost journalpost = mapper.map(request, null);
-		assertEquals(journalpost.getMottattDato(), null);
+		assertNull(journalpost.getMottattDato());
 	}
 
 	@Test
@@ -209,7 +205,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.datoMottatt(DATO_MOTTATT)
 				.build();
 		Journalpost journalpost = mapper.map(request, null);
-		assertEquals(journalpost.getMottattDato(), null);
+		assertNull(journalpost.getMottattDato());
 	}
 
 	@Test
@@ -232,8 +228,6 @@ public class OpprettJournalpostApiRequestMapperTest {
 
 	@Test
 	public void shouldNotMapSaksrelasjonIfFagsaksystemIsAnInvalidValue() {
-		expectedException.expect(UgyldigInputException.class);
-		expectedException.expectMessage("Kan ikke mappe fagsystem basert på input");
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.datoMottatt(DATO_MOTTATT)
 				.tema(TEMA_TIL)
@@ -245,9 +239,9 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		Journalpost journalpost = mapper.map(request, FAGSAK_ID);
-		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
-
+		assertThrows(UgyldigInputException.class, () ->
+						mapper.map(request, FAGSAK_ID),
+				"Kan ikke mappe fagsystem basert på input");
 	}
 
 	@Test
@@ -333,7 +327,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapInngaaendeJournalpostWithoutDokumentvarianter() {
 		OpprettJournalpostRequest request = createBaseRequest(JournalpostType.INNGAAENDE)
-				.dokumenter(Arrays.asList(
+				.dokumenter(List.of(
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)
 								.brevkode(BREVKODE1)
@@ -347,7 +341,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	public void shouldMapInngaaendeJournalpostWithDokumentvarianter() {
 		OpprettJournalpostRequest request = createBaseRequest(JournalpostType.INNGAAENDE)
-				.dokumenter(Arrays.asList(
+				.dokumenter(List.of(
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)
 								.brevkode(BREVKODE1)
