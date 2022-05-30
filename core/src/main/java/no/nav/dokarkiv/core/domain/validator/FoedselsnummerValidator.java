@@ -3,9 +3,6 @@ package no.nav.dokarkiv.core.domain.validator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import static no.nav.dokarkiv.core.domain.util.NaisClusterUtil.DEV_FSS;
-import static no.nav.dokarkiv.core.domain.util.NaisClusterUtil.getClusterName;
-
 /**
  * Endringer:
  * Modifisert Pid klasse fra Stelvio der all logikk knyttet til persistens er fjernet, da dette ikke blir brukt i joark.
@@ -51,12 +48,8 @@ public final class FoedselsnummerValidator {
 	 */
 	private static int getMonth(String validPid) {
 
-		//Identer fra testnorge skaper problemer da de legger på enten 40 eller 80 på måneden
-		if(getClusterName() == DEV_FSS) {
-			return Integer.parseInt(validPid.substring(2, 4)) % 20 ;
-		}
-
-		return Integer.parseInt(validPid.substring(2, 4));
+		//Mod20 på måned for å gjøre testnorge-identer gyldige.
+		return Integer.parseInt(validPid.substring(2, 4)) % 20;
 	}
 
 	/**
