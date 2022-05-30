@@ -27,8 +27,15 @@ import org.springframework.beans.factory.annotation.Value;
 public final class FoedselsnummerValidator {
 
 
-	private static String clusterName = System.getenv("NAIS_CLUSTER_NAME");
+	private static String clusterName;
 	private static final String DEV_FSS = "dev-fss";
+
+	public static String getClusterName(){
+		if (clusterName == null){
+			clusterName = System.getProperty("NAIS_CLUSTER_NAME");
+		}
+		return clusterName;
+	}
 
 	static{
 		clusterName = System.getProperty("NAIS_CLUSTER_NAME");
@@ -56,7 +63,7 @@ public final class FoedselsnummerValidator {
 	private static int getMonth(String validPid) {
 		System.out.println(clusterName);
 
-		if(clusterName == DEV_FSS) {
+		if(getClusterName() == DEV_FSS) {
 			int fnr =  Integer.parseInt(validPid.substring(2, 4));
 			int foersteSiffer = Integer.parseInt(validPid.substring(2, 3));
 			return foersteSiffer > 1 ? fnr % 20 : fnr;
