@@ -24,9 +24,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author Kjetil Kristiansen
  * @author Odin Hole Standal
  */
-@Slf4j
 public final class FoedselsnummerValidator {
-
 	private FoedselsnummerValidator() {
 	}
 
@@ -47,7 +45,6 @@ public final class FoedselsnummerValidator {
 	 * @return Month in birth date part of FoedselsnummerValidator
 	 */
 	private static int getMonth(String validPid) {
-
 		//Mod20 på måned for å gjøre testnorge-identer gyldige.
 		return Integer.parseInt(validPid.substring(2, 4)) % 20;
 	}

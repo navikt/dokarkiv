@@ -38,7 +38,7 @@ public class BrukerValidatorTest {
 				.brukerType(BrukerTypeCode.PERSON)
 				.build();
 
-		BrukerValidator.validate(bruker);
+		assertBrukerIsValid(bruker);
 	}
 
 	@Test
