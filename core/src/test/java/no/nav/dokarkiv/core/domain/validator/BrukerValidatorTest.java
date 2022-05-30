@@ -3,9 +3,13 @@ package no.nav.dokarkiv.core.domain.validator;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.exceptions.InvalidBrukerException;
+import org.junit.Before;
 import org.junit.Test;
 
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
+import static no.nav.dokarkiv.core.domain.util.NaisClusterUtil.DEV_FSS;
+import static no.nav.dokarkiv.core.domain.util.NaisClusterUtil.PROD_FSS;
+import static no.nav.dokarkiv.core.domain.util.NaisClusterUtil.setClusterNameForTest;
 import static org.junit.Assert.fail;
 
 /**
@@ -19,7 +23,13 @@ public class BrukerValidatorTest {
 	private static final String SOME_INVALID_FNR = "01014138924";
 	private static final String SOME_VALID_ORGNR = "123456785";
 	private static final String SOME_GJELDERID = "aaaaa";
-	
+	private static final String TESTNORGE_INDENT = "27857798800";
+
+	@Before
+	public void setup(){
+		setClusterNameForTest(PROD_FSS);
+	}
+
 	@Test
 	public void shouldValidateValidGjelderInfoForPerson() {
 		Bruker bruker = getBrukerBuilder()
@@ -28,6 +38,28 @@ public class BrukerValidatorTest {
 						.build(); 
 		
 		assertBrukerIsValid(bruker);
+	}
+
+	@Test
+	public void shouldNotValidateValidTestNorgePersonWhenProdfss() {
+		Bruker bruker = getBrukerBuilder()
+				.brukerId(TESTNORGE_INDENT)
+				.brukerType(BrukerTypeCode.PERSON)
+				.build();
+
+		assertGjelderInfoValidationFails(bruker,"Validation should fail for invalid fnr");
+	}
+
+	@Test
+	public void shouldValidateValidTestNorgePerson() {
+		setClusterNameForTest(DEV_FSS);
+		Bruker bruker = getBrukerBuilder()
+				.brukerId(TESTNORGE_INDENT)
+				.brukerType(BrukerTypeCode.PERSON)
+				.build();
+
+		BrukerValidator.validate(bruker);
+		setClusterNameForTest(PROD_FSS);
 	}
 
 	@Test

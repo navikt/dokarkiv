@@ -1,7 +1,10 @@
 package no.nav.dokarkiv.core.domain.validator;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
+
+import static no.nav.dokarkiv.core.domain.util.NaisClusterUtil.DEV_FSS;
+import static no.nav.dokarkiv.core.domain.util.NaisClusterUtil.getClusterName;
 
 /**
  * Endringer:
@@ -24,22 +27,8 @@ import org.springframework.beans.factory.annotation.Value;
  * @author Kjetil Kristiansen
  * @author Odin Hole Standal
  */
+@Slf4j
 public final class FoedselsnummerValidator {
-
-
-	private static String clusterName;
-	private static final String DEV_FSS = "dev-fss";
-
-	public static String getClusterName(){
-		if (clusterName == null){
-			clusterName = System.getProperty("NAIS_CLUSTER_NAME");
-		}
-		return clusterName;
-	}
-
-	static{
-		clusterName = System.getProperty("NAIS_CLUSTER_NAME");
-	}
 
 	private FoedselsnummerValidator() {
 	}
@@ -61,7 +50,6 @@ public final class FoedselsnummerValidator {
 	 * @return Month in birth date part of FoedselsnummerValidator
 	 */
 	private static int getMonth(String validPid) {
-		System.out.println(clusterName);
 
 		if(getClusterName() == DEV_FSS) {
 			int fnr =  Integer.parseInt(validPid.substring(2, 4));
