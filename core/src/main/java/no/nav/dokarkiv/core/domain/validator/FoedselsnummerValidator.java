@@ -44,7 +44,12 @@ public final class FoedselsnummerValidator {
 	 * @return Month in birth date part of FoedselsnummerValidator
 	 */
 	private static int getMonth(String validPid) {
-		return Integer.parseInt(validPid.substring(2, 4));
+		int foersteSiffer =  Integer.parseInt(validPid.substring(2, 3));
+		if(foersteSiffer > 1){
+			foersteSiffer = foersteSiffer-8;
+		}
+		String foedselsnr = foersteSiffer + validPid.substring(3, 4);
+		return Integer.parseInt(foedselsnr);
 	}
 
 	/**

@@ -16,6 +16,7 @@ import org.junit.Test;
 public class BrukerValidatorTest {
 	
 	private static final String SOME_VALID_FNR = "01014138923";
+	private static final String TESTNORGE_INDENT = "27857798800";
 	private static final String SOME_INVALID_FNR = "01014138924";
 	private static final String SOME_VALID_ORGNR = "123456785";
 	private static final String SOME_GJELDERID = "aaaaa";
@@ -27,6 +28,16 @@ public class BrukerValidatorTest {
 						.brukerType(BrukerTypeCode.PERSON)
 						.build(); 
 		
+		assertBrukerIsValid(bruker);
+	}
+
+	@Test
+	public void shouldValidateValidGjelderInfoForPersonForTestNorge() {
+		Bruker bruker = getBrukerBuilder()
+				.brukerId(TESTNORGE_INDENT)
+				.brukerType(BrukerTypeCode.PERSON)
+				.build();
+
 		assertBrukerIsValid(bruker);
 	}
 
