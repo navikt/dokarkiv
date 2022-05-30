@@ -51,10 +51,9 @@ public final class FoedselsnummerValidator {
 	 */
 	private static int getMonth(String validPid) {
 
+		//Identer fra testnorge skaper problemer da de legger på enten 40 eller 80 på måneden
 		if(getClusterName() == DEV_FSS) {
-			int fnr =  Integer.parseInt(validPid.substring(2, 4));
-			int foersteSiffer = Integer.parseInt(validPid.substring(2, 3));
-			return foersteSiffer > 1 ? fnr % 20 : fnr;
+			return Integer.parseInt(validPid.substring(2, 4)) % 20 ;
 		}
 
 		return Integer.parseInt(validPid.substring(2, 4));

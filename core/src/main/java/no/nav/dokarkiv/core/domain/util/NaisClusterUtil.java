@@ -9,16 +9,16 @@ public class NaisClusterUtil {
 	public static final String DEV_FSS = "dev-fss";
 	public static final String PROD_FSS = "prod-fss";
 
-	public static String getClusterName(){
-		if (clusterName == null){
+	public static String getClusterName() {
+		if (clusterName == null) {
 			log.info("Appen kjører i clustername:{} ", clusterName);
 			clusterName = System.getenv("NAIS_CLUSTER_NAME");
 		}
 		return clusterName;
 	}
 
-	//For å gjøre itesten lettere
-	public static void setClusterNameForTest(String clusterName){
+	//For å gjøre unit-testing lettere
+	public static void setClusterNameForTest(String clusterName) {
 		NaisClusterUtil.clusterName = clusterName;
 	}
 
