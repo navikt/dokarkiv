@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.domain.validator;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -44,7 +45,8 @@ public final class FoedselsnummerValidator {
 	 * @return Month in birth date part of FoedselsnummerValidator
 	 */
 	private static int getMonth(String validPid) {
-		return Integer.parseInt(validPid.substring(2, 4));
+		//Mod20 på måned for å gjøre testnorge-identer gyldige.
+		return Integer.parseInt(validPid.substring(2, 4)) % 20;
 	}
 
 	/**

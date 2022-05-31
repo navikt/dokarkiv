@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.core.domain.validator;
 
-import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
-import static org.junit.Assert.fail;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.exceptions.InvalidBrukerException;
 import org.junit.Test;
+
+import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
+import static org.junit.Assert.fail;
 
 /**
  * Tests BrukerValidator.
@@ -19,7 +19,8 @@ public class BrukerValidatorTest {
 	private static final String SOME_INVALID_FNR = "01014138924";
 	private static final String SOME_VALID_ORGNR = "123456785";
 	private static final String SOME_GJELDERID = "aaaaa";
-	
+	private static final String TESTNORGE_INDENT = "27857798800";
+
 	@Test
 	public void shouldValidateValidGjelderInfoForPerson() {
 		Bruker bruker = getBrukerBuilder()
@@ -27,6 +28,16 @@ public class BrukerValidatorTest {
 						.brukerType(BrukerTypeCode.PERSON)
 						.build(); 
 		
+		assertBrukerIsValid(bruker);
+	}
+
+	@Test
+	public void shouldValidateValidTestNorgePerson() {
+		Bruker bruker = getBrukerBuilder()
+				.brukerId(TESTNORGE_INDENT)
+				.brukerType(BrukerTypeCode.PERSON)
+				.build();
+
 		assertBrukerIsValid(bruker);
 	}
 
