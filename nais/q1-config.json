@@ -241,11 +241,6 @@
     {
       "app": "k9-joark",
       "namespace": "dusseldorf",
-      "cluster": "dev-fss"
-    },
-    {
-      "app": "k9-joark",
-      "namespace": "dusseldorf",
       "cluster": "dev-gcp"
     }
   ]
