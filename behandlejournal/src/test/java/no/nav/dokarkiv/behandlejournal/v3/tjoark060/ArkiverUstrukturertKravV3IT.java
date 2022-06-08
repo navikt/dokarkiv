@@ -1,22 +1,10 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark060;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3Itest;
 import no.nav.dokarkiv.behandlejournal.v3.KodeverdiHelper;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -42,6 +30,13 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.ArkiverUstrukture
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+
 /**
  * Integration test for the MOD operation: ArkiverUtstrukturertKrav.
  *
@@ -62,7 +57,6 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 	private ArkiverUstrukturertKravRequest arkiverUstrukturertKravRequest;
 	private ArkiverUstrukturertKravResponse arkiverUstrukturertKravResponse;
 	private no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost;
-	private BidragMellomlagring persistedBidragMellomlagring;
 
 	@Before
 	public void setUp() {
@@ -89,15 +83,6 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 
 		persistedJournalpost = joarkRepository.findById(Long.parseLong(arkiverUstrukturertKravResponse
 				.getJournalpostId())).get();
-	}
-
-	public void setUpBidrag() throws Exception {
-		arkiverUstrukturertKravRequest.setJournalpost(createJournalpost(TEMAVALUE_BID));
-		arkiverUstrukturertKravResponse = behandleJournalV3Provider
-				.arkiverUstrukturertKrav(arkiverUstrukturertKravRequest);
-
-		persistedBidragMellomlagring = bidragMellomlagringRepository.findById(BidragMellomlagring.removePrefixFromId(Long
-				.parseLong(arkiverUstrukturertKravResponse.getJournalpostId()))).get();
 	}
 
 	@Test
@@ -174,31 +159,6 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 		assertThat(arkiverUstrukturertKravResponse.getDokumentId(), is(notNullValue()));
 	}
 
-	@Test
-	public void shouldVerifyPersistedBidragMellomlagring() throws Exception {
-		setUpBidrag();
-
-		assertBidragMellomlagringProperties(persistedBidragMellomlagring);
-	}
-
-	@Test
-	public void shouldVerifyThatPersistedBidragMellomlagringDokumentMatchesInputDokument() throws Exception {
-		setUpBidrag();
-
-		assertBidragMellomlagringDokumentSaved(persistedBidragMellomlagring.getBidragMellomlagringDokuments()
-				.iterator().next());
-	}
-
-	@Test
-	public void shouldReturnBidragMellomlagringIdWithPrefixAndBidragMellomlagrindDokumentId() throws Exception {
-		setUpBidrag();
-
-		assertTrue(BidragMellomlagring.isBidragMellomLagringId(Long.parseLong(arkiverUstrukturertKravResponse
-				.getJournalpostId())));
-		assertThat(arkiverUstrukturertKravResponse.getDokumentId(), is(notNullValue()));
-	}
-
-
 	private void assertJournalpostProperties(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost) {
 		assertThat(journalpost.getBrukere().iterator().next().getBrukerId(), is(FNR_BRUKER));
 		assertThat(journalpost.getMottakskanal().name(), is(KANAL_ALTINN));
@@ -206,21 +166,10 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 		assertThat(journalpost.getFagomrade().name(), is(TEMAVALUE_FOR));
 	}
 
-	private void assertBidragMellomlagringProperties(BidragMellomlagring bidragMellomlagring) {
-		assertThat(bidragMellomlagring.getAvsenderFnr(), is(FNR_BRUKER));
-		assertThat(bidragMellomlagring.getMottattDato(), is(DateProvider.getToday()));
-		assertThat(bidragMellomlagring.getStatus(), is(BidragMellomlagringStatus.DOKUMENTOPPLASTING));
-	}
-
 	private void assertDokumentSaved(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost) {
 		String filUuid = journalpost.findAllFilDetaljer().get(0).getFilUuid();
 		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(filUuid);
 		assertThat(dokumentFil.getFil(), is(DOKUMENT));
-	}
-
-	private void assertBidragMellomlagringDokumentSaved(BidragMellomlagringDokument bidragMellomlagringDokument) {
-		assertThat(bidragMellomlagringDokument.getDokumentType(), is(BidragMellomlagringDokumentType.HOVEDDOKUMENT));
-		assertThat(bidragMellomlagringDokument.getDokument(), is(DOKUMENT));
 	}
 
 	private no.nav.dokarkiv.core.domain.entities.Journalpost getPersistedJournalposterById(Long id) {

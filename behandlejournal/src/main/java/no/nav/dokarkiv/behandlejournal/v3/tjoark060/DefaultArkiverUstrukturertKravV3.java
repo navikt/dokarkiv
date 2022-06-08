@@ -10,14 +10,9 @@ import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.domain.validator.BrukerValidator;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Component;
 
@@ -34,8 +29,6 @@ public class DefaultArkiverUstrukturertKravV3 implements ArkiverUstrukturertKrav
 
 	@Inject
 	private JoarkRepositorySkjermet joarkRepository;
-	@Inject
-	private BidragMellomlagringRepository bidragMellomlagringRepository;
 	@Inject
 	private DokumentFilerDelegate dokumentFilerDelegate;
 	@Inject
@@ -56,15 +49,7 @@ public class DefaultArkiverUstrukturertKravV3 implements ArkiverUstrukturertKrav
 		setInternalJournalpostValues(journalpost);
 		validateJournalpost(journalpost);
 
-		if (isBidragsdokument(journalpost)) {
-			return handleBidragsdokument(journalpost);
-		} else {
-			return handleJoarkdokument(journalpost);
-		}
-	}
-
-	private boolean isBidragsdokument(Journalpost journalpost) {
-		return FagomradeCode.BID == journalpost.getFagomrade();
+		return handleJoarkdokument(journalpost);
 	}
 
 	private ArkiverUstrukturertKravResponse handleJoarkdokument(Journalpost journalpost) {
@@ -74,26 +59,6 @@ public class DefaultArkiverUstrukturertKravV3 implements ArkiverUstrukturertKrav
 
 		return createResponse(journalpost.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo().getDokumentInfoId());
-	}
-
-	private ArkiverUstrukturertKravResponse handleBidragsdokument(Journalpost journalpost) {
-		BidragMellomlagring bidragMellomlagring = new BidragMellomlagring();
-		bidragMellomlagring.setAvsenderFnr(journalpost.getBrukere().iterator().next().getBrukerId());
-		bidragMellomlagring.setMottattDato(journalpost.getMottattDato());
-		bidragMellomlagring.setStatus(BidragMellomlagringStatus.DOKUMENTOPPLASTING);
-
-		BidragMellomlagringDokument bidragMellomlagringDokument = new BidragMellomlagringDokument();
-		bidragMellomlagringDokument.setDokument(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()
-				.getFildetaljerListe().iterator().next().getFileContent());
-		bidragMellomlagringDokument.setDokumentType(BidragMellomlagringDokumentType.HOVEDDOKUMENT);
-
-		bidragMellomlagring.addBidragMellomlagringDokument(bidragMellomlagringDokument);
-
-		BidragMellomlagring persistedBidragMellomlagring = bidragMellomlagringRepository
-				.save(bidragMellomlagring);
-
-		return createResponse(persistedBidragMellomlagring.getIdWithPrefix(), persistedBidragMellomlagring
-				.getBidragMellomlagringDokuments().iterator().next().getBidragMellomlagringDokumentId());
 	}
 
 	private ArkiverUstrukturertKravResponse createResponse(Long journalpostId, Long dokumentInfoId) {
@@ -116,7 +81,7 @@ public class DefaultArkiverUstrukturertKravV3 implements ArkiverUstrukturertKrav
 		relasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn());
 
 		DokumentInfo dokumentInfo = relasjon.getDokumentInfo();
-		if(FagomradeCode.PEN.equals(journalpost.getFagomrade())) {
+		if (FagomradeCode.PEN.equals(journalpost.getFagomrade())) {
 			dokumentInfo.setKategori(DokumentKategoriCode.IS);
 		}
 		dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);

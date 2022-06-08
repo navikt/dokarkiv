@@ -13,30 +13,21 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidBrukerException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Date;
 
-import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringBuilder.getBidragMellomlagringBuilder;
-import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringDokumentBuilder.getBidragMellomlagringDokumentBuilder;
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
@@ -47,15 +38,13 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * Test class for {@link DefaultArkiverUstrukturertKrav}.
- * 
+ *
  * @author Joakim Bjørnstad, Visma Consulting
- * 
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultArkiverUstrukturertKravTest {
@@ -67,16 +56,11 @@ public class DefaultArkiverUstrukturertKravTest {
 	@InjectMocks
 	private DefaultArkiverUstrukturertKrav service;
 	@Mock
-    private JoarkRepositorySkjermet repositoryMock;
-	@Mock
-	private BidragMellomlagringRepository bidragMellomlagringRepositoryMock;
+	private JoarkRepositorySkjermet repositoryMock;
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
 	private ArkiverUstrukturertKravJournalpostValidator behandleJournalJournalpostValidatorMock;
-
-	@Captor
-	ArgumentCaptor<BidragMellomlagring> captureBidragMellomlagring;
 
 	private ArkiverUstrukturertKravRequest request;
 	private ArkiverUstrukturertKravResponse response;
@@ -178,60 +162,6 @@ public class DefaultArkiverUstrukturertKravTest {
 	}
 
 	@Test
-	public void shouldNotCallJoarkRepositoryForBidragsdokument() {
-		Journalpost journalpost = createJournalpost(validFnr, FagomradeCode.BID);
-		request = new ArkiverUstrukturertKravRequest(journalpost);
-		when(bidragMellomlagringRepositoryMock.save(any())).thenReturn(
-				createBidragMellomlagring());
-
-		service.arkiverUstrukturertKrav(request);
-
-		verify(repositoryMock, never()).save(journalpost);
-	}
-
-	@Test
-	public void shouldCallBidragMellomlagringRepositoryToSaveBidragsdokument() {
-		Journalpost journalpost = createJournalpost(validFnr, FagomradeCode.BID);
-		request = new ArkiverUstrukturertKravRequest(journalpost);
-		when(bidragMellomlagringRepositoryMock.save(captureBidragMellomlagring.capture()))
-				.thenReturn(createBidragMellomlagring());
-
-		service.arkiverUstrukturertKrav(request);
-
-		assertBidragMellomlagring(captureBidragMellomlagring.getValue(), journalpost);
-		assertBidragMellomlagringDokument(captureBidragMellomlagring.getValue().getBidragMellomlagringDokuments()
-				.iterator().next(), journalpost.findAllFilDetaljer().iterator().next());
-
-	}
-
-	private void assertBidragMellomlagring(BidragMellomlagring bidragMellomlagring, Journalpost journalpost) {
-		assertThat(bidragMellomlagring.getAvsenderFnr(), is(journalpost.getBrukere().iterator().next().getBrukerId()));
-		assertThat(bidragMellomlagring.getMottattDato(), is(journalpost.getMottattDato()));
-		assertThat(bidragMellomlagring.getStatus(), is(BidragMellomlagringStatus.DOKUMENTOPPLASTING));
-	}
-
-	private void assertBidragMellomlagringDokument(BidragMellomlagringDokument bidragMellomlagringDokument,
-			FilDetaljer filDetaljer) {
-		assertThat(bidragMellomlagringDokument.getDokumentType(), is(BidragMellomlagringDokumentType.HOVEDDOKUMENT));
-		assertThat(bidragMellomlagringDokument.getDokument(), is(filDetaljer.getFileContent()));
-	}
-
-	@Test
-	public void shouldReturnResponseWithBidragMellomlagringIdWithPrefixAsJournalpostIdForBidragsdokument() {
-		Journalpost journalpost = createJournalpost(validFnr, FagomradeCode.BID);
-		BidragMellomlagring bidragMellomlagring = createBidragMellomlagring();
-		request = new ArkiverUstrukturertKravRequest(journalpost);
-		when(bidragMellomlagringRepositoryMock.save(any())).thenReturn(
-				bidragMellomlagring);
-
-		response = service.arkiverUstrukturertKrav(request);
-
-		assertThat(response.getJournalpostId(), is(bidragMellomlagring.getIdWithPrefix()));
-		assertThat(response.getDokumentId(), is(bidragMellomlagring.getBidragMellomlagringDokuments().iterator().next()
-				.getBidragMellomlagringDokumentId()));
-	}
-
-	@Test
 	public void shouldReturnResponseWithJournalpostIdForJoarkdokument() {
 		Journalpost journalpost = createJournalpost(validFnr, FagomradeCode.PEN);
 		request = new ArkiverUstrukturertKravRequest(journalpost);
@@ -250,18 +180,6 @@ public class DefaultArkiverUstrukturertKravTest {
 		exception.expectMessage(containsString(errormessagePart));
 
 		service.arkiverUstrukturertKrav(request);
-	}
-
-	private BidragMellomlagring createBidragMellomlagring() {
-		return getBidragMellomlagringBuilder()
-				.bidragMellomlagringId(100L)
-				.avsenderFnr("12312312312")
-				.mottattDato(new Date())
-				.status(BidragMellomlagringStatus.DOKUMENTOPPLASTING)
-				.bidragMellomlagringDokuments(
-						getBidragMellomlagringDokumentBuilder().bidragMellomlagringDokumentId(1000L)
-								.dokumentType(BidragMellomlagringDokumentType.HOVEDDOKUMENT)
-								.dokument("My little testfile".getBytes()).build()).build();
 	}
 
 	private Journalpost createJournalpost(String brukerId, FagomradeCode fagomrade) {
