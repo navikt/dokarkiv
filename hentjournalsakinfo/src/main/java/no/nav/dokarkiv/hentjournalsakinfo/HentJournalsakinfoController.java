@@ -24,6 +24,7 @@ import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerServic
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentService;
 import no.nav.security.token.support.core.api.Unprotected;
+import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,10 +79,14 @@ public class HentJournalsakinfoController {
 	@PostMapping(value = "/finnjournalposter")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark900"}, percentiles = {0.5, 0.95})
 	public FinnJournalposterResponseTo finnJournalposter(@RequestBody FinnJournalposterRequestTo finnJournalposterRequestTo) {
-		log.info("rjoark900 finner journalposter med request={}.", finnJournalposterRequestTo);
-		FinnJournalposterResponseTo finnJournalposterResponseTo = finnJournalposterService.finnJournalposter(finnJournalposterRequestTo);
-		log.info("rjoark900 fant og returnerer {} journalposter med request={}.", finnJournalposterResponseTo.getTilgangJournalposter().size(), finnJournalposterRequestTo);
-		return finnJournalposterResponseTo;
+		try {
+			log.info("rjoark900 finner journalposter med request={}.", finnJournalposterRequestTo);
+			FinnJournalposterResponseTo finnJournalposterResponseTo = finnJournalposterService.finnJournalposter(finnJournalposterRequestTo);
+			log.info("rjoark900 fant og returnerer {} journalposter med request={}.", finnJournalposterResponseTo.getTilgangJournalposter().size(), finnJournalposterRequestTo);
+			return finnJournalposterResponseTo;
+		} finally {
+			MDC.clear();
+		}
 	}
 
 	@Transactional(readOnly = true)
@@ -89,10 +94,14 @@ public class HentJournalsakinfoController {
 	@PostMapping(value = "/dokumentoversiktbruker")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark910"}, percentiles = {0.5, 0.95})
 	public DokumentoversiktBrukerResponseTo dokumentoversiktBruker(@RequestBody DokumentoversiktBrukerRequestTo dokumentoversiktBrukerRequestTo) {
-		log.info("rjoark910 henter dokumentoversikt til bruker for request={}.", dokumentoversiktBrukerRequestTo);
-		DokumentoversiktBrukerResponseTo dokumentoversiktBrukerResponseTo = dokumentoversiktBrukerService.hentDokumentoversiktBruker(dokumentoversiktBrukerRequestTo);
-		log.info("rjoark910 fant og returnerer {} journalposter med request={}.", dokumentoversiktBrukerResponseTo.getJournalposter().size(), dokumentoversiktBrukerRequestTo);
-		return dokumentoversiktBrukerResponseTo;
+		try {
+			log.info("rjoark910 henter dokumentoversikt til bruker for request={}.", dokumentoversiktBrukerRequestTo);
+			DokumentoversiktBrukerResponseTo dokumentoversiktBrukerResponseTo = dokumentoversiktBrukerService.hentDokumentoversiktBruker(dokumentoversiktBrukerRequestTo);
+			log.info("rjoark910 fant og returnerer {} journalposter med request={}.", dokumentoversiktBrukerResponseTo.getJournalposter().size(), dokumentoversiktBrukerRequestTo);
+			return dokumentoversiktBrukerResponseTo;
+		} finally {
+			MDC.clear();
+		}
 	}
 
 	@Transactional(readOnly = true)
@@ -100,10 +109,14 @@ public class HentJournalsakinfoController {
 	@PostMapping(value = "/finnjournalposterstatus")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark904"}, percentiles = {0.5, 0.95})
 	public FinnJournalposterStatusResponseTo finnJournalposterStatus(@RequestBody FinnJournalposterStatusRequestTo finnJournalposterStatusRequestTo) {
-		log.info("rjoark904 finner journalposter med request={}.", finnJournalposterStatusRequestTo);
-		FinnJournalposterStatusResponseTo finnJournalposterStatusResponseTo = finnJournalposterStatusService.finnJournalposterStatus(finnJournalposterStatusRequestTo);
-		log.info("rjoark904 fant og returnerer {} journalposter med request={}.", finnJournalposterStatusResponseTo.getTilgangJournalposter().size(), finnJournalposterStatusRequestTo);
-		return finnJournalposterStatusResponseTo;
+		try {
+			log.info("rjoark904 finner journalposter med request={}.", finnJournalposterStatusRequestTo);
+			FinnJournalposterStatusResponseTo finnJournalposterStatusResponseTo = finnJournalposterStatusService.finnJournalposterStatus(finnJournalposterStatusRequestTo);
+			log.info("rjoark904 fant og returnerer {} journalposter med request={}.", finnJournalposterStatusResponseTo.getTilgangJournalposter().size(), finnJournalposterStatusRequestTo);
+			return finnJournalposterStatusResponseTo;
+		} finally {
+			MDC.clear();
+		}
 	}
 
 	@Transactional(readOnly = true)
@@ -113,9 +126,13 @@ public class HentJournalsakinfoController {
 	public HentTilgangJournalpostResponse hentTilgangJournalpost(@PathVariable Long journalpostId,
 																 @PathVariable Long dokumentInfoId,
 																 @PathVariable VariantFormatCode variantFormat) {
-		log.info("rjoark901 har mottatt forespørsel om å hente TilgangJournalpost for journalpost med journalpostId={}, dokumentInfoId={} og variantFormat={}",
-				journalpostId, dokumentInfoId, variantFormat.name());
-		return hentTilgangJournalpostService.hentTilgangJournalpost(journalpostId, dokumentInfoId, variantFormat);
+		try {
+			log.info("rjoark901 har mottatt forespørsel om å hente TilgangJournalpost for journalpost med journalpostId={}, dokumentInfoId={} og variantFormat={}",
+					journalpostId, dokumentInfoId, variantFormat.name());
+			return hentTilgangJournalpostService.hentTilgangJournalpost(journalpostId, dokumentInfoId, variantFormat);
+		} finally {
+			MDC.clear();
+		}
 	}
 
 	@Transactional(readOnly = true)
@@ -123,8 +140,12 @@ public class HentJournalsakinfoController {
 	@RequestMapping(value = "/hentjournalpost/{journalpostId}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark902"}, percentiles = {0.5, 0.95})
 	public SafHentJournalpostResponse safHentJournalpost(@PathVariable Long journalpostId) {
-		log.info("rjoark902 har mottatt forespørsel om journalpost med journalpostId={}", journalpostId);
-		return safHentJournalpostService.hentJournalpostByJournalpostId(journalpostId);
+		try {
+			log.info("rjoark902 har mottatt forespørsel om journalpost med journalpostId={}", journalpostId);
+			return safHentJournalpostService.hentJournalpostByJournalpostId(journalpostId);
+		} finally {
+			MDC.clear();
+		}
 	}
 
 	@Transactional(readOnly = true)
@@ -133,8 +154,12 @@ public class HentJournalsakinfoController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark903"}, percentiles = {0.5, 0.95})
 	public TilknyttedeJournalposterResponse tilknyttedeJournalposter(@PathVariable Long dokumentInfoId,
 																	 @PathVariable Tilknytning tilknytning) {
-		log.info("rjoark903 har mottatt forespørsel om tilknyttede journalposter for dokumentInfoId={} med tilknytning={}", dokumentInfoId, tilknytning);
-		return tilknyttedeJournalposterService.tilknyttedeJournalposter(dokumentInfoId, tilknytning);
+		try {
+			log.info("rjoark903 har mottatt forespørsel om tilknyttede journalposter for dokumentInfoId={} med tilknytning={}", dokumentInfoId, tilknytning);
+			return tilknyttedeJournalposterService.tilknyttedeJournalposter(dokumentInfoId, tilknytning);
+		} finally {
+			MDC.clear();
+		}
 	}
 
 	@Transactional(readOnly = true)
@@ -142,11 +167,15 @@ public class HentJournalsakinfoController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", RJOARK_920}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> safHentDokument(@PathVariable Long dokumentinfoId,
 												  @PathVariable VariantFormatCode variant) {
-		RequestContextUtil.createAndSetUsername(RJOARK_920, "dokarkiv");
-		log.info("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId={} og variant={}", dokumentinfoId, variant);
-		SafHentDokumentResponse safHentDokumentResponse = safHentDokumentService.hentDokumentByDokumentinfoIdAndVariant(dokumentinfoId, variant);
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_TYPE, mimeTypeMapper.getMimeTypeForFileExtension(safHentDokumentResponse.getFiltype().toString()))
-				.body(Base64.getEncoder().encodeToString(safHentDokumentResponse.getDokument()));
+		try {
+			RequestContextUtil.createAndSetUsername(RJOARK_920, "dokarkiv");
+			log.info("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId={} og variant={}", dokumentinfoId, variant);
+			SafHentDokumentResponse safHentDokumentResponse = safHentDokumentService.hentDokumentByDokumentinfoIdAndVariant(dokumentinfoId, variant);
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_TYPE, mimeTypeMapper.getMimeTypeForFileExtension(safHentDokumentResponse.getFiltype().toString()))
+					.body(Base64.getEncoder().encodeToString(safHentDokumentResponse.getDokument()));
+		} finally {
+			MDC.clear();
+		}
 	}
 }

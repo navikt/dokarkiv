@@ -1,16 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark062;
 
-import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringBuilder.getBidragMellomlagringBuilder;
-import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringDokumentBuilder.getBidragMellomlagringDokumentBuilder;
-import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3Itest;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -26,9 +15,6 @@ import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.binding.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
@@ -38,13 +24,19 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.FerdigstillDokume
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Date;
+import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests for the ferdigstillDokumentopplasting operation.
- * 
+ *
  * @author Joakim Bjørnstad, Visma Consulting
- * 
  */
 public class FerdigstillDokumentopplastingV3IT extends AbstractBehandleJournalV3Itest {
 	private static final String SPORING_FORNAVN = "fornavn";
@@ -54,7 +46,6 @@ public class FerdigstillDokumentopplastingV3IT extends AbstractBehandleJournalV3
 	private FerdigstillDokumentopplastingRequest request;
 
 	private Journalpost journalpost;
-	private BidragMellomlagring bidragMellomlagring;
 
 	@Before
 	public void setUp() {
@@ -125,19 +116,6 @@ public class FerdigstillDokumentopplastingV3IT extends AbstractBehandleJournalV3
 		}
 	}
 
-	@Test
-	public void shouldFerdigstillDokumentOpplastingForBidragdokumenter() throws Exception {
-		bidragMellomlagring = buildAndPersistBidragMellomlagring();
-		request.setJournalpostId(bidragMellomlagring.getIdWithPrefix().toString());
-
-		behandleJournalV3Provider.ferdigstillDokumentopplasting(request);
-
-		BidragMellomlagring ferdigstiltBidragMellomlagring = bidragMellomlagringRepository.findById(bidragMellomlagring
-				.getBidragMellomlagringId()).get();
-
-		assertThat(ferdigstiltBidragMellomlagring.getStatus(), is(BidragMellomlagringStatus.KLAR_TIL_OVERFORING));
-	}
-
 	private ForretningsmessigUnntak expectedJournalpostIkkeFunnet() {
 		JournalpostIkkeFunnet journalpostIkkeFunnet = new JournalpostIkkeFunnet();
 		journalpostIkkeFunnet.setFeilaarsak("NoJournalpostFoundException");
@@ -145,18 +123,6 @@ public class FerdigstillDokumentopplastingV3IT extends AbstractBehandleJournalV3
 		journalpostIkkeFunnet.setFeilmelding("Journalpost with id: " + NONEXISTING_JOURNALPOST_ID + " does not exist");
 		journalpostIkkeFunnet.setTidspunkt(getXmlTimestamp());
 		return journalpostIkkeFunnet;
-	}
-
-	private BidragMellomlagring buildAndPersistBidragMellomlagring() {
-		BidragMellomlagring build = getBidragMellomlagringBuilder()
-				.avsenderFnr("01010101011")
-				.mottattDato(new Date())
-				.status(BidragMellomlagringStatus.DOKUMENTOPPLASTING)
-				.bidragMellomlagringDokuments(
-						getBidragMellomlagringDokumentBuilder()
-								.dokumentType(BidragMellomlagringDokumentType.HOVEDDOKUMENT)
-								.dokument("Testfil".getBytes()).build()).build();
-		return bidragMellomlagringRepository.save(build);
 	}
 
 	private Journalpost buildAndPersistJournalpost(FagomradeCode fagomradeCode) {

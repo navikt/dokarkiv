@@ -19,10 +19,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
@@ -39,11 +35,8 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJo
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostResponse;
 import org.junit.Test;
 
-import java.util.Date;
 import java.util.Set;
 
-import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringBuilder.getBidragMellomlagringBuilder;
-import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringDokumentBuilder.getBidragMellomlagringDokumentBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.IS;
 import static org.hamcrest.Matchers.is;
@@ -77,7 +70,6 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 	private Journalpost journalpost;
 	private DokumentInfo persistedDokumentInfo;
 	private FilDetaljer fildetaljer;
-	private BidragMellomlagring bidragMellomlagring;
 
 	private String dokumentTypeId;
 
@@ -89,18 +81,6 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 		persistedDokumentInfo = dokumentinfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
 				.getDokumentId())).get();
 		fildetaljer = persistedDokumentInfo.getFildetaljerListe().iterator().next();
-	}
-
-	public void setUpBidrag() throws Exception {
-		setUpBidrag(DOKUMENTTYPE_ID);
-	}
-
-	public void setUpBidrag(String dokumenttypeId) throws Exception {
-		this.dokumentTypeId = dokumenttypeId;
-		bidragMellomlagring = createAndPersistBidragMellomlagringWithHoveddokument();
-		createRequest(bidragMellomlagring.getIdWithPrefix().toString());
-		lagreVedleggPaaJournalpostResponse = behandleJournalProvider
-				.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
 	}
 
 	@Test
@@ -177,49 +157,6 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 		assertThat(dokumentFil.getFil(), is(FILECONTENT));
 	}
 
-	@Test
-	public void shouldReturnBidragMellomLagringDokumentIdForTheAddedBidragsdokumentVedlegg() throws Exception {
-		setUpBidrag();
-
-		assertNotNull(lagreVedleggPaaJournalpostResponse.getDokumentId());
-	}
-
-	@Test
-	public void shouldAddDokumentInfoAsVedleggToExistingBidragMellomlagring() throws Exception {
-		setUpBidrag();
-
-		BidragMellomlagring persistedBidragMellomlagring = bidragMellomlagringRepository.findById(bidragMellomlagring
-				.getBidragMellomlagringId()).get();
-		Set<BidragMellomlagringDokument> vedlegg = persistedBidragMellomlagring
-				.findBidragMellomlagringDokumentByType(BidragMellomlagringDokumentType.VEDLEGG);
-
-		assertThat(vedlegg.size(), is(1));
-	}
-
-	@Test
-	public void shouldAddDokumentInfoAsKvitteringVedleggToExistingBidragMellomlagring() throws Exception {
-		setUpBidrag(DOKUMENTTYPE_ID_VEDLEGG);
-
-		BidragMellomlagring persistedBidragMellomlagring = bidragMellomlagringRepository.findById(bidragMellomlagring
-				.getBidragMellomlagringId()).get();
-		Set<BidragMellomlagringDokument> vedlegg = persistedBidragMellomlagring
-				.findBidragMellomlagringDokumentByType(BidragMellomlagringDokumentType.VEDLEGG_KVITTERING);
-
-		assertThat(vedlegg.size(), is(1));
-	}
-
-	@Test
-	public void shouldVerifyFileContentForTheAddedBidragVedlegg() throws Exception {
-		setUpBidrag();
-
-		BidragMellomlagring persistedBidragMellomlagring = bidragMellomlagringRepository.findById(bidragMellomlagring
-				.getBidragMellomlagringId()).get();
-		Set<BidragMellomlagringDokument> vedlegg = persistedBidragMellomlagring
-				.findBidragMellomlagringDokumentByType(BidragMellomlagringDokumentType.VEDLEGG);
-
-		assertThat(vedlegg.iterator().next().getDokument(), is(FILECONTENT));
-	}
-
 	private ForretningsmessigUnntak expectedJournalpostIkkeFunnet() {
 		JournalpostIkkeFunnet journalpostIkkeFunnet = new JournalpostIkkeFunnet();
 		journalpostIkkeFunnet.setFeilaarsak("NoJournalpostFoundException");
@@ -275,18 +212,6 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 		persistedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()
 				.setOriginalJournalpost(persistedJournalpost);
 		return persistedJournalpost;
-	}
-
-	private BidragMellomlagring createAndPersistBidragMellomlagringWithHoveddokument() {
-		BidragMellomlagring bidragMellomlagring = getBidragMellomlagringBuilder()
-				.avsenderFnr("12312312312")
-				.mottattDato(new Date())
-				.status(BidragMellomlagringStatus.DOKUMENTOPPLASTING)
-				.bidragMellomlagringDokuments(
-						getBidragMellomlagringDokumentBuilder()
-								.dokumentType(BidragMellomlagringDokumentType.HOVEDDOKUMENT)
-								.dokument("Hoveddokument".getBytes()).build()).build();
-		return bidragMellomlagringRepository.save(bidragMellomlagring);
 	}
 
 	private JournalfoertDokumentInfo createInputJournalfoertDokumentInfo() {

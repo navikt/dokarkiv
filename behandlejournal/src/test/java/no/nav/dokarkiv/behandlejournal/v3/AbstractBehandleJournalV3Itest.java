@@ -3,7 +3,6 @@ package no.nav.dokarkiv.behandlejournal.v3;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
-import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
@@ -59,19 +58,16 @@ public abstract class AbstractBehandleJournalV3Itest {
 	@Inject
 	protected BehandleJournalV3 behandleJournalV3Provider;
 	@Inject
-    protected JoarkRepositorySkjermet joarkRepository;
+	protected JoarkRepositorySkjermet joarkRepository;
 	@Inject
-    protected DokumentinfoRepository dokumentinfoRepository;
+	protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
-	@Inject
-	protected BidragMellomlagringRepository bidragMellomlagringRepository;
 
 	@Before
 	public void setUpItest() {
 		joarkRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
-		bidragMellomlagringRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")

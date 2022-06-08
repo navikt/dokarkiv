@@ -8,19 +8,13 @@ import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.BidragMellomlagringDokumentRepository;
-import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
@@ -35,7 +29,7 @@ import java.util.List;
 
 /**
  * Implementation of LagreVedleggPaaJournalpost.
- * 
+ *
  * @author Rune Romundstad, Visma Consulting
  */
 @Component
@@ -48,16 +42,14 @@ public class DefaultLagreVedleggPaaJournalpostV3 implements LagreVedleggPaaJourn
 	@Inject
 	private DokumentFilRepository dokumentFilRepository;
 	@Inject
-	private BidragMellomlagringRepository bidragMellomlagringRepository;
-	@Inject
-	private BidragMellomlagringDokumentRepository bidragMellomlagringDokumentRepository;
-	@Inject
 	private KildeNavnPopulator kildeNavnPopulator;
 
 	@Value("${behandlejournal.v3.lagreVedleggPaaJournalpost.vedleggDokumentTypeId}")
 	private String vedleggDokumentTypeId;
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public LagreVedleggPaaJournalpostResponse lagreVedleggPaaJournalpost(
 			LagreVedleggPaaJournalpostRequest lagreVedleggPaaJournalpostRequest) throws NoJournalpostFoundException {
@@ -71,50 +63,7 @@ public class DefaultLagreVedleggPaaJournalpostV3 implements LagreVedleggPaaJourn
 
 	private LagreVedleggPaaJournalpostResponse handleIncomingDokumentvedlegg(Long journalpostId,
 																			 DokumentInfo dokumentInfo, SporingsMetaData sporingsMetaData) throws NoJournalpostFoundException {
-		if (BidragMellomlagring.isBidragMellomLagringId(journalpostId)) {
-			return handleIncomingBidragsvedlegg(BidragMellomlagring.removePrefixFromId(journalpostId), dokumentInfo);
-		} else {
-			return handleIncomingJoarkvedlegg(journalpostId, dokumentInfo, sporingsMetaData);
-		}
-	}
-
-	private LagreVedleggPaaJournalpostResponse handleIncomingBidragsvedlegg(Long bidragMellomlagringId,
-																			DokumentInfo dokumentInfo) {
-		validateDokumentInfo(dokumentInfo);
-
-		BidragMellomlagring bidragMellomlagring = getPersistedBidragMellomlagring(bidragMellomlagringId);
-
-		BidragMellomlagringDokument bidragMellomlagringDokument = createArkivBidragMellomlagringDokument(dokumentInfo);
-		bidragMellomlagringDokument.setBidragMellomlagring(bidragMellomlagring);
-		BidragMellomlagringDokument savedBidragMellomlagringDokument = bidragMellomlagringDokumentRepository.save(bidragMellomlagringDokument);
-		bidragMellomlagring.addBidragMellomlagringDokument(bidragMellomlagringDokument);
-
-		bidragMellomlagringRepository.save(bidragMellomlagring);
-		return new LagreVedleggPaaJournalpostResponse(savedBidragMellomlagringDokument.getBidragMellomlagringDokumentId());
-	}
-	
-	private BidragMellomlagring getPersistedBidragMellomlagring(Long bidragMellomlagringId) {
-		BidragMellomlagring bidragMellomlagring = bidragMellomlagringRepository
-				.findById(bidragMellomlagringId).orElse(null);
-		if (bidragMellomlagring == null) {
-			throw new ApplicationException("BidragMellomlagring with id: " + bidragMellomlagringId + " does not exist");
-		}
-		return bidragMellomlagring;
-	}
-
-	private BidragMellomlagringDokument createArkivBidragMellomlagringDokument(DokumentInfo dokumentInfo) {
-		FilDetaljer arkivVariant = dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
-		if (arkivVariant == null) {
-			throw new ApplicationException("Dokument must have a variant ARKIV");
-		}
-		BidragMellomlagringDokument bidragMellomlagringDokument = new BidragMellomlagringDokument();
-		if (vedleggDokumentTypeId.equals(dokumentInfo.getBrevkode())) {
-			bidragMellomlagringDokument.setDokumentType(BidragMellomlagringDokumentType.VEDLEGG_KVITTERING);
-		} else {
-			bidragMellomlagringDokument.setDokumentType(BidragMellomlagringDokumentType.VEDLEGG);
-		}
-		bidragMellomlagringDokument.setDokument(arkivVariant.getFileContent());
-		return bidragMellomlagringDokument;
+		return handleIncomingJoarkvedlegg(journalpostId, dokumentInfo, sporingsMetaData);
 	}
 
 	private LagreVedleggPaaJournalpostResponse handleIncomingJoarkvedlegg(Long journalpostId,
@@ -146,8 +95,8 @@ public class DefaultLagreVedleggPaaJournalpostV3 implements LagreVedleggPaaJourn
 	}
 
 	private void updateJournalpostAndDokumentInfoValues(Journalpost journalpost, DokumentInfo dokumentInfo,
-			SporingsMetaData sporingsMetaData) {
-		if(FagomradeCode.PEN.equals(journalpost.getFagomrade())) {
+														SporingsMetaData sporingsMetaData) {
+		if (FagomradeCode.PEN.equals(journalpost.getFagomrade())) {
 			dokumentInfo.setKategori(DokumentKategoriCode.IS);
 		}
 		updateJournalpostvaluesIfNotInngaaende(journalpost, dokumentInfo);
@@ -168,7 +117,7 @@ public class DefaultLagreVedleggPaaJournalpostV3 implements LagreVedleggPaaJourn
 	}
 
 	private void addJournalpostDokumentInfoRelasjon(Journalpost journalpost, DokumentInfo dokumentInfo,
-			SporingsMetaData sporingsMetaData) {
+													SporingsMetaData sporingsMetaData) {
 		JournalpostDokumentInfoRelasjon dokumentInfoRelasjon = new JournalpostDokumentInfoRelasjon();
 		dokumentInfoRelasjon.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
 		dokumentInfoRelasjon.setTilknyttetAvNavn(SporingUtil.decideSporingNavn(sporingsMetaData));
@@ -183,7 +132,7 @@ public class DefaultLagreVedleggPaaJournalpostV3 implements LagreVedleggPaaJourn
 		}
 		dokumentInfo.verifyNoVariantDuplicates();
 	}
-	
+
 	private void validateFilDetaljer(FilDetaljer filDetaljer) {
 		if (filDetaljer.getFiltype() == null) {
 			throw new ApplicationException("Filtype is missing from Fildetaljer");
