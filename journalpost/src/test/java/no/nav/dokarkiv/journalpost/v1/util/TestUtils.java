@@ -112,7 +112,6 @@ public class TestUtils {
 	public static final String VARIANTFORMAT_ORIGINAL = "ORIGINAL";
 	public static final byte[] FYSISK_DOKUMENT = "DOKUMENT".getBytes();
 	public static final byte[] FYSISK_DOKUMENT_2 = "DOKUMENT_2".getBytes();
-	public static final byte[] VEDLEGG_KVITTERING = "VedleggKvitteringBidrag".getBytes();
 	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
 	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
 	public static final String FILNAVN = "filnavn";
