@@ -110,6 +110,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "notat-administrasjon-q2",
+      "namespace": "isa",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "journalforing-frontend-q1",
       "namespace": "isa",
       "cluster": "dev-fss"
