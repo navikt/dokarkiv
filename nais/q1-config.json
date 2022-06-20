@@ -204,9 +204,19 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "syfosmsak",
+      "namespace": "teamsykmelding",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "pale-2-sak",
       "namespace": "teamsykmelding",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "pale-2-sak",
+      "namespace": "teamsykmelding",
+      "cluster": "dev-gcp"
     },
     {
       "app": "syfosmpapirmottak",
