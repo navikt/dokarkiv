@@ -244,6 +244,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "bidrag-dokument-arkivering-feature",
+      "namespace": "bidrag",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "soknadsarkiverer",
       "namespace": "team-soknad",
       "cluster": "dev-gcp"

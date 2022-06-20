@@ -203,6 +203,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "bidrag-dokument-arkivering",
+      "namespace": "bidrag",
+      "cluster": "prod-fss"
+    },
+    {
       "app": "soknadsarkiverer",
       "namespace": "team-soknad",
       "cluster": "prod-gcp"
