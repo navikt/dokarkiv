@@ -216,6 +216,11 @@
       "app": "k9-joark",
       "namespace": "dusseldorf",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "veilarbvedtaksstotte",
+      "namespace": "pto",
+      "cluster": "prod-fss"
     }
   ]
 }
