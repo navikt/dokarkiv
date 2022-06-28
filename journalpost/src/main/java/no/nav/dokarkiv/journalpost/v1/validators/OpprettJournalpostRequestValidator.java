@@ -16,13 +16,18 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.JPEG;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDFA;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PNG;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -268,23 +273,26 @@ public class OpprettJournalpostRequestValidator {
 		if (isBlank(dokumentVariant.getFiltype())) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype må være satt");
 		}
+
 		try {
 			FilTypeCode.valueOf(dokumentVariant.getFiltype());
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException(format("Dokument.dokumentvariant.filtype %s", VALIDERER_IKKE_MOT_KODEVERK));
 		}
+
 		if (isBlank(dokumentVariant.getVariantformat())) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.variantformat må være satt");
 		}
+
 		try {
 			VariantFormatCode.valueOf(dokumentVariant.getVariantformat());
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException(format("Dokument.dokumentvariant.variantformat %s", VALIDERER_IKKE_MOT_KODEVERK));
 		}
-		if (dokumentVariant.getVariantformat().equals(VariantFormatCode.ARKIV.name())
-				&& !Arrays.asList(FilTypeCode.PDF, FilTypeCode.PDFA)
-				.contains(FilTypeCode.valueOf(dokumentVariant.getFiltype()))) {
-			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype på være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV.");
+
+		if (dokumentVariant.getVariantformat().equals(ARKIV.name())
+				&& !asList(PDF, PDFA, JPEG, PNG).contains(FilTypeCode.valueOf(dokumentVariant.getFiltype()))) {
+			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype på være PDF, PDFA, JPEG eller PNG for Dokument.dokumentvariant.variantformat=ARKIV.");
 		}
 	}
 }

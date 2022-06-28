@@ -107,6 +107,9 @@ public class TestUtils {
 	public static final String KANAL_NAVNO = "NAV_NO";
 	public static final String DOKUMENTKATEGORI_SED = "SED";
 	public static final String FILTYPE_PDF = "PDF";
+	public static final String FILTYPE_PDFA = "PDFA";
+	public static final String FILTYPE_JPEG = "JPEG";
+	public static final String FILTYPE_PNG = "PNG";
 	public static final String FILTYPE_XML = "XML";
 	public static final String VARIANTFORMAT_ARKIV = "ARKIV";
 	public static final String VARIANTFORMAT_ORIGINAL = "ORIGINAL";

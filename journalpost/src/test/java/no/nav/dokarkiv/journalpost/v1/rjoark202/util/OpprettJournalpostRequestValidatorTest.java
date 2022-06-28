@@ -16,6 +16,8 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,10 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_JPEG;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDFA;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PNG;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET_UGYLDIG;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
@@ -37,6 +42,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OpprettJournalpostRequestValidatorTest {
@@ -46,7 +52,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	private OpprettJournalpostRequest request;
 
-	private OpprettJournalpostRequestValidator validator = new OpprettJournalpostRequestValidator();
+	private final OpprettJournalpostRequestValidator validator = new OpprettJournalpostRequestValidator();
 
 	@Test
 	public void happyPath() {
@@ -666,6 +672,22 @@ public class OpprettJournalpostRequestValidatorTest {
 		assertThrows(InputValideringFeiletException.class,
 				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
 				"Dokument.dokumentkategori");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {FILTYPE_PDF, FILTYPE_PDFA, FILTYPE_JPEG, FILTYPE_PNG})
+	public void shouldNotThrowExceptionIfFiltypeIsValidForARKIV(String filtype) {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.dokumenter(singletonList(Dokument.builder()
+						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.dokumentvarianter(singletonList(DokumentVariant.builder()
+								.filtype(filtype)
+								.variantformat(VARIANTFORMAT_ARKIV)
+								.build()))
+						.build()))
+				.build();
+
+		assertDoesNotThrow(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
 	}
 
 	@Test
