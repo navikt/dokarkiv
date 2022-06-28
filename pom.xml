@@ -69,6 +69,9 @@
 
 		<!-- test -->
 		<spring-cloud-contract-wiremock.version>2.1.5.RELEASE</spring-cloud-contract-wiremock.version>
+
+		<!-- Plugins -->
+		<maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -360,7 +363,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-toolchains-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>${maven-toolchains-plugin.version}</version>
 				<executions>
 					<execution>
 						<goals>
