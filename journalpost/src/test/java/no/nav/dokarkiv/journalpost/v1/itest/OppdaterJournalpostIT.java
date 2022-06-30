@@ -48,7 +48,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.INNHOLD;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.PEN;
-import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.HJELPEMIDLER;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.BARNEBRILLER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AKTOER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
@@ -897,7 +897,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.sak(Sak.builder()
 						.sakstype(Sakstype.FAGSAK)
 						.fagsakId(FAGSAK_ID)
-						.fagsaksystem(HJELPEMIDLER)
+						.fagsaksystem(BARNEBRILLER)
 						.build())
 				.build();
 
@@ -925,7 +925,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.sak(Sak.builder()
 						.sakstype(Sakstype.FAGSAK)
 						.fagsakId(FAGSAK_ID)
-						.fagsaksystem(HJELPEMIDLER)
+						.fagsaksystem(BARNEBRILLER)
 						.build())
 				.build();
 

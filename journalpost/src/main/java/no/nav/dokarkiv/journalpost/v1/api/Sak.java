@@ -51,6 +51,7 @@ public class Sak {
 					* SUPSTONAD (Supplerende Stønad)
 					* OMSORGSPENGER
 					* HJELPEMIDLER
+					* BARNEBRILLER
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",
