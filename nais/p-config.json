@@ -221,6 +221,11 @@
       "app": "veilarbvedtaksstotte",
       "namespace": "pto",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "notat-administrasjon",
+      "namespace": "isa",
+      "cluster": "prod-gcp"
     }
   ]
 }
