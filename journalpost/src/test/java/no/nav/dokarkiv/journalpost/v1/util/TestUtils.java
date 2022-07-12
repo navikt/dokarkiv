@@ -113,7 +113,6 @@ public class TestUtils {
 	public static final String VARIANTFORMAT_ORIGINAL = "ORIGINAL";
 	public static final byte[] FYSISK_DOKUMENT = "DOKUMENT".getBytes();
 	public static final byte[] FYSISK_DOKUMENT_2 = "DOKUMENT_2".getBytes();
-	public static final byte[] VEDLEGG_KVITTERING = "VedleggKvitteringBidrag".getBytes();
 	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
 	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
 	public static final String FILNAVN = "filnavn";
@@ -490,42 +489,6 @@ public class TestUtils {
 				.bruker(bruker)
 				.journalfoerendeEnhet(journalfoerendeEnhet)
 				.build();
-	}
-
-	public static OpprettJournalpostRequest createRequestBidrag() {
-		return createBaseBidragRequest().build();
-	}
-
-	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseBidragRequest() {
-		return createBaseRequest(JournalpostType.INNGAAENDE)
-				.tema(FagomradeCode.BID.name())
-				.datoMottatt(DATO_MOTTATT)
-				.dokumenter(Arrays.asList(
-						Dokument.builder()
-								.tittel(DOKUMENT_TITTEL1)
-								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
-										.filtype(FILTYPE_PDF)
-										.variantformat(VARIANTFORMAT_ARKIV)
-										.fysiskDokument(FYSISK_DOKUMENT)
-										.build()))
-								.build(),
-						Dokument.builder()
-								.tittel(DOKUMENT_TITTEL2)
-								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
-										.filtype(FILTYPE_PDF)
-										.variantformat(VARIANTFORMAT_ARKIV)
-										.fysiskDokument(FYSISK_DOKUMENT_2)
-										.build()))
-								.build(),
-						Dokument.builder()
-								.tittel("Vedlegg kvittering")
-								.brevkode("L7")
-								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
-										.filtype(FILTYPE_PDF)
-										.variantformat(VARIANTFORMAT_ARKIV)
-										.fysiskDokument(VEDLEGG_KVITTERING)
-										.build()))
-								.build()));
 	}
 
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet) {

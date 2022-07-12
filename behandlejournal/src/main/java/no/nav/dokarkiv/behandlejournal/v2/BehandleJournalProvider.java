@@ -12,7 +12,6 @@ import no.nav.dokarkiv.behandlejournal.v2.tjoark064.JournalfoerUtgaaendeHenvende
 import no.nav.dokarkiv.behandlejournal.v2.tjoark064.JournalfoerUtgaaendeHenvendelseResponseMapper;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseRequestMapper;
 import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseResponseMapper;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
@@ -39,7 +38,6 @@ import javax.inject.Inject;
  * and to WS model (FIM) and delegates to Service implementations.
  *
  * @author Rune Romundstad, Visma Consulting
- *
  */
 @Slf4j
 @Component
@@ -77,8 +75,8 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 	public ArkiverUstrukturertKravResponse arkiverUstrukturertKrav(ArkiverUstrukturertKravRequest request) {
 		ArkiverUstrukturertKravResponse response = arkiverUstrukturertKravResponseMapper.map(behandleJournalServiceBi
 				.arkiverUstrukturertKrav(arkiverUstrukturertKravRequestMapper.map(request)));
-		log.info("tjoark060 arkiverer ustrukturert krav i {}={}, dokumentId={}",
-				journalpostOrBidragClassifier(response.getJournalpostId()), response.getJournalpostId(), response.getDokumentId());
+		log.info("tjoark060 arkiverer ustrukturert krav i journalpostId={}, dokumentId={}",
+				response.getJournalpostId(), response.getDokumentId());
 		return response;
 	}
 
@@ -89,8 +87,8 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 		try {
 			LagreVedleggPaaJournalpostResponse response = lagreVedleggPaaJournalpostResponseMapper.map(behandleJournalServiceBi
 					.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequestMapper.map(request)));
-			log.info("tjoark061 lagret vedlegg dokumentId={} til {}={}",
-					response.getDokumentId(), journalpostOrBidragClassifier(request.getJournalpostId()), request.getJournalpostId());
+			log.info("tjoark061 lagret vedlegg dokumentId={} til journalpostId={}",
+					response.getDokumentId(), request.getJournalpostId());
 			return response;
 		} catch (NoJournalpostFoundException e) {
 			throw new LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet(e.getMessage(),
@@ -106,8 +104,7 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 		try {
 			behandleJournalServiceBi.ferdigstillDokumentopplasting(ferdigstillDokumentopplastingRequestMapper
 					.map(request));
-			log.info("tjoark062 ferdigstilte dokumentopplasting {}={}",
-					journalpostOrBidragClassifier(request.getJournalpostId()), request.getJournalpostId());
+			log.info("tjoark062 ferdigstilte dokumentopplasting journalpostId={}", request.getJournalpostId());
 		} catch (NoJournalpostFoundException e) {
 			throw new FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet(e.getMessage(),
 					behandleJournalFaultInfoPopulator.populateFaultInfo(new JournalpostIkkeFunnet(), e,
@@ -159,11 +156,4 @@ public class BehandleJournalProvider implements BehandleJournalV2 {
 		return Thread.currentThread().getStackTrace()[2].getMethodName();
 	}
 
-	private String journalpostOrBidragClassifier(String id) {
-		if(id != null && id.startsWith(BidragMellomlagring.ID_PREFIX.toString())) {
-			return "bidragMellomlagringId";
-		} else {
-			return "journalpostId";
-		}
-	}
 }

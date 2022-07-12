@@ -34,8 +34,6 @@ import java.util.Properties;
 		DokumentFilRepository.class,
 		DokumentinfoRepository.class,
 		JournalpostDokumentInfoRelasjonRepository.class,
-		BidragMellomlagringRepository.class,
-		BidragMellomlagringDokumentRepository.class,
 		JoarkDeleteRepository.class,
 		AksjonsLoggRepository.class,
 		SakRepository.class

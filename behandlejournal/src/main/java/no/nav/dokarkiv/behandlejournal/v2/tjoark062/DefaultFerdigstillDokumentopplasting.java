@@ -6,11 +6,8 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
@@ -19,20 +16,19 @@ import javax.inject.Inject;
 
 /**
  * Implementation of {@link FerdigstillDokumentopplasting}.
- * 
+ *
  * @author Joakim Bjørnstad, Visma Consulting
- * 
  */
 @Component
 public class DefaultFerdigstillDokumentopplasting implements FerdigstillDokumentopplasting {
 	@Inject
-    private JoarkRepositorySkjermet joarkRepository;
-	@Inject
-	private BidragMellomlagringRepository bidragMellomlagringRepository;
+	private JoarkRepositorySkjermet joarkRepository;
 	@Inject
 	private SporingPopulator sporingPopulator;
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void ferdigstillDokumentOpplasting(FerdigstillDokumentopplastingRequest ferdigstillDokumentOpplastingRequest)
 			throws NoJournalpostFoundException {
@@ -44,20 +40,7 @@ public class DefaultFerdigstillDokumentopplasting implements FerdigstillDokument
 
 	private void handleFerdigstillDokumentOpplasting(Long journalpostId, SporingsMetaData sporingsMetaData)
 			throws NoJournalpostFoundException {
-		if (BidragMellomlagring.isBidragMellomLagringId(journalpostId)) {
-			handleBidragMellomlagringDokumentOpplasting(BidragMellomlagring.removePrefixFromId(journalpostId));
-		} else {
-			handleJoarkFerdigstillDokumentOpplasting(journalpostId, sporingsMetaData);
-		}
-	}
-
-	private void handleBidragMellomlagringDokumentOpplasting(Long bidragMellomlagringId) {
-		BidragMellomlagring bidragMellomlagring = bidragMellomlagringRepository
-				.findById(bidragMellomlagringId).orElse(null);
-		if (bidragMellomlagring == null) {
-			throw new ApplicationException("Could not find BidragMellomlagring for overforing");
-		}
-		bidragMellomlagring.setStatus(BidragMellomlagringStatus.KLAR_TIL_OVERFORING);
+		handleJoarkFerdigstillDokumentOpplasting(journalpostId, sporingsMetaData);
 	}
 
 	private void handleJoarkFerdigstillDokumentOpplasting(Long journalpostId, SporingsMetaData sporingsMetaData)
@@ -88,10 +71,9 @@ public class DefaultFerdigstillDokumentopplasting implements FerdigstillDokument
 	}
 
 	private void updateJournalpost(Journalpost journalpost, SporingsMetaData sporingsMetaData) {
-		if(FagomradeCode.PEN.equals(journalpost.getFagomrade())) {
+		if (FagomradeCode.PEN.equals(journalpost.getFagomrade())) {
 			journalpost.setJournalstatus(JournalStatusCode.M);
-		}
-		else {
+		} else {
 			journalpost.setJournalstatus(JournalStatusCode.MO);
 		}
 		sporingPopulator.populateSporingInfo(journalpost, SporingUtil.decideSporingNavn(sporingsMetaData));

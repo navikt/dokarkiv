@@ -62,13 +62,9 @@ public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, 
 	 */
 	NAV_NO_CHAT,
 	/**
-	 * Digital Post til Virksomhet
+	 * Taushetsbelagt digital post til virksomhet
 	 */
-	DPV,
-	/**
-	 * Digital Post til Virksomhet (sensitiv)
-	 */
-	DPVS;
+	DPVT;
 
 	/**
 	 * {@inheritDoc}

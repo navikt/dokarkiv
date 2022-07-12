@@ -204,9 +204,19 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "syfosmsak",
+      "namespace": "teamsykmelding",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "pale-2-sak",
       "namespace": "teamsykmelding",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "pale-2-sak",
+      "namespace": "teamsykmelding",
+      "cluster": "dev-gcp"
     },
     {
       "app": "syfosmpapirmottak",
@@ -234,6 +244,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "bidrag-dokument-arkivering-feature",
+      "namespace": "bidrag",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "soknadsarkiverer",
       "namespace": "team-soknad",
       "cluster": "dev-gcp"
@@ -241,12 +256,12 @@
     {
       "app": "k9-joark",
       "namespace": "dusseldorf",
-      "cluster": "dev-fss"
+      "cluster": "dev-gcp"
     },
     {
-      "app": "k9-joark",
-      "namespace": "dusseldorf",
-      "cluster": "dev-gcp"
+      "app": "veilarbvedtaksstotte",
+      "namespace": "pto",
+      "cluster": "dev-fss"
     }
   ]
 }

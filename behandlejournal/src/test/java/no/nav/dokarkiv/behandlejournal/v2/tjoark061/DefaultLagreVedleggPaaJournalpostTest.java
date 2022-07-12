@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import no.nav.dokarkiv.behandlejournal.SporingsMetaData;
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
@@ -17,15 +15,9 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagring;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokument;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringDokumentType;
-import no.nav.dokarkiv.core.domain.entities.bidrag.BidragMellomlagringStatus;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.BidragMellomlagringDokumentRepository;
-import no.nav.dokarkiv.core.repository.BidragMellomlagringRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
@@ -39,25 +31,17 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
-import java.lang.reflect.Field;
-import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 
-import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringBuilder.getBidragMellomlagringBuilder;
-import static no.nav.dokarkiv.core.domain.builder.BidragMellomlagringDokumentBuilder.getBidragMellomlagringDokumentBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 /**
@@ -75,18 +59,11 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	private static final String BRUKEROPPGITT_TITTEL = "brukeroppgittTittel";
 	private static final Long JOURNALPOST_ID = 1L;
 	private static final long DOKUMENT_ID = 100L;
-	private static final Long BIDRAG_MELLOMLAGRING_ID = 1L;
-	private static final Long BIDRAG_JOURNALPOST_ID = 424900000001L;
-	private static final Long VEDLEGG_BIDRAG_MELLOMLAGRING_ID = 1001L;
 
 	@Mock
     private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
     private DokumentinfoRepository dokumentinfoRepositoryMock;
-	@Mock
-	private BidragMellomlagringRepository bidragMellomlagringRepository;
-	@Mock
-	private BidragMellomlagringDokumentRepository bidragMellomlagringDokumentRepositoryMock;
 	@Mock
 	private DokumentFilRepository dokumentFilRepositoryMock;
 	@Mock
@@ -104,8 +81,6 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	@Before
 	public void init() {
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder().componentId(COMPONENT_ID).build());
-		when(bidragMellomlagringDokumentRepositoryMock.save(any()))
-				.thenReturn(BidragMellomlagringDokument.builder().bidragMellomlagringDokumentId(VEDLEGG_BIDRAG_MELLOMLAGRING_ID).build());
 		when(dokumentinfoRepositoryMock.save(any())).thenReturn(DokumentInfo.builder().dokumentInfoId(DOKUMENT_ID).build());
 		
 		service.setVedleggDokumentTypeId(VEDLEGG_DOKUMENT_TYPE_ID);
@@ -205,49 +180,6 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 
 		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
 	}
-	
-	@Test
-	public void shouldThrowExceptionIfFilTypeMissingInDokumentInnholdForBidragsdokument() throws Exception {
-		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(BIDRAG_JOURNALPOST_ID,
-				createInputDokumentInfoWithMissingFiltype(), createSporingsMetaData());
-
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Filtype is missing from Fildetaljer");
-
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-	}
-
-	@Test
-	public void shouldThrowExceptionIfVariantFormatMissingInDokumentInnholdForBidragsdokument() throws Exception {
-		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(BIDRAG_JOURNALPOST_ID,
-				createInputDokumentInfoWithMissingVariantFormat(), createSporingsMetaData());
-
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Variantformat is missing from Fildetaljer");
-
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-	}
-
-	@Test
-	public void shouldThrowExceptionIfFileContentMissingInDokumentInnholdForBidragsdokument() throws Exception {
-		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(BIDRAG_JOURNALPOST_ID,
-				createInputDokumentInfoWithMissingFileContent(), createSporingsMetaData());
-
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Filecontent is missing from Fildetaljer");
-
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-	}
-	
-	@Test
-	public void shouldThrowExceptionIfDuplicateDokumentVariantsForBidragsdokument() throws Exception {
-		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(BIDRAG_JOURNALPOST_ID,
-				createDokumentInfoWithDuplicateDokumentVariant(), createSporingsMetaData());
-		expectedException.expect(InvalidJournalpostStructureException.class);
-		expectedException.expectMessage(containsString("cannot contain dokumentvariant duplicates"));
-
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-	}
 
 	@Test
 	public void shouldStoreDokumentInfoAsVedleggOnExistingJournalpost() throws Exception {
@@ -279,55 +211,6 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfNoBidragMellomlagringIdInDb() throws Exception {
-		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(BIDRAG_JOURNALPOST_ID,
-				DokumentInfo.builder().build(), createSporingsMetaData());
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("BidragMellomlagring with id: " + BIDRAG_MELLOMLAGRING_ID + " does not exist");
-		when(bidragMellomlagringRepository.findById(eq(BIDRAG_MELLOMLAGRING_ID))).thenReturn(Optional.empty());
-
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-	}
-
-	@Test
-	public void shouldStoreDokumentInfoAsVedleggOnExistingBidragMellomlagring() throws Exception {
-		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(BIDRAG_JOURNALPOST_ID,
-				createInputDokumentInfo("filnavn"), createSporingsMetaData());
-		BidragMellomlagring bidragMellomlagring = createBidragMellomlagringWithHoveddokument();
-		when(bidragMellomlagringRepository.findById(BIDRAG_MELLOMLAGRING_ID)).thenReturn(Optional.of(bidragMellomlagring));
-
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-
-		assertThat(bidragMellomlagring.getBidragMellomlagringDokuments().size(), is(2));
-	}
-	
-	@Test
-	public void shouldStoreKvitteringAsVedleggKvitteringOnExistingBidragMellomlagring() throws Exception {
-		String vedleggBrevkode = VEDLEGG_DOKUMENT_TYPE_ID;
-		DokumentInfo dokumentInfo = createInputDokumentInfo("filnavn");
-		dokumentInfo.setBrevkode(vedleggBrevkode);
-		
-		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(BIDRAG_JOURNALPOST_ID,
-				dokumentInfo, createSporingsMetaData());
-		BidragMellomlagring bidragMellomlagring = createBidragMellomlagringWithHoveddokument();
-		when(bidragMellomlagringRepository.findById(BIDRAG_MELLOMLAGRING_ID)).thenReturn(Optional.of(bidragMellomlagring));
-		
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-		
-		assertThatBidragMellomlagringHasKvitteringVedlegg(bidragMellomlagring);
-	}
-
-	private void assertThatBidragMellomlagringHasKvitteringVedlegg(BidragMellomlagring bidragMellomlagring) {
-		assertTrue(Iterables.any(bidragMellomlagring.getBidragMellomlagringDokuments(),
-				new Predicate<BidragMellomlagringDokument>() {
-					@Override
-					public boolean apply(BidragMellomlagringDokument input) {
-						return input.getDokumentType() == BidragMellomlagringDokumentType.VEDLEGG_KVITTERING;
-					}
-				}));
-	}
-
-	@Test
 	public void shouldReturnJoarkResponseAfterStoringVedlegg() throws Exception {
 		DokumentInfo vedlegg = createInputDokumentInfo("filnavn");
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID, vedlegg,
@@ -356,37 +239,6 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 
 		assertThat(lagreVedleggPaaJournalpostResponse.getDokumentId(), is(vedlegg.getDokumentInfoId()));
 		assertThat(joarkRepositoryMock.findById(JOURNALPOST_ID).get().findDokumentInfoById(DOKUMENT_ID).getTittel(), is(BRUKEROPPGITT_TITTEL));
-	}
-
-
-	@Test
-	public void shouldReturnBidragResponseAfterStoringVedlegg() throws Exception {
-		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(BIDRAG_JOURNALPOST_ID,
-				createInputDokumentInfo("filnavn"), createSporingsMetaData());
-		BidragMellomlagring bidragMellomlagring = createBidragMellomlagringWithHoveddokument();
-		when(bidragMellomlagringRepository.findById(eq(BIDRAG_MELLOMLAGRING_ID))).thenReturn(Optional.of(bidragMellomlagring));
-		doAnswer(new Answer<Void>() {
-			@Override
-			public Void answer(InvocationOnMock invocation) throws Throwable {
-				BidragMellomlagring answerBidragMellomlagring = (BidragMellomlagring) invocation.getArguments()[0];
-				for (BidragMellomlagringDokument dokument : answerBidragMellomlagring.getBidragMellomlagringDokuments()) {
-					if (dokument.getDokumentType() == BidragMellomlagringDokumentType.VEDLEGG) {
-						changeBidragMellomlagringDokumentId(dokument, VEDLEGG_BIDRAG_MELLOMLAGRING_ID);
-					}
-				}
-				return null;
-			}
-		}).when(bidragMellomlagringRepository).save((BidragMellomlagring) any());
-
-		lagreVedleggPaaJournalpostResponse = service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-
-		assertThat(lagreVedleggPaaJournalpostResponse.getDokumentId(), is(VEDLEGG_BIDRAG_MELLOMLAGRING_ID));
-	}
-
-	private void changeBidragMellomlagringDokumentId(BidragMellomlagringDokument object, Long value) throws Throwable {
-		Field bidragMellomlagringDokumentIdField = object.getClass().getDeclaredField("bidragMellomlagringDokumentId");
-		bidragMellomlagringDokumentIdField.setAccessible(true);
-		bidragMellomlagringDokumentIdField.set(object, value);
 	}
 
 	private SporingsMetaData createSporingsMetaData() {
@@ -458,18 +310,6 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 				.filDetaljerList(
 						FilDetaljerBuilder.getFilDetaljerBuilder().filnavn("test.pdf").filtype(FilTypeCode.PDF)
 								.variantFormat(VariantFormatCode.ARKIV).fileContent(null).build()).build();
-	}
-
-	private BidragMellomlagring createBidragMellomlagringWithHoveddokument() {
-		return getBidragMellomlagringBuilder()
-				.bidragMellomlagringId(DOKUMENT_ID)
-				.avsenderFnr("12312312312")
-				.mottattDato(new Date())
-				.status(BidragMellomlagringStatus.DOKUMENTOPPLASTING)
-				.bidragMellomlagringDokuments(
-						getBidragMellomlagringDokumentBuilder().bidragMellomlagringDokumentId(1000L)
-								.dokumentType(BidragMellomlagringDokumentType.HOVEDDOKUMENT)
-								.dokument("Hoveddokument".getBytes()).build()).build();
 	}
 
 	private Journalpost createJournalpostWithHoveddokument() {
