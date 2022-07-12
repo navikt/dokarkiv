@@ -116,6 +116,16 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
+	protected HttpHeaders createHeadersWithUserAndServiceUserTokenAndConsumerId() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add(HttpHeaders.AUTHORIZATION, BEARER + getTokenWithSubject(PERSON_USER_ID));
+		headers.add(NAV_CONSUMER_TOKEN, BEARER + getTokenWithSubject(SERVICE_USER_ID));
+		headers.add(NavHeaders.NAV_CALL_ID, "Nav-CallId");
+		headers.add(NavHeaders.NAV_CONSUMER_ID, "consumer_id");
+		return headers;
+	}
+
 	protected HttpHeaders createBidragHeadersWithServiceUserToken() {
 		HttpHeaders bidragHeader = createHeadersWithServiceUserToken(SERVICE_USER_ID);
 		bidragHeader.add(NavHeaders.NAV_CONSUMER_ID, BIDRAG_NAV_CONSUMER_ID);

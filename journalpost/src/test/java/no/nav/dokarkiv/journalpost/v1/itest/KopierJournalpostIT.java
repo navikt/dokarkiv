@@ -12,12 +12,14 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.util.Base64Utils;
 
@@ -51,6 +53,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 	public void happyPathInngaaende() throws IOException {
 		Journalpost journalpost = createJournalpost();
 		Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+		System.out.println(journalpostId);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

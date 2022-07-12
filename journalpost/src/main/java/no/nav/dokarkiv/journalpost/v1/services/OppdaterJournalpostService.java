@@ -1,6 +1,10 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
@@ -9,6 +13,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
@@ -37,15 +42,21 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_METADATA;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
 import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_MULTIPLIER;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService.UKJENT;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementSakstypeCounter;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
 @Named("oppdaterMetadataJournalpost")
+@Slf4j
 public class OppdaterJournalpostService {
 
 	private static final String APPLIKASJON_FS22 = "FS22";
@@ -56,6 +67,7 @@ public class OppdaterJournalpostService {
 	private final SaksrelasjonUpdater saksrelasjonUpdater;
 	private final DokumentInfoUpdater dokumentInfoUpdater;
 	private final LagreAksjonsLoggService lagreAksjonsLoggService;
+	private final AksjonsLoggService aksjonsLoggService;
 	private final IdentConsumer identConsumer;
 	private final HentSakerRepository hentSakerRepository;
 	private final MeterRegistry meterRegistry;
@@ -67,7 +79,7 @@ public class OppdaterJournalpostService {
 									  DokumentinfoRepository dokumentinfoRepository,
 									  DokumentInfoUpdater dokumentInfoUpdater,
 									  LagreAksjonsLoggService lagreAksjonsLoggService,
-									  final IdentConsumer identConsumer,
+									  AksjonsLoggService aksjonsLoggService, final IdentConsumer identConsumer,
 									  final HentSakerRepository hentSakerRepository,
 									  final MeterRegistry meterRegistry) {
 		this.joarkRepository = joarkRepository;
@@ -76,6 +88,7 @@ public class OppdaterJournalpostService {
 		this.saksrelasjonUpdater = saksrelasjonUpdater;
 		this.dokumentInfoUpdater = dokumentInfoUpdater;
 		this.lagreAksjonsLoggService = lagreAksjonsLoggService;
+		this.aksjonsLoggService = aksjonsLoggService;
 		this.identConsumer = identConsumer;
 		this.hentSakerRepository = hentSakerRepository;
 		this.meterRegistry = meterRegistry;
@@ -105,16 +118,16 @@ public class OppdaterJournalpostService {
 
 		if (!changeTracker.getChanges().isEmpty()) {
 			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
-					AksjonsTypeCode.ENDRE_METADATA, journalpostId, null,
-					hentMeldingFraAksjonsType(AksjonsTypeCode.ENDRE_METADATA), null, changeTracker.getChanges());
+					ENDRE_METADATA, journalpostId, null,
+					hentMeldingFraAksjonsType(ENDRE_METADATA), null, changeTracker.getChanges());
 		}
 
 		changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, sakId);
 		joarkRepository.save(journalpost);
 		if (!changeTracker.getChanges().isEmpty()) {
 			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
-					AksjonsTypeCode.SAKSTILKNYTNING, journalpostId, null,
-					hentMeldingFraAksjonsType(AksjonsTypeCode.SAKSTILKNYTNING), null, changeTracker.getChanges());
+					SAKSTILKNYTNING, journalpostId, null,
+					hentMeldingFraAksjonsType(SAKSTILKNYTNING), null, changeTracker.getChanges());
 		}
 
 		if (oppdaterJournalpostRequest.getDokumenter() != null) {
@@ -126,15 +139,84 @@ public class OppdaterJournalpostService {
 				dokumentinfoRepository.save(dokumentInfo);
 				if (!changeTracker.getChanges().isEmpty()) {
 					lagreAksjonsLoggService.lagreAksjonsLogg(
-							AksjonsTypeCode.ENDRE_METADATA, dokumentInfo.getDokumentInfoId(), null,
-							hentMeldingFraAksjonsType(AksjonsTypeCode.ENDRE_METADATA), null, changeTracker.getChanges());
+							ENDRE_METADATA, dokumentInfo.getDokumentInfoId(), null,
+							hentMeldingFraAksjonsType(ENDRE_METADATA), null, changeTracker.getChanges());
 				}
 			}
 		}
 	}
 
+	@Retryable(
+			include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
+			backoff = @Backoff(delay = RETRY_DELAY, multiplier = RETRY_MULTIPLIER)
+	)
+	/*
+	 * Kommentar PR:
+	 * Det ble rot med transactions da lagre lagreAksjonsLoggService.lagreAksjonsLogg() lager en ny transaction som søker opp en journalpost
+	 * før opprettJournalpost har fått committa den nye journalposten. Endret derfor til å opprette aksjonslogg-elementene her
+	 * i steden for å generere de i en ny transaction som feiler ved oppslag på journalposten.
+	 */
+	public void oppdaterJournalpostInternal(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
+		String sakId = null;
+
+		Journalpost journalpost = joarkRepository.findById(journalpostId)
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus(), journalpost.getJournalposttype());
+
+		if (oppdaterJournalpostRequest.getSak() != null) {
+			Sakstype sakstype = oppdaterJournalpostRequest.getSak().getSakstype();
+			incrementSakstypeCounter(sakstype, "oppdaterjournalpost", meterRegistry);
+			if ((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())) {
+				sakId = identifiserEllerOpprettArkivsak(oppdaterJournalpostRequest);
+			}
+		}
+
+		ChangeTracker changeTracker = journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
+
+		if (!changeTracker.getChanges().isEmpty()) {
+			populerAksjonslogg(journalpostId, ENDRE_METADATA,changeTracker.getChanges());
+		}
+
+		changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, sakId);
+		joarkRepository.save(journalpost);
+		if (!changeTracker.getChanges().isEmpty()) {
+			populerAksjonslogg(journalpostId, SAKSTILKNYTNING, changeTracker.getChanges());
+		}
+
+		if (oppdaterJournalpostRequest.getDokumenter() != null) {
+			for (no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokument : oppdaterJournalpostRequest.getDokumenter()) {
+				DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
+				assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
+
+				changeTracker = dokumentInfoUpdater.updateFields(dokumentInfo, dokument);
+				dokumentinfoRepository.save(dokumentInfo);
+				if (!changeTracker.getChanges().isEmpty()) {
+					populerAksjonslogg(journalpostId, ENDRE_METADATA, changeTracker.getChanges());
+				}
+			}
+		}
+	}
+
+	private void populerAksjonslogg(Long journalpostId, AksjonsTypeCode aksjon, List<ArkivElementEndringTO> endringer) {
+		AksjonsLoggTO aksjonsLoggTo = AksjonsLoggTO.builder()
+				.aksjon(aksjon)
+				.journalpostId(journalpostId)
+				.hjemmel(null)
+				.melding(hentMeldingFraAksjonsType(aksjon))
+				.utfoertAv(null)
+				.build();
+		try {
+			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, endringer);
+		} catch (UgyldigAksjonsLoggException e) {
+			log.warn("Kunne ikke skrive til AksjonsLogg: " + e.getMessage());
+		}
+	}
+
+
+
 	private String hentMeldingFraAksjonsType(AksjonsTypeCode kode) {
-		return kode.equals(AksjonsTypeCode.SAKSTILKNYTNING) ?
+		return kode.equals(SAKSTILKNYTNING) ?
 				"Journalposten ble knyttet til en sak." :
 				"Metadata på journalposten ble endret";
 	}

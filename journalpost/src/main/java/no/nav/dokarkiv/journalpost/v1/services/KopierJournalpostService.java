@@ -1,8 +1,9 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -13,11 +14,14 @@ import no.nav.dokarkiv.journalpost.v1.validators.KopierJournalpostValidator;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.util.Collections;
 
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOST_ID;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.KOPIER_JOURNALPOST;
 
 @Component
+@Slf4j
 public class KopierJournalpostService {
 	private static final String SRV_DOKARKIVPROXY = "srvdokarkivproxy";
 	private final JoarkRepository joarkRepository;
@@ -33,7 +37,7 @@ public class KopierJournalpostService {
 		this.journalpostCopier = new JournalpostCopier();
 	}
 
-	public Long execute(Long journalpostId) {
+	public Long kopierJournalpost(Long journalpostId) {
 		// finn journalpost
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
@@ -60,7 +64,7 @@ public class KopierJournalpostService {
 				.build();
 
 		aksjonsLoggService.lagreAksjonsLoggForJournalpost(
-				AksjonsTypeCode.KOPIER_JOURNALPOST, journalpostId, null,"Journalposten ble kopiert. Id til ny journalpost er " + nyJournalpostId,
+				KOPIER_JOURNALPOST, journalpostId, null,"Journalposten ble kopiert. Id til ny journalpost er " + nyJournalpostId,
 				SRV_DOKARKIVPROXY, Collections.singletonList(endring));
 
 		// returnere journalpostId til ny journalpost
