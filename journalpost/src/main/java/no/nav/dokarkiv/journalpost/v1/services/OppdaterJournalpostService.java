@@ -92,6 +92,58 @@ public class OppdaterJournalpostService {
 		this.meterRegistry = meterRegistry;
 	}
 
+	@Retryable(
+			include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
+			backoff = @Backoff(delay = RETRY_DELAY, multiplier = RETRY_MULTIPLIER)
+	)
+	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
+		String sakId = null;
+
+		Journalpost journalpost = joarkRepository.findById(journalpostId)
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus(), journalpost.getJournalposttype());
+
+		if (oppdaterJournalpostRequest.getSak() != null) {
+			Sakstype sakstype = oppdaterJournalpostRequest.getSak().getSakstype();
+			incrementSakstypeCounter(sakstype, "oppdaterjournalpost", meterRegistry);
+			if ((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())) {
+				sakId = identifiserEllerOpprettArkivsak(oppdaterJournalpostRequest);
+			}
+		}
+
+		ChangeTracker changeTracker = journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
+
+		if (!changeTracker.getChanges().isEmpty()) {
+			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
+					ENDRE_METADATA, journalpostId, null,
+					hentMeldingFraAksjonsType(ENDRE_METADATA), null, changeTracker.getChanges());
+		}
+
+		changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, sakId);
+		joarkRepository.save(journalpost);
+		if (!changeTracker.getChanges().isEmpty()) {
+			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
+					SAKSTILKNYTNING, journalpostId, null,
+					hentMeldingFraAksjonsType(SAKSTILKNYTNING), null, changeTracker.getChanges());
+		}
+
+		if (oppdaterJournalpostRequest.getDokumenter() != null) {
+			for (no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokument : oppdaterJournalpostRequest.getDokumenter()) {
+				DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
+				assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
+
+				changeTracker = dokumentInfoUpdater.updateFields(dokumentInfo, dokument);
+				dokumentinfoRepository.save(dokumentInfo);
+				if (!changeTracker.getChanges().isEmpty()) {
+					lagreAksjonsLoggService.lagreAksjonsLogg(
+							ENDRE_METADATA, dokumentInfo.getDokumentInfoId(), null,
+							hentMeldingFraAksjonsType(ENDRE_METADATA), null, changeTracker.getChanges());
+				}
+			}
+		}
+
+	}
 
 	@Retryable(
 			include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
@@ -103,7 +155,7 @@ public class OppdaterJournalpostService {
 	 * før journalposten har blitt lagret i kopierJournalpost. Endret derfor til å opprette aksjonslogg-elementene her
 	 * i steden for å generere de i en ny transaction som feiler ved oppslag på journalposten.
 	 */
-	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
+	public void knyttTilAnnenSakOppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 		String sakId = null;
 
 		Journalpost journalpost = joarkRepository.findById(journalpostId)

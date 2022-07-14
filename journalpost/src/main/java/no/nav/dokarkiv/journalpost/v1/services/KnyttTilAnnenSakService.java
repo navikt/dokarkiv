@@ -45,7 +45,7 @@ public class KnyttTilAnnenSakService {
 		log.info("knyttTilAnnenSak har kopiert journalpost {} til ny journalpost med journalpostId={}", kildeJournalpostId, nyJournalpostId);
 
 		// 5. Oppdater journalpost med ny sak
-		oppdaterJournalpostService.oppdaterJournalpost(nyJournalpostId, opprettOppdaterJournalpostRequest(knyttTilAnnenSakRequest));
+		oppdaterJournalpostService.knyttTilAnnenSakOppdaterJournalpost(nyJournalpostId, opprettOppdaterJournalpostRequest(knyttTilAnnenSakRequest));
 		log.warn("knyttTilAnnenSak har oppdatert ny journalpost {} med parametere fra payload", nyJournalpostId);
 
 		// 6. Ferdigstill ny journalpost, vil sette journalpost i endelig journalpostStatus.
