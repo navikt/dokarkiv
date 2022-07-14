@@ -2,7 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.util.knyttTilAnnenSak;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo;
-import no.nav.dokarkiv.core.exceptions.saf.SafJournalpostQueryFunctionalException;
+import no.nav.dokarkiv.core.exceptions.saf.SafJournalpostUnauthorizedException;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class DokumentUtils {
 				}
 			}
 			if (gyldigVariantMangler) {
-				throw new SafJournalpostQueryFunctionalException(String.format("Dokumentvariant har ikke variantformat 'ARKIV' eller 'SLADDET' der saksbehandlerHarTilgang = TRUE for journalpostId=%s", journalpostId));
+				throw new SafJournalpostUnauthorizedException(String.format("Dokumentvariant har ikke variantformat 'ARKIV' eller 'SLADDET' der saksbehandlerHarTilgang = TRUE for journalpostId=%s", journalpostId));
 			}
 		}
 	}

@@ -13,8 +13,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-
 import static no.nav.dokarkiv.journalpost.v1.util.knyttTilAnnenSak.DokumentUtils.sjekkOmAlleDokumentvarianterErGyldige;
 
 @Slf4j
@@ -24,8 +22,6 @@ public class KnyttTilAnnenSakService {
 	private final KopierJournalpostService kopierJournalpostService;
 	private final OppdaterJournalpostService oppdaterJournalpostService;
 	private final FerdigstillJournalpostService ferdigstillJournalpostService;
-
-	private static final String BEARER = "Bearer ";
 
 	@Autowired
 	public KnyttTilAnnenSakService(SafJournalpostQueryService safJournalpostQueryService,
@@ -49,7 +45,7 @@ public class KnyttTilAnnenSakService {
 		log.info("knyttTilAnnenSak har kopiert journalpost {} til ny journalpost med journalpostId={}", kildeJournalpostId, nyJournalpostId);
 
 		// 5. Oppdater journalpost med ny sak
-		oppdaterJournalpostService.oppdaterJournalpostInternal(nyJournalpostId, opprettOppdaterJournalpostRequest(knyttTilAnnenSakRequest));
+		oppdaterJournalpostService.oppdaterJournalpost(nyJournalpostId, opprettOppdaterJournalpostRequest(knyttTilAnnenSakRequest));
 		log.warn("knyttTilAnnenSak har oppdatert ny journalpost {} med parametere fra payload", nyJournalpostId);
 
 		// 6. Ferdigstill ny journalpost, vil sette journalpost i endelig journalpostStatus.

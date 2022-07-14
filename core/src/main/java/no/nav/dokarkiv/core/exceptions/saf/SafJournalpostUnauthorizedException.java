@@ -5,8 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-public class SafJournalpostQueryUnauthorizedException extends DokarkivTechnicalException {
-	public SafJournalpostQueryUnauthorizedException(String message, Throwable cause) {
+public class SafJournalpostUnauthorizedException extends DokarkivTechnicalException {
+	public SafJournalpostUnauthorizedException(String message, Throwable cause) {
 		super(message, cause);
+	}
+
+	public SafJournalpostUnauthorizedException(String message) {
+		super(message);
 	}
 }

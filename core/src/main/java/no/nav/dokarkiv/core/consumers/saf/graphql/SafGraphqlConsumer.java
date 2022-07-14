@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJsonJournalpost;
 import no.nav.dokarkiv.core.exceptions.JsonParserTechnicalException;
 import no.nav.dokarkiv.core.exceptions.saf.SafJournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.saf.SafJournalpostQueryTechnicalException;
-import no.nav.dokarkiv.core.exceptions.saf.SafJournalpostQueryUnauthorizedException;
+import no.nav.dokarkiv.core.exceptions.saf.SafJournalpostUnauthorizedException;
 import no.nav.dokarkiv.core.exceptions.ValidationFunctionalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import org.slf4j.MDC;
@@ -30,7 +30,6 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 
 import static java.lang.String.format;
-import static java.util.Objects.isNull;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
 import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
 import static no.nav.dokarkiv.core.storage.RetryConstants.MAX_ATTEMPTS_SHORT;
@@ -74,7 +73,7 @@ public class SafGraphqlConsumer {
 
 			return responseEntity.getBody().getJournalpost();
 		} catch (HttpClientErrorException e) {
-			throw new SafJournalpostQueryUnauthorizedException(format("Henting av journalpost feilet med status: %s, feilmelding: %s", e
+			throw new SafJournalpostUnauthorizedException(format("Henting av journalpost feilet med status: %s, feilmelding: %s", e
 					.getStatusCode(), e.getMessage()), e);
 		} catch (HttpServerErrorException e) {
 			throw new SafJournalpostQueryTechnicalException(format("Tjenesten SAF (graphQL) feilet med status: %s, feilmelding: %s", e.getStatusCode(), e.getMessage()), e);
