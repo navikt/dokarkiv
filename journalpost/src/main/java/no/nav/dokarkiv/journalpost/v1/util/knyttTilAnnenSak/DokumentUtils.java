@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo;
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo.DokumentInfo;
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo.Dokumentvariant;
-import no.nav.dokarkiv.core.exceptions.saf.SafJournalpostUnauthorizedException;
+import no.nav.dokarkiv.core.consumers.saf.exceptions.saf.SafJournalpostUnauthorizedException;
 
 import java.util.List;
 

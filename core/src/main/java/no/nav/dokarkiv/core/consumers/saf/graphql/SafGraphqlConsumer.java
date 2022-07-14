@@ -3,12 +3,9 @@ package no.nav.dokarkiv.core.consumers.saf.graphql;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo;
-import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJsonJournalpost;
-import no.nav.dokarkiv.core.exceptions.JsonParserTechnicalException;
-import no.nav.dokarkiv.core.exceptions.saf.SafJournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.saf.SafJournalpostQueryTechnicalException;
-import no.nav.dokarkiv.core.exceptions.saf.SafJournalpostUnauthorizedException;
+import no.nav.dokarkiv.core.consumers.saf.exceptions.saf.JsonParserTechnicalException;
+import no.nav.dokarkiv.core.consumers.saf.exceptions.saf.SafJournalpostQueryTechnicalException;
+import no.nav.dokarkiv.core.consumers.saf.exceptions.saf.SafJournalpostUnauthorizedException;
 import no.nav.dokarkiv.core.exceptions.ValidationFunctionalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import org.slf4j.MDC;
@@ -53,30 +50,22 @@ public class SafGraphqlConsumer {
 		this.graphQLurl = graphQLurl;
 	}
 
-
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "safJournalpostQuery"}, percentiles = {0.5, 0.95})
 	@Retryable(include = SafJournalpostQueryTechnicalException.class, maxAttempts = MAX_ATTEMPTS_SHORT, backoff = @Backoff(delay = DELAY_SHORT))
-	public SafJournalpostTo performQuery(GraphQLRequest graphQLRequest, String authorizationHeader, String journalpostId) {
+	public ResponseEntity<String> performQuery(GraphQLRequest graphQLRequest, String authorizationHeader, String journalpostId) {
 
 		try {
 			HttpHeaders httpHeaders = createAuthHeaderFromToken(authorizationHeader, journalpostId);
 			if (MDC.get(MDC_CALL_ID) != null) {
-				httpHeaders.add("X-Correlation-ID", MDC.get(MDC_CALL_ID));
+				httpHeaders.add("Nav-Callid", MDC.get(MDC_CALL_ID));
 			}
+			return  restTemplate.exchange(graphQLurl, HttpMethod.POST, new HttpEntity<>(requestToJson(graphQLRequest, journalpostId), httpHeaders), String.class);
 
-			ResponseEntity<SafJsonJournalpost> responseEntity = restTemplate.exchange(graphQLurl, HttpMethod.POST, new HttpEntity<>(requestToJson(graphQLRequest, journalpostId), httpHeaders), SafJsonJournalpost.class);
-
-			if (responseEntity.getBody() == null || responseEntity.getBody().getData() == null || responseEntity.getBody()
-					.getData().getJournalpost() == null) {
-				throw new SafJournalpostIkkeFunnetException(String.format("Ingen journalpost ble funnet for journalpostId=%s", journalpostId));
-			}
-
-			return responseEntity.getBody().getJournalpost();
 		} catch (HttpClientErrorException e) {
-			throw new SafJournalpostUnauthorizedException(format("Henting av journalpost feilet med status: %s, feilmelding: %s", e
+			throw new SafJournalpostUnauthorizedException(format("Tjenesten SAF (graphQL) feilet funksjonelt med status: %s, feilmelding: %s", e
 					.getStatusCode(), e.getMessage()), e);
 		} catch (HttpServerErrorException e) {
-			throw new SafJournalpostQueryTechnicalException(format("Tjenesten SAF (graphQL) feilet med status: %s, feilmelding: %s", e.getStatusCode(), e.getMessage()), e);
+			throw new SafJournalpostQueryTechnicalException(format("Tjenesten SAF (graphQL) feilet teknisk med status: %s, feilmelding: %s", e.getStatusCode(), e.getMessage()), e);
 		}
 	}
 

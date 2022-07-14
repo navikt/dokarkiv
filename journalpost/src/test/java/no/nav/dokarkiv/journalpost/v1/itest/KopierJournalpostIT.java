@@ -105,7 +105,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertEquals(1, aksjonsLoggList.size());
-		assertEquals(SRV_DOKARKIVPROXY, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(AksjonsTypeCode.KOPIER_JOURNALPOST, aksjonsLoggList.get(0).getAksjon());
 
 		Set<ArkivElementEndring> arkivElementEndringTOs = aksjonsLoggList.get(0).getArkivElementEndringer();

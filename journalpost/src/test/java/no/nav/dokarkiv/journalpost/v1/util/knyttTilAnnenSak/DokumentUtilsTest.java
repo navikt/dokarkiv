@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.util.knyttTilAnnenSak;
 
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo;
-import no.nav.dokarkiv.core.exceptions.saf.SafJournalpostUnauthorizedException;
+import no.nav.dokarkiv.core.consumers.saf.exceptions.saf.SafJournalpostUnauthorizedException;
 import org.junit.jupiter.api.Test;
 
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;

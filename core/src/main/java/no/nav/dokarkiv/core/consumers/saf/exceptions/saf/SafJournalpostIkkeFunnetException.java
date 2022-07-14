@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.exceptions.saf;
+package no.nav.dokarkiv.core.consumers.saf.exceptions.saf;
 
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import org.springframework.web.bind.annotation.ResponseStatus;

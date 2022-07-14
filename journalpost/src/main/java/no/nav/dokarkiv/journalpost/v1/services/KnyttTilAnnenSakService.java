@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.consumers.saf.SafJournalpostQueryService;
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo;
@@ -42,16 +43,15 @@ public class KnyttTilAnnenSakService {
 
 		// 4. Kopier kildejournalpost, ny journalpost vil få midlertidlig journalpostStatus = "OD"/"R"
 		Long nyJournalpostId = kopierJournalpostService.kopierJournalpost(Long.parseLong(kildeJournalpostId));
-		log.info("knyttTilAnnenSak har kopiert journalpost {} til ny journalpost med journalpostId={}", kildeJournalpostId, nyJournalpostId);
+		log.info("knyttTilAnnenSak har kopiert journalpost med journalpostId={} til ny journalpost med journalpostId={}", kildeJournalpostId, nyJournalpostId);
 
 		// 5. Oppdater journalpost med ny sak
 		oppdaterJournalpostService.knyttTilAnnenSakOppdaterJournalpost(nyJournalpostId, opprettOppdaterJournalpostRequest(knyttTilAnnenSakRequest));
-		log.warn("knyttTilAnnenSak har oppdatert ny journalpost {} med parametere fra payload", nyJournalpostId);
+		log.warn("knyttTilAnnenSak har oppdatert ny journalpost med journalpostId={} med parametre fra payload={}", nyJournalpostId, knyttTilAnnenSakRequest.getLogFriendlyString());
 
 		// 6. Ferdigstill ny journalpost, vil sette journalpost i endelig journalpostStatus.
 		ferdigstillJournalpostService.ferdigstill(nyJournalpostId, knyttTilAnnenSakRequest.getJournalfoerendeEnhet());
-		//ferdigstillJournalpostConsumer.ferdigstillJournalpost(nyJournalpostId, ferdigstillJournalpostRequest, authorizationHeader, navConsumerToken);
-		log.info("knyttTilAnnenSak har ferdigstilt ny journalpost {}", nyJournalpostId);
+		log.info("knyttTilAnnenSak har ferdigstilt ny journalpost med journalpostId={}", nyJournalpostId);
 
 		// 7. Returner ny journalpostId
 		return KnyttTilAnnenSakResponse.builder().nyJournalpostId(nyJournalpostId).build();

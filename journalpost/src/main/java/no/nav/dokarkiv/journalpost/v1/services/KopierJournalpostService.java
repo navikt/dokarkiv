@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -11,19 +10,23 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.JournalpostCopier;
 import no.nav.dokarkiv.journalpost.v1.validators.KopierJournalpostValidator;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.util.Collections;
 
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.KOPIER_JOURNALPOST;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Component
 @Slf4j
 public class KopierJournalpostService {
 	private static final String SRV_DOKARKIVPROXY = "srvdokarkivproxy";
+	private static final String USERID = "userId";
+	private static final String CONSUMERID = "consumerId";
+	private static final String UKJENT = "ukjent";
 	private final JoarkRepository joarkRepository;
 	private final LagreAksjonsLoggService aksjonsLoggService;
 	private final KopierJournalpostValidator kopierJournalpostValidator;
@@ -53,9 +56,9 @@ public class KopierJournalpostService {
 		// låse opp den nye journalpost ved å sette den "tilbake" i status: (eks: FS -> D)
 		resetJournalpoststatus(nyJournalpost);
 
-        nyJournalpost = joarkRepository.save(nyJournalpost);
+		nyJournalpost = joarkRepository.save(nyJournalpost);
 
-        Long nyJournalpostId = nyJournalpost.getJournalpostId();
+		Long nyJournalpostId = nyJournalpost.getJournalpostId();
 
 		ArkivElementEndringTO endring = ArkivElementEndringTO.builder()
 				.arkivElement(JOURNALPOST_JOURNALPOST_ID)
@@ -64,12 +67,18 @@ public class KopierJournalpostService {
 				.build();
 
 		aksjonsLoggService.lagreAksjonsLoggForJournalpost(
-				KOPIER_JOURNALPOST, journalpostId, null,"Journalposten ble kopiert. Id til ny journalpost er " + nyJournalpostId,
-				/* Hva burde stå som utført av i aksjonsloggen? ConsumerId?->*/SRV_DOKARKIVPROXY/* <-*/,
-				Collections.singletonList(endring));
+				KOPIER_JOURNALPOST, journalpostId, null, "Journalposten ble kopiert. Id til ny journalpost er " + nyJournalpostId,
+				getUtfoertAv(),	Collections.singletonList(endring));
 
 		// returnere journalpostId til ny journalpost
 		return nyJournalpostId;
+	}
+
+	private String getUtfoertAv() {
+		String userId = MDC.get(USERID);
+		String consumerId = MDC.get(CONSUMERID);
+		return isEmpty(userId) ? (isEmpty(consumerId) ? UKJENT : consumerId) : userId;
+
 	}
 
 	private void resetJournalpoststatus(Journalpost journalpost) {

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Value;
@@ -20,4 +21,9 @@ public class KnyttTilAnnenSakRequest {
     Bruker bruker;
     @Schema(description = "NAV-enheten som personen som utfører journalføring jobber for", name = "journalfoerendeEnhet", example = "9999")
     String journalfoerendeEnhet;
+
+    @JsonIgnore
+    public String getLogFriendlyString(){
+        return String.format("sakstype=%s, fagsakId=%s, fagsaksystem=%s, tema=%s, journalførendeEnhet=%s", sakstype, fagsakId, fagsaksystem, tema, journalfoerendeEnhet);
+    }
 }

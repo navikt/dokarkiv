@@ -1,10 +1,7 @@
 package no.nav.dokarkiv.core.consumers.saf.journalpost;
 
-import java.io.Serializable;
+public class DataJournalpost {
 
-public class DataJournalpost implements Serializable {
-
-	static final long serialVersionUID = 1234566L;
 	private SafJournalpostTo journalpost;
 
 	public SafJournalpostTo getJournalpost() {

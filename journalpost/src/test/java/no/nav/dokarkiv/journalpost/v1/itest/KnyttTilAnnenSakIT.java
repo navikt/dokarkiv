@@ -95,7 +95,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertEquals(4, aksjonsLoggList.size());
-		valdiateAksjonsloggELement(aksjonsLoggList.get(0), KOPIER_JOURNALPOST, journalpostId, "srvdokarkivproxy");
+		valdiateAksjonsloggELement(aksjonsLoggList.get(0), KOPIER_JOURNALPOST, journalpostId, "Z990782");
 		valdiateAksjonsloggELement(aksjonsLoggList.get(1), ENDRE_METADATA, journalpost.getJournalpostId(), "Z990782");
 		valdiateAksjonsloggELement(aksjonsLoggList.get(2), SAKSTILKNYTNING, journalpost.getJournalpostId(), "Z990782");
 		valdiateAksjonsloggELement(aksjonsLoggList.get(3), AksjonsTypeCode.FERDIGSTILL, journalpost.getJournalpostId(), "consumer_id");
@@ -103,13 +103,13 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 		verify(exactly(1), postRequestedFor(urlEqualTo("/safgraphql"))
 				.withRequestBody(equalToJson(String.format("""
 						{
-						  "query": "query journalpost($queryJournalpostId: String!) {\\n  journalpost(journalpostId: $queryJournalpostId) {\\n    dokumenter {\\n      dokumentInfoId\\n      dokumentvarianter {\\n        saksbehandlerHarTilgang\\n        variantformat\\n      }\\n    }\\n  }\\n}\\n",
+						  "query" : "query journalpost($queryJournalpostId: String!) {\\n\\t  journalpost(journalpostId: $queryJournalpostId) {\\n\\t\\tdokumenter {\\n\\t\\t  dokumentInfoId\\n\\t\\t  dokumentvarianter {\\n\\t\\t\\tsaksbehandlerHarTilgang\\n\\t\\t\\tvariantformat\\n\\t\\t  }\\n\\t\\t}\\n\\t  }\\n\\t}\\n",
 						  "operationName": "journalpost",
 						  "variables": {
 						    "queryJournalpostId": "%s"
 						  }
 						}""", journalpostId)))
-				.withHeader("X-Correlation-ID", matching(NAV_CALL_ID)));
+				.withHeader("Nav-Callid", matching(NAV_CALL_ID)));
 
 	}
 
