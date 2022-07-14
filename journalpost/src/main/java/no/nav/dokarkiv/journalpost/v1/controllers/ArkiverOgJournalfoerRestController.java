@@ -79,7 +79,6 @@ public class ArkiverOgJournalfoerRestController {
     private static final String TRUE = "true";
     private static final String MIDLERTIDIG = "MIDLERTIDIG";
     private static final String STATUS_ENDELIG = "ENDELIG";
-    private static final String BIDRAG_NAV_CONSUMER_ID = "dialogstyring-bidrag";
     private final FerdigstillJournalpostService ferdigstillJournalpostService;
     private final OppdaterJournalpostService oppdaterJournalpostService;
     private final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService;
@@ -291,22 +290,24 @@ public class ArkiverOgJournalfoerRestController {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
         try {
             log.warn("knyttTilAnnenSak har fått har fått kall for å knytte dokumenter til annen sak");
-            knyttTilAnnenSakValidator.validateKnyttTilAnnenSakRequest(knyttTilAnnenSakRequest, kildeJournalpostId, navConsumerId);
-            KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, kildeJournalpostId, authorizationHeader, navConsumerToken);
+            knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, kildeJournalpostId, navConsumerId);
+            KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, kildeJournalpostId, authorizationHeader);
 
             log.warn("knyttTilAnnenSak har knyttet til dokumenter til ny journalpost med journalpostId={}", knyttTilAnnenSakResponse.getNyJournalpostId());
 
             return ResponseEntity.ok().body(knyttTilAnnenSakResponse);
 
         } catch (DokarkivFunctionalException e) {
-            log.warn("knyttTilAnnenSak - feilet funksjonelt ved knytning dokumenter til annen sak for journalpostId={}. Feilmelding={}", kildeJournalpostId, e
-                    .getMessage());
+            log.warn("knyttTilAnnenSak - feilet funksjonelt ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", kildeJournalpostId,
+					e.getMessage());
             throw e;
         } catch (DokarkivTechnicalException e) {
-            log.warn("knyttTilAnnenSak - feilet teknisk ved knytning dokumenter til annen sak for journalpostId={}. Feilmelding={}", kildeJournalpostId, e
+            log.warn("knyttTilAnnenSak - feilet teknisk ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", kildeJournalpostId, e
                     .getMessage());
             throw e;
-        }
+        } finally {
+			MDC.clear();
+		}
     }
 
 }

@@ -152,8 +152,8 @@ public class OppdaterJournalpostService {
 	)
 	/*
 	 * Kommentar PR:
-	 * Det ble rot med transactions da lagre lagreAksjonsLoggService.lagreAksjonsLogg() lager en ny transaction som søker opp en journalpost
-	 * før opprettJournalpost har fått committa den nye journalposten. Endret derfor til å opprette aksjonslogg-elementene her
+	 * Det ble rot med transactions da lagreAksjonsLoggService.lagreAksjonsLogg() lager en ny transaction som søker opp en journalpost
+	 * før journalposten har blitt lagret i kopierJournalpost. Endret derfor til å opprette aksjonslogg-elementene her
 	 * i steden for å generere de i en ny transaction som feiler ved oppslag på journalposten.
 	 */
 	public void oppdaterJournalpostInternal(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {

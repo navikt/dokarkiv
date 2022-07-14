@@ -53,7 +53,6 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 	public void happyPathInngaaende() throws IOException {
 		Journalpost journalpost = createJournalpost();
 		Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
-		System.out.println(journalpostId);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

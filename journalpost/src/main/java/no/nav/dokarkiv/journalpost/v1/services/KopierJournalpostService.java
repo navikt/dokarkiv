@@ -65,7 +65,8 @@ public class KopierJournalpostService {
 
 		aksjonsLoggService.lagreAksjonsLoggForJournalpost(
 				KOPIER_JOURNALPOST, journalpostId, null,"Journalposten ble kopiert. Id til ny journalpost er " + nyJournalpostId,
-				SRV_DOKARKIVPROXY, Collections.singletonList(endring));
+				/* Hva burde stå som utført av i aksjonsloggen? ConsumerId?->*/SRV_DOKARKIVPROXY/* <-*/,
+				Collections.singletonList(endring));
 
 		// returnere journalpostId til ny journalpost
 		return nyJournalpostId;

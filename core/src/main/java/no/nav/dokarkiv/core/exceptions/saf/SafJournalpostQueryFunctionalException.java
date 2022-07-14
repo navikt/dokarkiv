@@ -11,8 +11,5 @@ public class SafJournalpostQueryFunctionalException extends DokarkivFunctionalEx
 		super(message);
 	}
 
-	public SafJournalpostQueryFunctionalException(String message, Throwable cause) {
-		super(message, cause);
-	}
 
 }

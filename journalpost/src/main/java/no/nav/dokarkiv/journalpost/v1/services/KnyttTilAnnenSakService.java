@@ -39,8 +39,7 @@ public class KnyttTilAnnenSakService {
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 	}
 
-	//@Transactional(rollbackFor = Exception.class)
-	public KnyttTilAnnenSakResponse knyttTilAnnenSak(KnyttTilAnnenSakRequest knyttTilAnnenSakRequest, String kildeJournalpostId, String authorizationHeader, String navConsumerToken) {
+	public KnyttTilAnnenSakResponse knyttTilAnnenSak(KnyttTilAnnenSakRequest knyttTilAnnenSakRequest, String kildeJournalpostId, String authorizationHeader) {
 		// 3. Sjekk tilgang til å knytte dokumenter på journalpost til ny sak.
 		SafJournalpostTo safJournalpostFra = safJournalpostQueryService.hentJournalpost(kildeJournalpostId, authorizationHeader);
 		sjekkOmAlleDokumentvarianterErGyldige(safJournalpostFra, kildeJournalpostId);

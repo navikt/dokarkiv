@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 
+import static java.util.Collections.singletonMap;
+
 @Component
 public class SafJournalpostQueryService {
 
@@ -33,7 +35,7 @@ public class SafJournalpostQueryService {
 		return safGraphqlConsumer.performQuery(GraphQLRequest.builder()
 				.query(JOURNALPOST_QUERY)
 				.operationName("journalpost")
-				.variables(Collections.singletonMap("queryJournalpostId", journalpostid))
+				.variables(singletonMap("queryJournalpostId", journalpostid))
 				.build(), authorizationHeader, journalpostid);
 	}
 }

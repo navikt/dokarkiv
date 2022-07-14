@@ -67,8 +67,8 @@ public class SafGraphqlConsumer {
 
 			ResponseEntity<SafJsonJournalpost> responseEntity = restTemplate.exchange(graphQLurl, HttpMethod.POST, new HttpEntity<>(requestToJson(graphQLRequest, journalpostId), httpHeaders), SafJsonJournalpost.class);
 
-			if (isNull(responseEntity.getBody()) && isNull(responseEntity.getBody().getData()) &&
-					isNull(responseEntity.getBody().getData().getJournalpost())) {
+			if (responseEntity.getBody() == null || responseEntity.getBody().getData() == null || responseEntity.getBody()
+					.getData().getJournalpost() == null) {
 				throw new SafJournalpostIkkeFunnetException(String.format("Ingen journalpost ble funnet for journalpostId=%s", journalpostId));
 			}
 
@@ -87,7 +87,7 @@ public class SafGraphqlConsumer {
 		}
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, authorizationHeader);
+		headers.setBearerAuth(authorizationHeader);
 		return headers;
 	}
 
