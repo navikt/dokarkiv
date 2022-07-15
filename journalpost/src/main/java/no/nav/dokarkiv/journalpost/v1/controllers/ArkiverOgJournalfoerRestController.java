@@ -79,24 +79,18 @@ public class ArkiverOgJournalfoerRestController {
     private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
     private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
     private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
-    private final KnyttTilAnnenSakValidator knyttTilAnnenSakValidator;
-    private final KnyttTilAnnenSakService knyttTilAnnenSakService;
 
     @Inject
     public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
                                               final OppdaterJournalpostService oppdaterJournalpostService,
                                               final OpprettJournalpostService opprettJournalpostService,
                                               final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
-                                              final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost,
-                                              final KnyttTilAnnenSakValidator knyttTilAnnenSakValidator,
-                                              final KnyttTilAnnenSakService knyttTilAnnenSakService) {
+                                              final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost) {
         this.ferdigstillJournalpostService = ferdigstillJournalpostService;
         this.oppdaterJournalpostService = oppdaterJournalpostService;
         this.opprettJournalpostService = opprettJournalpostService;
         this.fjernVedleggTilknyttJournalpost = fjernVedleggTilknyttJournalpost;
         this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
-        this.knyttTilAnnenSakValidator = knyttTilAnnenSakValidator;
-        this.knyttTilAnnenSakService = knyttTilAnnenSakService;
         this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
         this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
         this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
