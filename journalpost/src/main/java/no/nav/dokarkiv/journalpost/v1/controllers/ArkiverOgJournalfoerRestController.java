@@ -1,20 +1,15 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
-import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
-import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakResponse;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
@@ -33,7 +28,6 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFjernVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
-import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerRestKnyttTilAnnenSak;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.KnyttTilAnnenSakValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
@@ -41,7 +35,6 @@ import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValida
 import no.nav.security.token.support.core.api.Protected;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +43,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -274,40 +266,5 @@ public class ArkiverOgJournalfoerRestController {
 			MDC.clear();
 		}
 	}
-
-    @Transactional
-    @SwaggerRestKnyttTilAnnenSak
-    @Operation(summary = "Knytt dokumenter til ny sak.")
-    @PutMapping("/{kildeJournalpostId}/knyttTilAnnenSak")
-    @RestMetrics(value = "dok_request", extraTags = {"process_code", "knyttTilAnnenSak"}, percentiles = {0.5, 0.95})
-    public ResponseEntity<KnyttTilAnnenSakResponse> knyttTilAnnenSak(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                                                     @Parameter(description = "Nav-Consumer-Token - Systembrukerens OIDC-token. NB: Oppgis kun dersom den NAV-ansattes token er lagt ved under Authorization") @RequestHeader(value = "Nav-Consumer-Token", required = false) String navConsumerToken,
-                                                                     @Parameter(description = "Nav-Consumer-Id - brukes for sporingsinfo i joark", required = true) @RequestHeader(value = "Nav-Consumer-Id") String navConsumerId,
-                                                                     @Parameter(description = "Nav-CallId - teknisk sporingsid") @RequestHeader(value = "Nav-CallId", required = false) String navCallId,
-                                                                     @Parameter(description = "ID til journalposten som det er ønskelig å kopiere", required = true) @PathVariable String kildeJournalpostId,
-                                                                     @RequestBody KnyttTilAnnenSakRequest knyttTilAnnenSakRequest) {
-
-        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-        try {
-            log.warn("knyttTilAnnenSak har fått har fått kall for å knytte dokumenter til annen sak");
-            knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, kildeJournalpostId, navConsumerId);
-            KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, kildeJournalpostId, authorizationHeader);
-
-            log.warn("knyttTilAnnenSak har knyttet til dokumenter til ny journalpost med journalpostId={}", knyttTilAnnenSakResponse.getNyJournalpostId());
-
-            return ResponseEntity.ok().body(knyttTilAnnenSakResponse);
-
-        } catch (DokarkivFunctionalException e) {
-            log.warn("knyttTilAnnenSak - feilet funksjonelt ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", kildeJournalpostId,
-					e.getMessage());
-            throw e;
-        } catch (DokarkivTechnicalException e) {
-            log.warn("knyttTilAnnenSak - feilet teknisk ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", kildeJournalpostId, e
-                    .getMessage());
-            throw e;
-        } finally {
-			MDC.clear();
-		}
-    }
 
 }

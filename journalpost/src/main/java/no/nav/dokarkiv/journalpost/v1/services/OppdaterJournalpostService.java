@@ -145,16 +145,7 @@ public class OppdaterJournalpostService {
 
 	}
 
-	@Retryable(
-			include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
-			backoff = @Backoff(delay = RETRY_DELAY, multiplier = RETRY_MULTIPLIER)
-	)
-	/*
-	 * Kommentar PR:
-	 * Det ble rot med transactions da lagreAksjonsLoggService.lagreAksjonsLogg() lager en ny transaction som søker opp en journalpost
-	 * før journalposten har blitt lagret i kopierJournalpost. Endret derfor til å opprette aksjonslogg-elementene her
-	 * i steden for å generere de i en ny transaction som feiler ved oppslag på journalposten.
-	 */
+
 	public void knyttTilAnnenSakOppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 		String sakId = null;
 
@@ -181,19 +172,6 @@ public class OppdaterJournalpostService {
 		joarkRepository.save(journalpost);
 		if (!changeTracker.getChanges().isEmpty()) {
 			populerAksjonslogg(journalpostId, SAKSTILKNYTNING, changeTracker.getChanges());
-		}
-
-		if (oppdaterJournalpostRequest.getDokumenter() != null) {
-			for (no.nav.dokarkiv.journalpost.v1.api.DokumentInfo dokument : oppdaterJournalpostRequest.getDokumenter()) {
-				DokumentInfo dokumentInfo = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(Long.parseLong(dokument.getDokumentInfoId()));
-				assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
-
-				changeTracker = dokumentInfoUpdater.updateFields(dokumentInfo, dokument);
-				dokumentinfoRepository.save(dokumentInfo);
-				if (!changeTracker.getChanges().isEmpty()) {
-					populerAksjonslogg(journalpostId, ENDRE_METADATA, changeTracker.getChanges());
-				}
-			}
 		}
 	}
 

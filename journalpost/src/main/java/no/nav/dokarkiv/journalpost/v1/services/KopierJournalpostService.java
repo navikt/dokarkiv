@@ -23,7 +23,6 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @Component
 @Slf4j
 public class KopierJournalpostService {
-	private static final String SRV_DOKARKIVPROXY = "srvdokarkivproxy";
 	private static final String USERID = "userId";
 	private static final String CONSUMERID = "consumerId";
 	private static final String UKJENT = "ukjent";
@@ -78,7 +77,6 @@ public class KopierJournalpostService {
 		String userId = MDC.get(USERID);
 		String consumerId = MDC.get(CONSUMERID);
 		return isEmpty(userId) ? (isEmpty(consumerId) ? UKJENT : consumerId) : userId;
-
 	}
 
 	private void resetJournalpoststatus(Journalpost journalpost) {

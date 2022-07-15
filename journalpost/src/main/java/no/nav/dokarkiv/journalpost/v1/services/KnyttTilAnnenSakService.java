@@ -47,7 +47,7 @@ public class KnyttTilAnnenSakService {
 
 		// 5. Oppdater journalpost med ny sak
 		oppdaterJournalpostService.knyttTilAnnenSakOppdaterJournalpost(nyJournalpostId, opprettOppdaterJournalpostRequest(knyttTilAnnenSakRequest));
-		log.warn("knyttTilAnnenSak har oppdatert ny journalpost med journalpostId={} med parametre fra payload={}", nyJournalpostId, knyttTilAnnenSakRequest.getLogFriendlyString());
+		log.info("knyttTilAnnenSak har oppdatert ny journalpost med journalpostId={} med parametre fra payload: {}", nyJournalpostId, knyttTilAnnenSakRequest.getLogFriendlyString());
 
 		// 6. Ferdigstill ny journalpost, vil sette journalpost i endelig journalpostStatus.
 		ferdigstillJournalpostService.ferdigstill(nyJournalpostId, knyttTilAnnenSakRequest.getJournalfoerendeEnhet());
