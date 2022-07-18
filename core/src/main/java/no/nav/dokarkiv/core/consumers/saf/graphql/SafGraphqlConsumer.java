@@ -75,7 +75,7 @@ public class SafGraphqlConsumer {
 		}
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setBearerAuth(authorizationHeader);
+		headers.add(HttpHeaders.AUTHORIZATION, authorizationHeader);
 		return headers;
 	}
 
