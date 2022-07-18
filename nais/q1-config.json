@@ -180,6 +180,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "yrkesskade-brevutsending",
+      "namespace": "yrkesskade",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "k9-punsj",
       "namespace": "k9saksbehandling",
       "cluster": "dev-fss"
