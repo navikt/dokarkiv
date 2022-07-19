@@ -43,6 +43,7 @@ public class TestDataGenerator {
 	public static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	public static final String ENDRET_AV_NAVN = "Endret av navn";
 	public static final String AVSENDER_MOTTAKER_ID = "02016126007";
+	public static final String AVSENDER_MOTTAKER_NAVN = "Jim Hopper";
 	public static final AvsenderMottakerIdTypeCode AVSENDER_MOTTAKER_ID_TYPE = AvsenderMottakerIdTypeCode.FNR;
 	public static final String TITTEL = "FysiskSlettDokument";
 	public static final String BREVGRUPPE = "Brevgruppe";
@@ -59,6 +60,7 @@ public class TestDataGenerator {
 	public static final String TILLEGGOPPLYSNINGER_VAL = "tillegg_verdi";
 	public static final String FIL_UUID_ARKIV = "filuuid_arkiv";
 	public static final String FIL_UUID_SLADDET = "filuuid_sladdet";
+	public static final String INNHOLD = "Innhold";
 	public static final byte[] FIL = "Test dokument".getBytes();
 	public static final byte[] FIL_DUMMY_KASSERT = "Test kassert dummy dokument dummy".getBytes();
 	public static final byte[] FIL_DUMMY_SKJERMET = "Test skjermet dummy dokument dummy".getBytes();
@@ -70,11 +72,13 @@ public class TestDataGenerator {
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
+				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
 				.avsenderMottakerIdType(AVSENDER_MOTTAKER_ID_TYPE)
 				.dokumentDato(new Date())
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.journalstatus(JournalStatusCode.FS)
 				.journalposttype(JournalpostTypeCode.U)
+				.innhold(INNHOLD)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.fagomrade(FagomradeCode.RPO)
 				.mottakskanal(MottaksKanalCode.NAV_NO)

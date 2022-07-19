@@ -229,7 +229,7 @@ public class JournalpostInternRestController {
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
 			validateId(kildeJournalpostId, "journalpostId");
 
-			Long nyJournalpostId = kopierJournalpostService.execute(Long.parseLong(kildeJournalpostId));
+			Long nyJournalpostId = kopierJournalpostService.kopierJournalpost(Long.parseLong(kildeJournalpostId));
 
 			return ResponseEntity.status(HttpStatus.CREATED).body(nyJournalpostId);
 		} catch (DokarkivFunctionalException e) {

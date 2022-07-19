@@ -1,0 +1,7 @@
+{
+  "query": "query journalpost($queryJournalpostId: String!) {\n  journalpost(journalpostId: $queryJournalpostId) {\n    dokumenter {\n      dokumentInfoId\n      dokumentvarianter {\n        saksbehandlerHarTilgang\n        variantformat\n      }\n    }\n  }\n}\n",
+  "operationName": "journalpost",
+  "variables": {
+    "queryJournalpostId": "200000000"
+  }
+}

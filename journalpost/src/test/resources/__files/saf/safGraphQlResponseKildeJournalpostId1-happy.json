@@ -1,0 +1,30 @@
+{
+  "data": {
+    "journalpost": {
+      "dokumenter": [
+        {
+          "dokumentInfoId": "444444444",
+          "dokumentvarianter": [
+            {
+              "saksbehandlerHarTilgang": false,
+              "variantformat": "SLADDET"
+            },
+            {
+              "saksbehandlerHarTilgang": true,
+              "variantformat": "ARKIV"
+            }
+          ]
+        },
+        {
+          "dokumentInfoId": "555555555",
+          "dokumentvarianter": [
+            {
+              "saksbehandlerHarTilgang": true,
+              "variantformat": "SLADDET"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

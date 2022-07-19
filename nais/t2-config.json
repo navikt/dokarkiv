@@ -20,6 +20,7 @@
   "ABAC_ARKIV_V2_URL": "https://abac-arkiv-v2.dev.intern.nav.no/application/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp-t2.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-t2.nais.preprod.local/hentdokument",
+  "SAF_GRAPHQL_URL": "https://saf-q2.dev.adeo.no/graphql",
   "DOKPRODMELLOMLAGER_PROJECTID": "teamdokumenthandteri-dev-2c5a",
   "DOKPRODMELLOMLAGER_BUCKET": "dokprodmellomlager-dev",
   "DOKPRODMELLOMLAGER_KEYRING": "dokprodmellomlager-keyring-dev",

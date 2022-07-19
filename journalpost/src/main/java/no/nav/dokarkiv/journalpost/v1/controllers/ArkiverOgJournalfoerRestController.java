@@ -19,6 +19,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.FjernVedleggTilknyttetJournalpost;
+import no.nav.dokarkiv.journalpost.v1.services.KnyttTilAnnenSakService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
@@ -28,6 +29,7 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
+import no.nav.dokarkiv.journalpost.v1.validators.KnyttTilAnnenSakValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import no.nav.security.token.support.core.api.Protected;
@@ -66,33 +68,33 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 public class ArkiverOgJournalfoerRestController {
 
-	private static final String TRUE = "true";
-	private static final String MIDLERTIDIG = "MIDLERTIDIG";
-	private static final String STATUS_ENDELIG = "ENDELIG";
-	private final FerdigstillJournalpostService ferdigstillJournalpostService;
-	private final OppdaterJournalpostService oppdaterJournalpostService;
-	private final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService;
-	private final OpprettJournalpostService opprettJournalpostService;
-	private final OpprettJournalpostRequestValidator opprettJournalpostRequestValidator;
-	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
-	private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
-	private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
+    private static final String TRUE = "true";
+    private static final String MIDLERTIDIG = "MIDLERTIDIG";
+    private static final String STATUS_ENDELIG = "ENDELIG";
+    private final FerdigstillJournalpostService ferdigstillJournalpostService;
+    private final OppdaterJournalpostService oppdaterJournalpostService;
+    private final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService;
+    private final OpprettJournalpostService opprettJournalpostService;
+    private final OpprettJournalpostRequestValidator opprettJournalpostRequestValidator;
+    private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
+    private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
+    private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
 
-	@Inject
-	public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
-											  final OppdaterJournalpostService oppdaterJournalpostService,
-											  final OpprettJournalpostService opprettJournalpostService,
-											  final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
-											  final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost) {
-		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
-		this.oppdaterJournalpostService = oppdaterJournalpostService;
-		this.opprettJournalpostService = opprettJournalpostService;
-		this.fjernVedleggTilknyttJournalpost = fjernVedleggTilknyttJournalpost;
-		this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
-		this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
-		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
-		this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
-	}
+    @Inject
+    public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
+                                              final OppdaterJournalpostService oppdaterJournalpostService,
+                                              final OpprettJournalpostService opprettJournalpostService,
+                                              final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
+                                              final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost) {
+        this.ferdigstillJournalpostService = ferdigstillJournalpostService;
+        this.oppdaterJournalpostService = oppdaterJournalpostService;
+        this.opprettJournalpostService = opprettJournalpostService;
+        this.fjernVedleggTilknyttJournalpost = fjernVedleggTilknyttJournalpost;
+        this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
+        this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
+        this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
+        this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
+    }
 
 	@Transactional
 	@SwaggerFerdigstillJournalpost

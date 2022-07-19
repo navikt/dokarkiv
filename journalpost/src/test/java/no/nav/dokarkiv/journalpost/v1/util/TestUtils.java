@@ -25,6 +25,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
+import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
@@ -473,6 +474,21 @@ public class TestUtils {
 
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType) {
 		return createRequest(journalpostType, null);
+	}
+
+	public static KnyttTilAnnenSakRequest createKnyttTilAnnenSakRequest(String sakstype, String fagsakId, String fagsaksystem, String tema, BrukerIdType brukerIdType, String brukerId, String journalfoerendeEnhet) {
+		no.nav.dokarkiv.journalpost.v1.api.Bruker bruker = no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
+				.idType(brukerIdType)
+				.id(brukerId)
+				.build();
+		return KnyttTilAnnenSakRequest.builder()
+				.sakstype(sakstype)
+				.fagsakId(fagsakId)
+				.fagsaksystem(fagsaksystem)
+				.tema(tema)
+				.bruker(bruker)
+				.journalfoerendeEnhet(journalfoerendeEnhet)
+				.build();
 	}
 
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet) {
