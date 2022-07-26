@@ -214,6 +214,11 @@
       "app": "bidrag-dokument-arkivering",
       "namespace": "bidrag",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "pensjon-dokdist-lokal",
+      "namespace": "pensjonsbrev",
+      "cluster": "dev-gcp"
     }
   ]
 }
