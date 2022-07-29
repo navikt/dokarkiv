@@ -1,14 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark107;
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -25,12 +16,20 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FjernFerdigstiltDokumentDokumentAlleredeAvbrutt;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FjernFerdigstiltDokumentDokumentAlleredeRedigerbart;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FjernFerdigstiltDokumentRequest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration tests for the FjernFerdigstiltDokument
@@ -45,10 +44,7 @@ public class FjernFerdigstiltDokumentIT extends AbstractArkiverdokumentproduksjo
 	private static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	private static final String ENDRET_AV_NAVN = "Tester2";
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		RequestContextSetter.setRequestContextForUnitTest();
 	}
@@ -71,26 +67,25 @@ public class FjernFerdigstiltDokumentIT extends AbstractArkiverdokumentproduksjo
 	}
 
 	@Test
-	public void shouldThrowException_missingInput() throws Exception {
-		expectedException.expect(IllegalArgumentException.class);
-
-		arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest());
+	public void shouldThrowException_missingInput() {
+		assertThrows(IllegalArgumentException.class,
+				() -> arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest()));
 	}
 
 	@Test
 	public void shouldThrowException_DokumentAlleredeRedigerbart() throws Exception {
-		expectedException.expect(FjernFerdigstiltDokumentDokumentAlleredeRedigerbart.class);
 		Journalpost persistedJournalpost = buildAndPersistJournalpost(UNDER_REDIGERING);
 
-		arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(createRequest(persistedJournalpost));
+		assertThrows(FjernFerdigstiltDokumentDokumentAlleredeRedigerbart.class,
+				() -> arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(createRequest(persistedJournalpost)));
 	}
 
 	@Test
-	public void shoudlThrowException_DokumentAlleredeAvbrutt() throws Exception {
-		expectedException.expect(FjernFerdigstiltDokumentDokumentAlleredeAvbrutt.class);
+	public void shouldThrowException_DokumentAlleredeAvbrutt() throws Exception {
 		Journalpost persistedJournalpost = buildAndPersistJournalpost(DokumentStatusCode.AVBRUTT);
 
-		arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(createRequest(persistedJournalpost));
+		assertThrows(FjernFerdigstiltDokumentDokumentAlleredeAvbrutt.class,
+				() -> arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(createRequest(persistedJournalpost)));
 	}
 
 

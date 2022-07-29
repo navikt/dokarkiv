@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2.datautil;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -13,6 +10,9 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Person;
 
 import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Assert util for common BehandleJournal types

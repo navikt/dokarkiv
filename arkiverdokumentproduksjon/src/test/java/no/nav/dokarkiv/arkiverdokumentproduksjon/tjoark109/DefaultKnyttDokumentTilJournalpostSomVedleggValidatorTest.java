@@ -1,23 +1,20 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Thomas Kåsene, Visma Consulting AS
  */
 public class DefaultKnyttDokumentTilJournalpostSomVedleggValidatorTest {
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
 	private DefaultKnyttDokumentTilJournalpostSomVedleggValidator validator;
 
 	private KnyttDokumentTilJournalpostSomVedleggRequestTo request;
 
-	@Before
+	@BeforeEach
 	public void setUpHappyPath() {
 		validator = new DefaultKnyttDokumentTilJournalpostSomVedleggValidator();
 
@@ -32,60 +29,54 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggValidatorTest {
 	public void throwsIllegalArgumentExceptionWhenRequestIsNull() {
 		request = null;
 
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Missing request object");
-
-		validator.validate(request);
+		assertThrows(IllegalArgumentException.class,
+				() -> validator.validate(request),
+				"Missing request object");
 	}
 
 	@Test
 	public void throwsIllegalArgumentExceptionWhenKnyttesFraJournalpostIdIsZero() {
 		request.setKnyttesFraJournalpostId(0L);
 
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Missing parameter in request: knyttesFraJournalpostId");
-
-		validator.validate(request);
+		assertThrows(IllegalArgumentException.class,
+				() -> validator.validate(request),
+				"Missing parameter in request: knyttesFraJournalpostId");
 	}
 
 	@Test
 	public void throwsIllegalArgumentExceptionWhenKnyttesTilJournalpostIdIsZero() {
 		request.setKnyttesTilJournalpostId(0L);
 
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Missing parameter in request: knyttesTilJournalpostId");
-
-		validator.validate(request);
+		assertThrows(IllegalArgumentException.class,
+				() -> validator.validate(request),
+				"Missing parameter in request: knyttesTilJournalpostId");
 	}
 
 	@Test
 	public void throwsIllegalArgumentExceptionWhenDokumentInfoIdIsZero() {
 		request.setDokumentInfoId(0L);
 
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Missing parameter in request: dokumentInfoId");
-
-		validator.validate(request);
+		assertThrows(IllegalArgumentException.class,
+				() -> validator.validate(request),
+				"Missing parameter in request: dokumentInfoId");
 	}
 
 	@Test
 	public void throwsIllegalArgumentExceptionWhenEndretAvNavnIsNull() {
 		request.setEndretAvNavn(null);
 
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Missing parameter in request: endretAvNavn");
-
-		validator.validate(request);
+		assertThrows(IllegalArgumentException.class,
+				() -> validator.validate(request),
+				"Missing parameter in request: endretAvNavn");
 	}
 
 	@Test
 	public void throwsIllegalArgumentExceptionWhenEndretAvNavnIsEmpty() {
 		request.setEndretAvNavn("");
 
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Missing parameter in request: endretAvNavn");
-
-		validator.validate(request);
+		assertThrows(IllegalArgumentException.class,
+				() -> validator.validate(request),
+				"Missing parameter in request: endretAvNavn");
 	}
 
 	@Test

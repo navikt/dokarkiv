@@ -27,31 +27,28 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Optional;
 
 import static no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode.SYFO;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for HentDokumentUrlServiceTest.
- *
- * @author Thomas Eugen Bjørge, Sirius IT
- * @author Magnus Skuland, Sirius IT
- * @author Thao Thanh Nguyen, Visma Sirius
  */
 public class DefaultHentDokumentUrlTest {
 
@@ -73,7 +70,7 @@ public class DefaultHentDokumentUrlTest {
 
 	private HentDokumentUrlRequest request;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		hentDokumentUrl = new DefaultHentDokumentUrl();
@@ -85,7 +82,7 @@ public class DefaultHentDokumentUrlTest {
 	}
 
 	@Test
-	public void validationShouldFailWhenRequestIsNull() throws Exception {
+	public void validationShouldFailWhenRequestIsNull() {
 		try {
 			hentDokumentUrl.hentDokumentUrl(null);
 			fail("Validation should fail when request is null");
@@ -95,7 +92,7 @@ public class DefaultHentDokumentUrlTest {
 	}
 
 	@Test
-	public void validationShouldFailForMissingFilUuid() throws Exception {
+	public void validationShouldFailForMissingFilUuid() {
 		request = new HentDokumentUrlRequest(1L, null);
 		assertValidationFailsForArgument("FilUuid");
 	}
@@ -105,7 +102,7 @@ public class DefaultHentDokumentUrlTest {
 	 * does not exist.
 	 */
 	@Test
-	public void shouldThrowExceptionForNonExistingJournalpost() throws Exception {
+	public void shouldThrowExceptionForNonExistingJournalpost() {
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.empty());
 		try {
 			hentDokumentUrl.hentDokumentUrl(request);
@@ -119,7 +116,7 @@ public class DefaultHentDokumentUrlTest {
 	 * Happy scenario for a OnDemand document.
 	 */
 	@Test
-	public void shouldGetDokumentUrlForOnDemand() throws Exception {
+	public void shouldGetDokumentUrlForOnDemand() {
 		Journalpost journalpost = createJournalPost("10", SYFO, FIL_UUID, FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
@@ -135,7 +132,7 @@ public class DefaultHentDokumentUrlTest {
 	 * Happy scenario for a DB document
 	 */
 	@Test
-	public void shouldGetDokumentUrlForDokumentInDB() throws Exception {
+	public void shouldGetDokumentUrlForDokumentInDB() {
 		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
@@ -150,7 +147,7 @@ public class DefaultHentDokumentUrlTest {
 	}
 
 	@Test
-	public void shouldGetSkjermetDokumentUrlForDokumentInDB() throws Exception {
+	public void shouldGetSkjermetDokumentUrlForDokumentInDB() {
 		Journalpost journalpost = createJournalPostArkivVariantSkjermet(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
@@ -165,7 +162,7 @@ public class DefaultHentDokumentUrlTest {
 	}
 
 	@Test
-	public void shouldThrowDokumentNotFoundForKassertDokument() throws Exception {
+	public void shouldThrowDokumentNotFoundForKassertDokument() {
 
 		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
@@ -180,7 +177,7 @@ public class DefaultHentDokumentUrlTest {
 	}
 
 	@Test
-	public void shouldCreateDokumentUrlInfoWithCustomTimeToLive() throws Exception {
+	public void shouldCreateDokumentUrlInfoWithCustomTimeToLive() {
 		long timeToLive = 60;
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(
 				createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET)));
@@ -196,7 +193,7 @@ public class DefaultHentDokumentUrlTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForMissingFilDetaljer() throws Exception {
+	public void shouldThrowExceptionForMissingFilDetaljer() {
 		Journalpost journalpost = createJournalPost(null, null, "562b166e-5f9f", FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
@@ -204,7 +201,7 @@ public class DefaultHentDokumentUrlTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForMissingDokumentFil() throws Exception {
+	public void shouldThrowExceptionForMissingDokumentFil() {
 		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
@@ -214,7 +211,7 @@ public class DefaultHentDokumentUrlTest {
 	}
 
 	@Test
-	public void shouldSetCorrectMimeTypeForDlf() throws Exception {
+	public void shouldSetCorrectMimeTypeForDlf() throws UnsupportedEncodingException {
 		Journalpost journalpost = JournalpostBuilder.getJournalpostBuilder()
 				.journalpostId(JOURNALPOST_ID)
 				.journalStatus(JournalStatusCode.D)
@@ -312,7 +309,7 @@ public class DefaultHentDokumentUrlTest {
 				.build();
 	}
 
-	private void assertValidationFailsForArgument(String expectedArgumentName) throws Exception {
+	private void assertValidationFailsForArgument(String expectedArgumentName) {
 		try {
 			hentDokumentUrl.hentDokumentUrl(request);
 			fail("Validation should fail for argument " + expectedArgumentName);

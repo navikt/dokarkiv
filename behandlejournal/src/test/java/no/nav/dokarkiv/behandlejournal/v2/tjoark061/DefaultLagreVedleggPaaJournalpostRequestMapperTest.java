@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Arkivfiltyper;
@@ -14,10 +10,14 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Variantformater;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.lagrevedleggpaajournalpost.JournalfoertDokumentInfo;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test class for DefaultLagreVedleggPaaJournalpostResponseMapper
@@ -41,7 +41,7 @@ public class DefaultLagreVedleggPaaJournalpostRequestMapperTest {
 	private DefaultLagreVedleggPaaJournalpostRequestMapper requestMapper;
 	private LagreVedleggPaaJournalpostRequest wsRequest;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		requestMapper = new DefaultLagreVedleggPaaJournalpostRequestMapper();
 		wsRequest = createRequest(JOURNALPOST_ID, createDokumentInfo());

@@ -15,15 +15,13 @@ import no.nav.freg.abac.core.dto.response.Decision;
 import no.nav.freg.abac.core.dto.response.Obligation;
 import no.nav.freg.abac.core.dto.response.XacmlResponse;
 import no.nav.freg.abac.core.service.AbacService;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,12 +29,13 @@ import java.util.Collections;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_PENSJON_SAKSID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_TILKNYTTET_FNR;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_TEMA;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,7 +45,7 @@ import static org.mockito.Mockito.when;
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AbacSecurityServiceTest {
 
 	public static final Long DEFAULT_JOURNALPOST = 1L;
@@ -60,20 +59,18 @@ public class AbacSecurityServiceTest {
 	private AbacService abacService;
 	@Mock
 	private JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 	@InjectMocks
 	private AbacSecurityService abacSecurityService;
 	@Mock
 	private JoarkRepositorySkjermet joarkRepositorySkjermet;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
-		when(abacService.evaluate(any(XacmlRequest.class))).thenReturn(new XacmlResponse(Decision.PERMIT, Decision.PERMIT,
+		lenient().when(abacService.evaluate(any(XacmlRequest.class))).thenReturn(new XacmlResponse(Decision.PERMIT, Decision.PERMIT,
 				Collections.<Obligation>emptyList(),
 				Collections.<Advice>emptyList()));
-		when(joarkRepositorySkjermet.existsById(DEFAULT_JOURNALPOST)).thenReturn(true);
-		when(abacContext.getRequest()).thenReturn(new ThreadLocalAbacContext().getRequest());
+		lenient().when(joarkRepositorySkjermet.existsById(DEFAULT_JOURNALPOST)).thenReturn(true);
+		lenient().when(abacContext.getRequest()).thenReturn(new ThreadLocalAbacContext().getRequest());
 	}
 
 	@Test

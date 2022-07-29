@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
 import com.google.common.collect.Iterables;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -19,10 +15,13 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.Journalpost;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration tests for the OpprettJournalpost operation in the ArkiverDokumentproduksjon webservice
@@ -36,10 +35,7 @@ public class OpprettJournalpostIT extends AbstractArkiverdokumentproduksjonItest
 	private OpprettJournalpostRequest request;
 	private OpprettJournalpostResponse response;
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		DateProvider.configure(true, "2018-07-17T12:00");
 		RequestContextSetter.setRequestContextForUnitTest();
@@ -82,17 +78,19 @@ public class OpprettJournalpostIT extends AbstractArkiverdokumentproduksjonItest
 
 	@Test
 	public void shouldThrowExceptionIfRequestDoesNotValidate() throws Exception {
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("Journalpost.fagomrade must be set");
 		request.getJournalpost().setFagomrade(null);
-		response = arkiverDokumentproduksjonProvider.opprettJournalpost(request);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> response = arkiverDokumentproduksjonProvider.opprettJournalpost(request),
+				"Journalpost.fagomrade must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfRequestIsMissingMetaforceInstanceId() throws Exception {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("MetaforceInstanceId must be set");
 		request.getJournalpost().getDokumentInfo().getFildetaljer().setMetaForceInstanceId(0);
-		response = arkiverDokumentproduksjonProvider.opprettJournalpost(request);
+
+		assertThrows(ApplicationException.class,
+				() -> response = arkiverDokumentproduksjonProvider.opprettJournalpost(request),
+				"MetaforceInstanceId must be set");
 	}
 }

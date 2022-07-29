@@ -33,10 +33,10 @@ import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.assertj.core.util.DateUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,7 +46,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import javax.inject.Inject;
@@ -62,10 +62,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, HentDokumentConfig.class, TokenGeneratorConfiguration.class})
 @ActiveProfiles({"itest", "wiremock"})
@@ -103,7 +103,7 @@ public class HentDokumentControllerIT {
 	@Inject
 	private EntityManager entityManager;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
@@ -111,7 +111,7 @@ public class HentDokumentControllerIT {
 				.build());
 	}
 
-	@After
+	@AfterEach
 	public void deleteAll() {
 		dokumentUrlInfoRepository.deleteAll();
 		dokumentFilRepository.deleteAll();

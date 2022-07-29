@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark106;
 
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigDokumentStatusVerdiException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusVerdiException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigTilknyttetJournalpostSomVerdiException;
@@ -23,22 +16,28 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultAvbrytVedleggServiceTest {
 
 	private static final Long JOURNALPOST_ID = 51L;
@@ -60,19 +59,16 @@ public class DefaultAvbrytVedleggServiceTest {
 	@InjectMocks
 	private DefaultAvbrytVedleggService avbrytVedleggService;
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	private Journalpost journalpost;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		journalpost = createJournalpostWithDokumentInfo();
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 	}
 
 	@Test
-	public void shouldValidateInput() throws Exception {
+	public void shouldValidateInput() {
 		AvbrytVedleggRequestTo request = createRequest();
 		avbrytVedleggService.avbrytVedlegg(request);
 
@@ -83,7 +79,7 @@ public class DefaultAvbrytVedleggServiceTest {
 	}
 
 	@Test
-	public void shouldFindJournalpostBasedOnResponse() throws Exception {
+	public void shouldFindJournalpostBasedOnResponse() {
 		AvbrytVedleggRequestTo request = createRequest();
 		avbrytVedleggService.avbrytVedlegg(request);
 
@@ -91,7 +87,7 @@ public class DefaultAvbrytVedleggServiceTest {
 	}
 
 	@Test
-	public void shouldValidateJournalpost() throws Exception {
+	public void shouldValidateJournalpost() {
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		avbrytVedleggService.avbrytVedlegg(createRequest());
 
@@ -99,50 +95,50 @@ public class DefaultAvbrytVedleggServiceTest {
 	}
 
 	@Test
-	public void shouldRethrowNoJournalpostFoundException() throws Exception {
-		thrown.expect(NoJournalpostFoundException.class);
+	public void shouldRethrowNoJournalpostFoundException() {
 		doThrow(new NoJournalpostFoundException("", JOURNALPOST_ID))
 				.when(validator).validateJournalpost(journalpost, JOURNALPOST_ID);
 
-		avbrytVedleggService.avbrytVedlegg(createRequest());
+		assertThrows(NoJournalpostFoundException.class,
+				() -> avbrytVedleggService.avbrytVedlegg(createRequest()));
 	}
 
 	@Test
-	public void shouldRethrowUgyldigJournalStatusVerdiException() throws Exception {
-		thrown.expect(UgyldigJournalStatusVerdiException.class);
+	public void shouldRethrowUgyldigJournalStatusVerdiException() {
 		doThrow(new UgyldigJournalStatusVerdiException("", JournalStatusCode.J))
 				.when(validator).validateJournalpost(journalpost, JOURNALPOST_ID);
 
-		avbrytVedleggService.avbrytVedlegg(createRequest());
+		assertThrows(UgyldigJournalStatusVerdiException.class,
+				() -> avbrytVedleggService.avbrytVedlegg(createRequest()));
 	}
 
 	@Test
-	public void shouldValidateDocument() throws Exception {
+	public void shouldValidateDocument() {
 		avbrytVedleggService.avbrytVedlegg(createRequest());
 
 		verify(validator).validateDokumentInfo(journalpost.findDokumentInfoById(DOKUMENTINFO_ID), DOKUMENTINFO_ID);
 	}
 
 	@Test
-	public void shouldRethrowNoDokumentInfoFoundException() throws Exception {
-		thrown.expect(NoDokumentInfoFoundException.class);
+	public void shouldRethrowNoDokumentInfoFoundException() {
 		doThrow(new NoDokumentInfoFoundException("", DOKUMENTINFO_ID))
 				.when(validator).validateDokumentInfo(journalpost.findDokumentInfoById(DOKUMENTINFO_ID), DOKUMENTINFO_ID);
 
-		avbrytVedleggService.avbrytVedlegg(createRequest());
+		assertThrows(NoDokumentInfoFoundException.class,
+				() -> avbrytVedleggService.avbrytVedlegg(createRequest()));
 	}
 
 	@Test
-	public void shouldRethrowUgyldigDokumentStatusVerdiException() throws Exception {
-		thrown.expect(UgyldigDokumentStatusVerdiException.class);
+	public void shouldRethrowUgyldigDokumentStatusVerdiException() {
 		doThrow(new UgyldigDokumentStatusVerdiException("", DokumentStatusCode.AVBRUTT))
 				.when(validator).validateDokumentInfo(journalpost.findDokumentInfoById(DOKUMENTINFO_ID), DOKUMENTINFO_ID);
 
-		avbrytVedleggService.avbrytVedlegg(createRequest());
+		assertThrows(UgyldigDokumentStatusVerdiException.class,
+				() -> avbrytVedleggService.avbrytVedlegg(createRequest()));
 	}
 
 	@Test
-	public void shouldValidateJournalpostDokumentInfoRelasjon() throws Exception {
+	public void shouldValidateJournalpostDokumentInfoRelasjon() {
 		avbrytVedleggService.avbrytVedlegg(createRequest());
 
 		verify(validator).validateJournalpostDokumentInfoRelasjon(
@@ -150,24 +146,24 @@ public class DefaultAvbrytVedleggServiceTest {
 	}
 
 	@Test
-	public void shouldRethrowUgyldigTilknyttetJournalpostSomVerdiException() throws Exception {
-		thrown.expect(UgyldigTilknyttetJournalpostSomVerdiException.class);
+	public void shouldRethrowUgyldigTilknyttetJournalpostSomVerdiException() {
 		doThrow(new UgyldigTilknyttetJournalpostSomVerdiException("", TilknyttetJournalpostSomCode.HOVEDDOKUMENT))
 				.when(validator).validateJournalpostDokumentInfoRelasjon(
-				journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next());
+						journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next());
 
-		avbrytVedleggService.avbrytVedlegg(createRequest());
+		assertThrows(UgyldigTilknyttetJournalpostSomVerdiException.class,
+				() -> avbrytVedleggService.avbrytVedlegg(createRequest()));
 	}
 
 	@Test
-	public void shouldSetSporingsinformasjon() throws Exception {
+	public void shouldSetSporingsinformasjon() {
 		avbrytVedleggService.avbrytVedlegg(createRequest());
 
 		verify(sporingPopulator).populateSporingInfo(journalpost, ENDRET_AV_NAVN);
 	}
 
 	@Test
-	public void shouldSetDokumentstatusToAvbruttWhenDokumentBelongsToASingelJournalpost() throws Exception {
+	public void shouldSetDokumentstatusToAvbruttWhenDokumentBelongsToASingelJournalpost() {
 		avbrytVedleggService.avbrytVedlegg(createRequest());
 
 		DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(DOKUMENTINFO_ID);
@@ -175,7 +171,7 @@ public class DefaultAvbrytVedleggServiceTest {
 	}
 
 	@Test
-	public void shouldNotChangeDokumentstatusWhenDokumentBelongsToMultipleJournalposts() throws Exception {
+	public void shouldNotChangeDokumentstatusWhenDokumentBelongsToMultipleJournalposts() {
 		DokumentInfo dokumentInfo = createDokumentInfo();
 		dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
 
@@ -192,7 +188,7 @@ public class DefaultAvbrytVedleggServiceTest {
 	}
 
 	@Test
-	public void shouldDeleteJournalpostInfoRelasjonWhenDokumentBelongsToMultipleJournalposts() throws Exception {
+	public void shouldDeleteJournalpostInfoRelasjonWhenDokumentBelongsToMultipleJournalposts() {
 		DokumentInfo dokumentInfo = createDokumentInfo();
 		dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
 

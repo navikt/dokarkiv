@@ -1,23 +1,22 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 /**
  * Tests for DefaultBehandleJournalFaultInfoPopulator
- * 
+ *
  * @author Joakim Bjørnstad, Visma Consulting
- * 
  */
 public class DefaultBehandleJournalFaultInfoPopulatorTest {
 	private static final String KILDE = "JOARK";
@@ -26,13 +25,13 @@ public class DefaultBehandleJournalFaultInfoPopulatorTest {
 
 	private DefaultBehandleJournalFaultInfoPopulator faultInfoPopulator;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		faultInfoPopulator = new DefaultBehandleJournalFaultInfoPopulator();
 		DateProvider.configure(true, DateProvider.getDate(new Date()));
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		DateProvider.configure(false, null);
 	}

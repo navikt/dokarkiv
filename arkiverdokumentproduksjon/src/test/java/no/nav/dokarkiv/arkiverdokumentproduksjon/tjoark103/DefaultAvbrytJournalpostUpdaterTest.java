@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -14,8 +7,15 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.sporing.DefaultKildeNavnPopulator;
 import no.nav.dokarkiv.core.sporing.DefaultSporingPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -26,7 +26,7 @@ public class DefaultAvbrytJournalpostUpdaterTest {
 
 	private DefaultAvbrytJournalpostUpdater avbrytJournalpostUpdater = new DefaultAvbrytJournalpostUpdater();
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		RequestContextSetter.setRequestContextForUnitTest();
 		DefaultSporingPopulator sporingPopulator = new DefaultSporingPopulator();

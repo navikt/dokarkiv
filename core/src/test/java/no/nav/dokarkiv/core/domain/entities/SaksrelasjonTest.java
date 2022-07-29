@@ -1,50 +1,48 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for Saksrelasjon.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
  */
 public class SaksrelasjonTest {
 
 	@Test
-	public void shouldThrowExceptionForMissingSakId() throws Exception {
+	public void shouldThrowExceptionForMissingSakId() {
 		Saksrelasjon saksrelasjon = getSaksrelasjonBuilder()
-										.fagsystem(FagsystemCode.FS22)
-										.build();
-		
+				.fagsystem(FagsystemCode.FS22)
+				.build();
+
 		assertExceptionThrownWhenVerifyingMandatoryFields(saksrelasjon, "sakId");
 	}
-	
+
 	@Test
-	public void shouldThrowExceptionForMissingFagsystem() throws Exception {
+	public void shouldThrowExceptionForMissingFagsystem() {
 		Saksrelasjon saksrelasjon = getSaksrelasjonBuilder()
-										.sakId("123")
-										.build();
+				.sakId("123")
+				.build();
 
 		assertExceptionThrownWhenVerifyingMandatoryFields(saksrelasjon, "fagsystem");
 	}
-	
+
 	@Test
-	public void shouldThrowExceptionForMissingEndretAvNavn() throws Exception {
+	public void shouldThrowExceptionForMissingEndretAvNavn() {
 		Saksrelasjon saksrelasjon = getSaksrelasjonBuilder()
-										.saksrelasjonId(10L)
-										.sakId("123")
-										.fagsystem(FagsystemCode.FS22)
-										.build();
-		
+				.saksrelasjonId(10L)
+				.sakId("123")
+				.fagsystem(FagsystemCode.FS22)
+				.build();
+
 		assertExceptionThrownWhenVerifyingMandatoryFields(saksrelasjon, "endretAvNavn");
 	}
-	
+
 	private void assertExceptionThrownWhenVerifyingMandatoryFields(Saksrelasjon saksrelasjon, String fieldName) {
 		try {
 			saksrelasjon.verifyMandatoryFields();
@@ -53,5 +51,5 @@ public class SaksrelasjonTest {
 			assertThat(e.getMessage(), containsString(fieldName));
 		}
 	}
-	
+
 }

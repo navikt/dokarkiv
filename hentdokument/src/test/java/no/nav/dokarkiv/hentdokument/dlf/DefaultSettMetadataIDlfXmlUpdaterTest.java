@@ -1,22 +1,22 @@
 package no.nav.dokarkiv.hentdokument.dlf;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
-
 import com.google.common.io.Files;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataForKopiering;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataForUthenting;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.File;
 import java.nio.charset.Charset;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for DefaultSettMetadataIDlfXmlUpdater.
@@ -36,14 +36,14 @@ public class DefaultSettMetadataIDlfXmlUpdaterTest {
 
 	private DefaultSettMetadataIDlfXmlUpdater xmlUpdater;
 
-	@BeforeClass
+	@BeforeAll
 	public static void init() throws Exception {
 		metadataXml = Files.toString(new File("src/test/resources/Customer1.xml"), Charset.forName(encoding));
 		vedleggMalMetadataXml = Files.toString(new File("src/test/resources/vedleggmal.xml"), Charset.forName(encoding));
 		hoveddokumentXml = Files.toString(new File("src/test/resources/hoveddokument.xml"), Charset.forName(encoding));
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		xmlUpdater = new DefaultSettMetadataIDlfXmlUpdater(vedleggUrlRetrieverMock, encoding);

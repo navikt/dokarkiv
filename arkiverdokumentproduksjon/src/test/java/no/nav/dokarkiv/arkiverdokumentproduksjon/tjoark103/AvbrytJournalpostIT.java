@@ -1,13 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -20,10 +12,17 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytJournalpostJournalpostIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.AvbrytJournalpostRequest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration tests for the avbrytJournalpost operation
@@ -41,10 +40,7 @@ public class AvbrytJournalpostIT extends AbstractArkiverdokumentproduksjonItest 
 	private AvbrytJournalpostRequest request;
 	private Journalpost journalpost;
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		journalpost = createJournalpost(DokumentStatusCode.UNDER_REDIGERING, JournalStatusCode.D);
 		joarkRepository.save(journalpost);
@@ -95,19 +91,21 @@ public class AvbrytJournalpostIT extends AbstractArkiverdokumentproduksjonItest 
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostDoesNotExist() throws Exception {
+	public void shouldThrowExceptionIfJournalpostDoesNotExist() {
 		request.setJournalpostId(66666);
-		expectedException.expect(AvbrytJournalpostJournalpostIkkeFunnet.class);
-		expectedException.expectMessage("Journalpost with id: 66666 not found");
-		arkiverDokumentproduksjonProvider.avbrytJournalpost(request);
+
+		assertThrows(AvbrytJournalpostJournalpostIkkeFunnet.class,
+				() -> arkiverDokumentproduksjonProvider.avbrytJournalpost(request),
+				"Journalpost with id: 66666 not found");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfNoEndretAvNavnInRequest() throws Exception {
+	public void shouldThrowExceptionIfNoEndretAvNavnInRequest() {
 		request.setEndretAvNavn(null);
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("EndretAvNavn cannot be empty or missing");
-		arkiverDokumentproduksjonProvider.avbrytJournalpost(request);
+
+		assertThrows(IllegalArgumentException.class,
+				() -> arkiverDokumentproduksjonProvider.avbrytJournalpost(request),
+				"EndretAvNavn cannot be empty or missing");
 	}
 
 	private AvbrytJournalpostRequest createWsRequest(Long journalpostId) {

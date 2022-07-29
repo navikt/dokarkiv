@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark060;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.behandlejournal.v3.datautil.ArkiverUstrukturertKravJournalpostAssertUtil;
 import no.nav.dokarkiv.behandlejournal.v3.datautil.ArkiverUstrukturertKravJournalpostDataUtil;
 import no.nav.dokarkiv.behandlejournal.v3.datautil.BehandleJournalCommonDataUtil;
@@ -13,8 +9,12 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal.NorskIdent;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal.Organisasjon;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal.Person;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 /**
  * Unit tests for DefaultJournalpostMapper.
@@ -30,7 +30,7 @@ public class ArkiverUstrukturertKravV3JournalpostMapperTest {
 
 	private no.nav.dokarkiv.core.domain.entities.Journalpost domainJournalpost;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		DateProvider.configure(true, "2014-08-27T12:00:00");
 	}

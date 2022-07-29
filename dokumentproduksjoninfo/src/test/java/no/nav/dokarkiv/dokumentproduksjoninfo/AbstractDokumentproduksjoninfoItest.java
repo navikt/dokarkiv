@@ -8,20 +8,18 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.DokumentproduksjonInfoV1;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class, DokumentproduksjonInfoConfig.class, TokenGeneratorConfiguration.class})
 @ActiveProfiles("itest")
@@ -30,18 +28,16 @@ import javax.transaction.Transactional;
 @Transactional
 public abstract class AbstractDokumentproduksjoninfoItest {
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	@Inject
 	protected DokumentproduksjonInfoV1 dokumentproduksjonInfoProvider;
 	@Inject
-    protected JoarkRepositorySkjermet joarkRepository;
+	protected JoarkRepositorySkjermet joarkRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
 	protected SkjermingServiceTest skjermingService;
 
-	@Before
+	@BeforeEach
 	public void setUpItest() {
 		joarkRepository.deleteAll();
 		dokumentFilRepository.deleteAll();

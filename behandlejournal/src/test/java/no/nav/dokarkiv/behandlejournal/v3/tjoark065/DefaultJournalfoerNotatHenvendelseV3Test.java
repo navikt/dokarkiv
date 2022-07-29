@@ -1,14 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark065;
 
-import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-
 import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -24,31 +15,37 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
+
+import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DefaultJournalfoerNotatHenvendelseV3}
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultJournalfoerNotatHenvendelseV3Test {
 	private static final Long JOURNALPOST_ID = 1L;
 	private static final Long DOKUMENTINFO_ID = 1L;
 	private static final String TODAY_DATE = "2013-01-01T12:00:00";
 	private static final boolean SENSITIVT_REQUEST = true;
 	private static final String OPPRETTET_AV_NAVN = "Kalle Klovn";
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	@Mock
 	private JournalfoerNotatHenvendelseV3Validator behandleJournalJournalpostValidatorMock;
 	@Mock
@@ -61,7 +58,7 @@ public class DefaultJournalfoerNotatHenvendelseV3Test {
 	private JournalfoerNotatHenvendelseResponse response;
 	private Journalpost journalpost,journalpostFerdigDato;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		DateProvider.configure(true, TODAY_DATE);
 		journalpost = createJournalpost();
@@ -80,27 +77,26 @@ public class DefaultJournalfoerNotatHenvendelseV3Test {
 
 	@Test
 	public void shouldThrowExceptionWhenRequestIsNull() {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter: request");
 		request = null;
-		service.journalfoerNotatHenvendelse(request);
+		assertThrows(ApplicationException.class,
+				() -> service.journalfoerNotatHenvendelse(request),
+				"Missing parameter: request");
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenJournalpostMissingInRequest() {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter in request: Journalpost");
 		request = new JournalfoerNotatHenvendelseRequest(null);
-		service.journalfoerNotatHenvendelse(request);
+		assertThrows(ApplicationException.class,
+				() -> service.journalfoerNotatHenvendelse(request),
+				"Missing parameter in request: Journalpost");
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenHoveddokumentIsMissingInRequest() {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter in request: Hoveddokument");
 		request.getJournalpost().findHoveddokumentDokumentInfoRelasjon().setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
-		service.journalfoerNotatHenvendelse(request);
-
+		assertThrows(ApplicationException.class,
+				() -> service.journalfoerNotatHenvendelse(request),
+				"Missing parameter in request: Hoveddokument");
 	}
 
 	@Test
@@ -144,7 +140,7 @@ public class DefaultJournalfoerNotatHenvendelseV3Test {
 	}
 
 	@Test
-	public void shouldSetDokumentFerdigDatoToFerdigDato() throws Exception {
+	public void shouldSetDokumentFerdigDatoToFerdigDato() {
 		request = new JournalfoerNotatHenvendelseRequest(journalpostFerdigDato);
 		service.journalfoerNotatHenvendelse(request);
 		assertThat(journalpostFerdigDato.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentFerdigDato(),

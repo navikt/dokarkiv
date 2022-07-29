@@ -1,31 +1,30 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * Test of DefaultAvbrytJournalpostService
  *
  * @author Stig Strøm
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultAvbrytJournalpostServiceTest {
 
 	private static final Long JOURNALPOST_ID = 42L;
@@ -33,10 +32,8 @@ public class DefaultAvbrytJournalpostServiceTest {
 
 	private Journalpost journalpost;
 
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
 	@Mock
-    private JoarkRepositorySkjermet repositoryMock;
+	private JoarkRepositorySkjermet repositoryMock;
 	@Mock
 	private AvbrytJournalpostValidator avbrytJournalpostValidator;
 	@Mock
@@ -44,13 +41,13 @@ public class DefaultAvbrytJournalpostServiceTest {
 	@InjectMocks
 	DefaultAvbrytJournalpostService service;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		RequestContextSetter.setRequestContextForUnitTest();
 	}
 
 	@Test
-	public void shouldRunAvbrytJournalpost() throws Exception {
+	public void shouldRunAvbrytJournalpost() {
 		journalpost = createJournalpost();
 		when(repositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(avbrytJournalpostUpdater.updateJournalpost(journalpost, ENDRET_AV_NAVN)).thenReturn(journalpost);
@@ -63,32 +60,34 @@ public class DefaultAvbrytJournalpostServiceTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfRequestToIsNull() throws Exception {
-		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("Request cannot be empty or missing");
-		service.avbrytJournalpost(null);
+	public void shouldThrowExceptionIfRequestToIsNull() {
+		assertThrows(IllegalArgumentException.class,
+				() -> service.avbrytJournalpost(null),
+				"Request cannot be empty or missing");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostIsNull() throws Exception {
-		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("JournalpostId cannot be empty or missing");
-		service.avbrytJournalpost(new AvbrytJournalpostRequestTo(null, ENDRET_AV_NAVN));
+	public void shouldThrowExceptionIfJournalpostIsNull() {
+		assertThrows(IllegalArgumentException.class,
+				() -> service.avbrytJournalpost(new AvbrytJournalpostRequestTo(null, ENDRET_AV_NAVN)),
+				"JournalpostId cannot be empty or missing");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfEndretAvIsNull() throws Exception {
-		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("EndretAvNavn cannot be empty or missing");
-		service.avbrytJournalpost(new AvbrytJournalpostRequestTo(JOURNALPOST_ID, null));
+	public void shouldThrowExceptionIfEndretAvIsNull() {
+		assertThrows(IllegalArgumentException.class,
+				() -> service.avbrytJournalpost(new AvbrytJournalpostRequestTo(JOURNALPOST_ID, null)),
+				"EndretAvNavn cannot be empty or missing");
 	}
 
 	@Test
-	public void shouldThrowFunctionalExceptionIfJournalpostDoesNotExist() throws Exception {
-		when(repositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.ofNullable(null));
-		expected.expect(NoJournalpostFoundException.class);
-		expected.expectMessage("Journalpost with id");
-		service.avbrytJournalpost(new AvbrytJournalpostRequestTo(JOURNALPOST_ID, ENDRET_AV_NAVN));
+	public void shouldThrowFunctionalExceptionIfJournalpostDoesNotExist() {
+		when(repositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.empty());
+
+		assertThrows(NoJournalpostFoundException.class,
+				() -> service.avbrytJournalpost(new AvbrytJournalpostRequestTo(JOURNALPOST_ID, ENDRET_AV_NAVN)),
+				"Journalpost with id");
+
 		verifyNoMoreInteractions(avbrytJournalpostValidator, avbrytJournalpostUpdater);
 	}
 

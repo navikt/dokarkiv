@@ -1,11 +1,5 @@
 package no.nav.dokarkiv.hentdokument.hentdokumenturlinfo;
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentUrlInfoBuilder.getDokumentUrlInfoBuilder;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
@@ -14,14 +8,20 @@ import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import no.nav.dokarkiv.hentdokument.dokumenturlinfo.DefaultHentDokumentUrlInfo;
 import no.nav.dokarkiv.hentdokument.dokumenturlinfo.HentDokumentUrlInfoRequest;
 import no.nav.dokarkiv.hentdokument.dokumenturlinfo.HentDokumentUrlInfoResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentUrlInfoBuilder.getDokumentUrlInfoBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for DefaultHentDokumentUrlInfo.
@@ -40,7 +40,7 @@ public class DefaultHentDokumentUrlInfoTest {
 
 	private HentDokumentUrlInfoRequest request;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		DateProvider.configure(false, null);
 

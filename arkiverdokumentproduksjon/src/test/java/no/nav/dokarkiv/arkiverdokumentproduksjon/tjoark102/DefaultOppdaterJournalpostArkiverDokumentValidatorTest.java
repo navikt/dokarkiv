@@ -1,11 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.AlleredeFerdigstiltException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.FeilStrukturException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.KanIkkeFerdigstillesException;
@@ -20,141 +15,142 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
+public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 
 	private DefaultOppdaterJournalpostArkiverDokumentValidator validator = new DefaultOppdaterJournalpostArkiverDokumentValidator();
 
 	@Test
-	public void shouldThrowExceptionIfDuplicateVariantFormats() throws Exception {
+	public void shouldThrowExceptionIfDuplicateVariantFormats() {
 		Set<FilDetaljer> filDetaljer = new HashSet<>();
 		filDetaljer.add(createFilDetaljer(VariantFormatCode.ARKIV));
 		filDetaljer.add(createFilDetaljer(VariantFormatCode.ARKIV));
 
-		expected.expect(FeilStrukturException.class);
-		expected.expectMessage("Input til tjenesten inneholder flere fildetaljer med samme variantformat");
-		validator.validateNoDuplicateVariantFormats(filDetaljer, 10L);
+		assertThrows(FeilStrukturException.class,
+				() -> validator.validateNoDuplicateVariantFormats(filDetaljer, 10L),
+				"Input til tjenesten inneholder flere fildetaljer med samme variantformat");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostTypeIsInngaaendeDokument() throws Exception {
+	public void shouldThrowExceptionIfJournalpostTypeIsInngaaendeDokument() {
 		Journalpost jp = createJournalpost();
 		jp.setJournalposttype(JournalpostTypeCode.I);
 		OppdaterJournalpostArkiverDokumentRequestTo request = createRequest();
 		request.setFerdigstillJournalpost(false);
 
-		expected.expect(UgyldigInputException.class);
-		expected.expectMessage("Journalpost kan ikke være av typen INNGÅENDE");
-		validator.validateJournalpostTypeAndStatus(jp, request);
+		assertThrows(UgyldigInputException.class,
+				() -> validator.validateJournalpostTypeAndStatus(jp, request),
+				"Journalpost kan ikke være av typen INNGÅENDE");
 	}
 
 	@Test
-	public void shouldThrowExceptionOnMissingJournalpostId() throws Exception {
+	public void shouldThrowExceptionOnMissingJournalpostId() {
 		OppdaterJournalpostArkiverDokumentRequestTo request = createRequest();
 
 		request.setJournalpostId(null);
 
-		expected.expect(UgyldigInputException.class);
-		expected.expectMessage("journalpostId");
-		validator.validateRequest(request);
+		assertThrows(UgyldigInputException.class,
+				() -> validator.validateRequest(request),
+				"journalpostId");
 	}
 
 	@Test
-	public void shouldThrowExceptionOnMissingDokumentInfoId() throws Exception {
+	public void shouldThrowExceptionOnMissingDokumentInfoId() {
 		OppdaterJournalpostArkiverDokumentRequestTo request = createRequest();
 
 		request.setDokumentInfoId(null);
 
-		expected.expect(UgyldigInputException.class);
-		expected.expectMessage("dokumentInfoId");
-		validator.validateRequest(request);
+		assertThrows(UgyldigInputException.class,
+				() -> validator.validateRequest(request),
+				"dokumentInfoId");
 	}
 
 	@Test
-	public void shouldThrowExceptionOnMissingEndretAvNavn() throws Exception {
+	public void shouldThrowExceptionOnMissingEndretAvNavn() {
 		OppdaterJournalpostArkiverDokumentRequestTo request = createRequest();
 
 		request.setEndretAvNavn(null);
 
-		expected.expect(UgyldigInputException.class);
-		expected.expectMessage("endretAvNavn");
-		validator.validateRequest(request);
+		assertThrows(UgyldigInputException.class,
+				() -> validator.validateRequest(request),
+				"endretAvNavn");
 	}
 
 	@Test
-	public void shouldThrowExceptionOnEmptyFilDetaljer() throws Exception {
+	public void shouldThrowExceptionOnEmptyFilDetaljer() {
 		OppdaterJournalpostArkiverDokumentRequestTo request = createBaseRequest().build();
 
-		expected.expect(UgyldigInputException.class);
-		expected.expectMessage("filDetaljer");
-		validator.validateRequest(request);
+		assertThrows(UgyldigInputException.class,
+				() -> validator.validateRequest(request),
+				"filDetaljer");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostStatusIsNotUnderProduction() throws Exception {
+	public void shouldThrowExceptionIfJournalpostStatusIsNotUnderProduction() {
 		Journalpost jp = createJournalpost();
 		jp.setJournalstatus(JournalStatusCode.A);
 		OppdaterJournalpostArkiverDokumentRequestTo request = createRequest();
 
-		expected.expect(KanIkkeFerdigstillesException.class);
-		expected.expectMessage("Journal- og/eller dokumentstatus er ulik \"under arbeid\"");
-		validator.validateJournalpostTypeAndStatus(jp, request);
+		assertThrows(KanIkkeFerdigstillesException.class,
+				() -> validator.validateJournalpostTypeAndStatus(jp, request),
+				"Journal- og/eller dokumentstatus er ulik \"under arbeid\"");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfDokumentInfoStatusIsNotUnderRedigering() throws Exception {
+	public void shouldThrowExceptionIfDokumentInfoStatusIsNotUnderRedigering() {
 		DokumentInfo dokumentInfo = new DokumentInfo(1L, 2L);
 		dokumentInfo.setDokumentstatus(DokumentStatusCode.AVBRUTT);
 
-		expected.expect(KanIkkeFerdigstillesException.class);
-		expected.expectMessage("DokumentInfo [" + dokumentInfo.getDokumentInfoId() + "] krever status UNDER REDIGERING");
-		validator.validateDokumentInfoIsUnderRedigering(dokumentInfo, 10L);
+		assertThrows(KanIkkeFerdigstillesException.class,
+				() -> validator.validateDokumentInfoIsUnderRedigering(dokumentInfo, 10L),
+				"DokumentInfo [" + dokumentInfo.getDokumentInfoId() + "] krever status UNDER REDIGERING");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostContainsNoDatoDokument() throws Exception {
+	public void shouldThrowExceptionIfJournalpostContainsNoDatoDokument() {
 		OppdaterJournalpostArkiverDokumentRequestTo request = OppdaterJournalpostArkiverDokumentRequestTo.builder().build();
 
-		expected.expect(UgyldigInputException.class);
-		expected.expectMessage("Mangler påkrevd felt datoDokument");
-		validator.validateDatoDokument(request);
+		assertThrows(UgyldigInputException.class,
+				() -> validator.validateDatoDokument(request),
+				"Mangler påkrevd felt datoDokument");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostDoesNotContainDokumentInfoWithId() throws Exception {
+	public void shouldThrowExceptionIfJournalpostDoesNotContainDokumentInfoWithId() {
 		Journalpost journalpost = createJournalpost();
 		addDokumentInfo(journalpost, generateId());
 		Long dokumentInfoId = generateId();
 
-		expected.expect(ObjektIkkeFunnetException.class);
-		expected.expectMessage("DokumentInfoId [" + dokumentInfoId + "] finnes ikke");
-		validator.validateJournalpostContainsDokumentInfoWithId(journalpost, dokumentInfoId);
+		assertThrows(ObjektIkkeFunnetException.class,
+				() -> validator.validateJournalpostContainsDokumentInfoWithId(journalpost, dokumentInfoId),
+				"DokumentInfoId [" + dokumentInfoId + "] finnes ikke");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostContainsNoDokumentInfoRelasjonOfTypeHoveddokument() throws Exception {
+	public void shouldThrowExceptionIfJournalpostContainsNoDokumentInfoRelasjonOfTypeHoveddokument() {
 		Journalpost journalpost = createJournalpost();
 		addDokumentInfo(journalpost, generateId());
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next()
 				.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
 
-		expected.expect(FeilStrukturException.class);
-		expected.expectMessage("Journalpost har ikke korrekt struktur");
-		validator.validateJournalpostContainsOneRealtedDokumenInfoOfTypeHoveddokument(journalpost);
+		assertThrows(FeilStrukturException.class,
+				() -> validator.validateJournalpostContainsOneRealtedDokumenInfoOfTypeHoveddokument(journalpost),
+				"Journalpost har ikke korrekt struktur");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostContainsTwoDokumentInfoRelasjonsOfTypeHoveddokument() throws Exception {
+	public void shouldThrowExceptionIfJournalpostContainsTwoDokumentInfoRelasjonsOfTypeHoveddokument() {
 		Journalpost journalpost = createJournalpost();
 		addDokumentInfo(journalpost, generateId());
 		addDokumentInfo(journalpost, generateId());
@@ -163,26 +159,27 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next()
 				.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
 
-		expected.expect(FeilStrukturException.class);
-		expected.expectMessage("Journalpost har ikke korrekt struktur");
-		validator.validateJournalpostContainsOneRealtedDokumenInfoOfTypeHoveddokument(journalpost);
+		assertThrows(FeilStrukturException.class,
+				() -> validator.validateJournalpostContainsOneRealtedDokumenInfoOfTypeHoveddokument(journalpost),
+				"Journalpost har ikke korrekt struktur");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfDokumentInfoOrFilDetaljerContainNoArkivFormat() throws Exception {
+	public void shouldThrowExceptionIfDokumentInfoOrFilDetaljerContainNoArkivFormat() {
 		Journalpost journalpost = createJournalpost();
 		addDokumentInfo(journalpost, generateId());
 		DokumentInfo dokumentInfo = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo();
 		Set<FilDetaljer> filDetaljerSet = new HashSet<>();
 		filDetaljerSet.add(createFilDetaljer(VariantFormatCode.ORIGINAL));
 		filDetaljerSet.add(createFilDetaljer(VariantFormatCode.PRODUKSJON));
-		expected.expect(FeilStrukturException.class);
-		expected.expectMessage("Arkivvariant av dokument mangler, kan ikke ferdigstille journalpost");
-		validator.validateDokumentInfoOrFilDetaljerContainsArkivFormat(dokumentInfo, filDetaljerSet, 10L);
+
+		assertThrows(FeilStrukturException.class,
+				() -> validator.validateDokumentInfoOrFilDetaljerContainsArkivFormat(dokumentInfo, filDetaljerSet, 10L),
+				"Arkivvariant av dokument mangler, kan ikke ferdigstille journalpost");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfInputContainsDuplicateVariantFormats() throws Exception {
+	public void shouldThrowExceptionIfInputContainsDuplicateVariantFormats() {
 
 		Set<FilDetaljer> jpFilDetaljerSet = new HashSet<>();
 		jpFilDetaljerSet.add(createFilDetaljer(VariantFormatCode.ORIGINAL));
@@ -193,13 +190,13 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 		filDetaljerSet.add(createFilDetaljer(VariantFormatCode.BREVBESTILLING));
 		filDetaljerSet.add(createFilDetaljer(VariantFormatCode.PRODUKSJON));
 
-		expected.expect(FeilStrukturException.class);
-		expected.expectMessage("Variantformat");
-		validator.validateNoDuplicateVariantFormatsExceptProduksjon(jpFilDetaljerSet, filDetaljerSet, 10L);
+		assertThrows(FeilStrukturException.class,
+				() -> validator.validateNoDuplicateVariantFormatsExceptProduksjon(jpFilDetaljerSet, filDetaljerSet, 10L),
+				"Variantformat");
 	}
 
 	@Test
-	public void shouldNotThrowExceptionIfBothDokumentInfoAndFilDetailerContainsProduksjonFormatEvenWhenOtherDuplicate() throws Exception {
+	public void shouldNotThrowExceptionIfBothDokumentInfoAndFilDetailerContainsProduksjonFormatEvenWhenOtherDuplicate() {
 		Set<FilDetaljer> filDetaljerSet = new HashSet<>();
 		filDetaljerSet.add(createFilDetaljer(VariantFormatCode.PRODUKSJON));
 		filDetaljerSet.add(createFilDetaljer(VariantFormatCode.ARKIV));
@@ -212,7 +209,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfDokumentInfoContainsElementsInFildetaljerEvenWhenProduksjonsFormat() throws Exception {
+	public void shouldThrowExceptionIfDokumentInfoContainsElementsInFildetaljerEvenWhenProduksjonsFormat() {
 		Set<FilDetaljer> jpFilDetaljerSet = new HashSet<>();
 		jpFilDetaljerSet.add(createFilDetaljer(VariantFormatCode.ARKIV));
 		jpFilDetaljerSet.add(createFilDetaljer(VariantFormatCode.PRODUKSJON));
@@ -221,29 +218,26 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 		filDetaljerSet.add(createFilDetaljer(VariantFormatCode.ARKIV));
 		filDetaljerSet.add(createFilDetaljer(VariantFormatCode.BREVBESTILLING));
 
-		expected.expect(FeilStrukturException.class);
-		expected.expectMessage("Variantformat");
-		validator.validateNoDuplicateVariantFormatsExceptProduksjon(jpFilDetaljerSet, filDetaljerSet, 10L);
+		assertThrows(FeilStrukturException.class,
+				() -> validator.validateNoDuplicateVariantFormatsExceptProduksjon(jpFilDetaljerSet, filDetaljerSet, 10L),
+				"Variantformat");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfNotAllDocumenStatusIsFerdigstilltWhenFerdigstillJournalPost() throws Exception {
+	public void shouldThrowExceptionIfNotAllDocumenStatusIsFerdigstilltWhenFerdigstillJournalPost() {
 		Journalpost journalpost = createJournalpost();
 		addDokumentInfo(journalpost, 2L);
 		addDokumentInfo(journalpost, 2L);
 		DokumentInfo dokumentInfo = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo();
 
-		expected.expect(KanIkkeFerdigstillesException.class);
-		expected.expectMessage("Journalposten kan ikke ferdigstilles fordi tilknyttet dokument (dokumentInfoId=" + dokumentInfo.getDokumentInfoId() + ")  ikke har status " + DokumentStatusCode.FERDIGSTILT
-				.name());
-		validator.validateThatAllDocumentStatusesAreFerdigstilt(journalpost, dokumentInfo);
+		assertThrows(KanIkkeFerdigstillesException.class,
+				() -> validator.validateThatAllDocumentStatusesAreFerdigstilt(journalpost, dokumentInfo),
+				"Journalposten kan ikke ferdigstilles fordi tilknyttet dokument (dokumentInfoId=" + dokumentInfo.getDokumentInfoId() + ")  ikke har status " + DokumentStatusCode.FERDIGSTILT
+						.name());
 	}
 
 	@Test
-	public void shouldThrowExceptionOnFerdigstilt() throws Exception {
-		expected.expect(AlleredeFerdigstiltException.class);
-		expected.expectMessage("Journalpost med dokument er allerede ferdigstilt.");
-
+	public void shouldThrowExceptionOnFerdigstilt() {
 		Journalpost journalpost = createJournalpost();
 		OppdaterJournalpostArkiverDokumentRequestTo request = createRequest();
 
@@ -251,14 +245,13 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 		addDokumentInfo(journalpost, request.getDokumentInfoId());
 		journalpost.findDokumentInfoById(request.getDokumentInfoId()).setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
 
-		validator.validateJournalpostTypeAndStatus(journalpost, request);
+		assertThrows(AlleredeFerdigstiltException.class,
+				() -> validator.validateJournalpostTypeAndStatus(journalpost, request),
+				"Journalpost med dokument er allerede ferdigstilt.");
 	}
 
 	@Test
-	public void shouldThrowExceptionOnFerdigLokalPrintAndLokalAndDokFerdigstiltAndFerdigstilles() throws Exception {
-		expected.expect(AlleredeFerdigstiltException.class);
-		expected.expectMessage("Journalpost med dokument er allerede ferdigstilt lokalprint.");
-
+	public void shouldThrowExceptionOnFerdigLokalPrintAndLokalAndDokFerdigstiltAndFerdigstilles() {
 		Journalpost journalpost = createJournalpost();
 		OppdaterJournalpostArkiverDokumentRequestTo request = createRequest();
 
@@ -269,14 +262,13 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 
 		request.setUtsendingskanal(UtsendingsKanalCode.L);
 
-		validator.validateJournalpostTypeAndStatus(journalpost, request);
+		assertThrows(AlleredeFerdigstiltException.class,
+				() -> validator.validateJournalpostTypeAndStatus(journalpost, request),
+				"Journalpost med dokument er allerede ferdigstilt lokalprint.");
 	}
 
 	@Test
-	public void shouldThrowExceptionOnUnderBehandlingAndDokFerdigstilltAndIkkeFerdigstilles() throws Exception {
-		expected.expect(AlleredeFerdigstiltException.class);
-		expected.expectMessage("Dokument er allerede ferdigstilt for journalpost under arbeid.");
-
+	public void shouldThrowExceptionOnUnderBehandlingAndDokFerdigstilltAndIkkeFerdigstilles() {
 		Journalpost journalpost = createJournalpost();
 		OppdaterJournalpostArkiverDokumentRequestTo request = createRequest();
 		request.setFerdigstillJournalpost(false);
@@ -287,8 +279,9 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 			dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
 		}
 
-
-		validator.validateJournalpostTypeAndStatus(journalpost, request);
+		assertThrows(AlleredeFerdigstiltException.class,
+				() -> validator.validateJournalpostTypeAndStatus(journalpost, request),
+				"Dokument er allerede ferdigstilt for journalpost under arbeid.");
 	}
 
 	private FilDetaljer createFilDetaljer(VariantFormatCode variantFormatCode) {

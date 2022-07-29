@@ -27,15 +27,16 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal.Variantformater;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.ArkiverUstrukturertKravRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.ArkiverUstrukturertKravResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration test for the MOD operation: ArkiverUtstrukturertKrav.
@@ -58,7 +59,7 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 	private ArkiverUstrukturertKravResponse arkiverUstrukturertKravResponse;
 	private no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		DateProvider.configure(true, "2018-07-11T12:00");
 		RequestContextSetter.setRequestContextForUnitTest();
@@ -124,10 +125,10 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 
 		arkiverUstrukturertKravRequest.setJournalpost(journalpost);
 
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Journalpost.AvsenderMottakerId must be set when Journalpost.AvsenderMottaker is set");
-		arkiverUstrukturertKravResponse = behandleJournalV3Provider
-				.arkiverUstrukturertKrav(arkiverUstrukturertKravRequest);
+		assertThrows(ApplicationException.class,
+				() -> arkiverUstrukturertKravResponse = behandleJournalV3Provider
+						.arkiverUstrukturertKrav(arkiverUstrukturertKravRequest),
+				"Journalpost.AvsenderMottakerId must be set when Journalpost.AvsenderMottaker is set");
 	}
 
 	@Test

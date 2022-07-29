@@ -1,24 +1,19 @@
 package no.nav.dokarkiv.core.security.ldap;
 
 import no.nav.dokarkiv.core.security.LdapConfig;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DataLdapTest
 @ContextConfiguration(classes = {LdapConfig.class, NavLdapService.class})
 @ActiveProfiles({"itest", "ldap"})
@@ -26,9 +21,6 @@ public class NavLdapServiceIT {
 
 	@Inject
 	private NavLdapService navLdapService;
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void shouldReturnNameWhenUserIdLookedUp() {
@@ -77,6 +69,4 @@ public class NavLdapServiceIT {
 		NavUser saksbehandler = navLdapService.findByServiceuserId("abcdefgh");
 		assertThat(saksbehandler.getFullname(), is("abcdefgh"));
 	}
-
-
 }

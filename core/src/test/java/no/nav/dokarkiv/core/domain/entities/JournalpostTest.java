@@ -1,21 +1,5 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.AVBRUTT;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -25,15 +9,30 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.HashSet;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.AVBRUTT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for Journalpost.
@@ -41,11 +40,8 @@ import java.util.HashSet;
  * @author Per Kristian Foss, Visma Sirius
  * @author Thomas Eugen Bjørge, Visma Sirius
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JournalpostTest {
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 
 	@InjectMocks
 	private Journalpost journalpost;
@@ -87,8 +83,6 @@ public class JournalpostTest {
 
 		journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(HOVEDDOKUMENT).iterator().next().setTilknyttetAvNavn("testnavn2");
 		assertThat(journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(HOVEDDOKUMENT).iterator().next().getTilknyttetAvNavn(), is("testnavn2"));
-
-
 
 
 	}
@@ -193,7 +187,7 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void shouldCheckForLenientStatus() throws Exception {
+	public void shouldCheckForLenientStatus() {
 		assertLenientStatus(JournalStatusCode.MO, true);
 		assertLenientStatus(JournalStatusCode.M, true);
 		assertLenientStatus(JournalStatusCode.U, true);
@@ -224,7 +218,7 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void shouldCheckInngaendeStatus() throws Exception {
+	public void shouldCheckInngaendeStatus() {
 		assertInngaendeStatus(JournalStatusCode.MO, true);
 		assertInngaendeStatus(JournalStatusCode.M, true);
 		assertInngaendeStatus(JournalStatusCode.U, true);
@@ -242,7 +236,7 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForNonUniqueDokumentInfoRelasjoner() throws Exception {
+	public void shouldThrowExceptionForNonUniqueDokumentInfoRelasjoner() {
 		long dokumentInfoId = 200;
 		journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
 				getJournalpostDokumentInfoRelasjonBuilder().dokumentInfo(
@@ -258,11 +252,11 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForDuplicateDokumentVarianter() throws Exception {
+	public void shouldThrowExceptionForDuplicateDokumentVarianter() {
 		VariantFormatCode arkiv = VariantFormatCode.ARKIV;
 		journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
 				getJournalpostDokumentInfoRelasjonBuilder().dokumentInfo(
-						getDokumentInfoBuilder().filDetaljerList(getFilDetaljerBuilder().variantFormat(arkiv).build()).build())
+								getDokumentInfoBuilder().filDetaljerList(getFilDetaljerBuilder().variantFormat(arkiv).build()).build())
 						.build(),
 				getJournalpostDokumentInfoRelasjonBuilder().dokumentInfo(
 						getDokumentInfoBuilder().filDetaljerList(getFilDetaljerBuilder().variantFormat(arkiv).build(),
@@ -276,7 +270,7 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void shouldNotThrowNPEWhenCoutingIfVariantFormatIsNull() throws Exception {
+	public void shouldNotThrowNPEWhenCoutingIfVariantFormatIsNull() {
 		VariantFormatCode arkiv = VariantFormatCode.ARKIV;
 		journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
 				getJournalpostDokumentInfoRelasjonBuilder().dokumentInfo(
@@ -286,35 +280,33 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void shouldVerifyStructureForEndeligJournalforingWhenStatusNotFinal() throws Exception {
+	public void shouldVerifyStructureForEndeligJournalforingWhenStatusNotFinal() {
 		Journalpost journalpost = getJournalpostBuilder().journalStatus(JournalStatusCode.M).build();
 
 		journalpost.verifyStructureForEndeligJournalforing();
 	}
 
 	@Test
-	public void shouldThrowExceptionForNoHoveddok() throws Exception {
+	public void shouldThrowExceptionForNoHoveddok() {
 		Journalpost journalpost = getJournalpostBuilder().journalStatus(JournalStatusCode.J).build();
 
-		expectedException.expect(InvalidJournalpostStructureException.class);
-		expectedException.expectMessage("Journalpost must contain a hoveddokument");
-
-		journalpost.verifyOnlyOneHoveddokument();
+		assertThrows(InvalidJournalpostStructureException.class,
+				journalpost::verifyOnlyOneHoveddokument,
+				"Journalpost must contain a hoveddokument");
 	}
 
 	@Test
-	public void shouldThrowExceptionForTooManyHoveddoks() throws Exception {
+	public void shouldThrowExceptionForTooManyHoveddoks() {
 		Journalpost journalpost = createJournalpostWithTwoDokumentInfoRelasjoner(JournalStatusCode.FS, HOVEDDOKUMENT,
 				HOVEDDOKUMENT);
-		expectedException.expect(InvalidJournalpostStructureException.class);
-		expectedException.expectMessage("Journalpost cannot contain more than one hoveddokument");
 
-		journalpost.verifyOnlyOneHoveddokument();
-
+		assertThrows(InvalidJournalpostStructureException.class,
+				journalpost::verifyOnlyOneHoveddokument,
+				"Journalpost cannot contain more than one hoveddokument");
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenMoreThanOneHoveddokIsSet() throws Exception {
+	public void shouldThrowExceptionWhenMoreThanOneHoveddokIsSet() {
 		Journalpost journalpost = createJournalpostWithTwoDokumentInfoRelasjoner(JournalStatusCode.FL, HOVEDDOKUMENT,
 				HOVEDDOKUMENT);
 
@@ -322,7 +314,7 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForMissingJournalForendeEnhetIdAndStatusM() throws Exception {
+	public void shouldThrowExceptionForMissingJournalForendeEnhetIdAndStatusM() {
 		Journalpost journalpost = getJournalpostBuilder()
 				.journalpostId(100L)
 				.journalStatus(JournalStatusCode.M)
@@ -340,7 +332,7 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForMissingArkivVariant() throws Exception {
+	public void shouldThrowExceptionForMissingArkivVariant() {
 		journalpost = getJournalpostBuilder()
 				.journalStatus(JournalStatusCode.J)
 				.dokumentInfoRelasjoner(
@@ -354,14 +346,14 @@ public class JournalpostTest {
 								.tilknyttetJournalpostSom(VEDLEGG)
 								.dokumentInfo(
 										getDokumentInfoBuilder().filDetaljerList(
-												getFilDetaljerBuilder().variantFormat(VariantFormatCode.PRODUKSJON).build())
+														getFilDetaljerBuilder().variantFormat(VariantFormatCode.PRODUKSJON).build())
 												.build()).build()).build();
 
 		assertExceptionThrownWithMessage(journalpost, "arkiv variant");
 	}
 
 	@Test
-	public void shouldThrowExceptionForDokumentUnderRedigering() throws Exception {
+	public void shouldThrowExceptionForDokumentUnderRedigering() {
 		journalpost = getJournalpostBuilder()
 				.journalStatus(JournalStatusCode.FS)
 				.dokumentInfoRelasjoner(
@@ -386,7 +378,7 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void shouldClearDokumentInfoRelasjoner() throws Exception {
+	public void shouldClearDokumentInfoRelasjoner() {
 		Journalpost journalpost = new Journalpost();
 		journalpost.addJournalpostDokumentInfoRelasjon(new JournalpostDokumentInfoRelasjon());
 
@@ -396,7 +388,7 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void shouldClearBrukere() throws Exception {
+	public void shouldClearBrukere() {
 		Journalpost journalpost = new Journalpost();
 		journalpost.addBruker(new Bruker());
 

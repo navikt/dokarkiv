@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.rjoark102;
 
 
-import junit.framework.TestCase;
 import no.nav.dokarkiv.AbstractAdminIT;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
@@ -28,6 +27,7 @@ import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Rjoark102SIT extends AbstractAdminIT {
 
@@ -51,7 +51,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalSkjermesSomKassert
 				.getDokumentInfoId());
-		TestCase.assertTrue(dokInfoEtterKall.isPresent());
+		assertTrue(dokInfoEtterKall.isPresent());
 		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), POL);
 		assertThat(dokInfoEtterKall.get().isKassert(), is(true));
 
@@ -106,7 +106,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalSkjermesSomKassert
 				.getDokumentInfoId());
-		TestCase.assertTrue(dokInfoEtterKall.isPresent());
+		assertTrue(dokInfoEtterKall.isPresent());
 		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), null);
 		assertThat(dokInfoEtterKall.get().isKassert(), is(false));
 

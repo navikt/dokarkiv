@@ -1,13 +1,5 @@
 package no.nav.dokarkiv.core.repository;
 
-import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
@@ -16,14 +8,14 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +24,18 @@ import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
 @Transactional
@@ -64,12 +64,12 @@ public class JoarkRepositorySkjermetTest {
 	public static final String TILLEGGSOPPLYSNINGER_KEY = "keey";
 	public static final String TILLEGGSOPPLYSNINGER_VALUE = "value";
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		RequestContextUtil.createAndSetUsername("itest", "itest");
 	}
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		TestTransaction.end();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
@@ -78,7 +78,6 @@ public class JoarkRepositorySkjermetTest {
 		entityManager.createNativeQuery("Delete from t_jp_tillegg").getFirstResult();
 
 	}
-
 
 	@Test
 	public void shouldReturnNullOrFalseWhenNotFound() {
@@ -94,7 +93,6 @@ public class JoarkRepositorySkjermetTest {
 		assertThat(joarkRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal("213", MottaksKanalCode.NAV_NO)
 				.size(), is(0));
 	}
-
 
 	@Test
 	public void shouldReturnSameResultAsJoarkRepositoryWhenNotSkjermet() {

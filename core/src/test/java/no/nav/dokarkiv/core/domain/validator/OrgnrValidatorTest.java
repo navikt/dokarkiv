@@ -1,16 +1,14 @@
 package no.nav.dokarkiv.core.domain.validator;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 import no.nav.dokarkiv.core.exceptions.InvalidOrgnrException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for OrgnrValidator.
- *
- * @author Hans Olav Loftum, BEKK
  */
 public class OrgnrValidatorTest {
 
@@ -61,13 +59,13 @@ public class OrgnrValidatorTest {
 		String orgnr = "123456786";
 		assertOrgnrIsInvalid(orgnr, "Validation should fail when control number is incorrect");
 	}
-	
+
 	@Test
 	public void shouldReturnIsValidTrue() {
 		String orgnr = "123456785";
 		assertThat(OrgnrValidator.isOrgnr(orgnr), is(true));
 	}
-	
+
 	@Test
 	public void shouldReturnIsValidFalse() {
 		String orgnr = "12345678";

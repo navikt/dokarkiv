@@ -1,10 +1,5 @@
 package no.nav.dokarkiv.core.repository;
 
-import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
@@ -19,32 +14,37 @@ import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import javax.inject.Inject;
 
+import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class, SkjermingServiceTest.class, JdbcAbacSecurityRepository.class})
 @ActiveProfiles("itest")
 public class JournalpostSkjermetTest {
 
-    @Inject
-    private JoarkRepositorySkjermet joarkRepositorySkjermet;
+	@Inject
+	private JoarkRepositorySkjermet joarkRepositorySkjermet;
 
-    @Inject
-    private JoarkRepository joarkRepository;
+	@Inject
+	private JoarkRepository joarkRepository;
 
 	@Inject
 	private DokumentinfoRepository dokumentinfoRepository;
@@ -58,12 +58,12 @@ public class JournalpostSkjermetTest {
 	@Inject
 	private SkjermingServiceTest skjermingServiceTest;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		RequestContextUtil.createAndSetUsername("itest", "itest");
 	}
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		TestTransaction.end();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();

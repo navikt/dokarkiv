@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark063;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3Itest;
 import no.nav.dokarkiv.behandlejournal.v3.datautil.JournalfoerInngaaendeHenvendelseAssertUtil;
 import no.nav.dokarkiv.behandlejournal.v3.datautil.JournalfoerInngaaendeHenvendelseDataUtil;
@@ -13,8 +9,12 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.journalfoerinngaaendehenvendelse.Journalpost;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerInngaaendeHenvendelseRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerInngaaendeHenvendelseResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * Integration test of operation JournalfoerInngaaendeHenvendelse.
@@ -31,7 +31,7 @@ public class JournalfoerInngaaendeHenvendelseV3IT extends AbstractBehandleJourna
 	private no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost;
 	private Journalpost wsJournalpost;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		DateProvider.configure(true, "2013-12-24T12:00:00");
 		RequestContextSetter.setRequestContextForUnitTest();

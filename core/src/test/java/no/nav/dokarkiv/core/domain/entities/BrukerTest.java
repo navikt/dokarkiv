@@ -1,39 +1,38 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for Bruker.
- * 
- * @author Thomas Eugen Bjørge, Visma Sirius
+ *
  */
 public class BrukerTest {
 
 	@Test
 	public void shouldThrowExceptionForMissingBrukerId() throws Exception {
 		Bruker bruker = getBrukerBuilder()
-						.brukerType(BrukerTypeCode.PERSON)
-						.build();
-		
+				.brukerType(BrukerTypeCode.PERSON)
+				.build();
+
 		assertExceptionThrownWhenVerifyingMandatoryFields(bruker, "brukerId");
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionForMissingBrukerType() throws Exception {
 		Bruker bruker = getBrukerBuilder()
-						.brukerId("12312312312")
-						.build();
-		
+				.brukerId("12312312312")
+				.build();
+
 		assertExceptionThrownWhenVerifyingMandatoryFields(bruker, "brukerType");
 	}
-	
+
 	private void assertExceptionThrownWhenVerifyingMandatoryFields(Bruker bruker, String fieldName) {
 		try {
 			bruker.verifyMandatoryFields();
@@ -42,5 +41,5 @@ public class BrukerTest {
 			assertThat(e.getMessage(), containsString(fieldName));
 		}
 	}
-	
+
 }

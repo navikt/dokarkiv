@@ -1,15 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark106;
 
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -25,11 +16,20 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVed
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggDokumentIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggDokumentIkkeVedlegg;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggJournalpostIkkeFunnet;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggJournalpostIkkeUnderArbeid;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.AvbrytVedleggRequest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration tests for the AvbrytVedlegg
@@ -43,10 +43,7 @@ public class AvbrytVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 	private static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	private static final String ENDRET_AV_NAVN = "Tester2";
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		RequestContextSetter.setRequestContextForUnitTest();
 	}
@@ -90,67 +87,65 @@ public class AvbrytVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 
 
 	@Test
-	public void shouldThrowIllegalArgumentException() throws Exception {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("JournalpostId cannot be empty or missing");
-
-		arkiverDokumentproduksjonProvider.avbrytVedlegg(new AvbrytVedleggRequest());
+	public void shouldThrowIllegalArgumentException() {
+		assertThrows(IllegalArgumentException.class,
+				() -> arkiverDokumentproduksjonProvider.avbrytVedlegg(new AvbrytVedleggRequest()),
+				"JournalpostId cannot be empty or missing");
 	}
 
 	@Test
-	public void shouldThrowDokumentAlleredeAvbrutt() throws Exception {
+	public void shouldThrowDokumentAlleredeAvbrutt() {
 		Journalpost journalpost = buildAndPersistJournalpost(DokumentStatusCode.AVBRUTT);
 
-		thrown.expect(AvbrytVedleggDokumentAlleredeAvbrutt.class);
-		thrown.expectMessage("dokumentinfoid=" + findDokumentInfo(journalpost).getDokumentInfoId()
-				+ " is already Avbrutt");
-
-		arkiverDokumentproduksjonProvider.avbrytVedlegg(createRequest(journalpost));
+		assertThrows(AvbrytVedleggDokumentAlleredeAvbrutt.class,
+				() -> arkiverDokumentproduksjonProvider.avbrytVedlegg(createRequest(journalpost)),
+				"dokumentinfoid=" + findDokumentInfo(journalpost).getDokumentInfoId()
+						+ " is already Avbrutt");
 	}
 
 	@Test
 	public void shouldThrowJournalpostIkkeFunnet() throws Exception {
-		thrown.expect(AvbrytVedleggJournalpostIkkeFunnet.class);
-		thrown.expectMessage("journalpostid=1 does not exist");
-
 		AvbrytVedleggRequest avbrytVedleggRequest = new AvbrytVedleggRequest()
 				.withJournalpostId(1L)
 				.withDokumentInfoId(1L)
 				.withEndretAvNavn(ENDRET_AV_NAVN);
 
-		arkiverDokumentproduksjonProvider.avbrytVedlegg(avbrytVedleggRequest);
+		assertThrows(AvbrytVedleggJournalpostIkkeFunnet.class,
+				() -> arkiverDokumentproduksjonProvider.avbrytVedlegg(avbrytVedleggRequest),
+				"journalpostid=1 does not exist");
 	}
 
 	@Test
 	public void shouldThrowDokumentIkkeFunnet() throws Exception {
 		Journalpost journalpost = buildAndPersistJournalpost(DokumentStatusCode.UNDER_REDIGERING);
-		thrown.expect(AvbrytVedleggDokumentIkkeFunnet.class);
-		thrown.expectMessage("Journalpost missing DokumentInfo with dokumentinfoid=1");
 
 		AvbrytVedleggRequest avbrytVedleggRequest = createRequest(journalpost);
 		avbrytVedleggRequest.setDokumentInfoId(1L);
 
-		arkiverDokumentproduksjonProvider.avbrytVedlegg(avbrytVedleggRequest);
+		assertThrows(AvbrytVedleggDokumentIkkeFunnet.class,
+				() -> arkiverDokumentproduksjonProvider.avbrytVedlegg(avbrytVedleggRequest),
+				"Journalpost missing DokumentInfo with dokumentinfoid=1");
 	}
 
 	@Test
 	public void shouldThrowJournalpostIkkeUnderArbeid() throws Exception {
 		Journalpost journalpost = buildAndPersistJournalpost(DokumentStatusCode.UNDER_REDIGERING,
 				JournalStatusCode.A, VEDLEGG);
-		thrown.expectMessage("Invalid JournalStatus for journalpostid=" + journalpost.getJournalpostId());
 
-		arkiverDokumentproduksjonProvider.avbrytVedlegg(createRequest(journalpost));
+		assertThrows(AvbrytVedleggJournalpostIkkeUnderArbeid.class,
+				() -> arkiverDokumentproduksjonProvider.avbrytVedlegg(createRequest(journalpost)),
+				"Invalid JournalStatus for journalpostid=" + journalpost.getJournalpostId());
 	}
 
 	@Test
 	public void shouldThrowDokumentIkkeVedlegg() throws Exception {
 		Journalpost journalpost = buildAndPersistJournalpost(DokumentStatusCode.UNDER_REDIGERING,
 				JournalStatusCode.D, HOVEDDOKUMENT);
-		thrown.expect(AvbrytVedleggDokumentIkkeVedlegg.class);
-		thrown.expectMessage("tilknyttetjournalpostsom=HOVEDDOKUMENT is not Vedlegg on relasjon journalpostid="
-				+ journalpost.getJournalpostId());
 
-		arkiverDokumentproduksjonProvider.avbrytVedlegg(createRequest(journalpost));
+		assertThrows(AvbrytVedleggDokumentIkkeVedlegg.class,
+				() -> arkiverDokumentproduksjonProvider.avbrytVedlegg(createRequest(journalpost)),
+				"tilknyttetjournalpostsom=HOVEDDOKUMENT is not Vedlegg on relasjon journalpostid="
+						+ journalpost.getJournalpostId());
 	}
 
 	private JournalpostDokumentInfoRelasjon getJournalpostRelasjon(DokumentInfo resultDokumentInfo) {
