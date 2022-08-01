@@ -211,7 +211,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		var requestEntity = new HttpEntity<>(null, new HttpHeaders());
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
 
 		HttpStatus status = response.getStatusCode();
 
