@@ -34,8 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	private static final String FINNMOTTATTEJOURNALPOSTER = "finnMottatteJournalposter";
-	private static final String GYLDIG_CONSUMER = "srvdoksikkerhetsnt";
-	private static final String UGYLDIG_CONSUMER = "srvdokarkiv";
 	private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
 	private static final String FAGKODE_UFO = "UFO";
 	private static final String FAGKODE_PEN = "PEN";
@@ -176,7 +174,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		assertFalse(journalpostIds.stream().anyMatch(ubehandletJournalpostIds::contains));
 	}
 
-	/*
 	@Test
 	public void returnsOKWithResponseJSONifValidRequest() {
 		abacPermit();
@@ -191,10 +188,9 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 				.map(Journalpost::getJournalpostId).toList();
 
 		commitAndStartNewTransaction();
+		var requestEntity = new HttpEntity<>(null, createHeaders(SERVICE_USER_ID));
 
-		var requestEntity = new HttpEntity<>(null, createHeaders(GYLDIG_CONSUMER));
-
-		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class);
+		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(URL_PROTECTED_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class);
 
 
 		HttpStatus status = response.getStatusCode();
@@ -206,11 +202,11 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		List<Long> ubehandletJournalpostIds = body.getJournalposter().stream().map(UbehandletJournalpost::getJournalpostId).toList();
 
 		assertTrue(ubehandletJournalpostIds.containsAll(journalpostIds));
-	}*/
+	}
 
-	/*
+
 	@Test
-	public void returnsBadRequestIfNoAuthorizationHeader() {
+	public void returnsUnauthorizedWhenNoAuthorization() {
 		abacPermit();
 
 		var requestEntity = new HttpEntity<>(null, new HttpHeaders());
@@ -219,14 +215,14 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		HttpStatus status = response.getStatusCode();
 
-		assertEquals(HttpStatus.BAD_REQUEST, status);
+		assertEquals(HttpStatus.UNAUTHORIZED, status);
 	}
 
-	@Test
+	/*@Test
 	public void returnsForbiddenIfInvalidConsumer() {
 		abacPermit();
 
-		var requestEntity = new HttpEntity<>(null, createHeaders(UGYLDIG_CONSUMER));
+		var requestEntity = new HttpEntity<>(null, createHeaders(NO_ACCESS_SERVICE_USER_ID));
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
 
@@ -235,13 +231,11 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.FORBIDDEN, status);
 	}*/
 
-	private HttpHeaders createHeaders(String consumer) {
+	private HttpHeaders createHeaders(String serviceUser) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add("Nav-Consumer-Id", NAV_CONSUMER_ID);
-		String token = Base64Utils.encodeToString(
-				(consumer + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
+		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + getTokenWithSubject(serviceUser));
 
 		return headers;
 	}
