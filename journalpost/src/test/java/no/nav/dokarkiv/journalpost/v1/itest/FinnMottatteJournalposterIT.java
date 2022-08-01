@@ -176,6 +176,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		assertFalse(journalpostIds.stream().anyMatch(ubehandletJournalpostIds::contains));
 	}
 
+	/*
 	@Test
 	public void returnsOKWithResponseJSONifValidRequest() {
 		abacPermit();
@@ -205,8 +206,9 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		List<Long> ubehandletJournalpostIds = body.getJournalposter().stream().map(UbehandletJournalpost::getJournalpostId).toList();
 
 		assertTrue(ubehandletJournalpostIds.containsAll(journalpostIds));
-	}
+	}*/
 
+	/*
 	@Test
 	public void returnsBadRequestIfNoAuthorizationHeader() {
 		abacPermit();
@@ -231,7 +233,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		HttpStatus status = response.getStatusCode();
 
 		assertEquals(HttpStatus.FORBIDDEN, status);
-	}
+	}*/
 
 	private HttpHeaders createHeaders(String consumer) {
 		HttpHeaders headers = new HttpHeaders();
