@@ -25,6 +25,7 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposterMe
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerMottaDokumentUtgaaendeSkanning;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
+import no.nav.security.token.support.core.api.Protected;
 import no.nav.security.token.support.core.api.Unprotected;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
@@ -127,11 +128,12 @@ public class JournalpostInternRestController {
 	@ResponseBody
 	@GetMapping(value = "/finnMottatteJournalposter")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposter(
-			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth) {
+	@Protected
+	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposter(){
+			//@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
 		try {
-			assertThatConsumerIsSrvdoksikkerhetsnett(auth);
+			//assertThatConsumerIsSrvdoksikkerhetsnett(auth);
 
 			log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter");
 
@@ -156,12 +158,13 @@ public class JournalpostInternRestController {
 	@ResponseBody
 	@GetMapping(value = "/finnMottatteJournalposter/{temaer}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
+	@Protected
 	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposterMedTema(
-			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
+		//	@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@PathVariable List<String> temaer) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
 		try {
-			assertThatConsumerIsSrvdoksikkerhetsnett(auth);
+			//assertThatConsumerIsSrvdoksikkerhetsnett(auth);
 
 			log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter med tema blandt " + Arrays.toString(temaer.toArray()));
 
@@ -187,13 +190,14 @@ public class JournalpostInternRestController {
 	@ResponseBody
 	@GetMapping(value = "/finnMottatteJournalposter/{temaer}/{eldreEnn}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
+	@Protected
 	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposterMedTemaEldreEnn(
-			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
+		//	@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@PathVariable("temaer") List<String> temaer,
 			@PathVariable("eldreEnn") int eldreEnn) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
 		try {
-			assertThatConsumerIsSrvdoksikkerhetsnett(auth);
+			//assertThatConsumerIsSrvdoksikkerhetsnett(auth);
 
 			log.info("finnMottatteJournalposter_eldreEnn har mottatt kall om å hente ubehandlede journalposter med tema blandt " + Arrays.toString(temaer.toArray()));
 
