@@ -9,8 +9,8 @@ import no.nav.dokarkiv.core.storage.BucketStorage;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.JournalpostType;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 import javax.xml.datatype.DatatypeFactory;
@@ -23,11 +23,12 @@ import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournal
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.createJournalpost;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.createTilleggsopplysning;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -44,7 +45,7 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 
 	private no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		when(dokprodMellomlagerStorage.downloadObject(eq(FILREFERANSE_GCS), anyString())).thenReturn((Optional.of("{\n" +
 				"  \"axml\" : \"" + DOKUMENT_INNHOLD_BASE64 + "\",\n" +
@@ -93,11 +94,12 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 
 	@Test
 	public void shouldThrowExceptionIfDatoDokumentIsNull() {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("DatoDokument must be set");
 		OpprettJournalpostArkiverDokumenterRequest request = createRequest();
 		request.getJournalpost().setDatoDokument(null);
-		arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(request);
+
+		assertThrows(ApplicationException.class,
+				() -> arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(request),
+				"DatoDokument must be set");
 	}
 
 	@Test
@@ -109,19 +111,21 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 
 	@Test
 	public void shouldThrowExceptionIfRequestDoesNotValidate() {
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("Journalpost.fagomrade must be set");
 		OpprettJournalpostArkiverDokumenterRequest request = createRequest();
 		request.getJournalpost().setFagomrade(null);
-		arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(request);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(request),
+				"Journalpost.fagomrade must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfRequestIsMissingDokumentFilReferanse() {
-		expectedException.expect(DokarkivTechnicalException.class);
 		OpprettJournalpostArkiverDokumenterRequest request = createRequest();
 		request.getJournalpost().getDokumentInfoHoveddokument().getTilleggsopplysninger().clear();
-		arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(request);
+
+		assertThrows(DokarkivTechnicalException.class,
+				() -> arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(request));
 	}
 
 	@Test

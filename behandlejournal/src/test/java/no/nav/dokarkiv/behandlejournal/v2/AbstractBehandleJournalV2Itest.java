@@ -9,28 +9,20 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.Date;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class, BehandleJournalV2Config.class, TokenGeneratorConfiguration.class})
 @ActiveProfiles("itest")
@@ -39,8 +31,6 @@ import static org.hamcrest.Matchers.is;
 @Transactional
 public abstract class AbstractBehandleJournalV2Itest {
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	@Inject
 	protected BehandleJournalV2 behandleJournalProvider;
 	@Inject
@@ -50,7 +40,7 @@ public abstract class AbstractBehandleJournalV2Itest {
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 
-	@Before
+	@BeforeEach
 	public void setUpItest() {
 		joarkRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
@@ -58,24 +48,6 @@ public abstract class AbstractBehandleJournalV2Itest {
 				.userId("itestuser")
 				.componentId("itest")
 				.build());
-	}
-
-	/**
-	 * Utility assert method for MOD checked exceptions
-	 *
-	 * @param expectedExceptionClass
-	 * @param expectedFaultInfo
-	 */
-	protected void assertForretningsmessigUnntak(Class<? extends Exception> expectedExceptionClass,
-												 ForretningsmessigUnntak expectedFaultInfo) {
-		expectedException.expect(expectedExceptionClass);
-		expectedException.expectMessage(expectedFaultInfo.getFeilmelding());
-		expectedException.expect(hasProperty("faultInfo", instanceOf(ForretningsmessigUnntak.class)));
-		expectedException.expect(hasProperty("faultInfo",
-				hasProperty("feilaarsak", containsString(expectedFaultInfo.getFeilaarsak()))));
-		expectedException.expect(hasProperty("faultInfo", hasProperty("feilkilde", is(expectedFaultInfo.getFeilkilde()))));
-		expectedException.expect(hasProperty("faultInfo", hasProperty("feilmelding", is(expectedFaultInfo.getFeilmelding()))));
-		expectedException.expect(hasProperty("faultInfo", hasProperty("tidspunkt", is(expectedFaultInfo.getTidspunkt()))));
 	}
 
 	/**

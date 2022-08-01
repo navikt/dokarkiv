@@ -20,9 +20,6 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.journal.v3.AbstractJournalV3Itest;
 import no.nav.modig.core.domain.IdentType;
@@ -34,8 +31,8 @@ import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentRequest;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentResponse;
 import org.apache.http.HttpHeaders;
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -54,12 +51,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static no.nav.dokarkiv.core.domain.entities.DokumentInfo.DELETED_DOCUMENT_TITLE;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Integration test for HentDokument(TJOARK051) in 3rd gen. Journal service.
@@ -82,7 +79,7 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 	private static final String ON_DEMAND_ID = "onDemandId";
 	private static final byte[] ONDEMAND_FIL_CONTENT = "e-business".getBytes();
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		SubjectHandlerUtils.setSubject(new SubjectHandlerUtils.SubjectBuilder(INTERN_BRUKER_USER_ID, IdentType.InternBruker).getSubject());
 	}
@@ -123,12 +120,9 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		HentDokumentRequest request = createRequest(journalpost);
 		request.setJournalpostId("123");
 
-		expectedException.expect(HentDokumentDokumentIkkeFunnet.class);
-		expectedException.expectMessage("Journalpost ikke funnet. journalpostId=123");
-		expectedException.expect(hasProperty("faultInfo", hasProperty("feilaarsak", containsString(JournalpostIkkeFunnetException.class.getName()))));
-
-
-		journalV3Provider.hentDokument(request);
+		assertThrows(HentDokumentDokumentIkkeFunnet.class,
+				() -> journalV3Provider.hentDokument(request),
+				"Journalpost ikke funnet. journalpostId=123");
 	}
 
 	@Test
@@ -138,9 +132,9 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		HentDokumentRequest request = createRequest(journalpost);
 		request.setDokumentId("123");
 
-		setupExpectedException(NoDokumentInfoFoundException.class.getName());
-
-		journalV3Provider.hentDokument(request);
+		assertThrows(HentDokumentDokumentIkkeFunnet.class,
+				() -> journalV3Provider.hentDokument(request),
+				"Could not find document");
 	}
 
 	@Test
@@ -152,9 +146,9 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		variantFormat.setValue(VariantFormatCode.PRODUKSJON.name());
 		request.setVariantformat(variantFormat);
 
-		setupExpectedException(InvalidArgumentException.class.getName());
-
-		journalV3Provider.hentDokument(request);
+		assertThrows(HentDokumentDokumentIkkeFunnet.class,
+				() -> journalV3Provider.hentDokument(request),
+				"Could not find document");
 	}
 
 	@Test
@@ -210,8 +204,6 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 
 	@Test
 	public void shouldNotReturnDokumentWhenJournalpostIsSkjermet() throws Exception {
-		expectedException.expect(HentDokumentDokumentIkkeFunnet.class);
-		expectedException.expectMessage("Journalpost ikke funnet");
 		abacPermit();
 
 		Journalpost journalpost = buildAndPersistJournalpost("Dokumenttittel");
@@ -222,7 +214,9 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		journalV3Provider.hentDokument(request);
+		assertThrows(HentDokumentDokumentIkkeFunnet.class,
+				() -> journalV3Provider.hentDokument(request),
+				"Journalpost ikke funnet");
 	}
 
 	@Test
@@ -291,12 +285,6 @@ public class HentDokumentIT extends AbstractJournalV3Itest {
 		variantFormat.setValue(VARIANT_FORMAT.name());
 		request.setVariantformat(variantFormat);
 		return request;
-	}
-
-	private void setupExpectedException(String rootCause) {
-		expectedException.expect(HentDokumentDokumentIkkeFunnet.class);
-		expectedException.expectMessage("Could not find document");
-		expectedException.expect(hasProperty("faultInfo", hasProperty("feilaarsak", containsString(rootCause))));
 	}
 
 	private Journalpost buildAndPersistJournalpost(String dokumentTittel) {

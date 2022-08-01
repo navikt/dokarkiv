@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.ArkiverUstrukturertKravRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.FerdigstillDokumentopplastingRequest;
@@ -10,15 +7,18 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerInngaa
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerNotatRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerUtgaaendeHenvendelseRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostRequest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.xml.ws.WebServiceContext;
 import java.security.Principal;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Test class for the BehandleJournalEndpoint. To verify the ws operations call the
@@ -26,7 +26,7 @@ import java.security.Principal;
  *
  * @author Rune Romundstad, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BehandleJournalEndpointTest {
 
 	@Mock
@@ -38,7 +38,7 @@ public class BehandleJournalEndpointTest {
 	@InjectMocks
 	private BehandleJournalEndpoint behandleJournalEndpoint;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		when(webServiceContextMock.getUserPrincipal()).thenReturn(principalMock);
 	}

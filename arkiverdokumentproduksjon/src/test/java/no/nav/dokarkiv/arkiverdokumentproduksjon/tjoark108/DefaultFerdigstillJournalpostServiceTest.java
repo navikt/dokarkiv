@@ -1,16 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -24,26 +14,35 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
 
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 /**
  * Test of {@link DefaultFerdigstillJournalpostService}
  *
  * @author Stig Strøm
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultFerdigstillJournalpostServiceTest {
 	private static final Long JOURNALPOST_ID = 42L;
 	private static final String ENDRET_AV_NAVN = "endret_av";
@@ -58,21 +57,19 @@ public class DefaultFerdigstillJournalpostServiceTest {
 	private SporingPopulator sporingPopulator;
 
 	@Mock
-    private JoarkRepositorySkjermet joarkRepository;
+	private JoarkRepositorySkjermet joarkRepository;
 
 	@InjectMocks
 	private DefaultFerdigstillJournalpostService service;
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 
-	@Before
-	public void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() {
 		request = new FerdigstillJournalpostRequestTo(JOURNALPOST_ID, ENDRET_AV_NAVN, UTSENDINGS_KANAL);
 		DateProvider.configure(true, MOCK_DATE);
 	}
 
 	@Test
-	public void shouldRunOk() throws Exception {
+	public void shouldRunOk() {
 		Journalpost journalpost = testJournalpost(VariantFormatCode.ARKIV);
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
@@ -90,7 +87,7 @@ public class DefaultFerdigstillJournalpostServiceTest {
 	}
 
 	@Test
-	public void shouldRunOkLokalPrint() throws Exception {
+	public void shouldRunOkLokalPrint() {
 		Journalpost journalpost = testJournalpost(VariantFormatCode.ARKIV);
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
@@ -101,7 +98,7 @@ public class DefaultFerdigstillJournalpostServiceTest {
 	}
 
 	@Test
-	public void shouldRunOkProduksjon() throws Exception {
+	public void shouldRunOkProduksjon() {
 		Journalpost journalpost = testJournalpost(VariantFormatCode.PRODUKSJON);
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		service.ferdigstillJournalpost(request);
@@ -119,10 +116,11 @@ public class DefaultFerdigstillJournalpostServiceTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionCannotFindJournalpost() throws Exception {
-		expectedException.expect(NoJournalpostFoundException.class);
+	public void shouldThrowExceptionCannotFindJournalpost() {
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.empty());
-		service.ferdigstillJournalpost(request);
+
+		assertThrows(NoJournalpostFoundException.class,
+				() -> service.ferdigstillJournalpost(request));
 	}
 
 	private Journalpost testJournalpost(VariantFormatCode variantFormat) {

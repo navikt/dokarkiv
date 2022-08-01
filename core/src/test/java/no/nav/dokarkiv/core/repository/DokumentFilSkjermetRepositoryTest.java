@@ -1,16 +1,5 @@
 package no.nav.dokarkiv.core.repository;
 
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL_SLADDET;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDummyDokumentKassert;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDummyDokumentSkjermet;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -21,24 +10,35 @@ import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL_SLADDET;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createDummyDokumentKassert;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createDummyDokumentSkjermet;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class, SkjermingServiceTest.class, JdbcAbacSecurityRepository.class})
 @Transactional
@@ -62,19 +62,18 @@ public class DokumentFilSkjermetRepositoryTest {
 	@Inject
 	private SkjermingServiceTest skjermingService;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		RequestContextUtil.createAndSetUsername("itest", "itest");
 	}
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		TestTransaction.end();
 		dokumentFilRepository.deleteAll();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
 		joarkRepository.deleteAll();
-
 	}
 
 	@Test
@@ -132,7 +131,7 @@ public class DokumentFilSkjermetRepositoryTest {
 	}
 
 	@Test
-	public void shouldReturnDummyDokumentWhenKassert(){
+	public void shouldReturnDummyDokumentWhenKassert() {
 
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 
@@ -183,7 +182,7 @@ public class DokumentFilSkjermetRepositoryTest {
 
 
 	@Test
-	public void shouldReturnSladdetForSladdetFilUuidVariantWhenArkivVariantIsSkjermet(){
+	public void shouldReturnSladdetForSladdetFilUuidVariantWhenArkivVariantIsSkjermet() {
 
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 

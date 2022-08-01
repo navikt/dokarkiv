@@ -1,16 +1,16 @@
 package no.nav.dokarkiv.journal.v3;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.tjeneste.virksomhet.journal.v3.feil.ForretningsmessigUnntak;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Unit tests for DefaultJournalV3FaultInfoPopulator.
@@ -25,7 +25,7 @@ public class DefaultJournalV3FaultInfoPopulatorTest {
 
 	private DefaultJournalV3FaultInfoPopulator faultInfoPopulator;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		faultInfoPopulator = new DefaultJournalV3FaultInfoPopulator();
 		DateProvider.configure(true, DateProvider.getDate(new Date()));

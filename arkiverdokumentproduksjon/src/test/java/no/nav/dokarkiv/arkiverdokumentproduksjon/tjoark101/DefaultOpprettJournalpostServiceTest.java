@@ -1,17 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
 
-import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -29,14 +18,24 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
 
 
 /**
@@ -44,7 +43,7 @@ import org.mockito.junit.MockitoJUnitRunner;
  *
  * @author Stig Strøm
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultOpprettJournalpostServiceTest {
 	private static final Long JOURNALPOST_ID = 42L;
 	private static final Long DOKUMENTINFO_ID = 56L;
@@ -52,13 +51,10 @@ public class DefaultOpprettJournalpostServiceTest {
 	private static final boolean SENSITIVT_REQUEST = true;
 	private static final String OPPRETTET_AV_NAVN = "Saksbehandler";
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
-    private JoarkRepositorySkjermet joarkRepositoryMock;
+	private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
 	private OpprettJournalpostValidator opprettJournalpostValidator;
 	@InjectMocks
@@ -67,12 +63,12 @@ public class DefaultOpprettJournalpostServiceTest {
 	private OpprettJournalpostResponseTo response;
 	private Journalpost journalpost;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		DateProvider.configure(true, TODAY_DATE);
 		journalpost = createJournalpost(null, null);
 		request = new OpprettJournalpostRequestTo(journalpost);
-		when(joarkRepositoryMock.save(journalpost)).thenReturn(
+		lenient().when(joarkRepositoryMock.save(journalpost)).thenReturn(
 				createJournalpost(JOURNALPOST_ID, DOKUMENTINFO_ID));
 	}
 
@@ -89,26 +85,28 @@ public class DefaultOpprettJournalpostServiceTest {
 
 	@Test
 	public void shouldThrowExceptionWhenRequestIsNull() {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter: request");
-		service.opprettJournalpost(null);
+		assertThrows(ApplicationException.class,
+				() -> service.opprettJournalpost(null),
+				"Missing parameter: request");
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenJournalpostMissingInRequest() {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter in request: Journalpost");
 		request = new OpprettJournalpostRequestTo(null);
-		service.opprettJournalpost(request);
+
+		assertThrows(ApplicationException.class,
+				() -> service.opprettJournalpost(request),
+				"Missing parameter in request: Journalpost");
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenHoveddokumentIsMissingInRequest() {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter in request: Hoveddokument");
 		request.getJournalpost().findHoveddokumentDokumentInfoRelasjon()
 				.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
-		service.opprettJournalpost(request);
+
+		assertThrows(ApplicationException.class,
+				() -> service.opprettJournalpost(request),
+				"Missing parameter in request: Hoveddokument");
 	}
 
 	@Test

@@ -4,10 +4,10 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorResponse;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 
@@ -25,7 +25,7 @@ import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_2_A;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_2_B;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_2_U;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PDFAValidatorUtilTest {
 
 	private final String baseString = "2021_01_06_nasjonale_tiltak_16_9_PDF_A_";

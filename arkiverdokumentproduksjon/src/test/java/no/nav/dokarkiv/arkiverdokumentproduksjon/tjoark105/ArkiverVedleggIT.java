@@ -20,15 +20,14 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVe
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.Fildetaljer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggResponse;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration tests for the arkiverVedlegg operation
@@ -44,9 +43,6 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 	private static final String BREVKODE = "Kode";
 	private static final byte[] FILE_CONTENT = "a".getBytes();
 	private static final String DOKUMENT_TYPE_ID = "DokumentTypeId";
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void shouldArkiverVedlegg() throws Exception {
@@ -119,13 +115,13 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 	@Test
 	public void shouldThrowExceptionIfJournalpostNotExist() throws Exception {
 		Long journalpostId = 1L;
-		thrown.expect(ArkiverVedleggJournalpostIkkeFunnet.class);
-		thrown.expectMessage("journalpostId=" + journalpostId + " does not exist");
 
 		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
 		arkiverVedleggRequest.setJournalpost(buildJournalpostForWsRequest(journalpostId));
 
-		arkiverDokumentproduksjonProvider.arkiverVedlegg(arkiverVedleggRequest);
+		assertThrows(ArkiverVedleggJournalpostIkkeFunnet.class,
+				() -> arkiverDokumentproduksjonProvider.arkiverVedlegg(arkiverVedleggRequest),
+				"journalpostId=" + journalpostId + " does not exist");
 	}
 
 	@Test
@@ -135,10 +131,9 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
 		arkiverVedleggRequest.setJournalpost(buildJournalpostForWsRequest(journalpost.getId()));
 
-		thrown.expect(ArkiverVedleggJournalpostIkkeUnderArbeid.class);
-		thrown.expectMessage("Journalpost with id: " + journalpost.getJournalpostId() + " can not be updated");
-
-		arkiverDokumentproduksjonProvider.arkiverVedlegg(arkiverVedleggRequest);
+		assertThrows(ArkiverVedleggJournalpostIkkeUnderArbeid.class,
+				() -> arkiverDokumentproduksjonProvider.arkiverVedlegg(arkiverVedleggRequest),
+				"Journalpost with id: " + journalpost.getJournalpostId() + " can not be updated");
 	}
 
 	private no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.Journalpost buildJournalpostForWsRequest(Long journalpostId) {

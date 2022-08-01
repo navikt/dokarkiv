@@ -1,18 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
-import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -31,21 +18,33 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-@RunWith(MockitoJUnitRunner.class)
+import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 
 	private static final Long JOURNALPOST_ID = 42L;
@@ -60,10 +59,8 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	private Journalpost journalpost;
 	private OppdaterJournalpostArkiverDokumentRequestTo requestTo;
 
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
 	@Mock
-    private JoarkRepositorySkjermet repositoryMock;
+	private JoarkRepositorySkjermet repositoryMock;
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
@@ -73,16 +70,17 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	@InjectMocks
 	DefaultOppdaterJournalpostArkiverDokumentService service;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		requestTo = createJournalpostRequestTo(JOURNALPOST_ID, DOKUMENTINFO_ID);
 		journalpost = createJournalpost(JOURNALPOST_ID, DOKUMENTINFO_ID);
 		DateProvider.configure(true, TODAY_DATE);
-		when(repositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 	}
 
 	@Test
-	public void shouldNotArkiverDokumentOgFerdigstillJournalpostOrThrowException() throws Exception {
+	public void shouldNotArkiverDokumentOgFerdigstillJournalpostOrThrowException() {
+		when(repositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+
 		service.oppdaterJournalpostArkiverDokument(requestTo);
 		verify(validatorMock).validate(journalpost, requestTo);
 		verify(sporingPopulatorMock).populateSporingInfo(journalpost, requestTo.getEndretAvNavn());
@@ -90,7 +88,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	}
 
 	@Test
-	public void shouldUpdateJournalpostIfFerdigstillJournalpostSentralPrint() throws Exception {
+	public void shouldUpdateJournalpostIfFerdigstillJournalpostSentralPrint() {
 		requestTo.setFerdigstillJournalpost(true);
 		service.updateJournalpost(journalpost, requestTo);
 		assertThat(journalpost.getJournalstatus(), is(JournalStatusCode.FS));
@@ -100,7 +98,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	}
 
 	@Test
-	public void shouldUpdateJournalpostIfFerdigstillJournalpostLokalPrint() throws Exception {
+	public void shouldUpdateJournalpostIfFerdigstillJournalpostLokalPrint() {
 		requestTo.setFerdigstillJournalpost(true);
 		requestTo.setUtsendingskanal(UtsendingsKanalCode.L);
 		service.updateJournalpost(journalpost, requestTo);
@@ -111,7 +109,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	}
 
 	@Test
-	public void shouldUpdateJournalpostIfNotFerdigstillJournalpost() throws Exception {
+	public void shouldUpdateJournalpostIfNotFerdigstillJournalpost() {
 		JournalStatusCode journalStatusCode = journalpost.getJournalstatus();
 		Date journalDato = journalpost.getJournalDato();
 		String journalfortAvNavn = journalpost.getJournalfortAvNavn();
@@ -124,7 +122,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	}
 
 	@Test
-	public void shouldUpdateDokumentInfo() throws Exception {
+	public void shouldUpdateDokumentInfo() {
 		service.updateJournalpost(journalpost, requestTo);
 		DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(DOKUMENTINFO_ID);
 		assertThat(dokumentInfo.getDokumentstatus(), is(DokumentStatusCode.FERDIGSTILT));
@@ -132,7 +130,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	}
 
 	@Test
-	public void shouldAddFileDetaljerToDokumentInfo() throws Exception {
+	public void shouldAddFileDetaljerToDokumentInfo() {
 		service.updateJournalpost(journalpost, requestTo);
 		DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(DOKUMENTINFO_ID);
 		Set<FilDetaljer> filDetaljer = dokumentInfo.getFildetaljerListeAdmin();
@@ -142,16 +140,18 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	}
 
 	@Test
-	public void verfiyThatRepositoryExceptionPropagatesToService() throws Exception {
+	public void verfiyThatRepositoryExceptionPropagatesToService() {
 		when(repositoryMock.findById(JOURNALPOST_ID))
 				.thenThrow(new RuntimeException("joark repository is not available"));
-		expected.expectMessage("joark repository is not available");
-		service.oppdaterJournalpostArkiverDokument(requestTo);
+
+		assertThrows(RuntimeException.class,
+				() -> service.oppdaterJournalpostArkiverDokument(requestTo),
+				"joark repository is not available");
 	}
 
 
 	@Test
-	public void verifyThatMetaforceInstanceIdIsDeletedForProduksjonVariantIfFerdigstillJournalpost() throws Exception {
+	public void verifyThatMetaforceInstanceIdIsDeletedForProduksjonVariantIfFerdigstillJournalpost() {
 		service.updateJournalpost(journalpost, requestTo);
 		DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(DOKUMENTINFO_ID);
 		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListe()) {
@@ -162,7 +162,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	}
 
 	@Test
-	public void verifyThatMetaforceInstanceIdIsNotDeletedForProduksjonVariantIfNotFerdigstillJournalpost() throws Exception {
+	public void verifyThatMetaforceInstanceIdIsNotDeletedForProduksjonVariantIfNotFerdigstillJournalpost() {
 		requestTo.setFerdigstillJournalpost(false);
 		service.updateJournalpost(journalpost, requestTo);
 		DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(DOKUMENTINFO_ID);

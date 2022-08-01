@@ -1,62 +1,60 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for DefaultSettDatoSendtService
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultSettDatoSendtServiceTest {
 
 	private static final String ENDRET_AV_NAVN = "Bill";
 	private static final Long JOURNALPOSTID_1 = 100L;
 	private static final Long JOURNALPOSTID_2 = 200L;
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 	@Mock
-    private JoarkRepositorySkjermet joarkRepositoryMock;
+	private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
 	private SporingPopulator sporingPopulatorMock;
 	@InjectMocks
 	private DefaultSettDatoSendtService defaultSettDatoSendtService;
 
-	@Before
-	public void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() {
 		DateProvider.configure(true, "2018-06-20T14:31:54.767");
 	}
 
-	@After
-	public void tearDown() throws Exception {
+	@AfterEach
+	public void tearDown() {
 		DateProvider.configure(false, null);
 	}
 
 	@Test
-	public void shouldSettDatoSendt() throws Exception {
+	public void shouldSettDatoSendt() {
 		Journalpost journalpost1 = new Journalpost(JOURNALPOSTID_1, 0L);
 		Journalpost journalpost2 = new Journalpost(JOURNALPOSTID_2, 0L);
 		when(joarkRepositoryMock.findById(JOURNALPOSTID_1)).thenReturn(Optional.of(journalpost1));
@@ -72,47 +70,42 @@ public class DefaultSettDatoSendtServiceTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostNotFound() throws Exception {
-		thrown.expect(ApplicationException.class);
-		thrown.expectMessage("Could not find Journalpost with journalpostId: " + JOURNALPOSTID_2);
-
+	public void shouldThrowExceptionIfJournalpostNotFound() {
 		Journalpost journalpost1 = new Journalpost(JOURNALPOSTID_1, 0L);
 		when(joarkRepositoryMock.findById(JOURNALPOSTID_1)).thenReturn(Optional.of(journalpost1));
 
-		defaultSettDatoSendtService.settDatoSendt(createValidDomainRequest());
+		assertThrows(ApplicationException.class,
+				() -> defaultSettDatoSendtService.settDatoSendt(createValidDomainRequest()),
+				"Could not find Journalpost with journalpostId: " + JOURNALPOSTID_2);
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostIdsIsNull() throws Exception {
-		thrown.expect(ApplicationException.class);
-		thrown.expectMessage("journalpostIds was null or empty");
-
-		defaultSettDatoSendtService.settDatoSendt(new SettDatoSendtRequestTo(null, ENDRET_AV_NAVN, DateProvider.getToday()));
+	public void shouldThrowExceptionIfJournalpostIdsIsNull() {
+		assertThrows(ApplicationException.class,
+				() -> defaultSettDatoSendtService.settDatoSendt(new SettDatoSendtRequestTo(null, ENDRET_AV_NAVN, DateProvider.getToday())),
+				"journalpostIds was null or empty");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostIdsIsEmpty() throws Exception {
-		thrown.expect(ApplicationException.class);
-		thrown.expectMessage("journalpostIds was null or empty");
-
-		defaultSettDatoSendtService.settDatoSendt(new SettDatoSendtRequestTo(new ArrayList<Long>(), ENDRET_AV_NAVN, DateProvider
-				.getToday()));
+	public void shouldThrowExceptionIfJournalpostIdsIsEmpty() {
+		assertThrows(ApplicationException.class,
+				() -> defaultSettDatoSendtService.settDatoSendt(new SettDatoSendtRequestTo(new ArrayList<Long>(), ENDRET_AV_NAVN, DateProvider
+						.getToday())),
+				"journalpostIds was null or empty");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfEndretAvNavnIsNull() throws Exception {
-		thrown.expect(ApplicationException.class);
-		thrown.expectMessage("endretAvNavn was null or empty");
-
-		defaultSettDatoSendtService.settDatoSendt(new SettDatoSendtRequestTo(Arrays.asList(JOURNALPOSTID_1), null, DateProvider.getToday()));
+	public void shouldThrowExceptionIfEndretAvNavnIsNull() {
+		assertThrows(ApplicationException.class,
+				() -> defaultSettDatoSendtService.settDatoSendt(new SettDatoSendtRequestTo(List.of(JOURNALPOSTID_1), null, DateProvider.getToday())),
+				"endretAvNavn was null or empty");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfDatoSendtPrintIsNull() throws Exception {
-		thrown.expect(ApplicationException.class);
-		thrown.expectMessage("datoSendtPrint was null");
-
-		defaultSettDatoSendtService.settDatoSendt(new SettDatoSendtRequestTo(Arrays.asList(JOURNALPOSTID_1, JOURNALPOSTID_2), ENDRET_AV_NAVN, null));
+	public void shouldThrowExceptionIfDatoSendtPrintIsNull() {
+		assertThrows(ApplicationException.class,
+				() -> defaultSettDatoSendtService.settDatoSendt(new SettDatoSendtRequestTo(Arrays.asList(JOURNALPOSTID_1, JOURNALPOSTID_2), ENDRET_AV_NAVN, null)),
+				"datoSendtPrint was null");
 	}
 
 	private SettDatoSendtRequestTo createValidDomainRequest() {

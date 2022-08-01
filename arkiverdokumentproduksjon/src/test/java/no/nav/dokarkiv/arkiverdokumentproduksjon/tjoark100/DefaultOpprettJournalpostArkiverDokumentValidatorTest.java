@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
-import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101.OpprettJournalpostPostUpdateVerifier;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -25,23 +18,29 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.journalbehandling.DefaultJournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.DefaultMandatoryFieldsVerifier;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import java.util.Date;
+
+import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Validator test for {@link DefaultOpprettJournalpostArkiverDokumentValidator}
  *
  * @author Stig Strøm
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {DefaultMandatoryFieldsVerifier.class,
 		DefaultOpprettJournalpostArkiverDokumentValidator.class,
 		DefaultJournalpostStructureVerifier.class,
@@ -54,15 +53,12 @@ public class DefaultOpprettJournalpostArkiverDokumentValidatorTest {
 
 	private static final String OPPRETTET_AV_NAVN = "Saksbehandler";
 
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
-
 	private Journalpost journalpost;
 
 	@Inject
 	private OpprettJournalpostArkiverDokumentValidator validator;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		journalpost = createJournalpost();
 	}
@@ -70,221 +66,244 @@ public class DefaultOpprettJournalpostArkiverDokumentValidatorTest {
 	//Saksrelasjon
 	@Test
 	public void shouldThrowExceptionIfNoSaksrelasjonOnJournalpost() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("saksrelasjon must be set");
 		journalpost.setSaksrelasjon(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"saksrelasjon must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfNoSaksIDOnJournalpostIsNull() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("sakId must be set");
 		journalpost.getSaksrelasjon().setSakId(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"sakId must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfSaksRelasjonFagsystemOnJournalpostIsNull() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("fagsystem must be set");
 		journalpost.getSaksrelasjon().setFagsystem(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"fagsystem must be set");
 	}
 
 
 	//Journalpost
 	@Test
 	public void shouldThrowExceptionIfFagomradeNotSetOnJournalpost() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("fagomrade must be set");
 		journalpost.setFagomrade(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"fagomrade must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfOpprettetAvNavnNotSetOnJournalpost() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("opprettetAvNavn must be set");
 		journalpost.setOpprettetAvNavn(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"opprettetAvNavn must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfJournalforendeEnhetIdNotSetOnJournalpost() {
-		expected.expect(ApplicationException.class);
-		expected.expectMessage("Field journalfoerendeEnhetId must be set");
 		journalpost.setJournalForendeEnhetId(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(ApplicationException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"Field journalfoerendeEnhetId must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfInnholdNotSetOnJournalpost() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("innhold must be set");
 		journalpost.setInnhold(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"innhold must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfAvsenderMottakerNotSetOnJournalpost() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("avsenderMottaker must be set");
 		journalpost.setAvsenderMottaker(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"avsenderMottaker must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfUtsendingsKanalNotSetOnJournalpost() {
-		expected.expect(ApplicationException.class);
-		expected.expectMessage("Utsendingskanal must be set");
-
 		journalpost.setUtsendingskanal(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(ApplicationException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"Utsendingskanal must be set");
 	}
 
 	@Test
 	public void shouldNotThrowExceptionIfUtsendingsKanalNotSetOnJournalpost() {
 		journalpost.setUtsendingskanal(null);
+
 		validator.validate(journalpost, IKKE_FERDIGSTILL_JOURNALPOST);
 	}
 
 	@Test
 	public void shouldThrowExceptionIfDokumentDatoIsMissing() {
-		expected.expect(ApplicationException.class);
-		expected.expectMessage("DatoDokument must be set");
-
 		journalpost.setDokumentDato(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(ApplicationException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"DatoDokument must be set");
 	}
 
 	//Ekstra test for JP
 	@Test
 	public void shouldThrowExceptionIfJournalstatusIsNotSet() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("journalstatus must be set");
 		journalpost.setJournalstatus(null);
 
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"journalstatus must be set");
 	}
 
 	//Brukere
 	@Test
 	public void shouldThrowExceptionIfNoBrukereOnJournalpost() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("Journalpost must have at least one Bruker");
 		journalpost.clearBrukere();
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"Journalpost must have at least one Bruker");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIdIsNull() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("brukerId must be set");
 		journalpost.getBrukere().iterator().next().setBrukerId(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"brukerId must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfBrukerTypeIsNull() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("brukerType must be set");
 		journalpost.getBrukere().iterator().next().setBrukerType(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"brukerType must be set");
 	}
 
 	//DokumentInfo
 	@Test
 	public void shouldThrowExceptionIfNoDokumentInfoObjectOnJournalpost() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("dokumentInfo must be set");
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().setDokumentInfo(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"dokumentInfo must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfNoKategoriOnDocumentInfo() {
-		expected.expect(ApplicationException.class);
-		expected.expectMessage("Kategori must be set");
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setKategori(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(ApplicationException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"Kategori must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfNoTittelOnDocumentInfo() {
-		expected.expect(ApplicationException.class);
-		expected.expectMessage("Tittel must be set");
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setTittel(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(ApplicationException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"Tittel must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfNoBrevkodeOnDocumentInfo() {
-		expected.expect(ApplicationException.class);
-		expected.expectMessage("Brevkode must be set");
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setBrevkode(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(ApplicationException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"Brevkode must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfNoDokumenttypeIdOnDocumentInfo() {
-		expected.expect(ApplicationException.class);
-		expected.expectMessage("DokumenttypeId must be set");
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setDokumenttypeId(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(ApplicationException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"DokumenttypeId must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfNoSensitivtOnDocumentInfo() {
-		expected.expect(ApplicationException.class);
-		expected.expectMessage("Sensitivt must be set");
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setSensitivt(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(ApplicationException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"Sensitivt must be set");
 	}
 
 	//FilDetaljer
 	@Test
 	public void shouldThrowExceptionIfVariantFormatArkivIsMissing() {
-		expected.expect(InvalidJournalpostStructureException.class);
-		expected.expectMessage("DokumentInfos must contain an arkiv variant");
 		journalpost.findAllFilDetaljer().get(0).setVariantFormat(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidJournalpostStructureException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"DokumentInfos must contain an arkiv variant");
 	}
 
 	@Test
 	public void shouldThrowExcpetionIfNoFilTypeOnFildetaljerOnJournalpost() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("filtype must be set");
 		journalpost.findAllFilDetaljer().get(0).setFiltype(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"filtype must be set");
 	}
 
 	@Test
 	public void shouldThrowExcpetionIfNoFileContentOnFildetaljerOnFilDetaljer() {
-		expected.expect(ApplicationException.class);
-		expected.expectMessage("FileContent must be set");
 		journalpost.findAllFilDetaljer().get(0).setFileContent(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(ApplicationException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"FileContent must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfDokumentDuplicatesOnJournalpost() {
-		expected.expect(InvalidJournalpostStructureException.class);
-		expected.expectMessage("DokumentInfo cannot contain dokumentvariant duplicates");
 		addDuplicatesOfVariantFormats(journalpost);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(InvalidJournalpostStructureException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"DokumentInfo cannot contain dokumentvariant duplicates");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfGotArkivVariantButOneVarianIsNull() {
-		expected.expect(InvalidArgumentException.class);
-		expected.expectMessage("variantFormat must be set");
-		validator.validate(journalPostWithOneVariantFormatSetToNull(), FERDIGSTILL_JOURNALPOST);
+		assertThrows(InvalidArgumentException.class,
+				() -> validator.validate(journalPostWithOneVariantFormatSetToNull(), FERDIGSTILL_JOURNALPOST),
+				"variantFormat must be set");
 	}
 
 	@Test
 	public void shouldNotThrowExceptionIfNullJournalpostType() {
 		journalpost.setJournalposttype(null);
+
 		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
 	}
 
@@ -292,22 +311,25 @@ public class DefaultOpprettJournalpostArkiverDokumentValidatorTest {
 	public void shouldNotThrowExceptionNoUtsendingskanal() {
 		journalpost.setJournalposttype(null);
 		journalpost.setUtsendingskanal(null);
+
 		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
 	}
 
 	@Test
 	public void shouldNotThrowExceptionNoUtsendingskanal2() {
 		journalpost.setUtsendingskanal(null);
+
 		validator.validate(journalpost, IKKE_FERDIGSTILL_JOURNALPOST);
 	}
 
 	@Test
 	public void shouldThrowExceptionNoUtsendingskanal() {
-		expected.expect(ApplicationException.class);
-		expected.expectMessage("Utsendingskanal must be set");
-
 		journalpost.setUtsendingskanal(null);
-		validator.validate(journalpost, FERDIGSTILL_JOURNALPOST);
+
+		assertThrows(ApplicationException.class,
+				() -> validator.validate(journalpost, FERDIGSTILL_JOURNALPOST),
+				"Utsendingskanal must be set");
+
 	}
 
 	private Journalpost createJournalpost() {

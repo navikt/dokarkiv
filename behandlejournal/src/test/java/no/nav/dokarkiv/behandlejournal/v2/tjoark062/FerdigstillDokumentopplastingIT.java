@@ -18,11 +18,9 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.JournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.FerdigstillDokumentopplastingRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
@@ -30,8 +28,9 @@ import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetal
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration tests for the ferdigstillDokumentopplasting operation.
@@ -47,7 +46,7 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 
 	private Journalpost journalpost;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		DateProvider.configure(true, "2018-07-10T14:20");
 		RequestContextSetter.setRequestContextForUnitTest();
@@ -62,14 +61,11 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenFerdigstillDokumentopplastingForJoarkdokumenterIfJournalpostDoesNotExist()
-			throws Exception {
-		assertForretningsmessigUnntak(FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet.class,
-				expectedJournalpostIkkeFunnet());
-
+	public void shouldThrowExceptionWhenFerdigstillDokumentopplastingForJoarkdokumenterIfJournalpostDoesNotExist() {
 		request.setJournalpostId(NONEXISTING_JOURNALPOST_ID);
 
-		behandleJournalProvider.ferdigstillDokumentopplasting(request);
+		assertThrows(FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet.class,
+				() -> behandleJournalProvider.ferdigstillDokumentopplasting(request));
 	}
 
 	@Test
@@ -114,15 +110,6 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 			assertThat(dokumentInfo.getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
 			assertThat(dokumentInfo.getEndretKildeNavn(), is("testComponentId"));
 		}
-	}
-
-	private ForretningsmessigUnntak expectedJournalpostIkkeFunnet() {
-		JournalpostIkkeFunnet journalpostIkkeFunnet = new JournalpostIkkeFunnet();
-		journalpostIkkeFunnet.setFeilaarsak("NoJournalpostFoundException");
-		journalpostIkkeFunnet.setFeilkilde("JOARK:ferdigstillDokumentopplasting");
-		journalpostIkkeFunnet.setFeilmelding("Journalpost with id: " + NONEXISTING_JOURNALPOST_ID + " does not exist");
-		journalpostIkkeFunnet.setTidspunkt(getTodayJodaTime());
-		return journalpostIkkeFunnet;
 	}
 
 	private Journalpost buildAndPersistJournalpost(FagomradeCode fagomradeCode) {

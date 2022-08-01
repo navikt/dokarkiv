@@ -1,15 +1,14 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FerdigstillJournalpostRequest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -22,10 +21,7 @@ public class FerdigstillJournalpostRequestMapperTest {
 
 	private FerdigstillJournalpostRequestMapper requestMapper;
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
-	@Before
+	@BeforeEach
 	public void setUp() {
 		requestMapper = new FerdigstillJournalpostRequestMapper();
 	}
@@ -48,19 +44,17 @@ public class FerdigstillJournalpostRequestMapperTest {
 
 	@Test
 	public void shouldThrowException_inputIsNull() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Request is null");
-		requestMapper.map(null);
+		assertThrows(IllegalArgumentException.class,
+				() -> requestMapper.map(null),
+				"Request is null");
 	}
 
 	@Test
 	public void shouldThrowException_illegalUtsendingskanalValue() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.illegal");
-
-		requestMapper.map(createWebRequest(ILLEGAL_UTSENDINGKANAL));
+		assertThrows(IllegalArgumentException.class,
+				() -> requestMapper.map(createWebRequest(ILLEGAL_UTSENDINGKANAL)),
+				"No enum constant no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.illegal");
 	}
-
 
 	private FerdigstillJournalpostRequest createWebRequest(String utsendingkanal) {
 		FerdigstillJournalpostRequest request = new FerdigstillJournalpostRequest();

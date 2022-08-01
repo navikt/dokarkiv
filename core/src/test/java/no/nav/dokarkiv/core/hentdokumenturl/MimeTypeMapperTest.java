@@ -1,24 +1,22 @@
 package no.nav.dokarkiv.core.hentdokumenturl;
 
-import static org.junit.Assert.assertEquals;
-
 import no.nav.dokarkiv.core.dokumenturl.MimeTypeMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test for MimeTypeMapper
- * 
- * @author Hans Olav Loftum, BEKK
  */
 public class MimeTypeMapperTest {
 
-	private MimeTypeMapper mapper = new MimeTypeMapper();
+	private final MimeTypeMapper mapper = new MimeTypeMapper();
 
 	@Test
 	public void shouldGetMimeTypeForPdf() {
 		assertExpectedMimeTypeForFileExtension("application/pdf", "PDF");
 	}
-	
+
 	@Test
 	public void shouldGetMimeTypeForPdfA() {
 		assertExpectedMimeTypeForFileExtension("application/pdf", "PDFA");
@@ -33,12 +31,12 @@ public class MimeTypeMapperTest {
 	public void shouldGetMimeTypeForXml() {
 		assertExpectedMimeTypeForFileExtension("text/xml", "xml");
 	}
-	
+
 	@Test
 	public void shouldGetMimeTypeForDXml() {
 		assertExpectedMimeTypeForFileExtension("text/xml", "dxml");
 	}
-	
+
 	@Test
 	public void shouldGetMimeTypeForAXml() {
 		assertExpectedMimeTypeForFileExtension("text/xml", "axml");

@@ -2,16 +2,13 @@ package no.nav.dokarkiv.rjoark102;
 
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.dto.KasserDokumentRequest;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class KasserDokumentValidatorTest {
 
 	private final KasserDokumentValidator validator = new KasserDokumentValidator();
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 
 	@Test
 	public void happyPath() {
@@ -21,17 +18,15 @@ public class KasserDokumentValidatorTest {
 
 	@Test
 	public void throwExceptionWhenDokumentInfoIdIsNull() {
-		expectedException.expect(UgyldigInputException.class);
-		expectedException.expectMessage("DokumentInfoId kan ikke være null");
 		KasserDokumentRequest request = KasserDokumentRequest.builder().kassertAvNavn("Kassør").build();
-		validator.validerKasserDokumentRequest(request);
+		assertThrows(UgyldigInputException.class, () ->
+				validator.validerKasserDokumentRequest(request), "DokumentInfoId kan ikke være null");
 	}
 
 	@Test
 	public void throwExceptionWhenKassertAvIsNull() {
-		expectedException.expect(UgyldigInputException.class);
-		expectedException.expectMessage("KassertAvNavn kan ikke være null");
 		KasserDokumentRequest request = KasserDokumentRequest.builder().dokumentInfoId(1l).build();
-		validator.validerKasserDokumentRequest(request);
+		assertThrows(UgyldigInputException.class, () ->
+				validator.validerKasserDokumentRequest(request), "KassertAvNavn kan ikke være null");
 	}
 }

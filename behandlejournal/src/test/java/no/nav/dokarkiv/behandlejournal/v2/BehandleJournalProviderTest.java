@@ -19,7 +19,6 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.JournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerutgaaendehenvendelse.Journalpost;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.ArkiverUstrukturertKravRequest;
@@ -34,22 +33,19 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerUtgaae
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostResponse;
 import org.joda.time.DateTime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
 
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -61,7 +57,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Rune Romundstad, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BehandleJournalProviderTest {
 	private static final String SPORING_FORNAVN = "Sigrid";
 	private static final String SPORING_ETTERNAVN = "Saksbehandler";
@@ -101,17 +97,15 @@ public class BehandleJournalProviderTest {
 
 	@InjectMocks
 	private BehandleJournalProvider behandleJournalProvider = new BehandleJournalProvider();
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
 	private JournalpostIkkeFunnet journalpostIkkeFunnet;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		DateProvider.configure(true, DateProvider.getDate(new Date()));
 		journalpostIkkeFunnet = createJournalpostIkkeFunnet();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		DateProvider.configure(false, null);
 	}
@@ -138,8 +132,7 @@ public class BehandleJournalProviderTest {
 	}
 
 	@Test
-	public void shouldAddVedleggToJournalpostAndReturnDokumentIdWhenLagreVedleggPaaJournalpostIsCalled()
-			throws Exception {
+	public void shouldAddVedleggToJournalpostAndReturnDokumentIdWhenLagreVedleggPaaJournalpostIsCalled() throws LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet {
 		LagreVedleggPaaJournalpostRequest wsRequest = new LagreVedleggPaaJournalpostRequest();
 		LagreVedleggPaaJournalpostResponse wsResponse = new LagreVedleggPaaJournalpostResponse();
 		wsResponse.setDokumentId(DOKUMENT_ID.toString());
@@ -158,10 +151,7 @@ public class BehandleJournalProviderTest {
 	}
 
 	@Test
-	public void shouldNotAddVedleggToJournalpostAndThrowCheckedExceptionWhenLagreVedleggPaaJournalpostIsCalled()
-			throws Exception {
-		assertCheckedExceptionProperties(LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet.class);
-
+	public void shouldNotAddVedleggToJournalpostAndThrowCheckedExceptionWhenLagreVedleggPaaJournalpostIsCalled() {
 		LagreVedleggPaaJournalpostRequest wsRequest = new LagreVedleggPaaJournalpostRequest();
 		LagreVedleggPaaJournalpostResponse wsResponse = new LagreVedleggPaaJournalpostResponse();
 		wsResponse.setDokumentId(DOKUMENT_ID.toString());
@@ -175,7 +165,8 @@ public class BehandleJournalProviderTest {
 				behandleJournalFaultInfoPopulatorMock.populateFaultInfo((JournalpostIkkeFunnet) any(),
 						(Exception) any(), (String) any())).thenReturn(journalpostIkkeFunnet);
 
-		behandleJournalProvider.lagreVedleggPaaJournalpost(wsRequest);
+		assertThrows(LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet.class,
+				() -> behandleJournalProvider.lagreVedleggPaaJournalpost(wsRequest));
 	}
 
 	@Test
@@ -202,7 +193,7 @@ public class BehandleJournalProviderTest {
 	}
 
 	@Test
-	public void shouldDelegateToFerdigstillDokumentopplastingService() throws Exception {
+	public void shouldDelegateToFerdigstillDokumentopplastingService() throws FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet {
 		FerdigstillDokumentopplastingRequest wsRequest = new FerdigstillDokumentopplastingRequest();
 		wsRequest.setJournalpostId(String.valueOf(JOURNALPOST_ID));
 		no.nav.dokarkiv.behandlejournal.v2.tjoark062.FerdigstillDokumentopplastingRequest domainRequest = new no.nav.dokarkiv.behandlejournal.v2.tjoark062.FerdigstillDokumentopplastingRequest(
@@ -216,10 +207,7 @@ public class BehandleJournalProviderTest {
 	}
 
 	@Test
-	public void shouldDelegateToFerdigstillDokumentopplastingServiceAndThrowCheckedExceptionWhenJournalpostIsNotFound()
-			throws Exception {
-		assertCheckedExceptionProperties(FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet.class);
-
+	public void shouldDelegateToFerdigstillDokumentopplastingServiceAndThrowCheckedExceptionWhenJournalpostIsNotFound() {
 		FerdigstillDokumentopplastingRequest wsRequest = new FerdigstillDokumentopplastingRequest();
 		wsRequest.setJournalpostId(String.valueOf(JOURNALPOST_ID));
 		no.nav.dokarkiv.behandlejournal.v2.tjoark062.FerdigstillDokumentopplastingRequest domainRequest = new no.nav.dokarkiv.behandlejournal.v2.tjoark062.FerdigstillDokumentopplastingRequest(
@@ -232,7 +220,8 @@ public class BehandleJournalProviderTest {
 				behandleJournalFaultInfoPopulatorMock.populateFaultInfo((JournalpostIkkeFunnet) any(),
 						(Exception) any(), (String) any())).thenReturn(journalpostIkkeFunnet);
 
-		behandleJournalProvider.ferdigstillDokumentopplasting(wsRequest);
+		assertThrows(FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet.class,
+				() -> behandleJournalProvider.ferdigstillDokumentopplasting(wsRequest));
 	}
 
 	@Test
@@ -284,15 +273,6 @@ public class BehandleJournalProviderTest {
 
 	private SporingsMetaData createSporingsMetaData() {
 		return new SporingsMetaData(SPORING_FORNAVN, SPORING_ETTERNAVN, SPORING_APPLIKASJONS_ID);
-	}
-
-	private void assertCheckedExceptionProperties(Class<? extends Exception> clazz) {
-		expected.expect(clazz);
-		expected.expect(hasProperty("faultInfo", instanceOf(ForretningsmessigUnntak.class)));
-		expected.expect(hasProperty("faultInfo", hasProperty("feilaarsak", is(FEIL_AARSAK))));
-		expected.expect(hasProperty("faultInfo", hasProperty("feilkilde", is(FEIL_KILDE))));
-		expected.expect(hasProperty("faultInfo", hasProperty("feilmelding", is(EXCEPTION_MESSAGE))));
-		expected.expect(hasProperty("faultInfo", hasProperty("tidspunkt", is(getTodayJodaTime()))));
 	}
 
 	private JournalpostIkkeFunnet createJournalpostIkkeFunnet() {

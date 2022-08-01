@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
@@ -20,11 +16,16 @@ import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentJournalO
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentJournalOgDokumentStatusJournalpostIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalOgDokumentStatusRequest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalOgDokumentStatusResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration test for HentJournalOgDokumentStatus.
@@ -41,8 +42,8 @@ public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninf
 	private Long dokumentInfoId;
 	
 	private HentJournalOgDokumentStatusRequest request;
-	
-	@Before
+
+	@BeforeEach
 	public void setUp() {
 		Journalpost journalpost = joarkRepository.save(buildAndPersistJournalpost());
 		journalpostId = journalpost.getId();
@@ -67,38 +68,35 @@ public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninf
 
 
 	@Test
-	public void shouldThrowExceptionWhenJournalpostNotFound() throws Exception {
+	public void shouldThrowExceptionWhenJournalpostNotFound() {
 		request.setJournalpostId(123L);
 
-		expectedException.expect(HentJournalOgDokumentStatusJournalpostIkkeFunnet.class);
-
-		dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(request);
+		assertThrows(HentJournalOgDokumentStatusJournalpostIkkeFunnet.class,
+				() -> dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(request));
 	}
-	
+
 	@Test
-	public void shouldThrowExceptionWhenDokumentInfoNotFoundOnJournalpost() throws Exception {
+	public void shouldThrowExceptionWhenDokumentInfoNotFoundOnJournalpost() {
 		request.setDokumentInfoId(123L);
 
-		expectedException.expect(HentJournalOgDokumentStatusDokumentInfoIkkeFunnet.class);
-
-		dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(request);
+		assertThrows(HentJournalOgDokumentStatusDokumentInfoIkkeFunnet.class,
+				() -> dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(request));
 	}
-	
+
 	@Test
-	public void shouldReturnJournalStatusDokumentStatusAndMetaforceInstanceId() throws Exception {
-		
+	public void shouldReturnJournalStatusDokumentStatusAndMetaforceInstanceId() {
 		HentJournalOgDokumentStatusResponse response = dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(request);
-	
+
 		assertThat(response.getJournalStatus(), is(JOURNAL_STATUS.name()));
 		assertThat(response.getDokumentStatus(), is(DOKUMENT_INFO_STATUS.name()));
 		assertThat(response.getMetaForceInstanceId(), is(METAFORCE_INSTANCE_ID));
 	}
-	
+
 	@Test
-	public void dokumentInfoMissingFromInput_shouldOnlyReturnJournalStatus() throws Exception {
+	public void dokumentInfoMissingFromInput_shouldOnlyReturnJournalStatus() {
 		request.setDokumentInfoId(0L);
 		HentJournalOgDokumentStatusResponse response = dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(request);
-	
+
 		assertThat(response.getJournalStatus(), is(JOURNAL_STATUS.name()));
 		assertThat(response.getDokumentStatus(), is(nullValue()));
 		assertThat(response.getMetaForceInstanceId(), is(nullValue()));

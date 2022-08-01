@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.exceptions.KanIkkeOppdatereDistribusjonsinfoExceptio
 import org.junit.jupiter.api.Test;
 
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class OppdaterDistribusjonsinfoValidatorTest {
 

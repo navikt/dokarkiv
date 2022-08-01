@@ -25,12 +25,13 @@ import no.nav.freg.abac.core.annotation.context.AbacContext;
 import no.nav.freg.abac.core.dto.request.XacmlRequest;
 import no.nav.freg.abac.core.dto.response.Decision;
 import no.nav.tjeneste.virksomhet.journal.v3.HentDokumentDokumentIkkeFunnet;
+import no.nav.tjeneste.virksomhet.journal.v3.HentDokumentJournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.journal.v3.HentDokumentSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.journal.v3.HentDokumentURLDokumentIkkeFunnet;
+import no.nav.tjeneste.virksomhet.journal.v3.HentDokumentURLSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.journal.v3.HentKjerneJournalpostListeSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.journal.v3.HentKjerneJournalpostListeUgyldigInput;
 import no.nav.tjeneste.virksomhet.journal.v3.feil.DokumentIkkeFunnet;
-import no.nav.tjeneste.virksomhet.journal.v3.feil.ForretningsmessigUnntak;
 import no.nav.tjeneste.virksomhet.journal.v3.feil.Sikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Variantformater;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostliste.ArkivSak;
@@ -40,15 +41,13 @@ import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLRequest;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLResponse;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeRequest;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeResponse;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -57,13 +56,10 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import static no.nav.dokarkiv.journal.v3.JournalV3Provider.JOURNAL_V3_HENT_DOKUMENT;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
@@ -76,18 +72,16 @@ import static org.mockito.Mockito.when;
  *
  * @author Stig Strøm
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JournalV3ProviderTest {
-	
+
 	private static final String JOURNALPOST_ID = "1";
 	private static final String DOKUMENT_ID = "42";
 	private static final byte[] FIL_INNHOLD = "fil".getBytes();
 	private static final String FEIL_AARSAK = "feilAarsak";
 	private static final String FEIL_KILDE = "feilKilde";
 	private static final String EXCEPTION_MESSAGE = "Exception message";
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-	
+
 	@Mock
 	private JournalV3FaultInfoPopulator faultInfoPopulatorMock;
 	@Mock
@@ -110,76 +104,73 @@ public class JournalV3ProviderTest {
 	private HentDokumentURLV3RequestMapper hentDokumentURLV3RequestMapper;
 	@Mock
 	private HentDokumentUrlService hentDokumentUrlService;
-	
+
 	@InjectMocks
 	private JournalV3Provider journalProvider;
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
-	
 	private HentKjerneJournalpostListeRequest hentKjerneJournalpostListeRequest;
 	private HentKjerneJournalpostListeRequestTo requestTo;
 	private HentKjerneJournalpostListeResponseTo responseTo;
 	private HentKjerneJournalpostListeResponse wsResponse;
-	
-	@Before
+
+	@BeforeEach
 	public void setUp() {
 		hentKjerneJournalpostListeRequest = new HentKjerneJournalpostListeRequest();
 		requestTo = HentKjerneJournalpostListeRequestTo.builder().build();
 		responseTo = HentKjerneJournalpostListeResponseTo.builder().build();
 		wsResponse = new HentKjerneJournalpostListeResponse();
-		when(abacContext.getRequest()).thenReturn(new XacmlRequest());
-		
 	}
-	
+
 	@Test
-	public void hentKjerneJournalpostListeShouldDelegateToService() throws Exception {
+	public void hentKjerneJournalpostListeShouldDelegateToService() throws HentKjerneJournalpostListeUgyldigInput, HentKjerneJournalpostListeSikkerhetsbegrensning {
 		when(hentKjerneJournalpostListeRequestMapper.map(eq(hentKjerneJournalpostListeRequest), anyList())).thenReturn(requestTo);
 		when(hentKjerneJournalpostListeService.hentKjerneJournalpostListe(requestTo)).thenReturn(responseTo);
 		when(hentKjerneJournalpostListeResponseMapper.map(responseTo)).thenReturn(wsResponse);
-		
+
 		assertThat(journalProvider.hentKjerneJournalpostListe(hentKjerneJournalpostListeRequest), is(wsResponse));
 	}
-	
+
 	@Test
-	public void hentKjerneJournalpostListeShouldThrowUgyldigInputException() throws Exception {
+	public void hentKjerneJournalpostListeShouldThrowUgyldigInputException() {
 		doThrow(new IllegalArgumentException("hentKjerneJournalpostListeShouldThrowUgyldigInputException")).when(hentKjerneJournalpostListeRequestValidator)
 				.validate(hentKjerneJournalpostListeRequest);
-		
-		thrown.expect(HentKjerneJournalpostListeUgyldigInput.class);
-		thrown.expectMessage("hentKjerneJournalpostListeShouldThrowUgyldigInputException");
-		journalProvider.hentKjerneJournalpostListe(hentKjerneJournalpostListeRequest);
+
+		assertThrows(HentKjerneJournalpostListeUgyldigInput.class,
+				() -> journalProvider.hentKjerneJournalpostListe(hentKjerneJournalpostListeRequest),
+				"hentKjerneJournalpostListeShouldThrowUgyldigInputException");
 	}
-	
+
 	@Test
-	public void shouldFilterSaksIdsByAbacAccess() throws Exception {
+	public void shouldFilterSaksIdsByAbacAccess() throws HentKjerneJournalpostListeUgyldigInput, HentKjerneJournalpostListeSikkerhetsbegrensning {
 		ArkivSak accessableArkivSak = new ArkivSak().withArkivSakId("1").withArkivSakSystem("FS22");
 		ArkivSak notAccesableArkivSak = new ArkivSak().withArkivSakId("2").withArkivSakSystem("PEN");
 
+		when(abacContext.getRequest()).thenReturn(new XacmlRequest());
 		when(hentKjerneJournalpostListeRequestMapper.map(eq(hentKjerneJournalpostListeRequest), anyList())).thenReturn(requestTo);
 		when(abacSecurityService.assertAccessToSak(any(XacmlRequest.class), eq("1"), eq(FagsystemCode.FS22))).thenReturn(Decision.PERMIT);
 		when(abacSecurityService.assertAccessToSak(any(XacmlRequest.class), eq("2"), eq(FagsystemCode.PEN))).thenReturn(Decision.DENY);
-		
+
 		hentKjerneJournalpostListeRequest.withArkivSakListe(accessableArkivSak, notAccesableArkivSak);
-		
+
 		journalProvider.hentKjerneJournalpostListe(hentKjerneJournalpostListeRequest);
-		
+
 		List<ArkivSak> filteredList = getFilteredArkivSakListFromRequestMapperMock();
 		assertThat(filteredList, contains(accessableArkivSak));
 	}
-	
+
 	@Test
-	public void shouldThrowHentKjerneJournalpostListeSikkerhetsbegrensningWhenAbacFiltersToEmptyList() throws Exception {
+	public void shouldThrowHentKjerneJournalpostListeSikkerhetsbegrensningWhenAbacFiltersToEmptyList() {
+		when(abacContext.getRequest()).thenReturn(new XacmlRequest());
 		ArkivSak accessableArkivSak = new ArkivSak().withArkivSakId("1").withArkivSakSystem("FS22");
 		ArkivSak notAccesableArkivSak = new ArkivSak().withArkivSakId("2").withArkivSakSystem("PEN");
 
 		hentKjerneJournalpostListeRequest.withArkivSakListe(accessableArkivSak, notAccesableArkivSak);
-		
-		expected.expect(HentKjerneJournalpostListeSikkerhetsbegrensning.class);
-		journalProvider.hentKjerneJournalpostListe(hentKjerneJournalpostListeRequest);
+
+		assertThrows(HentKjerneJournalpostListeSikkerhetsbegrensning.class,
+				() -> journalProvider.hentKjerneJournalpostListe(hentKjerneJournalpostListeRequest));
 	}
-	
+
 	@Test
-	public void shouldDelegateToHentDokumentUrlService() throws Exception {
+	public void shouldDelegateToHentDokumentUrlService() throws HentDokumentURLSikkerhetsbegrensning, HentDokumentURLDokumentIkkeFunnet {
 		String dokumentUrl = "url";
 		HentDokumentURLRequest wsRequest = new HentDokumentURLRequest().withJournalpostId("dummyId")
 				.withDokumentId("dummyDokId")
@@ -188,158 +179,150 @@ public class JournalV3ProviderTest {
 		HentDokumentUrlResponseTo domainResponse = new HentDokumentUrlResponseTo(dokumentUrl);
 		HentDokumentURLResponse wsResponse = new HentDokumentURLResponse();
 		wsResponse.setDokumentURL(dokumentUrl);
-		
+
 		when(hentDokumentURLV3RequestMapper.map(wsRequest)).thenReturn(hentDokumentUrlRequest);
 		when(hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest)).thenReturn(domainResponse);
-		
+
 		HentDokumentURLResponse response = journalProvider.hentDokumentURL(wsRequest);
-		
+
 		assertThat(response.getDokumentURL(), is(dokumentUrl));
 	}
-	
+
 	@Test
-	public void shouldThrowDokumentIkkeFunnetWhenhentDokumentUrlFails() throws Exception {
+	public void shouldThrowDokumentIkkeFunnetWhenhentDokumentUrlFails() {
 		HentDokumentURLRequest wsRequest = new HentDokumentURLRequest().withJournalpostId("dummyId")
 				.withDokumentId("dummyDokId")
 				.withVariantformat(new Variantformater().withValue("verdi").withKodeRef("dummyKodeRef"));
 		HentDokumentUrlRequestTo hentDokumentUrlRequest = new HentDokumentUrlRequestTo(1L, 2L, VariantFormatCode.ARKIV);
-		
+
 		String exceptionMessage = "Test exception";
-		setupExpectedExceptionProperties(HentDokumentURLDokumentIkkeFunnet.class, exceptionMessage);
-		
+
 		when(faultInfoPopulatorMock.populateFaultInfo((DokumentIkkeFunnet) any(), (Exception) any(), (String) any()))
 				.thenReturn(createDokumentIkkeFunnet());
 		when(hentDokumentURLV3RequestMapper.map(wsRequest)).thenReturn(hentDokumentUrlRequest);
 		when(hentDokumentUrlService.hentDokumentUrl(hentDokumentUrlRequest)).thenThrow(
 				new DocumentNotFoundException(exceptionMessage, null));
-		
-		journalProvider.hentDokumentURL(wsRequest);
+
+		assertThrows(HentDokumentURLDokumentIkkeFunnet.class,
+				() -> journalProvider.hentDokumentURL(wsRequest),
+				exceptionMessage);
 	}
-	
-	
+
 	@Test
-	public void shouldDelegateToHentDokument() throws Exception {
+	public void shouldDelegateToHentDokument() throws HentDokumentSikkerhetsbegrensning, HentDokumentJournalpostIkkeFunnet, HentDokumentDokumentIkkeFunnet {
 		HentDokumentRequest wsRequest = createHentDokumentRequest(JOURNALPOST_ID, DOKUMENT_ID, VariantFormatCode.ARKIV.name());
-		
+
 		HentDokumentRequestTo domainRequest = createHentDokumentRequestTo();
 		when(hentDokumentRequestMapper.map(wsRequest)).thenReturn(domainRequest);
 		when(tjoark051HentDokumentService.hentDokument(eq(domainRequest))).thenReturn(FIL_INNHOLD);
-		
+
 		HentDokumentResponse wsResponse = journalProvider.hentDokument(wsRequest);
-		
+
 		assertThat(wsResponse.getDokument(), is(FIL_INNHOLD));
 	}
-	
+
 	@Test
-	public void hentDokumentThrowsException_inputIsNull() throws Exception {
-		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("Input request is null");
-		journalProvider.hentDokument(null);
+	public void hentDokumentThrowsException_inputIsNull() {
+		assertThrows(IllegalArgumentException.class,
+				() -> journalProvider.hentDokument(null),
+				"Input request is null");
 	}
-	
+
 	@Test
-	public void hentDokumentThrowsException_journalpostIsMissing() throws Exception {
-		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("JournalpostId is null or empty");
-		
-		journalProvider.hentDokument(createHentDokumentRequest(null, DOKUMENT_ID, VariantFormatCode.ARKIV.name()));
+	public void hentDokumentThrowsException_journalpostIsMissing() {
+		assertThrows(IllegalArgumentException.class,
+				() -> journalProvider.hentDokument(createHentDokumentRequest(null, DOKUMENT_ID, VariantFormatCode.ARKIV.name())),
+				"JournalpostId is null or empty");
 	}
-	
+
 	@Test
-	public void hentDokumentThrowsException_journalpostIdIsEmpty() throws Exception {
-		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("JournalpostId is null or empty");
-		
-		journalProvider.hentDokument(createHentDokumentRequest("", DOKUMENT_ID, VariantFormatCode.ARKIV.name()));
+	public void hentDokumentThrowsException_journalpostIdIsEmpty() {
+		assertThrows(IllegalArgumentException.class,
+				() -> journalProvider.hentDokument(createHentDokumentRequest("", DOKUMENT_ID, VariantFormatCode.ARKIV.name())),
+				"JournalpostId is null or empty");
 	}
-	
+
 	@Test
-	public void hentDokumentThrowsException_dokumentIdIsMissing() throws Exception {
-		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("DokumentId is null or empty");
-		
-		journalProvider.hentDokument(createHentDokumentRequest(JOURNALPOST_ID, null, VariantFormatCode.ARKIV.name()));
+	public void hentDokumentThrowsException_dokumentIdIsMissing() {
+		assertThrows(IllegalArgumentException.class,
+				() -> journalProvider.hentDokument(createHentDokumentRequest(JOURNALPOST_ID, null, VariantFormatCode.ARKIV.name())),
+				"DokumentId is null or empty");
 	}
-	
+
 	@Test
-	public void hentDokumentThrowsException_dokumentIdIsEmpty() throws Exception {
-		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("DokumentId is null or empty");
-		
-		journalProvider.hentDokument(createHentDokumentRequest(JOURNALPOST_ID, "", VariantFormatCode.ARKIV.name()));
+	public void hentDokumentThrowsException_dokumentIdIsEmpty() {
+		assertThrows(IllegalArgumentException.class,
+				() -> journalProvider.hentDokument(createHentDokumentRequest(JOURNALPOST_ID, "", VariantFormatCode.ARKIV.name())),
+				"DokumentId is null or empty");
 	}
-	
+
 	@Test
-	public void hentDokumentThrowsException_VariantFormatIsNull() throws Exception {
-		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("VariantFormat is null");
-		
+	public void hentDokumentThrowsException_VariantFormatIsNull() {
 		HentDokumentRequest wsRequest = createHentDokumentRequest(JOURNALPOST_ID, DOKUMENT_ID, VariantFormatCode.ARKIV.name());
 		wsRequest.setVariantformat(null);
-		journalProvider.hentDokument(wsRequest);
+
+		assertThrows(IllegalArgumentException.class,
+				() -> journalProvider.hentDokument(wsRequest),
+				"VariantFormat is null");
 	}
-	
+
 	@Test
-	public void hentDokumentThrowsException_VariantFormatValueIsNull() throws Exception {
-		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("VariantFormat.Value is null or empty");
-		
+	public void hentDokumentThrowsException_VariantFormatValueIsNull() {
 		HentDokumentRequest wsRequest = createHentDokumentRequest(JOURNALPOST_ID, DOKUMENT_ID, null);
-		journalProvider.hentDokument(wsRequest);
+		assertThrows(IllegalArgumentException.class,
+				() -> journalProvider.hentDokument(wsRequest),
+				"VariantFormat.Value is null or empty");
 	}
-	
+
 	@Test
-	public void hentDokumentThrowsException_VariantFormatValueIsEmpty() throws Exception {
-		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("VariantFormat.Value is null or empty");
-		
+	public void hentDokumentThrowsException_VariantFormatValueIsEmpty() {
 		HentDokumentRequest wsRequest = createHentDokumentRequest(JOURNALPOST_ID, DOKUMENT_ID, "");
-		journalProvider.hentDokument(wsRequest);
+		assertThrows(IllegalArgumentException.class,
+				() -> journalProvider.hentDokument(wsRequest),
+				"VariantFormat.Value is null or empty");
 	}
-	
+
 	@Test
-	public void hentDokumentThrows_HentDokumentDokumentIkkeFunnet() throws Exception {
-		expected.expect(HentDokumentDokumentIkkeFunnet.class);
-		
+	public void hentDokumentThrows_HentDokumentDokumentIkkeFunnet() {
 		HentDokumentRequestTo domainRequest = createHentDokumentRequestTo();
 		when(hentDokumentRequestMapper.map(any(HentDokumentRequest.class))).thenReturn(domainRequest);
 		when(tjoark051HentDokumentService.hentDokument(eq(domainRequest))).thenThrow(
 				new DocumentNotFoundException(new NoJournalpostFoundException("not found", Long.valueOf(JOURNALPOST_ID))));
-		
+
 		HentDokumentRequest wsRequest = createHentDokumentRequest(JOURNALPOST_ID, DOKUMENT_ID, VariantFormatCode.ARKIV.name());
-		journalProvider.hentDokument(wsRequest);
+		assertThrows(HentDokumentDokumentIkkeFunnet.class,
+				() -> journalProvider.hentDokument(wsRequest));
 	}
-	
+
 	@Test
-	public void shouldThrowSikkerhetsbegreningsFromHentDokument() throws Exception {
-		expected.expect(HentDokumentSikkerhetsbegrensning.class);
-		
+	public void shouldThrowSikkerhetsbegreningsFromHentDokument() {
 		HentDokumentRequest wsRequest = createHentDokumentRequest(JOURNALPOST_ID, DOKUMENT_ID, VariantFormatCode.ARKIV.name());
-		
+
 		AuthorizationException authorizationException = new AuthorizationException("Access denied");
 		doThrow(authorizationException)
 				.when(abacSecurityService).assertAccessToJournalpost(eq(wsRequest.getJournalpostId()));
-		
-		journalProvider.hentDokument(wsRequest);
+
+		assertThrows(HentDokumentSikkerhetsbegrensning.class,
+				() -> journalProvider.hentDokument(wsRequest));
+
 		verify(faultInfoPopulatorMock)
 				.populateFaultInfo(any(Sikkerhetsbegrensning.class),
 						eq(authorizationException),
 						eq(JOURNAL_V3_HENT_DOKUMENT));
 	}
-	
+
 	@Test
-	public void hentDokumentThrowsException_variantFormatIsNull() throws Exception {
-		expected.expect(IllegalArgumentException.class);
-		expected.expectMessage("VariantFormat.Value is null");
-		
+	public void hentDokumentThrowsException_variantFormatIsNull() {
 		HentDokumentRequest wsRequest = createHentDokumentRequest(JOURNALPOST_ID, DOKUMENT_ID, null);
-		journalProvider.hentDokument(wsRequest);
+		assertThrows(IllegalArgumentException.class,
+				() -> journalProvider.hentDokument(wsRequest),
+				"VariantFormat.Value is null");
 	}
-	
+
 	private HentDokumentRequestTo createHentDokumentRequestTo() {
 		return new HentDokumentRequestTo(Long.valueOf(JOURNALPOST_ID), Long.valueOf(DOKUMENT_ID), VariantFormatCode.ARKIV);
 	}
-	
+
 	private HentDokumentRequest createHentDokumentRequest(String journalpostId, String dokumentId, String variantFormat) {
 		HentDokumentRequest wsRequest = new HentDokumentRequest();
 		wsRequest.setJournalpostId(journalpostId);
@@ -349,13 +332,13 @@ public class JournalV3ProviderTest {
 		wsRequest.setVariantformat(variantFormater);
 		return wsRequest;
 	}
-	
+
 	private List<ArkivSak> getFilteredArkivSakListFromRequestMapperMock() {
 		ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 		verify(hentKjerneJournalpostListeRequestMapper).map(any(HentKjerneJournalpostListeRequest.class), captor.capture());
 		return captor.getValue();
 	}
-	
+
 	private DokumentIkkeFunnet createDokumentIkkeFunnet() {
 		DokumentIkkeFunnet dokumentIkkeFunnet = new DokumentIkkeFunnet();
 		dokumentIkkeFunnet.setFeilaarsak(FEIL_AARSAK);
@@ -364,7 +347,7 @@ public class JournalV3ProviderTest {
 		dokumentIkkeFunnet.setTidspunkt(getXmlTimestamp());
 		return dokumentIkkeFunnet;
 	}
-	
+
 	private Sikkerhetsbegrensning createSikkerhetsbegrensning() {
 		Sikkerhetsbegrensning sikkerhetsbegrensning = new Sikkerhetsbegrensning();
 		sikkerhetsbegrensning.setFeilaarsak(FEIL_AARSAK);
@@ -373,17 +356,7 @@ public class JournalV3ProviderTest {
 		sikkerhetsbegrensning.setTidspunkt(getXmlTimestamp());
 		return sikkerhetsbegrensning;
 	}
-	
-	private void setupExpectedExceptionProperties(Class<? extends Exception> clazz, String exceptionMessage) {
-		expected.expect(clazz);
-		expected.expect(hasProperty("message", containsString(exceptionMessage)));
-		expected.expect(hasProperty("faultInfo", instanceOf(ForretningsmessigUnntak.class)));
-		expected.expect(hasProperty("faultInfo", hasProperty("feilaarsak", is(FEIL_AARSAK))));
-		expected.expect(hasProperty("faultInfo", hasProperty("feilkilde", is(FEIL_KILDE))));
-		expected.expect(hasProperty("faultInfo", hasProperty("feilmelding", is(EXCEPTION_MESSAGE))));
-		expected.expect(hasProperty("faultInfo", hasProperty("tidspunkt", isA(getXmlTimestamp().getClass())))); //Timestamp hentes på et annet tidspunkt i exception-koden vi tester, enn her. Kan derfor ikke teste "tidspunkt" på verdien.
-	}
-	
+
 	private XMLGregorianCalendar getXmlTimestamp() {
 		GregorianCalendar calendar = new GregorianCalendar();
 		calendar.setTime(DateProvider.getToday());

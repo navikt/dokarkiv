@@ -29,8 +29,8 @@ import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFResponse;
 import no.nav.dokarkiv.hentdokument.dokument.DefaultHentDokument;
 import no.nav.dokarkiv.hentdokument.dokument.HentDokumentRequest;
 import no.nav.dokarkiv.hentdokument.dokument.HentDokumentResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -43,12 +43,12 @@ import static no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder.getDokument
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
@@ -81,7 +81,7 @@ public class DefaultHentDokumentTest {
 	private SettMetadataIDLF settMetadataIDLFMock;
 	private HentDokumentRequest request;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		hentDokument = new DefaultHentDokument();

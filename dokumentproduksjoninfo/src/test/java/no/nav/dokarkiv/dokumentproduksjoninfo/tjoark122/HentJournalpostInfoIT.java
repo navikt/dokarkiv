@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo.tjoark122;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
@@ -25,8 +21,13 @@ import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentJournalp
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentJournalpostInfoJournalpostIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoRequest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration test for HentJournalpostInfo.
@@ -49,7 +50,7 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 	private Long journalpostId;
 	private Long dokumentInfoId;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		Journalpost journalpost = joarkRepository.save(buildJournalpost());
 		journalpostId = journalpost.getId();
@@ -57,25 +58,24 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenJournalpostNotFound() throws Exception {
-		expectedException.expect(HentJournalpostInfoJournalpostIkkeFunnet.class);
-
-		dokumentproduksjonInfoProvider.hentJournalpostInfo(new HentJournalpostInfoRequest()
-				.withJournalpostId(123L)
-				.withDokumentInfoId(null));
+	public void shouldThrowExceptionWhenJournalpostNotFound() {
+		assertThrows(HentJournalpostInfoJournalpostIkkeFunnet.class,
+				() -> dokumentproduksjonInfoProvider.hentJournalpostInfo(new HentJournalpostInfoRequest()
+						.withJournalpostId(123L)
+						.withDokumentInfoId(null)));
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenDokumentInfoNotFoundOnJournalpost() throws Exception {
-		expectedException.expect(HentJournalpostInfoDokumentInfoIkkeFunnet.class);
-
+	public void shouldThrowExceptionWhenDokumentInfoNotFoundOnJournalpost() {
 		HentJournalpostInfoRequest request = createRequest();
 		request.setDokumentInfoId(123L);
-		dokumentproduksjonInfoProvider.hentJournalpostInfo(request);
+
+		assertThrows(HentJournalpostInfoDokumentInfoIkkeFunnet.class,
+				() -> dokumentproduksjonInfoProvider.hentJournalpostInfo(request));
 	}
 
 	@Test
-	public void shouldReturnJournalStatusDokumentStatusAndMetaforceInstanceId() throws Exception {
+	public void shouldReturnJournalStatusDokumentStatusAndMetaforceInstanceId() {
 
 		HentJournalpostInfoResponse response = dokumentproduksjonInfoProvider.hentJournalpostInfo(createRequest());
 
@@ -86,7 +86,7 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 	}
 
 	@Test
-	public void shouldOnlyReturnJournalStatusWhenDokumentInfoMissingFromInput() throws Exception {
+	public void shouldOnlyReturnJournalStatusWhenDokumentInfoMissingFromInput() {
 		HentJournalpostInfoRequest request = createRequest();
 		request.setDokumentInfoId(0L);
 		HentJournalpostInfoResponse response = dokumentproduksjonInfoProvider.hentJournalpostInfo(request);
@@ -120,12 +120,12 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 						.fagsystem(FAGSYSTEM_CODE)
 						.sakId(SAKID)
 						.opprettetKildeNavn("test")
-				.build())
+						.build())
 				.brukere(BrukerBuilder.getBrukerBuilder()
 						.brukerId(BRUKERID)
 						.brukerType(BRUKER_TYPE_CODE)
 						.opprettetKildeNavn("test")
-				.build())
+						.build())
 				.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder
 						.getJournalpostDokumentInfoRelasjonBuilder()
 						.tilknyttetAvNavn("testuser")

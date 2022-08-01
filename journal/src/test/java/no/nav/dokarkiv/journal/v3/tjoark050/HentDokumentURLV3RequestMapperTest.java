@@ -1,12 +1,13 @@
 package no.nav.dokarkiv.journal.v3.tjoark050;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Variantformater;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class HentDokumentURLV3RequestMapperTest {
 
@@ -30,11 +31,13 @@ public class HentDokumentURLV3RequestMapperTest {
 		assertThat(domainRequest.getVariantFormat(), is(VariantFormatCode.ARKIV));
 	}
 
-	@Test(expected = NumberFormatException.class)
+	@Test
 	public void shouldThrowExcpetionWhenMapping_journalpostIdIsNotANumber() {
 		HentDokumentURLRequest invalidWsRequest = new HentDokumentURLRequest();
 		invalidWsRequest.setJournalpostId("not a valid journalpostId");
-		mapper.map(invalidWsRequest);
+
+		assertThrows(NumberFormatException.class,
+				() -> mapper.map(invalidWsRequest));
 	}
 
 }

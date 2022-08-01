@@ -12,13 +12,11 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
-@RunWith(MockitoJUnitRunner.class)
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 public class DefaultArkiverVedleggValidatorTest {
-
 
 	private static final long JOURNALPOST_ID = 11L;
 	private static final String ENDRET_AV_NAVN = "Endre Tavnavn";
@@ -34,30 +32,37 @@ public class DefaultArkiverVedleggValidatorTest {
 		validator.validate(request);
 	}
 
-	@Test(expected = NoJournalpostFoundException.class)
+	@Test
 	public void shouldNotValidateIfJournalpostIsNull() throws NoJournalpostFoundException {
-		validator.validate(null, 1L);
+		assertThrows(NoJournalpostFoundException.class,
+				() -> validator.validate(null, 1L));
 	}
 
-	@Test(expected = IllegalDocumentUpdateException.class)
+	@Test
 	public void shouldNotValidateIfJournalpostIsFerdigstilt() throws NoJournalpostFoundException {
 		Journalpost journalpost = new Journalpost();
 		journalpost.setJournalstatus(JournalStatusCode.FL);
-		validator.validate(journalpost, 1L);
+
+		assertThrows(IllegalDocumentUpdateException.class,
+				() -> validator.validate(journalpost, 1L));
 	}
 
-	@Test(expected = IllegalDocumentUpdateException.class)
+	@Test
 	public void shouldNotValidateIfJournalpostIsNotUnderProduksjon() throws NoJournalpostFoundException {
 		Journalpost journalpost = new Journalpost();
 		journalpost.setJournalstatus(JournalStatusCode.A);
-		validator.validate(journalpost, 1L);
+
+		assertThrows(IllegalDocumentUpdateException.class,
+				() -> validator.validate(journalpost, 1L));
 	}
 
-	@Test(expected = ApplicationException.class)
+	@Test
 	public void shouldNotValidateIfMissingParameter() {
 		ArkiverVedleggRequestTo request = createRequest();
 		request.getDokumentInfo().setTittel("");
-		validator.validate(request);
+
+		assertThrows(ApplicationException.class,
+				() -> validator.validate(request));
 	}
 
 	private ArkiverVedleggRequestTo createRequest() {

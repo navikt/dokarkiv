@@ -16,18 +16,15 @@ import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentJournalO
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentFerdigstilteDokumenterRequest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalOgDokumentStatusRequest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalOgDokumentStatusResponse;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,7 +34,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DokumentproduksjonInfoProviderTest {
 
 	@Mock
@@ -52,13 +49,10 @@ public class DokumentproduksjonInfoProviderTest {
 	private HentJournalOgDokumentStatusResponseMapper hentJournalOgDokumentStatusResponseMapperMock;
 	@Mock
 	private HentFerdigstilteDokumenterResponseMapper hentFerdigstilteDokumenterServiceResponeMapper;
-	
+
 	@InjectMocks
 	private DokumentproduksjonInfoProvider dokumentproduksjonInfoProvider;
-	
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
-	
+
 	@Test
 	public void shouldDelegateToHentJournalOgDokumentStatus() throws Exception {
 		HentJournalOgDokumentStatusRequest wsRequest = new HentJournalOgDokumentStatusRequest();
@@ -68,82 +62,76 @@ public class DokumentproduksjonInfoProviderTest {
 		when(hentJournalOgDokumentStatusRequestMapperMock.map(wsRequest)).thenReturn(domainRequest);
 		when(hentJournalOgDokumentStatusMock.hentJournalOgDokumentStatus(domainRequest)).thenReturn(domainResponse);
 		when(hentJournalOgDokumentStatusResponseMapperMock.map(domainResponse)).thenReturn(wsResponse);
-		
+
 		HentJournalOgDokumentStatusResponse response = dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(wsRequest);
-		
+
 		assertThat(response, is(wsResponse));
 	}
-	
+
 	@Test
 	public void shouldThrowJournalpostIkkeFunnetWhenJournalpostNotFound() throws Exception {
 		String exceptionMessage = "Test exception";
-		setupExpectedExceptionProperties(HentJournalOgDokumentStatusJournalpostIkkeFunnet.class, exceptionMessage);
-		
 		HentJournalOgDokumentStatusRequest wsRequest = new HentJournalOgDokumentStatusRequest();
 		HentJournalOgDokumentStatusRequestTo domainRequest = new HentJournalOgDokumentStatusRequestTo();
 		when(hentJournalOgDokumentStatusRequestMapperMock.map(wsRequest)).thenReturn(domainRequest);
 		NoJournalpostFoundException domainException = new NoJournalpostFoundException(exceptionMessage, 1L);
 		when(hentJournalOgDokumentStatusMock.hentJournalOgDokumentStatus(domainRequest)).thenThrow(
 				domainException);
-		
-		dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(wsRequest);
+
+		assertThrows(HentJournalOgDokumentStatusJournalpostIkkeFunnet.class,
+				() -> dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(wsRequest),
+				exceptionMessage);
 	}
-	
+
 	@Test
 	public void shouldThrowDokumentInfoIkkeFunnetWhenDokumentInfoNotFound() throws Exception {
 		String exceptionMessage = "Test exception";
-		setupExpectedExceptionProperties(HentJournalOgDokumentStatusDokumentInfoIkkeFunnet.class, exceptionMessage);
-		
 		HentJournalOgDokumentStatusRequest wsRequest = new HentJournalOgDokumentStatusRequest();
 		HentJournalOgDokumentStatusRequestTo domainRequest = new HentJournalOgDokumentStatusRequestTo();
 		when(hentJournalOgDokumentStatusRequestMapperMock.map(wsRequest)).thenReturn(domainRequest);
 		NoDokumentInfoFoundException domainException = new NoDokumentInfoFoundException(exceptionMessage, 1L);
 		when(hentJournalOgDokumentStatusMock.hentJournalOgDokumentStatus(domainRequest)).thenThrow(
 				domainException);
-		
-		dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(wsRequest);
+
+		assertThrows(HentJournalOgDokumentStatusDokumentInfoIkkeFunnet.class,
+				() -> dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(wsRequest),
+				exceptionMessage);
 	}
-	
+
 	@Test
 	public void shouldDelegateToHentFerdigstilteDokumenter() throws Exception {
 		HentFerdigstilteDokumenterRequest wsRequest = new HentFerdigstilteDokumenterRequest();
 		wsRequest.setJournalpostId(1L);
 		wsRequest.getDokumentInfoListe().add(2L);
-		
+
 		dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(wsRequest);
 		verify(hentFerdigstilteDokumenterServiceResponeMapper).map(anyList());
 	}
-	
+
 	@Test
 	public void shouldThrowException_HentFerdigstilteDokumenter_requestIsNull() throws Exception {
-		expected.expect(HentFerdigstilteDokumenterUgyldingInput.class);
-		expected.expectMessage("request is null");
-		dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(null);
-	}
-	
-	@Test
-	public void shouldThrowException_HentFerdigstilteDokumenter_journalpostIsNull() throws Exception {
-		expected.expect(HentFerdigstilteDokumenterUgyldingInput.class);
-		expected.expectMessage("journalpostId is null");
-		HentFerdigstilteDokumenterRequest wsRequest = new HentFerdigstilteDokumenterRequest();
-		wsRequest.setJournalpostId(0);
-		
-		dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(wsRequest);
-	}
-	
-	@Test
-	public void shouldThrowException_HentFerdigstilteDokumenter_dokumentInfosIsNull() throws Exception {
-		expected.expect(HentFerdigstilteDokumenterUgyldingInput.class);
-		expected.expectMessage("List with dokumentInfo is null or empty");
-		
-		HentFerdigstilteDokumenterRequest wsRequest = new HentFerdigstilteDokumenterRequest();
-		wsRequest.setJournalpostId(1L);
-		
-		dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(wsRequest);
+		assertThrows(HentFerdigstilteDokumenterUgyldingInput.class,
+				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(null),
+				"request is null");
 	}
 
-	private void setupExpectedExceptionProperties(Class<? extends Exception> clazz, String exceptionMessage) {
-		expected.expect(clazz);
-		expected.expect(hasProperty("message", containsString(exceptionMessage)));
+	@Test
+	public void shouldThrowException_HentFerdigstilteDokumenter_journalpostIsNull() throws Exception {
+		HentFerdigstilteDokumenterRequest wsRequest = new HentFerdigstilteDokumenterRequest();
+		wsRequest.setJournalpostId(0);
+
+		assertThrows(HentFerdigstilteDokumenterUgyldingInput.class,
+				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(wsRequest),
+				"journalpostId is null");
+	}
+
+	@Test
+	public void shouldThrowException_HentFerdigstilteDokumenter_dokumentInfosIsNull() throws Exception {
+		HentFerdigstilteDokumenterRequest wsRequest = new HentFerdigstilteDokumenterRequest();
+		wsRequest.setJournalpostId(1L);
+
+		assertThrows(HentFerdigstilteDokumenterUgyldingInput.class,
+				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(wsRequest),
+				"List with dokumentInfo is null or empty");
 	}
 }

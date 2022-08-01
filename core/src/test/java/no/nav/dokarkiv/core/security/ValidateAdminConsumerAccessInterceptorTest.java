@@ -3,7 +3,7 @@ package no.nav.dokarkiv.core.security;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
 public class ValidateAdminConsumerAccessInterceptorTest {
-
 
 	private final NavLdapService navLdapService = mock(NavLdapService.class);
 	protected static final String OIDC_TOKEN_JOARKADMIN_USER_TEST = "Bearer eyJraWQiOiI5Y2ZkZDlkYS1lZTdmLTQ5NjItOGVkYy0wZTc2NzU1MGI1YzMiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJzcnZqb2Fya2FkbWluIiwiYXVkIjpbInNydmpvYXJrYWRtaW4iLCJwcmVwcm9kLmxvY2FsIl0sInZlciI6IjEuMCIsIm5iZiI6MTU1NDgwMzgwMywiYXpwIjoic3J2am9hcmthZG1pbiIsImlkZW50VHlwZSI6IlN5c3RlbXJlc3N1cnMiLCJhdXRoX3RpbWUiOjE1NTQ4MDM4MDMsImlzcyI6Imh0dHBzOlwvXC9zZWN1cml0eS10b2tlbi1zZXJ2aWNlLm5haXMucHJlcHJvZC5sb2NhbCIsImV4cCI6MTU1NDgwNzQwMywiaWF0IjoxNTU0ODAzODAzLCJqdGkiOiJlMzllMWViYS00ZjdjLTRhNmEtOTM3OC04MzU0NGFiYzI3NzAifQ.SSjNpiF9DHJPAVqrx_6CqCS9v46dPsO_7KiKdSdUDJPfY_kwusEtlnicmaU389kdvhS0_n4wzRONjrp7Ycoe7XU6fRh-vf0fw2XhbYzbNRY5DpI2vNZZ3j6sFGBdicPA10UPpMfgO26qU0Jnp9rtzpOwN9Y1ycay8SHOfyVJQPxOjaFIfSV5jgLQUYDg6HGcfZCb_b3R3vgcBt6QAQgBQXebtQdrnOswh6x-LynSt3NJGaZPTzZkhpCeIKHPJT_tsKf5DsBYcFo7G-m4KNjgInqqTilsnG9V2gVL5Q4pkLYCYva7o8ayT5Fls2GGV6z7dW_xuGc3ogwh7MVs5ll-Tw";

@@ -1,13 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentDataUtil.createJournalpost;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -19,9 +11,18 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasj
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Fildetaljer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeFactory;
+
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentDataUtil.createJournalpost;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration tests for the opprettOgFerdigstillJournalpost operation in the ArkiverDokumentproduksjon webservice
@@ -77,11 +78,12 @@ public class OpprettJournalpostArkiverDokumentIT extends AbstractArkiverdokument
 
 	@Test
 	public void shouldThrowExceptionIfDatoDokumentIsNull() throws Exception {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("DatoDokument must be set");
 		OpprettJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpost().setDatoDokument(null);
-		response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request);
+
+		assertThrows(ApplicationException.class,
+				() -> response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request),
+				"DatoDokument must be set");
 	}
 
 	@Test
@@ -93,33 +95,36 @@ public class OpprettJournalpostArkiverDokumentIT extends AbstractArkiverdokument
 
 	@Test
 	public void shouldThrowExceptionIfRequestDoesNotValidate() throws Exception {
-		expectedException.expect(InvalidArgumentException.class);
-		expectedException.expectMessage("Journalpost.fagomrade must be set");
 		OpprettJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpost().setFagomrade(null);
-		response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request);
+
+		assertThrows(InvalidArgumentException.class,
+				() -> response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request),
+				"Journalpost.fagomrade must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfRequestIsMissingDokument() throws Exception {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("FileContent must be set");
 		OpprettJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpost().getDokumentInfo().getFildetaljerListe().get(0).setIkkeRedigerbartdokument(null);
-		response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request);
+
+		assertThrows(ApplicationException.class,
+				() -> response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request),
+				"FileContent must be set");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfRequestGotTwoArkivDokuments() throws Exception {
-		expectedException.expect(InvalidJournalpostStructureException.class);
-		expectedException.expectMessage("found 2 ARKIV");
 		Fildetaljer anotherArkiv = new Fildetaljer();
 		anotherArkiv.setIkkeRedigerbartdokument("foo".getBytes());
 		anotherArkiv.setFiltype("AXML");
 		anotherArkiv.setVariantformat("ARKIV");
 		OpprettJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpost().getDokumentInfo().getFildetaljerListe().add(anotherArkiv);
-		response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request);
+
+		assertThrows(InvalidJournalpostStructureException.class,
+				() -> response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request),
+				"found 2 ARKIV");
 	}
 
 	@Test
@@ -166,15 +171,12 @@ public class OpprettJournalpostArkiverDokumentIT extends AbstractArkiverdokument
 
 	@Test
 	public void shouldThrowExceptionNoUtsendingskanal() throws Exception {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter in request: Utsendingskanal");
-
 		OpprettJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpost().setUtsendingskanal(null);
-		response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request);
 
-		assertThat(response.getJournalpostId(), is(notNullValue()));
-		assertThat(response.getDokumentInfoId(), is(notNullValue()));
+		assertThrows(ApplicationException.class,
+				() -> arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request),
+				"Missing parameter in request: Utsendingskanal");
 	}
 
 	private OpprettJournalpostArkiverDokumentRequest createRequest() throws Exception {

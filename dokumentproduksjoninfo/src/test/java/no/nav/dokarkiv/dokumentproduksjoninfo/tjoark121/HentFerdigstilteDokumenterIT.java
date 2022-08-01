@@ -13,12 +13,13 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.dokumentproduksjoninfo.AbstractDokumentproduksjoninfoItest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentFerdigstilteDokumenterDokumenterIkkeFunnet;
+import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentFerdigstilteDokumenterDokumenterKanIkkeHentes;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentFerdigstilteDokumenterUgyldingInput;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.informasjon.Dokument;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentFerdigstilteDokumenterRequest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentFerdigstilteDokumenterResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.ByteArrayOutputStream;
@@ -29,8 +30,9 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.UNDER_REDIGERING;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration test for HentFerdigstilteDokumenter.
@@ -51,7 +53,7 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 
 	private HentFerdigstilteDokumenterRequest request;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		journalpost = buildAndPersistJournalpost(FILUUID, FILUUID_SKJERMET, FS, FERDIGSTILT);
 		journalpostId = journalpost.getId();
@@ -101,52 +103,54 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 
 	@Test
 	public void shouldThrowException_inputRequestIsNull() throws Exception {
-		expectedException.expect(HentFerdigstilteDokumenterUgyldingInput.class);
-		expectedException.expectMessage("request is null");
-		dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(null);
+		assertThrows(HentFerdigstilteDokumenterUgyldingInput.class,
+				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(null),
+				"request is null");
 	}
 
 	@Test
 	public void shouldThrowException_dokumentIsMissing() throws Exception {
-		expectedException.expect(HentFerdigstilteDokumenterDokumenterIkkeFunnet.class);
-		expectedException.expectMessage("Fildetaljer ikke funnet");
-
 		Journalpost journalpost = buildAndPersistJournalpost("dokument_eksisterer_ikke", "dummy", FS, FERDIGSTILT);
 		journalpostId = journalpost.getId();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
 		createRequest(journalpostId, dokumentInfoId);
 
-		dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request);
+		assertThrows(HentFerdigstilteDokumenterDokumenterIkkeFunnet.class,
+				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request),
+				"Fildetaljer ikke funnet");
 	}
 
 	@Test
 	public void shouldThrowException_dokumentNotBelongingToJournalpost() throws Exception {
-		expectedException.expectMessage("dokumentInfoId=56 hører ikke til journalpost");
 		createRequest(journalpostId, dokumentInfoId, 56L);
 
-		dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request);
+		assertThrows(HentFerdigstilteDokumenterDokumenterIkkeFunnet.class,
+				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request),
+				"dokumentInfoId=56 hører ikke til journalpost");
 	}
 
 	@Test
 	public void shouldThrowException_invalidJournalStatus() throws Exception {
-		expectedException.expectMessage("forventet JournalStatus FS, men har journalStatus=J");
 		Journalpost journalpost = buildAndPersistJournalpost("dokument_eksisterer_ikke", "dummy", JournalStatusCode.J, FERDIGSTILT);
 		journalpostId = journalpost.getId();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
 		createRequest(journalpostId, dokumentInfoId);
 
-		dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request);
+		assertThrows(HentFerdigstilteDokumenterDokumenterKanIkkeHentes.class,
+				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request),
+				"forventet JournalStatus FS, men har journalStatus=J");
 	}
 
 	@Test
 	public void shouldThrowException_dokumentIsNotFerdigstilt() throws Exception {
-		expectedException.expectMessage("er ikke ferdigstilt");
 		Journalpost journalpost = buildAndPersistJournalpost("dokument_eksisterer_ikke", "dummy", FS, UNDER_REDIGERING);
 		journalpostId = journalpost.getId();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
 		createRequest(journalpostId, dokumentInfoId);
 
-		dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request);
+		assertThrows(HentFerdigstilteDokumenterDokumenterKanIkkeHentes.class,
+				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request),
+				"er ikke ferdigstilt");
 	}
 
 

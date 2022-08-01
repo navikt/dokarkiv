@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark065;
 
-import static org.mockito.Mockito.verify;
-
 import no.nav.dokarkiv.behandlejournal.SporingMapper;
 import no.nav.dokarkiv.behandlejournal.v2.datautil.BehandleJournalCommonDataUtil;
 import no.nav.dokarkiv.behandlejournal.v2.datautil.JournalfoerNotatHenvendelseAssertUtil;
@@ -9,19 +7,21 @@ import no.nav.dokarkiv.behandlejournal.v2.datautil.JournalfoerNotatHenvendelseDa
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoernotat.Journalpost;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerNotatRequest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DefaultJournalfoerNotatHenvendelseRequestMapper}
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultJournalfoerNotatHenvendelseRequestMapperTest {
 	private static final String SPORING_FORNAVN = JournalfoerNotatHenvendelseDataUtil.SPORING_FORNAVN;
 	private static final String SPORING_ETTERNAVN = JournalfoerNotatHenvendelseDataUtil.SPORING_ETTERNAVN;
@@ -35,7 +35,7 @@ public class DefaultJournalfoerNotatHenvendelseRequestMapperTest {
 	private JournalfoerNotatHenvendelseRequest domainRequest;
 	private Journalpost notatWsJournalpost;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		DateProvider.configure(true, "2014-08-27T12:00:00");
 		createRequest();

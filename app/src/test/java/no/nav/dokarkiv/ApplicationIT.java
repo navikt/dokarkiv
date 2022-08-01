@@ -1,26 +1,24 @@
 package no.nav.dokarkiv;
 
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TokenGeneratorConfiguration.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
@@ -35,6 +33,6 @@ public class ApplicationIT {
 	public void shouldStartApp() {
 		// verifisere at appen klarer starte opp
 		String isAlive = testRestTemplate.getForObject("/isAlive", String.class);
-		assertThat(isAlive, is("Application is alive!"));
+		assertThat(isAlive).isEqualTo("Application is alive!");
 	}
 }

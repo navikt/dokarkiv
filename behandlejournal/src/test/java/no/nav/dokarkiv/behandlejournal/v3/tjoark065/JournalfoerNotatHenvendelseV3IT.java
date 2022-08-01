@@ -1,13 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark065;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3Itest;
 import no.nav.dokarkiv.behandlejournal.v3.datautil.JournalfoerNotatHenvendelseAssertUtil;
 import no.nav.dokarkiv.behandlejournal.v3.datautil.JournalfoerNotatHenvendelseDataUtil;
@@ -19,8 +11,17 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.binding.JournalfoerNotatSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerNotatRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerNotatResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integrations tests for the journalfoerNotatHenvendelse operation.
@@ -31,7 +32,7 @@ public class JournalfoerNotatHenvendelseV3IT extends AbstractBehandleJournalV3It
 	private static final String SPORING_FORNAVN = JournalfoerNotatHenvendelseDataUtil.SPORING_FORNAVN;
 	private static final String SPORING_ETTERNAVN = JournalfoerNotatHenvendelseDataUtil.SPORING_ETTERNAVN;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		DateProvider.configure(true, "2018-07-11T12:00");
 		RequestContextSetter.setRequestContextForUnitTest();
@@ -76,12 +77,11 @@ public class JournalfoerNotatHenvendelseV3IT extends AbstractBehandleJournalV3It
 
 	@Test
 	public void shouldThrowSikkerhetsbegrensningWhenAbacDenies() throws Exception {
-		expectedException.expect(JournalfoerNotatSikkerhetsbegrensning.class);
-
 		abacDeny();
 
 		JournalfoerNotatRequest request = createRequest();
 
-		behandleJournalV3Provider.journalfoerNotat(request);
+		assertThrows(JournalfoerNotatSikkerhetsbegrensning.class,
+				() -> behandleJournalV3Provider.journalfoerNotat(request));
 	}
 }

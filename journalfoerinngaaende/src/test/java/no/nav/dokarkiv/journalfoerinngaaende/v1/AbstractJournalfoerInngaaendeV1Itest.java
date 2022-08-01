@@ -12,11 +12,9 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
@@ -29,7 +27,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import wiremock.com.google.common.io.Resources;
@@ -48,9 +46,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TokenGeneratorConfiguration.class})
+		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TokenGeneratorConfiguration.class})
 @ActiveProfiles({"itest", "wiremock", "ldap"})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
@@ -68,8 +66,6 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
     protected final String PERSON_USER_ID = "Z990782";
     protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/journalfoerinngaaende/v1/journalposter/";
     protected static final ObjectMapper mapper = new ObjectMapper();
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
     @Inject
     protected JoarkRepositorySkjermet joarkRepository;
     @Inject
@@ -81,7 +77,7 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
     @Inject
     protected EntityManager entityManager;
 
-    @Before
+	@BeforeEach
     public void setUp() {
         OIDC_TOKEN_PERSON_USER_TEST = getTokenWithSubject(PERSON_USER_ID);
         OIDC_TOKEN_SERVICE_USER_TEST = getTokenWithSubject(SERVICE_USER_ID);
@@ -91,7 +87,7 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
         return restTemplate.getForObject("/local/jwt?subject=" + subject, String.class);
     }
 
-    @BeforeClass
+	@BeforeAll
     public static void setupItest() {
         RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
                 .userId("itestuser")
@@ -111,7 +107,7 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
         }
     }
 
-    @Before
+	@BeforeEach
     public void cleanup() {
         joarkRepository.deleteAll();
         dokumentinfoRepository.deleteAll();
