@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
-import static java.lang.Long.parseLong;
-import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
-import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_MULTIPLIER;
-
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.FeilregistreringAlleredeOpphevetException;
@@ -13,6 +9,7 @@ import no.nav.dokarkiv.core.exceptions.SaksrelasjonAlleredeFeilregistrertExcepti
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.SaksrelasjonRepository;
 import org.hibernate.StaleObjectStateException;
+import org.slf4j.MDC;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -21,6 +18,12 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
+
+import static java.lang.Long.parseLong;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
+import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
+import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_MULTIPLIER;
 
 @Component
 public class FeilregistrerSakstilknytningService {
@@ -43,6 +46,8 @@ public class FeilregistrerSakstilknytningService {
 
         if (saksrelasjon.getFeilregistrert() == null || !saksrelasjon.getFeilregistrert()) {
             saksrelasjon.setFeilregistrert(true);
+            saksrelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+            saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_NAME));
         } else {
             throw new SaksrelasjonAlleredeFeilregistrertException("Saksrelasjonen er allerede feilregistrert");
         }

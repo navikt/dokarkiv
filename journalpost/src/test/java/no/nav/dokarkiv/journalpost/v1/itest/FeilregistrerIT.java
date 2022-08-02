@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,10 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		Journalpost oppdatertJournalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
-		assertEquals(oppdatertJournalpost.getSaksrelasjon().getFeilregistrert(), true);
+		Saksrelasjon saksrelasjon = oppdatertJournalpost.getSaksrelasjon();
+		assertEquals(true, saksrelasjon.getFeilregistrert());
+		assertEquals(SERVICE_USER_ID, saksrelasjon.getEndretAvNavn());
+		assertEquals(SERVICE_USER_ID, saksrelasjon.getEndretKildeNavn());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 
@@ -65,6 +69,30 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		assertEquals(AksjonsTypeCode.FEILREGISTRER_SAKSTILKNYTNING, aksjonsLogg.getAksjon());
 		assertEquals(HJEMMEL, aksjonsLogg.getHjemmel());
 		assertEquals(1, aksjonsLogg.getArkivElementEndringer().size());
+	}
+
+	@Test
+	public void happyPathFeilregistrerWithSaksbehandlerToken() {
+		abacPermit();
+
+		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+
+		commitAndStartNewTransaction();
+
+		var requestEntity = new HttpEntity<>(createHeadersWithUserAndServiceUserToken());
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + FEILREGISTRER_SAKSTILKNYTNING, PATCH, requestEntity, String.class);
+
+		assertEquals(OK, response.getStatusCode());
+
+		commitAndStartNewTransaction();
+
+		Journalpost oppdatertJournalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+
+		Saksrelasjon saksrelasjon = oppdatertJournalpost.getSaksrelasjon();
+		assertEquals(true, saksrelasjon.getFeilregistrert());
+		assertEquals(PERSON_USER_NAME, saksrelasjon.getEndretAvNavn());
+		assertEquals(SERVICE_USER_ID, saksrelasjon.getEndretKildeNavn());
 	}
 
 	@Test
