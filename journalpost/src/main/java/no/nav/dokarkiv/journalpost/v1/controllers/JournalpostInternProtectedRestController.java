@@ -28,7 +28,6 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 @Slf4j
 @Protected
 @RestController
-//usikker på naminga men må ha noe å skille på i RestWebMvcConfig
 @RequestMapping("/rest/protected/intern/journalpostapi/v1")
 public class JournalpostInternProtectedRestController {
 
