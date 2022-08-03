@@ -28,7 +28,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 @Slf4j
 @Protected
 @RestController
-@RequestMapping("/rest/protected/intern/journalpostapi/v1")
+@RequestMapping("/rest/internal/journalpostapi/v1")
 public class JournalpostInternProtectedRestController {
 
 	private final FinnMottatteJournalposterService finnMottatteJournalposterService;
