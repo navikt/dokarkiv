@@ -218,18 +218,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.UNAUTHORIZED, status);
 	}
 
-	/*@Test
-	public void returnsForbiddenIfInvalidConsumer() {
-		abacPermit();
-
-		var requestEntity = new HttpEntity<>(null, createHeaders(NO_ACCESS_SERVICE_USER_ID));
-
-		ResponseEntity<String> response = restTemplate.exchange(URL_INTERN + FINNMOTTATTEJOURNALPOSTER, HttpMethod.GET, requestEntity, String.class);
-
-		HttpStatus status = response.getStatusCode();
-
-		assertEquals(HttpStatus.FORBIDDEN, status);
-	}*/
 
 	private HttpHeaders createHeaders(String serviceUser) {
 		HttpHeaders headers = new HttpHeaders();
