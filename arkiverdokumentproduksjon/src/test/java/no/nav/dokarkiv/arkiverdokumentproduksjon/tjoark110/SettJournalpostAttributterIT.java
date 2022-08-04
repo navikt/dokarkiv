@@ -1,14 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110;
 
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -21,15 +13,22 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.GregorianCalendar;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Itest for the settJournalpostAttributter operation
@@ -43,10 +42,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 	public static final String ORIGINAL_ENDRET_AV_NAVN = "original";
 	public static final String UTSENDINGSKANAL = UtsendingsKanalCode.EESSI.name();
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		DateProvider.configure(true, "2018-06-20T14:31:54.767");
 	}
@@ -118,12 +114,13 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 
 	@Test
 	public void shouldThrowExceptionIllegalUtsendingskanal() throws Exception {
-		expectedException.expect(ApplicationException.class);
 		Journalpost journalpost1 = buildAndPersistJournalpost();
 
 		SettJournalpostAttributterRequest request = createWsRequest(journalpost1.getJournalpostId())
 				.withUtsendingskanal("Ugyldig_kanal");
-		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
+
+		assertThrows(ApplicationException.class,
+				() -> arkiverDokumentproduksjonProvider.settJournalpostAttributter(request));
 	}
 
 	@Test

@@ -1,5 +1,24 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
+import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.OpprettUtgaaendeJournalpostUgyldigInput;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.OpprettUtgaaendeJournalpostValideringAvVedleggFeilet;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.JournalTilstand;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentResponse;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
+import org.hamcrest.core.IsNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertBruker;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertDokumentinfoRelasjon;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertFildetaljer;
@@ -23,31 +42,12 @@ import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.UNDER_REDIGERING;
 import static no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode.SYFO;
 import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.OpprettUtgaaendeJournalpostUgyldigInput;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.OpprettUtgaaendeJournalpostValideringAvVedleggFeilet;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.JournalTilstand;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentResponse;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matchers;
-import org.hamcrest.core.IsNull;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -56,8 +56,8 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 
 	private Journalpost persistedJournalpost;
 
-	@Before
-	public void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws OpprettUtgaaendeJournalpostUgyldigInput, OpprettUtgaaendeJournalpostValideringAvVedleggFeilet {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpost().setKanalreferanseId("persistedJournalpost");
 		OpprettUtgaaendeJournalpostArkiverDokumentResponse response = arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
@@ -73,7 +73,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	 * HVIS tjenesten kalles med input.forsokFerdigstilling = true, OG alle attributter som kreves for endelig journalføring er satt SÅ skal journalStatus i Joark = "FS" og output.JournalTilstand = FERDIGSTILT
 	 */
 	@Test
-	public void shouldOppretteUtgaaendeJournalpostWithVedlegg() throws Exception {
+	public void shouldOppretteUtgaaendeJournalpostWithVedlegg() throws OpprettUtgaaendeJournalpostUgyldigInput, OpprettUtgaaendeJournalpostValideringAvVedleggFeilet {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		addVedleggToRequest(request);
 
@@ -111,7 +111,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	}
 
 	@Test
-	public void shouldOppretteUtgaaendeJournalpostWithOnlyRequiredValues() throws Exception {
+	public void shouldOppretteUtgaaendeJournalpostWithOnlyRequiredValues() throws OpprettUtgaaendeJournalpostUgyldigInput, OpprettUtgaaendeJournalpostValideringAvVedleggFeilet {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequestWihtOnlyRequiredValues();
 
 		OpprettUtgaaendeJournalpostArkiverDokumentResponse response = arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
@@ -141,10 +141,10 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	}
 
 	@Test
-	public void shouldThrowForInvalidInput() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostUgyldigInput.class));
-		expectedException.expectMessage("kanalReferanseId, opprettetAvNavn, journalpostDokumentInfoRelasjoner");
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(new OpprettUtgaaendeJournalpostArkiverDokumentRequest());
+	public void shouldThrowForInvalidInput() {
+		assertThrows(OpprettUtgaaendeJournalpostUgyldigInput.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(new OpprettUtgaaendeJournalpostArkiverDokumentRequest()),
+				"kanalReferanseId, opprettetAvNavn, journalpostDokumentInfoRelasjoner");
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	 * HVIS tjenesten kalles med input.forsokFerdigstilling = true, OG alle attributter som kreves for endelig journalføring IKKE er satt SÅ skal journalStatus i Joark = "D" og output.JournalTilstand = UNDER_ARBEID
 	 */
 	@Test
-	public void shouldSetStatusUnderArbeidWhenInvalidJournalpost() throws Exception {
+	public void shouldSetStatusUnderArbeidWhenInvalidJournalpost() throws OpprettUtgaaendeJournalpostUgyldigInput, OpprettUtgaaendeJournalpostValideringAvVedleggFeilet {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.setSaksrelasjon(null);
 		OpprettUtgaaendeJournalpostArkiverDokumentResponse response = arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
@@ -170,7 +170,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	 * HVIS tjenesten kalles med input.forsokFerdigstilling = false, OG alle attributter som kreves for endelig journalføring IKKE er satt SÅ skal journalStatus i Joark = "D" og output.JournalTilstand = UNDER_ARBEID
 	 */
 	@Test
-	public void shouldSetStatusUnderArbeidWhenForskFerdigstillingIsFalse() throws Exception {
+	public void shouldSetStatusUnderArbeidWhenForskFerdigstillingIsFalse() throws OpprettUtgaaendeJournalpostUgyldigInput, OpprettUtgaaendeJournalpostValideringAvVedleggFeilet {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.setForsokFerdigstilling(false);
 		request.setSaksrelasjon(null);
@@ -185,7 +185,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	 * HVIS to journalposter sendes inn med samme kanalReferanseId SÅ skal output for de to innsendingene være likt.
 	 */
 	@Test
-	public void shouldReturnSameResponseWhenKanalReferanseIdIsEqual() throws Exception {
+	public void shouldReturnSameResponseWhenKanalReferanseIdIsEqual() throws OpprettUtgaaendeJournalpostUgyldigInput, OpprettUtgaaendeJournalpostValideringAvVedleggFeilet {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		addVedleggToRequest(request);
 
@@ -201,10 +201,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG journalstatus for original journalposten != J, FS eller FS SÅ skal det returneres en feil
 	 */
 	@Test
-	public void shouldThrowIfVedleggRefersToJournalpostWithStatusD() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("Journalpost.JournalStatus kan ikke være D");
-
+	public void shouldThrowIfVedleggRefersToJournalpostWithStatusD() {
 		persistedJournalpost.setJournalstatus(JournalStatusCode.D);
 		persistedJournalpost = joarkRepository.save(persistedJournalpost);
 
@@ -216,17 +213,16 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 						.getDokumentInfo()
 						.getId(), persistedJournalpost.getJournalpostId()));
 
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
+		assertThrows(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
+				"Journalpost.JournalStatus kan ikke være D");
 	}
 
 	/**
 	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG saksrelasjonen for original journalposten er feilregistrert SÅ skal det returneres en feil
 	 */
 	@Test
-	public void shouldThrowIfVedleggRefersToJournalpostWithFeiletregistertSaksrelasjon() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("Journalpost.Saksrelasjon.Feilregistert kan ikke være Sann");
-
+	public void shouldThrowIfVedleggRefersToJournalpostWithFeiletregistertSaksrelasjon() {
 		persistedJournalpost.getSaksrelasjon().setFeilregistrert(true);
 		persistedJournalpost = joarkRepository.save(persistedJournalpost);
 
@@ -238,31 +234,29 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 						.getDokumentInfo()
 						.getId(), persistedJournalpost.getJournalpostId()));
 
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
+		assertThrows(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
+				"Journalpost.Saksrelasjon.Feilregistert kan ikke være Sann");
 	}
 
 	/**
 	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG dokumentet ikke finnes i Joark på den oppgitte journalposten SÅ skal det returneres en feil
 	 */
 	@Test
-	public void shouldThrowIfCannotFindVedleggDokumentInfo() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("Fant ingen DokumentInfo for vedlegg med dokumentInfoId");
-
+	public void shouldThrowIfCannotFindVedleggDokumentInfo() {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getVedlegg().add(createVedlegg(123L, persistedJournalpost.getJournalpostId()));
 
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
+		assertThrows(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
+				"Fant ingen DokumentInfo for vedlegg med dokumentInfoId");
 	}
 
 	/**
 	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG dokumentet har satt dokumentStatus, men den er ulik FERDIGSTILT, SÅ skal det returneres en feil
 	 */
 	@Test
-	public void shouldThrowIfVedleggDokumentInfoStatusIsNotFerdigstilt() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("DokumentInfo.Dokumentstatus må være FERDIGSTILT men var UNDER_REDIGERING");
-
+	public void shouldThrowIfVedleggDokumentInfoStatusIsNotFerdigstilt() {
 		persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
 				.iterator()
 				.next()
@@ -278,17 +272,16 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 						.getDokumentInfo()
 						.getId(), persistedJournalpost.getJournalpostId()));
 
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
+		assertThrows(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
+				"DokumentInfo.Dokumentstatus må være FERDIGSTILT men var UNDER_REDIGERING");
 	}
 
 	/**
 	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG det er registrert at dokumentet er slettet, organInternt eller har innskrenketPartsinnsyn SÅ skal det returneres en feil
 	 */
 	@Test
-	public void shouldThrowIfVedleggDokumentInfoOrganInterntIsTrue() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("DokumentInfo.OrganInternt kan ikke være Sann");
-
+	public void shouldThrowIfVedleggDokumentInfoOrganInterntIsTrue() {
 		persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
 				.iterator()
 				.next()
@@ -304,17 +297,16 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 						.getDokumentInfo()
 						.getId(), persistedJournalpost.getJournalpostId()));
 
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
+		assertThrows(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
+				"DokumentInfo.OrganInternt kan ikke være Sann");
 	}
 
 	/**
 	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG det er registrert at dokumentet er slettet, organInternt eller har innskrenketPartsinnsyn SÅ skal det returneres en feil
 	 */
 	@Test
-	public void shouldThrowIfVedleggDokumentInfoInnskrenketPartInnsynIsTrue() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("DokumentInfo.InnskrenketPartsinnsyn kan ikke være Sann");
-
+	public void shouldThrowIfVedleggDokumentInfoInnskrenketPartInnsynIsTrue() {
 		persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
 				.iterator()
 				.next()
@@ -330,17 +322,16 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 						.getDokumentInfo()
 						.getId(), persistedJournalpost.getJournalpostId()));
 
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
+		assertThrows(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
+				"DokumentInfo.InnskrenketPartsinnsyn kan ikke være Sann");
 	}
 
 	/**
 	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG dokumentet har et tilhørende filDetaljer-objekt som har satt ondemandId SÅ skal det returneres en feil
 	 */
 	@Test
-	public void shouldThrowIfVedleggDokumentInfoHasFildetaljerObjectWithOndemanIdNotNull() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("Fildetaljer.OnDemandId kan ikke være satt");
-
+	public void shouldThrowIfVedleggDokumentInfoHasFildetaljerObjectWithOndemanIdNotNull() {
 		FilDetaljer detaljer = persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
 				.iterator()
 				.next()
@@ -360,17 +351,16 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 						.getDokumentInfo()
 						.getId(), persistedJournalpost.getJournalpostId()));
 
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
+		assertThrows(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
+				"Fildetaljer.OnDemandId kan ikke være satt");
 	}
 
 	/**
 	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG dokumentet IKKE har et tilhørende filDetaljer-objekt med variantFormat ARKIV SÅ skal det returneres en feil
 	 */
 	@Test
-	public void shouldThrowIfVedleggDokumentInfoMissingFildetaljerWithVariantFormatARKIV() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class));
-		expectedException.expectMessage("Vedlegg mangler Fildetaljer med variantFormat=ARKIV");
-
+	public void shouldThrowIfVedleggDokumentInfoMissingFildetaljerWithVariantFormatARKIV() {
 		persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
 				.iterator()
 				.next()
@@ -389,18 +379,16 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 						.getDokumentInfo()
 						.getId(), persistedJournalpost.getJournalpostId()));
 
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
+		assertThrows(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
+				"Vedlegg mangler Fildetaljer med variantFormat=ARKIV");
 	}
 
 	/**
 	 * HVIS operasjonen kalles med mer enn ett hoveddokument SÅ skal det returneres en feil
 	 */
 	@Test
-	public void shouldThrowIfRequestHasMoreThanOneHoveddokument() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostUgyldigInput.class));
-		expectedException.expectMessage("Journalpost cannot contain more than one hoveddokument when endelig journalforing");
-
-
+	public void shouldThrowIfRequestHasMoreThanOneHoveddokument() {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpostDokumentInfoRelasjon().forEach(relasjon -> {
 			relasjon.setTilknyttetJournalpostSom(HOVEDDOKUMENT);
@@ -413,17 +401,16 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 						.getDokumentInfo()
 						.getId(), persistedJournalpost.getJournalpostId()));
 
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
+		assertThrows(OpprettUtgaaendeJournalpostUgyldigInput.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
+				"Journalpost cannot contain more than one hoveddokument when endelig journalforing");
 	}
 
 	/**
 	 * HVIS operasjonen kalles uten Fildetaljer med variantformat = ARKIV SÅ skal det returnere en feil
 	 */
 	@Test
-	public void shouldThrowIfRequestHasDokumentWithNoARKIVVariantFormat() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostUgyldigInput.class));
-		expectedException.expectMessage("All the Journalpost's DokumentInfos must contain an arkiv variant when endelig journalforing");
-
+	public void shouldThrowIfRequestHasDokumentWithNoARKIVVariantFormat() {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpostDokumentInfoRelasjon().forEach(relasjon -> {
 			relasjon.getDokumentInfo().getFildetaljerListe().add(createFildetaljer());
@@ -439,7 +426,9 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 						.getDokumentInfo()
 						.getId(), persistedJournalpost.getJournalpostId()));
 
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
+		assertThrows(OpprettUtgaaendeJournalpostUgyldigInput.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
+				"All the Journalpost's DokumentInfos must contain an arkiv variant when endelig journalforing");
 	}
 
 	/**
@@ -447,10 +436,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	 * HVIS operasjonen kalles med flere Fildetaljer OG to av disse har identiske variantformater SÅ skal det returneres en feil
 	 */
 	@Test
-	public void shouldThrowIfRequestHasDokumentWithMultipleEqualVariantFormats() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostUgyldigInput.class));
-		expectedException.expectMessage("DokumentInfo cannot contain dokumentvariant duplicates, found 2 ARKIV varianter");
-
+	public void shouldThrowIfRequestHasDokumentWithMultipleEqualVariantFormats() {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpostDokumentInfoRelasjon().forEach(relasjon -> {
 			relasjon.getDokumentInfo()
@@ -465,17 +451,16 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 						.getDokumentInfo()
 						.getId(), persistedJournalpost.getJournalpostId()));
 
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
+		assertThrows(OpprettUtgaaendeJournalpostUgyldigInput.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
+				"DokumentInfo cannot contain dokumentvariant duplicates, found 2 ARKIV varianter");
 	}
 
 	/**
 	 * HVIS operasjonen kalles med en ugyldig kodeverdi i input SÅ skal det returneres en feil
 	 */
 	@Test
-	public void shouldThrowIfRequestHasInvalidEnumValue() throws Exception {
-		expectedException.expect(isA(OpprettUtgaaendeJournalpostUgyldigInput.class));
-		expectedException.expectMessage("No enum constant no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.adsad");
-
+	public void shouldThrowIfRequestHasInvalidEnumValue() {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpostDokumentInfoRelasjon().get(0).setTilknyttetJournalpostSom("adsad");
 
@@ -486,7 +471,9 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 						.getDokumentInfo()
 						.getId(), persistedJournalpost.getJournalpostId()));
 
-		arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
+		assertThrows(OpprettUtgaaendeJournalpostUgyldigInput.class,
+				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
+				"No enum constant no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.adsad");
 	}
 
 	private OpprettUtgaaendeJournalpostArkiverDokumentRequest addVedleggToRequest(OpprettUtgaaendeJournalpostArkiverDokumentRequest request) {

@@ -55,6 +55,7 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AlleredeFerdigstiltException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVedleggJournalpostIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVedleggJournalpostIkkeUnderArbeid;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytJournalpostAvbrytelseIkkeTillatt;
@@ -65,6 +66,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVed
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggDokumentIkkeVedlegg;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggJournalpostIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggJournalpostIkkeUnderArbeid;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FeilStrukturException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FerdigstillJournalpostInneholderDokumenterUnderRedigering;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FerdigstillJournalpostJournalpostIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FerdigstillJournalpostJournalpostIkkeUnderArbeid;
@@ -73,6 +75,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FjernFerd
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FjernFerdigstiltDokumentDokumentIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FjernFerdigstiltDokumentJournalpostIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KanIkkeFerdigstillesException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt;
@@ -80,6 +83,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDoku
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ObjektIkkeFunnetException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.UgyldigInputException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.DokumentInfo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.Journalpost;
@@ -95,18 +99,17 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doThrow;
@@ -119,15 +122,12 @@ import static org.mockito.Mockito.when;
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ArkiverDokumentproduksjonProviderTest {
 
 	private static final String ENDRET_AV_NAVN = "endretAvNavn";
 	private static final Long JOURNALPOST_ID = 37483L;
 	private static final Long DOCUMENT_INFO_ID = 2433L;
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 
 	@Mock
 	private OpprettJournalpostArkiverDokumentRequestMapper opprettJournalpostArkiverDokumentRequestMapperMock;
@@ -192,11 +192,8 @@ public class ArkiverDokumentproduksjonProviderTest {
 	@InjectMocks
 	private ArkiverDokumentproduksjonProvider provider;
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
-	public void shouldOpprettJournalpostArkiverDokument() throws Exception {
+	public void shouldOpprettJournalpostArkiverDokument() {
 		OpprettJournalpostArkiverDokumentResponse wsResponse =
 				new OpprettJournalpostArkiverDokumentResponse();
 		wsResponse.setJournalpostId(JOURNALPOST_ID);
@@ -218,7 +215,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	}
 
 	@Test
-	public void shouldOpprettJournalpost() throws Exception {
+	public void shouldOpprettJournalpost() {
 		OpprettJournalpostRequest wsRequest = new OpprettJournalpostRequest();
 
 		OpprettJournalpostResponseTo domainResponse = OpprettJournalpostResponseTo.builder()
@@ -236,13 +233,16 @@ public class ArkiverDokumentproduksjonProviderTest {
 	}
 
 	@Test
-	public void shouldOppdaterJournalpostArkiverDokument()
-			throws Exception {
-		thrown.expect(UgyldigInputException.class);
-
+	public void shouldOppdaterJournalpostArkiverDokument() throws UgyldigInputException, AlleredeFerdigstiltException, ObjektIkkeFunnetException, FeilStrukturException, KanIkkeFerdigstillesException {
 		OppdaterJournalpostArkiverDokumentRequestTo domainRequest = OppdaterJournalpostArkiverDokumentRequestTo.builder().build();
+		when(oppdaterJournalpostArkiverDokumentRequestMapperMock
+				.map(any()))
+				.thenReturn(domainRequest);
 
-		provider.oppdaterJournalpostArkiverDokument(new OppdaterJournalpostArkiverDokumentRequest());
+		OppdaterJournalpostArkiverDokumentRequest wsRequest = new OppdaterJournalpostArkiverDokumentRequest();
+		wsRequest.setJournalpostId(1L);
+
+		provider.oppdaterJournalpostArkiverDokument(wsRequest);
 
 		verify(oppdaterJournalpostArkiverDokumentRequestMapperMock)
 				.map(any(OppdaterJournalpostArkiverDokumentRequest.class));
@@ -251,46 +251,42 @@ public class ArkiverDokumentproduksjonProviderTest {
 	}
 
 	@Test
-	public void shouldAvbrytJournalpost() throws Exception {
+	public void shouldAvbrytJournalpost() throws AvbrytJournalpostAvbrytelseIkkeTillatt, AvbrytJournalpostJournalpostIkkeFunnet, AvbrytJournalpostJournalpostAlleredeAvbrutt {
 		provider.avbrytJournalpost(createAvbrytJournalpostRequest(JOURNALPOST_ID, ENDRET_AV_NAVN));
 		verify(avbrytJournalpostServiceMock).avbrytJournalpost(argThat(new IsAvbrytJournalpostServiceCalledWithExpectedInput()));
 	}
 
-
 	@Test
-	public void shouldThrowExceptionIfJournalpostNotFound() throws Exception {
-		thrown.expect(AvbrytJournalpostJournalpostIkkeFunnet.class);
-
+	public void shouldThrowExceptionIfJournalpostNotFound() {
 		doThrow(new NoJournalpostFoundException("Not found", JOURNALPOST_ID)).when(avbrytJournalpostServiceMock)
 				.avbrytJournalpost(any(AvbrytJournalpostRequestTo.class));
 
-		provider.avbrytJournalpost(createAvbrytJournalpostRequest(JOURNALPOST_ID, ENDRET_AV_NAVN));
+		assertThrows(AvbrytJournalpostJournalpostIkkeFunnet.class,
+				() -> provider.avbrytJournalpost(createAvbrytJournalpostRequest(JOURNALPOST_ID, ENDRET_AV_NAVN)));
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostAlleredeAvbrutt() throws Exception {
-		thrown.expect(AvbrytJournalpostJournalpostAlleredeAvbrutt.class);
-
+	public void shouldThrowExceptionIfJournalpostAlleredeAvbrutt() {
 		UgyldigJournalStatusOvergangException alleredeAvbrutt =
 				new UgyldigJournalStatusOvergangException("Allerede Avbrutt", JournalStatusCode.A, JournalStatusCode.A, JournalpostTypeCode.I);
 		doThrow(alleredeAvbrutt).when(avbrytJournalpostServiceMock).avbrytJournalpost(any(AvbrytJournalpostRequestTo.class));
 
-		provider.avbrytJournalpost(createAvbrytJournalpostRequest(JOURNALPOST_ID, ENDRET_AV_NAVN));
+		assertThrows(AvbrytJournalpostJournalpostAlleredeAvbrutt.class,
+				() -> provider.avbrytJournalpost(createAvbrytJournalpostRequest(JOURNALPOST_ID, ENDRET_AV_NAVN)));
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostStatusHasUgyldigOvergang() throws Exception {
-		thrown.expect(AvbrytJournalpostAvbrytelseIkkeTillatt.class);
-
+	public void shouldThrowExceptionIfJournalpostStatusHasUgyldigOvergang() {
 		UgyldigJournalStatusOvergangException ugyldigOvergang =
 				new UgyldigJournalStatusOvergangException("Kan ikke fremprovosere transisjon fra journalført til avbrutt", JournalStatusCode.J, JournalStatusCode.A, JournalpostTypeCode.I);
 		doThrow(ugyldigOvergang).when(avbrytJournalpostServiceMock).avbrytJournalpost(any(AvbrytJournalpostRequestTo.class));
 
-		provider.avbrytJournalpost(createAvbrytJournalpostRequest(JOURNALPOST_ID, ENDRET_AV_NAVN));
+		assertThrows(AvbrytJournalpostAvbrytelseIkkeTillatt.class,
+				() -> provider.avbrytJournalpost(createAvbrytJournalpostRequest(JOURNALPOST_ID, ENDRET_AV_NAVN)));
 	}
 
 	@Test
-	public void shouldArkiverVedlegg() throws Exception {
+	public void shouldArkiverVedlegg() throws ArkiverVedleggJournalpostIkkeFunnet, ArkiverVedleggJournalpostIkkeUnderArbeid {
 		when(arkiverVedleggRequestMapperMock.map(any())).thenReturn(new ArkiverVedleggRequestTo());
 		when(arkiverVedleggServiceMock.arkiverVedlegg(any())).thenReturn(ArkiverVedleggResponseTo.builder()
 				.dokumentInfoId(12L)
@@ -300,22 +296,26 @@ public class ArkiverDokumentproduksjonProviderTest {
 		verify(arkiverVedleggServiceMock).arkiverVedlegg(any(ArkiverVedleggRequestTo.class));
 	}
 
-	@Test(expected = ArkiverVedleggJournalpostIkkeFunnet.class)
-	public void shouldThrowExceptionIfJournalpostIsNull() throws NoJournalpostFoundException, ArkiverVedleggJournalpostIkkeUnderArbeid, ArkiverVedleggJournalpostIkkeFunnet {
+	@Test
+	public void shouldThrowExceptionIfJournalpostIsNull() throws NoJournalpostFoundException {
 		doThrow(new NoJournalpostFoundException("Journalpost not found", JOURNALPOST_ID)).when(arkiverVedleggServiceMock)
 				.arkiverVedlegg(any());
-		provider.arkiverVedlegg(createArkiverVedleggRequest(null));
-	}
 
-	@Test(expected = ArkiverVedleggJournalpostIkkeUnderArbeid.class)
-	public void shouldThrowExceptionIfJournalpostIsIkkeUnderArbeid() throws NoJournalpostFoundException, ArkiverVedleggJournalpostIkkeUnderArbeid, ArkiverVedleggJournalpostIkkeFunnet {
-		doThrow(new IllegalDocumentUpdateException("Journalpost with id: " + JOURNALPOST_ID + " can not be updated")).when(arkiverVedleggServiceMock)
-				.arkiverVedlegg(any());
-		provider.arkiverVedlegg(createArkiverVedleggRequest(JOURNALPOST_ID));
+		assertThrows(ArkiverVedleggJournalpostIkkeFunnet.class,
+				() -> provider.arkiverVedlegg(createArkiverVedleggRequest(null)));
 	}
 
 	@Test
-	public void shouldSettDatoSendt() throws Exception {
+	public void shouldThrowExceptionIfJournalpostIsIkkeUnderArbeid() throws NoJournalpostFoundException, ArkiverVedleggJournalpostIkkeUnderArbeid, ArkiverVedleggJournalpostIkkeFunnet {
+		doThrow(new IllegalDocumentUpdateException("Journalpost with id: " + JOURNALPOST_ID + " can not be updated")).when(arkiverVedleggServiceMock)
+				.arkiverVedlegg(any());
+
+		assertThrows(ArkiverVedleggJournalpostIkkeUnderArbeid.class,
+				() -> provider.arkiverVedlegg(createArkiverVedleggRequest(JOURNALPOST_ID)));
+	}
+
+	@Test
+	public void shouldSettDatoSendt() {
 		SettDatoSendtRequest wsRequest = new SettDatoSendtRequest();
 		SettDatoSendtRequestTo domainRequest = new SettDatoSendtRequestTo(null, null, null);
 		when(settDatoSendtRequestMapperMock.map(wsRequest)).thenReturn(domainRequest);
@@ -326,64 +326,64 @@ public class ArkiverDokumentproduksjonProviderTest {
 	}
 
 	@Test
-	public void shouldFjernFerdigstiltDokument() throws Exception {
+	public void shouldFjernFerdigstiltDokument() throws FjernFerdigstiltDokumentDokumentAlleredeRedigerbart, FjernFerdigstiltDokumentJournalpostIkkeFunnet, FjernFerdigstiltDokumentDokumentIkkeFunnet, FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid, FjernFerdigstiltDokumentDokumentAlleredeAvbrutt {
 		provider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest());
 		verify(fjernFerdigstiltDokumentServiceMock).fjernFerdigstiltDokument(any(FjernFerdigstiltDokumentRequestTo.class));
 	}
 
 	@Test
-	public void shouldThrowException_FjernFerdigstiltDokumentJournalpostIkkeFunnet() throws Exception {
-		expectedException.expect(FjernFerdigstiltDokumentJournalpostIkkeFunnet.class);
+	public void shouldThrowException_FjernFerdigstiltDokumentJournalpostIkkeFunnet() {
 		doThrow(new NoJournalpostFoundException("Cannot find", JOURNALPOST_ID)).when(fjernFerdigstiltDokumentServiceMock)
 				.fjernFerdigstiltDokument(any(FjernFerdigstiltDokumentRequestTo.class));
 
-		provider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest());
+		assertThrows(FjernFerdigstiltDokumentJournalpostIkkeFunnet.class,
+				() -> provider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest()));
 	}
 
 	@Test
-	public void shouldThrowException_FjernFerdigstiltDokumentDokumentIkkeFunnet() throws Exception {
-		expectedException.expect(FjernFerdigstiltDokumentDokumentIkkeFunnet.class);
+	public void shouldThrowException_FjernFerdigstiltDokumentDokumentIkkeFunnet() {
 		doThrow(new NoDokumentInfoFoundException("Cannot find", DOCUMENT_INFO_ID)).when(fjernFerdigstiltDokumentServiceMock)
 				.fjernFerdigstiltDokument(any(FjernFerdigstiltDokumentRequestTo.class));
 
-		provider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest());
+		assertThrows(FjernFerdigstiltDokumentDokumentIkkeFunnet.class,
+				() -> provider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest()));
 	}
 
 	@Test
-	public void shouldThrowException_FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid() throws Exception {
-		expectedException.expect(FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid.class);
+	public void shouldThrowException_FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid() {
 		doThrow(new UgyldigJournalStatusVerdiException("journal status", JournalStatusCode.FL))
 				.when(
 						fjernFerdigstiltDokumentServiceMock)
 				.fjernFerdigstiltDokument(any(FjernFerdigstiltDokumentRequestTo.class));
 
-		provider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest());
+		assertThrows(FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid.class,
+				() -> provider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest()));
 	}
 
 	@Test
-	public void shouldThrowException_FjernFerdigstiltDokumentDokumentAlleredeRedigerbart() throws Exception {
-		expectedException.expect(FjernFerdigstiltDokumentDokumentAlleredeRedigerbart.class);
+	public void shouldThrowException_FjernFerdigstiltDokumentDokumentAlleredeRedigerbart() {
 		doThrow(new UgyldigDokumentStatusVerdiException("dokument status", DokumentStatusCode.UNDER_REDIGERING))
 				.when(
 						fjernFerdigstiltDokumentServiceMock)
 				.fjernFerdigstiltDokument(any(FjernFerdigstiltDokumentRequestTo.class));
 
-		provider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest());
+		assertThrows(FjernFerdigstiltDokumentDokumentAlleredeRedigerbart.class,
+				() -> provider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest()));
 	}
 
 	@Test
-	public void shouldThrowException_FjernFerdigstiltDokumentDokumentAlleredeAvbrutt() throws Exception {
-		expectedException.expect(FjernFerdigstiltDokumentDokumentAlleredeAvbrutt.class);
+	public void shouldThrowException_FjernFerdigstiltDokumentDokumentAlleredeAvbrutt() {
 		doThrow(new UgyldigDokumentStatusVerdiException("dokument status", DokumentStatusCode.AVBRUTT))
 				.when(
 						fjernFerdigstiltDokumentServiceMock)
 				.fjernFerdigstiltDokument(any(FjernFerdigstiltDokumentRequestTo.class));
 
-		provider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest());
+		assertThrows(FjernFerdigstiltDokumentDokumentAlleredeAvbrutt.class,
+				() -> provider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest()));
 	}
 
 	@Test
-	public void shouldFerdigstillJournalpost() throws Exception {
+	public void shouldFerdigstillJournalpost() throws FerdigstillJournalpostJournalpostIkkeFunnet, FerdigstillJournalpostInneholderDokumenterUnderRedigering, FerdigstillJournalpostJournalpostIkkeUnderArbeid {
 		when(ferdigstillJournalpostRequestMapperMock.map(any(FerdigstillJournalpostRequest.class))).thenReturn(
 				new FerdigstillJournalpostRequestTo(JOURNALPOST_ID, ENDRET_AV_NAVN, UtsendingsKanalCode.EESSI));
 		provider.ferdigstillJournalpost(new FerdigstillJournalpostRequest());
@@ -391,43 +391,42 @@ public class ArkiverDokumentproduksjonProviderTest {
 	}
 
 	@Test
-	public void shouldThrowException_FerdigstillJournalpostJournalpostIkkeFunnet() throws Exception {
-		expectedException.expect(FerdigstillJournalpostJournalpostIkkeFunnet.class);
+	public void shouldThrowException_FerdigstillJournalpostJournalpostIkkeFunnet() {
 		doThrow(new NoJournalpostFoundException("Cannot find", JOURNALPOST_ID)).when(ferdigstillJournalpostServiceMock)
 				.ferdigstillJournalpost(any());
 
-		provider.ferdigstillJournalpost(new FerdigstillJournalpostRequest());
+		assertThrows(FerdigstillJournalpostJournalpostIkkeFunnet.class,
+				() -> provider.ferdigstillJournalpost(new FerdigstillJournalpostRequest()));
 	}
 
 	@Test
-	public void shouldThrowException_FerdigstillJournalpostJournalpostIkkeUnderArbeid() throws Exception {
-		expectedException.expect(FerdigstillJournalpostJournalpostIkkeUnderArbeid.class);
+	public void shouldThrowException_FerdigstillJournalpostJournalpostIkkeUnderArbeid() {
 		doThrow(new UgyldigJournalStatusVerdiException("Cannot find", null)).when(ferdigstillJournalpostServiceMock)
 				.ferdigstillJournalpost(any());
 
-		provider.ferdigstillJournalpost(new FerdigstillJournalpostRequest());
+		assertThrows(FerdigstillJournalpostJournalpostIkkeUnderArbeid.class,
+				() -> provider.ferdigstillJournalpost(new FerdigstillJournalpostRequest()));
 	}
 
 	@Test
-	public void shouldThrowException_FerdigstillJournalpostInneholderDokumenterUnderRedigering() throws Exception {
-		expectedException.expect(FerdigstillJournalpostInneholderDokumenterUnderRedigering.class);
+	public void shouldThrowException_FerdigstillJournalpostInneholderDokumenterUnderRedigering() {
 		doThrow(new UgyldigDokumentStatusVerdiException("journal status", null))
 				.when(ferdigstillJournalpostServiceMock).ferdigstillJournalpost(any());
 
-		provider.ferdigstillJournalpost(new FerdigstillJournalpostRequest());
+		assertThrows(FerdigstillJournalpostInneholderDokumenterUnderRedigering.class,
+				() -> provider.ferdigstillJournalpost(new FerdigstillJournalpostRequest()));
 	}
 
 
 	@Test
-	public void shouldThrowExceptionAvbrytVedleggWsRequestIsNull() throws Exception {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("Request is null");
-
-		provider.avbrytVedlegg(null);
+	public void shouldThrowExceptionAvbrytVedleggWsRequestIsNull() {
+		assertThrows(IllegalArgumentException.class,
+				() -> provider.avbrytVedlegg(null),
+				"Request is null");
 	}
 
 	@Test
-	public void shouldAvbrytVedlegg() throws Exception {
+	public void shouldAvbrytVedlegg() throws AvbrytVedleggJournalpostIkkeFunnet, AvbrytVedleggDokumentIkkeFunnet, AvbrytVedleggDokumentIkkeVedlegg, AvbrytVedleggJournalpostIkkeUnderArbeid, AvbrytVedleggDokumentAlleredeAvbrutt {
 		provider.avbrytVedlegg(createAvbrytVedlegRequest());
 
 		ArgumentCaptor<AvbrytVedleggRequestTo> captor = ArgumentCaptor.forClass(AvbrytVedleggRequestTo.class);
@@ -440,56 +439,53 @@ public class ArkiverDokumentproduksjonProviderTest {
 	}
 
 	@Test
-	public void shouldThrowAvbrytVedleggJournalpostIkkeFunnet() throws Exception {
-		expectedException.expect(AvbrytVedleggJournalpostIkkeFunnet.class);
-
+	public void shouldThrowAvbrytVedleggJournalpostIkkeFunnet() {
 		doThrow(new NoJournalpostFoundException("Cannot find", JOURNALPOST_ID)).when(avbrytVedleggServiceMock)
 				.avbrytVedlegg(any(AvbrytVedleggRequestTo.class));
 
-		provider.avbrytVedlegg(new AvbrytVedleggRequest());
+		assertThrows(AvbrytVedleggJournalpostIkkeFunnet.class,
+				() -> provider.avbrytVedlegg(new AvbrytVedleggRequest()));
 	}
 
 	@Test
-	public void shouldThrowAvbrytVedleggDokumentIkkeFunnet() throws Exception {
-		expectedException.expect(AvbrytVedleggDokumentIkkeFunnet.class);
-
+	public void shouldThrowAvbrytVedleggDokumentIkkeFunnet() {
 		doThrow(new NoDokumentInfoFoundException("Cannot find", DOCUMENT_INFO_ID)).when(avbrytVedleggServiceMock)
 				.avbrytVedlegg(any(AvbrytVedleggRequestTo.class));
 
-		provider.avbrytVedlegg(new AvbrytVedleggRequest());
+		assertThrows(AvbrytVedleggDokumentIkkeFunnet.class,
+				() -> provider.avbrytVedlegg(new AvbrytVedleggRequest()));
 	}
 
 	@Test
-	public void shouldThrowAvbrytVedleggJournalpostIkkeUnderArbeid() throws Exception {
-		expectedException.expect(AvbrytVedleggJournalpostIkkeUnderArbeid.class);
-
+	public void shouldThrowAvbrytVedleggJournalpostIkkeUnderArbeid() {
 		doThrow(new UgyldigJournalStatusVerdiException("journal status", JournalStatusCode.FL)).when(avbrytVedleggServiceMock)
 				.avbrytVedlegg(any(AvbrytVedleggRequestTo.class));
 
-		provider.avbrytVedlegg(new AvbrytVedleggRequest());
+		assertThrows(AvbrytVedleggJournalpostIkkeUnderArbeid.class,
+				() -> provider.avbrytVedlegg(new AvbrytVedleggRequest()));
 	}
 
 	@Test
-	public void shouldThrowAvbrytVedleggDokumentAlleredeAvbrutt() throws Exception {
-		expectedException.expect(AvbrytVedleggDokumentAlleredeAvbrutt.class);
+	public void shouldThrowAvbrytVedleggDokumentAlleredeAvbrutt() {
 		doThrow(new UgyldigDokumentStatusVerdiException("dokument status", DokumentStatusCode.AVBRUTT)).when(avbrytVedleggServiceMock)
 				.avbrytVedlegg(any(AvbrytVedleggRequestTo.class));
 
-		provider.avbrytVedlegg(new AvbrytVedleggRequest());
+		assertThrows(AvbrytVedleggDokumentAlleredeAvbrutt.class,
+				() -> provider.avbrytVedlegg(new AvbrytVedleggRequest()));
 	}
 
 	@Test
-	public void shouldThrowAvbrytVedleggDokumentIkkeVedlegg() throws Exception {
-		expectedException.expect(AvbrytVedleggDokumentIkkeVedlegg.class);
+	public void shouldThrowAvbrytVedleggDokumentIkkeVedlegg() {
 		doThrow(new UgyldigTilknyttetJournalpostSomVerdiException("Tilknyttet som", TilknyttetJournalpostSomCode.HOVEDDOKUMENT))
 				.when(avbrytVedleggServiceMock)
 				.avbrytVedlegg(any(AvbrytVedleggRequestTo.class));
 
-		provider.avbrytVedlegg(new AvbrytVedleggRequest());
+		assertThrows(AvbrytVedleggDokumentIkkeVedlegg.class,
+				() -> provider.avbrytVedlegg(new AvbrytVedleggRequest()));
 	}
 
 	@Test
-	public void doesNothingWhenKnyttDokumentTilJournalpostSomVedleggSucceeds() throws Exception {
+	public void doesNothingWhenKnyttDokumentTilJournalpostSomVedleggSucceeds() throws KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt, KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet, KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader, KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt, KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt, KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet, KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -498,7 +494,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	}
 
 	@Test
-	public void knyttDokumentTilJournalpostSomVedleggCallsMapperWithRequest() throws Exception {
+	public void knyttDokumentTilJournalpostSomVedleggCallsMapperWithRequest() throws KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt, KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet, KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader, KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt, KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt, KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet, KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -509,7 +505,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	}
 
 	@Test
-	public void knyttDokumentTilJournalpostSomVedleggCallsServiceWithMappedRequest() throws Exception {
+	public void knyttDokumentTilJournalpostSomVedleggCallsServiceWithMappedRequest() throws KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt, KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet, KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader, KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt, KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt, KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet, KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -520,7 +516,7 @@ public class ArkiverDokumentproduksjonProviderTest {
 	}
 
 	@Test
-	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsDokumentInfoInnskrenketPartsinnsynException() throws Exception {
+	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsDokumentInfoInnskrenketPartsinnsynException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -529,14 +525,13 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	@Test
-	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsDokumentInfoSlettetException() throws Exception {
+	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsDokumentInfoSlettetException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -545,14 +540,13 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	@Test
-	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsDokumentInfoIsOrganInterntException() throws Exception {
+	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsDokumentInfoIsOrganInterntException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -561,14 +555,13 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	@Test
-	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsIllegalDokumentstatusException() throws Exception {
+	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsIllegalDokumentstatusException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -577,14 +570,13 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	@Test
-	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsFilDetaljerOnDemandException() throws Exception {
+	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsFilDetaljerOnDemandException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -593,14 +585,13 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	@Test
-	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsIllegalVariantFormatException() throws Exception {
+	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsIllegalVariantFormatException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -609,14 +600,13 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	@Test
-	public void throwsJournalpostIkkeFunnetWhenServiceThrowsJournalpostNotFoundException() throws Exception {
+	public void throwsJournalpostIkkeFunnetWhenServiceThrowsJournalpostNotFoundException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -625,14 +615,13 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	@Test
-	public void throwsDokumentIkkeFunnetWhenServiceThrowsDokumentInfoNotFoundException() throws Exception {
+	public void throwsDokumentIkkeFunnetWhenServiceThrowsDokumentInfoNotFoundException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -641,14 +630,13 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	@Test
-	public void throwsUlikeFagomraaderWhenServiceThrowsIllegalFagomraadeException() throws Exception {
+	public void throwsUlikeFagomraaderWhenServiceThrowsIllegalFagomraadeException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -657,14 +645,13 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	@Test
-	public void throwsJournalpostIkkeFerdigstiltWhenServiceThrowsJournalpostIkkeFerdigstiltException() throws Exception {
+	public void throwsJournalpostIkkeFerdigstiltWhenServiceThrowsJournalpostIkkeFerdigstiltException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -673,14 +660,13 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	@Test
-	public void throwsJournalpostIkkeFerdigstiltWhenServiceThrowsFeilregistrertSaksrelasjonException() throws Exception {
+	public void throwsJournalpostIkkeFerdigstiltWhenServiceThrowsFeilregistrertSaksrelasjonException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -689,14 +675,13 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	@Test
-	public void throwsJournalpostIkkeUnderArbeidWhenServiceThrowsIllegalJournalStatusException() throws Exception {
+	public void throwsJournalpostIkkeUnderArbeidWhenServiceThrowsIllegalJournalStatusException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -705,14 +690,13 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	@Test
-	public void throwsEksterneVedleggIkkeTillattWhenServiceThrowsIllegalTilleggsopplysningerException() throws Exception {
+	public void throwsEksterneVedleggIkkeTillattWhenServiceThrowsIllegalTilleggsopplysningerException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
@@ -721,10 +705,9 @@ public class ArkiverDokumentproduksjonProviderTest {
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 
-		expectedException.expect(KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt.class);
-		expectedException.expectMessage("Something failed");
-
-		provider.knyttDokumentTilJournalpostSomVedlegg(requestMock);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt.class,
+				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
+				"Something failed");
 	}
 
 	private AvbrytJournalpostRequest createAvbrytJournalpostRequest(long journalpostId, String endretAvNavn) {

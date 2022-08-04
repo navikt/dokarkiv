@@ -1,25 +1,23 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for SkannetInnhold.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
  */
 public class SkannetInnholdTest {
 
 	@Test
-	public void shouldThrowExceptionForMissingVedleggInnhold() throws Exception {
+	public void shouldThrowExceptionForMissingVedleggInnhold() {
 		SkannetInnhold skannetInnhold = getSkannetInnholdBuilder()
-											.build();
-		
+				.build();
+
 		try {
 			skannetInnhold.verifyMandatoryFields();
 			fail();
@@ -27,5 +25,5 @@ public class SkannetInnholdTest {
 			assertThat(e.getMessage(), containsString("vedleggInnhold"));
 		}
 	}
-	
+
 }

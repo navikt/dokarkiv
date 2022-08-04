@@ -4,17 +4,17 @@ import no.nav.dokarkiv.behandlejournal.v3.AbstractBehandleJournalV3JournalpostVa
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Unit tests for JournalfoerInngaaendeHenvendelseValidator.
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JournalfoerInngaaendeHenvendelseV3ValidatorTest extends
 		AbstractBehandleJournalV3JournalpostValidatorTest {
 

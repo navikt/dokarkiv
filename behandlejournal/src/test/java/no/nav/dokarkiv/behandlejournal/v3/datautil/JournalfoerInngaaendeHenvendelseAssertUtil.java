@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v3.datautil;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import com.google.common.collect.Iterables;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -13,6 +9,10 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.journalfoerinngaaendehenvendelse.JournalfoertDokumentInfo;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.journalfoerinngaaendehenvendelse.Journalpost;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Assert util specific for JournalfoerInngaaendeHenvendelse Journalpost

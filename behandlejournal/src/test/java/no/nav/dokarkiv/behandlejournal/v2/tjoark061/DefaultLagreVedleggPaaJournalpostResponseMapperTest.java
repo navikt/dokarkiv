@@ -1,10 +1,10 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark061;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Test class for DefaultLagreVedleggPaaJournalpostResponseMapper.
@@ -17,8 +17,8 @@ public class DefaultLagreVedleggPaaJournalpostResponseMapperTest {
 	
 	private DefaultLagreVedleggPaaJournalpostResponseMapper responseMapper;
 	private LagreVedleggPaaJournalpostResponse domainResponse;
-	
-	@Before
+
+	@BeforeEach
 	public void init() {
 		domainResponse = new LagreVedleggPaaJournalpostResponse(DOKUMENT_ID);
 		responseMapper = new DefaultLagreVedleggPaaJournalpostResponseMapper();

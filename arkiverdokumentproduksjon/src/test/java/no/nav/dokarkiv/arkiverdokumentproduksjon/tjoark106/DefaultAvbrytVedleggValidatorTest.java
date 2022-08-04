@@ -1,10 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark106;
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigDokumentStatusVerdiException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusVerdiException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigTilknyttetJournalpostSomVerdiException;
@@ -17,9 +12,13 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit tests for {@link DefaultAvbrytVedleggValidator}
@@ -34,129 +33,116 @@ public class DefaultAvbrytVedleggValidatorTest {
 
 	private DefaultAvbrytVedleggValidator validator = new DefaultAvbrytVedleggValidator();
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
-	public void shouldValidateRequest() throws Exception {
+	public void shouldValidateRequest() {
 		validator.validateInputRequest(createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, ENDRET_AV_NAVN));
 	}
 
 	@Test
 	public void shouldThrowExceptionIfJournalpostIdIsNull() {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("JournalpostId cannot be empty or missing");
-
 		AvbrytVedleggRequestTo requestTo = createRequest(null, DOKUMENTINFO_ID, ENDRET_AV_NAVN);
 
-		validator.validateInputRequest(requestTo);
+		assertThrows(IllegalArgumentException.class,
+				() -> validator.validateInputRequest(requestTo),
+				"JournalpostId cannot be empty or missing");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfJournalpostIdIsZero() {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("JournalpostId cannot be empty or missing");
-
 		AvbrytVedleggRequestTo requestTo = createRequest(0L, DOKUMENTINFO_ID, ENDRET_AV_NAVN);
 
-		validator.validateInputRequest(requestTo);
+		assertThrows(IllegalArgumentException.class,
+				() -> validator.validateInputRequest(requestTo),
+				"JournalpostId cannot be empty or missing");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfDokumentInfoIdIsNull() {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("DokumentInfoId cannot be empty or missing");
-
 		AvbrytVedleggRequestTo requestTo = createRequest(JOURNALPOST_ID, null, ENDRET_AV_NAVN);
 
-		validator.validateInputRequest(requestTo);
+		assertThrows(IllegalArgumentException.class,
+				() -> validator.validateInputRequest(requestTo),
+				"DokumentInfoId cannot be empty or missing");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfDokumentInfoIdIsZero() {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("DokumentInfoId cannot be empty or missing");
-
 		AvbrytVedleggRequestTo requestTo = createRequest(JOURNALPOST_ID, 0L, ENDRET_AV_NAVN);
 
-		validator.validateInputRequest(requestTo);
+		assertThrows(IllegalArgumentException.class,
+				() -> validator.validateInputRequest(requestTo),
+				"DokumentInfoId cannot be empty or missing");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfEndretAvIsNull() {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("EndretAvNavn cannot be empty or missing.");
-
 		AvbrytVedleggRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, null);
 
-		validator.validateInputRequest(requestTo);
+		assertThrows(IllegalArgumentException.class,
+				() -> validator.validateInputRequest(requestTo),
+				"EndretAvNavn cannot be empty or missing.");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfEndretAvIsEmpty() {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("EndretAvNavn cannot be empty or missing.");
-
 		AvbrytVedleggRequestTo requestTo = createRequest(JOURNALPOST_ID, DOKUMENTINFO_ID, "");
 
-		validator.validateInputRequest(requestTo);
+		assertThrows(IllegalArgumentException.class,
+				() -> validator.validateInputRequest(requestTo),
+				"EndretAvNavn cannot be empty or missing.");
 	}
 
 	@Test
-	public void shouldValidateJournalpost() throws Exception {
+	public void shouldValidateJournalpost() {
 		validator.validateJournalpost(createJournalpost(JournalStatusCode.D), JOURNALPOST_ID);
 	}
 
 	@Test
-	public void shouldThrowNoJournalpostFoundException() throws Exception {
-		thrown.expect(NoJournalpostFoundException.class);
-		thrown.expectMessage("journalpostid=" + JOURNALPOST_ID + " does not exist");
-
-		validator.validateJournalpost(null, JOURNALPOST_ID);
+	public void shouldThrowNoJournalpostFoundException() {
+		assertThrows(NoJournalpostFoundException.class,
+				() -> validator.validateJournalpost(null, JOURNALPOST_ID),
+				"journalpostid=" + JOURNALPOST_ID + " does not exist");
 	}
 
 	@Test
-	public void shouldThrowUgyldigJournalStatusVerdiException() throws Exception {
-		thrown.expect(UgyldigJournalStatusVerdiException.class);
-		thrown.expectMessage("Invalid JournalStatus for journalpostid=" + JOURNALPOST_ID);
-
-		validator.validateJournalpost(createJournalpost(JournalStatusCode.A), JOURNALPOST_ID);
+	public void shouldThrowUgyldigJournalStatusVerdiException() {
+		assertThrows(UgyldigJournalStatusVerdiException.class,
+				() -> validator.validateJournalpost(createJournalpost(JournalStatusCode.A), JOURNALPOST_ID),
+				"Invalid JournalStatus for journalpostid=" + JOURNALPOST_ID);
 	}
 
 	@Test
-	public void shouldValidateDokumentInfo() throws Exception {
+	public void shouldValidateDokumentInfo() {
 		validator.validateDokumentInfo(createDokumentInfo(DokumentStatusCode.UNDER_REDIGERING), DOKUMENTINFO_ID);
 	}
 
 	@Test
-	public void shouldThrowNoDokumentInfoFoundException() throws Exception {
-		thrown.expect(NoDokumentInfoFoundException.class);
-		thrown.expectMessage("Journalpost missing DokumentInfo with dokumentinfoid=" + DOKUMENTINFO_ID);
-
-		validator.validateDokumentInfo(null, DOKUMENTINFO_ID);
+	public void shouldThrowNoDokumentInfoFoundException() {
+		assertThrows(NoDokumentInfoFoundException.class,
+				() -> validator.validateDokumentInfo(null, DOKUMENTINFO_ID),
+				"Journalpost missing DokumentInfo with dokumentinfoid=" + DOKUMENTINFO_ID);
 	}
 
 	@Test
-	public void shouldThrowUgyldigDokumentstatisVerdiException() throws Exception {
-		thrown.expect(UgyldigDokumentStatusVerdiException.class);
-		thrown.expectMessage("dokumentinfoid=" + DOKUMENTINFO_ID + " is already Avbrutt");
-
-		validator.validateDokumentInfo(createDokumentInfo(DokumentStatusCode.AVBRUTT), DOKUMENTINFO_ID);
+	public void shouldThrowUgyldigDokumentstatisVerdiException() {
+		assertThrows(UgyldigDokumentStatusVerdiException.class,
+				() -> validator.validateDokumentInfo(createDokumentInfo(DokumentStatusCode.AVBRUTT), DOKUMENTINFO_ID),
+				"dokumentinfoid=" + DOKUMENTINFO_ID + " is already Avbrutt");
 	}
 
 	@Test
-	public void shouldValidateJournalpostDokumentInfoRelasjon() throws Exception {
+	public void shouldValidateJournalpostDokumentInfoRelasjon() {
 		validator.validateJournalpostDokumentInfoRelasjon(createJournalpostDokumentInfoRelasjon(VEDLEGG));
 	}
 
 	@Test
-	public void shouldUgyldigTilknyttetJournalpostSomVerdiException() throws Exception {
-		thrown.expect(UgyldigTilknyttetJournalpostSomVerdiException.class);
-		thrown.expectMessage("tilknyttetjournalpostsom=" + HOVEDDOKUMENT + " is not Vedlegg");
-
+	public void shouldUgyldigTilknyttetJournalpostSomVerdiException() {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = createJournalpostDokumentInfoRelasjon(HOVEDDOKUMENT);
 		new Journalpost().addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
-		validator.validateJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
+
+		assertThrows(UgyldigTilknyttetJournalpostSomVerdiException.class,
+				() -> validator.validateJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon),
+				"tilknyttetjournalpostsom=" + HOVEDDOKUMENT + " is not Vedlegg");
 	}
 
 	private JournalpostDokumentInfoRelasjon createJournalpostDokumentInfoRelasjon(TilknyttetJournalpostSomCode code) {

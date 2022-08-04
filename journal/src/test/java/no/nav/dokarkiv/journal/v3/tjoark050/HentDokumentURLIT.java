@@ -1,18 +1,5 @@
 package no.nav.dokarkiv.journal.v3.tjoark050;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
 import no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder;
@@ -32,9 +19,6 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentUrlInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
-import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.jaxws.SubjectHandlerUtils;
 import no.nav.dokarkiv.journal.v3.AbstractJournalV3Itest;
 import no.nav.modig.core.domain.IdentType;
@@ -43,9 +27,22 @@ import no.nav.tjeneste.virksomhet.journal.v3.HentDokumentURLSikkerhetsbegrensnin
 import no.nav.tjeneste.virksomhet.journal.v3.informasjon.Variantformater;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLRequest;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentURLResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.context.transaction.TestTransaction;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Integration test for HentDokumentURL in 3rd gen. Journal service.
@@ -64,7 +61,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 	private Journalpost journalpost;
 	private HentDokumentURLRequest request = new HentDokumentURLRequest();
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		journalpost = buildAndPersistJournalpost("Dokumenttittel");
 		createRequestFromJournalpost(journalpost);
@@ -72,7 +69,7 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		SubjectHandlerUtils.setSubject(new SubjectHandlerUtils.SubjectBuilder(INTERN_BRUKER_USER_ID, IdentType.InternBruker).getSubject());
 	}
 
-	
+
 	@Test
 	public void shouldFailWhenABACDenies() throws Exception {
 		abacDeny();
@@ -97,28 +94,25 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 
 		journalV3Provider.hentDokumentURL(request);
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionWhenJournalpostNotFound() throws Exception {
 		abacPermit();
 		request.setJournalpostId("123");
 
-		expectedException.expect(HentDokumentURLDokumentIkkeFunnet.class);
-		expectedException.expectMessage("Journalpost ikke funnet. journalpostId=123");
-		expectedException.expect(hasProperty("faultInfo",
-				hasProperty("feilaarsak", containsString("Journalpost ikke funnet. journalpostId=123"))));
-
-		journalV3Provider.hentDokumentURL(request);
+		assertThrows(HentDokumentURLDokumentIkkeFunnet.class,
+				() -> journalV3Provider.hentDokumentURL(request),
+				"Journalpost ikke funnet. journalpostId=123");
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionWhenDokumentInfoNotFoundOnJournalpost() throws Exception {
 		abacPermit();
 		request.setDokumentId("123");
 
-		setupExpectedException(NoDokumentInfoFoundException.class.getName());
-
-		journalV3Provider.hentDokumentURL(request);
+		assertThrows(HentDokumentURLDokumentIkkeFunnet.class,
+				() -> journalV3Provider.hentDokumentURL(request),
+				"Could not find document");
 	}
 
 	@Test
@@ -128,34 +122,33 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		variantFormat.setValue(VariantFormatCode.PRODUKSJON.name());
 		request.setVariantformat(variantFormat);
 
-		setupExpectedException(InvalidArgumentException.class.getName());
-
-		journalV3Provider.hentDokumentURL(request);
+		assertThrows(HentDokumentURLDokumentIkkeFunnet.class,
+				() -> journalV3Provider.hentDokumentURL(request),
+				"Could not find document");
 	}
-	
+
 	@Test
 	public void shouldThrowExceptionWhenDokumentFilNotFound() throws Exception {
 		abacPermit();
-		setupExpectedException(InvalidFilUuidException.class.getName());
 
-		journalV3Provider.hentDokumentURL(request);
+		assertThrows(HentDokumentURLDokumentIkkeFunnet.class,
+				() -> journalV3Provider.hentDokumentURL(request),
+				"Could not find document");
 	}
-	
+
 	@Test
 	public void shouldGetDokumentUrl() throws Exception {
 		abacPermit();
 		persistDokumentFil();
-		
+
 		HentDokumentURLResponse response = journalV3Provider.hentDokumentURL(request);
-			
+
 		assertThat(response.getDokumentURL(), containsString("docToken"));
 		assertDokumentUrlInfoIsPersisted(FIL_UUID);
 	}
 
 	@Test
 	public void shouldThrowWhenJournalpostIsSkjermet() throws Exception {
-		expectedException.expect(HentDokumentURLDokumentIkkeFunnet.class);
-		expectedException.expectMessage("Journalpost ikke funnet");
 		abacPermit();
 		persistDokumentFil();
 
@@ -163,9 +156,9 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		journalV3Provider.hentDokumentURL(request);
-
-
+		assertThrows(HentDokumentURLDokumentIkkeFunnet.class,
+				() -> journalV3Provider.hentDokumentURL(request),
+				"Journalpost ikke funnet");
 	}
 
 	@Test
@@ -209,32 +202,25 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 		request.setVariantformat(variantFormat);
 		return request;
 	}
-	
-	private void setupExpectedException(String rootCause) {
-		expectedException.expect(HentDokumentURLDokumentIkkeFunnet.class);
-		expectedException.expectMessage("Could not find document");
-		expectedException.expect(hasProperty("faultInfo",
-				hasProperty("feilaarsak", containsString(rootCause))));
-	}
-	
+
 	private void assertDokumentUrlInfoIsPersisted(String filuuid) {
 		DokumentUrlInfo dokUrlInfo = dokumentUrlInfoRepository.findByFilUuid(filuuid);
 		assertThat(dokUrlInfo.getDoctoken(), notNullValue());
 		assertThat(dokUrlInfo.getFilUuid(), is(filuuid));
 	}
-	
+
 	private void createRequestFromJournalpost(Journalpost journalpost) { // hentet fra HentDokumentTest
 		journalpostId = journalpost.getId().toString();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId().toString();
 		createRequest();
 	}
-	
+
 	private Journalpost buildAndPersistJournalpost(String dokumentTittel) { // hentet fra HentDokumentTest
 		return joarkRepository.save(createJournalpostBuilder(dokumentTittel)
 				.fagomrade(FagomradeCode.FOR).build());
 	}
-	
-	
+
+
 	private JournalpostBuilder createJournalpostBuilder(String dokumentTittel) { // hentet fra HentDokumentTest
 		return JournalpostBuilder
 				.getJournalpostBuilder()
@@ -268,10 +254,10 @@ public class HentDokumentURLIT extends AbstractJournalV3Itest {
 
 	private void persistDokumentFil() {
 		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
-							.filUuid(FIL_UUID)
-							.fil("Test".getBytes())
-							.opprettetKildeNavn("test")
-							.build());
+				.filUuid(FIL_UUID)
+				.fil("Test".getBytes())
+				.opprettetKildeNavn("test")
+				.build());
 		dokumentFilRepository.save(DokumentFilBuilder.getDokumentFilBuilder()
 				.filUuid(FIL_UUID_SLADDET)
 				.fil("Test".getBytes())

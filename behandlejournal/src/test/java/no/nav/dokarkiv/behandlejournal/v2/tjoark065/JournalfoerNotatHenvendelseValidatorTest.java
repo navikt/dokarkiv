@@ -1,21 +1,21 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark065;
 
-import static org.mockito.Mockito.verify;
-
 import no.nav.dokarkiv.behandlejournal.v2.AbstractBehandleJournalJournalpostValidatorTest;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests of OpprettNotatJournalpostValidator.
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JournalfoerNotatHenvendelseValidatorTest extends AbstractBehandleJournalJournalpostValidatorTest {
 
 	@InjectMocks

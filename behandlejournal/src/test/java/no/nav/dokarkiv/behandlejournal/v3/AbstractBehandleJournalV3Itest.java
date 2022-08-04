@@ -10,13 +10,10 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.binding.BehandleJournalV3;
-import no.nav.tjeneste.virksomhet.behandlejournal.v3.feil.ForretningsmessigUnntak;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +21,7 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -38,12 +35,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class, BehandleJournalV3Config.class, TokenGeneratorConfiguration.class})
 @ActiveProfiles({"itest", "wiremock"})
@@ -53,8 +46,6 @@ import static org.hamcrest.Matchers.is;
 @Transactional
 public abstract class AbstractBehandleJournalV3Itest {
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	@Inject
 	protected BehandleJournalV3 behandleJournalV3Provider;
 	@Inject
@@ -64,7 +55,7 @@ public abstract class AbstractBehandleJournalV3Itest {
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 
-	@Before
+	@BeforeEach
 	public void setUpItest() {
 		joarkRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
@@ -72,24 +63,6 @@ public abstract class AbstractBehandleJournalV3Itest {
 				.userId("itestuser")
 				.componentId("itest")
 				.build());
-	}
-
-	/**
-	 * Utility assert method for MOD checked exceptions
-	 *
-	 * @param expectedExceptionClass
-	 * @param expectedFaultInfo
-	 */
-	protected void assertForretningsmessigUnntak(Class<? extends Exception> expectedExceptionClass,
-												 ForretningsmessigUnntak expectedFaultInfo) {
-		expectedException.expect(expectedExceptionClass);
-		expectedException.expectMessage(expectedFaultInfo.getFeilmelding());
-		expectedException.expect(hasProperty("faultInfo", instanceOf(ForretningsmessigUnntak.class)));
-		expectedException.expect(hasProperty("faultInfo",
-				hasProperty("feilaarsak", containsString(expectedFaultInfo.getFeilaarsak()))));
-		expectedException.expect(hasProperty("faultInfo", hasProperty("feilkilde", is(expectedFaultInfo.getFeilkilde()))));
-		expectedException.expect(hasProperty("faultInfo", hasProperty("feilmelding", is(expectedFaultInfo.getFeilmelding()))));
-		expectedException.expect(hasProperty("faultInfo", hasProperty("tidspunkt", is(expectedFaultInfo.getTidspunkt()))));
 	}
 
 	/**

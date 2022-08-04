@@ -1,10 +1,6 @@
 package no.nav.dokarkiv.core.util;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -14,6 +10,11 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit tests for {@link DateConverterUtil}
@@ -53,9 +54,9 @@ public class DateConverterUtilTest {
 		assertThat(converted.toGregorianCalendar().getTime(), is(NOW));
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void convertDateToXMLGregorianCalendarShouldThrowNullPointerException() throws Exception {
-		DateConverterUtil.convertDateToXMLGregorianCalendar(null, false);
+		assertThrows(NullPointerException.class, () -> DateConverterUtil.convertDateToXMLGregorianCalendar(null, false));
 	}
 
 	@Test

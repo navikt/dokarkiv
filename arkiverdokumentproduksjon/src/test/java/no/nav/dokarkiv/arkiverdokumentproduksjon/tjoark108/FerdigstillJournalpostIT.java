@@ -1,15 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -26,12 +17,20 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FerdigstillJournalpostInneholderDokumenterUnderRedigering;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FerdigstillJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FjernFerdigstiltDokumentRequest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration tests for the FerdigstillJournalpost
@@ -47,10 +46,7 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 	private static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	private static final String ENDRET_AV_NAVN = "Tester2";
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		RequestContextSetter.setRequestContextForUnitTest();
 	}
@@ -103,22 +99,21 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 	}
 
 	@Test
-	public void shouldThrowException_missingInput() throws Exception {
-		expectedException.expect(IllegalArgumentException.class);
-
-		arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest());
+	public void shouldThrowException_missingInput() {
+		assertThrows(IllegalArgumentException.class,
+				() -> arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest()));
 	}
 
 	@Test
 	public void shouldFerdigstillJournalpost2() throws Exception {
-		expectedException.expect(FerdigstillJournalpostInneholderDokumenterUnderRedigering.class);
 		Journalpost ferdigstiltJournalpost = buildAndPersistJournalpost(UNDER_REDIGERING);
 
-		arkiverDokumentproduksjonProvider.ferdigstillJournalpost(createRequest(ferdigstiltJournalpost));
+		assertThrows(FerdigstillJournalpostInneholderDokumenterUnderRedigering.class,
+				() -> arkiverDokumentproduksjonProvider.ferdigstillJournalpost(createRequest(ferdigstiltJournalpost)));
 	}
 
 
-	private FerdigstillJournalpostRequest createRequest(Journalpost journalpost) throws Exception {
+	private FerdigstillJournalpostRequest createRequest(Journalpost journalpost) {
 		FerdigstillJournalpostRequest request = new FerdigstillJournalpostRequest();
 		request.setJournalpostId(journalpost.getJournalpostId());
 		request.setUtsendingskanal(UTSENDINGKANAL.name());

@@ -1,12 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt;
@@ -28,24 +21,29 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.xml.ws.WebServiceContext;
 import java.security.Principal;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for ArkiverDokumentproduksjonEndpoint
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ArkiverDokumentproduksjonEndpointTest {
 
 	@Mock
@@ -60,10 +58,7 @@ public class ArkiverDokumentproduksjonEndpointTest {
 	@InjectMocks
 	private ArkiverDokumentproduksjonEndpoint endpoint;
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
-	@Before
+	@BeforeEach
 	public void setUp() {
 		when(webServiceContextMock.getUserPrincipal()).thenReturn(principalMock);
 	}
@@ -133,14 +128,7 @@ public class ArkiverDokumentproduksjonEndpointTest {
 	}
 
 	@Test
-	public void shouldDelegateToProviderForPing() throws Exception {
-		endpoint.ping();
-
-		verify(arkiverDokumentproduksjonProviderMock).ping();
-	}
-
-	@Test
-	public void shouldDelegateToProviderForSettDatoSendt() throws Exception {
+	public void shouldDelegateToProviderForSettDatoSendt() {
 		SettDatoSendtRequest request = new SettDatoSendtRequest();
 
 		endpoint.settDatoSendt(request);
@@ -163,9 +151,8 @@ public class ArkiverDokumentproduksjonEndpointTest {
 		KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet exception = new KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet();
 		doThrow(exception).when(arkiverDokumentproduksjonProviderMock).knyttDokumentTilJournalpostSomVedlegg(request);
 
-		expectedException.expect(sameInstance(exception));
-
-		endpoint.knyttDokumentTilJournalpostSomVedlegg(request);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet.class,
+				() -> endpoint.knyttDokumentTilJournalpostSomVedlegg(request));
 	}
 
 	@Test
@@ -174,9 +161,8 @@ public class ArkiverDokumentproduksjonEndpointTest {
 		KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid exception = new KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid();
 		doThrow(exception).when(arkiverDokumentproduksjonProviderMock).knyttDokumentTilJournalpostSomVedlegg(request);
 
-		expectedException.expect(sameInstance(exception));
-
-		endpoint.knyttDokumentTilJournalpostSomVedlegg(request);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid.class,
+				() -> endpoint.knyttDokumentTilJournalpostSomVedlegg(request));
 	}
 
 	@Test
@@ -185,9 +171,8 @@ public class ArkiverDokumentproduksjonEndpointTest {
 		KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt exception = new KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt();
 		doThrow(exception).when(arkiverDokumentproduksjonProviderMock).knyttDokumentTilJournalpostSomVedlegg(request);
 
-		expectedException.expect(sameInstance(exception));
-
-		endpoint.knyttDokumentTilJournalpostSomVedlegg(request);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt.class,
+				() -> endpoint.knyttDokumentTilJournalpostSomVedlegg(request));
 	}
 
 	@Test
@@ -196,9 +181,8 @@ public class ArkiverDokumentproduksjonEndpointTest {
 		KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet exception = new KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet();
 		doThrow(exception).when(arkiverDokumentproduksjonProviderMock).knyttDokumentTilJournalpostSomVedlegg(request);
 
-		expectedException.expect(sameInstance(exception));
-
-		endpoint.knyttDokumentTilJournalpostSomVedlegg(request);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet.class,
+				() -> endpoint.knyttDokumentTilJournalpostSomVedlegg(request));
 	}
 
 	@Test
@@ -207,9 +191,8 @@ public class ArkiverDokumentproduksjonEndpointTest {
 		KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt exception = new KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt();
 		doThrow(exception).when(arkiverDokumentproduksjonProviderMock).knyttDokumentTilJournalpostSomVedlegg(request);
 
-		expectedException.expect(sameInstance(exception));
-
-		endpoint.knyttDokumentTilJournalpostSomVedlegg(request);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class,
+				() -> endpoint.knyttDokumentTilJournalpostSomVedlegg(request));
 	}
 
 	@Test
@@ -218,9 +201,8 @@ public class ArkiverDokumentproduksjonEndpointTest {
 		KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt exception = new KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt();
 		doThrow(exception).when(arkiverDokumentproduksjonProviderMock).knyttDokumentTilJournalpostSomVedlegg(request);
 
-		expectedException.expect(sameInstance(exception));
-
-		endpoint.knyttDokumentTilJournalpostSomVedlegg(request);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt.class,
+				() -> endpoint.knyttDokumentTilJournalpostSomVedlegg(request));
 	}
 
 	@Test
@@ -229,8 +211,7 @@ public class ArkiverDokumentproduksjonEndpointTest {
 		KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader exception = new KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader();
 		doThrow(exception).when(arkiverDokumentproduksjonProviderMock).knyttDokumentTilJournalpostSomVedlegg(request);
 
-		expectedException.expect(sameInstance(exception));
-
-		endpoint.knyttDokumentTilJournalpostSomVedlegg(request);
+		assertThrows(KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader.class,
+				() -> endpoint.knyttDokumentTilJournalpostSomVedlegg(request));
 	}
 }

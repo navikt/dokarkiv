@@ -1,5 +1,10 @@
 package no.nav.dokarkiv.core.sporing;
 
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
@@ -8,13 +13,8 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 import static no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder.getKryssreferanseBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Unit tests for DefaultKildeNavnPopulator.
@@ -28,7 +28,7 @@ public class DefaultKildeNavnPopulatorTest {
 	private final String kildeNavn = "Unittest";
 	private final long id = 100;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		kildeNavnPopulator = new DefaultKildeNavnPopulator();
 	}

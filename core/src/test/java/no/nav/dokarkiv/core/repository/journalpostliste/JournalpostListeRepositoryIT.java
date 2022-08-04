@@ -14,14 +14,13 @@ import no.nav.dokarkiv.core.util.TestDataUtils;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -30,7 +29,9 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-@RunWith(SpringRunner.class)
+import static org.hamcrest.MatcherAssert.assertThat;
+
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class, JournalpostListeRepository.class})
 @Transactional
@@ -52,7 +53,7 @@ public class JournalpostListeRepositoryIT {
 	@Inject
 	private JoarkRepositorySkjermet joarkRepository;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		RequestContextUtil.createAndSetUsername("itest", "itest");
 		hentMinJPListeParameters = createHentMinJPListeParameters();
@@ -68,7 +69,7 @@ public class JournalpostListeRepositoryIT {
 		hentMinJPListeParameters.addFagsystemSak(saksnr, fagsystem);
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
-		Assert.assertThat(journalpostListe, Matchers.hasSize(1));
+		assertThat(journalpostListe, Matchers.hasSize(1));
 	}
 
 	@Test
@@ -84,7 +85,7 @@ public class JournalpostListeRepositoryIT {
 		hentMinJPListeParameters.addFagsystemSak(saksnr, fagsystem);
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
-		Assert.assertThat(journalpostListe, Matchers.hasSize(4));
+		assertThat(journalpostListe, Matchers.hasSize(4));
 	}
 
 	@Test
@@ -98,7 +99,7 @@ public class JournalpostListeRepositoryIT {
 		hentMinJPListeParameters.addFagsystemSak("1339", FagsystemCode.FS22);
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
-		Assert.assertThat(journalpostListe, Matchers.hasSize(2));
+		assertThat(journalpostListe, Matchers.hasSize(2));
 	}
 
 	@Test
@@ -109,7 +110,7 @@ public class JournalpostListeRepositoryIT {
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
 
-		Assert.assertThat(journalpostListe, Matchers.hasSize(0));
+		assertThat(journalpostListe, Matchers.hasSize(0));
 	}
 
 	@Test
@@ -119,7 +120,7 @@ public class JournalpostListeRepositoryIT {
 		hentMinJPListeParameters.addFagsystemSak(saksnr, fagsystem);
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
-		Assert.assertThat(journalpostListe, Matchers.hasSize(1));
+		assertThat(journalpostListe, Matchers.hasSize(1));
 	}
 
 	@Test
@@ -132,9 +133,9 @@ public class JournalpostListeRepositoryIT {
 		hentMinJPListeParameters.getFagomraade().addAll(Arrays.asList(FagomradeCode.PEN, FagomradeCode.FOR));
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
-		Assert.assertThat(journalpostListe, Matchers.hasSize(2));
-		Assert.assertThat(journalpostListe, CoreMatchers.hasItem(penJournalpost));
-		Assert.assertThat(journalpostListe, CoreMatchers.hasItem(forJournalpost));
+		assertThat(journalpostListe, Matchers.hasSize(2));
+		assertThat(journalpostListe, CoreMatchers.hasItem(penJournalpost));
+		assertThat(journalpostListe, CoreMatchers.hasItem(forJournalpost));
 	}
 
 	@Test
@@ -159,7 +160,7 @@ public class JournalpostListeRepositoryIT {
 		hentMinJPListeParameters.setMaxResults(3);
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
-		Assert.assertThat(journalpostListe, Matchers.hasSize(3));
+		assertThat(journalpostListe, Matchers.hasSize(3));
 	}
 
 
@@ -176,10 +177,10 @@ public class JournalpostListeRepositoryIT {
 		hentMinJPListeParameters.setPageNr(0);
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
-		Assert.assertThat(journalpostListe, Matchers.hasSize(3));
-		Assert.assertThat(journalpostListe, CoreMatchers.hasItem(expectedJournalposter.get(0)));
-		Assert.assertThat(journalpostListe, CoreMatchers.hasItem(expectedJournalposter.get(1)));
-		Assert.assertThat(journalpostListe, CoreMatchers.hasItem(expectedJournalposter.get(2)));
+		assertThat(journalpostListe, Matchers.hasSize(3));
+		assertThat(journalpostListe, CoreMatchers.hasItem(expectedJournalposter.get(0)));
+		assertThat(journalpostListe, CoreMatchers.hasItem(expectedJournalposter.get(1)));
+		assertThat(journalpostListe, CoreMatchers.hasItem(expectedJournalposter.get(2)));
 	}
 
 	@Test
@@ -194,9 +195,9 @@ public class JournalpostListeRepositoryIT {
 		hentMinJPListeParameters.setPageNr(1);
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
-		Assert.assertThat(journalpostListe, Matchers.hasSize(2));
-		Assert.assertThat(journalpostListe, CoreMatchers.hasItem(expectedJournalposter.get(3)));
-		Assert.assertThat(journalpostListe, CoreMatchers.hasItem(expectedJournalposter.get(4)));
+		assertThat(journalpostListe, Matchers.hasSize(2));
+		assertThat(journalpostListe, CoreMatchers.hasItem(expectedJournalposter.get(3)));
+		assertThat(journalpostListe, CoreMatchers.hasItem(expectedJournalposter.get(4)));
 
 	}
 
@@ -213,7 +214,7 @@ public class JournalpostListeRepositoryIT {
 		hentMinJPListeParameters.setPageNr(2);
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
-		Assert.assertThat(journalpostListe, Matchers.hasSize(0));
+		assertThat(journalpostListe, Matchers.hasSize(0));
 
 
 	}
@@ -227,7 +228,7 @@ public class JournalpostListeRepositoryIT {
 
 		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.FS22);
 
-//		Assert.assertThat(joarkRepository.findTotalNumberOfJournalposts(hentMinJPListeParameters), Matchers.is(5L));
+//		assertThat(joarkRepository.findTotalNumberOfJournalposts(hentMinJPListeParameters), Matchers.is(5L));
 	}
 
 	@Test
@@ -239,7 +240,7 @@ public class JournalpostListeRepositoryIT {
 		hentMinJPListeParameters.addFagsystemSak("1337", FagsystemCode.FS22);
 
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
-		Assert.assertThat(journalpostListe, Matchers.hasSize(2));
+		assertThat(journalpostListe, Matchers.hasSize(2));
 	}
 
 	@Test
@@ -256,7 +257,7 @@ public class JournalpostListeRepositoryIT {
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
 
 		//THEN
-		Assert.assertThat(journalpostListe, Matchers.hasSize(1));
+		assertThat(journalpostListe, Matchers.hasSize(1));
 	}
 
 
@@ -275,8 +276,8 @@ public class JournalpostListeRepositoryIT {
 		List<Journalpost> journalpostListe = journalpostListeRepository.findJournalpostListe(hentMinJPListeParameters);
 
 		//THEN
-		Assert.assertThat(journalpostListe, Matchers.hasSize(1));
-		Assert.assertThat(journalpostListe.get(0).getChangeStamp().getCreatedDate(), Matchers.is(shouldBeFoundDate));
+		assertThat(journalpostListe, Matchers.hasSize(1));
+		assertThat(journalpostListe.get(0).getChangeStamp().getCreatedDate(), Matchers.is(shouldBeFoundDate));
 
 	}
 

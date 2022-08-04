@@ -1,16 +1,5 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121;
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder.getDokumentFilBuilder;
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -20,25 +9,33 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder.getDokumentFilBuilder;
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 /**
  * Junit test for {@link HentFerdigstilteDokumenterService}
  *
  * @author Stig Strøm
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class HentFerdigstilteDokumenterServiceTest {
 
 	private static final String FILUUID_1 = "filuuid1";
@@ -55,9 +52,6 @@ public class HentFerdigstilteDokumenterServiceTest {
 	private static final long DOKUMENT_1 = 1L;
 	private static final long DOKUMENT_2 = 2L;
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
-
 	@Mock
 	private JoarkRepositorySkjermet joarkRepository;
 
@@ -70,7 +64,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 	@InjectMocks
 	private HentFerdigstilteDokumenterService service;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 	}
 
@@ -113,10 +107,10 @@ public class HentFerdigstilteDokumenterServiceTest {
 
 	@Test
 	public void shouldThrowException_dokumentNotAvailable() throws Exception {
-		exception.expect(FilDetaljerNotFoundException.class);
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalpost()));
 
-		service.hentFerdigstilteDokumenter(JOURNALPOST_ID, Arrays.asList(DOKUMENT_1));
+		assertThrows(FilDetaljerNotFoundException.class,
+				() -> service.hentFerdigstilteDokumenter(JOURNALPOST_ID, Arrays.asList(DOKUMENT_1)));
 	}
 
 	private DokumentFil createFildetaljer(String filContent) {

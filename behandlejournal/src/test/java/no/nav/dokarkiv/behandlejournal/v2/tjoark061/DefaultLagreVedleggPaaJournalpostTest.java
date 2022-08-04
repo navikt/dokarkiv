@@ -24,32 +24,31 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 /**
  * Test class for DefaultLagreVedleggPaaJournalpost
- * 
+ *
  * @author Rune Romundstad, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultLagreVedleggPaaJournalpostTest {
 	private static final String VEDLEGG_DOKUMENT_TYPE_ID = "458212";
 	private static final String SPORING_FORNAVN = "fornavn";
@@ -61,9 +60,9 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	private static final long DOKUMENT_ID = 100L;
 
 	@Mock
-    private JoarkRepositorySkjermet joarkRepositoryMock;
+	private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
-    private DokumentinfoRepository dokumentinfoRepositoryMock;
+	private DokumentinfoRepository dokumentinfoRepositoryMock;
 	@Mock
 	private DokumentFilRepository dokumentFilRepositoryMock;
 	@Mock
@@ -72,117 +71,107 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	@InjectMocks
 	private DefaultLagreVedleggPaaJournalpost service;
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
 	private LagreVedleggPaaJournalpostRequest lagreVedleggPaaJournalpostRequest;
-	private LagreVedleggPaaJournalpostResponse lagreVedleggPaaJournalpostResponse;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder().componentId(COMPONENT_ID).build());
-		when(dokumentinfoRepositoryMock.save(any())).thenReturn(DokumentInfo.builder().dokumentInfoId(DOKUMENT_ID).build());
-		
+		lenient().when(dokumentinfoRepositoryMock.save(any())).thenReturn(DokumentInfo.builder().dokumentInfoId(DOKUMENT_ID).build());
 		service.setVedleggDokumentTypeId(VEDLEGG_DOKUMENT_TYPE_ID);
 	}
-
 	@Test
-	public void shouldThrowExceptionIfRequestIsNull() throws Exception {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter: lagreVedleggPaaJournalpostRequest is null");
-
-		service.lagreVedleggPaaJournalpost(null);
+	public void shouldThrowExceptionIfRequestIsNull() {
+		assertThrows(ApplicationException.class,
+				() -> service.lagreVedleggPaaJournalpost(null),
+				"Missing parameter: lagreVedleggPaaJournalpostRequest is null");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostIdMissingInRequest() throws Exception {
+	public void shouldThrowExceptionIfJournalpostIdMissingInRequest() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(null, new DokumentInfo(),
 				createSporingsMetaData());
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter in request: journalpostId");
 
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+		assertThrows(ApplicationException.class,
+				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
+				"Missing parameter in request: journalpostId");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfSporingsMetaDataMissingInRequest() throws Exception {
+	public void shouldThrowExceptionIfSporingsMetaDataMissingInRequest() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID,
 				createInputDokumentInfo("test.pdf"), null);
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter in request: sporingsMetaData");
 
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+		assertThrows(ApplicationException.class,
+				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
+				"Missing parameter in request: sporingsMetaData");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfDokumentInfoMissingInRequest() throws Exception {
+	public void shouldThrowExceptionIfDokumentInfoMissingInRequest() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(1L, null, createSporingsMetaData());
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter in request: dokumentInfo");
 
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+		assertThrows(ApplicationException.class,
+				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
+				"Missing parameter in request: dokumentInfo");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfNoJournalpostIdInDb() throws Exception {
+	public void shouldThrowExceptionIfNoJournalpostIdInDb() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID, new DokumentInfo(),
 				createSporingsMetaData());
-		expectedException.expect(NoJournalpostFoundException.class);
-		expectedException.expectMessage(containsString("Journalpost with id: " + JOURNALPOST_ID + " does not exist"));
 		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.empty());
 
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+		assertThrows(NoJournalpostFoundException.class,
+				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
+				"Journalpost with id: " + JOURNALPOST_ID + " does not exist");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfDuplicateDokumentVariants() throws Exception {
+	public void shouldThrowExceptionIfDuplicateDokumentVariants() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID,
 				createDokumentInfoWithDuplicateDokumentVariant(), createSporingsMetaData());
-		expectedException.expect(InvalidJournalpostStructureException.class);
-		expectedException.expectMessage(containsString("cannot contain dokumentvariant duplicates"));
 		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(createJournalpostWithHoveddokument()));
 
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+		assertThrows(InvalidJournalpostStructureException.class,
+				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
+				"cannot contain dokumentvariant duplicates");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfFilTypeMissingInDokumentInnhold() throws Exception {
+	public void shouldThrowExceptionIfFilTypeMissingInDokumentInnhold() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID,
 				createInputDokumentInfoWithMissingFiltype(), createSporingsMetaData());
 		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(createJournalpostWithHoveddokument()));
 
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Filtype is missing from Fildetaljer");
-
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+		assertThrows(ApplicationException.class,
+				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
+				"Filtype is missing from Fildetaljer");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfVariantFormatMissingInDokumentInnhold() throws Exception {
+	public void shouldThrowExceptionIfVariantFormatMissingInDokumentInnhold() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID,
 				createInputDokumentInfoWithMissingVariantFormat(), createSporingsMetaData());
 		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(createJournalpostWithHoveddokument()));
 
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Variantformat is missing from Fildetaljer");
-
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+		assertThrows(ApplicationException.class,
+				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
+				"Variantformat is missing from Fildetaljer");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfFileContentMissingInDokumentInnhold() throws Exception {
+	public void shouldThrowExceptionIfFileContentMissingInDokumentInnhold() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID,
 				createInputDokumentInfoWithMissingFileContent(), createSporingsMetaData());
 		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(createJournalpostWithHoveddokument()));
 
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Filecontent is missing from Fildetaljer");
-
-		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+		assertThrows(ApplicationException.class,
+				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
+				"Filecontent is missing from Fildetaljer");
 	}
 
 	@Test
-	public void shouldStoreDokumentInfoAsVedleggOnExistingJournalpost() throws Exception {
+	public void shouldStoreDokumentInfoAsVedleggOnExistingJournalpost() {
 		String filnavn = "testStoreVedleggOnExistingJournalpost";
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID,
 				createInputDokumentInfo(filnavn), createSporingsMetaData());
@@ -194,24 +183,24 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 
 		verifyDokumentInfoAddedAsVedleggOnJournalpost(journalpost, filnavn);
 	}
-	
+
 	@Test
-	public void shouldStoreDokumentInfoBrukeroppgittTittelAsVedleggOnExistingJournalpost() throws Exception {
+	public void shouldStoreDokumentInfoBrukeroppgittTittelAsVedleggOnExistingJournalpost() {
 		String filnavn = "testStoreVedleggOnExistingJournalpost";
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID,
 				createInputDokumentInfoBrukeroppgittTittel(filnavn), createSporingsMetaData());
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setOriginalJournalpost(journalpost);
 		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(journalpost));
-		
+
 		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-		
+
 		verifyDokumentInfoAddedAsVedleggOnJournalpost(journalpost, filnavn);
 		assertThat(joarkRepositoryMock.findById(JOURNALPOST_ID).get().findDokumentInfoById(DOKUMENT_ID).getTittel(), is(BRUKEROPPGITT_TITTEL));
 	}
 
 	@Test
-	public void shouldReturnJoarkResponseAfterStoringVedlegg() throws Exception {
+	public void shouldReturnJoarkResponseAfterStoringVedlegg() {
 		DokumentInfo vedlegg = createInputDokumentInfo("filnavn");
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID, vedlegg,
 				createSporingsMetaData());
@@ -219,25 +208,25 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setOriginalJournalpost(journalpost);
 		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(journalpost));
 
-		lagreVedleggPaaJournalpostResponse = service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+		LagreVedleggPaaJournalpostResponse lagreVedleggPaaJournalpost = service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
 
-		assertThat(lagreVedleggPaaJournalpostResponse.getDokumentId(), is(vedlegg.getDokumentInfoId()));
+		assertThat(lagreVedleggPaaJournalpost.getDokumentId(), is(vedlegg.getDokumentInfoId()));
 		assertThat(joarkRepositoryMock.findById(JOURNALPOST_ID).get().findDokumentInfoById(DOKUMENT_ID).getTittel(), is(TITTEL));
 	}
-	
+
 	@Test
-	public void shouldReturnJoarkResponseAfterStoringVedleggBrukerOppgittTittel() throws Exception {
+	public void shouldReturnJoarkResponseAfterStoringVedleggBrukerOppgittTittel() {
 		DokumentInfo vedlegg = createInputDokumentInfoBrukeroppgittTittel("filnavn");
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID, vedlegg,
 				createSporingsMetaData());
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setOriginalJournalpost(journalpost);
 		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(journalpost));
-		
-		lagreVedleggPaaJournalpostResponse = service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-		
 
-		assertThat(lagreVedleggPaaJournalpostResponse.getDokumentId(), is(vedlegg.getDokumentInfoId()));
+		LagreVedleggPaaJournalpostResponse lagreVedleggPaaJournalpost = service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+
+
+		assertThat(lagreVedleggPaaJournalpost.getDokumentId(), is(vedlegg.getDokumentInfoId()));
 		assertThat(joarkRepositoryMock.findById(JOURNALPOST_ID).get().findDokumentInfoById(DOKUMENT_ID).getTittel(), is(BRUKEROPPGITT_TITTEL));
 	}
 
@@ -267,7 +256,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 								.variantFormat(VariantFormatCode.ARKIV).fileContent("filinnhold".getBytes()).build())
 				.build();
 	}
-	
+
 	private DokumentInfo createInputDokumentInfoBrukeroppgittTittel(String filnavn) {
 		return DokumentInfoBuilder
 				.getDokumentInfoBuilder()
@@ -280,7 +269,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 								.variantFormat(VariantFormatCode.ARKIV).fileContent("filinnhold".getBytes()).build())
 				.build();
 	}
-	
+
 	private DokumentInfo createInputDokumentInfoWithMissingFiltype() {
 		return DokumentInfoBuilder
 				.getDokumentInfoBuilder()

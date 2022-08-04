@@ -18,14 +18,12 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
@@ -35,7 +33,8 @@ import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetal
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,14 +43,11 @@ import static org.mockito.Mockito.when;
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultFerdigstillDokumentopplastingTest {
 	private static final String SPORING_FORNAVN = "fornavn";
 	private static final String SPORING_ETTERNAVN = "etternavn";
 	private static final Long JOURNALPOST_ID = 100L;
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 
 	@InjectMocks
 	private DefaultFerdigstillDokumentopplasting service;
@@ -62,73 +58,69 @@ public class DefaultFerdigstillDokumentopplastingTest {
 
 	private FerdigstillDokumentopplastingRequest request;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		request = new FerdigstillDokumentopplastingRequest(JOURNALPOST_ID, new SporingsMetaData(SPORING_FORNAVN, SPORING_ETTERNAVN,
 				null));
 	}
 
 	@Test
-	public void shouldThrowExceptionIfRequestIsNull() throws Exception {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter: ferdigstillJournalpostRequest");
-
+	public void shouldThrowExceptionIfRequestIsNull() {
 		request = null;
-		service.ferdigstillDokumentOpplasting(request);
+
+		assertThrows(ApplicationException.class,
+				() -> service.ferdigstillDokumentOpplasting(request),
+				"Missing parameter: ferdigstillJournalpostRequest");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostIdIsNull() throws Exception {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter: journalpostId");
-
+	public void shouldThrowExceptionIfJournalpostIdIsNull() {
 		request = new FerdigstillDokumentopplastingRequest(null, new SporingsMetaData(SPORING_FORNAVN, SPORING_ETTERNAVN, null));
-		service.ferdigstillDokumentOpplasting(request);
+		assertThrows(ApplicationException.class,
+				() -> service.ferdigstillDokumentOpplasting(request),
+				"Missing parameter: journalpostId");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfNoJournalpostInRequest() throws Exception {
-		expectedException.expect(NoJournalpostFoundException.class);
-		expectedException.expectMessage("Journalpost with id: " + JOURNALPOST_ID + " does not exist");
-
+	public void shouldThrowExceptionIfNoJournalpostInRequest() {
 		when(repositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.empty());
 
-		service.ferdigstillDokumentOpplasting(request);
+		assertThrows(NoJournalpostFoundException.class,
+				() -> service.ferdigstillDokumentOpplasting(request),
+				"Journalpost with id: " + JOURNALPOST_ID + " does not exist");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfNoSporingsMetaDataInRequest() throws Exception {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Missing parameter: sporingsMetaData");
+	public void shouldThrowExceptionIfNoSporingsMetaDataInRequest() {
 		request = new FerdigstillDokumentopplastingRequest(JOURNALPOST_ID, null);
 
-		service.ferdigstillDokumentOpplasting(request);
+		assertThrows(ApplicationException.class,
+				() -> service.ferdigstillDokumentOpplasting(request),
+				"Missing parameter: sporingsMetaData");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpostIsNotInngaende() throws Exception {
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Journalpost is not of type Inngaaende");
-
+	public void shouldThrowExceptionIfJournalpostIsNotInngaende() {
 		when(repositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalpost(JournalpostTypeCode.U)));
 
-		service.ferdigstillDokumentOpplasting(request);
+		assertThrows(ApplicationException.class,
+				() -> service.ferdigstillDokumentOpplasting(request),
+				"Journalpost is not of type Inngaaende");
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalstatusIsNotOD() throws Exception {
+	public void shouldThrowExceptionIfJournalstatusIsNotOD() {
 		Journalpost journalpost = createBasicJournalpost().build();
 		journalpost.setJournalstatus(JournalStatusCode.MO);
 		when(repositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
-		expectedException.expect(ApplicationException.class);
-		expectedException.expectMessage("Journalpost must have status OD");
-
-		service.ferdigstillDokumentOpplasting(request);
+		assertThrows(ApplicationException.class,
+				() -> service.ferdigstillDokumentOpplasting(request),
+				"Journalpost must have status OD");
 	}
 
 	@Test
-	public void shouldFerdigstillDokumentopplastingForNonBidragJournalpostId() throws Exception {
+	public void shouldFerdigstillDokumentopplastingForNonBidragJournalpostId() {
 		Journalpost journalpost = createJournalpost(JournalpostTypeCode.I);
 		when(repositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 

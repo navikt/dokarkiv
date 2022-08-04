@@ -9,8 +9,8 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.AbstractJournalfoerInngaaendeV1Itest;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -265,8 +265,8 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
     /**
      * HVIS forsoekEndeligJF == TRUE, men journalfEnhet == null, returner ???
      */
-    @Test
-    @Ignore("TODO: Endre når oppførsel er avklart.")
+	@Test
+	@Disabled("TODO: Endre når oppførsel er avklart.")
     public void shouldReturnOKWhenEndeligJFAndJournalfEnhetMangler() throws IOException {
         abacPermit();
 

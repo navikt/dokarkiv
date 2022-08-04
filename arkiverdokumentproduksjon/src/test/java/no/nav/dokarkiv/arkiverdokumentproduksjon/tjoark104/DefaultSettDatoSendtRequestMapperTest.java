@@ -1,21 +1,20 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.GregorianCalendar;
+
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -27,10 +26,7 @@ public class DefaultSettDatoSendtRequestMapperTest {
 
 	private SettDatoSendtRequestMapper settDatoSendtRequestMapper = new SettDatoSendtRequestMapper();
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		DateProvider.configure(true, "2018-06-20T14:31:54.767");
 	}
@@ -46,37 +42,34 @@ public class DefaultSettDatoSendtRequestMapperTest {
 
 	@Test
 	public void shouldThrowExceptionIfDatoSendtIsNull() throws Exception {
-		thrown.expect(ApplicationException.class);
-		thrown.expectMessage("datoSendt has not been provided");
-
 		SettDatoSendtRequest request = createRequest();
 		request.setDatoSendt(null);
 
-		settDatoSendtRequestMapper.map(request);
+		assertThrows(ApplicationException.class,
+				() -> settDatoSendtRequestMapper.map(request),
+				"datoSendt has not been provided");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfJournalpostIdListeIsEmpty() throws Exception {
-		thrown.expect(ApplicationException.class);
-		thrown.expectMessage("journalpostIdListe is empty");
-
 		SettDatoSendtRequest request = createRequest();
 		request.getJournalpostIdListe().clear();
 
-		settDatoSendtRequestMapper.map(request);
+		assertThrows(ApplicationException.class,
+				() -> settDatoSendtRequestMapper.map(request),
+				"journalpostIdListe is empty");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfJournalpostIdListeHasNullElement() throws Exception {
-		thrown.expect(ApplicationException.class);
-		thrown.expectMessage("journalpostIdListe has an element with a null value.");
-
 		SettDatoSendtRequest request = createRequest();
 		request.getJournalpostIdListe().clear();
 		request.getJournalpostIdListe().add(JOURNALPOSTID_1);
 		request.getJournalpostIdListe().add(null);
 
-		settDatoSendtRequestMapper.map(request);
+		assertThrows(ApplicationException.class,
+				() -> settDatoSendtRequestMapper.map(request),
+				"journalpostIdListe has an element with a null value.");
 	}
 
 	private SettDatoSendtRequest createRequest() throws DatatypeConfigurationException {

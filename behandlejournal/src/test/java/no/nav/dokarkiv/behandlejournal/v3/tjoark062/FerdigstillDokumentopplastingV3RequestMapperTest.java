@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark062;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.FerdigstillDokumentopplastingRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Tests for {@link FerdigstillDokumentopplastingV3RequestMapper}
@@ -23,7 +23,7 @@ public class FerdigstillDokumentopplastingV3RequestMapperTest {
 
 	private FerdigstillDokumentopplastingRequest wsRequest;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		mapper = new FerdigstillDokumentopplastingV3RequestMapper();
 		createRequest();

@@ -1,25 +1,5 @@
-package no.nav.dokarkiv.core.akjsonslogg;
+package no.nav.dokarkiv.core.aksjonslogg;
 
-import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
-import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVELEMENT;
-import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
-import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_FRA_VERDI;
-import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_TIL_VERDI;
-import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
-import static no.nav.dokarkiv.core.util.TestDataUtils.APPLICATION;
-import static no.nav.dokarkiv.core.util.TestDataUtils.USER_ID;
-import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTO;
-import static no.nav.dokarkiv.core.util.TestDataUtils.createArkivElementEndringToList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggServiceImpl;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
-import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -38,16 +18,14 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import org.apache.commons.collections15.IteratorUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -55,10 +33,27 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVELEMENT;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_FRA_VERDI;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_TIL_VERDI;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
+import static no.nav.dokarkiv.core.util.TestDataUtils.APPLICATION;
+import static no.nav.dokarkiv.core.util.TestDataUtils.USER_ID;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTO;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createArkivElementEndringToList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = {RepositoryConfig.class, AksjonsLoggServiceImpl.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
 @EnableConfigurationProperties
@@ -75,12 +70,9 @@ public class AksjonsLoggIT {
 	@Inject
 	private JoarkRepository joarkRepository;
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
 	private long journalpostId;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		RequestContextUtil.createAndSetUsername(USER_ID, APPLICATION);
 		aksjonsLoggRepository.deleteAll();
@@ -90,7 +82,6 @@ public class AksjonsLoggIT {
 
 	@Test
 	public void shouldSaveAksjonsLogg() throws UgyldigAksjonsLoggException {
-
 		aksjonsLoggService.validateAndSaveAksjonsLogg(createAksjonsLoggTO(journalpostId, 1L), createArkivElementEndringToList());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
@@ -119,19 +110,19 @@ public class AksjonsLoggIT {
 	}
 
 	@Test
-    public void shouldGetBrukerFromJoark() throws UgyldigAksjonsLoggException {
-        AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTO(journalpostId, 1L);
-        aksjonsLoggTO.setBruker(null);
-        aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, createArkivElementEndringToList());
+	public void shouldGetBrukerFromJoark() throws UgyldigAksjonsLoggException {
+		AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTO(journalpostId, 1L);
+		aksjonsLoggTO.setBruker(null);
+		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, createArkivElementEndringToList());
 
-        List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-        assertThat(aksjonsLoggList.size(), is(1));
-        AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList.size(), is(1));
+		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
 
-        assertThat(aksjonsLogg.getBruker(), is(BRUKER_ID));
-    }
+		assertThat(aksjonsLogg.getBruker(), is(BRUKER_ID));
+	}
 
-    @Test
+	@Test
 	public void shouldGetMostRecentBruker() throws UgyldigAksjonsLoggException {
 		Journalpost journalpost = joarkRepository.findById(journalpostId)
 				.orElseThrow(JournalpostIkkeFunnetException::new);
@@ -171,12 +162,10 @@ public class AksjonsLoggIT {
 
 	@Test
 	public void shouldThrowWhenAksjonIsNull() throws UgyldigAksjonsLoggException {
-		expectedException.expect(UgyldigAksjonsLoggException.class);
-		expectedException.expectMessage("aksjon");
-
 		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTOList.setAksjon(null);
-		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
+		assertThrows(UgyldigAksjonsLoggException.class, () ->
+				aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList()), "aksjon");
 	}
 
 	@Test
@@ -190,36 +179,33 @@ public class AksjonsLoggIT {
 
 	@Test
 	public void shouldThrowWhenJournalpostIdAndDokumentInfoIdIsNull() throws UgyldigAksjonsLoggException {
-		expectedException.expect(UgyldigAksjonsLoggException.class);
-		expectedException.expectMessage("AksjonsLogg mangler påkrevd parameter: enten journalpostId eller dokumentInfoId må bli satt.");
-
 		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTOList.setDokumentInfoId(null);
 		aksjonsLoggTOList.setJournalpostId(null);
-		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
+		assertThrows(UgyldigAksjonsLoggException.class, () ->
+						aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList()),
+				"AksjonsLogg mangler påkrevd parameter: enten journalpostId eller dokumentInfoId må bli satt.");
 	}
 
 	@Test
 	public void shouldThrowWhenArkivElementEndringArkivElementIsNull() throws UgyldigAksjonsLoggException {
-		expectedException.expect(UgyldigAksjonsLoggException.class);
-		expectedException.expectMessage("AksjonsLogg.ArkivElementEndring mangler påkrevd parameter: arkivElement");
-
 		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
-		List<ArkivElementEndringTO> arkivElementEndringTO =  createArkivElementEndringToList();
+		List<ArkivElementEndringTO> arkivElementEndringTO = createArkivElementEndringToList();
 		arkivElementEndringTO.get(0).setArkivElement(null);
-		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList,arkivElementEndringTO);
+		assertThrows(UgyldigAksjonsLoggException.class, () ->
+						aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, arkivElementEndringTO),
+				"AksjonsLogg.ArkivElementEndring mangler påkrevd parameter: arkivElement");
 	}
 
 	@Test
 	public void shouldThrowWhenArkivElementEndringArkivElementFraVerdiAndTilVerdiIsNull() throws UgyldigAksjonsLoggException {
-		expectedException.expect(UgyldigAksjonsLoggException.class);
-		expectedException.expectMessage("Ugyldig AksjonsLogg.ArkivElementEndring: enten fraVerdi eller tilVerdi må bli satt");
-
 		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
-		List<ArkivElementEndringTO> arkivElementEndringTO =  createArkivElementEndringToList();
+		List<ArkivElementEndringTO> arkivElementEndringTO = createArkivElementEndringToList();
 		arkivElementEndringTO.get(0).setFraVerdi(null);
 		arkivElementEndringTO.get(0).setTilVerdi(null);
-		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, arkivElementEndringTO);
+		assertThrows(UgyldigAksjonsLoggException.class, () ->
+						aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, arkivElementEndringTO),
+				"Ugyldig AksjonsLogg.ArkivElementEndring: enten fraVerdi eller tilVerdi må bli satt");
 	}
 
 }

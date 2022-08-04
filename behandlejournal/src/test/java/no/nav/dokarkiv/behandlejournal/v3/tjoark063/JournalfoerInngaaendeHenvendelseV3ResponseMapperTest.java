@@ -1,10 +1,10 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark063;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Test class for DefaultJournalfoerInngaaendeHenvendelseResponseMapper.
@@ -19,7 +19,7 @@ public class JournalfoerInngaaendeHenvendelseV3ResponseMapperTest {
 	private JournalfoerInngaaendeHenvendelseResponse domainResponse;
 	private no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerInngaaendeHenvendelseResponse wsResponse;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		mapper = new JournalfoerInngaaendeHenvendelseV3ResponseMapper();
 		domainResponse = new JournalfoerInngaaendeHenvendelseResponse(JOURNALPOST_ID);

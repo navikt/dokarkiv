@@ -1,32 +1,33 @@
 package no.nav.dokarkiv.core.jaxws;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
+
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for CallIdHandler.
  *
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CallIdHandlerTest {
 
 	private QName CALLID_QNAME = new QName("uri:no.nav.applikasjonsrammeverk", "callId");
@@ -39,8 +40,8 @@ public class CallIdHandlerTest {
 
 	private SOAPMessage soapMessage;
 
-	@Before
-	public void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws SOAPException {
 		handler = new CallIdHandler();
 		soapMessage = createEmptySoapMessage();
 
@@ -51,7 +52,7 @@ public class CallIdHandlerTest {
 	}
 
 	@Test
-	public void shouldSetCallIdInMDC() throws Exception {
+	public void shouldSetCallIdInMDC() throws SOAPException {
 		addCallIdHeaderToSOAPMessage();
 
 		handler.handleMessage(context);
@@ -59,7 +60,7 @@ public class CallIdHandlerTest {
 		assertThat(MDC.get(MDC_CALL_ID), is(callId));
 	}
 
-	private void addCallIdHeaderToSOAPMessage() throws Exception {
+	private void addCallIdHeaderToSOAPMessage() throws SOAPException {
 		SOAPEnvelope envelope = soapMessage.getSOAPPart().getEnvelope();
 		SOAPHeader header = envelope.getHeader();
 
@@ -67,7 +68,7 @@ public class CallIdHandlerTest {
 		callIdElement.setValue(callId);
 	}
 
-	public static SOAPMessage createEmptySoapMessage() throws Exception {
+	public static SOAPMessage createEmptySoapMessage() throws SOAPException {
 		MessageFactory factory = MessageFactory.newInstance();
 		SOAPMessage message = factory.createMessage();
 		return message;

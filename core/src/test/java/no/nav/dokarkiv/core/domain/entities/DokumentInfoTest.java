@@ -1,5 +1,13 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
+import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
+import org.junit.jupiter.api.Test;
+
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
@@ -9,26 +17,16 @@ import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for DokumentInfo.
  *
- * @author Thomas Eugen Bjørge, Sirius IT
  */
 public class DokumentInfoTest {
 
@@ -246,7 +244,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForMissingEndretAvNavn() throws Exception {
+	public void shouldThrowExceptionForMissingEndretAvNavn() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.dokumentInfoId(19L)
 				.build();
@@ -255,7 +253,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForMissingDokumentstatusAndJournalposttypeU() throws Exception {
+	public void shouldThrowExceptionForMissingDokumentstatusAndJournalposttypeU() {
 		Journalpost journalpost = getJournalpostBuilder()
 				.journalpostType(JournalpostTypeCode.U)
 				.build();
@@ -265,7 +263,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForMissingDokumentstatusAndJournalposttypeN() throws Exception {
+	public void shouldThrowExceptionForMissingDokumentstatusAndJournalposttypeN() {
 		Journalpost journalpost = getJournalpostBuilder()
 				.journalpostType(JournalpostTypeCode.N)
 				.build();
@@ -275,7 +273,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForMissingKategori() throws Exception {
+	public void shouldThrowExceptionForMissingKategori() {
 		Journalpost journalpost = getJournalpostBuilder().build();
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.tittel("Tittel")
@@ -286,7 +284,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForMissingTittel() throws Exception {
+	public void shouldThrowExceptionForMissingTittel() {
 		Journalpost journalpost = getJournalpostBuilder()
 				.journalStatus(JournalStatusCode.D)
 				.build();
@@ -299,7 +297,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldFindSkannetInnholdById() throws Exception {
+	public void shouldFindSkannetInnholdById() {
 		long skannetInnholdId = 200L;
 		String innhold = "innhold";
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
@@ -317,7 +315,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldFindSkannetInnholdByIdWithNewAndExistingSkannetInnholdsInList() throws Exception {
+	public void shouldFindSkannetInnholdByIdWithNewAndExistingSkannetInnholdsInList() {
 		long skannetInnholdId = 200L;
 		String innhold = "innhold";
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
@@ -334,7 +332,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldFindFilDetaljerById() throws Exception {
+	public void shouldFindFilDetaljerById() {
 		long filDetaljerId = 200L;
 		String uuid = "uuid";
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
@@ -353,7 +351,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldFindFilDetaljerByFilUuid() throws Exception {
+	public void shouldFindFilDetaljerByFilUuid() {
 		long filDetaljerId = 200L;
 		String filUuid = FilDetaljer.generateUuid();
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
@@ -371,7 +369,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForDuplicateDokumentVarianter() throws Exception {
+	public void shouldThrowExceptionForDuplicateDokumentVarianter() {
 		VariantFormatCode arkivVariant = VariantFormatCode.ARKIV;
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(getFilDetaljerBuilder()
@@ -394,7 +392,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldReturnTrueIfThereIsADocumentWithArkivVariant() throws Exception {
+	public void shouldReturnTrueIfThereIsADocumentWithArkivVariant() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(getFilDetaljerBuilder()
 						.variantFormat(VariantFormatCode.ARKIV)
@@ -405,7 +403,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldReturnFalseIfThereIsNotADocumentWithArkivVariant() throws Exception {
+	public void shouldReturnFalseIfThereIsNotADocumentWithArkivVariant() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
 				.filDetaljerList(getFilDetaljerBuilder()
 						.variantFormat(VariantFormatCode.PRODUKSJON)
@@ -416,7 +414,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionForMissingFilDetaljerWhenEndeligJournalforing() throws Exception {
+	public void shouldThrowExceptionForMissingFilDetaljerWhenEndeligJournalforing() {
 		Journalpost journalpost = getJournalpostBuilder()
 				.journalStatus(JournalStatusCode.J)
 				.build();
@@ -430,7 +428,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldFindFilDetaljerByVariantFormat() throws Exception {
+	public void shouldFindFilDetaljerByVariantFormat() {
 		VariantFormatCode arkiv = VariantFormatCode.ARKIV;
 		String uuid = "uuid";
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
@@ -450,7 +448,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldFindJournalpostDokumentInfoRelasjonByJournalpostId() throws Exception {
+	public void shouldFindJournalpostDokumentInfoRelasjonByJournalpostId() {
 		Long journalpostId = 200L;
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder().build();
 
@@ -466,7 +464,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldRemoveFildetaljerFromSet() throws Exception {
+	public void shouldRemoveFildetaljerFromSet() {
 		FilDetaljer arkivFildetaljer = getFilDetaljerBuilder()
 				.variantFormat(VariantFormatCode.ARKIV)
 				.filUuid("uuid")
@@ -488,7 +486,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldHaveMultipleJournalpostRelations() throws Exception {
+	public void shouldHaveMultipleJournalpostRelations() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder().build();
 
 		getJournalpostDokumentInfoRelasjonBuilder()
@@ -502,7 +500,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldNotHaveMultipleJournalpostRelations() throws Exception {
+	public void shouldNotHaveMultipleJournalpostRelations() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder().build();
 
 		getJournalpostDokumentInfoRelasjonBuilder()
@@ -513,7 +511,7 @@ public class DokumentInfoTest {
 	}
 
 	@Test
-	public void shouldNotHaveMultipleJournalpostRelationsWhenZero() throws Exception {
+	public void shouldNotHaveMultipleJournalpostRelationsWhenZero() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder().build();
 
 		assertThat(dokumentInfo.isRelatedToMultipleJournalposts(), is(false));

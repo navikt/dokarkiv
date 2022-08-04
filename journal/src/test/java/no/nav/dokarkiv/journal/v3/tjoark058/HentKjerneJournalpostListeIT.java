@@ -1,35 +1,5 @@
 package no.nav.dokarkiv.journal.v3.tjoark058;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.resetAllRequests;
-import static com.github.tomakehurst.wiremock.client.WireMock.resetAllScenarios;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
-import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.JANUARY_1_2020;
-import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.createJournalpost;
-import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.PEN_SAK_ID;
-import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createPENSaksrelasjon;
-import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createSaksrelasjon;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static no.nav.dokarkiv.core.domain.entities.DokumentInfo.DELETED_DOCUMENT_TITLE;
-import static no.nav.dokarkiv.core.util.DateConverterUtil.convertDateToXMLGregorianCalendar;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isIn;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 import no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
@@ -69,8 +39,8 @@ import no.nav.tjeneste.virksomhet.journal.v3.informasjon.hentkjernejournalpostli
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeRequest;
 import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentKjerneJournalpostListeResponse;
 import org.apache.http.HttpHeaders;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -80,6 +50,37 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.resetAllRequests;
+import static com.github.tomakehurst.wiremock.client.WireMock.resetAllScenarios;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID;
+import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.JANUARY_1_2020;
+import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.createJournalpost;
+import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.PEN_SAK_ID;
+import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createPENSaksrelasjon;
+import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createSaksrelasjon;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.dokarkiv.core.domain.entities.DokumentInfo.DELETED_DOCUMENT_TITLE;
+import static no.nav.dokarkiv.core.util.DateConverterUtil.convertDateToXMLGregorianCalendar;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isIn;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Integration test for HentKjerneJournalpostListe(TJOARK058) in 3rd gen. Journal
@@ -97,7 +98,7 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	private static final String SAK_ID = "9999";
 	private static final String DENY_PERMIT_ABAC_SCENARIO = "denypermitabac";
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		SubjectHandlerUtils.setInternBruker("userId");
 	}
@@ -352,24 +353,26 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 	@Test
 	public void shouldThrowUgyldigInputException_whenSakIdIsMissing() throws Exception {
 		abacPermit();
-		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
-		expectedException.expectMessage("ArkivSakId er tom eller null");
 
 		HentKjerneJournalpostListeRequest wsRequest = createRequest();
 		wsRequest.getArkivSakListe().get(0).setArkivSakId("");
-		journalV3Provider.hentKjerneJournalpostListe(wsRequest);
+
+		assertThrows(HentKjerneJournalpostListeUgyldigInput.class,
+				() -> journalV3Provider.hentKjerneJournalpostListe(wsRequest),
+				"ArkivSakId er tom eller null");
 	}
 
 
 	@Test
 	public void shouldThrowUgyldigInputException_whenSakArkivSystemIsMissing() throws Exception {
 		abacPermit();
-		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
-		expectedException.expectMessage("ArkivSakSystem er tom eller null");
 
 		HentKjerneJournalpostListeRequest wsRequest = createRequest();
 		wsRequest.getArkivSakListe().get(0).setArkivSakSystem("");
-		journalV3Provider.hentKjerneJournalpostListe(wsRequest);
+
+		assertThrows(HentKjerneJournalpostListeUgyldigInput.class,
+				() -> journalV3Provider.hentKjerneJournalpostListe(wsRequest),
+				"ArkivSakSystem er tom eller null");
 	}
 
 	@Test
@@ -380,10 +383,9 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 		HentKjerneJournalpostListeRequest request = createRequest();
 		request.withSoekefilter(new Soekefilter().withJournalFom(convertDateToXMLGregorianCalendar(futureDate)));
 
-
-		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
-		expectedException.expectMessage("Ugyldig datointervall. JournalFom er etter dagens dato.");
-		journalV3Provider.hentKjerneJournalpostListe(request);
+		assertThrows(HentKjerneJournalpostListeUgyldigInput.class,
+				() -> journalV3Provider.hentKjerneJournalpostListe(request),
+				"Ugyldig datointervall. JournalFom er etter dagens dato.");
 	}
 
 	@Test
@@ -397,17 +399,14 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 				.withJournalFom(convertDateToXMLGregorianCalendar(yesterday))
 				.withJournalTom(convertDateToXMLGregorianCalendar(lastYear)));
 
-		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
-		expectedException.expectMessage("Ugyldig datointervall. JournalFom er etter journalTom.");
-
-		journalV3Provider.hentKjerneJournalpostListe(request);
+		assertThrows(HentKjerneJournalpostListeUgyldigInput.class,
+				() -> journalV3Provider.hentKjerneJournalpostListe(request),
+				"Ugyldig datointervall. JournalFom er etter journalTom.");
 	}
 
 	@Test
 	public void shouldFailOnListeLargerThanPredefinertAntallSaker() throws Exception {
 		abacPermit();
-		expectedException.expect(HentKjerneJournalpostListeUgyldigInput.class);
-		expectedException.expectMessage("Saksliste må begrenses");
 
 		int predefinertAntall = 51;
 		List<ArkivSak> arkivSaker = new ArrayList<>(predefinertAntall);
@@ -417,7 +416,9 @@ public class HentKjerneJournalpostListeIT extends AbstractJournalV3Itest {
 		HentKjerneJournalpostListeRequest request = createRequest();
 		request.withArkivSakListe(arkivSaker);
 
-		journalV3Provider.hentKjerneJournalpostListe(request);
+		assertThrows(HentKjerneJournalpostListeUgyldigInput.class,
+				() -> journalV3Provider.hentKjerneJournalpostListe(request),
+				"Saksliste må begrenses");
 	}
 
 	@Test

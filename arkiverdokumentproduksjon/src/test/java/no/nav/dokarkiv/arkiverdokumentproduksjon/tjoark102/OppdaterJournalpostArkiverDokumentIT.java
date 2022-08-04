@@ -1,16 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.AbstractArkiverdokumentproduksjonItest;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -27,13 +17,22 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FeilStrukturException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.oppdaterjournalpostarkiverdokument.Fildetaljer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OppdaterJournalpostArkiverDokumentRequest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeFactory;
 import java.util.List;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration tests for the arkiverDokumentOgFerdigstillJournalpost operation
@@ -52,12 +51,10 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 	private static final byte[] DOKUMENTINNHOLD = "DOKUMENT".getBytes();
 	private static final String OPPRETTETKILDENAVN = "NAV";
 	private static final String UTSENDINGS_KANAL_CODE = UtsendingsKanalCode.NAV_NO.name();
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	private OppdaterJournalpostArkiverDokumentRequest request;
 	private Journalpost journalpost;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		journalpost = buildAndPersistJournalpost();
 		Long journalpostId = journalpost.getJournalpostId();
@@ -138,10 +135,9 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 		request.getFildetaljerListe().add(createWsFilDetaljer(VariantFormatCode.SLADDET));
 		request.getFildetaljerListe().add(createWsFilDetaljer(VariantFormatCode.SLADDET));
 
-		expectedException.expect(FeilStrukturException.class);
-
-		expectedException.expectMessage("Input til tjenesten inneholder flere fildetaljer med samme variantformat");
-		arkiverDokumentproduksjonProvider.oppdaterJournalpostArkiverDokument(request);
+		assertThrows(FeilStrukturException.class,
+				() -> arkiverDokumentproduksjonProvider.oppdaterJournalpostArkiverDokument(request),
+				"Input til tjenesten inneholder flere fildetaljer med samme variantformat");
 	}
 
 	private Journalpost buildAndPersistJournalpost() {

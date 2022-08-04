@@ -1,12 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark107;
 
 
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -15,22 +9,27 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Test of {@link DefaultFjernFerdigstiltDokumentService}
  *
  * @author Stig Strøm
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultFjernFerdigstiltDokumentServiceTest {
 	private static final Long JOURNALPOST_ID = 42L;
 	private static final Long DOKUMENTINFO_ID = 1L;
@@ -45,18 +44,16 @@ public class DefaultFjernFerdigstiltDokumentServiceTest {
 	private SporingPopulator sporingPopulator;
 
 	@Mock
-    private JoarkRepositorySkjermet joarkRepository;
+	private JoarkRepositorySkjermet joarkRepository;
 
 	@Mock
 	private DokumentFilRepository dokumentFilRepository;
 
 	@InjectMocks
 	private DefaultFjernFerdigstiltDokumentService service;
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 
 	@Test
-	public void shouldRunOk() throws Exception {
+	public void shouldRunOk() {
 		Journalpost journalpost = testJournalpost();
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		service.fjernFerdigstiltDokument(request);
@@ -70,10 +67,11 @@ public class DefaultFjernFerdigstiltDokumentServiceTest {
 
 
 	@Test
-	public void shouldThrowException_cannotFindJournalpost() throws Exception {
-		expectedException.expect(NoJournalpostFoundException.class);
+	public void shouldThrowException_cannotFindJournalpost() {
 		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.ofNullable(null));
-		service.fjernFerdigstiltDokument(request);
+
+		assertThrows(NoJournalpostFoundException.class,
+				() -> service.fjernFerdigstiltDokument(request));
 	}
 
 	private Journalpost testJournalpost() {

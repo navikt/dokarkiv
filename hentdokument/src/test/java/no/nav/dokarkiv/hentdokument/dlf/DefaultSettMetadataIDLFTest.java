@@ -6,8 +6,8 @@ import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataForUthenting;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFRequest;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFResponse;
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.ClassPathResource;
@@ -15,10 +15,10 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.File;
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,7 +47,7 @@ public class DefaultSettMetadataIDLFTest {
 		return FileUtils.readFileToByteArray(file);
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		settMetadataIDLF = new DefaultSettMetadataIDLF();

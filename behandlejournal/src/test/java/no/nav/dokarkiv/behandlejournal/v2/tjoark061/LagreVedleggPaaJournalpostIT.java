@@ -21,8 +21,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.ForretningsmessigUnntak;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.feil.JournalpostIkkeFunnet;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Arkivfiltyper;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.DokumentInnhold;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.Dokumenttyper;
@@ -33,16 +31,17 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.lagrevedleggpaajournalpost.JournalfoertDokumentInfo;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.IS;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration test of operation LagreVedleggPaaJournalpost.
@@ -86,12 +85,11 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 	@Test
 	public void shouldThrowExceptionWhenTryingToAddVedleggToNonExistingJournalpost() throws Exception {
 		DateProvider.configure(true, "2018-07-11T12:00");
-		assertForretningsmessigUnntak(LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet.class,
-				expectedJournalpostIkkeFunnet());
 
 		createRequest(NONEXISTING_JOURNALPOST_ID);
 
-		behandleJournalProvider.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
+		assertThrows(LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet.class,
+				() -> behandleJournalProvider.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest));
 	}
 
 	@Test
@@ -155,15 +153,6 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 
 		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(fildetaljer.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(FILECONTENT));
-	}
-
-	private ForretningsmessigUnntak expectedJournalpostIkkeFunnet() {
-		JournalpostIkkeFunnet journalpostIkkeFunnet = new JournalpostIkkeFunnet();
-		journalpostIkkeFunnet.setFeilaarsak("NoJournalpostFoundException");
-		journalpostIkkeFunnet.setFeilkilde("JOARK:lagreVedleggPaaJournalpost");
-		journalpostIkkeFunnet.setFeilmelding("Journalpost with id: " + NONEXISTING_JOURNALPOST_ID + " does not exist");
-		journalpostIkkeFunnet.setTidspunkt(getTodayJodaTime());
-		return journalpostIkkeFunnet;
 	}
 
 	private void createRequest(String journalpostId) {

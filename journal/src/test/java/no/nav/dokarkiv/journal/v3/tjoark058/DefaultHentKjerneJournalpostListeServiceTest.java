@@ -1,13 +1,5 @@
 package no.nav.dokarkiv.journal.v3.tjoark058;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -16,13 +8,13 @@ import no.nav.dokarkiv.core.repository.journalpostliste.HentMinJPListeParameters
 import no.nav.dokarkiv.core.repository.journalpostliste.JournalpostListeRepository;
 import no.nav.dokarkiv.core.repository.journalpostliste.SakFagsystem;
 import org.hibernate.Session;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
@@ -30,12 +22,20 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 /**
  * Unit test for {@link DefaultHentKjerneJournalpostListeService}
- * @author Stig Strøm, Acando
  *
+ * @author Stig Strøm, Acando
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultHentKjerneJournalpostListeServiceTest {
 	
 

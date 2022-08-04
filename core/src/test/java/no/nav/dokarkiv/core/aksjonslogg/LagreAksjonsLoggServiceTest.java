@@ -1,29 +1,18 @@
-package no.nav.dokarkiv.core.akjsonslogg;
+package no.nav.dokarkiv.core.aksjonslogg;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
-import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
-import no.nav.dokarkiv.core.aksjonslogg.JournalpostDokumentInfoPair;
-import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,13 +20,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class LagreAksjonsLoggServiceTest {
-
 	@Mock
 	AksjonsLoggService aksjonsLoggService;
 
@@ -53,9 +43,9 @@ public class LagreAksjonsLoggServiceTest {
 	@Captor
 	ArgumentCaptor<List<ArkivElementEndringTO>> captorArkivElementListe;
 
-	private final String HJEMMEL="POL";
-	private final String UTFOERT_AV="MEG";
-	private final String MELDING="HEI";
+	private final String HJEMMEL = "POL";
+	private final String UTFOERT_AV = "MEG";
+	private final String MELDING = "HEI";
 
 	@Test
 	public void skalLageNyEllerLeggeTilEndringerTilEksisterendeAksjonsLoggHvisJournalpostErNull() throws UgyldigAksjonsLoggException {

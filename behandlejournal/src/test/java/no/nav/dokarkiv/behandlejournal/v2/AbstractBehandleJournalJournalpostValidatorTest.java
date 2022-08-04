@@ -13,9 +13,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 
 import java.util.Date;
@@ -26,6 +24,7 @@ import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetal
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Base class for JournalpostValidator tests.
@@ -33,9 +32,6 @@ import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrel
  * @author Thomas Eugen Bjørge, Visma Consulting
  */
 public abstract class AbstractBehandleJournalJournalpostValidatorTest {
-
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
 
 	@Mock
 	protected MandatoryFieldsVerifier mandatoryFieldsVerifierMock;
@@ -45,16 +41,16 @@ public abstract class AbstractBehandleJournalJournalpostValidatorTest {
 
 	protected Journalpost journalpost;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		journalpost = createJournalpost();
 	}
 
 	protected void validateAndAssertExceptionThrownWithMessage(BehandleJournalJournalpostValidator validator,
 															   Class<? extends Exception> exception, String message) {
-		expected.expect(exception);
-		expected.expectMessage(message);
-		validator.validate(journalpost);
+		assertThrows(exception,
+				() -> validator.validate(journalpost),
+				message);
 	}
 
 	protected Journalpost createJournalpost() {
@@ -136,26 +132,26 @@ public abstract class AbstractBehandleJournalJournalpostValidatorTest {
 
 	protected void addDuplicatesOfVariantFormats(Journalpost journalpost) {
 		journalpost.addJournalpostDokumentInfoRelasjon(getJournalpostDokumentInfoRelasjonBuilder().dokumentInfo(
-				getDokumentInfoBuilder()
-						.dokumenttypeId("dokumentTypeId")
-						.sensitivt(true)
-						.tittel("tittel")
-						.innskrenketPartsinnsyn(true)
-						.brevkode("brevkode")
-						.organInternt(false)
-						.kategori(DokumentKategoriCode.ES)
-						.filDetaljerList(
-								getFilDetaljerBuilder()
-										.variantFormat(VariantFormatCode.ARKIV)
-										.filtype(FilTypeCode.PDF)
-										.fileContent("test".getBytes())
-										.build(),
-								getFilDetaljerBuilder()
-										.variantFormat(VariantFormatCode.ARKIV)
-										.filtype(FilTypeCode.RTF)
-										.fileContent("test".getBytes())
-										.build())
-						.build())
+						getDokumentInfoBuilder()
+								.dokumenttypeId("dokumentTypeId")
+								.sensitivt(true)
+								.tittel("tittel")
+								.innskrenketPartsinnsyn(true)
+								.brevkode("brevkode")
+								.organInternt(false)
+								.kategori(DokumentKategoriCode.ES)
+								.filDetaljerList(
+										getFilDetaljerBuilder()
+												.variantFormat(VariantFormatCode.ARKIV)
+												.filtype(FilTypeCode.PDF)
+												.fileContent("test".getBytes())
+												.build(),
+										getFilDetaljerBuilder()
+												.variantFormat(VariantFormatCode.ARKIV)
+												.filtype(FilTypeCode.RTF)
+												.fileContent("test".getBytes())
+												.build())
+								.build())
 				.build());
 	}
 

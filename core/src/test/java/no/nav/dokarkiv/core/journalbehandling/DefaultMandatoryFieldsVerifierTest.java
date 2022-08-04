@@ -1,14 +1,5 @@
 package no.nav.dokarkiv.core.journalbehandling;
 
-import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
-import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder.getKryssreferanseBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -22,12 +13,18 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.Date;
+import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
+import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder.getKryssreferanseBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit tests for DefaultMandatoryFieldsVerifier. Validation failures is tested
@@ -39,16 +36,13 @@ public class DefaultMandatoryFieldsVerifierTest {
 
 	private DefaultMandatoryFieldsVerifier mandatoryFieldsVerifier;
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
-	@Before
+	@BeforeEach
 	public void setUp() {
 		mandatoryFieldsVerifier = new DefaultMandatoryFieldsVerifier();
 	}
 
 	@Test
-	public void shouldVerifyCompleteJournalpostUpdate() throws Exception {
+	public void shouldVerifyCompleteJournalpostUpdate() {
 		DokumentInfo dokumentInfo = createDokumentInfo();
 		Journalpost journalpost = createJournalpost(dokumentInfo);
 
@@ -57,16 +51,15 @@ public class DefaultMandatoryFieldsVerifierTest {
 
 	@Test
 	public void shouldVerifyJournalForendeEnhetIdWhenVerifyJournalForendeEnhetIdIsTrue() {
-		expectedException.expect(InvalidArgumentException.class);
 		DokumentInfo dokumentInfo = createDokumentInfo();
 		Journalpost journalpost = createJournalpost(dokumentInfo);
 		journalpost.setJournalForendeEnhetId(null);
 		journalpost.setJournalstatus(JournalStatusCode.J);
-		mandatoryFieldsVerifier.verifyFields(journalpost);
+		assertThrows(InvalidArgumentException.class, () -> mandatoryFieldsVerifier.verifyFields(journalpost));
 	}
 
 	@Test
-	public void shouldNotVerifyDokumentInfoFieldsWhenExistingDokumentInfoAttachedToJournalpost() throws Exception {
+	public void shouldNotVerifyDokumentInfoFieldsWhenExistingDokumentInfoAttachedToJournalpost() {
 		Journalpost journalpost =
 				getJournalpostBuilder()
 						.journalStatus(JournalStatusCode.MO)

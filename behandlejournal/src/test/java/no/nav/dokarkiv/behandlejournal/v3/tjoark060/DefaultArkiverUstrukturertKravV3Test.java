@@ -17,14 +17,12 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidBrukerException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
 
@@ -33,20 +31,18 @@ import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumen
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Test class for {@link DefaultArkiverUstrukturertKravV3}.
  *
  * @author Joakim Bjørnstad, Visma Consulting
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultArkiverUstrukturertKravV3Test {
 
 	private static final long JOURNALPOST_ID = 100L;
@@ -69,10 +65,7 @@ public class DefaultArkiverUstrukturertKravV3Test {
 
 	private Journalpost journalpost;
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
-
-	@Before
+	@BeforeEach
 	public void setUp() {
 		Journalpost persistedJournalpost = Journalpost.builder()
 				.journalpostId(JOURNALPOST_ID)
@@ -83,7 +76,6 @@ public class DefaultArkiverUstrukturertKravV3Test {
 						.dokumentInfoId(DOKUMENT_INFO_ID)
 						.build())
 				.build());
-		when(repositoryMock.save(any())).thenReturn(persistedJournalpost);
 		journalpost = createJournalpost(validFnr, FagomradeCode.UFO);
 	}
 
@@ -91,8 +83,8 @@ public class DefaultArkiverUstrukturertKravV3Test {
 	public void shouldThrowExceptionIfJournalpostInRequestIsNull() {
 		request = new ArkiverUstrukturertKravRequest(null);
 
-		exception.expect(ApplicationException.class);
-		service.arkiverUstrukturertKrav(request);
+		assertThrows(ApplicationException.class,
+				() -> service.arkiverUstrukturertKrav(request));
 	}
 
 	@Test
@@ -100,12 +92,12 @@ public class DefaultArkiverUstrukturertKravV3Test {
 		Journalpost journalpost = createJournalpost(invalidFnr, FagomradeCode.UFO);
 		request = new ArkiverUstrukturertKravRequest(journalpost);
 
-		exception.expect(InvalidBrukerException.class);
-		service.arkiverUstrukturertKrav(request);
+		assertThrows(InvalidBrukerException.class,
+				() -> service.arkiverUstrukturertKrav(request));
 	}
 
 	@Test
-	public void shouldThrowExceptionForMissingDokumentInfoRelasjon() throws Exception {
+	public void shouldThrowExceptionForMissingDokumentInfoRelasjon() {
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		callOperationAndExpectExceptionWithMessageContaining("DokumentInfo");
@@ -133,7 +125,7 @@ public class DefaultArkiverUstrukturertKravV3Test {
 	}
 
 	@Test
-	public void shouldBehandleJournalJournalpostValidator() throws Exception {
+	public void shouldBehandleJournalJournalpostValidator() {
 		Journalpost journalpost = createJournalpost(validFnr, FagomradeCode.UFO);
 		request = new ArkiverUstrukturertKravRequest(journalpost);
 
@@ -177,10 +169,9 @@ public class DefaultArkiverUstrukturertKravV3Test {
 	private void callOperationAndExpectExceptionWithMessageContaining(String errormessagePart) {
 		request = new ArkiverUstrukturertKravRequest(journalpost);
 
-		exception.expect(ApplicationException.class);
-		exception.expectMessage(containsString(errormessagePart));
-
-		service.arkiverUstrukturertKrav(request);
+		assertThrows(ApplicationException.class,
+				() -> service.arkiverUstrukturertKrav(request),
+				errormessagePart);
 	}
 
 	private Journalpost createJournalpost(String brukerId, FagomradeCode fagomrade) {

@@ -1,39 +1,37 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import static no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder.getKryssreferanseBuilder;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder.getKryssreferanseBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for Kryssreferanse.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
  */
 public class KryssreferanseTest {
 
 	@Test
-	public void shouldThrowExceptionForMissingReferanseId() throws Exception {
+	public void shouldThrowExceptionForMissingReferanseId() {
 		Kryssreferanse kryssreferanse = getKryssreferanseBuilder()
-										.referanseType(ReferanseTypeCode.SPOERSMAAL)
-										.build();
-		
+				.referanseType(ReferanseTypeCode.SPOERSMAAL)
+				.build();
+
 		assertExceptionThrownWhenVerifyingMandatoryFields(kryssreferanse, "referanseId");
 	}
-	
+
 	@Test
-	public void shouldThrowExceptionForMissingReferanseType() throws Exception {
+	public void shouldThrowExceptionForMissingReferanseType() {
 		Kryssreferanse kryssreferanse = getKryssreferanseBuilder()
-										.referanseId("123")
-										.build();
-		
+				.referanseId("123")
+				.build();
+
 		assertExceptionThrownWhenVerifyingMandatoryFields(kryssreferanse, "referanseType");
 	}
-	
+
 	private void assertExceptionThrownWhenVerifyingMandatoryFields(Kryssreferanse kryssreferanse, String fieldName) {
 		try {
 			kryssreferanse.verifyMandatoryFields();
@@ -42,5 +40,5 @@ public class KryssreferanseTest {
 			assertThat(e.getMessage(), containsString(fieldName));
 		}
 	}
-	
+
 }

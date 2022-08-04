@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.support;
 
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostDokumentinfoRelasjon1;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostForOppdatering;
-
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -13,97 +10,96 @@ import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeInngaaendeException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KunneIkkeEndeligJournalfoereException;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostDokumentinfoRelasjon1;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.TestUtils.createJournalpostForOppdatering;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JournalpostValidatorTest {
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+	private Journalpost journalpost;
 
-    private Journalpost journalpost;
+	@BeforeEach
+	public void setUp() throws Exception {
+		journalpost = createJournalpostForOppdatering();
+	}
 
-    @Before
-    public void setUp() throws Exception {
-        journalpost = createJournalpostForOppdatering();
-    }
+	@Test
+	public void happyPath() {
+		JournalpostValidator.validateJournalpostStatuser(journalpost);
+		JournalpostValidator.validateJournalpostStruktur(journalpost);
+	}
 
-    @Test
-    public void happyPath() {
-        JournalpostValidator.validateJournalpostStatuser(journalpost);
-        JournalpostValidator.validateJournalpostStruktur(journalpost);
-    }
+	@Test
+	public void shouldFailHvisJournalpostTypeIkkeErInngaaende() {
+		journalpost.setJournalposttype(JournalpostTypeCode.U);
 
-    @Test
-    public void shouldFailHvisJournalpostTypeIkkeErInngaaende() {
-        journalpost.setJournalposttype(JournalpostTypeCode.U);
+		expectExceptionWithMessage(JournalpostIkkeInngaaendeException.class);
+	}
 
-        expectExceptionWithMessage(JournalpostIkkeInngaaendeException.class);
-    }
+	@Test
+	public void shouldFailHvisJournalpostIkkeErMidlertidigJournalfoert() {
+		journalpost.setJournalstatus(JournalStatusCode.J);
 
-    @Test
-    public void shouldFailHvisJournalpostIkkeErMidlertidigJournalfoert() {
-        journalpost.setJournalstatus(JournalStatusCode.J);
+		expectExceptionWithMessage(JournalpostIkkeMidlertidigException.class);
+	}
 
-        expectExceptionWithMessage(JournalpostIkkeMidlertidigException.class);
-    }
+	@Test
+	public void shouldFailHvisSaksrelasjonErFeilregistrert() {
+		journalpost.getSaksrelasjon().setFeilregistrert(Boolean.TRUE);
 
-    @Test
-    public void shouldFailHvisSaksrelasjonErFeilregistrert() {
-        journalpost.getSaksrelasjon().setFeilregistrert(Boolean.TRUE);
+		expectExceptionWithMessage(JournalpostIkkeMidlertidigException.class);
+	}
 
-        expectExceptionWithMessage(JournalpostIkkeMidlertidigException.class);
-    }
+	@Test
+	public void shouldFailWhenDokumentinfoErUnderRedigering() {
+		journalpost.getJournalpostDokumentInfoRelasjoner()
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.setDokumentstatus(DokumentStatusCode.UNDER_REDIGERING);
 
-    @Test
-    public void shouldFailWhenDokumentinfoErUnderRedigering() {
-        journalpost.getJournalpostDokumentInfoRelasjoner()
-                .iterator()
-                .next()
-                .getDokumentInfo()
-                .setDokumentstatus(DokumentStatusCode.UNDER_REDIGERING);
+		expectExceptionWithMessage(DokumentUnderRedigeringException.class);
+	}
 
-        expectExceptionWithMessage(DokumentUnderRedigeringException.class);
-    }
+	@Test
+	public void shouldFailHvisJournalpostIkkeInneholderNoenHoveddokument() {
+		journalpost.getJournalpostDokumentInfoRelasjoner()
+				.iterator()
+				.next()
+				.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
 
-    @Test
-    public void shouldFailHvisJournalpostIkkeInneholderNoenHoveddokument() {
-        journalpost.getJournalpostDokumentInfoRelasjoner()
-                .iterator()
-                .next()
-                .setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
+		expectExceptionWithMessage(KunneIkkeEndeligJournalfoereException.class);
+	}
 
-        expectExceptionWithMessage(KunneIkkeEndeligJournalfoereException.class);
-    }
+	@Test
+	public void shouldFailHvisJournalpostIkkeInneholderKunEttHoveddokument() {
+		journalpost.addJournalpostDokumentInfoRelasjon(createJournalpostDokumentinfoRelasjon1());
 
-    @Test
-    public void shouldFailHvisJournalpostIkkeInneholderKunEttHoveddokument() {
-        journalpost.addJournalpostDokumentInfoRelasjon(createJournalpostDokumentinfoRelasjon1());
+		expectExceptionWithMessage(KunneIkkeEndeligJournalfoereException.class);
+	}
 
-        expectExceptionWithMessage(KunneIkkeEndeligJournalfoereException.class);
-    }
+	@Test
+	public void shouldFailHvisFildetaljerManglerVariantFormatArkiv() {
+		journalpost.findAllFilDetaljer().forEach(filDetaljer -> filDetaljer.setVariantFormat(VariantFormatCode.SLADDET));
 
-    @Test
-    public void shouldFailHvisFildetaljerManglerVariantFormatArkiv() {
-        journalpost.findAllFilDetaljer().forEach(filDetaljer -> filDetaljer.setVariantFormat(VariantFormatCode.SLADDET));
+		expectExceptionWithMessage(KunneIkkeEndeligJournalfoereException.class);
+	}
 
-        expectExceptionWithMessage(KunneIkkeEndeligJournalfoereException.class);
-    }
+	@Test
+	public void shouldFailHvisFildetaljerHarSammeVariantFormat() {
+		journalpost.findAllFilDetaljer().forEach(filDetaljer -> filDetaljer.setVariantFormat(VariantFormatCode.ARKIV));
 
-    @Test
-    public void shouldFailHvisFildetaljerHarSammeVariantFormat() {
-        journalpost.findAllFilDetaljer().forEach(filDetaljer -> filDetaljer.setVariantFormat(VariantFormatCode.ARKIV));
-
-        expectExceptionWithMessage(KunneIkkeEndeligJournalfoereException.class);
-    }
+		expectExceptionWithMessage(KunneIkkeEndeligJournalfoereException.class);
+	}
 
 
-    private void expectExceptionWithMessage(Class exceptionClass) {
-        expectedException.expect(exceptionClass);
-
-        JournalpostValidator.validateJournalpostStatuser(journalpost);
-        JournalpostValidator.validateJournalpostStruktur(journalpost);
-    }
+	private void expectExceptionWithMessage(Class exceptionClass) {
+		assertThrows(exceptionClass, () -> {
+			JournalpostValidator.validateJournalpostStatuser(journalpost);
+			JournalpostValidator.validateJournalpostStruktur(journalpost);
+		});
+	}
 }

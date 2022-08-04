@@ -13,10 +13,8 @@ import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.virksomhet.journal.v3.JournalV3;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +22,7 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -36,7 +34,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class, JournalV3Config.class, TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
@@ -49,12 +47,10 @@ public abstract class AbstractJournalV3Itest {
 
 	protected static final String INTERN_BRUKER_USER_ID = "srvjoarkadmin";
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	@Inject
 	protected JournalV3 journalV3Provider;
 	@Inject
-    protected JoarkRepositorySkjermet joarkRepository;
+	protected JoarkRepositorySkjermet joarkRepository;
 	@Inject
 	protected DokumentFilRepository dokumentFilRepository;
 	@Inject
@@ -62,13 +58,13 @@ public abstract class AbstractJournalV3Itest {
 	@Inject
 	protected DokumentinfoRepository dokumentinfoRepository;
 	@Inject
-    protected DokumentUrlInfoRepository dokumentUrlInfoRepository;
+	protected DokumentUrlInfoRepository dokumentUrlInfoRepository;
 	@Inject
 	protected SkjermingServiceTest skjermingService;
 	@Inject
 	protected EntityManager entityManager;
 
-	@Before
+	@BeforeEach
 	public void setUpItest() {
 		relasjonRepository.deleteAll();
 		dokumentinfoRepository.deleteAll();
