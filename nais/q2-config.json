@@ -234,11 +234,6 @@
       "app": "doksikkerhetsnett",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"
-    },
-    {
-      "app": "doksikkerhetsnett-q1",
-      "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss"
     }
   ]
 }
