@@ -50,7 +50,6 @@ public class MottaDokumentUtgaaendeSkanningService {
             validateRequest(journalpostId, request);
 
             Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException(get(MDC_REQUEST_ID) + "\n" + "journalpost med id " + journalpostId + " ikke funnet"));
-
             validateJournalpost(journalpostId, request, journalpost);
 
             journalpost.setJournalstatus(JournalStatusCode.FL);
@@ -65,15 +64,19 @@ public class MottaDokumentUtgaaendeSkanningService {
             }
             journalpost.setJournalDato(DateProvider.getToday());
 
+            log.info("Save1");
             List<FilDetaljer> filDetaljerList = request.getDokumentvarianter()
                     .stream()
                     .map(dokumentVariant -> mapDokumentVariantToFildetaljer(dokumentVariant, request.getBatchnavn()))
                     .collect(Collectors.toList());
 
+            log.info("Save2");
             filDetaljerList.forEach(filDetaljer -> {
+                log.info("lagrer");
                 DokumentFil dokumentFil = filDetaljer.createDokumentFil();
                 dokumentFilRepository.save(dokumentFil);
             });
+            log.info("Save3");
             filDetaljerList.forEach(filDetaljer -> journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().addFilDetaljer(filDetaljer));
 
         } catch (Exception e) {

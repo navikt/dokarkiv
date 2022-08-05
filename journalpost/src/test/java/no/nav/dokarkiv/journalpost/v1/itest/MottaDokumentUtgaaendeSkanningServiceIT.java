@@ -29,10 +29,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.util.Base64Utils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -46,7 +44,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpostIT {
 	private static final String GYLDIG_CONSUMER = "srvskanmotutgaaende";
-	private static final String UGYLDIG_CONSUMER = "srvdokarkiv";
 	private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
 	private static final String KILDE = "skanmotutgaaende";
 
@@ -277,17 +274,6 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
 	}
 
-	@Test
-	public void shouldReturnForbiddenIfInvalidConsumer() throws IOException {
-
-		String expectedErrorMessage = "Konsument har ikke tilgang til å kalle tjenesten";
-		long journalpostId = 0L;
-
-		MottaDokumentUtgaaendeSkanningRequest request = createGyldigRequest();
-
-		validateRequestResponse(request, UGYLDIG_CONSUMER, journalpostId, expectedErrorMessage, HttpStatus.FORBIDDEN);
-	}
-
 	private MottaDokumentUtgaaendeSkanningRequest createGyldigRequest() {
 		return buildRequest(List.of(DokumentVariant
 				.builder()
@@ -303,7 +289,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		HttpHeaders headers = createHeaders(consumer);
 		HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST_INTERN + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT,
+				URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT,
 				requestHttpEntity, String.class);
 
 		endTransaction();
@@ -315,7 +301,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
 		HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST_INTERN + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT,
+				URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT,
 				requestHttpEntity, String.class);
 		JsonNode responseBody = mapper.readTree((String) responseEntity.getBody());
 
@@ -338,9 +324,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add("Nav-Consumer-Id", NAV_CONSUMER_ID);
-		String token = Base64Utils.encodeToString(
-				(consumer + ":" + "hemmelig").getBytes(StandardCharsets.UTF_8));
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic " + token);
+		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + getTokenWithSubject(consumer));
 
 		return headers;
 	}

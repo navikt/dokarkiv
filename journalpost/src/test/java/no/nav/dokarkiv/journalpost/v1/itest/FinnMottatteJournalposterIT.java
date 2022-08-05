@@ -190,7 +190,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(URL_PROTECTED_INTERN + FINNMOTTATTEJOURNALPOSTER_PENSJON, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class);
 
-
 		HttpStatus status = response.getStatusCode();
 		FinnMottatteJournalposterResponse body = response.getBody();
 
@@ -201,7 +200,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		assertTrue(ubehandletJournalpostIds.containsAll(journalpostIds));
 	}
-
 
 	@Test
 	public void returnsUnauthorizedWhenNoAuthorization() {
