@@ -232,6 +232,11 @@
       "app": "doksikkerhetsnett",
       "namespace": "teamdokumenthandtering",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "pensjon-dokdist",
+      "namespace": "pensjonsbrev",
+      "cluster": "prod-gcp"
     }
   ]
 }
