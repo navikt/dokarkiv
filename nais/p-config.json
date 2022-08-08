@@ -249,6 +249,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "skanmotutgaaende",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss"
+    },
+    {
       "app": "pensjon-dokdist",
       "namespace": "pensjonsbrev",
       "cluster": "prod-gcp"

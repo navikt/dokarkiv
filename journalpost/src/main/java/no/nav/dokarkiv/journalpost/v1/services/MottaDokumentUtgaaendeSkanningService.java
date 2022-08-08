@@ -50,7 +50,6 @@ public class MottaDokumentUtgaaendeSkanningService {
             validateRequest(journalpostId, request);
 
             Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException(get(MDC_REQUEST_ID) + "\n" + "journalpost med id " + journalpostId + " ikke funnet"));
-
             validateJournalpost(journalpostId, request, journalpost);
 
             journalpost.setJournalstatus(JournalStatusCode.FL);
