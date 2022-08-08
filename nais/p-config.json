@@ -124,6 +124,21 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "jfr-infotrygd",
+      "namespace": "isa",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "jfr-arena",
+      "namespace": "isa",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "jfr-generell",
+      "namespace": "isa",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "journalfoer-soeknad",
       "namespace": "etterlatte",
       "cluster": "prod-gcp"
