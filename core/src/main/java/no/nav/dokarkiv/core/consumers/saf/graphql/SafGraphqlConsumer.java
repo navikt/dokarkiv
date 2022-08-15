@@ -52,10 +52,10 @@ public class SafGraphqlConsumer {
 
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "safJournalpostQuery"}, percentiles = {0.5, 0.95})
 	@Retryable(include = SafJournalpostQueryTechnicalException.class, maxAttempts = MAX_ATTEMPTS_SHORT, backoff = @Backoff(delay = DELAY_SHORT))
-	public ResponseEntity<String> performQuery(GraphQLRequest graphQLRequest, String authorizationHeader, String journalpostId) {
+	public ResponseEntity<String> performQuery(GraphQLRequest graphQLRequest, String safAuthorizationHeader, String journalpostId) {
 
 		try {
-			HttpHeaders httpHeaders = createAuthHeaderFromToken(authorizationHeader, journalpostId);
+			HttpHeaders httpHeaders = createAuthHeaderFromToken(safAuthorizationHeader, journalpostId);
 			if (MDC.get(MDC_CALL_ID) != null) {
 				httpHeaders.add("Nav-Callid", MDC.get(MDC_CALL_ID));
 			}

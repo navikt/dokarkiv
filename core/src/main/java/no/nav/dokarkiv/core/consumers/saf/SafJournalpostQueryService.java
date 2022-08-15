@@ -33,13 +33,13 @@ public class SafJournalpostQueryService {
 		this.safGraphqlConsumer = safGraphqlConsumer;
 	}
 
-	public SafJournalpostTo hentJournalpost(String journalpostId, String authorizationHeader) {
+	public SafJournalpostTo hentJournalpost(String journalpostId, String safAuthorizationHeader) {
 
 		ResponseEntity<String> response = safGraphqlConsumer.performQuery(GraphQLRequest.builder()
 				.query(JOURNALPOST_QUERY)
 				.operationName("journalpost")
 				.variables(singletonMap("queryJournalpostId", journalpostId))
-				.build(), authorizationHeader, journalpostId);
+				.build(), safAuthorizationHeader, journalpostId);
 
 		return convertJsonToSafJsonJournalpost(response.getBody(), journalpostId).getJournalpost();
 	}

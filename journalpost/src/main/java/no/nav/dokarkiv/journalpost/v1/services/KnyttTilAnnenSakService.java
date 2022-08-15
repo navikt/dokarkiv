@@ -36,9 +36,9 @@ public class KnyttTilAnnenSakService {
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 	}
 
-	public KnyttTilAnnenSakResponse knyttTilAnnenSak(KnyttTilAnnenSakRequest knyttTilAnnenSakRequest, String kildeJournalpostId, String authorizationHeader) {
+	public KnyttTilAnnenSakResponse knyttTilAnnenSak(KnyttTilAnnenSakRequest knyttTilAnnenSakRequest, String kildeJournalpostId, String safAuthorizationHeader) {
 		// 3. Sjekk tilgang til å knytte dokumenter på journalpost til ny sak.
-		SafJournalpostTo safJournalpostFra = safJournalpostQueryService.hentJournalpost(kildeJournalpostId, authorizationHeader);
+		SafJournalpostTo safJournalpostFra = safJournalpostQueryService.hentJournalpost(kildeJournalpostId, safAuthorizationHeader);
 		sjekkOmAlleDokumentvarianterErGyldige(safJournalpostFra, kildeJournalpostId);
 
 		// 4. Kopier kildejournalpost, ny journalpost vil få midlertidlig journalpostStatus = "OD"/"R"
