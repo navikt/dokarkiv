@@ -257,6 +257,16 @@
       "app": "pensjon-dokdist",
       "namespace": "pensjonsbrev",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "esyfovarsel",
+      "namespace": "team-esyfo",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "esyfovarsel",
+      "namespace": "team-esyfo",
+      "cluster": "prod-fss"
     }
   ]
 }
