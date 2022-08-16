@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
@@ -13,7 +14,9 @@ import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakResponse;
 import no.nav.dokarkiv.journalpost.v1.services.KnyttTilAnnenSakService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerRestKnyttTilAnnenSak;
 import no.nav.dokarkiv.journalpost.v1.validators.KnyttTilAnnenSakValidator;
+import no.nav.security.token.support.core.api.Protected;
 import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.security.token.support.core.jwt.JwtToken;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +32,7 @@ import javax.inject.Inject;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.NavHeaders.NAV_USER_ID;
 
 /*
  * Kontrolleren er satt som unprotected da tokenet sendes videre til saf og valideres der
@@ -57,14 +61,13 @@ public class KnyttTilAnnenSakController {
 	@Operation(summary = "Knytt dokumenter til ny sak.")
 	@PutMapping("/{kildeJournalpostId}/knyttTilAnnenSak")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "knyttTilAnnenSak"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<KnyttTilAnnenSakResponse> knyttTilAnnenSak(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String safAuthorizationHeader,
-																	 @Parameter(description = "Nav-Consumer-Token - Systembrukerens OIDC-token. NB: Oppgis kun dersom den NAV-ansattes token er lagt ved under Authorization") @RequestHeader(value = "Nav-Consumer-Token", required = false) String navConsumerToken,
+	public ResponseEntity<KnyttTilAnnenSakResponse> knyttTilAnnenSak(@Parameter(description = "Azure token scopet mot saf") @RequestHeader(value = HttpHeaders.AUTHORIZATION) String safAuthorizationHeader,
 																	 @Parameter(description = "Nav-Consumer-Id - brukes for sporingsinfo i joark", required = true) @RequestHeader(value = "Nav-Consumer-Id") String navConsumerId,
+																	 @Parameter(description = "Nav-User-Id - Brukes for sporing i arkivet", required = true) @RequestHeader(value=NAV_USER_ID) String userId,
 																	 @Parameter(description = "Nav-CallId - teknisk sporingsid") @RequestHeader(value = "Nav-CallId", required = false) String navCallId,
 																	 @Parameter(description = "ID til journalposten som det er ønskelig å kopiere", required = true) @PathVariable String kildeJournalpostId,
 																	 @RequestBody KnyttTilAnnenSakRequest knyttTilAnnenSakRequest) {
-
-		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		RequestContextUtil.createAndSetUsername(userId, MDC.get(MDC_CONSUMER_ID));
 		try {
 			log.warn("knyttTilAnnenSak har fått har fått kall for å knytte dokumenter til annen sak");
 			knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, kildeJournalpostId, navConsumerId);

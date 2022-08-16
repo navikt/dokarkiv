@@ -45,6 +45,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
         registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, navLdapService, meterRegistry))
                 .excludePathPatterns("/rest/intern/**")
+                .excludePathPatterns("/rest/journalpostapi/v1/journalpost/{\\d+}/knyttTilAnnenSak")
                 .addPathPatterns("/rest/**");
 
         registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(navLdapService))

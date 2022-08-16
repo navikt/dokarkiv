@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.Collections;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.KOPIER_JOURNALPOST;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -23,8 +25,6 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @Component
 @Slf4j
 public class KopierJournalpostService {
-	private static final String USERID = "userId";
-	private static final String CONSUMERID = "consumerId";
 	private static final String UKJENT = "ukjent";
 	private final JoarkRepository joarkRepository;
 	private final LagreAksjonsLoggService aksjonsLoggService;
@@ -74,8 +74,8 @@ public class KopierJournalpostService {
 	}
 
 	private String getUtfoertAv() {
-		String userId = MDC.get(USERID);
-		String consumerId = MDC.get(CONSUMERID);
+		String userId = MDC.get(MDC_USER_ID);
+		String consumerId = MDC.get(MDC_CONSUMER_ID);
 		return isEmpty(userId) ? (isEmpty(consumerId) ? UKJENT : consumerId) : userId;
 	}
 

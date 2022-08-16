@@ -33,11 +33,17 @@ import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.util.Objects;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
+import static no.nav.dokarkiv.core.NavHeaders.NAV_CONSUMER_ID;
+import static no.nav.dokarkiv.core.NavHeaders.NAV_USER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
+import static no.nav.dokarkiv.core.util.TestDataUtils.USER_ID;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -108,40 +114,53 @@ public abstract class AbstractRestIT {
 
 	protected HttpHeaders createHeadersWithUserAndServiceUserToken() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setContentType(APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, BEARER + getTokenWithSubject(PERSON_USER_ID));
 		headers.add(NAV_CONSUMER_TOKEN, BEARER + getTokenWithSubject(SERVICE_USER_ID));
-		headers.add(NavHeaders.NAV_CALL_ID, "itest");
+		headers.add(NAV_CALL_ID, "itest");
 		return headers;
 	}
 
 	protected HttpHeaders createHeadersWithUserAndServiceUserTokenAndConsumerId() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(getTokenWithSubject(PERSON_USER_ID));
 		headers.add(NAV_CONSUMER_TOKEN, BEARER + getTokenWithSubject(SERVICE_USER_ID));
-		headers.add(NavHeaders.NAV_CALL_ID, "Nav-CallId");
-		headers.add(NavHeaders.NAV_CONSUMER_ID, "consumer_id");
+		headers.add(NAV_CALL_ID, "Nav-CallId");
+		headers.add(NAV_CONSUMER_ID, "consumer_id");
 		return headers;
 	}
+
+	protected HttpHeaders createHeadersWithUserAndSafToken() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(APPLICATION_JSON);
+		headers.setBearerAuth(getTokenWithSubject(PERSON_USER_ID));
+		//Bruker et ugyldig token her for å validere at tilgangsstyringen er skrudd av i dokarkiv for knyttTilAnnenSak
+		headers.add(NAV_CONSUMER_TOKEN, BEARER + "Token_for_saf. Noop i dokarkiv");
+		headers.add(NAV_CALL_ID, "Nav-CallId");
+		headers.add(NAV_CONSUMER_ID, "consumer_id");
+		headers.add(NAV_USER_ID, USER_ID);
+		return headers;
+	}
+
 	protected HttpHeaders createHeadersWithServiceUserToken() throws IOException {
 		return createHeadersWithServiceUserToken(SERVICE_USER_ID);
 	}
 
 	protected HttpHeaders createHeadersWithServiceUserToken(String serviceUserId) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setContentType(APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, BEARER + getTokenWithSubject(serviceUserId));
-		headers.add(NavHeaders.NAV_CALL_ID, "itest");
+		headers.add(NAV_CALL_ID, "itest");
 		return headers;
 	}
 
 	protected HttpHeaders createHeadersWithServiceUserTokenAndUserIdHeader(String serviceUserId, String userId) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setContentType(APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, BEARER + getTokenWithSubject(serviceUserId));
-		headers.add(NavHeaders.NAV_CALL_ID, "itest");
-		headers.add(NavHeaders.NAV_USER_ID, userId);
+		headers.add(NAV_CALL_ID, "itest");
+		headers.add(NAV_USER_ID, userId);
 		return headers;
 	}
 
