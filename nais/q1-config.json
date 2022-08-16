@@ -273,6 +273,16 @@
       "app": "doksikkerhetsnett-q1",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "esyfovarsel",
+      "namespace": "team-esyfo",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "esyfovarsel",
+      "namespace": "team-esyfo",
+      "cluster": "dev-fss"
     }
   ]
 }
