@@ -259,6 +259,11 @@
       "app": "esyfovarsel",
       "namespace": "team-esyfo",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "syfosmsak",
+      "namespace": "teamsykmelding",
+      "cluster": "dev-gcp"
     }
   ]
 }
