@@ -181,17 +181,7 @@
     {
       "app": "syfosmsak",
       "namespace": "teamsykmelding",
-      "cluster": "prod-fss"
-    },
-    {
-      "app": "syfosmsak",
-      "namespace": "teamsykmelding",
       "cluster": "prod-gcp"
-    },
-    {
-      "app": "pale-2-sak",
-      "namespace": "teamsykmelding",
-      "cluster": "prod-fss"
     },
     {
       "app": "pale-2-sak",
@@ -204,9 +194,19 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "syfosmpapirmottak",
+      "namespace": "teamsykmelding",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "smregistrering-backend",
       "namespace": "teamsykmelding",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "smregistrering-backend",
+      "namespace": "teamsykmelding",
+      "cluster": "prod-gcp"
     },
     {
       "app": "dp-behov-journalforing",
