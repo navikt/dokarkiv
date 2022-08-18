@@ -13,6 +13,7 @@ import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakResponse;
 import no.nav.dokarkiv.journalpost.v1.services.KnyttTilAnnenSakService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerRestKnyttTilAnnenSak;
 import no.nav.dokarkiv.journalpost.v1.validators.KnyttTilAnnenSakValidator;
+import no.nav.security.token.support.core.api.Protected;
 import no.nav.security.token.support.core.api.Unprotected;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +35,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
  * Kontrolleren er satt som unprotected da tokenet sendes videre til saf og valideres der
  */
 @Slf4j
-@Unprotected
+@Protected
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 @Tag(name = "journalpostapi - knyttTilAnnenSak", description = "Tjeneste for å endre sakstilknytning på en journalpost")
@@ -45,8 +46,7 @@ public class KnyttTilAnnenSakController {
 
 
 	@Inject
-	public KnyttTilAnnenSakController(KnyttTilAnnenSakValidator knyttTilAnnenSakValidator, KnyttTilAnnenSakService knyttTilAnnenSakService){
-
+	public KnyttTilAnnenSakController(KnyttTilAnnenSakValidator knyttTilAnnenSakValidator, KnyttTilAnnenSakService knyttTilAnnenSakService) {
 		this.knyttTilAnnenSakValidator = knyttTilAnnenSakValidator;
 		this.knyttTilAnnenSakService = knyttTilAnnenSakService;
 	}
