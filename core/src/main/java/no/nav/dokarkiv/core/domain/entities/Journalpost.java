@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FaktiskDistribusjonskanalCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -207,6 +208,10 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_skjerming_type")
 	@Enumerated(EnumType.STRING)
 	private SkjermingTypeCode skjermingType;
+
+	@Column(name = "k_innsyn", length = 50)
+	@Enumerated(EnumType.STRING)
+	private InnsynCode innsyn;
 
 	@OneToMany
 	@JoinColumn(name = "journalpost_id", nullable = false)
@@ -1406,6 +1411,13 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		throw new UnsupportedOperationException("Skjerming skal bare settes gjennom SkjermingService");
 	}
 
+	public InnsynCode getInnsyn() {
+		return innsyn;
+	}
+
+	public void setInnsyn(InnsynCode innsyn) {
+		this.innsyn = innsyn;
+	}
 
 	/**
 	 * Add a JournalpostDokumentInfoRelasjon to relasjon Set.
