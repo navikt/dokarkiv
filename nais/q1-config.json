@@ -40,6 +40,11 @@
   "SPRINGDOC_ENABLED": "true",
   "AZURE_IAC_RULES": [
     {
+      "app": "pensjon-journalforing",
+      "namespace": "pensjon-saksbehandling",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "salesforce",
       "namespace": "teamcrm",
       "cluster": "dev-external"
