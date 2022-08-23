@@ -70,7 +70,7 @@ spec:
     path: /isAlive
     port: 8080
     initialDelay: 30
-    failureThreshold: 30
+    failureThreshold: 12
     periodSeconds: 10
   port: 8080
   prometheus:
