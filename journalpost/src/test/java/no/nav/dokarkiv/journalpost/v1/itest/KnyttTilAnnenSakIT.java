@@ -71,8 +71,8 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			FAGSAK + ", " + FAGSAK_ID + ", " + FAGSAKSYSTEM,
-			GENERELL_SAK + ",,"
+			FAGSAK + ", " + FAGSAK_ID + ", " + FAGSAKSYSTEM, //Ved fagsak skal fagsakID og fagsaksystem være satt
+			GENERELL_SAK + ",," // ved generell_sak skal hverken fagsak eller fagsakID være satt
 	})
 	public void knyttTilAnnenSakHappyPath(String sakstype, String fagsakId, String fagsaksystem) {
 		abacPermit();
@@ -125,11 +125,13 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 	@ParameterizedTest
 	@CsvSource(value = {
 			GENERELL_SAK + ", " + FAGSAK_ID + ", " + FAGSAKSYSTEM + ", FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK",
-			FAGSAK + ",,,FagsakId kan ikke være null eller tom for sakstype FAGSAK"
+			GENERELL_SAK + ",, " + FAGSAKSYSTEM + ", FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK",
+			GENERELL_SAK + ", " + FAGSAK_ID + ",, FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK",
+			FAGSAK + ",,,FagsakId kan ikke være null eller tom for sakstype FAGSAK",
+			FAGSAK + "," + FAGSAK_ID +",,Fagsaksystem kan ikke være null eller tom sakstype FAGSAK",
+			FAGSAK + ",," + FAGSAKSYSTEM +",FagsakId kan ikke være null eller tom for sakstype FAGSAK"
 	})
 	public void knyttTilAnnenSakShouldFailWithBadInput(String sakstype, String fagsakId, String fagsaksystem, String feilmelding) {
-
-
 		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserTokenAndConsumerId());
 		ResponseEntity<String> response =  restTemplate.exchange(URL_JOURNALPOST + "12345678910" + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, String.class);
 		assertTrue(response.getBody().contains(feilmelding));
