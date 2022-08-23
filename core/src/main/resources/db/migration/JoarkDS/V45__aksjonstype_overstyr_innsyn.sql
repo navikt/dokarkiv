@@ -1,6 +1,6 @@
 insert into t_k_aksjon_type (aksjon_type, beskrivelse, dato_opprettet, opprettet_av)
 select 'OVERSTYR_INNSYN',
-       'Overstyr innsyn',
+       'Reglene for innsyn på nav.no ble overstyrt',
        current_timestamp,
        'MMA-6327'
 from dual
