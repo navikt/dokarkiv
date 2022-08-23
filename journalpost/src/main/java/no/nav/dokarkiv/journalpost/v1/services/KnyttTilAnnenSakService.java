@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static no.nav.dokarkiv.journalpost.v1.util.knyttTilAnnenSak.DokumentUtils.sjekkOmAlleDokumentvarianterErGyldige;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Slf4j
 @Service
@@ -64,7 +65,7 @@ public class KnyttTilAnnenSakService {
 				build();
 		Sak sak = Sak.builder().
 				fagsakId(knyttTilAnnenSakRequest.getFagsakId()).
-				fagsaksystem(Fagsaksystem.valueOf(knyttTilAnnenSakRequest.getFagsaksystem())).
+				fagsaksystem(isEmpty(knyttTilAnnenSakRequest.getFagsaksystem()) ? null : Fagsaksystem.valueOf(knyttTilAnnenSakRequest.getFagsaksystem())).
 				sakstype(Sakstype.valueOf(knyttTilAnnenSakRequest.getSakstype())).
 				build();
 		return OppdaterJournalpostRequest.builder().

@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakResponse;
 import org.apache.commons.collections15.IteratorUtils;
@@ -52,6 +53,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 	private static final String GYLDIG_FNR = "01018912345";
 	public static final String JOURNALFOERENDE_ENHET = "9999";  // Ved automatisk journalføring uten mennesker involvert, skal enhet settes til "9999".
 	public static final String FAGSAK = "FAGSAK";
+	public static final String GENERELL_SAK = "GENERELL_SAK";
 	public static final String FAGSAK_ID = "0123A21";
 	public static final String FAGSAKSYSTEM = "IT01";
 	public static final String TEMA = "SYK";
@@ -64,7 +66,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 	}
 
 	@Test
-	public void knyttTilAnnenSakHappyPath() {
+	public void knyttTilAnnenSakHappyPathFAGSAK() {
 		abacPermit();
 		restStsToken();
 		happyAktoerIdStub();
@@ -78,7 +80,58 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 		TestTransaction.end();
 		TestTransaction.start();
 
-		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(), createHeadersWithUserAndServiceUserTokenAndConsumerId());
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(FAGSAK, FAGSAK_ID, FAGSAKSYSTEM), createHeadersWithUserAndServiceUserTokenAndConsumerId());
+		ResponseEntity<KnyttTilAnnenSakResponse> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, KnyttTilAnnenSakResponse.class);
+		assertEquals(OK, response.getStatusCode());
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Journalpost journalpost = joarkRepository.findById(response.getBody().getNyJournalpostId()).orElseThrow(RuntimeException::new);
+
+		assertNotNull(response);
+
+		assertEquals(AvsenderMottakerIdTypeCode.FNR, journalpost.getAvsenderMottakerIdType());
+		assertEquals(AVSENDER_MOTTAKER_NAVN, journalpost.getAvsenderMottaker());
+		assertEquals(AVSENDER_MOTTAKER_ID, journalpost.getAvsenderMottakerId());
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertEquals(4, aksjonsLoggList.size());
+		valdiateAksjonsloggELement(aksjonsLoggList.get(0), KOPIER_JOURNALPOST, journalpostId, "Z990782");
+		valdiateAksjonsloggELement(aksjonsLoggList.get(1), ENDRE_METADATA, journalpost.getJournalpostId(), "Z990782");
+		valdiateAksjonsloggELement(aksjonsLoggList.get(2), SAKSTILKNYTNING, journalpost.getJournalpostId(), "Z990782");
+		valdiateAksjonsloggELement(aksjonsLoggList.get(3), AksjonsTypeCode.FERDIGSTILL, journalpost.getJournalpostId(), "consumer_id");
+
+		verify(exactly(1), postRequestedFor(urlEqualTo("/safgraphql"))
+				.withRequestBody(equalToJson(String.format("""
+						{
+						  "query" : "query journalpost($queryJournalpostId: String!) {\\n\\t  journalpost(journalpostId: $queryJournalpostId) {\\n\\t\\tdokumenter {\\n\\t\\t  dokumentInfoId\\n\\t\\t  dokumentvarianter {\\n\\t\\t\\tsaksbehandlerHarTilgang\\n\\t\\t\\tvariantformat\\n\\t\\t  }\\n\\t\\t}\\n\\t  }\\n\\t}\\n",
+						  "operationName": "journalpost",
+						  "variables": {
+						    "queryJournalpostId": "%s"
+						  }
+						}""", journalpostId)))
+				.withHeader("Nav-Callid", matching(NAV_CALL_ID)));
+
+	}
+
+
+	@Test
+	public void knyttTilAnnenSakHappyPathGENERELL_SAK() {
+		abacPermit();
+		restStsToken();
+		happyAktoerIdStub();
+		stubFor(post(urlMatching("/safgraphql"))
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("saf/safGraphQlResponseKildeJournalpostId1-happy.json")));
+
+		Long journalpostId = joarkRepository.save(createJournalpostWithHoveddokument()).getJournalpostId();
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(GENERELL_SAK, null, null), createHeadersWithUserAndServiceUserTokenAndConsumerId());
 		ResponseEntity<KnyttTilAnnenSakResponse> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, KnyttTilAnnenSakResponse.class);
 		assertEquals(OK, response.getStatusCode());
 
@@ -139,6 +192,10 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 
 	public static KnyttTilAnnenSakRequest createKnyttTilAnnenSakRequestHappyPath() {
 		return createKnyttTilAnnenSakRequest(FAGSAK, FAGSAK_ID, FAGSAKSYSTEM, TEMA, FNR, GYLDIG_FNR, JOURNALFOERENDE_ENHET);
+	}
+
+	public static KnyttTilAnnenSakRequest createKnyttTilAnnenSakRequestHappyPath(String sakstype, String fagsakid, String fagsaksystem) {
+		return createKnyttTilAnnenSakRequest(sakstype, fagsakid, fagsaksystem, TEMA, FNR, GYLDIG_FNR, JOURNALFOERENDE_ENHET);
 	}
 
 }
