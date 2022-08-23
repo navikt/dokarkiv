@@ -1,10 +1,6 @@
 package no.nav.dokarkiv.core.domain.codes;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 public enum AksjonsTypeCode {
-
 	ARKIVERING,
 	AVBRYT,
 	EKSPEDER,
@@ -15,6 +11,7 @@ public enum AksjonsTypeCode {
 	KASSERING,
 	KOPIER_JOURNALPOST,
 	OPPHEV_FEILREGISTRERING,
+	OVERSTYR_INNSYN,
 	OPPRETT,
 	SAKSTILKNYTNING,
 	SLETTING,
