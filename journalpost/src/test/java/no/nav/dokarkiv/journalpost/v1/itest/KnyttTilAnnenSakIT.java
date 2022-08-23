@@ -39,8 +39,12 @@ import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.AVSENDER_MOTTAKER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createKnyttTilAnnenSakRequest;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -67,10 +71,10 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			GENERELL_SAK + ", " + FAGSAK_ID + ", " + FAGSAKSYSTEM,
-			FAGSAK + ",,"
+			FAGSAK + ", " + FAGSAK_ID + ", " + FAGSAKSYSTEM,
+			GENERELL_SAK + ",,"
 	})
-	public void knyttTilAnnenSakHappyPath() {
+	public void knyttTilAnnenSakHappyPath(String sakstype, String fagsakId, String fagsaksystem) {
 		abacPermit();
 		restStsToken();
 		happyAktoerIdStub();
@@ -84,7 +88,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 		TestTransaction.end();
 		TestTransaction.start();
 
-		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(GENERELL_SAK, null, null), createHeadersWithUserAndServiceUserTokenAndConsumerId());
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserTokenAndConsumerId());
 		ResponseEntity<KnyttTilAnnenSakResponse> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, KnyttTilAnnenSakResponse.class);
 		assertEquals(OK, response.getStatusCode());
 
@@ -118,8 +122,18 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 				.withHeader("Nav-Callid", matching(NAV_CALL_ID)));
 	}
 
-	private void validateResponse(ResponseEntity<KnyttTilAnnenSakResponse> response, long journalpostId){
+	@ParameterizedTest
+	@CsvSource(value = {
+			GENERELL_SAK + ", " + FAGSAK_ID + ", " + FAGSAKSYSTEM + ", FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK",
+			FAGSAK + ",,,FagsakId kan ikke være null eller tom for sakstype FAGSAK"
+	})
+	public void knyttTilAnnenSakShouldFailWithBadInput(String sakstype, String fagsakId, String fagsaksystem, String feilmelding) {
 
+
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserTokenAndConsumerId());
+		ResponseEntity<String> response =  restTemplate.exchange(URL_JOURNALPOST + "12345678910" + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, String.class);
+		assertTrue(response.getBody().contains(feilmelding));
+		assertThat(response.getStatusCode(), is(BAD_REQUEST));
 	}
 
 	@Test
