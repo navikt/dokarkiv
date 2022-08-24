@@ -10,10 +10,11 @@ import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakResponse;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
@@ -38,8 +39,12 @@ import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.AVSENDER_MOTTAKER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createKnyttTilAnnenSakRequest;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -52,6 +57,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 	private static final String GYLDIG_FNR = "01018912345";
 	public static final String JOURNALFOERENDE_ENHET = "9999";  // Ved automatisk journalføring uten mennesker involvert, skal enhet settes til "9999".
 	public static final String FAGSAK = "FAGSAK";
+	public static final String GENERELL_SAK = "GENERELL_SAK";
 	public static final String FAGSAK_ID = "0123A21";
 	public static final String FAGSAKSYSTEM = "IT01";
 	public static final String TEMA = "SYK";
@@ -63,8 +69,12 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 		WireMock.removeAllMappings();
 	}
 
-	@Test
-	public void knyttTilAnnenSakHappyPath() {
+	@ParameterizedTest
+	@CsvSource(value = {
+			FAGSAK + ", " + FAGSAK_ID + ", " + FAGSAKSYSTEM, //Ved fagsak skal fagsakID og fagsaksystem være satt
+			GENERELL_SAK + ",," // ved generell_sak skal hverken fagsak eller fagsakID være satt
+	})
+	public void knyttTilAnnenSakHappyPath(String sakstype, String fagsakId, String fagsaksystem) {
 		abacPermit();
 		restStsToken();
 		happyAktoerIdStub();
@@ -78,7 +88,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 		TestTransaction.end();
 		TestTransaction.start();
 
-		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(), createHeadersWithUserAndServiceUserTokenAndConsumerId());
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserTokenAndConsumerId());
 		ResponseEntity<KnyttTilAnnenSakResponse> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, KnyttTilAnnenSakResponse.class);
 		assertEquals(OK, response.getStatusCode());
 
@@ -110,7 +120,22 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 						  }
 						}""", journalpostId)))
 				.withHeader("Nav-Callid", matching(NAV_CALL_ID)));
+	}
 
+	@ParameterizedTest
+	@CsvSource(value = {
+			GENERELL_SAK + ", " + FAGSAK_ID + ", " + FAGSAKSYSTEM + ", FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK",
+			GENERELL_SAK + ",, " + FAGSAKSYSTEM + ", FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK",
+			GENERELL_SAK + ", " + FAGSAK_ID + ",, FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK",
+			FAGSAK + ",,,FagsakId kan ikke være null eller tom for sakstype FAGSAK",
+			FAGSAK + "," + FAGSAK_ID +",,Fagsaksystem kan ikke være null eller tom sakstype FAGSAK",
+			FAGSAK + ",," + FAGSAKSYSTEM +",FagsakId kan ikke være null eller tom for sakstype FAGSAK"
+	})
+	public void knyttTilAnnenSakShouldFailWithBadInput(String sakstype, String fagsakId, String fagsaksystem, String feilmelding) {
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserTokenAndConsumerId());
+		ResponseEntity<String> response =  restTemplate.exchange(URL_JOURNALPOST + "12345678910" + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, String.class);
+		assertTrue(response.getBody().contains(feilmelding));
+		assertThat(response.getStatusCode(), is(BAD_REQUEST));
 	}
 
 	@Test
@@ -139,6 +164,10 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 
 	public static KnyttTilAnnenSakRequest createKnyttTilAnnenSakRequestHappyPath() {
 		return createKnyttTilAnnenSakRequest(FAGSAK, FAGSAK_ID, FAGSAKSYSTEM, TEMA, FNR, GYLDIG_FNR, JOURNALFOERENDE_ENHET);
+	}
+
+	public static KnyttTilAnnenSakRequest createKnyttTilAnnenSakRequestHappyPath(String sakstype, String fagsakid, String fagsaksystem) {
+		return createKnyttTilAnnenSakRequest(sakstype, fagsakid, fagsaksystem, TEMA, FNR, GYLDIG_FNR, JOURNALFOERENDE_ENHET);
 	}
 
 }
