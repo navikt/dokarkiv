@@ -30,6 +30,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_ØNSKE;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_INNSKRENKET_PARTSINNSYN;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
 
@@ -84,6 +87,7 @@ public class TestDataGenerator {
 				.mottakskanal(MottaksKanalCode.NAV_NO)
 				.antallRetur(ANTALL_RETUR)
 				.kanalReferanseId(KANAL_REFERANSE_ID)
+				.innsyn(BRUK_STANDARDREGLER)
 				.build();
 
 		journalpost.addBruker(createBruker());
@@ -105,7 +109,9 @@ public class TestDataGenerator {
 				.journalposttype(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.fagomrade(FagomradeCode.RPO)
-				.mottakskanal(MottaksKanalCode.NAV_NO).build();
+				.mottakskanal(MottaksKanalCode.NAV_NO)
+				.innsyn(SKJULES_BRUKERS_ØNSKE)
+				.build();
 
 		journalpost.addBruker(createBruker());
 		journalpost.addKryssReferanse(createKryssreferanse());
@@ -126,7 +132,9 @@ public class TestDataGenerator {
 				.journalposttype(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.fagomrade(FagomradeCode.RPO)
-				.mottakskanal(MottaksKanalCode.NAV_NO).build();
+				.mottakskanal(MottaksKanalCode.NAV_NO)
+				.innsyn(SKJULES_INNSKRENKET_PARTSINNSYN)
+				.build();
 
 		journalpost.addBruker(createBruker());
 		journalpost.addKryssReferanse(createKryssreferanse());

@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -54,6 +55,7 @@ class HentTilgangJournalpostDtoMapper {
 						(SkjermingTypeCode) tuple[29],
 						new TilgangVariantDto((VariantFormatCode) tuple[30],
 								(SkjermingTypeCode) tuple[31])
-				));
+				),
+				(InnsynCode) tuple[32]);
 	}
 }

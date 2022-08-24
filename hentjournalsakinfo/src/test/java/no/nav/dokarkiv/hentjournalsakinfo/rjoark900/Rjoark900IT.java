@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -19,6 +20,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.PSAK_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.SAK_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
@@ -98,6 +100,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertThat(journalpostDto.getDokumenter().get(0).getDokumentInfoId(), is(hoveddokument.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(1).getDokumentInfoId(), is(vedlegg1.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(2).getDokumentInfoId(), is(vedlegg2.getDokumentInfoId()));
+		assertThat(journalpostDto.getInnsyn(), is(BRUK_STANDARDREGLER));
 	}
 
 	@Test

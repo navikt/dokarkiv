@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -54,4 +55,5 @@ public class HentJournalpostDto {
 	private final String kanalReferanseId;
 	private final List<TilleggsopplysningDto> tilleggsopplysninger;
 	private final List<DokumentInfoDto> dokumenter;
+	private InnsynCode innsyn;
 }

@@ -57,7 +57,8 @@ class HentTilgangJournalpostRepository {
                                 "di.kassert, " +
                                 "jr.skjermingType, " +
                                 "fd.variantFormat, " +
-                                "fd.skjermingType " +
+                                "fd.skjermingType, " +
+                                "jp.innsyn " +
                                 "from Journalpost jp " +
                                 "left join jp.brukere br " +
                                 "join jp.changeStamp cs " +
