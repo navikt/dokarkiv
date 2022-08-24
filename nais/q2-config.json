@@ -269,6 +269,11 @@
       "app": "pale-2-sak",
       "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "testnav-dokarkiv-proxy-trygdeetaten",
+      "namespace": "dolly",
+      "cluster": "dev-fss"
     }
   ]
 }
