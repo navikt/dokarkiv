@@ -26,48 +26,21 @@ class HentTilgangJournalpostRepository {
 
         List resultList = entityManager
                 .createQuery(
-                        "select jp.journalpostId, " +
-                                "jp.journalstatus, " +
-                                "jp.journalposttype, " +
-                                "jp.fagomrade, " +
-                                "cs.createdDate, " +
-                                "jp.journalDato, " +
-                                "jp.mottakskanal, " +
-                                "jp.skjermingType, " +
-                                "jp.avsenderMottakerId, " +
-                                "br.brukerId, " +
-                                "br.brukerType, " +
-                                "sr.sakId, " +
-                                "sr.fagsystem, " +
-                                "sr.feilregistrert, " +
-                                "sa.aktoerId, " +
-                                "sa.tema, " +
-                                "sa.fagsakNr, " +
-                                "sa.orgnr, " +
-                                "sa.applikasjon, " +
-                                "sa.opprettetAv, " +
-                                "sa.opprettetTidspunkt, " +
-                                "di.dokumentInfoId, " +
-                                "di.dokumentstatus, " +
-                                "di.brevkode, " +
-                                "di.kategori, " +
-                                "di.organInternt, " +
-                                "di.innskrenketPartsinnsyn, " +
-                                "di.innskrenketPartsinnsynFraTredjepart, " +
-                                "di.kassert, " +
-                                "jr.skjermingType, " +
-                                "fd.variantFormat, " +
-                                "fd.skjermingType, " +
-                                "jp.innsyn " +
-                                "from Journalpost jp " +
-                                "left join jp.brukere br " +
-                                "join jp.changeStamp cs " +
-                                "left join jp.saksrelasjon sr on sr.journalpost.journalpostId = :journalpostId " +
-                                "left join Sak sa on sr.sakId = sa.sakId " +
-                                "join jp.journalpostDokumentInfoRelasjoner jr " +
-                                "join jr.dokumentInfo di on di.dokumentInfoId = :dokumentInfoId and jr.journalpost.journalpostId = :journalpostId " +
-                                "join FilDetaljer fd on fd.dokumentInfo.dokumentInfoId = :dokumentInfoId and fd.variantFormat = :variantFormat " +
-                                "where jp.journalpostId = :journalpostId " +
+                        "select jp.journalpostId, jp.journalstatus, jp.journalposttype, jp.fagomrade, cs.createdDate, jp.journalDato, jp.mottakskanal,\n" +
+                                "       jp.skjermingType, jp.avsenderMottakerId, br.brukerId, br.brukerType, sr.sakId, sr.fagsystem, sr.feilregistrert, \n" +
+                                "       sa.aktoerId, sa.tema, sa.fagsakNr, sa.orgnr, sa.applikasjon, sa.opprettetAv, sa.opprettetTidspunkt, di.dokumentInfoId, \n" +
+                                "       di.dokumentstatus, di.brevkode, di.kategori, di.organInternt, di.innskrenketPartsinnsyn, di.innskrenketPartsinnsynFraTredjepart, \n" +
+                                "       di.kassert, jr.skjermingType, fd.variantFormat, fd.skjermingType, jp.innsyn\n" +
+                                "from Journalpost jp\n" +
+                                "         left join jp.brukere br\n" +
+                                "         join jp.changeStamp cs\n" +
+                                "         left join jp.saksrelasjon sr on sr.journalpost.journalpostId = :journalpostId\n" +
+                                "         left join Sak sa on sr.sakId = sa.sakId\n" +
+                                "         join jp.journalpostDokumentInfoRelasjoner jr\n" +
+                                "         join jr.dokumentInfo di\n" +
+                                "              on di.dokumentInfoId = :dokumentInfoId and jr.journalpost.journalpostId = :journalpostId\n" +
+                                "         join FilDetaljer fd on fd.dokumentInfo.dokumentInfoId = :dokumentInfoId and fd.variantFormat = :variantFormat\n" +
+                                "where jp.journalpostId = :journalpostId\n" +
                                 "order by br.brukerInfoId desc"
                 )
                 .setParameter("journalpostId", journalpostId)
