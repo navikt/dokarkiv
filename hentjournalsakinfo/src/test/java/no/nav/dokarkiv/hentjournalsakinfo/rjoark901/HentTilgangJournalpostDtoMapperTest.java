@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -18,6 +19,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,6 +37,7 @@ public class HentTilgangJournalpostDtoMapperTest {
 		JournalStatusCode journalStatus = JournalStatusCode.J;
 		JournalpostTypeCode journalType = JournalpostTypeCode.U;
 		FagomradeCode journalFagomrade = FagomradeCode.PEN;
+		InnsynCode innsyn = BRUK_STANDARDREGLER;
 		Timestamp createdDate = Timestamp.valueOf(journalpostDatetime);
 		Timestamp journalDato = Timestamp.valueOf(journalpostDatetime);
 		MottaksKanalCode mottakskanal = MottaksKanalCode.NAV_NO;
@@ -76,7 +79,7 @@ public class HentTilgangJournalpostDtoMapperTest {
 				sakrelasjonApplikasjon, sakrelasjonOpprettetAv, journalpostDatetime,
 				dokumentInfoId, dokumentInfoStatus, dokumentInfoBrevkode,
 				dokumentKategoriCode, organinternt, innskrenketPartsinnsyn, innskrenketTredjepart, kassert,
-				dokumentInfoRelasjonerSkjermingType, fildetaljerVariantFormat, fildetaljerSkjermingType
+				dokumentInfoRelasjonerSkjermingType, fildetaljerVariantFormat, fildetaljerSkjermingType, innsyn
 		};
 
 		TilgangJournalpostDto journalpostDto = HentTilgangJournalpostDtoMapper.mapTupleTilgangJournalPost(tuple);
@@ -85,6 +88,7 @@ public class HentTilgangJournalpostDtoMapperTest {
 		assertEquals(journalStatus, journalpostDto.getJournalStatus());
 		assertEquals(journalType, journalpostDto.getJournalpostType());
 		assertEquals(journalFagomrade, journalpostDto.getFagomrade());
+		assertEquals(innsyn, journalpostDto.getInnsyn());
 		assertEquals(journalpostDatetime, journalpostDto.getDatoOpprettet());
 		assertEquals(mottakskanal, journalpostDto.getMottakskanal());
 		assertEquals(jounralpostSkjermingType, journalpostDto.getSkjerming());

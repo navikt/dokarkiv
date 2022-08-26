@@ -3,6 +3,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
 import lombok.Value;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -27,4 +28,5 @@ public class TilgangJournalpostDto {
 	private final TilgangBrukerDto bruker;
 	private final TilgangSakDto sak;
 	private final TilgangDokumentInfoDto dokument;
+	private final InnsynCode innsyn;
 }

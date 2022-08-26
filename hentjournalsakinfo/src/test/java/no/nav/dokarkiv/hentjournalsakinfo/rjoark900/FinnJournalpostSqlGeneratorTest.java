@@ -62,7 +62,7 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                        AND tj.k_journal_s IN ('M', 'MO', 'D')\n" +
 						"                        AND (s.feilregistrert IS NULL OR (s.feilregistrert IN (:visFeilregistrert)))\n" +
 						"     ),\n" +
-						"     relevantedata AS (SELECT" + RELEVANTE_DATA +
+						"     relevantedata AS (SELECT " + RELEVANTE_DATA +
 						"                       FROM t_journalpost j\n" +
 						"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
 						"                              LEFT JOIN sak sa ON sa.id = to_number(s.sak_nr_fk)\n" +
