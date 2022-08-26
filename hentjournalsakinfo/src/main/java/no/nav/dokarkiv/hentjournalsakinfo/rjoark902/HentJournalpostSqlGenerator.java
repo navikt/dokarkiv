@@ -12,7 +12,7 @@ final class HentJournalpostSqlGenerator {
 
 	// Spørringen finner journalposter tilknyttet sak og midlertidige journalposter.
 	static String hentJournalpostSql() {
-		return "	SELECT" + RELEVANTE_DATA +
+		return "	SELECT " + RELEVANTE_DATA +
 				"       	FROM t_journalpost j\n" +
 				"               LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
 				"               LEFT JOIN sak sa ON sa.id = to_number(s.sak_nr_fk)\n" +

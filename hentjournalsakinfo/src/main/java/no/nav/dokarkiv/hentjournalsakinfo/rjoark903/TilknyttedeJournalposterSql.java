@@ -17,7 +17,7 @@ final class TilknyttedeJournalposterSql {
 					"  WHERE dokument_info_id = :dokumentInfoId\n" +
 					"),\n" +
 					"     saf_visning_tilgang AS (\n" +
-					"       SELECT" + RELEVANTE_DATA +
+					"       SELECT " + RELEVANTE_DATA +
 					"       FROM t_journalpost j\n" +
 					"              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
 					"              LEFT JOIN sak sa ON sa.id = to_number(s.sak_nr_fk)\n" +

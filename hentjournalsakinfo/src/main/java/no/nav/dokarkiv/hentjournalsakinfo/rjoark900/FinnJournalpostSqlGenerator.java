@@ -42,7 +42,7 @@ final class FinnJournalpostSqlGenerator {
 				"                        AND tj.k_journal_s IN ('M', 'MO', 'D')\n" +
 				"                        AND " + feilregistrertSelectionSql(journalpostFilter.isKunFeilregistrerte()) + "\n" +
 				"     ),\n" +
-				"     relevantedata AS (SELECT" + RELEVANTE_DATA +
+				"     relevantedata AS (SELECT " + RELEVANTE_DATA +
 				"                       FROM t_journalpost j\n" +
 				"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
 				"                              LEFT JOIN sak sa ON sa.id = to_number(s.sak_nr_fk)\n" +
@@ -54,7 +54,7 @@ final class FinnJournalpostSqlGenerator {
 				"                              LEFT JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id AND fd.k_variant_format IN ('ARKIV', 'SLADDET', 'PRODUKSJON', 'PRODUKSJON_DLF', 'FULLVERSJON', 'ORIGINAL')\n" +
 				"                              LEFT JOIN t_skannet_innhold tsi ON d.dokument_info_id = tsi.dokument_info_id" +
 				"     )\n" +
-				"SELECT "+(parallell ? "/*+ PARALLEL(10) */" : "")+" r.*,\n" +
+				"SELECT " + (parallell ? "/*+ PARALLEL(10) */" : "") + " r.*,\n" +
 				"       journalposter.prevjournalpostid,\n" +
 				"       journalposter.nextjournalpostid,\n" +
 				"       journalposter.totaltAntall\n" +
