@@ -1,10 +1,13 @@
 kind: Application
 apiVersion: nais.io/v1alpha1
 metadata:
-  name: {{ APP_NAME }}
+  name: {{APP_NAME}}
   namespace: teamdokumenthandtering
   labels:
     team: teamdokumenthandtering
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "256m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
 spec:
   env:
     - name: NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL
