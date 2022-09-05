@@ -10,10 +10,13 @@ import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.Date;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
@@ -473,5 +476,50 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I),
 				"Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=bb3333");
 	}
+
+	@ParameterizedTest
+	@MethodSource
+	public void shouldThrowExceptionOnAvsenderMottakerUpdateMismatch(String id, AvsenderMottakerIdType idType) {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.id(id)
+						.idType(idType)
+						.build())
+				.build();
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, J, I));
+	}
+
+	private static Stream<Arguments> shouldThrowExceptionOnAvsenderMottakerUpdateMismatch() {
+		return Stream.of(
+				Arguments.of("123", null),
+				Arguments.of(null, AvsenderMottakerIdType.FNR),
+				Arguments.of("", AvsenderMottakerIdType.FNR)
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	public void shouldValidateAvsenderMottakerWhenBothIdAndTypeIsSetOrNotSet(String id, AvsenderMottakerIdType idType) {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.id(id)
+						.idType(idType)
+						.build())
+				.build();
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, J, I);
+	}
+
+	private static Stream<Arguments> shouldValidateAvsenderMottakerWhenBothIdAndTypeIsSetOrNotSet() {
+		return Stream.of(
+				Arguments.of("123", AvsenderMottakerIdType.FNR),
+				Arguments.of(" ", AvsenderMottakerIdType.FNR),
+				Arguments.of("", null),
+				Arguments.of(null, null)
+		);
+	}
+
 
 }
