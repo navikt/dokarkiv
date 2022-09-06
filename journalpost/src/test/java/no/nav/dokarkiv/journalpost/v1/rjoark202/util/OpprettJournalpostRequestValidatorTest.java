@@ -16,6 +16,8 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -468,12 +470,26 @@ public class OpprettJournalpostRequestValidatorTest {
 				"AvsenderMottaker.id");
 	}
 
-	@Test
-	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRAndIdNot9Digits() {
+	@ParameterizedTest
+	@ValueSource(strings = {"7777777", "88888888", "999999999"})
+	public void shouldValidateWhenAvsenderMottakerIdTypeHPRNRAnd7To9Digits(String hprnr) {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
-						.id("1010101010")
+						.id(hprnr)
+						.idType(AvsenderMottakerIdType.HPRNR)
+						.build())
+				.build();
+
+		validator.validateRequest(request, FORSOEKFERDIGSTILL);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRAndIdLessThan7Digits() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.navn(AVSENDER_NAVN)
+						.id("666666")
 						.idType(AvsenderMottakerIdType.HPRNR)
 						.build())
 				.build();
@@ -484,7 +500,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRMoreThan9Digits() {
+	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRAndIdMoreThan9Digits() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)

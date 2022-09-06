@@ -86,8 +86,8 @@ public class OpprettJournalpostRequestValidator {
 					break;
 				case ORGNR:
 				case HPRNR:
-					if (!avsenderMottaker.getId().matches("^\\d{9}$")) {
-						throw new InputValideringFeiletException("AvsenderMottaker.id må være 9 siffer når AvsenderMottaker.idType er " + avsenderMottaker
+					if (!avsenderMottaker.getId().matches("^\\d{7,9}$")) {
+						throw new InputValideringFeiletException("AvsenderMottaker.id må være 7-9 siffer når AvsenderMottaker.idType er " + avsenderMottaker
 								.getIdType() + ".");
 					}
 					break;
