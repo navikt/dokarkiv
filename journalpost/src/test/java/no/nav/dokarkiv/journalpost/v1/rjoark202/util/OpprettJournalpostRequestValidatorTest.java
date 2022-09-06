@@ -455,12 +455,13 @@ public class OpprettJournalpostRequestValidatorTest {
 				"AvsenderMottaker.id");
 	}
 
-	@Test
-	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeORGNRAndIdMoreThan9Digits() {
+	@ParameterizedTest
+	@ValueSource(strings = {"88888888", "1010101010"})
+	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeORGNRAndIdLessThan9OrMoreThan9Digits(String orgnr) {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
-						.id("9999999999")
+						.id(orgnr)
 						.idType(AvsenderMottakerIdType.ORGNR)
 						.build())
 				.build();
@@ -485,11 +486,11 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRAndIdLessThan7Digits() {
+	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRAndIdNotANumber() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
-						.id("666666")
+						.id("777777a")
 						.idType(AvsenderMottakerIdType.HPRNR)
 						.build())
 				.build();
@@ -499,12 +500,13 @@ public class OpprettJournalpostRequestValidatorTest {
 				"AvsenderMottaker.id");
 	}
 
-	@Test
-	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRAndIdMoreThan9Digits() {
+	@ParameterizedTest
+	@ValueSource(strings = {"666666", "1010101010"})
+	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRAndIdLessThan7OrMoreThan9Digits(String hprnr) {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
-						.id("9999999999")
+						.id(hprnr)
 						.idType(AvsenderMottakerIdType.HPRNR)
 						.build())
 				.build();
