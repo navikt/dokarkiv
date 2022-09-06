@@ -29,6 +29,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 public final class OppdaterJournalpostValidator {
@@ -107,7 +108,7 @@ public final class OppdaterJournalpostValidator {
 	private static void validateAvsenderMottakerInngaaende(AvsenderMottaker avsenderMottaker) {
 		if (isEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() != null) {
 			throw new InputValideringFeiletException("Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt");
-		} else if (!isEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() == null) {
+		} else if (isNotEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() == null) {
 			throw new InputValideringFeiletException("Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt");
 		}
 	}

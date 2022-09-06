@@ -34,6 +34,8 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_ORGANISASJON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTINFO_ID1;
@@ -493,7 +495,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 	private static Stream<Arguments> shouldThrowExceptionOnAvsenderMottakerUpdateMismatch() {
 		return Stream.of(
-				Arguments.of("123", null),
+				Arguments.of(AVSENDER_ID_PERSON, null),
 				Arguments.of(null, AvsenderMottakerIdType.FNR),
 				Arguments.of("", AvsenderMottakerIdType.FNR)
 		);
@@ -514,7 +516,8 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 	private static Stream<Arguments> shouldValidateAvsenderMottakerWhenBothIdAndTypeIsSetOrNotSet() {
 		return Stream.of(
-				Arguments.of("123", AvsenderMottakerIdType.FNR),
+				Arguments.of(AVSENDER_ID_PERSON, AvsenderMottakerIdType.FNR),
+				Arguments.of(AVSENDER_ID_ORGANISASJON, AvsenderMottakerIdType.FNR),
 				Arguments.of(" ", AvsenderMottakerIdType.FNR),
 				Arguments.of("", null),
 				Arguments.of(null, null)
