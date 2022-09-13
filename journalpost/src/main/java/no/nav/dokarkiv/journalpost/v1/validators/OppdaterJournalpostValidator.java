@@ -65,7 +65,9 @@ public final class OppdaterJournalpostValidator {
 			checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType);
 			checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType);
 			checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType);
-			validateAvsenderMottakerInngaaende(request.getAvsenderMottaker());
+			if (request.getAvsenderMottaker() != null) {
+				validateAvsenderMottakerInngaaende(request.getAvsenderMottaker());
+			}
 		} else if (request.getSak() != null) {
 			validateSak(request.getSak(), request.getBruker(), request.getTema());
 		}
