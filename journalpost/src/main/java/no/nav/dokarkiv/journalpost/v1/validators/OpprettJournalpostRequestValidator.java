@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -35,6 +37,7 @@ public class OpprettJournalpostRequestValidator {
 	private static final int ORGNR_LENGTH = 9;
 	public static final String MASKINELL_JOURNALFOERENDE_ENHET = "9999";
 	public static final String JOURNALPOST_FERDIGSTILT = "false";
+	public static final List<String> LOVLIGE_INNSYNSKODER = List.of(VISES_MASKINELT_GODKJENT.toString(), VISES_MANUELT_GODKJENT.toString());
 
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
 	private static final Pattern JOURNALFOERENDE_ENHET_PATTERN = Pattern.compile("^\\d{4}$");
@@ -178,7 +181,10 @@ public class OpprettJournalpostRequestValidator {
 
 		if (Sakstype.ARKIVSAK.equals(sak.getSakstype()) || sak.getSakstype() == null) {
 			validateArkivsak(sak);
+		}
 
+		if (isNotBlank(sak.getOverstyrInnsynsregler())) {
+			validateOverstyrInnsynsregler(sak.getOverstyrInnsynsregler());
 		}
 	}
 
@@ -290,6 +296,12 @@ public class OpprettJournalpostRequestValidator {
 				&& !Arrays.asList(FilTypeCode.PDF, FilTypeCode.PDFA)
 				.contains(FilTypeCode.valueOf(dokumentVariant.getFiltype()))) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype på være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV.");
+		}
+	}
+
+	private void validateOverstyrInnsynsregler(String overstyrInnsynsregler) {
+		if (!LOVLIGE_INNSYNSKODER.contains(overstyrInnsynsregler)) {
+			throw new InputValideringFeiletException("Sak.overstyrInnsynsregler kan kun ta verdienen 'VISES_MASKINELT_GODKJENT' eller 'VISES_MANUELT_GODKJENT'.");
 		}
 	}
 }
