@@ -68,33 +68,33 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 public class ArkiverOgJournalfoerRestController {
 
-    private static final String TRUE = "true";
-    private static final String MIDLERTIDIG = "MIDLERTIDIG";
-    private static final String STATUS_ENDELIG = "ENDELIG";
-    private final FerdigstillJournalpostService ferdigstillJournalpostService;
-    private final OppdaterJournalpostService oppdaterJournalpostService;
-    private final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService;
-    private final OpprettJournalpostService opprettJournalpostService;
-    private final OpprettJournalpostRequestValidator opprettJournalpostRequestValidator;
-    private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
-    private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
-    private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
+	private static final String TRUE = "true";
+	private static final String MIDLERTIDIG = "MIDLERTIDIG";
+	private static final String STATUS_ENDELIG = "ENDELIG";
+	private final FerdigstillJournalpostService ferdigstillJournalpostService;
+	private final OppdaterJournalpostService oppdaterJournalpostService;
+	private final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService;
+	private final OpprettJournalpostService opprettJournalpostService;
+	private final OpprettJournalpostRequestValidator opprettJournalpostRequestValidator;
+	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
+	private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
+	private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
 
-    @Inject
-    public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
-                                              final OppdaterJournalpostService oppdaterJournalpostService,
-                                              final OpprettJournalpostService opprettJournalpostService,
-                                              final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
-                                              final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost) {
-        this.ferdigstillJournalpostService = ferdigstillJournalpostService;
-        this.oppdaterJournalpostService = oppdaterJournalpostService;
-        this.opprettJournalpostService = opprettJournalpostService;
-        this.fjernVedleggTilknyttJournalpost = fjernVedleggTilknyttJournalpost;
-        this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
-        this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
-        this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
-        this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
-    }
+	@Inject
+	public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
+											  final OppdaterJournalpostService oppdaterJournalpostService,
+											  final OpprettJournalpostService opprettJournalpostService,
+											  final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
+											  final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost) {
+		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
+		this.oppdaterJournalpostService = oppdaterJournalpostService;
+		this.opprettJournalpostService = opprettJournalpostService;
+		this.fjernVedleggTilknyttJournalpost = fjernVedleggTilknyttJournalpost;
+		this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
+		this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
+		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
+		this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
+	}
 
 	@Transactional
 	@SwaggerFerdigstillJournalpost
@@ -181,9 +181,22 @@ public class ArkiverOgJournalfoerRestController {
 			@Parameter(
 					name = "forsoekFerdigstill",
 					description = """
-							Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Dette vil å sette journalposten i en status som indikerer at journalføring er komplett,
-							 og låser journalposten for senere endringer. Journalposten blir uansett opprettet, men kun ferdigstilt dersom den oppfyller krav til struktur og metadata som beskrevet under ferdigstillJournalpost.
-							 Dersom det feiler å ferdigstille journalposten og den har status "midlertidig" og journalførendeEnhet=="9999" skal journalførendeEnhet settes til null. Sjekk "journalpostferdigstilt" på responsen for å være sikker på at journalposten faktisk ble ferdigstilt.""",
+							Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Når journalposten ferdigstilles, blir den låst for senere endringer.
+
+							Dersom ferdigstilling ikke lykkes, returnerer tjenesten journalpostFerdigstilt=false
+											   
+							Journalposten blir opprettet i alle tilfeller, men kan bare ferdigstilles dersom (minst) følgende er satt på input:
+							* bruker
+							* sak
+							* tema
+							* kanal (for inngående journalposter)
+							* journalfoerendeEnhet
+							* avsenderMottaker.navn
+							* tittel på journalpostnivå
+							* tittel på alle dokumentene
+														
+							NB: Dersom dokumentene skal være mulig å distribuere via Dokdist, eller skal kunne vises til brukeren på nav.no, må i tillegg avsenderMottaker.id og avsenderMottaker.idType settes.
+							""",
 					schema = @Schema(type = "boolean", allowableValues = {"true", "false"})
 			)
 			@RequestParam(required = false) String forsoekFerdigstill) {

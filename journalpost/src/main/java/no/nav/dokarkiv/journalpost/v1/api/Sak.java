@@ -16,7 +16,7 @@ public class Sak {
 			description = """
 					* FAGSAK vil si at dokumentene tilhører en sak i et fagsystem. Dersom FAGSAK velges, må fagsakid og fagsaksystem oppgis.
 					* GENERELL_SAK kan brukes for dokumenter som skal journalføres, men som ikke tilhører en konkret fagsak. Generell sak kan ses på som brukerens "mappe" på et gitt tema.
-					* ARKIVSAK skal kun brukes etter avtale.
+					* ARKIVSAK er deprekert og skal kun brukes etter avtale.
 					""",
 			example = "FAGSAK"
 	)
@@ -73,8 +73,8 @@ public class Sak {
 	@Hidden
 	@Schema(
 			description = """
-					Saksnummeret i PSAK eller GSAK (SAK). Må være et numerisk heltall.
-					Skal kun settes dersom sakstype = ARKIVSAK.
+					Saksnummeret i PSAK eller GSAK/SAK. Skal kun settes dersom sakstype = ARKIVSAK. Feltet må være et numerisk heltall.
+					
 					Feltet skal kun brukes etter avtale.
 					"""
 	)
@@ -85,8 +85,10 @@ public class Sak {
 	@Schema(
 			description = """
 					Skal kun settes dersom sakstype = ARKIVSAK.
-					Feltet skal kun brukes etter avtale. GSAK,PSAK
-					"""
+
+					Feltet skal kun brukes etter avtale.
+					""",
+			example = "PSAK"
 	)
 	@Deprecated
 	private Arkivsaksystem arkivsaksystem;

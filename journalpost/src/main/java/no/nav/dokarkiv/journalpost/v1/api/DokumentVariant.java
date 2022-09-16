@@ -18,7 +18,7 @@ public class DokumentVariant {
 
 	@NotNull(message = "Filtype kan ikke være null")
 	@Schema(
-			description = "Filtypen til filen som følger, f.eks. PDFA, JSON eller XML.",
+			description = "Filtypen til filen som følger, f.eks. PDF/A, JSON eller XML.",
 			required = true,
 			example = "PDFA"
 	)
@@ -27,9 +27,9 @@ public class DokumentVariant {
 	@NotNull(message = "Variantformat kan ikke være null")
 	@Schema(
 			description = """
-					ARKIV brukes for dokumentvarianter i menneskelesbart format (for eksempel PDFA).  Gosys og nav.no henter arkivvariant og viser denne til bruker.
-					ORIGINAL skal brukes for dokumentvariant i maskinlesbart format (for eksempel XML og JSON) som brukes for automatisk saksbehandling
-					Alle dokumenter må ha én variant med variantFormat ARKIV.
+					Typen variant som arkiveres. ARKIV-varianten vil være den som vises frem til bruker i Gosys og på nav.no. Alle dokumenter som arkiveres må ha én variant med variantformat ARKIV. Variantformat ARKIV skal ha filtype PDF eller (helst) PDFA.
+
+					ORIGINAL skal brukes for dokumentvariant i maskinlesbart format (for eksempel XML og JSON) som brukes for automatisk saksbehandling.
 					""",
 			required = true,
 			example = "ARKIV"
@@ -39,21 +39,20 @@ public class DokumentVariant {
 	@ArraySchema(arraySchema = @Schema(
 			description = "Selve dokumentet. Hvis filtype er PDF/XML, ved fysisk dokument brukes bytearray.",
 			required = true,
-			example = "U8O4a25hZCBvbSBkYWdwZW5nZXIgdmVkIHBlcm1pdHRlcmluZw=="
-		)
+			example = "U8O4a25hZCBvbSBkYWdwZW5nZXIgdmVkIHBlcm1pdHRlcmluZw==")
 	)
 	private byte[] fysiskDokument;
 
 	@Hidden
 	@Schema(
-			description = "Navnet filen skal ha i arkivet.",
+			description = "Navnet filen skal ha i arkivet. Brukes for sporingsformål ved arkivering av skannede dokumenter.",
 			example = "eksempeldokument.pdf"
 	)
 	private String filnavn;
 
 	@Hidden
 	@Schema(
-			description = "Navnet på skanningsbatchen som produserte filen. Feltet skal kun brukes etter avtale",
+			description = "Navnet på skanningsbatchen som produserte filen. Feltet skal kun brukes etter avtale.",
 			example = "R512345678"
 	)
 	private String batchnavn;

@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 public class Bruker {
     @NotNull(message = "Bruker mangler idType")
     @Schema(
-            description = "Angir hvilken type identifikator som er benyttet i bruker.id",
+            description = "Angir hvilken type identifikator som er benyttet i `bruker.id`",
             required = true,
             example = "FNR"
     )
@@ -23,7 +23,7 @@ public class Bruker {
 
     @NotNull(message = "Bruker mangler id")
     @Schema(
-            description = "Brukerens fødselsnummer (11 siffer) eller organisasjonsnummer (9 siffer)",
+            description = "Brukerens fødselsnummer (11 siffer), aktørID eller organisasjonsnummer (9 siffer)",
             required = true,
             example = "09071844797"
     )

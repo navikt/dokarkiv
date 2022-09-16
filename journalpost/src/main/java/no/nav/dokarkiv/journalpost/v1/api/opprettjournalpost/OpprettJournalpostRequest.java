@@ -29,21 +29,34 @@ public class OpprettJournalpostRequest {
 	@NotNull(message = "Journalposttype kan ikke være null")
 	@Schema(
 			required = true,
+			description = """
+					INNGAAENDE brukes for dokumentasjon som NAV har mottatt fra en ekstern part. Dette kan være søknader, ettersendelser av dokumentasjon til sak eller meldinger fra arbeidsgivere.
+					     
+					UTGAAENDE brukes for dokumentasjon som NAV har produsert og sendt ut til en ekstern part. Dette kan for eksempel være informasjons- eller vedtaksbrev til privatpersoner eller organisasjoner.
+					     
+					NOTAT brukes for dokumentasjon som NAV har produsert selv og uten mål om å distribuere dette ut av NAV. Eksempler på dette er forvaltningsnotater og referater fra telefonsamtaler med brukere.
+					""",
 			example = "INNGAAENDE"
 	)
 	private JournalpostType journalposttype;
 
 	@Schema(
-			description = "Avsender av forsendelsen"
+			description = """
+					* Ved journalposttype INNGÅENDE skal avsender av dokumentene oppgis.
+					* Ved journalposttype UTGÅENDE skal mottaker av dokumentene oppgis.
+					* avsenderMottaker skal ikke settes for journalposttype NOTAT.
+					"""
 	)
 	private AvsenderMottaker avsenderMottaker;
 
-	@Schema
+	@Schema(
+			description = "Brukeren som forsendelsen gjelder"
+	)
 	private Bruker bruker;
 
 	@Schema(
 			description = """
-					Temaet som forsendelsen tilhører, for eksempel “DAG” (Dagpenger).
+					Temaet som forsendelsen tilhører, for eksempel 'DAG' (Dagpenger).
 					Tema er påkrevd dersom Sak oppgis.
 					""",
 			example = "DAG"
@@ -53,7 +66,7 @@ public class OpprettJournalpostRequest {
 	@Schema(
 			description = """
 					Behandlingstema for forsendelsen, for eksempel ab0001 (Ordinære dagpenger).
-					Lovlige verdier finnes i felles kodeverksløsning.
+					Lovlige verdier finnes i i Felles Kodeverksløsning, men valideres ikke.
 					""",
 			example = "ab0001"
 	)
@@ -61,23 +74,27 @@ public class OpprettJournalpostRequest {
 
 	@Schema(
 			description = """
-					Tittel som beskriver forsendelsen samlet, f.eks. "Søknad om dagpenger ved permittering".
+					Tittel som beskriver forsendelsen samlet.
 					""",
 			example = "Søknad om dagpenger ved permittering"
 	)
 	private String tittel;
 
 	@Schema(
-			description = "Kanalen som ble brukt ved innsending eller distribusjon. F.eks. NAV_NO, ALTINN eller EESSI.",
+			description = """
+					Kanalen som ble brukt ved innsending eller distribusjon. F.eks. NAV_NO, ALTINN eller EESSI. Kanal skal ikke settes for notater.
+					""",
 			example = "NAV_NO"
 	)
 	private String kanal;
 
 	@Schema(
 			description = """
-					NAV-enheten som har journalført, eventuelt skal journalføre, forsendelsen.
-					Ved automatisk journalføring uten mennesker involvert skal enhet settes til "9999".
-					Konsument må sette journalfoerendeEnhet dersom tjenesten skal ferdigstille journalføringen.
+					NAV-enheten som har journalført forsendelsen.
+
+					Dersom forsoekFerdigstill=true skal enhet alltid settes. Dersom  det ikke er noen Nav-enhet involvert (f.eks. ved automatisk brevutsending), skal enhet være '9999'.
+
+					Dersom foersoekFerdigstill=false bør journalførendeEnhet kun settes dersom oppgavene skal rutes på en annen måte enn Norg-reglene tilsier. Hvis enhet er bank, havner oppgavene på enheten som ligger i Norg-regelsettet.
 					""",
 			example = "0701"
 	)
@@ -85,8 +102,8 @@ public class OpprettJournalpostRequest {
 
 	@Schema(
 			description = """
-					Unik id for forsendelsen som kan brukes til sporing gjennom verdikjeden.
-					Eksempler på eksternReferanseId kan være en GUID, sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.
+					Unik id for forsendelsen som kan brukes til sporing gjennom verdikjeden. Eksempler på eksternReferanseId kan være en GUID, sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.
+					                                                                                                                                                                      
 					NB: Det er duplikatkontroll på eksternReferanseId. Dersom man sender inn en eksternReferanseId som allerede finnes i arkivet, vil tjenesten kaste feil (409 Conflict).
 					""",
 			example = "a0f480a3-8ab2-4c56-8c93-e53bb35bec2b"
@@ -105,11 +122,10 @@ public class OpprettJournalpostRequest {
 	@Builder.Default
 	@ArraySchema(arraySchema = @Schema(
 			description = """
-					Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert
-					som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være
-					nøkkel: bucid og verdi: 12345.
-					"""
-		)
+					Kan brukes av fagsystemene til å lagre egne fagspesifikke attributter per journalpost. Nøkkel-verdi-settet er skjemaløst og valideres ikke. Nøkkelen bør prefixes med fagsystemets navn for å unngå "kollisjon" mellom fagsystemer.
+
+					Et eksempel er nøkkel eessi_bucid og verdi 1234
+					""")
 	)
 	private List<Tilleggsopplysning> tilleggsopplysninger = new ArrayList<>();
 
@@ -120,10 +136,13 @@ public class OpprettJournalpostRequest {
 
 	@Builder.Default
 	@NotNull(message = "dokumenter kan ikke være null")
-	@ArraySchema(arraySchema=@Schema(
-			description = "Første dokument blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke ved uthenting av journalpost.",
-			required = true
-		)
+	@ArraySchema(arraySchema = @Schema(
+			description = """
+					Alle dokumentene som skal arkiveres.
+					  
+					Det første dokument i meldingen blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke nødvendigvis ved uthenting av journalpost.
+					""",
+			required = true)
 	)
 	private List<Dokument> dokumenter = new ArrayList<>();
 
