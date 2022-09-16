@@ -89,7 +89,11 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private static InnsynCode mapOverstyrInnsynsregler(OpprettJournalpostRequest request) {
-		return isBlank(request.getSak().getOverstyrInnsynsregler()) ? null : InnsynCode.valueOf(request.getSak().getOverstyrInnsynsregler());
+		if (request.getSak() == null) {
+			return null;
+		} else {
+			return isBlank(request.getSak().getOverstyrInnsynsregler()) ? null : InnsynCode.valueOf(request.getSak().getOverstyrInnsynsregler());
+		}
 	}
 
 	private String hentNavn(OpprettJournalpostRequest request) {

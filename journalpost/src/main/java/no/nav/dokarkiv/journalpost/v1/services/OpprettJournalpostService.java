@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
@@ -32,16 +33,17 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OVERSTYR_INNSYN;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementSakstypeCounter;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -105,6 +107,10 @@ public class OpprettJournalpostService {
 		joarkRepository.save(journalpost);
 
 		populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT);
+		if (journalpost.getInnsyn() != null) {
+			populerAksjonslogg(journalpost.getJournalpostId(), OVERSTYR_INNSYN);
+		}
+
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
 
 		if (!SKANMOTOVRIG.equalsIgnoreCase(journalpost.getOpprettetAvNavn())) {
@@ -130,7 +136,7 @@ public class OpprettJournalpostService {
 		List<Sak> saker = hentSakerRepository.finnSaker(SakSearchCriteria.builder()
 				.aktoerId(sak.getAktoerId())
 				.orgnr(sak.getOrgnr())
-				.tema(Collections.singletonList(sak.getTema()))
+				.tema(singletonList(sak.getTema()))
 				.applikasjon(sak.getApplikasjon())
 				.fagsakNr(sak.getFagsakNr())
 				.build());
@@ -183,12 +189,33 @@ public class OpprettJournalpostService {
 				.journalpostId(journalpostId)
 				.utfoertAv(MDC.get(MDC_CONSUMER_ID))
 				.bruker(isNotBlank(bruker) ? bruker : UKJENT)
-				.melding("Journalpost " + aksjon.name())
+				.melding(getMelding(aksjon))
 				.build();
+
 		try {
-			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, emptyList());
+			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, getEndringer(journalpost, aksjon));
 		} catch (UgyldigAksjonsLoggException e) {
 			log.warn("Kunne ikke skrive til AksjonsLogg: " + e.getMessage());
+		}
+	}
+
+	private static String getMelding(AksjonsTypeCode aksjon) {
+		if (OVERSTYR_INNSYN.equals(aksjon)) {
+			return "Innsynsreglene ble overstyrt ved opprettelse av journalpost";
+		} else {
+			return "Journalpost " + aksjon;
+		}
+	}
+
+	private static List<ArkivElementEndringTO> getEndringer(Journalpost journalpost, AksjonsTypeCode aksjon) {
+		if (OVERSTYR_INNSYN.equals(aksjon)) {
+			return singletonList(ArkivElementEndringTO.builder()
+					.arkivElement("Journalpost.k_innsyn")
+					.fraVerdi(null)
+					.tilVerdi(journalpost.getInnsyn().toString())
+					.build());
+		} else {
+			return emptyList();
 		}
 	}
 

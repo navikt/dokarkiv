@@ -72,6 +72,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_NOKKEL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_VERDI;
@@ -182,12 +183,12 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@MethodSource
 	public void shouldMapOverstyrInnsynsregler(String overstyrInnsynsregler, InnsynCode expected) {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
-				.tema(TEMA_TIL)
+				.tema(TEMA_PEN)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
 						.sakstype(Sakstype.FAGSAK)
 						.fagsakId(FAGSAK_ID)
-						.fagsaksystem(Fagsaksystem.FS36)
+						.fagsaksystem(Fagsaksystem.PP01)
 						.overstyrInnsynsregler(overstyrInnsynsregler)
 						.build())
 				.build();
