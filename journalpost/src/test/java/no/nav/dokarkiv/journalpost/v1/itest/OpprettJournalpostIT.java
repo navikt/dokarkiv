@@ -45,7 +45,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OVERSTYR_INNSYN;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.ALTINN;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.BARNEBRILLER;
@@ -159,6 +161,36 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.filter(dokumentFil -> Arrays.equals(FYSISK_DOKUMENT, dokumentFil.getFil())).count());
 		assertEquals(1, dokumentFilList.stream()
 				.filter(dokumentFil -> Arrays.equals(FYSISK_DOKUMENT_2, dokumentFil.getFil())).count());
+	}
+
+	@Test
+	public void happyPathOpprettInngaaendeMedOverstyringAvInnsynsregler() throws IOException {
+		abacPermit();
+		restStsToken();
+
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER)
+						.overstyrInnsynsregler("VISES_MASKINELT_GODKJENT")
+						.build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+		Journalpost journalpost = joarkRepository.findAll().iterator().next();
+		assertEquals(VISES_MASKINELT_GODKJENT, journalpost.getInnsyn());
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertEquals(2, aksjonsLoggList.size());
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+
+		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
+		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+
+		assertEquals(OVERSTYR_INNSYN, aksjonsLoggList.get(1).getAksjon());
+		assertEquals(1, aksjonsLoggList.get(1).getArkivElementEndringer().size());
 	}
 
 	@Test
