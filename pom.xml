@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.6.10</version>
+		<version>2.7.3</version>
 	</parent>
 
 	<groupId>no.nav.dokarkiv</groupId>
@@ -38,7 +38,7 @@
 		<javax.inject.version>1</javax.inject.version>
 		<jakarta.jws-api.version>1.1.1</jakarta.jws-api.version>
 		<oracle.version>19.15.0.0.1</oracle.version>
-		<cxf.version>3.5.2</cxf.version>
+		<cxf.version>3.5.3</cxf.version>
 		<simpleflatmapper.version>8.2.3</simpleflatmapper.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
@@ -46,12 +46,12 @@
 		<jaxb2-basics-runtime.version>0.12.0</jaxb2-basics-runtime.version>
 		<java-jwt.version>3.19.2</java-jwt.version>
 
-		<google-cloud-storage.version>2.8.1</google-cloud-storage.version>
-		<tink.version>1.6.1</tink.version>
+		<google-cloud-storage.version>2.10.0</google-cloud-storage.version>
+		<tink.version>1.7.0</tink.version>
 
 		<bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
 		<commons.io.version>2.11.0</commons.io.version>
-		<springdoc-openapi-ui.version>1.6.9</springdoc-openapi-ui.version>
+		<springdoc-openapi-ui.version>1.6.11</springdoc-openapi-ui.version>
 
 		<!-- NAV -->
 		<modig-security.version>3.0.6</modig-security.version>
@@ -69,6 +69,8 @@
 
 		<!-- test -->
 		<spring-cloud-contract-wiremock.version>2.1.5.RELEASE</spring-cloud-contract-wiremock.version>
+		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
+		<h2.version>1.4.200</h2.version>
 
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
