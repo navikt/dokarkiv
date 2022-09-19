@@ -189,8 +189,8 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.sakstype(Sakstype.FAGSAK)
 						.fagsakId(FAGSAK_ID)
 						.fagsaksystem(Fagsaksystem.PP01)
-						.overstyrInnsynsregler(overstyrInnsynsregler)
 						.build())
+				.overstyrInnsynsregler(overstyrInnsynsregler)
 				.build();
 		Journalpost journalpost = mapper.map(request, null);
 		assertEquals(expected, journalpost.getInnsyn());

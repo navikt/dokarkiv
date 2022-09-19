@@ -853,14 +853,14 @@ public class OpprettJournalpostRequestValidatorTest {
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
 						.sakstype(Sakstype.GENERELL_SAK)
-						.overstyrInnsynsregler(overstyrInnsynsregler.toString())
 						.build())
+				.overstyrInnsynsregler(overstyrInnsynsregler.toString())
 				.build();
 
 		Exception e = assertThrows(InputValideringFeiletException.class, () ->
 						validator.validateRequest(request, FORSOEKFERDIGSTILL)
 		);
-		assertTrue(e.getMessage().contains("Sak.overstyrInnsynsregler kan kun ta verdienen 'VISES_MASKINELT_GODKJENT' eller 'VISES_MANUELT_GODKJENT'."));
+		assertTrue(e.getMessage().contains("Sak.overstyrInnsynsregler kan kun ta verdiene"));
 	}
 
 	@ParameterizedTest
@@ -871,8 +871,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
 						.sakstype(Sakstype.GENERELL_SAK)
-						.overstyrInnsynsregler(overstyrInnsynsregler != null ? overstyrInnsynsregler.toString() : null)
 						.build())
+				.overstyrInnsynsregler(overstyrInnsynsregler != null ? overstyrInnsynsregler.toString() : null)
 				.build();
 
 		assertDoesNotThrow(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL));

@@ -59,17 +59,6 @@ public class Sak {
 	)
 	private Fagsaksystem fagsaksystem;
 
-	@Schema(
-			description = """
-					Gjør at journalposten med dokumenter vises til pålogget bruker på nav.no til tross for at standardregelsettet sier at journalposten og/eller dokumentene skal skjules.
-					Dersom flagget ikke settes, er det standard-regelsettet som styrer innsyn.
-					* VISES_MASKINELT_GODKJENT brukes når en maskinell prosess har besluttet at journalposten og underliggende dokumenter kan vises til bruker på nav.no.
-					* VISES_MANUELT_GODKJENT brukes når en NAV-ansatt har sett over og godkjent at journalposten og underliggende dokumenter kan vises til bruker på nav.no.
-					""",
-			example = "VISES_MANUELT_GODKJENT"
-	)
-	private String overstyrInnsynsregler;
-
 	@Hidden
 	@Schema(
 			description = """
