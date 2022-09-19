@@ -189,17 +189,17 @@ public class OpprettJournalpostService {
 				.journalpostId(journalpostId)
 				.utfoertAv(MDC.get(MDC_CONSUMER_ID))
 				.bruker(isNotBlank(bruker) ? bruker : UKJENT)
-				.melding(getMelding(aksjon))
+				.melding(mapAksjonsloggmelding(aksjon))
 				.build();
 
 		try {
-			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, getEndringer(journalpost, aksjon));
+			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, mapAksjonsloggendringer(journalpost, aksjon));
 		} catch (UgyldigAksjonsLoggException e) {
 			log.warn("Kunne ikke skrive til AksjonsLogg: " + e.getMessage());
 		}
 	}
 
-	private static String getMelding(AksjonsTypeCode aksjon) {
+	private static String mapAksjonsloggmelding(AksjonsTypeCode aksjon) {
 		if (OVERSTYR_INNSYN.equals(aksjon)) {
 			return "Innsynsreglene ble overstyrt ved opprettelse av journalpost";
 		} else {
@@ -207,7 +207,7 @@ public class OpprettJournalpostService {
 		}
 	}
 
-	private static List<ArkivElementEndringTO> getEndringer(Journalpost journalpost, AksjonsTypeCode aksjon) {
+	private static List<ArkivElementEndringTO> mapAksjonsloggendringer(Journalpost journalpost, AksjonsTypeCode aksjon) {
 		if (OVERSTYR_INNSYN.equals(aksjon)) {
 			return singletonList(ArkivElementEndringTO.builder()
 					.arkivElement("Journalpost.k_innsyn")

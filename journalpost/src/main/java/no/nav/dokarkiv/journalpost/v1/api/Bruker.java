@@ -23,7 +23,7 @@ public class Bruker {
 
     @NotNull(message = "Bruker mangler id")
     @Schema(
-            description = "Brukerens fødselsnummer (11 siffer), aktørID eller organisasjonsnummer (9 siffer)",
+            description = "Brukerens fødselsnummer (11 siffer), aktørID (13 siffer) eller organisasjonsnummer (9 siffer)",
             required = true,
             example = "09071844797"
     )
