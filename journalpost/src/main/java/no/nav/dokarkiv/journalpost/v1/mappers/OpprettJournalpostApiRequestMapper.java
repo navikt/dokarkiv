@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -77,6 +78,7 @@ public class OpprettJournalpostApiRequestMapper {
 				.kanalReferanseId(request.getEksternReferanseId())
 				.mottattDato(mapMottattDato(request))
 				.dokumentDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
+				.innsyn(mapOverstyrInnsynsregler(request))
 				.build();
 
 		addSaksrelasjon(journalpost, request, sakId);
@@ -84,6 +86,10 @@ public class OpprettJournalpostApiRequestMapper {
 		addJournalpostDokumentInfoRelasjon(journalpost, request);
 
 		return journalpost;
+	}
+
+	private static InnsynCode mapOverstyrInnsynsregler(OpprettJournalpostRequest request) {
+		return request.getOverstyrInnsynsregler() == null ? null : InnsynCode.valueOf(request.getOverstyrInnsynsregler());
 	}
 
 	private String hentNavn(OpprettJournalpostRequest request) {

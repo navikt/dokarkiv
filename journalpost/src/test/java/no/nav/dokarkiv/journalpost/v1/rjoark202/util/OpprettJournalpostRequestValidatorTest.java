@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
@@ -17,6 +18,8 @@ import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
@@ -39,7 +42,10 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 
 public class OpprettJournalpostRequestValidatorTest {
 
@@ -48,7 +54,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	private OpprettJournalpostRequest request;
 
-	private OpprettJournalpostRequestValidator validator = new OpprettJournalpostRequestValidator();
+	private final OpprettJournalpostRequestValidator validator = new OpprettJournalpostRequestValidator();
 
 	@Test
 	public void happyPath() {
@@ -835,6 +841,41 @@ public class OpprettJournalpostRequestValidatorTest {
 		assertThrows(InputValideringFeiletException.class,
 				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
 				"Dokument.dokumentvariant.variantformat");
+	}
+
+	@ParameterizedTest
+	@EnumSource(
+			value = InnsynCode.class,
+			names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT"},
+			mode = EXCLUDE)
+	void shouldThrowExceptionIfOverstyrInnsynsreglerIsInvalid(InnsynCode overstyrInnsynsregler) {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.GENERELL_SAK)
+						.build())
+				.overstyrInnsynsregler(overstyrInnsynsregler.toString())
+				.build();
+
+		Exception e = assertThrows(InputValideringFeiletException.class, () ->
+						validator.validateRequest(request, FORSOEKFERDIGSTILL)
+		);
+		assertTrue(e.getMessage().contains("Sak.overstyrInnsynsregler kan kun ta verdiene"));
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = InnsynCode.class, names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT"})
+	@NullSource
+	void shouldNotThrowExceptionWhenOverstyrInnsynsreglerIsValid(InnsynCode overstyrInnsynsregler) {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.GENERELL_SAK)
+						.build())
+				.overstyrInnsynsregler(overstyrInnsynsregler != null ? overstyrInnsynsregler.toString() : null)
+				.build();
+
+		assertDoesNotThrow(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
 	}
 
 }

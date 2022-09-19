@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -31,6 +32,9 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiRequestMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,7 +43,10 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_L;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
@@ -65,6 +72,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_NOKKEL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_VERDI;
@@ -169,6 +177,31 @@ public class OpprettJournalpostApiRequestMapperTest {
 		JournalpostDokumentInfoRelasjon relasjon2 = jp.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG).iterator().next();
 		assertEquals(DokumentStatusCode.FERDIGSTILT, relasjon.getDokumentInfo().getDokumentstatus());
 		assertEquals(DokumentStatusCode.FERDIGSTILT, relasjon2.getDokumentInfo().getDokumentstatus());
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	public void shouldMapOverstyrInnsynsregler(String overstyrInnsynsregler, InnsynCode expected) {
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_PEN)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.FAGSAK)
+						.fagsakId(FAGSAK_ID)
+						.fagsaksystem(Fagsaksystem.PP01)
+						.build())
+				.overstyrInnsynsregler(overstyrInnsynsregler)
+				.build();
+		Journalpost journalpost = mapper.map(request, null);
+		assertEquals(expected, journalpost.getInnsyn());
+	}
+
+	private static Stream<Arguments> shouldMapOverstyrInnsynsregler() {
+		return Stream.of(
+				Arguments.of(null, null),
+				Arguments.of("VISES_MASKINELT_GODKJENT", VISES_MASKINELT_GODKJENT),
+				Arguments.of("VISES_MANUELT_GODKJENT", VISES_MANUELT_GODKJENT)
+		);
 	}
 
 	@Test
