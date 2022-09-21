@@ -267,6 +267,11 @@
       "app": "esyfovarsel",
       "namespace": "team-esyfo",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "pdl-fullmakt",
+      "namespace": "pdl",
+      "cluster": "prod-fss"
     }
   ]
 }
