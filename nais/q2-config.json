@@ -284,6 +284,11 @@
       "app": "soknad-api",
       "namespace": "aap",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "pdl-fullmakt",
+      "namespace": "pdl",
+      "cluster": "dev-fss"
     }
   ]
 }

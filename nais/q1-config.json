@@ -303,6 +303,11 @@
       "app": "syk-dig-backend",
       "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "pdl-fullmakt",
+      "namespace": "pdl",
+      "cluster": "dev-fss"
     }
   ]
 }

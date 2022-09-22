@@ -262,6 +262,11 @@
       "app": "syk-dig-backend",
       "namespace": "teamsykmelding",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "pdl-fullmakt",
+      "namespace": "pdl",
+      "cluster": "prod-fss"
     }
   ]
 }
