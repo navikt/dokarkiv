@@ -191,17 +191,7 @@
     {
       "app": "syfosmpapirmottak",
       "namespace": "teamsykmelding",
-      "cluster": "prod-fss"
-    },
-    {
-      "app": "syfosmpapirmottak",
-      "namespace": "teamsykmelding",
       "cluster": "prod-gcp"
-    },
-    {
-      "app": "smregistrering-backend",
-      "namespace": "teamsykmelding",
-      "cluster": "prod-fss"
     },
     {
       "app": "smregistrering-backend",
@@ -267,6 +257,11 @@
       "app": "esyfovarsel",
       "namespace": "team-esyfo",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "syk-dig-backend",
+      "namespace": "teamsykmelding",
+      "cluster": "prod-gcp"
     },
     {
       "app": "pdl-fullmakt",

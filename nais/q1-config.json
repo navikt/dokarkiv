@@ -227,17 +227,7 @@
     {
       "app": "syfosmpapirmottak",
       "namespace": "teamsykmelding",
-      "cluster": "dev-fss"
-    },
-    {
-      "app": "syfosmpapirmottak",
-      "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
-    },
-    {
-      "app": "smregistrering-backend",
-      "namespace": "teamsykmelding",
-      "cluster": "dev-fss"
     },
     {
       "app": "smregistrering-backend",
@@ -307,6 +297,11 @@
     {
       "app": "soknad-api",
       "namespace": "aap",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "syk-dig-backend",
+      "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
     },
     {
