@@ -20,6 +20,7 @@
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp-q2.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv.dev.intern.nav.no/hentdokument",
   "SAF_GRAPHQL_URL": "https://saf-q2.dev.adeo.no/graphql",
+  "SAF_SCOPE": "api://dev-fss.teamdokumenthandtering.saf/.default",
   "DOKPRODMELLOMLAGER_PROJECTID": "teamdokumenthandteri-dev-2c5a",
   "DOKPRODMELLOMLAGER_BUCKET": "dokprodmellomlager-dev",
   "DOKPRODMELLOMLAGER_KEYRING": "dokprodmellomlager-keyring-dev",

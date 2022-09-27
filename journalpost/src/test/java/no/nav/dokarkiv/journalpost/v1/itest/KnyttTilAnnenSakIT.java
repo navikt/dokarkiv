@@ -9,6 +9,7 @@ import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakResponse;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -49,6 +50,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Disabled
 public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 
 	public static final String URL_JOURNALPOST = "/rest/journalpostapi/v1/journalpost/";

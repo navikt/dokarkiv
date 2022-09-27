@@ -9,7 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.DAYS;
+import static java.util.concurrent.TimeUnit.HOURS;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -23,32 +26,36 @@ public class CacheConfig {
 	public static final String NAVSERVICEUSER_CACHE = "navserviceuserCache";
 	public static final String REST_STS_CACHE = "RESTSTS";
 	public static final String HISTORISKE_IDENTER = "historiskeIdenterCache";
+	public static final String AZURE_TOKEN_CACHE = "AzureTokenCache";
 
 	@Bean
 	CacheManager cacheManager() {
 		SimpleCacheManager manager = new SimpleCacheManager();
 		manager.setCaches(Arrays.asList(
 				new CaffeineCache(NAVUSER_CACHE, Caffeine.newBuilder()
-						.expireAfterWrite(8, TimeUnit.HOURS)
+						.expireAfterWrite(8, HOURS)
 						.maximumSize(10000)
 						.build()),
 				new CaffeineCache(NAVSERVICEUSER_CACHE, Caffeine.newBuilder()
-						.expireAfterWrite(2, TimeUnit.DAYS)
+						.expireAfterWrite(2, DAYS)
 						.maximumSize(10000)
 						.build()),
 				new CaffeineCache(USERNAME_TOKEN_CACHE, Caffeine.newBuilder()
-						.expireAfterWrite(10, TimeUnit.MINUTES)
+						.expireAfterWrite(10, MINUTES)
 						.maximumSize(10)
 						.build()),
 				new CaffeineCache(REST_STS_CACHE, Caffeine.newBuilder()
-						.expireAfterWrite(50, TimeUnit.MINUTES)
+						.expireAfterWrite(50, MINUTES)
 						.maximumSize(1)
 						.build()),
 				new CaffeineCache(HISTORISKE_IDENTER, Caffeine.newBuilder()
-						.expireAfterWrite(10, TimeUnit.MINUTES)
+						.expireAfterWrite(10, MINUTES)
 						.maximumSize(25000)
+						.build()),
+				new CaffeineCache(AZURE_TOKEN_CACHE, Caffeine.newBuilder()
+						.expireAfterWrite(50, MINUTES)
+						.maximumSize(1)
 						.build())
-
 		));
 		return manager;
 	}
