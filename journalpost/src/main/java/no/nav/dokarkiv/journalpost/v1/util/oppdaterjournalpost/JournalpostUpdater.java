@@ -86,6 +86,9 @@ public class JournalpostUpdater {
 			tracker.setEndretFlagg(true);
 			tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), JournalStatusCode.E.name());
 		}
+		if (request.getDatoLest() != null && journalpost.getLestDato() == null) {
+			journalpost.setLestDato(request.getDatoLest());
+		}
 
 		if (tracker.isEndretFlagg()) {
 			journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));

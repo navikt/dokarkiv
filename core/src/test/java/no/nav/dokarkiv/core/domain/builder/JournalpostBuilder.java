@@ -13,6 +13,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,7 +69,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	private Boolean elektroniskDistribusjon;
 	private Boolean signatur;
 	private Date ekspedertDato;
-	private Date lestDato;
+	private OffsetDateTime lestDato;
 	private Date mottattAdressatDato;
 	private String opprettetKildeNavn;
 	private String endretKildeNavn;
@@ -111,7 +112,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 		this.faktiskDistribusjonskanal = value; return this; }
 	public JournalpostBuilder elektroniskDistribusjon(Boolean value) { this.elektroniskDistribusjon = value; return this; }
 	public JournalpostBuilder ekspedertDato(Date value) { this.ekspedertDato = value; return this; }
-	public JournalpostBuilder lestDato(Date value) { this.lestDato = value; return this; }
+	public JournalpostBuilder lestDato(OffsetDateTime value) { this.lestDato = value; return this; }
 	public JournalpostBuilder mottattAdressatDato(Date value) { this.mottattAdressatDato = value; return this; }
 	public JournalpostBuilder opprettetKildeNavn(String value) { this.opprettetKildeNavn = value; return this; }
 	public JournalpostBuilder endretKildeNavn(String value) { this.endretKildeNavn = value; return this; }
