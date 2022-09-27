@@ -19,7 +19,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class SafGraphQLConfig {
 
 	@NotEmpty
-	private String graphQlUrl;
+	private String graphqlUrl;
 
 	@NotEmpty
 	private String scope;
@@ -28,7 +28,7 @@ public class SafGraphQLConfig {
 	public WebClient webClient(WebClient.Builder webClientBuilder) {
 		return webClientBuilder
 				.clone()
-				.baseUrl(graphQlUrl)
+				.baseUrl(graphqlUrl)
 				.defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.build();
 	}
