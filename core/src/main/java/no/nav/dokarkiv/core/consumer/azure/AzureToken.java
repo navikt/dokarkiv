@@ -57,9 +57,9 @@ public class AzureToken {
         formData.add("scope", scope);
 
         if(isOnBehalfOfToken(token)) {
-            formData.add("request_token_use", ON_BEHALF_OF);
+            formData.add("requested_token_use", ON_BEHALF_OF);
             formData.add("grant_type", ON_BEHALF_OF_GRANT_TYPE);
-            formData.add("assertions", getTokenValueFromAccessToken(token));
+            formData.add("assertion", getTokenValueFromAccessToken(token));
         } else {
             formData.add("grant_type", CLIENT_CREDENTIALS_GRANT_TYPE);
         }
