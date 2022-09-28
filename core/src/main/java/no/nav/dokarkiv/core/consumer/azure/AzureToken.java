@@ -59,7 +59,7 @@ public class AzureToken {
         if(isOnBehalfOfToken(token)) {
             formData.add("requested_token_use", ON_BEHALF_OF);
             formData.add("grant_type", ON_BEHALF_OF_GRANT_TYPE);
-            formData.add("assertion", getTokenValueFromAccessToken(token));
+            formData.add("assertion", token);
         } else {
             formData.add("grant_type", CLIENT_CREDENTIALS_GRANT_TYPE);
         }
@@ -108,17 +108,6 @@ public class AzureToken {
             throw new AzureTokenException(
                     String.format("En feil oppsto ved behandling av Access Token. Feilemelding=%s", e.getMessage()),
                     e.getCause());
-        }
-    }
-
-    private String getTokenValueFromAccessToken(String authHeader) {
-        try {
-            return StringUtils.split(authHeader, " ")[1];
-        } catch (Exception e) {
-            throw new AzureTokenException(
-                    String.format("Klarte ikke hente value fra Access Token. Feilemelding=%s", e.getMessage()),
-                    e.getCause());
-
         }
     }
 }

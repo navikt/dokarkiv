@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.consumer.azure;
 
+import no.nav.dokarkiv.core.exceptions.AzureTokenException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -19,9 +21,21 @@ public class WebClientAzureAuthentication implements ExchangeFilterFunction {
     @Override
     public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
 
-        var token = request.headers().getFirst(HttpHeaders.AUTHORIZATION);
+        var token = getTokenValueFromAccessToken(request.headers().getFirst(HttpHeaders.AUTHORIZATION));
 
         return next.exchange(ClientRequest.from(request).headers((headers) ->
                 headers.setBearerAuth(azureToken.accessToken(token, scope))).build());
     }
+
+    private String getTokenValueFromAccessToken(String authHeader) {
+        try {
+            return StringUtils.split(authHeader, " ")[1];
+        } catch (Exception e) {
+            throw new AzureTokenException(
+                    String.format("Klarte ikke hente value fra Access Token. Feilemelding=%s", e.getMessage()),
+                    e.getCause());
+
+        }
+    }
+
 }
