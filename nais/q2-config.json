@@ -285,6 +285,11 @@
       "app": "soknad-api",
       "namespace": "aap",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "ida",
+      "namespace": "traktor",
+      "cluster": "prod-fss"
     }
   ]
 }
