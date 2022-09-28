@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -15,9 +16,6 @@ import javax.transaction.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TokenGeneratorConfiguration.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("itest")
@@ -32,7 +30,8 @@ public class ApplicationIT {
 	@Test
 	public void shouldStartApp() {
 		// verifisere at appen klarer starte opp
-		String isAlive = testRestTemplate.getForObject("/isAlive", String.class);
-		assertThat(isAlive).isEqualTo("Application is alive!");
+		var liveness = testRestTemplate.getForEntity("/actuator/health/liveness", String.class);
+		assertThat(liveness.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(liveness.getBody()).contains("UP");
 	}
 }

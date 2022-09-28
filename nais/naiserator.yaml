@@ -6,7 +6,7 @@ metadata:
   labels:
     team: teamdokumenthandtering
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "256m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "512m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
 spec:
   env:
@@ -72,7 +72,7 @@ spec:
     - {{this }}
     {{/each}}
   liveness:
-    path: /isAlive
+    path: /actuator/health/liveness
     port: 8080
     initialDelay: 30
     failureThreshold: 12
@@ -82,7 +82,7 @@ spec:
     enabled: true
     path: /actuator/prometheus
   readiness:
-    path: /isReady
+    path: /actuator/health/readiness
     port: 8080
     initialDelay: 30
     timeout: 3

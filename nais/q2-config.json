@@ -287,6 +287,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "pdl-fullmakt",
+      "namespace": "pdl",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "ida",
       "namespace": "traktor",
       "cluster": "prod-fss"

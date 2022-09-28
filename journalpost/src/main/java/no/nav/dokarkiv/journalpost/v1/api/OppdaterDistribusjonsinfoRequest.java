@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.OffsetDateTime;
+
+
 @Builder
 @Getter
 @AllArgsConstructor
@@ -18,5 +21,9 @@ public class OppdaterDistribusjonsinfoRequest {
             description = "Kanalen som dokumentene på journalpost ble sendt via. Se https://confluence.adeo.no/display/BOA/Utsendingskanal for lovlige verdier"
     )
     private String utsendingsKanal;
+    @Schema(
+            description = "Sett tidspunkt journalposten ble lest, om det ikke allerede er satt"
+    )
+    private OffsetDateTime datoLest;
 
 }

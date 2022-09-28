@@ -40,6 +40,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1316,9 +1317,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 *
 	 * @param lestDato the lestDato to set
 	 */
-	public void setLestDato(Date lestDato) {
+	public void setLestDato(OffsetDateTime lestDato) {
 		if (lestDato != null) {
-			this.lestDato = new Date(lestDato.getTime());
+			this.lestDato = Date.from(lestDato.toInstant());
 		} else {
 			this.lestDato = null;
 		}
