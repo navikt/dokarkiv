@@ -100,6 +100,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "dokdistdittnav-q1",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "padm2",
       "namespace": "teamsykefravr",
       "cluster": "dev-fss"
