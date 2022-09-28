@@ -100,7 +100,7 @@
       "cluster": "dev-fss"
     },
     {
-      "app": "dokdistdittnav-q1",
+      "app": "dokdistdittnav",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"
     },
