@@ -267,6 +267,11 @@
       "app": "pdl-fullmakt",
       "namespace": "pdl",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "joarkadmin",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss"
     }
   ]
 }
