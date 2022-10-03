@@ -18,6 +18,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.text.ParseException;
 import java.util.Map;
 
 import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_TOKEN_CACHE;
@@ -101,9 +102,12 @@ public class AzureToken {
 
         try {
             var jwtToken = JWTParser.parse(token);
-            var oid = jwtToken.getJWTClaimsSet().getClaim(OID_CLAIM_NAME).toString();
+            var oid = jwtToken.getJWTClaimsSet().getStringClaim(OID_CLAIM_NAME);
             var sub = jwtToken.getJWTClaimsSet().getSubject();
             return oid != null && !StringUtils.equals(oid, sub);
+        } catch (ParseException e) {
+            log.info("En feil oppsto ved parsing/prosessering av Access Token. Feilmelding={}", e.getMessage());
+            return false;
         } catch (Exception e) {
             throw new AzureTokenException(
                     String.format("En feil oppsto ved behandling av Access Token. Feilemelding=%s", e.getMessage()),
