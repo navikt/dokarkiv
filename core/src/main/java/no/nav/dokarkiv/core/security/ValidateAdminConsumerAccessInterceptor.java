@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.security;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
@@ -15,9 +16,6 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
-/**
- * @author Ketill Fenne, Visma Consulting AS
- */
 @Slf4j
 public class ValidateAdminConsumerAccessInterceptor implements HandlerInterceptor {
 
@@ -83,9 +81,19 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 	public boolean isTokenBelongsToUser(String token, String subject) {
 		if (isNotEmpty(token)) {
 			String consumerID = getSubjectFromToken(token);
-			return subject.equalsIgnoreCase(consumerID);
+			return subject.equalsIgnoreCase(consumerID) || azureClaimWorkaround(token);
 		}
 		return false;
+	}
+
+	private boolean azureClaimWorkaround(String token) {
+		DecodedJWT decode = JWT.decode(token);
+		String azpName = decode.getClaim("azp_name").asString();
+		if(azpName == null) {
+			return false;
+		} else {
+			return azpName.contains("joarkadmin");
+		}
 	}
 
 	private String getSubjectFromToken(String token) {
@@ -94,6 +102,4 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 		}
 		return JWT.decode(token).getSubject();
 	}
-
-
 }
