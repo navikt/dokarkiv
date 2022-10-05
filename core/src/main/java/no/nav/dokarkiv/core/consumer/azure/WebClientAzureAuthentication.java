@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
 import reactor.core.publisher.Mono;
 
 public class WebClientAzureAuthentication implements ExchangeFilterFunction {
+
     final private AzureToken azureToken;
     final private String scope;
 
@@ -21,10 +22,10 @@ public class WebClientAzureAuthentication implements ExchangeFilterFunction {
     @Override
     public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
 
-        var token = getTokenValueFromAccessToken(request.headers().getFirst(HttpHeaders.AUTHORIZATION));
+        String tokenValue = getTokenValueFromAccessToken(request.headers().getFirst(HttpHeaders.AUTHORIZATION));
 
         return next.exchange(ClientRequest.from(request).headers((headers) ->
-                headers.setBearerAuth(azureToken.accessToken(token, scope))).build());
+                headers.setBearerAuth(azureToken.accessToken(tokenValue, scope))).build());
     }
 
     private String getTokenValueFromAccessToken(String authHeader) {
@@ -34,8 +35,6 @@ public class WebClientAzureAuthentication implements ExchangeFilterFunction {
             throw new AzureTokenException(
                     String.format("Klarte ikke hente value fra Access Token. Feilemelding=%s", e.getMessage()),
                     e.getCause());
-
         }
     }
-
 }

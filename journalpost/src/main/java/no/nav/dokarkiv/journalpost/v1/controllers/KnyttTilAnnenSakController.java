@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
+import no.nav.dokarkiv.core.security.TokenGrantValidator;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakResponse;
@@ -14,7 +15,6 @@ import no.nav.dokarkiv.journalpost.v1.services.KnyttTilAnnenSakService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerRestKnyttTilAnnenSak;
 import no.nav.dokarkiv.journalpost.v1.validators.KnyttTilAnnenSakValidator;
 import no.nav.security.token.support.core.api.Protected;
-import no.nav.security.token.support.core.api.Unprotected;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +67,7 @@ public class KnyttTilAnnenSakController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		try {
 			log.warn("knyttTilAnnenSak har fått har fått kall for å knytte dokumenter til annen sak");
+			TokenGrantValidator.validateOnBehalfOfAccessToken(safAuthorizationHeader);
 			knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, kildeJournalpostId, navConsumerId);
 			KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, kildeJournalpostId, safAuthorizationHeader);
 

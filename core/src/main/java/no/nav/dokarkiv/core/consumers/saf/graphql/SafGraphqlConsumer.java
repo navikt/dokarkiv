@@ -21,7 +21,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Component
 public class SafGraphqlConsumer {
 
-	private static final String OIDC_TOKEN_PREFIX = "Bearer";
 	private final WebClient safGraphQLClient;
 
 	@Autowired
@@ -38,8 +37,6 @@ public class SafGraphqlConsumer {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "safJournalpostQuery"}, percentiles = {0.5, 0.95})
 	@Retryable(include = SafJournalpostQueryTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT))
 	public ResponseEntity<String> performQuery(GraphQLRequest graphQLRequest, String safAuthorizationHeader, String journalpostId) {
-
-		validateAuthHeader(safAuthorizationHeader, journalpostId);
 
 		return safGraphQLClient
 				.post()
@@ -62,12 +59,6 @@ public class SafGraphqlConsumer {
 			throw new SafJournalpostQueryTechnicalException(
 					String.format("Tjenesten SAF (graphQL) feilet teknisk med feilmelding: %s", error.getMessage()),
 					error);
-		}
-	}
-
-	private void validateAuthHeader(String authorizationHeader, String journalpostId) {
-		if (!OIDC_TOKEN_PREFIX.equals(authorizationHeader.split(" ")[0])) {
-			throw new ValidationFunctionalException(String.format("Authorization header må være på formen Bearer {token} for journalpostId=%s", journalpostId));
 		}
 	}
 }

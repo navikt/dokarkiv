@@ -30,7 +30,6 @@ public class AzureToken {
     private static final String CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials";
     private static final String ON_BEHALF_OF_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
     private static final String ON_BEHALF_OF = "on_behalf_of";
-    private static final String OID_CLAIM_NAME = "oid";
 
     private final AzureConfig azureConfig;
     private final ObjectMapper objectMapper;
@@ -46,8 +45,13 @@ public class AzureToken {
 
     @Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
     @Cacheable(AZURE_TOKEN_CACHE)
+    public String accessToken(String scope) {
+		return fetchAccessToken(null, scope);
+    }
+
+    @Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
     public String accessToken(String token, String scope) {
-		return (isOnBehalfOfToken(token) || token == null) ? fetchAccessToken(token, scope) : token;
+        return fetchAccessToken(token, scope);
     }
 
     private String fetchAccessToken(String token, String scope) {
@@ -57,7 +61,7 @@ public class AzureToken {
         formData.add("client_secret", azureConfig.getAppClientSecret());
         formData.add("scope", scope);
 
-        if(isOnBehalfOfToken(token)) {
+        if(token != null) {
             formData.add("requested_token_use", ON_BEHALF_OF);
             formData.add("grant_type", ON_BEHALF_OF_GRANT_TYPE);
             formData.add("assertion", token);
@@ -91,27 +95,6 @@ public class AzureToken {
             throw new AzureTokenException(
                     String.format("Kall mot Azure feilet med feilmelding=%s", error.getMessage()),
                     error);
-        }
-    }
-
-    private boolean isOnBehalfOfToken(String token) {
-
-        if(token == null) {
-            return false;
-        }
-
-        try {
-            var jwtToken = JWTParser.parse(token);
-            var oid = jwtToken.getJWTClaimsSet().getStringClaim(OID_CLAIM_NAME);
-            var sub = jwtToken.getJWTClaimsSet().getSubject();
-            return oid != null && !StringUtils.equals(oid, sub);
-        } catch (ParseException e) {
-            log.info("En feil oppsto ved parsing/prosessering av Access Token. Feilmelding={}", e.getMessage());
-            return false;
-        } catch (Exception e) {
-            throw new AzureTokenException(
-                    String.format("En feil oppsto ved behandling av Access Token. Feilemelding=%s", e.getMessage()),
-                    e.getCause());
         }
     }
 }
