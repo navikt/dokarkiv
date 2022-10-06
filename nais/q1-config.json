@@ -101,7 +101,7 @@
       "cluster": "dev-fss"
     },
     {
-      "app": "dokdistdittnav-q1",
+      "app": "dokdistdittnav",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"
     },
@@ -182,6 +182,11 @@
     },
     {
       "app": "sykepengesoknad-arkivering-oppgave",
+      "namespace": "flex",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "flex-testdata-generator",
       "namespace": "flex",
       "cluster": "dev-gcp"
     },
