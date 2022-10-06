@@ -27,7 +27,7 @@ public class TokenGrantValidator {
 			if (isBlank(sub)) {
 				throw new InputValideringFeiletException("Access Token mangler Subject claim");
 			}
-			if (!StringUtils.equals(oid, sub)) {
+			if (StringUtils.equals(oid, sub)) {
 				throw new InputValideringFeiletException("Access Token er ikke et On-Behalf-Of token");
 			}
 		} catch (ParseException e) {
