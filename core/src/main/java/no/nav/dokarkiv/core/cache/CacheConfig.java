@@ -26,7 +26,6 @@ public class CacheConfig {
 	public static final String NAVSERVICEUSER_CACHE = "navserviceuserCache";
 	public static final String REST_STS_CACHE = "RESTSTS";
 	public static final String HISTORISKE_IDENTER = "historiskeIdenterCache";
-	public static final String AZURE_TOKEN_CACHE = "AzureTokenCache";
 
 	@Bean
 	CacheManager cacheManager() {
@@ -51,12 +50,7 @@ public class CacheConfig {
 				new CaffeineCache(HISTORISKE_IDENTER, Caffeine.newBuilder()
 						.expireAfterWrite(10, MINUTES)
 						.maximumSize(25000)
-						.build()),
-				new CaffeineCache(AZURE_TOKEN_CACHE, Caffeine.newBuilder()
-						.expireAfterWrite(50, MINUTES)
-						.maximumSize(1)
-						.build())
-		));
+						.build())));
 		return manager;
 	}
 }
