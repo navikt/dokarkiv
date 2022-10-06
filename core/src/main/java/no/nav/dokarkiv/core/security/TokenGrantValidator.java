@@ -31,7 +31,7 @@ public class TokenGrantValidator {
 				throw new InputValideringFeiletException("Access Token er ikke et On-Behalf-Of token");
 			}
 		} catch (ParseException e) {
-			throw new RuntimeException(String.format("En feil oppsto ved parsing av Access Token. Feilmelding=%s", e.getMessage()));
+			throw new RuntimeException(String.format("En feil oppsto ved parsing av Access Token. Feilmelding=%s", e.getMessage()), e);
 		}
 	}
 }
