@@ -43,12 +43,15 @@ public class KnyttTilAnnenSakController {
 
 	private final KnyttTilAnnenSakValidator knyttTilAnnenSakValidator;
 	private final KnyttTilAnnenSakService knyttTilAnnenSakService;
-
+	private final TokenGrantValidator tokenGrantValidator;
 
 	@Inject
-	public KnyttTilAnnenSakController(KnyttTilAnnenSakValidator knyttTilAnnenSakValidator, KnyttTilAnnenSakService knyttTilAnnenSakService) {
+	public KnyttTilAnnenSakController(KnyttTilAnnenSakValidator knyttTilAnnenSakValidator,
+									  KnyttTilAnnenSakService knyttTilAnnenSakService,
+									  TokenGrantValidator tokenGrantValidator) {
 		this.knyttTilAnnenSakValidator = knyttTilAnnenSakValidator;
 		this.knyttTilAnnenSakService = knyttTilAnnenSakService;
+		this.tokenGrantValidator = tokenGrantValidator;
 	}
 
 
@@ -57,7 +60,7 @@ public class KnyttTilAnnenSakController {
 	@Operation(summary = "Knytt dokumenter til ny sak.")
 	@PutMapping("/{kildeJournalpostId}/knyttTilAnnenSak")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "knyttTilAnnenSak"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<KnyttTilAnnenSakResponse> knyttTilAnnenSak(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String safAuthorizationHeader,
+	public ResponseEntity<KnyttTilAnnenSakResponse> knyttTilAnnenSak(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationHeader,
 																	 @Parameter(description = "Nav-Consumer-Token - Systembrukerens OIDC-token. NB: Oppgis kun dersom den NAV-ansattes token er lagt ved under Authorization") @RequestHeader(value = "Nav-Consumer-Token", required = false) String navConsumerToken,
 																	 @Parameter(description = "Nav-Consumer-Id - brukes for sporingsinfo i joark", required = true) @RequestHeader(value = "Nav-Consumer-Id") String navConsumerId,
 																	 @Parameter(description = "Nav-CallId - teknisk sporingsid") @RequestHeader(value = "Nav-CallId", required = false) String navCallId,
@@ -67,9 +70,9 @@ public class KnyttTilAnnenSakController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		try {
 			log.warn("knyttTilAnnenSak har fått har fått kall for å knytte dokumenter til annen sak");
-			TokenGrantValidator.validateOnBehalfOfAccessToken(safAuthorizationHeader);
+			tokenGrantValidator.validateOnBehalfOfAccessToken(authorizationHeader);
 			knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, kildeJournalpostId, navConsumerId);
-			KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, kildeJournalpostId, safAuthorizationHeader);
+			KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, kildeJournalpostId, authorizationHeader);
 
 			log.warn("knyttTilAnnenSak har knyttet til dokumenter til ny journalpost med journalpostId={}", knyttTilAnnenSakResponse.getNyJournalpostId());
 

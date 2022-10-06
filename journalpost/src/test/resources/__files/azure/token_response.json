@@ -1,0 +1,6 @@
+{
+  "access_token": "dummy",
+  "token_type": "Bearer",
+  "expires_in": 3599,
+  "ext_expires_in": 3599
+}

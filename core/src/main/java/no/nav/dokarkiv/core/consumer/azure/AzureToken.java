@@ -2,13 +2,10 @@ package no.nav.dokarkiv.core.consumer.azure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jwt.JWTParser;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.AzureTokenException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.security.azure.AzureConfig;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -18,16 +15,12 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.text.ParseException;
 import java.util.Map;
-
-import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_TOKEN_CACHE;
 
 @Slf4j
 @Component
 public class AzureToken {
 
-    private static final String CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials";
     private static final String ON_BEHALF_OF_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
     private static final String ON_BEHALF_OF = "on_behalf_of";
 
@@ -44,13 +37,7 @@ public class AzureToken {
     }
 
     @Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
-    @Cacheable(AZURE_TOKEN_CACHE)
-    public String accessToken(String scope) {
-		return fetchAccessToken(null, scope);
-    }
-
-    @Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
-    public String accessToken(String token, String scope) {
+    public String onBehalfOfAccessToken(String token, String scope) {
         return fetchAccessToken(token, scope);
     }
 
@@ -61,13 +48,9 @@ public class AzureToken {
         formData.add("client_secret", azureConfig.getAppClientSecret());
         formData.add("scope", scope);
 
-        if(token != null) {
-            formData.add("requested_token_use", ON_BEHALF_OF);
-            formData.add("grant_type", ON_BEHALF_OF_GRANT_TYPE);
-            formData.add("assertion", token);
-        } else {
-            formData.add("grant_type", CLIENT_CREDENTIALS_GRANT_TYPE);
-        }
+        formData.add("requested_token_use", ON_BEHALF_OF);
+        formData.add("grant_type", ON_BEHALF_OF_GRANT_TYPE);
+        formData.add("assertion", token);
 
         String responseJson = azureClient.post()
                 .body(BodyInserters.fromFormData(formData))

@@ -3,16 +3,18 @@ package no.nav.dokarkiv.core.security;
 import com.nimbusds.jwt.JWTParser;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+@Component
 public class TokenGrantValidator {
 
 	private static final String OID_CLAIM_NAME = "oid";
 
-	public static void validateOnBehalfOfAccessToken(String authHeader) {
+	public void validateOnBehalfOfAccessToken(String authHeader) {
 		try {
 			var token = StringUtils.split(authHeader, " ")[1];
 			var jwtToken = JWTParser.parse(token);

@@ -25,7 +25,7 @@ public class WebClientAzureAuthentication implements ExchangeFilterFunction {
         String tokenValue = getTokenValueFromAccessToken(request.headers().getFirst(HttpHeaders.AUTHORIZATION));
 
         return next.exchange(ClientRequest.from(request).headers((headers) ->
-                headers.setBearerAuth(azureToken.accessToken(tokenValue, scope))).build());
+                headers.setBearerAuth(azureToken.onBehalfOfAccessToken(tokenValue, scope))).build());
     }
 
     private String getTokenValueFromAccessToken(String authHeader) {
