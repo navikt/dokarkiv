@@ -185,6 +185,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "flex-testdata-generator",
+      "namespace": "flex",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "yrkesskade-melding-mottak",
       "namespace": "yrkesskade",
       "cluster": "dev-gcp"
