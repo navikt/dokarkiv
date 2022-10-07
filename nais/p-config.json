@@ -20,6 +20,7 @@
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv.intern.nav.no/hentdokument",
   "SAF_GRAPHQL_URL": "https://saf.nais.adeo.no/graphql",
+  "SAF_SCOPE": "api://prod-fss.teamdokumenthandtering.saf/.default",
   "DOKPRODMELLOMLAGER_PROJECTID": "teamdokumenthandteri-prod-a63b",
   "DOKPRODMELLOMLAGER_BUCKET": "dokprodmellomlager-prod",
   "DOKPRODMELLOMLAGER_KEYRING": "dokprodmellomlager-keyring",

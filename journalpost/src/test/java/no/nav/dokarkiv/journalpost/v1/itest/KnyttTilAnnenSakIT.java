@@ -44,6 +44,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -62,11 +64,10 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 	public static final String FAGSAKSYSTEM = "IT01";
 	public static final String TEMA = "SYK";
 
+
 	@BeforeEach
 	public void tearDown() {
-		WireMock.reset();
 		WireMock.resetAllRequests();
-		WireMock.removeAllMappings();
 	}
 
 	@ParameterizedTest
@@ -75,6 +76,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 			GENERELL_SAK + ",," // ved generell_sak skal hverken fagsak eller fagsakID være satt
 	})
 	public void knyttTilAnnenSakHappyPath(String sakstype, String fagsakId, String fagsaksystem) {
+		stubAzure();
 		abacPermit();
 		restStsToken();
 		happyAktoerIdStub();
@@ -82,6 +84,8 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("saf/safGraphQlResponseKildeJournalpostId1-happy.json")));
+
+		doNothing().when(tokenGrantValidator).validateOnBehalfOfAccessToken(anyString());
 
 		Long journalpostId = joarkRepository.save(createJournalpostWithHoveddokument()).getJournalpostId();
 		TestTransaction.flagForCommit();
@@ -140,6 +144,8 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 
 	@Test
 	public void knyttTilAnnenSakJournalpostNotFound() {
+
+		stubAzure();
 		abacPermit();
 		restStsToken();
 		happyAktoerIdStub();

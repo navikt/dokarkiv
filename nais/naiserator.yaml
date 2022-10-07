@@ -50,6 +50,8 @@ spec:
       value: {{ DOKARKIV_HENTDOKUMENT_BASEURL }}
     - name: SAF_GRAPHQL_URL
       value: {{ SAF_GRAPHQL_URL }}
+    - name: SAF_SCOPE
+      value: {{ SAF_SCOPE }}
     - name: APPD_NAME
       value: {{ APPD_NAME }}
     - name: DOKARKIV_DATABASE_POOLSIZE
