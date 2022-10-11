@@ -212,6 +212,16 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "eux-helloeu-app-q2",
+      "namespace": "eessibasis",
+      "cluster": "dev-fss"
+    },
+     {
+      "app": "eux-helloeu-app-q2",
+      "namespace": "eessibasis",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "eessi-pensjon-journalforing-q2",
       "namespace": "eessipensjon",
       "cluster": "dev-gcp"
