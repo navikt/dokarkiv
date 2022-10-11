@@ -37,7 +37,6 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALFORENDE_ENHET;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
-import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.FNR;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Component
@@ -78,7 +77,6 @@ public class JournalpostUpdater {
 
 		if (request.getUtsendingsKanal() != null) {
 			journalpost.setUtsendingskanal(UtsendingsKanalCode.valueOf(request.getUtsendingsKanal()));
-			tracker.setEndretFlagg(true);
 		}
 		if (request.getSettStatusEkspedert()) {
 			journalpost.setJournalstatus(JournalStatusCode.E);

@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator.validateJournalpost;
-import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator.validateOppdaterteFelt;
+import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator.validateJournalpostKanSetteStatusEkspedert;
 
 @Service
 @Named("oppdaterDistribusjonsinfo")
@@ -38,17 +37,18 @@ public class OppdaterDistribusjonsinfoService {
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(
                         String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
-        validateJournalpost(journalpost);
-        validateOppdaterteFelt(journalpost, request);
+        if (request.getSettStatusEkspedert()) {
+            validateJournalpostKanSetteStatusEkspedert(journalpost, request);
+        }
 
-        ChangeTracker changes = journalpostUpdater.updateFields(journalpost, request);
+        ChangeTracker trackStatusSattTilEkspedert = journalpostUpdater.updateFields(journalpost, request);
 
         joarkRepository.save(journalpost);
 
-        if(!changes.getChanges().isEmpty()) {
+        if(!trackStatusSattTilEkspedert.getChanges().isEmpty()) {
             aksjonsLoggService.lagreAksjonsLoggForJournalpost(
                     AksjonsTypeCode.EKSPEDER, journalpostId, null, "Journalposten fikk status 'ekspedert'",
-                    null, changes.getChanges());
+                    null, trackStatusSattTilEkspedert.getChanges());
         }
     }
 
