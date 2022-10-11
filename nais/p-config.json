@@ -288,6 +288,11 @@
       "app": "joarkadmin",
       "namespace": "teamdokumenthandtering",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "soknad-api",
+      "namespace": "aap",
+      "cluster": "prod-gcp"
     }
   ]
 }
