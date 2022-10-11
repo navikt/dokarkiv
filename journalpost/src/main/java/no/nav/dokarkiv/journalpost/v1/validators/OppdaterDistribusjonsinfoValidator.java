@@ -34,7 +34,7 @@ public class OppdaterDistribusjonsinfoValidator {
         }
     }
 
-    public static void validateJournalpost(Journalpost journalpost) {
+    public static void validateJournalpostKanSetteStatusEkspedert(Journalpost journalpost, OppdaterDistribusjonsinfoRequest request) {
         if (!JournalpostTypeCode.U.equals(journalpost.getJournalposttype())) {
             throw new KanIkkeOppdatereDistribusjonsinfoException(
                     String.format("Kan ikke ekspedere journalpost med journalposttype=%s", journalpost.getJournalposttype()));
@@ -48,9 +48,6 @@ public class OppdaterDistribusjonsinfoValidator {
             throw new KanIkkeOppdatereDistribusjonsinfoException(
                     "Kan ikke ekspedere journalpost med tom/feilregistrert saksrelasjon");
         }
-    }
-
-    public static void validateOppdaterteFelt(Journalpost journalpost, OppdaterDistribusjonsinfoRequest request) {
         if(journalpost.getUtsendingskanal() == null && request.getUtsendingsKanal() == null){
             throw new KanIkkeOppdatereDistribusjonsinfoException(
                     String.format("Utsendingskanal er ikke satt, hverken på input eller på journalpost med journalposttype=%s", journalpost.getJournalposttype()));

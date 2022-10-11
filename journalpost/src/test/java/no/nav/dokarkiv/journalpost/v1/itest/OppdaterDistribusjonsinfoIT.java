@@ -88,6 +88,20 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		ResponseEntity<String> finalizeResponse = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, finalizeRequestEntity, String.class);
 
 		assertEquals(HttpStatus.OK, finalizeResponse.getStatusCode());
+		OppdaterDistribusjonsinfoRequest zeroOppdaterDistribusjonsinfoRequest = OppdaterDistribusjonsinfoRequest.builder()
+				.utsendingsKanal(UtsendingsKanalCode.SDP.name())
+				.settStatusEkspedert(true)
+				.build();
+		var zeroOppdaterDistribusjonsinfoEntity = new HttpEntity<>(zeroOppdaterDistribusjonsinfoRequest, createHeadersWithServiceUserToken());
+
+		ResponseEntity<String> response0 = restTemplate.exchange(URL_JOURNALPOST + journalpostId + "/oppdaterDistribusjonsinfo", HttpMethod.PATCH, zeroOppdaterDistribusjonsinfoEntity, String.class);
+
+		assertEquals(HttpStatus.OK, response0.getStatusCode());
+
+		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+		assertEquals(JournalStatusCode.E, ferdigstiltJournalpost.getJournalstatus());
+
+		// Here the actual test begins
 
 		OffsetDateTime firstReadAtTimestamp = OffsetDateTime.now(clock);
 		OppdaterDistribusjonsinfoRequest firstOppdaterDistribusjonsinfoRequest = OppdaterDistribusjonsinfoRequest.builder()
@@ -105,7 +119,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		OffsetDateTime secondReadAtTimestamp = OffsetDateTime.now(clock);
 		OppdaterDistribusjonsinfoRequest secondOppdaterDistribusjonsinfoRequest = OppdaterDistribusjonsinfoRequest.builder()
 				.utsendingsKanal(UtsendingsKanalCode.SDP.name())
-				.settStatusEkspedert(true)
+				.settStatusEkspedert(false)
 				.datoLest(secondReadAtTimestamp)
 				.build();
 		var secondOppdaterDistribusjonsinfoEntity = new HttpEntity<>(secondOppdaterDistribusjonsinfoRequest, createHeadersWithServiceUserToken());
@@ -114,11 +128,10 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.OK, response2.getStatusCode());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost2 = joarkRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
-		assertEquals(JournalStatusCode.E, ferdigstiltJournalpost.getJournalstatus());
-		assertEquals(UtsendingsKanalCode.SDP, ferdigstiltJournalpost.getUtsendingskanal());
-		assertTrue(Duration.between(firstReadAtTimestamp.toInstant(), ferdigstiltJournalpost.getLestDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
+		assertEquals(UtsendingsKanalCode.SDP, ferdigstiltJournalpost2.getUtsendingskanal());
+		assertTrue(Duration.between(firstReadAtTimestamp.toInstant(), ferdigstiltJournalpost2.getLestDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
 
 		TestTransaction.end();
 	}
