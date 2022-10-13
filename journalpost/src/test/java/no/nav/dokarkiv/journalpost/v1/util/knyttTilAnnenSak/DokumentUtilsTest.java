@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class DokumentUtilsTest {
-	public static final String JOURNALPOST_ID = "111111111";
+	public static final long JOURNALPOST_ID = 111111111;
 	public static final String VARIANTFORMAT_ARKIV = ARKIV.name();
 	public static final String VARIANTFORMAT_SLADDET = SLADDET.name();
 

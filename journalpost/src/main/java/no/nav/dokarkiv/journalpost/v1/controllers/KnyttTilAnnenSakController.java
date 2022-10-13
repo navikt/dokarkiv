@@ -72,7 +72,7 @@ public class KnyttTilAnnenSakController {
 			log.warn("knyttTilAnnenSak har fått har fått kall for å knytte dokumenter til annen sak");
 			tokenGrantValidator.validateOnBehalfOfAccessToken(authorizationHeader);
 			knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, kildeJournalpostId, navConsumerId);
-			KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, kildeJournalpostId, authorizationHeader);
+			KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, Long.parseLong(kildeJournalpostId), authorizationHeader);
 
 			log.warn("knyttTilAnnenSak har knyttet til dokumenter til ny journalpost med journalpostId={}", knyttTilAnnenSakResponse.getNyJournalpostId());
 

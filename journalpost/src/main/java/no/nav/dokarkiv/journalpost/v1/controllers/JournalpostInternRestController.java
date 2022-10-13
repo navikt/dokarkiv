@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.NavHeaders;
-import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
+import no.nav.dokarkiv.core.exceptions.ConsumerUnauthorizedDokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
@@ -12,7 +12,6 @@ import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
-import no.nav.dokarkiv.journalpost.v1.services.MottaDokumentUtgaaendeSkanningService;
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
@@ -72,13 +71,17 @@ public class JournalpostInternRestController {
 			@RequestBody TilknyttVedleggRequest request) {
 		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
 		try {
-			assertThatConsumerIsSrvdokarkivproxy(auth);
-
 			validateId(journalpostId, "journalpostId");
+			long journalpostIdLong = Long.parseLong(journalpostId);
 
 			log.info("tilknyttVedlegg har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
 
-			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(Long.parseLong(journalpostId), request);
+			List<FeiledeDokumenter> feiledeDokumenterList;
+			if (consumerIsNotSrvdokarkivproxy(auth)) {
+				feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(journalpostIdLong, request, auth);
+			} else {
+				feiledeDokumenterList = tilknyttVedleggService.tilknyttVedleggWithoutQueryingSaf(journalpostIdLong, request);
+			}
 
 			if (feiledeDokumenterList.isEmpty()) {
 				return ResponseEntity
@@ -132,9 +135,12 @@ public class JournalpostInternRestController {
 	}
 
 	private void assertThatConsumerIsSrvdokarkivproxy(String auth) {
-		if (!SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
-			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
+		if (consumerIsNotSrvdokarkivproxy(auth)) {
+			throw new ConsumerUnauthorizedDokarkivFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
 		}
 	}
 
+	private static boolean consumerIsNotSrvdokarkivproxy(String auth) {
+		return !SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0]);
+	}
 }

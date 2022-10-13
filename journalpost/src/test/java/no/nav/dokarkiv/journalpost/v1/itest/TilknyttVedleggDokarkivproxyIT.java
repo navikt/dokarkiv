@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
-public class TilknyttVedleggIT extends AbstractJournalpostIT {
+public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 
 	private static final String UGYLDIG_JOURNALPOST = "12312312312";
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";

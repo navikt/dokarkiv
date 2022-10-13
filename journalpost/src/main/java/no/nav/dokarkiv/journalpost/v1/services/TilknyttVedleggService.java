@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -8,6 +10,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.exceptions.ConsumerUnauthorizedDokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -45,12 +48,15 @@ public class TilknyttVedleggService {
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final TilknyttVedleggValidator tilknyttVedleggValidator;
 	private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator;
+	private final AccessLookupJournalpost accessLookupJournalpost;
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
+	public static final String BEARER = "Bearer ";
 
 	@Inject
-	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
+	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AccessLookupJournalpost accessLookupJournalpost) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
+		this.accessLookupJournalpost = accessLookupJournalpost;
 		this.shallowDokumentInfoCopier = new ShallowDokumentInfoCopier();
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
@@ -58,7 +64,28 @@ public class TilknyttVedleggService {
 		this.tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
 	}
 
-	public List<FeiledeDokumenter> tilknyttVedlegg(Long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
+	@Deprecated
+	public List<FeiledeDokumenter> tilknyttVedleggWithoutQueryingSaf(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
+		return tilknyttVedlegg(targetJournalpostId, tilknyttVedleggRequest);
+	}
+
+	public List<FeiledeDokumenter> tilknyttVedlegg(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest, String auth) {
+		try {
+			String tilknyttetAvNavn = JWT.decode(auth.replace(BEARER, "")).getSubject();
+
+			// For hvert vedlegg må saksbehandlers tilgang sjekkes i saf med 🎷OBO-tokenet 🎷
+			var accessControlledDocuments = accessLookupJournalpost.checkDocumentsCanBeAccessedByActor(targetJournalpostId, tilknyttVedleggRequest, auth);
+
+			List<FeiledeDokumenter> failedDocuments = tilknyttVedlegg(targetJournalpostId, new TilknyttVedleggRequest(tilknyttetAvNavn, accessControlledDocuments.okDocuments()));
+			failedDocuments.addAll(accessControlledDocuments.failedDocuments());
+			return failedDocuments;
+		} catch (JWTDecodeException e) {
+			throw new ConsumerUnauthorizedDokarkivFunctionalException("Invalid OBO-token 🎶🎷");
+		}
+	}
+
+
+	private List<FeiledeDokumenter> tilknyttVedlegg(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
 
 		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
 
@@ -246,4 +273,5 @@ public class TilknyttVedleggService {
 		}
 		return valid;
 	}
+
 }
