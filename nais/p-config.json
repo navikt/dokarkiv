@@ -265,6 +265,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "pensjon-selvbetjening-soknad-alder-backend",
+      "namespace": "pensjonselvbetjening",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "esyfovarsel",
       "namespace": "team-esyfo",
       "cluster": "prod-gcp"

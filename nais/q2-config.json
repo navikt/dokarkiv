@@ -252,6 +252,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "pensjon-selvbetjening-soknad-alder-backend",
+      "namespace": "pensjonselvbetjening",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "doksikkerhetsnett",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"
