@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -10,12 +9,12 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.exceptions.ConsumerUnauthorizedDokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.security.TokenGrantValidator;
 import no.nav.dokarkiv.journalpost.v1.api.ArsakKode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
@@ -49,14 +48,16 @@ public class TilknyttVedleggService {
 	private final TilknyttVedleggValidator tilknyttVedleggValidator;
 	private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator;
 	private final AccessLookupJournalpost accessLookupJournalpost;
+	private final TokenGrantValidator tokenGrantValidator;
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
 	public static final String BEARER = "Bearer ";
 
 	@Inject
-	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AccessLookupJournalpost accessLookupJournalpost) {
+	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AccessLookupJournalpost accessLookupJournalpost, TokenGrantValidator tokenGrantValidator) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.accessLookupJournalpost = accessLookupJournalpost;
+		this.tokenGrantValidator = tokenGrantValidator;
 		this.shallowDokumentInfoCopier = new ShallowDokumentInfoCopier();
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
@@ -70,18 +71,18 @@ public class TilknyttVedleggService {
 	}
 
 	public List<FeiledeDokumenter> tilknyttVedlegg(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest, String auth) {
-		try {
-			String tilknyttetAvNavn = JWT.decode(auth.replace(BEARER, "")).getSubject();
+		JWTClaimsSet tokenClaims = tokenGrantValidator.validateOnBehalfOfAccessToken(auth);
+		String tilknyttetAvNavn = tokenClaims.getSubject();
 
-			// For hvert vedlegg må saksbehandlers tilgang sjekkes i saf med 🎷OBO-tokenet 🎷
-			var accessControlledDocuments = accessLookupJournalpost.checkDocumentsCanBeAccessedByActor(targetJournalpostId, tilknyttVedleggRequest, auth);
+		// For hvert vedlegg må saksbehandlers tilgang sjekkes i saf med 🎷OBO-tokenet 🎷
+		var accessControlledDocuments = accessLookupJournalpost.checkDocumentsCanBeAccessedByActor(targetJournalpostId, tilknyttVedleggRequest, auth);
 
-			List<FeiledeDokumenter> failedDocuments = tilknyttVedlegg(targetJournalpostId, new TilknyttVedleggRequest(tilknyttetAvNavn, accessControlledDocuments.okDocuments()));
-			failedDocuments.addAll(accessControlledDocuments.failedDocuments());
-			return failedDocuments;
-		} catch (JWTDecodeException e) {
-			throw new ConsumerUnauthorizedDokarkivFunctionalException("Invalid OBO-token 🎶🎷");
+		List<FeiledeDokumenter> failedDocuments = accessControlledDocuments.failedDocuments();
+		if (!accessControlledDocuments.okDocuments().isEmpty()) {
+			failedDocuments.addAll(tilknyttVedlegg(targetJournalpostId, new TilknyttVedleggRequest(tilknyttetAvNavn, accessControlledDocuments.okDocuments())));
 		}
+
+		return failedDocuments;
 	}
 
 

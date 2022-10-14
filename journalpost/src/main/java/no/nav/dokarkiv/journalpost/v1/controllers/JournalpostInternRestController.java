@@ -36,6 +36,7 @@ import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
+import static no.nav.dokarkiv.core.util.DecodeUtils.isBasicAuth;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
 /**
@@ -77,7 +78,7 @@ public class JournalpostInternRestController {
 			log.info("tilknyttVedlegg har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
 
 			List<FeiledeDokumenter> feiledeDokumenterList;
-			if (consumerIsNotSrvdokarkivproxy(auth)) {
+			if (consumerIsNotOldSchoolSrvdokarkivproxy(auth)) {
 				feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(journalpostIdLong, request, auth);
 			} else {
 				feiledeDokumenterList = tilknyttVedleggService.tilknyttVedleggWithoutQueryingSaf(journalpostIdLong, request);
@@ -114,7 +115,7 @@ public class JournalpostInternRestController {
 			@RequestHeader(value = NavHeaders.NAV_USER_ID) String userId,
 			@RequestParam String kildeJournalpostId) {
 		try {
-			assertThatConsumerIsSrvdokarkivproxy(auth);
+			assertThatConsumerIsOldSchoolSrvdokarkivproxy(auth);
 
 			MDC.put(MDC_REQUEST_ID, "rjoark203");
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
@@ -134,13 +135,13 @@ public class JournalpostInternRestController {
 		}
 	}
 
-	private void assertThatConsumerIsSrvdokarkivproxy(String auth) {
-		if (consumerIsNotSrvdokarkivproxy(auth)) {
+	private void assertThatConsumerIsOldSchoolSrvdokarkivproxy(String auth) {
+		if (consumerIsNotOldSchoolSrvdokarkivproxy(auth)) {
 			throw new ConsumerUnauthorizedDokarkivFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
 		}
 	}
 
-	private static boolean consumerIsNotSrvdokarkivproxy(String auth) {
-		return !SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0]);
+	private static boolean consumerIsNotOldSchoolSrvdokarkivproxy(String auth) {
+		return !isBasicAuth(auth) || !SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0]);
 	}
 }
