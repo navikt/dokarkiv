@@ -319,6 +319,11 @@
       "app": "pdl-fullmakt",
       "namespace": "pdl",
       "cluster": "dev-fss"
-    }
+    },
+	{
+	  "app": "gosys-q1",
+	  "namespace": "isa",
+	  "cluster": "dev-fss"
+	}
   ]
 }
