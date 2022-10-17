@@ -311,10 +311,10 @@
       "namespace": "traktor",
       "cluster": "prod-fss"
     },
-	{
-	  "app": "gosys-q2",
-	  "namespace": "isa",
-	  "cluster": "dev-fss"
-	}
+    {
+      "app": "gosys-q2",
+      "namespace": "isa",
+      "cluster": "dev-fss"
+    }
   ]
 }

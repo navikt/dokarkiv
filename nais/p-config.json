@@ -299,10 +299,10 @@
       "namespace": "aap",
       "cluster": "prod-gcp"
     },
-	{
-	  "app": "gosys",
-	  "namespace": "isa",
-	  "cluster": "prod-fss"
-	}
+    {
+      "app": "gosys",
+      "namespace": "isa",
+      "cluster": "prod-fss"
+    }
   ]
 }
