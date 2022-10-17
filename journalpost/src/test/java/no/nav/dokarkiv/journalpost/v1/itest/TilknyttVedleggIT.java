@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.journalpost.v1.api.ArsakKode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
@@ -25,11 +26,14 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static java.util.stream.Collectors.joining;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.journalpost.v1.util.FunctionalMatcher.where;
@@ -39,14 +43,12 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-/**
- * @author Olav Røstvold Thorsen, Visma Consulting.
- */
 public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private static final String UGYLDIG_JOURNALPOST = "12312312312";
@@ -63,13 +65,13 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldTilknytteArkivVedleggTilJournalpost() {
-		stubSafResponse("saf/safGraphQlResponseKildeJournalpostId1-happy.json");
 		Journalpost targetJournalpost = createJournalpostArkiv();
 		Journalpost sourceJournalpost = createJournalpostArkiv();
 		sourceJournalpost.setJournalstatus(JournalStatusCode.J);
 		Long targetJournalpostId = saveJournalpost(targetJournalpost).getJournalpostId();
 		Long sourcejournalpostId = saveJournalpost(sourceJournalpost).getJournalpostId();
 
+		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost));
 		endTransaction();
 
 
@@ -93,18 +95,21 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		Journalpost journalpostTilknyttetVedlegg = joarkRepository.findById(targetJournalpostId).get();
 		DokumentInfo sourceDokumentInfo = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		DokumentInfo dokumentInfoKopi = journalpostTilknyttetVedlegg.getJournalpostDokumentInfoRelasjoner()
-				.stream()
-				.filter(j -> j.getDokumentInfo().getDokumentInfoId().equals(dokumentInfoId)).findAny().get().getDokumentInfo();
 
-		assertThat(responseEntity.getStatusCode(), is(OK));
-		assertEquals(sourceDokumentInfo.getDokumentInfoId(), dokumentInfoKopi.getDokumentInfoId());
+ 		assertThat(responseEntity.getStatusCode(), is(OK));
+
+		Optional<DokumentInfo> dokumentInfoKopi = journalpostTilknyttetVedlegg.getJournalpostDokumentInfoRelasjoner()
+				.stream()
+				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
+				.filter(j -> j.getDokumentInfoId().equals(dokumentInfoId)).findAny();
+		assertTrue(dokumentInfoKopi.isPresent());
+		assertEquals(sourceDokumentInfo.getDokumentInfoId(), dokumentInfoKopi.get().getDokumentInfoId());
+
 		TestTransaction.end();
 	}
 
 	@Test
 	public void shouldTilknytteFlereVedleggTilJournalpost() {
-		stubSafResponse("saf/safGraphQlResponseKildeJournalpostId1-happy.json");
 		Journalpost targetJournalpost = createJournalpostArkiv();
 		Journalpost sourceJournalpost1 = createJournalpostSladdet();
 		Journalpost sourceJournalpost2 = createJournalpostSladdet();
@@ -115,6 +120,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId2 = saveJournalpost(sourceJournalpost2).getJournalpostId();
 		Long sourceJournalpostId3 = saveJournalpost(sourceJournalpost3).getJournalpostId();
 
+		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost1, sourceJournalpost2, sourceJournalpost3));
 		endTransaction();
 
 		Long sourceDokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon()
@@ -201,16 +207,16 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldTilknytte2av3VedleggTilJournalpost() {
-		stubSafResponse("saf/safGraphQlResponseKildeJournalpostId1-happy.json");
 		Journalpost journalpostVedlegg = createJournalpostArkiv();
 		Journalpost sourceJournalpost1 = createJournalpostSladdet();
 		Journalpost sourceJournalpost2 = createJournalpostSladdet();
-		Journalpost sourcejJournalpost3 = createJournalpostArkiv();
+		Journalpost sourceJournalpost3 = createJournalpostArkiv();
 		Long journalpostIdVedlegg = saveJournalpost(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId1 = saveJournalpost(sourceJournalpost1).getJournalpostId();
 		Long sourceJournalpostId2 = saveJournalpost(sourceJournalpost2).getJournalpostId();
-		Long sourceJournalpostId3 = saveJournalpost(sourcejJournalpost3).getJournalpostId();
+		Long sourceJournalpostId3 = saveJournalpost(sourceJournalpost3).getJournalpostId();
 
+		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost1, sourceJournalpost2, sourceJournalpost3));
 		endTransaction();
 
 		Long sourceDokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon()
@@ -219,7 +225,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceDokumentInfoId2 = sourceJournalpost2.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getDokumentInfoId();
-		Long sourceDokumentInfoId3 = sourcejJournalpost3.findHoveddokumentDokumentInfoRelasjon()
+		Long sourceDokumentInfoId3 = sourceJournalpost3.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getDokumentInfoId();
 
@@ -291,17 +297,17 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldReturnForbiddenForWrongConsumer() {
-		stubSafResponse("saf/safGraphQlResponseKildeJournalpostId1-happy.json");
 		Journalpost journalpostVedlegg = createJournalpostArkiv();
 		Journalpost sourceJournalpost = createJournalpostSladdet();
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
+		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost));
 		endTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
-		// TODO: Denne skal feile
+		// TODO: Denne skal ha en token som ikke har tilgang
 		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId();
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(createDokumentVedleggList(sourceJournalpostId, dokumentInfoId
@@ -342,7 +348,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldReturnNotFoundForJournalpost() {
-		stubSafResponse("saf/safGraphQlResponseJournalpostIkkeFunnet.json");
+		stubSafResponse(generateSafResponseBodyOk());
 
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
 
@@ -360,12 +366,12 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldReturnConflictForJournalpostWrongStatus() {
-		stubSafResponse("saf/safGraphQlResponseKildeJournalpostId1-happy.json");
 		Journalpost sourceJournalpost = createJournalpostSladdet();
 		sourceJournalpost.setJournalstatus(JournalStatusCode.M);
 		Long journalpostIdVedlegg = joarkRepository.save(sourceJournalpost).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
+		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost));
 		endTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
@@ -385,13 +391,13 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldReturnFeiletDokumentListeAarsakKodeUgyldigStatus() {
-		stubSafResponse("saf/safGraphQlResponseKildeJournalpostId1-happy.json");
 		Journalpost journalpostVedlegg = createJournalpostArkiv();
 		Journalpost sourceJournalpost = createJournalpostSladdet();
 		sourceJournalpost.setJournalstatus(JournalStatusCode.M);
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
+		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost));
 		endTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
@@ -407,9 +413,8 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
-		// må legge inn et item med riktig id, men sånn at det trigger ugyldig status
 		assertThat(responseEntity.getBody().getFeiledeDokumenter(), hasItem(allOf(
-				where(dok -> Long.parseLong(((FeiledeDokumenter)dok).getDokumentInfoId()), is(sourceJournalpostId)),
+				where(dok -> Long.parseLong(((FeiledeDokumenter)dok).getDokumentInfoId()), is(dokumentInfoId)),
 				where(FeiledeDokumenter::getArsakKode, is(ArsakKode.UGYLDIG_STATUS))
 		)));
 		TestTransaction.end();
@@ -417,12 +422,12 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldReturnFeiletDokumentListeAarsakKodeIkkeFunnet() {
-		stubSafResponse("saf/safGraphQlResponseJournalpostIkkeFunnet.json");
 		Journalpost journalpostVedlegg = createJournalpostArkiv();
 		Journalpost sourceJournalpost = createJournalpostSladdet();
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
+		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost));
 		endTransaction();
 
 		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId();
@@ -544,6 +549,41 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		stubFor(post(urlMatching("/safgraphql"))
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile(response)));
+						.withBody(response)));
 	}
+
+	private static String generateSafResponseBodyOk(Journalpost... journalposts) {
+		return generateSafResponseBody(Stream.of(journalposts)
+				.map(Journalpost::findHoveddokumentDokumentInfoRelasjon).map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
+				.map(DokumentInfo::getDokumentInfoId)
+				.map(id -> new SimulertDokumentStatus(id, true, "ARKIV"))
+				.toArray(SimulertDokumentStatus[]::new));
+	}
+
+	private static String generateSafResponseBody(SimulertDokumentStatus... ids) {
+		return """
+  			{
+  			"data": {
+  			  "journalpost": {
+  			    "dokumenter": [
+  			    """ +
+				Stream.of(ids)
+						.map(simulertDokument ->
+								String.format(
+										"""
+										  {
+										  "dokumentInfoId": "%d",
+										  "dokumentvarianter": [
+											{
+											  "saksbehandlerHarTilgang": %b,
+											  "variantformat": "%s"
+											}
+										  ]
+										}""", simulertDokument.id, simulertDokument.saksbehandlerHarTilgang, simulertDokument.variantformat))
+						.collect(joining(","))
+				+ "] }}}";
+	}
+
+	record SimulertDokumentStatus(long id, boolean saksbehandlerHarTilgang, String variantformat) {}
+
 }

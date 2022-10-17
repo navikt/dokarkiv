@@ -58,7 +58,7 @@ public class AccessLookupJournalpost {
 	private SafJournalpostTo.DokumentInfo getDokumentInfo(SafJournalpostTo safJournalpostTo, String dokumentInfoId) {
 		return safJournalpostTo.getDokumenter()
 				.stream()
-				.filter(dokumentInfo -> dokumentInfoId.equals(dokumentInfo.getDokumentInfoId()))
+				.filter(dokument -> dokumentInfoId.equals(dokument.getDokumentInfoId()))
 				.findAny()
 				.orElse(null);
 	}

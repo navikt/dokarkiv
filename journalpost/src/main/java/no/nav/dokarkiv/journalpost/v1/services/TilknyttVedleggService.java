@@ -74,13 +74,11 @@ public class TilknyttVedleggService {
 		JWTClaimsSet tokenClaims = tokenGrantValidator.validateOnBehalfOfAccessToken(auth);
 		String tilknyttetAvNavn = tokenClaims.getSubject();
 
-		// For hvert vedlegg må saksbehandlers tilgang sjekkes i saf med 🎷OBO-tokenet 🎷
 		var accessControlledDocuments = accessLookupJournalpost.checkDocumentsCanBeAccessedByActor(targetJournalpostId, tilknyttVedleggRequest, auth);
 
 		List<FeiledeDokumenter> failedDocuments = accessControlledDocuments.failedDocuments();
-		if (!accessControlledDocuments.okDocuments().isEmpty()) {
-			failedDocuments.addAll(tilknyttVedlegg(targetJournalpostId, new TilknyttVedleggRequest(tilknyttetAvNavn, accessControlledDocuments.okDocuments())));
-		}
+
+		failedDocuments.addAll(tilknyttVedlegg(targetJournalpostId, new TilknyttVedleggRequest(tilknyttetAvNavn, accessControlledDocuments.okDocuments())));
 
 		return failedDocuments;
 	}
