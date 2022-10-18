@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.exceptions.ConsumerUnauthorizedDokarkivFunctionalException;
 import no.nav.dokarkiv.journalpost.v1.api.ArsakKode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
@@ -53,8 +54,8 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private static final String UGYLDIG_JOURNALPOST = "12312312312";
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
-	public static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
-	private static final String ACTOR = "herr. saksbehandler";
+	private static final String ACTOR = "saks-behandler";
+	private static final String CONSUMER = "ikkesrvdokarkivproxy";
 
 	@BeforeEach
 	void setup() {
@@ -83,7 +84,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.dokumentInfoId(dokumentInfoId.toString())
 				.build());
 
-		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId();
+		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId(CONSUMER);
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
@@ -138,7 +139,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId2, sourceDokumentInfoId2.toString()));
 		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId3, sourceDokumentInfoId3.toString()));
 
-		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId();
+		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId(CONSUMER);
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
@@ -235,7 +236,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId2, sourceDokumentInfoId2.toString()));
 		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId3, sourceDokumentInfoId3.toString()));
 
-		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId();
+		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId(CONSUMER);
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
@@ -303,12 +304,12 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
 		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost));
+		when(tokenGrantValidator.validateOnBehalfOfAccessToken(any())).thenThrow(new ConsumerUnauthorizedDokarkivFunctionalException("Access Token is invalid"));
 		endTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
-		// TODO: Denne skal ha en token som ikke har tilgang
-		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId();
+		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId(CONSUMER);
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(createDokumentVedleggList(sourceJournalpostId, dokumentInfoId
 				.toString()));
@@ -321,38 +322,12 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	@Disabled("No longer relevant?")
-	public void shouldReturnInvalidRequestForMissingTilknytetAvNavn() {
-		stubSafResponse("saf/safGraphQlResponseKildeJournalpostId1-happy.json");
-		Journalpost journalpostVedlegg = createJournalpostArkiv();
-		Journalpost sourceJournalpost = createJournalpostSladdet();
-		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
-		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
-
-		endTransaction();
-
-		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
-
-		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId();
-
-		TilknyttVedleggRequest request = createTilknyttVedleggRequestWithoutTilknyttetAvNavn(
-				createDokumentVedleggList(sourceJournalpostId, dokumentInfoId.toString())
-		);
-
-		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-		var responseEntity= restTemplate.exchange(
-				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-		TestTransaction.end();
-	}
-
-	@Test
 	public void shouldReturnNotFoundForJournalpost() {
 		stubSafResponse(generateSafResponseBodyOk());
 
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
 
-		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId();
+		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId(CONSUMER);
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
@@ -376,7 +351,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
-		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId();
+		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId(CONSUMER);
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(createDokumentVedleggList(sourceJournalpostId, dokumentInfoId
 				.toString()));
@@ -402,7 +377,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
-		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId();
+		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId(CONSUMER);
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(createDokumentVedleggList(sourceJournalpostId, dokumentInfoId
 				.toString()));
@@ -430,7 +405,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost));
 		endTransaction();
 
-		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId();
+		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId(CONSUMER);
 
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(createDokumentVedleggList(sourceJournalpostId, "200000345"));
 
@@ -459,7 +434,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertNull(dokumentInfoKopi.getEndretAvNavn());
 		assertEquals(sourceDokumentInfo.getKassertAvNavn(), dokumentInfoKopi.getKassertAvNavn());
 		assertEquals(sourceDokumentInfo.getDatoKassert(), dokumentInfoKopi.getDatoKassert());
-		assertThat(dokumentInfoKopi.getOpprettetKildeNavn(), is(ACTOR));
+		assertThat(dokumentInfoKopi.getOpprettetKildeNavn(), is(CONSUMER));
 		assertNull(dokumentInfoKopi.getEndretKildeNavn());
 
 	}
@@ -470,7 +445,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertEquals(sourceFilDetaljer.getOnDemandInstans(), filDetaljerKopi.getOnDemandInstans());
 		assertEquals(sourceFilDetaljer.getMetaforceInstanceId(), filDetaljerKopi.getMetaforceInstanceId());
 		assertThat(filDetaljerKopi.getVariantFormat(), is(VariantFormatCode.ARKIV));
-		assertThat(filDetaljerKopi.getOpprettetKildeNavn(), is(ACTOR));
+		assertThat(filDetaljerKopi.getOpprettetKildeNavn(), is(CONSUMER));
 		assertEquals(sourceFilDetaljer.getBatchNavn(), filDetaljerKopi.getBatchNavn());
 		assertEquals(sourceFilDetaljer.getFilnavn(), filDetaljerKopi.getFilnavn());
 		assertEquals(sourceFilDetaljer.getFilstorrelse(), filDetaljerKopi.getFilstorrelse());
@@ -480,7 +455,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private void assertDokumentFil(DokumentFil sourceDokumentFil, DokumentFil dokumentFilKopi) {
 		assertEquals(new String(sourceDokumentFil.getFil()), new String(dokumentFilKopi.getFil()));
-		assertThat(dokumentFilKopi.getOpprettetKildeNavn(), is(ACTOR));
+		assertThat(dokumentFilKopi.getOpprettetKildeNavn(), is(CONSUMER));
 	}
 
 	private TilknyttVedleggRequest createTilknyttVedleggRequest(List<DokumentVedlegg> dokumentVedleggList) {

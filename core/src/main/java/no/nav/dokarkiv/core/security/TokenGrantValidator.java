@@ -3,6 +3,8 @@ package no.nav.dokarkiv.core.security;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.exceptions.ConsumerUnauthorizedDokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,7 @@ import java.text.ParseException;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+@Slf4j
 @Component
 public class TokenGrantValidator {
 
@@ -25,17 +28,18 @@ public class TokenGrantValidator {
 			var sub = claimsSet.getSubject();
 
 			if (isBlank(oid)) {
-				throw new InputValideringFeiletException("Access Token mangler OID claim");
+				throw new ConsumerUnauthorizedDokarkivFunctionalException("Access Token mangler OID claim");
 			}
 			if (isBlank(sub)) {
-				throw new InputValideringFeiletException("Access Token mangler Subject claim");
+				throw new ConsumerUnauthorizedDokarkivFunctionalException("Access Token mangler Subject claim");
 			}
 			if (StringUtils.equals(oid, sub)) {
-				throw new InputValideringFeiletException("Access Token er ikke et On-Behalf-Of token");
+				throw new ConsumerUnauthorizedDokarkivFunctionalException("Access Token er ikke et On-Behalf-Of token");
 			}
 			return claimsSet;
 		} catch (ParseException e) {
-			throw new InputValideringFeiletException(String.format("En feil oppsto ved parsing av Access Token. Feilmelding=%s", e.getMessage()), e);
+			log.warn("En feil oppsto ved parsing av Access Token. Feilmelding={}", e.getMessage(), e);
+			throw new ConsumerUnauthorizedDokarkivFunctionalException("Access Token er ugyldig");
 		}
 	}
 }

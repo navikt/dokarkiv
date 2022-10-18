@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.NavHeaders;
+import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
 import no.nav.dokarkiv.core.exceptions.ConsumerUnauthorizedDokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
@@ -137,7 +138,7 @@ public class JournalpostInternRestController {
 
 	private void assertThatConsumerIsOldSchoolSrvdokarkivproxy(String auth) {
 		if (consumerIsNotOldSchoolSrvdokarkivproxy(auth)) {
-			throw new ConsumerUnauthorizedDokarkivFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
+			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
 		}
 	}
 

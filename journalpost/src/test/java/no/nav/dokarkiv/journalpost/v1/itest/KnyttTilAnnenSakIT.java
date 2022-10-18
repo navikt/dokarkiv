@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.nimbusds.jwt.JWTClaimsSet;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -86,7 +87,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("saf/safGraphQlResponseKildeJournalpostId1-happy.json")));
 
-		when(tokenGrantValidator.validateOnBehalfOfAccessToken(anyString())).thenReturn(null);
+		when(tokenGrantValidator.validateOnBehalfOfAccessToken(anyString())).thenReturn(new JWTClaimsSet.Builder().subject("saks-behandler").build());
 
 		Long journalpostId = joarkRepository.save(createJournalpostWithHoveddokument()).getJournalpostId();
 		TestTransaction.flagForCommit();
