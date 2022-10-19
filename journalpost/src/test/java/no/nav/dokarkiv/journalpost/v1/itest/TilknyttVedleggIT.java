@@ -88,7 +88,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST_INTERN + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
+				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 
 		endTransaction();
 
@@ -143,7 +143,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST_INTERN + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		endTransaction();
 
@@ -240,7 +240,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		endTransaction();
 
@@ -314,7 +314,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
+				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
 		TestTransaction.end();
 	}
@@ -331,7 +331,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST_INTERN + UGYLDIG_JOURNALPOST + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
+				URL_JOURNALPOST + UGYLDIG_JOURNALPOST + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 		TestTransaction.end();
@@ -356,7 +356,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
+				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.CONFLICT));
 		TestTransaction.end();
@@ -382,7 +382,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
@@ -409,7 +409,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(ArsakKode.IKKE_FUNNET));

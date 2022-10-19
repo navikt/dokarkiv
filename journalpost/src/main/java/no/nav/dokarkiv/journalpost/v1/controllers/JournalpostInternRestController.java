@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.exceptions.ConsumerIsNotSrvDokarkivProxyFunctionalException;
-import no.nav.dokarkiv.core.exceptions.ConsumerUnauthorizedDokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
@@ -71,19 +70,16 @@ public class JournalpostInternRestController {
 			@PathVariable String journalpostId,
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@RequestBody TilknyttVedleggRequest request) {
-		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
+		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg_dokarkivproxy");
 		try {
+			assertThatConsumerIsOldSchoolSrvdokarkivproxy(auth);
+
 			validateId(journalpostId, "journalpostId");
 			long journalpostIdLong = Long.parseLong(journalpostId);
 
 			log.info("tilknyttVedlegg har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
 
-			List<FeiledeDokumenter> feiledeDokumenterList;
-			if (consumerIsNotOldSchoolSrvdokarkivproxy(auth)) {
-				feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(journalpostIdLong, request, auth);
-			} else {
-				feiledeDokumenterList = tilknyttVedleggService.tilknyttVedleggWithoutQueryingSaf(journalpostIdLong, request);
-			}
+			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedleggWithoutQueryingSaf(journalpostIdLong, request);
 
 			if (feiledeDokumenterList.isEmpty()) {
 				return ResponseEntity
@@ -137,12 +133,9 @@ public class JournalpostInternRestController {
 	}
 
 	private void assertThatConsumerIsOldSchoolSrvdokarkivproxy(String auth) {
-		if (consumerIsNotOldSchoolSrvdokarkivproxy(auth)) {
+		if (!isBasicAuth(auth) || !SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
 			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
 		}
 	}
 
-	private static boolean consumerIsNotOldSchoolSrvdokarkivproxy(String auth) {
-		return !isBasicAuth(auth) || !SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0]);
-	}
 }
