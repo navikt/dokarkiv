@@ -35,9 +35,9 @@ public class UtsendingsInfo {
 	private Journalpost journalpost;
 
 	@Embedded
-	private FysiskPostAdresse fysiskPostAdresse;
+	private FysiskPostadresse fysiskPostadresse;
 	@Embedded
-	private SikkerDigitalPostAdresse sikkerDigitalPostAdresse;
+	private DigitalPostadresse digitalPostadresse;
 	@Embedded
 	private NavNoVarsling navNoVarsling;
 
@@ -92,7 +92,7 @@ public class UtsendingsInfo {
 	@NoArgsConstructor
 	class NavNoVarsling  {
 		@Column(name = "digital_kontaktinformasjon")
-		private String navDigitalKontakinformasjon;
+		private String navDigitalKontaktinformasjon;
 		@Column(name = "varslingstekst")
 		private String navVarslingstekst;
 	}

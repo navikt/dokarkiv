@@ -12,8 +12,8 @@ CREATE TABLE t_utsendings_info (
     digital_kontaktinformasjon VARCHAR(200),
     varslingstekst             VARCHAR(400),
 
-    CONSTRAINT pk_sak PRIMARY KEY (utsendings_info_id),
-    CONSTRAINT FOREIGN KEY journalpost_id REFERENCES t_journalpost
+    CONSTRAINT pk_utsendings_info PRIMARY KEY (utsendings_info_id),
+    CONSTRAINT FOREIGN KEY journalpost_id REFERENCES t_journalpost(journalpost_id)
 );
 
 CREATE SEQUENCE seq_utsendings_info;
