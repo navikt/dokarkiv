@@ -16,7 +16,6 @@ import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -72,9 +71,8 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long targetJournalpostId = saveJournalpost(targetJournalpost).getJournalpostId();
 		Long sourcejournalpostId = saveJournalpost(sourceJournalpost).getJournalpostId();
 
-		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost));
+		generateAndStubSafResponse(sourceJournalpost);
 		endTransaction();
-
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -89,7 +87,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-		var responseEntity= restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 
 		endTransaction();
@@ -97,7 +95,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Journalpost journalpostTilknyttetVedlegg = joarkRepository.findById(targetJournalpostId).get();
 		DokumentInfo sourceDokumentInfo = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
- 		assertThat(responseEntity.getStatusCode(), is(OK));
+		assertThat(responseEntity.getStatusCode(), is(OK));
 
 		Optional<DokumentInfo> dokumentInfoKopi = journalpostTilknyttetVedlegg.getJournalpostDokumentInfoRelasjoner()
 				.stream()
@@ -121,7 +119,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId2 = saveJournalpost(sourceJournalpost2).getJournalpostId();
 		Long sourceJournalpostId3 = saveJournalpost(sourceJournalpost3).getJournalpostId();
 
-		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost1, sourceJournalpost2, sourceJournalpost3));
+		generateAndStubSafResponse(sourceJournalpost1, sourceJournalpost2, sourceJournalpost3);
 		endTransaction();
 
 		Long sourceDokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon()
@@ -217,7 +215,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId2 = saveJournalpost(sourceJournalpost2).getJournalpostId();
 		Long sourceJournalpostId3 = saveJournalpost(sourceJournalpost3).getJournalpostId();
 
-		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost1, sourceJournalpost2, sourceJournalpost3));
+		generateAndStubSafResponse(sourceJournalpost1, sourceJournalpost2, sourceJournalpost3);
 		endTransaction();
 
 		Long sourceDokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon()
@@ -303,7 +301,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
-		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost));
+		generateAndStubSafResponse(sourceJournalpost);
 		when(tokenGrantValidator.validateOnBehalfOfAccessToken(any())).thenThrow(new ConsumerUnauthorizedDokarkivFunctionalException("Access Token is invalid"));
 		endTransaction();
 
@@ -315,7 +313,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.toString()));
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-		var responseEntity= restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
 		TestTransaction.end();
@@ -323,7 +321,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldReturnNotFoundForJournalpost() {
-		stubSafResponse(generateSafResponseBodyOk());
+		generateAndStubSafResponse();
 
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
 
@@ -346,7 +344,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long journalpostIdVedlegg = joarkRepository.save(sourceJournalpost).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
-		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost));
+		generateAndStubSafResponse(sourceJournalpost);
 		endTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
@@ -372,7 +370,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
-		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost));
+		generateAndStubSafResponse(sourceJournalpost);
 		endTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
@@ -389,7 +387,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter(), hasItem(allOf(
-				where(dok -> Long.parseLong(((FeiledeDokumenter)dok).getDokumentInfoId()), is(dokumentInfoId)),
+				where(dok -> Long.parseLong(((FeiledeDokumenter) dok).getDokumentInfoId()), is(dokumentInfoId)),
 				where(FeiledeDokumenter::getArsakKode, is(ArsakKode.UGYLDIG_STATUS))
 		)));
 		TestTransaction.end();
@@ -402,7 +400,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
-		stubSafResponse(generateSafResponseBodyOk(sourceJournalpost));
+		generateAndStubSafResponse(sourceJournalpost);
 		endTransaction();
 
 		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId(CONSUMER);
@@ -436,7 +434,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertEquals(sourceDokumentInfo.getDatoKassert(), dokumentInfoKopi.getDatoKassert());
 		assertThat(dokumentInfoKopi.getOpprettetKildeNavn(), is(CONSUMER));
 		assertNull(dokumentInfoKopi.getEndretKildeNavn());
-
 	}
 
 	private void assertFildetaljer(FilDetaljer sourceFilDetaljer, FilDetaljer filDetaljerKopi) {
@@ -465,12 +462,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.build();
 	}
 
-	private TilknyttVedleggRequest createTilknyttVedleggRequestWithoutTilknyttetAvNavn(List<DokumentVedlegg> dokumentVedleggList) {
-		return TilknyttVedleggRequest.builder()
-				.dokument(dokumentVedleggList)
-				.build();
-	}
-
 	private Journalpost createJournalpostSladdet() {
 		Journalpost journalpostSladdet = createJournalpostWithHoveddokument();
 		journalpostSladdet.setJournalstatus(JournalStatusCode.J);
@@ -494,7 +485,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		journalpostArkiv.setOpprettetKildeNavn("opprettetKildeNavn");
 		journalpostArkiv.setEndretKildeNavn("endretKildeNavn");
 		journalpostArkiv.setEndretAvNavn("endretAvNavn");
-
 
 		DokumentInfo dokumentInfo = journalpostArkiv.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfo.removeFilDetaljer(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON));
@@ -520,45 +510,34 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		TestTransaction.start();
 	}
 
-	private static void stubSafResponse(String response) {
+	private static void generateAndStubSafResponse(Journalpost... journalposts) {
+		String response = """
+				{
+				"data": {
+				  "journalpost": {
+				    "dokumenter": [
+				    """ +
+				Stream.of(journalposts)
+						.map(Journalpost::findHoveddokumentDokumentInfoRelasjon)
+						.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
+						.map(DokumentInfo::getDokumentInfoId)
+						.map(id -> String.format("""
+										  {
+										  "dokumentInfoId": "%d",
+										  "dokumentvarianter": [
+											{
+											  "saksbehandlerHarTilgang": true,
+											  "variantformat": "ARKIV"
+											}
+										  ]
+										}""", id))
+						.collect(joining(","))
+				+ "] }}}";
+
 		stubFor(post(urlMatching("/safgraphql"))
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBody(response)));
 	}
-
-	private static String generateSafResponseBodyOk(Journalpost... journalposts) {
-		return generateSafResponseBody(Stream.of(journalposts)
-				.map(Journalpost::findHoveddokumentDokumentInfoRelasjon).map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
-				.map(DokumentInfo::getDokumentInfoId)
-				.map(id -> new SimulertDokumentStatus(id, true, "ARKIV"))
-				.toArray(SimulertDokumentStatus[]::new));
-	}
-
-	private static String generateSafResponseBody(SimulertDokumentStatus... ids) {
-		return """
-  			{
-  			"data": {
-  			  "journalpost": {
-  			    "dokumenter": [
-  			    """ +
-				Stream.of(ids)
-						.map(simulertDokument ->
-								String.format(
-										"""
-										  {
-										  "dokumentInfoId": "%d",
-										  "dokumentvarianter": [
-											{
-											  "saksbehandlerHarTilgang": %b,
-											  "variantformat": "%s"
-											}
-										  ]
-										}""", simulertDokument.id, simulertDokument.saksbehandlerHarTilgang, simulertDokument.variantformat))
-						.collect(joining(","))
-				+ "] }}}";
-	}
-
-	record SimulertDokumentStatus(long id, boolean saksbehandlerHarTilgang, String variantformat) {}
 
 }

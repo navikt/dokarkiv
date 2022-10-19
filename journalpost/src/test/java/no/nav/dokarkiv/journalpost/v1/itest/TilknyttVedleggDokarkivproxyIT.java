@@ -35,9 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Olav Røstvold Thorsen, Visma Consulting.
- */
 public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 
 	private static final String UGYLDIG_JOURNALPOST = "12312312312";

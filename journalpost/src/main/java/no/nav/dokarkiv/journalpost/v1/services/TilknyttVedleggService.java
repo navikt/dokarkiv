@@ -65,7 +65,7 @@ public class TilknyttVedleggService {
 		this.tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
 	}
 
-	@Deprecated
+	@Deprecated  // Fjernes når vi har skrudd av dokarkivproxy
 	public List<FeiledeDokumenter> tilknyttVedleggWithoutQueryingSaf(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
 		return tilknyttVedlegg(targetJournalpostId, tilknyttVedleggRequest);
 	}
