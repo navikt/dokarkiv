@@ -6,7 +6,7 @@
   "NO_NAV_SECURITY_JWT_ISSUER_OPENAM_DISCOVERYURL": "https://isso-q.adeo.no:443/isso/oauth2/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_OPENAM_ACCEPTED_AUDIENCE": "bidrag-ui-feature-q1,veilarblogin-q1,arbeid-og-inntekt-q0,arbeid-og-inntekt-q1,arbeid-og-inntekt-q2,arbeid-og-inntekt-q3,arbeid-og-inntekt-q4,arbeid-og-inntekt-q5,arbeid-og-inntekt-q6,fpfordel-q1,fptilbake-q1,gosys-dokument-auth-proxy-q1,gosys-nais-q1,joarkadmin-q1,k9-tilbake-q1,arbeid-og-inntekt-q1-localhost,fpformidling-q1,gosys-q1,ida-q,pensjon-psak-q1,psak-localhost,eux-helloeu-app-q1",
-  "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvbdarkiv,srvfritakagp,srvalf-mottak,srvondemandtojoark,srvhelseabgproxy,srvdolly,srvsyfomock,srvtestnorge-inntekt,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvimvarsel,srvjfr-arena,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvklage-saksbeh,srvmelosys,srvmelosys-eessi,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmotovrig,srvskanmotreferanse,srvsporenstreks,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen,srvsoknadarkiverer,srvsupstonad,srvregpapirsm,srvBrevBestilling,srvpadm2,srvfpformidling,srvveilarbvedtakss,srv-digihotProxy,srvk9-fordel,srvtiltakrefusjon,srvbarnepensjon,srvdp-proxy,srv-oms-proxy,srvccmarkivogdist,srvmeldekortservice,srvbdarkivering,srvfarskapsportal,srvsyfoinntektsmel,srvpensjon,srvgsak-henv-migr,srvfpfordel,srvfpformidling,srvfptilbake,srvfpsoknad-mottak,srvspberegning,srvk9-tilbake",
+  "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvbdarkiv,srvfritakagp,srvalf-mottak,srvondemandtojoark,srvhelseabgproxy,srvdolly,srvsyfomock,srvtestnorge-inntekt,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvimvarsel,srvjfr-arena,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvklage-saksbeh,srvmelosys,srvmelosys-eessi,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmotovrig,srvskanmotreferanse,srvsporenstreks,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen,srvsoknadarkiverer,srvsupstonad,srvregpapirsm,srvBrevBestilling,srvpadm2,srvfpformidling,srvveilarbvedtakss,srv-digihotProxy,srvk9-fordel,srvtiltakrefusjon,srvbarnepensjon,srvdp-proxy,srv-oms-proxy,srvccmarkivogdist,srvmeldekortservice,srvbdarkivering,srvfarskapsportal,srvsyfoinntektsmel,srvpensjon,srvgsak-henv-migr,srvfpfordel,srvfpformidling,srvfptilbake,srvfpsoknad-mottak,srvspberegning,srvk9-tilbake,SrvOppgRobotNOP",
   "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@a01dbfl032.adeo.no:1521/joark_q1",
   "SPRING_LDAP_URLS": "ldaps://ldapgw.preprod.local",
   "LDAP_NAVUSER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=preprod,dc=local",
@@ -318,6 +318,11 @@
     {
       "app": "pdl-fullmakt",
       "namespace": "pdl",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "gosys-q1",
+      "namespace": "isa",
       "cluster": "dev-fss"
     }
   ]

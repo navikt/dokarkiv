@@ -252,6 +252,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "pensjon-selvbetjening-soknad-alder-backend",
+      "namespace": "pensjonselvbetjening",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "doksikkerhetsnett",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"
@@ -305,6 +310,11 @@
       "app": "ida",
       "namespace": "traktor",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "gosys-q2",
+      "namespace": "isa",
+      "cluster": "dev-fss"
     }
   ]
 }

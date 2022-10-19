@@ -119,13 +119,13 @@ public class FerdigstillJournalpostValidator {
 	}
 
 	private void verifyPaakrevdeFelterJournalpost(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {
-		verifyFieldNotNull(journalpost, journalpost.getFagomrade(), "fagomrade", manglendePaakrevdeFelter);
-		verifyStringNotBlank(journalpost, journalpost.getInnhold(), "innhold", manglendePaakrevdeFelter);
+		verifyFieldNotNull(journalpost.getFagomrade(), "Journalpost.fagomrade", manglendePaakrevdeFelter);
+		verifyStringNotBlank(journalpost.getInnhold(), "Journalpost.innhold", manglendePaakrevdeFelter);
 		if (!JournalpostTypeCode.N.equals(journalpost.getJournalposttype())) {
-			verifyStringNotBlank(journalpost, journalpost.getAvsenderMottaker(), "avsendMottaker.navn", manglendePaakrevdeFelter);
+			verifyStringNotBlank(journalpost.getAvsenderMottaker(), "Journalpost.avsendMottaker.navn", manglendePaakrevdeFelter);
 		}
 		if (JournalpostTypeCode.I.equals(journalpost.getJournalposttype())) {
-			verifyFieldNotNull(journalpost, journalpost.getMottakskanal(), "mottakskanal", manglendePaakrevdeFelter);
+			verifyFieldNotNull(journalpost.getMottakskanal(), "Journalpost.mottakskanal", manglendePaakrevdeFelter);
 		}
 	}
 
@@ -136,20 +136,20 @@ public class FerdigstillJournalpostValidator {
 
 	private void verifyPaakrevdeFelterBruker(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {
 		journalpost.getBrukere().forEach(bruker -> {
-			verifyStringNotBlank(bruker, bruker.getBrukerId(), "brukerId", manglendePaakrevdeFelter);
-			verifyFieldNotNull(bruker, bruker.getBrukerType(), "brukerType", manglendePaakrevdeFelter);
+			verifyStringNotBlank(bruker.getBrukerId(), "Bruker.brukerId", manglendePaakrevdeFelter);
+			verifyFieldNotNull(bruker.getBrukerType(), "Bruker.brukerType", manglendePaakrevdeFelter);
 		});
 	}
 
 	private void verifyPaakrevdeFelterSaksrelasjon(Saksrelasjon saksrelasjon, List<String> manglendePaakrevdeFelter) {
 		if (saksrelasjon != null) {
-			verifyStringNotBlank(saksrelasjon, saksrelasjon.getSakId(), "sakId", manglendePaakrevdeFelter);
-			verifyFieldNotNull(saksrelasjon, saksrelasjon.getFagsystem(), "fagsystem", manglendePaakrevdeFelter);
+			verifyStringNotBlank(saksrelasjon.getSakId(), "Saksrelasjon.sakId", manglendePaakrevdeFelter);
+			verifyFieldNotNull(saksrelasjon.getFagsystem(), "Saksrelasjon.fagsystem", manglendePaakrevdeFelter);
 		}
 	}
 
 	private void verifyMandatoryFelterDokumentinfo(DokumentInfo dokumentInfo, List<String> manglendePaakrevdeFelter) {
-		verifyStringNotBlank(dokumentInfo, dokumentInfo.getTittel(), "tittel", manglendePaakrevdeFelter);
+		verifyStringNotBlank(dokumentInfo.getTittel(), "DokumentInfo.tittel", manglendePaakrevdeFelter);
 	}
 
 	/**
@@ -158,9 +158,9 @@ public class FerdigstillJournalpostValidator {
 	 * @param fieldValue The value to check.
 	 * @param fieldName  The fieldName.
 	 */
-	private void verifyFieldNotNull(Object parent, Object fieldValue, String fieldName, List<String> manglendePaakrevdeFelter) {
+	private void verifyFieldNotNull(Object fieldValue, String fieldName, List<String> manglendePaakrevdeFelter) {
 		if (fieldValue == null) {
-			manglendePaakrevdeFelter.add(parent.getClass().getSimpleName() + "." + fieldName);
+			manglendePaakrevdeFelter.add(fieldName);
 		}
 	}
 
@@ -170,9 +170,9 @@ public class FerdigstillJournalpostValidator {
 	 * @param fieldValue The String to check.
 	 * @param fieldName  The fieldName.
 	 */
-	private void verifyStringNotBlank(Object parent, String fieldValue, String fieldName, List<String> manglendePaakrevdeFelter) {
+	private void verifyStringNotBlank(String fieldValue, String fieldName, List<String> manglendePaakrevdeFelter) {
 		if (isBlank(fieldValue)) {
-			manglendePaakrevdeFelter.add(parent.getClass().getSimpleName() + "." + fieldName);
+			manglendePaakrevdeFelter.add(fieldName);
 		}
 	}
 }

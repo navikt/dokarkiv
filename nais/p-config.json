@@ -265,6 +265,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "pensjon-selvbetjening-soknad-alder-backend",
+      "namespace": "pensjonselvbetjening",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "esyfovarsel",
       "namespace": "team-esyfo",
       "cluster": "prod-gcp"
@@ -293,6 +298,11 @@
       "app": "soknad-api",
       "namespace": "aap",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "gosys",
+      "namespace": "isa",
+      "cluster": "prod-fss"
     }
   ]
 }
