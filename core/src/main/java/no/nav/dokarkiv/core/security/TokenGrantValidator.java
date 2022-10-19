@@ -28,7 +28,7 @@ public class TokenGrantValidator {
 			var sub = claimsSet.getSubject();
 
 			if (isBlank(oid)) {
-				throw new ConsumerUnauthorizedDokarkivFunctionalException("Access Token mangler OID claim");
+				throw new ConsumerUnauthorizedDokarkivFunctionalException("Access token på Authorization header mangler oid claim. Dette betyr at vi ikke gjenkjenner token som utstedt av NAV sin Azure tenant. Vennligst forsøk på nytt med On-Behalf-Of flow access token fra NAV sin Azure tenant. Hvis ikke dette fungerer, kontakt oss på #team_dokumentløsninger");
 			}
 			if (isBlank(sub)) {
 				throw new ConsumerUnauthorizedDokarkivFunctionalException("Access Token mangler Subject claim");
