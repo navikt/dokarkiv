@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.repository;
 
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -26,6 +27,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createDummyDokumentKas
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
@@ -63,11 +65,36 @@ public class UtsendingsInfoRepositoryTest {
 		dokumentFilRepository.save(createDummyDokumentKassert());
 		journalpost = joarkRepository.save(journalpost);
 
-		UtsendingsInfo utsendingsInfo = new UtsendingsInfo(journalpost, new UtsendingsInfo.DigitalPostadresse("post.mottaker#1241", "959844519"));
+		UtsendingsInfo utsendingsInfo = new UtsendingsInfo(journalpost, new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
+				"Hei Bruker! Du har fått en ny melding på nav.no. Hilsen NAV"));
 		utsendingsInfo = utsendingsInfoRepository.save(utsendingsInfo);
 
 
 		assertThat(utsendingsInfo.getId(), equalTo(journalpost.getId()));
 		assertTrue(utsendingsInfoRepository.findById(journalpost.getJournalpostId()).isPresent(), "Det skal finnes en utsendingsinfo med journalpostId som id");
+	}
+
+	@Test
+	public void shouldValidateUtsendingskanalUtsendingsinfoCombination() {
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
+		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
+		dokumentFilRepository.save(arkivDokumentFil);
+		dokumentFilRepository.save(createDummyDokumentKassert());
+		joarkRepository.save(journalpost);
+
+		journalpost.setUtsendingskanal(UtsendingsKanalCode.NAV_NO);
+		assertThrows(IllegalArgumentException.class, () ->
+				new UtsendingsInfo(journalpost, new UtsendingsInfo.FysiskPostadresse("varslegate 1",
+						null, null, "0101", "Oslo", "NO")));
+
+		assertThrows(IllegalArgumentException.class, () ->
+				new UtsendingsInfo(journalpost, new UtsendingsInfo.DigitalPostadresse("postmottaker#1323",
+						"postkasseleverandør")));
+
+		journalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		assertThrows(IllegalArgumentException.class, () ->
+				new UtsendingsInfo(journalpost, new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
+						"Hei Bruker! Du har fått en ny melding på nav.no. Hilsen NAV")));
 	}
 }

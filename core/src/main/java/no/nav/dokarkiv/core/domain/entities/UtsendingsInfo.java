@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.domain.entities;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -38,18 +39,28 @@ public class UtsendingsInfo {
 	private NavNoVarsling navNoVarsling;
 
 	public UtsendingsInfo(Journalpost journalpost, FysiskPostadresse fysiskPostAdresse) {
+		validateKanalAndUtsendingsinfo(journalpost, UtsendingsKanalCode.S, FysiskPostadresse.class);
 		this.journalpost = journalpost;
 		this.fysiskPostadresse = fysiskPostAdresse;
 	}
 
 	public UtsendingsInfo(Journalpost journalpost, DigitalPostadresse digitalPostadresse) {
+		validateKanalAndUtsendingsinfo(journalpost, UtsendingsKanalCode.SDP, DigitalPostadresse.class);
 		this.journalpost = journalpost;
 		this.digitalPostadresse = digitalPostadresse;
 	}
 
 	public UtsendingsInfo(Journalpost journalpost, NavNoVarsling navNoVarsling) {
+		validateKanalAndUtsendingsinfo(journalpost, UtsendingsKanalCode.NAV_NO, NavNoVarsling.class);
 		this.journalpost = journalpost;
 		this.navNoVarsling = navNoVarsling;
+	}
+
+	private static void validateKanalAndUtsendingsinfo(Journalpost journalpost, UtsendingsKanalCode requiredUtsendingsKanal, Class<?> varslingClass) {
+		if (requiredUtsendingsKanal != journalpost.getUtsendingskanal()) {
+			throw new IllegalArgumentException(String.format("Journalpost må ha utsendingskanal=%s for å ha utsendingsinfo av typen %s (hadde %s)",
+					requiredUtsendingsKanal, varslingClass.getSimpleName(), journalpost.getUtsendingskanal()));
+		}
 	}
 
 	@Embeddable
