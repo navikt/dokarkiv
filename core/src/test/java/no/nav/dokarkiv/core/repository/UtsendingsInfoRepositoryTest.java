@@ -65,9 +65,12 @@ public class UtsendingsInfoRepositoryTest {
 		dokumentFilRepository.save(createDummyDokumentKassert());
 		journalpost = joarkRepository.save(journalpost);
 
-		UtsendingsInfo utsendingsInfo = new UtsendingsInfo(journalpost, new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
-				"Hei Bruker! Du har fått en ny melding på nav.no. Hilsen NAV"));
-		utsendingsInfo = utsendingsInfoRepository.save(utsendingsInfo);
+		var utsendingsInfoPart = new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
+				"Hei Bruker! Du har fått en ny melding på nav.no. Hilsen NAV");
+		journalpost.setUtsendingskanal(UtsendingsKanalCode.NAV_NO);
+		journalpost.setUtsendingsInfo(utsendingsInfoPart);
+		journalpost = joarkRepository.save(journalpost);
+		UtsendingsInfo utsendingsInfo = journalpost.getUtsendingsInfo();
 
 
 		assertThat(utsendingsInfo.getId(), equalTo(journalpost.getId()));
@@ -85,16 +88,16 @@ public class UtsendingsInfoRepositoryTest {
 
 		journalpost.setUtsendingskanal(UtsendingsKanalCode.NAV_NO);
 		assertThrows(IllegalArgumentException.class, () ->
-				new UtsendingsInfo(journalpost, new UtsendingsInfo.FysiskPostadresse("varslegate 1",
+				journalpost.setUtsendingsInfo(new UtsendingsInfo.FysiskPostadresse("varslegate 1",
 						null, null, "0101", "Oslo", "NO")));
 
 		assertThrows(IllegalArgumentException.class, () ->
-				new UtsendingsInfo(journalpost, new UtsendingsInfo.DigitalPostadresse("postmottaker#1323",
+				journalpost.setUtsendingsInfo(new UtsendingsInfo.DigitalPostadresse("postmottaker#1323",
 						"postkasseleverandør")));
 
 		journalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		assertThrows(IllegalArgumentException.class, () ->
-				new UtsendingsInfo(journalpost, new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
+				journalpost.setUtsendingsInfo(new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
 						"Hei Bruker! Du har fått en ny melding på nav.no. Hilsen NAV")));
 	}
 }

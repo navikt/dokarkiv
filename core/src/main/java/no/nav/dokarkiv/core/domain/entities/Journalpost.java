@@ -238,7 +238,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Kryssreferanse> kryssreferanser = new HashSet<>();
 
-	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "journalpost")
+	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private UtsendingsInfo utsendingsInfo;
 
 	/**
@@ -1543,6 +1544,48 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		}
 	}
 
+	/**
+	 * Getter for the utsendingsInfo property
+	 *
+	 * @return Utsendingsinfo
+	 */
+	public UtsendingsInfo getUtsendingsInfo() {
+		return utsendingsInfo;
+	}
+
+	/**
+	 * @param navNoVarsling utsendingsinfo for Nav.no to attach to this journalpost. Journalpost must have
+	 * utsendingskanal = NAV_NO
+	 */
+	public void setUtsendingsInfo(UtsendingsInfo.NavNoVarsling navNoVarsling) {
+		if (this.utsendingskanal != UtsendingsKanalCode.NAV_NO) {
+			throw new IllegalArgumentException(String.format("Can not set UtsendingsInfo of type %s for utsendingskanal=%s",
+					UtsendingsInfo.NavNoVarsling.class.getSimpleName(), this.utsendingskanal));
+		}
+		this.utsendingsInfo = new UtsendingsInfo(this, navNoVarsling);
+	}
+	/**
+	 * @param digitalPostadresse utsendingsinfo for Digital post to attach to this journalpost. Journalpost must have
+	 * utsendingskanal = SDP
+	 */
+	public void setUtsendingsInfo(UtsendingsInfo.DigitalPostadresse digitalPostadresse) {
+		if (this.utsendingskanal != UtsendingsKanalCode.SDP) {
+			throw new IllegalArgumentException(String.format("Can not set UtsendingsInfo of type %s for utsendingskanal=%s",
+					UtsendingsInfo.DigitalPostadresse.class.getSimpleName(), this.utsendingskanal));
+		}
+		this.utsendingsInfo = new UtsendingsInfo(this, digitalPostadresse);
+	}
+	/**
+	 * @param fysiskPostadresse utsendingsinfo for Sentralprint to attach to this journalpost. Journalpost must have
+	 * utsendingskanal = S
+	 */
+	public void setUtsendingsInfo(UtsendingsInfo.FysiskPostadresse fysiskPostadresse) {
+		if (this.utsendingskanal != UtsendingsKanalCode.S) {
+			throw new IllegalArgumentException(String.format("Can not set UtsendingsInfo of type %s for utsendingskanal=%s",
+			UtsendingsInfo.FysiskPostadresse.class.getSimpleName(), this.utsendingskanal));
+		}
+		this.utsendingsInfo = new UtsendingsInfo(this, fysiskPostadresse);
+	}
 	/**
 	 * Updates a Journalpost with values from the Journalpost created by the
 	 * scanning process (re-scanning, scenario 2b).

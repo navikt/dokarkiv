@@ -3,7 +3,6 @@ package no.nav.dokarkiv.core.domain.entities;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -38,29 +37,19 @@ public class UtsendingsInfo {
 	@Embedded
 	private NavNoVarsling navNoVarsling;
 
-	public UtsendingsInfo(Journalpost journalpost, FysiskPostadresse fysiskPostAdresse) {
-		validateKanalAndUtsendingsinfo(journalpost, UtsendingsKanalCode.S, FysiskPostadresse.class);
+	UtsendingsInfo(Journalpost journalpost, FysiskPostadresse fysiskPostAdresse) {
 		this.journalpost = journalpost;
 		this.fysiskPostadresse = fysiskPostAdresse;
 	}
 
-	public UtsendingsInfo(Journalpost journalpost, DigitalPostadresse digitalPostadresse) {
-		validateKanalAndUtsendingsinfo(journalpost, UtsendingsKanalCode.SDP, DigitalPostadresse.class);
+	UtsendingsInfo(Journalpost journalpost, DigitalPostadresse digitalPostadresse) {
 		this.journalpost = journalpost;
 		this.digitalPostadresse = digitalPostadresse;
 	}
 
-	public UtsendingsInfo(Journalpost journalpost, NavNoVarsling navNoVarsling) {
-		validateKanalAndUtsendingsinfo(journalpost, UtsendingsKanalCode.NAV_NO, NavNoVarsling.class);
+	UtsendingsInfo(Journalpost journalpost, NavNoVarsling navNoVarsling) {
 		this.journalpost = journalpost;
 		this.navNoVarsling = navNoVarsling;
-	}
-
-	private static void validateKanalAndUtsendingsinfo(Journalpost journalpost, UtsendingsKanalCode requiredUtsendingsKanal, Class<?> varslingClass) {
-		if (requiredUtsendingsKanal != journalpost.getUtsendingskanal()) {
-			throw new IllegalArgumentException(String.format("Journalpost må ha utsendingskanal=%s for å ha utsendingsinfo av typen %s (hadde %s)",
-					requiredUtsendingsKanal, varslingClass.getSimpleName(), journalpost.getUtsendingskanal()));
-		}
 	}
 
 	@Embeddable
@@ -68,23 +57,17 @@ public class UtsendingsInfo {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class FysiskPostadresse {
-		@Size(max = 200)
-		@Column(name = "adresselinje1")
+		@Column(name = "adresselinje1", length = 200)
 		private String adresselinje1;
-		@Size(max = 200)
-		@Column(name = "adresselinje2")
+		@Column(name = "adresselinje2", length = 200)
 		private String adresselinje2;
-		@Size(max = 200)
-		@Column(name = "adresselinje3")
+		@Column(name = "adresselinje3", length = 200)
 		private String adresselinje3;
-		@Size(max = 10)
-		@Column(name = "postnummer")
+		@Column(name = "postnummer", length = 10)
 		private String postnummer;
-		@Size(max = 200)
-		@Column(name = "poststed")
+		@Column(name = "poststed", length = 200)
 		private String poststed;
-		@Size(max = 2)
-		@Column(name = "landkode")
+		@Column(name = "landkode", length = 2)
 		private String landkode;
 	}
 
@@ -93,11 +76,9 @@ public class UtsendingsInfo {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class DigitalPostadresse {
-		@Size(max = 100)
-		@Column(name = "digitalpostkasseadresse")
+		@Column(name = "digitalpostkasseadresse", length = 100)
 		private String adresse;
-		@Size(max = 20)
-		@Column(name = "digitalpostkasseleverandor")
+		@Column(name = "digitalpostkasseleverandor", length = 20)
 		private String postkasseLeverandor;
 	}
 
@@ -106,11 +87,9 @@ public class UtsendingsInfo {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class NavNoVarsling {
-		@Size(max = 200)
-		@Column(name = "digital_kontaktinformasjon")
+		@Column(name = "digital_kontaktinformasjon", length = 200)
 		private String kontaktinformasjon;
-		@Size(max = 4000)
-		@Column(name = "varslingstekst")
+		@Column(name = "varslingstekst", length = 4000)
 		private String varslingstekst;
 	}
 
