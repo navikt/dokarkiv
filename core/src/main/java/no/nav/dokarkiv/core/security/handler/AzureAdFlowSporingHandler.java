@@ -2,6 +2,7 @@ package no.nav.dokarkiv.core.security.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.security.token.support.core.jwt.JwtToken;
@@ -44,10 +45,10 @@ public class AzureAdFlowSporingHandler {
 	static final String NAV_CUSTOM_CLAIM_AZP_NAME = "azp_name";
 	static final String PROFILE_SCOPE_CLAIM_NAME = "name";
 
-	private final NavLdapService navLdapService;
+	private final AzureAdGraphService azureAdGraphService;
 
-	public AzureAdFlowSporingHandler(NavLdapService navLdapService) {
-		this.navLdapService = navLdapService;
+	public AzureAdFlowSporingHandler(AzureAdGraphService azureAdGraphService) {
+		this.azureAdGraphService = azureAdGraphService;
 	}
 
 	public void handle(JwtToken token, String navUserIdHeader) {
@@ -89,10 +90,10 @@ public class AzureAdFlowSporingHandler {
 
 	private void handleClientCredentialGrantFlowNavUserIdHeaderContext(String appClaim, String navUserIdHeader) {
 		if (NAVIDENT_PATTERN.matcher(navUserIdHeader).matches()) {
-			final NavUser navUser = navLdapService.findByUserId(navUserIdHeader);
-			if (navUser.isUserExistsInLdap()) {
+			final String fulltNavn = azureAdGraphService.hentFulltNavn(navUserIdHeader);
+			if (fulltNavn != null) {
 				MDC.put(MDCConstants.MDC_USER_ID, navUserIdHeader);
-				MDC.put(MDCConstants.MDC_USER_NAME, navUser.getFullname());
+				MDC.put(MDCConstants.MDC_USER_NAME, fulltNavn);
 				MDC.put(MDCConstants.MDC_CONSUMER_ID, appClaim);
 			} else {
 				handleClientCredentialGrantFlowAppContext(appClaim);

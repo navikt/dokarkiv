@@ -23,36 +23,6 @@ public class NavLdapServiceIT {
 	private NavLdapService navLdapService;
 
 	@Test
-	public void shouldReturnNameWhenUserIdLookedUp() {
-		NavUser saksbehandler = navLdapService.findByUserId("b133337");
-		assertThat(saksbehandler.getFullname(), is("Bjarne Betjent"));
-	}
-
-	@Test
-	public void shouldReturnNameUserIdWithNoDescriptionLookedUp() {
-		NavUser saksbehandler = navLdapService.findByUserId("z000001");
-		assertThat(saksbehandler.getFullname(), is("Kaptein Sabeltann"));
-	}
-
-	@Test
-	public void shouldReturnNameUserIdWithNoDisplayNameLookedUp() {
-		NavUser saksbehandler = navLdapService.findByUserId("z000002");
-		assertThat(saksbehandler.getFullname(), is("Stasjonsmester Tidemann"));
-	}
-
-	@Test
-	public void shouldReturnUserIdAsFallbackWhenNotFound() {
-		NavUser saksbehandler = navLdapService.findByUserId("abcdefgh");
-		assertThat(saksbehandler.getFullname(), is("abcdefgh"));
-	}
-
-	@Test
-	public void shouldReturnServiceUserIdWhenInDifferentBasedn() {
-		NavUser saksbehandler = navLdapService.findByUserId("srvdokarkiv");
-		assertThat(saksbehandler.getFullname(), is("srvdokarkiv"));
-	}
-
-	@Test
 	public void shouldReturnNameWhenServiceUserIdLookedUp() {
 		NavUser saksbehandler = navLdapService.findByServiceuserId("srvdokarkiv");
 		assertThat(saksbehandler.getFullname(), is("Service account for srvdokarkiv"));

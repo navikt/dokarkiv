@@ -23,28 +23,14 @@ import javax.inject.Inject;
 @Component
 @Slf4j
 public class NavLdapService {
-	private final String navuserBasedn;
 	private final String serviceuserBasedn;
 	private final LdapTemplate ldapTemplate;
 
 	@Inject
-	public NavLdapService(@Value("${ldap.navuser.basedn}") String navuserBasedn, @Value("${ldap.serviceuser.basedn}") String serviceuserBasedn,
+	public NavLdapService(@Value("${ldap.serviceuser.basedn}") String serviceuserBasedn,
 						  LdapTemplate ldapTemplate) {
-		this.navuserBasedn = navuserBasedn;
 		this.serviceuserBasedn = serviceuserBasedn;
 		this.ldapTemplate = ldapTemplate;
-	}
-
-	@Retryable(backoff = @Backoff(delay = 500))
-	@Cacheable(NAVUSER_CACHE)
-	public NavUser findByUserId(final String userId) {
-		try {
-			return ldapTemplate.findOne(query().base(navuserBasedn).where("cn").is(userId), NavUser.class);
-		} catch(IncorrectResultSizeDataAccessException e) {
-			log.warn(format("Feilet ved oppslag av navBruker=%s i LDAP. Feilmelding=%s", userId, e.getMessage()));
-			// fallback til userId
-			return NavUser.builder().userId(userId).userExistsInLdap(false).build();
-		}
 	}
 
 	@Retryable(backoff = @Backoff(delay = 500))
@@ -58,13 +44,4 @@ public class NavLdapService {
 		}
 	}
 
-	public AuthenticationResult authenticateLdapUser(final String userId, final String password) {
-		try {
-			ldapTemplate.authenticate(query().base(serviceuserBasedn).where("cn").is(userId), password);
-			return AuthenticationResult.success(userId, userId);
-		} catch (Exception e) {
-			return AuthenticationResult.invalid(String.format("Kunne ikke autentisere %s mot %s. %s", userId, serviceuserBasedn, e.getMessage()));
-		}
-
-	}
 }

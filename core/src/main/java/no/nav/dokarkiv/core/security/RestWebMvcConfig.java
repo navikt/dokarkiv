@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.security;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.security.token.support.core.configuration.MultiIssuerConfiguration;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
@@ -22,17 +23,19 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
     private final TokenValidationContextHolder tokenValidationContextHolder;
     private final MultiIssuerConfiguration multiIssuerConfiguration;
+    private final AzureAdGraphService azureAdGraphService;
     private final NavLdapService navLdapService;
     private final HandlerInterceptor basicAuthReadAccessRestInterceptor;
     private final MeterRegistry meterRegistry;
 
     public RestWebMvcConfig(TokenValidationContextHolder tokenValidationContextHolder,
                             MultiIssuerConfiguration multiIssuerConfiguration,
-                            NavLdapService navLdapService,
+                            AzureAdGraphService azureAdGraphService, NavLdapService navLdapService,
                             @Lazy @Named("basicAuthReadAccessRestInterceptor") HandlerInterceptor basicAuthReadAccessRestInterceptor,
                             MeterRegistry meterRegistry) {
         this.tokenValidationContextHolder = tokenValidationContextHolder;
         this.multiIssuerConfiguration = multiIssuerConfiguration;
+        this.azureAdGraphService = azureAdGraphService;
         this.navLdapService = navLdapService;
         this.basicAuthReadAccessRestInterceptor = basicAuthReadAccessRestInterceptor;
         this.meterRegistry = meterRegistry;
@@ -43,11 +46,11 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(basicAuthReadAccessRestInterceptor)
                 .addPathPatterns("/hentjournalsakinfo/**");
 
-        registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, navLdapService, meterRegistry))
+        registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, navLdapService, meterRegistry, azureAdGraphService))
                 .excludePathPatterns("/rest/intern/**")
                 .addPathPatterns("/rest/**");
 
-        registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(navLdapService))
+        registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(azureAdGraphService))
                 .addPathPatterns("/rest/admin/**");
 
         registry.addInterceptor(new PopulateMDCHandler())

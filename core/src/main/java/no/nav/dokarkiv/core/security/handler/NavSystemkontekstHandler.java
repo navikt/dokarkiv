@@ -2,6 +2,7 @@ package no.nav.dokarkiv.core.security.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.security.token.support.core.jwt.JwtToken;
@@ -25,9 +26,11 @@ public class NavSystemkontekstHandler {
 	private static final String ERROR_MELDING_PREFIX = "Tjeneste kalt med REST-STS token og Nav-User-Id header.";
 	private static final String ERROR_MELDING_SUFFIX = "Konsument må informeres og bes om å rette dette.";
 	private final NavLdapService navLdapService;
+	private final AzureAdGraphService azureAdGraphService;
 
-	public NavSystemkontekstHandler(NavLdapService navLdapService) {
+	public NavSystemkontekstHandler(NavLdapService navLdapService, AzureAdGraphService azureAdGraphService) {
 		this.navLdapService = navLdapService;
+		this.azureAdGraphService = azureAdGraphService;
 	}
 
 	public boolean handle(JwtToken token, HttpServletResponse response, String navUserIdHeader) throws IOException {
@@ -51,10 +54,10 @@ public class NavSystemkontekstHandler {
 
 	private void handleServiceUserWithNavUserIdHeaderContext(String consumerId, String navUserIdHeader) {
 		if (NAVIDENT_PATTERN.matcher(navUserIdHeader).matches()) {
-			final NavUser navUser = navLdapService.findByUserId(navUserIdHeader);
-			if (navUser.isUserExistsInLdap()) {
+			final String fulltNavn = azureAdGraphService.hentFulltNavn(navUserIdHeader);
+			if (fulltNavn!=null) {
 				MDC.put(MDCConstants.MDC_USER_ID, navUserIdHeader);
-				MDC.put(MDCConstants.MDC_USER_NAME, navUser.getFullname());
+				MDC.put(MDCConstants.MDC_USER_NAME, fulltNavn);
 				MDC.put(MDCConstants.MDC_CONSUMER_ID, consumerId);
 			} else {
 				log.error(ERROR_MELDING_PREFIX + " Fant ikke NAVIdent={} i onprem Active Directory. " + ERROR_MELDING_SUFFIX, navUserIdHeader);

@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import org.springframework.http.HttpStatus;
@@ -20,13 +21,13 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 public class ValidateAdminConsumerAccessInterceptor implements HandlerInterceptor {
 
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
-	private final NavLdapService navLdapService;
+	private final AzureAdGraphService azureAdGraphService;
 
 	private static final String ADMIN_SERVICE_USER = "srvjoarkadmin";
 	private static final String ADMIN_SERVICE_USER_AD_ROLE = "0000-GA-joark-vedlikehold";
 
-	public ValidateAdminConsumerAccessInterceptor(NavLdapService navLdapService) {
-		this.navLdapService = navLdapService;
+	public ValidateAdminConsumerAccessInterceptor(AzureAdGraphService azureAdGraphService) {
+		this.azureAdGraphService = azureAdGraphService;
 	}
 
 	@Override
@@ -70,12 +71,8 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 
 	public boolean isUserInTokenHasRole(String token, String ldapGroup) {
 		String userId = getSubjectFromToken(token);
-		NavUser user = navLdapService.findByUserId(userId);
-		return user.isUserExistsInLdap() && contains(user.getMemberOf(), ldapGroup);
-	}
-
-	private boolean contains(Set<String> l, String s) {
-		return l.stream().anyMatch(x -> x.contains(s));
+		String fulltNavn = azureAdGraphService.hentFulltNavn(userId);
+		return fulltNavn != null && azureAdGraphService.userInGroup(userId, ldapGroup);
 	}
 
 	public boolean isTokenBelongsToUser(String token, String subject) {

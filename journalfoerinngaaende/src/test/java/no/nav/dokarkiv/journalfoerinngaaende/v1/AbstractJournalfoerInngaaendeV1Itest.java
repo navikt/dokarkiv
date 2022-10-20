@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalfoerinngaaende.v1;
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.TestCoreConfig;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -48,7 +49,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TokenGeneratorConfiguration.class})
+		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TokenGeneratorConfiguration.class, TestCoreConfig.class})
 @ActiveProfiles({"itest", "wiremock", "ldap"})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
