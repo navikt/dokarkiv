@@ -18,7 +18,7 @@ import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.services.KnyttTilAnnenSakService;
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerRestKnyttTilAnnenSak;
-import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerRestTilknyttVedlegg;
 import no.nav.dokarkiv.journalpost.v1.validators.KnyttTilAnnenSakValidator;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
@@ -105,7 +105,7 @@ public class JournalpostEksternProtectedRestController {
 	}
 
 	@Transactional
-	@SwaggerTilknyttVedlegg
+	@SwaggerRestTilknyttVedlegg
 	@ResponseBody
 	@Operation(summary = "Knytt vedlegg til journalpost")
 	@Tag(name = "journalpostapi - tilknyttVedlegg", description = "Tjeneste for å knytte vedlegg til en journalpost")

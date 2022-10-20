@@ -72,7 +72,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourcejournalpostId = saveJournalpost(sourceJournalpost).getJournalpostId();
 
 		generateAndStubSafResponse(sourceJournalpost);
-		endTransaction();
+		completeCurrentAndStartNewTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -90,7 +90,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		var responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 
-		endTransaction();
+		completeCurrentAndStartNewTransaction();
 
 		Journalpost journalpostTilknyttetVedlegg = joarkRepository.findById(targetJournalpostId).get();
 		DokumentInfo sourceDokumentInfo = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -120,7 +120,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId3 = saveJournalpost(sourceJournalpost3).getJournalpostId();
 
 		generateAndStubSafResponse(sourceJournalpost1, sourceJournalpost2, sourceJournalpost3);
-		endTransaction();
+		completeCurrentAndStartNewTransaction();
 
 		Long sourceDokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
@@ -145,7 +145,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
-		endTransaction();
+		completeCurrentAndStartNewTransaction();
 
 		assertThat(responseEntity.getStatusCode(), is(OK));
 
@@ -216,7 +216,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId3 = saveJournalpost(sourceJournalpost3).getJournalpostId();
 
 		generateAndStubSafResponse(sourceJournalpost1, sourceJournalpost2, sourceJournalpost3);
-		endTransaction();
+		completeCurrentAndStartNewTransaction();
 
 		Long sourceDokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
@@ -242,7 +242,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
-		endTransaction();
+		completeCurrentAndStartNewTransaction();
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(ArsakKode.UGYLDIG_STATUS));
@@ -303,7 +303,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		generateAndStubSafResponse(sourceJournalpost);
 		when(tokenGrantValidator.validateOnBehalfOfAccessToken(any())).thenThrow(new ConsumerUnauthorizedDokarkivFunctionalException("Access Token is invalid"));
-		endTransaction();
+		completeCurrentAndStartNewTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -345,7 +345,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
 		generateAndStubSafResponse(sourceJournalpost);
-		endTransaction();
+		completeCurrentAndStartNewTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -371,7 +371,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
 		generateAndStubSafResponse(sourceJournalpost);
-		endTransaction();
+		completeCurrentAndStartNewTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -401,7 +401,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
 
 		generateAndStubSafResponse(sourceJournalpost);
-		endTransaction();
+		completeCurrentAndStartNewTransaction();
 
 		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId(CONSUMER);
 
@@ -504,7 +504,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.build();
 	}
 
-	private void endTransaction() {
+	private void completeCurrentAndStartNewTransaction() {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		TestTransaction.start();

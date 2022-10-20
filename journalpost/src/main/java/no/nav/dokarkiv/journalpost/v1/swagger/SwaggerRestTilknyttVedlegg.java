@@ -16,8 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Operation(
-		summary = "Knytter ett eller flere eksisterende dokumenter til en utgående journalpost som vedlegg",
-		security = { @SecurityRequirement(name = "bearer-key"), @SecurityRequirement(name = "nav-consumer-token") }
+		summary = "Knytter ett eller flere eksisterende dokumenter til en utgående journalpost som vedlegg"
 )
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "OK"),
