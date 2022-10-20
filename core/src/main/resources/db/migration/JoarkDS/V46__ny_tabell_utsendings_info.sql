@@ -1,19 +1,13 @@
 CREATE TABLE t_utsendings_info (
-    utsendings_info_id         NUMBER NOT NULL,
-    journalpost_id             NUMBER NOT NULL,
+    journalpost_id             NUMBER NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES t_journalpost(journalpost_id),
     adresselinje1              VARCHAR(200),
     adresselinje2              VARCHAR(200),
     adresselinje3              VARCHAR(200),
-    postnummer                 VARCHAR(20),
+    postnummer                 VARCHAR(10),
     poststed                   VARCHAR(200),
-    landkode                   VARCHAR(20),
+    landkode                   VARCHAR(2),
     digitalpostkasseadresse    VARCHAR(100),
     digitalpostkasseleverandor VARCHAR(20),
     digital_kontaktinformasjon VARCHAR(200),
-    varslingstekst             VARCHAR(400),
-
-    CONSTRAINT pk_utsendings_info PRIMARY KEY (utsendings_info_id),
-    CONSTRAINT FOREIGN KEY journalpost_id REFERENCES t_journalpost(journalpost_id)
+    varslingstekst             VARCHAR(4000),
 );
-
-CREATE SEQUENCE seq_utsendings_info;
