@@ -22,7 +22,6 @@ public class TilknyttVedleggRequest {
 
 	@Schema(
 			description = "Navn på saksbehandler som tilknytter vedleggene",
-			required = true,
 			example = "Mikkel Pettersen"
 	)
 	private String tilknyttetAvNavn;

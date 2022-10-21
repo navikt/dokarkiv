@@ -18,7 +18,7 @@ public class DokumentUtils {
 	 * For hvert dokument
 	 * 		Sjekk at det finnes et dokument hvor (arkivvariant == ARKIV || SLADDET) && isSaksbehandlerHarTilgang == true
 	 */
-	public static void sjekkOmAlleDokumentvarianterErGyldige(SafJournalpostTo safJournalpost, String journalpostId) {
+	public static void sjekkOmAlleDokumentvarianterErGyldige(SafJournalpostTo safJournalpost, long journalpostId) {
 		List<SafJournalpostTo.DokumentInfo> dokumenter = safJournalpost.getDokumenter();
 		if(dokumenter.isEmpty()){
 			return;

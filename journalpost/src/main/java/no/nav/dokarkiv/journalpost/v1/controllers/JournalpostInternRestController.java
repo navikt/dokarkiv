@@ -12,7 +12,6 @@ import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
-import no.nav.dokarkiv.journalpost.v1.services.MottaDokumentUtgaaendeSkanningService;
 import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerTilknyttVedlegg;
@@ -37,6 +36,7 @@ import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
+import static no.nav.dokarkiv.core.util.DecodeUtils.isBasicAuth;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
 /**
@@ -70,15 +70,16 @@ public class JournalpostInternRestController {
 			@PathVariable String journalpostId,
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@RequestBody TilknyttVedleggRequest request) {
-		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
+		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg_dokarkivproxy");
 		try {
-			assertThatConsumerIsSrvdokarkivproxy(auth);
+			assertThatConsumerIsOldSchoolSrvdokarkivproxy(auth);
 
 			validateId(journalpostId, "journalpostId");
+			long journalpostIdLong = Long.parseLong(journalpostId);
 
 			log.info("tilknyttVedlegg har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
 
-			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(Long.parseLong(journalpostId), request);
+			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedleggWithoutQueryingSaf(journalpostIdLong, request);
 
 			if (feiledeDokumenterList.isEmpty()) {
 				return ResponseEntity
@@ -111,7 +112,7 @@ public class JournalpostInternRestController {
 			@RequestHeader(value = NavHeaders.NAV_USER_ID) String userId,
 			@RequestParam String kildeJournalpostId) {
 		try {
-			assertThatConsumerIsSrvdokarkivproxy(auth);
+			assertThatConsumerIsOldSchoolSrvdokarkivproxy(auth);
 
 			MDC.put(MDC_REQUEST_ID, "rjoark203");
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for kopiering av journalpost med journalpostId={}", kildeJournalpostId);
@@ -131,9 +132,11 @@ public class JournalpostInternRestController {
 		}
 	}
 
-	private void assertThatConsumerIsSrvdokarkivproxy(String auth) {
-		if (!SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
-			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
+	private void assertThatConsumerIsOldSchoolSrvdokarkivproxy(String auth) {
+		if (!isBasicAuth(auth) || !SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
+			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Ingen tilgang: Dette endepunktet skal kun brukes " +
+					"av applikasjonen dokarkivproxy. Om du prøver å koble deg til tjenesten tilknyttVedlegg må du i stedet " +
+					"kalle endepunktet PUT /rest/journalpostapi/v1/journalpost/<id>/tilknyttVedlegg");
 		}
 	}
 

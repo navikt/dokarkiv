@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.nimbusds.jwt.JWTClaimsSet;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -46,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -85,7 +87,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("saf/safGraphQlResponseKildeJournalpostId1-happy.json")));
 
-		doNothing().when(tokenGrantValidator).validateOnBehalfOfAccessToken(anyString());
+		when(tokenGrantValidator.validateOnBehalfOfAccessToken(anyString())).thenReturn(new JWTClaimsSet.Builder().subject("saks-behandler").build());
 
 		Long journalpostId = joarkRepository.save(createJournalpostWithHoveddokument()).getJournalpostId();
 		TestTransaction.flagForCommit();

@@ -33,4 +33,8 @@ public final class DecodeUtils {
 		}
 	}
 
+	public static boolean isBasicAuth(String header) {
+		return header.toLowerCase().contains("basic");
+	}
+
 }
