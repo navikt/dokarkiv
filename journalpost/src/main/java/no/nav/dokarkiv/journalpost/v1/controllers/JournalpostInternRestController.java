@@ -134,7 +134,9 @@ public class JournalpostInternRestController {
 
 	private void assertThatConsumerIsOldSchoolSrvdokarkivproxy(String auth) {
 		if (!isBasicAuth(auth) || !SRVDOKARKIVPROXY.equals(decodeBasicAuth(auth)[0])) {
-			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Konsument har ikke tilgang til å kalle tjenesten");
+			throw new ConsumerIsNotSrvDokarkivProxyFunctionalException("Ingen tilgang: Dette endepunktet skal kun brukes " +
+					"av applikasjonen dokarkivproxy. Om du prøver å koble deg til tjenesten tilknyttVedlegg må du i stedet " +
+					"kalle endepunktet PUT /rest/journalpostapi/v1/journalpost/<id>/tilknyttVedlegg");
 		}
 	}
 
