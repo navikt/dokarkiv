@@ -33,18 +33,18 @@ public class SafJournalpostQueryService {
 		this.safGraphqlConsumer = safGraphqlConsumer;
 	}
 
-	public SafJournalpostTo hentJournalpost(String journalpostId, String safAuthorizationHeader) {
+	public SafJournalpostTo hentJournalpost(long journalpostId, String safAuthorizationHeader) {
 
 		ResponseEntity<String> response = safGraphqlConsumer.performQuery(GraphQLRequest.builder()
 				.query(JOURNALPOST_QUERY)
 				.operationName("journalpost")
-				.variables(singletonMap("queryJournalpostId", journalpostId))
-				.build(), safAuthorizationHeader, journalpostId);
+				.variables(singletonMap("queryJournalpostId", String.valueOf(journalpostId)))
+				.build(), safAuthorizationHeader);
 
 		return convertJsonToSafJsonJournalpost(response.getBody(), journalpostId).getJournalpost();
 	}
 
-	private SafJsonJournalpost convertJsonToSafJsonJournalpost(String jsonBody, String journalpostId) {
+	private SafJsonJournalpost convertJsonToSafJsonJournalpost(String jsonBody, long journalpostId) {
 			SafJsonJournalpost journalpost = new GsonBuilder().create().fromJson(jsonBody, SafJsonJournalpost.class);
 			if (journalpost == null || journalpost.getData() == null || journalpost.getJournalpost() == null) {
 				throw new SafJournalpostIkkeFunnetException(String.format("Ingen journalpost ble funnet for journalpostId=%s", journalpostId));
