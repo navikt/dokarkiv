@@ -9,5 +9,5 @@ CREATE TABLE t_utsendings_info (
     digitalpostkasseadresse    VARCHAR(100),
     digitalpostkasseleverandor VARCHAR(20),
     digital_kontaktinformasjon VARCHAR(200),
-    varslingstekst             VARCHAR(4000),
+    varslingstekst             VARCHAR(4000)
 );
