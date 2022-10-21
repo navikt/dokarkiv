@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core;
+package no.nav.dokarkiv.behandlejournal;
 
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.consumer.azure.TokenConsumer;
@@ -11,7 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Configuration
-public class TestCoreConfig {
+public class TestBehandleConfig {
 
 	@Bean
 	public TokenConsumer tokenConsumer() {

@@ -1,6 +1,9 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
+import no.nav.dokarkiv.core.consumer.azure.TokenConsumer;
+import no.nav.dokarkiv.core.consumer.azure.TokenResponse;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
@@ -22,7 +25,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -65,6 +70,18 @@ public abstract class AbstractArkiverdokumentproduksjonItest {
 		@Bean
 		public GoogleCloudBucketStorage dokprodMellomlagerStorage() {
 			return mock(GoogleCloudBucketStorage.class);
+		}
+
+		@Bean
+		public TokenConsumer tokenConsumer() {
+			return (TokenConsumer) token -> new TokenResponse();
+		}
+
+		@Bean
+		public AzureAdGraphService azureAdGraphService() {
+			AzureAdGraphService azureAdGraphServiceMock = mock(AzureAdGraphService.class);
+			when(azureAdGraphServiceMock.hentFulltNavn(any())).thenReturn("Username");
+			return azureAdGraphServiceMock;
 		}
 	}
 }

@@ -24,8 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,15 +55,19 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	public static class Config {
 		@Bean
-		NavLdapService navLdapService() {
+		AzureAdGraphService azureAdGraphService() {
 			AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);
-			NavLdapService mockNavLdapService = mock(NavLdapService.class);
-
 			when(azureAdGraphService.hentFulltNavn(PERSON_USER_ID)).thenReturn(PERSON_USER_NAME);
 			when(azureAdGraphService.userInGroup(PERSON_USER_ID, "0000-GA-joark-vedlikehold")).thenReturn(true);
 
 			when(azureAdGraphService.hentFulltNavn(NO_ACCESS_PERSON_USER_ID)).thenReturn(NO_ACCESS_PERSON_USER_ID);
 			when(azureAdGraphService.userInGroup(NO_ACCESS_PERSON_USER_ID, "0000-GA-joark-vedlikehold")).thenReturn(false);
+			return azureAdGraphService;
+		}
+
+		@Bean
+		NavLdapService navLdapService() {
+			NavLdapService mockNavLdapService = mock(NavLdapService.class);
 
 			when(mockNavLdapService.findByServiceuserId(SERVICE_USER_ID)).thenReturn(NavUser.builder()
 					.userId(SERVICE_USER_ID)

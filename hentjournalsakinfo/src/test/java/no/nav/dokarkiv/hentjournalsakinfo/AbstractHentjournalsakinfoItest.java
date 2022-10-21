@@ -3,6 +3,9 @@ package no.nav.dokarkiv.hentjournalsakinfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
+import no.nav.dokarkiv.core.consumer.azure.TokenConsumer;
+import no.nav.dokarkiv.core.consumer.azure.TokenResponse;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
@@ -32,6 +35,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
@@ -53,6 +60,18 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 															  @Value("${ldap.serviceuser.basedn}") String serviceuserBaseDn) {
 			// kan ikke teste gruppemedlemskap pga embedded unboundid ldap server ikke støtter det.
 			return new BasicAuthRestInterceptor(baseDn, serviceuserBaseDn, null, ldapTemplate, cacheManager);
+		}
+
+		@Bean
+		public TokenConsumer tokenConsumer() {
+			return (TokenConsumer) token -> new TokenResponse();
+		}
+
+		@Bean
+		public AzureAdGraphService azureAdGraphService() {
+			AzureAdGraphService azureAdGraphServiceMock = mock(AzureAdGraphService.class);
+			when(azureAdGraphServiceMock.hentFulltNavn(any())).thenReturn("Username");
+			return azureAdGraphServiceMock;
 		}
 	}
 

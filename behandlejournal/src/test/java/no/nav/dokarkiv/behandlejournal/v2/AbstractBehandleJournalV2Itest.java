@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v2;
 
+import no.nav.dokarkiv.behandlejournal.TestBehandleConfig;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
@@ -24,7 +25,7 @@ import java.util.Date;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, BehandleJournalV2Config.class, TokenGeneratorConfiguration.class})
+		classes = {CoreConfig.class, BehandleJournalV2Config.class, TokenGeneratorConfiguration.class, TestBehandleConfig.class})
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager

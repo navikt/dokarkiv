@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.behandlejournal.v3;
 
+import no.nav.dokarkiv.behandlejournal.TestBehandleConfig;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
@@ -38,7 +39,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, BehandleJournalV3Config.class, TokenGeneratorConfiguration.class})
+		classes = {CoreConfig.class, BehandleJournalV3Config.class, TokenGeneratorConfiguration.class, TestBehandleConfig.class})
 @ActiveProfiles({"itest", "wiremock"})
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager

@@ -3,12 +3,12 @@ package no.nav.dokarkiv.journalfoerinngaaende.v1;
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.TestCoreConfig;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
+import no.nav.dokarkiv.core.security.SporingHandlerInterceptorTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
@@ -49,8 +49,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TokenGeneratorConfiguration.class, TestCoreConfig.class})
-@ActiveProfiles({"itest", "wiremock", "ldap"})
+		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TokenGeneratorConfiguration.class, SporingHandlerInterceptorTest.TestConfig.class})
+@ActiveProfiles({"itest", "wiremock", "ldap", "registry"})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager

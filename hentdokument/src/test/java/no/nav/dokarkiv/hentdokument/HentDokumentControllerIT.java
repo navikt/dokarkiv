@@ -26,6 +26,7 @@ import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.security.SporingHandlerInterceptorTest;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -67,8 +68,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, HentDokumentConfig.class, TokenGeneratorConfiguration.class})
-@ActiveProfiles({"itest", "wiremock"})
+		classes = {CoreConfig.class, HentDokumentConfig.class, TokenGeneratorConfiguration.class, SporingHandlerInterceptorTest.TestConfig.class})
+@ActiveProfiles({"itest", "wiremock", "registry"})
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @AutoConfigureWireMock(port = 0)

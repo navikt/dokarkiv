@@ -2,6 +2,7 @@ package no.nav.dokarkiv.arkivervariant;
 
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
@@ -39,18 +40,19 @@ public abstract class AbstractArkiverVariantIT extends AbstractRestIT {
 
 	public static class Config {
 		@Bean
+		AzureAdGraphService azureAdGraphService() {
+			AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);
+			when(azureAdGraphService.hentFulltNavn(PERSON_USER_ID)).thenReturn(PERSON_USER_NAME);
+			when(azureAdGraphService.userInGroup(PERSON_USER_ID, "0000-GA-joark-vedlikehold")).thenReturn(true);
+
+			when(azureAdGraphService.hentFulltNavn(NO_ACCESS_PERSON_USER_ID)).thenReturn(NO_ACCESS_PERSON_USER_ID);
+			when(azureAdGraphService.userInGroup(NO_ACCESS_PERSON_USER_ID, "0000-GA-joark-vedlikehold")).thenReturn(false);
+			return azureAdGraphService;
+		}
+
+		@Bean
 		NavLdapService navLdapService() {
 			NavLdapService mockNavLdapService = mock(NavLdapService.class);
-			when(mockNavLdapService.findByUserId(PERSON_USER_ID)).thenReturn(NavUser.builder()
-					.memberOf(new HashSet<>(Arrays.asList("0000-GA-joark-vedlikehold")))
-					.userId(PERSON_USER_ID)
-					.userExistsInLdap(true)
-					.build());
-			when(mockNavLdapService.findByUserId(NO_ACCESS_PERSON_USER_ID)).thenReturn(NavUser.builder()
-					.memberOf(new HashSet<>(Arrays.asList("0000-GA-NOTHING")))
-					.userId(NO_ACCESS_PERSON_USER_ID)
-					.userExistsInLdap(true)
-					.build());
 			when(mockNavLdapService.findByServiceuserId(SERVICE_USER_ID)).thenReturn(NavUser.builder()
 					.userId(SERVICE_USER_ID)
 					.userExistsInLdap(true)

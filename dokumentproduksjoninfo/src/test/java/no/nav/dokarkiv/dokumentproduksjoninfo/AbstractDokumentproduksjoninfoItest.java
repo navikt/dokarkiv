@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo;
 
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.TestCoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.consumer.azure.TokenConsumer;
 import no.nav.dokarkiv.core.consumer.azure.TokenResponse;
@@ -25,11 +24,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, DokumentproduksjonInfoConfig.class, TokenGeneratorConfiguration.class, TestCoreConfig.class})
+		classes = {CoreConfig.class, DokumentproduksjonInfoConfig.class, TokenGeneratorConfiguration.class, AbstractDokumentproduksjoninfoItest.Config.class})
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
@@ -45,6 +46,22 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 	@Inject
 	protected SkjermingServiceTest skjermingService;
 
+
+	@Configuration
+	public static class Config {
+
+		@Bean
+		public TokenConsumer tokenConsumer() {
+			return (TokenConsumer) token -> new TokenResponse();
+		}
+
+		@Bean
+		public AzureAdGraphService azureAdGraphService() {
+			AzureAdGraphService azureAdGraphServiceMock = mock(AzureAdGraphService.class);
+			when(azureAdGraphServiceMock.hentFulltNavn(any())).thenReturn("Username");
+			return azureAdGraphServiceMock;
+		}
+	}
 
 	@BeforeEach
 	public void setUpItest() {
