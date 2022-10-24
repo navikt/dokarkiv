@@ -1,5 +1,5 @@
 CREATE TABLE t_utsendings_info (
-    journalpost_id             NUMBER NOT NULL PRIMARY KEY
+    journalpost_id             NUMBER PRIMARY KEY
     CONSTRAINT t_utsendings_info_fk REFERENCES t_journalpost(journalpost_id),
     adresselinje1              VARCHAR(200),
     adresselinje2              VARCHAR(200),
