@@ -6,9 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import java.util.Arrays;
-import java.util.HashSet;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -19,6 +17,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
+@ActiveProfiles("itest")
 public class ValidateAdminConsumerAccessInterceptorTest {
 
 	private final AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);

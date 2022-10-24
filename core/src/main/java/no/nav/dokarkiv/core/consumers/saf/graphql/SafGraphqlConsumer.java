@@ -4,7 +4,6 @@ import no.nav.dokarkiv.core.consumer.azure.AzureToken;
 import no.nav.dokarkiv.core.consumer.azure.WebClientAzureAuthentication;
 import no.nav.dokarkiv.core.consumers.saf.exceptions.saf.SafJournalpostQueryTechnicalException;
 import no.nav.dokarkiv.core.consumers.saf.exceptions.saf.SafJournalpostUnauthorizedException;
-import no.nav.dokarkiv.core.exceptions.ValidationFunctionalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.util.NavHeadersFilter;
 import org.springframework.beans.factory.annotation.Autowired;
