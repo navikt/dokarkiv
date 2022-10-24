@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -13,6 +14,7 @@ import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.security.TokenGrantValidator;
 import no.nav.dokarkiv.journalpost.v1.api.ArsakKode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
@@ -45,12 +47,17 @@ public class TilknyttVedleggService {
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final TilknyttVedleggValidator tilknyttVedleggValidator;
 	private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator;
+	private final AccessLookupJournalpost accessLookupJournalpost;
+	private final TokenGrantValidator tokenGrantValidator;
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
+	public static final String BEARER = "Bearer ";
 
 	@Inject
-	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
+	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AccessLookupJournalpost accessLookupJournalpost, TokenGrantValidator tokenGrantValidator) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
+		this.accessLookupJournalpost = accessLookupJournalpost;
+		this.tokenGrantValidator = tokenGrantValidator;
 		this.shallowDokumentInfoCopier = new ShallowDokumentInfoCopier();
 		this.dokumentinfoRepository = dokumentinfoRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
@@ -58,7 +65,26 @@ public class TilknyttVedleggService {
 		this.tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
 	}
 
-	public List<FeiledeDokumenter> tilknyttVedlegg(Long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
+	@Deprecated  // Fjernes når vi har skrudd av dokarkivproxy
+	public List<FeiledeDokumenter> tilknyttVedleggWithoutQueryingSaf(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
+		return tilknyttVedlegg(targetJournalpostId, tilknyttVedleggRequest);
+	}
+
+	public List<FeiledeDokumenter> tilknyttVedlegg(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest, String auth) {
+		JWTClaimsSet tokenClaims = tokenGrantValidator.validateOnBehalfOfAccessToken(auth);
+		String tilknyttetAvNavn = tokenClaims.getSubject();
+
+		var accessControlledDocuments = accessLookupJournalpost.checkDocumentsCanBeAccessedByActor(targetJournalpostId, tilknyttVedleggRequest, auth);
+
+		List<FeiledeDokumenter> failedDocuments = accessControlledDocuments.failedDocuments();
+
+		failedDocuments.addAll(tilknyttVedlegg(targetJournalpostId, new TilknyttVedleggRequest(tilknyttetAvNavn, accessControlledDocuments.okDocuments())));
+
+		return failedDocuments;
+	}
+
+
+	private List<FeiledeDokumenter> tilknyttVedlegg(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
 
 		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
 
@@ -246,4 +272,5 @@ public class TilknyttVedleggService {
 		}
 		return valid;
 	}
+
 }

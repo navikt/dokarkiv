@@ -36,7 +36,7 @@ public class SafGraphqlConsumer {
 
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "safJournalpostQuery"}, percentiles = {0.5, 0.95})
 	@Retryable(include = SafJournalpostQueryTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT))
-	public ResponseEntity<String> performQuery(GraphQLRequest graphQLRequest, String safAuthorizationHeader, String journalpostId) {
+	public ResponseEntity<String> performQuery(GraphQLRequest graphQLRequest, String safAuthorizationHeader) {
 
 		return safGraphQLClient
 				.post()
