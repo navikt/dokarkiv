@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -21,7 +22,8 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 	private final AzureAdGraphService azureAdGraphService;
 
 	private static final String ADMIN_SERVICE_USER = "srvjoarkadmin";
-	private static final String ADMIN_SERVICE_USER_AD_ROLE = "0000-GA-joark-vedlikehold";
+	@Value("${azure.ad.admin.role}")
+	private String ADMIN_SERVICE_USER_AD_ROLE;
 
 	public ValidateAdminConsumerAccessInterceptor(AzureAdGraphService azureAdGraphService) {
 		this.azureAdGraphService = azureAdGraphService;
