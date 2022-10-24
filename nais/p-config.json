@@ -38,6 +38,10 @@
   "APPD_NAME": "dokarkiv",
   "DOKARKIV_DATABASE_POOLSIZE": "60",
   "SPRINGDOC_ENABLED": "false",
+  "AZURE_AD_ADMIN_ROLE": "cc9f8c69-9a8b-4cd1-a1c7-d5e993cc7e5a",
+  "AZURE_APP_TOKEN_URL": "https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/oauth2/v2.0/token",
+  "DOKARKIV_PROXY_HOST": "webproxy.nais",
+  "DOKARKIV_PROXY_PORT": "8088",
   "AZURE_IAC_RULES": [
     {
       "app": "salesforce",

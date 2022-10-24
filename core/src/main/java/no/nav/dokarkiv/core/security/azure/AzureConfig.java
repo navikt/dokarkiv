@@ -21,6 +21,8 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 public class AzureConfig {
 
     @NotEmpty
+    private String tokenUrl;
+    @NotEmpty
     private String openidConfigTokenEndpoint;
     @NotEmpty
     private String appClientId;

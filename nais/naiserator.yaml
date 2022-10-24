@@ -66,6 +66,12 @@ spec:
       value: {{ DOKPRODMELLOMLAGER_KEYID }}
     - name: SPRINGDOC_ENABLED
       value: "{{ SPRINGDOC_ENABLED }}"
+    - name: AZURE_APP_TOKEN_URL
+      value: {{ AZURE_APP_TOKEN_URL }}
+    - name: DOKARKIV_PROXY_HOST
+      value: {{ DOKARKIV_PROXY_HOST }}
+    - name: DOKARKIV_PROXY_PORT
+      value: "{{ DOKARKIV_PROXY_PORT }}"
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
