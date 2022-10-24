@@ -43,11 +43,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.unboundid</groupId>
-			<artifactId>unboundid-ldapsdk</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>no.nav.security</groupId>
 			<artifactId>token-validation-test-support</artifactId>
 			<scope>test</scope>

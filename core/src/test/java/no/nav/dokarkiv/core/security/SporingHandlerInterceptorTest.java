@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.security.token.support.filter.JwtTokenValidationFilter;
 import no.nav.security.token.support.spring.EnableJwtTokenValidationConfiguration;
 import no.nav.security.token.support.test.JwtTokenGenerator;
@@ -51,12 +50,10 @@ import static org.mockito.Mockito.when;
 @DataLdapTest
 @ContextConfiguration(classes = {
 		SporingHandlerInterceptorTest.TestConfig.class,
-		LdapConfig.class,
 		SporingHandlerInterceptor.class,
-		NavLdapService.class,
 		EnableJwtTokenValidationConfiguration.class,
 		TokenGeneratorConfiguration.class})
-@ActiveProfiles({"itest", "ldap", "registry"})
+@ActiveProfiles({"itest", "registry"})
 public class SporingHandlerInterceptorTest {
 	public static final String SERVICE_USER = "srvdokarkiv";
 	public static final String USER_ID = "Z990782";

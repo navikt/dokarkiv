@@ -11,8 +11,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
-import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.test.JwkGenerator;
 import org.junit.jupiter.api.Test;

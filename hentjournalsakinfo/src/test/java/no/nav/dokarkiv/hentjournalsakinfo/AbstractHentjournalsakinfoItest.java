@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 		classes = {CoreConfig.class, HentJournalsakinfoConfig.class, LdapConfig.class,
 				AbstractHentjournalsakinfoItest.Config.class, TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles({"itest", "wiremock", "ldap"})
+@ActiveProfiles({"itest", "wiremock"})
 public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 
 	@Configuration

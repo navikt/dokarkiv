@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.security.handler.AzureAdFlowSporingHandler;
 import no.nav.dokarkiv.core.security.handler.NavCombinedBrukerSystemkontekstHandler;
 import no.nav.dokarkiv.core.security.handler.NavSystemkontekstHandler;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.modig.core.context.SubjectHandler;
 import no.nav.security.token.support.core.configuration.MultiIssuerConfiguration;
 import no.nav.security.token.support.core.context.TokenValidationContext;
@@ -68,13 +67,13 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 
 	public SporingHandlerInterceptor(TokenValidationContextHolder tokenValidationContextHolder,
 									 MultiIssuerConfiguration multiIssuerConfiguration,
-									 NavLdapService navLdapService, MeterRegistry meterRegistry, AzureAdGraphService azureAdGraphService) {
+									 MeterRegistry meterRegistry, AzureAdGraphService azureAdGraphService) {
 		this.tokenValidationContextHolder = tokenValidationContextHolder;
 		this.meterRegistry = meterRegistry;
 		this.azureAdGraphService = azureAdGraphService;
 		this.headerTokenExtractor = new HeaderTokenExtractor();
 		this.azureAdFlowSporingHandler = new AzureAdFlowSporingHandler(azureAdGraphService);
-		this.navSystemkontekstHandler = new NavSystemkontekstHandler(navLdapService, this.azureAdGraphService);
+		this.navSystemkontekstHandler = new NavSystemkontekstHandler(this.azureAdGraphService);
 		this.navCombinedBrukerSystemkontekstHandler = new NavCombinedBrukerSystemkontekstHandler(azureAdGraphService,
 				multiIssuerConfiguration.getIssuer(ISSUER_RESTSTS).orElseThrow().getTokenValidator());
 	}

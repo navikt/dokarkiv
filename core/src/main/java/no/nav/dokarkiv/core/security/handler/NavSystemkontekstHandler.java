@@ -3,8 +3,6 @@ package no.nav.dokarkiv.core.security.handler;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
-import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import org.slf4j.MDC;
 
@@ -25,11 +23,9 @@ import static no.nav.dokarkiv.core.security.handler.HandlerConstants.NAVIDENT_RE
 public class NavSystemkontekstHandler {
 	private static final String ERROR_MELDING_PREFIX = "Tjeneste kalt med REST-STS token og Nav-User-Id header.";
 	private static final String ERROR_MELDING_SUFFIX = "Konsument må informeres og bes om å rette dette.";
-	private final NavLdapService navLdapService;
 	private final AzureAdGraphService azureAdGraphService;
 
-	public NavSystemkontekstHandler(NavLdapService navLdapService, AzureAdGraphService azureAdGraphService) {
-		this.navLdapService = navLdapService;
+	public NavSystemkontekstHandler(AzureAdGraphService azureAdGraphService) {
 		this.azureAdGraphService = azureAdGraphService;
 	}
 

@@ -50,7 +50,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TokenGeneratorConfiguration.class, SporingHandlerInterceptorTest.TestConfig.class})
-@ActiveProfiles({"itest", "wiremock", "ldap", "registry"})
+@ActiveProfiles({"itest", "wiremock", "registry"})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager

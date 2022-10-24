@@ -11,8 +11,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
-import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.test.JwkGenerator;
 import org.junit.jupiter.api.Test;
@@ -43,9 +41,8 @@ class NavSystemkontekstHandlerTest {
 	private static final String USER_NAVIDENT = "D999999";
 	private static final String USER_NAME = "Donald Duck";
 
-	private final NavLdapService navLdapServiceMock = mock(NavLdapService.class);
 	private final AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);
-	private final NavSystemkontekstHandler navSystemkontekstHandler = new NavSystemkontekstHandler(navLdapServiceMock, azureAdGraphService);
+	private final NavSystemkontekstHandler navSystemkontekstHandler = new NavSystemkontekstHandler(azureAdGraphService);
 
 	@Test
 	void shouldReturnFalseWhenHandledRestStsToken() throws IOException {
