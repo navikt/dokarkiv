@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,7 +18,6 @@ import static org.mockito.Mockito.when;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
-@ActiveProfiles("itest")
 public class ValidateAdminConsumerAccessInterceptorTest {
 
 	private final AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);
@@ -75,7 +75,7 @@ public class ValidateAdminConsumerAccessInterceptorTest {
 	public void shouldDenyAccessToNavUserNotMemberOfJoarkVedlikehold() throws Exception {
 		when(azureAdGraphService.hentFulltNavn(any())).thenReturn("Z990782");
 		when(azureAdGraphService.userInGroup("Z990782", "0000-GA-joark-vedlikehold")).thenReturn(false);
-
+		ReflectionTestUtils.setField(validateAdminConsumerAccessInterceptor,"adminServiceUserAdRole", "0000-GA-joark-vedlikehold");
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_ADMIN_USER);
 		request.addHeader(NavHeaders.NAV_CONSUMER_TOKEN, OIDC_TOKEN_JOARKADMIN_USER_TEST);

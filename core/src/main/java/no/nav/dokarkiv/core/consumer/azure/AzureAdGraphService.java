@@ -61,10 +61,10 @@ public class AzureAdGraphService {
 
 	@Cacheable(value = AZURE_HENT_AD_GRUPPER, key = "#navIdent")
 	@Retryable(include = Exception.class, exclude = {DokarkivFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Boolean userInGroup(String navIdent, String ldapGroup) {
+	public Boolean userInGroup(String navIdent, String adGroup) {
 		User user = getUser(navIdent);
 		List<String> groups = getAzureGroupsByPrincipal(user.id);
-		return groups.contains(ldapGroup);
+		return groups.contains(adGroup);
 	}
 
 	private String getUserToken() {

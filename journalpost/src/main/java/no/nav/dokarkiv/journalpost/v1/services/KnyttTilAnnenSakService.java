@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.consumers.saf.SafJournalpostQueryService;
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo;

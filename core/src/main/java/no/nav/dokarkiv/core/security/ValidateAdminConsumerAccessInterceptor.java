@@ -23,7 +23,7 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 
 	private static final String ADMIN_SERVICE_USER = "srvjoarkadmin";
 	@Value("${azure.ad.admin.role}")
-	private String ADMIN_SERVICE_USER_AD_ROLE;
+	private String adminServiceUserAdRole;
 
 	public ValidateAdminConsumerAccessInterceptor(AzureAdGraphService azureAdGraphService) {
 		this.azureAdGraphService = azureAdGraphService;
@@ -53,8 +53,8 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 				log.warn(message);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
 				return false;
-			} else if (isFalse(isUserInTokenHasRole(authorizationToken, ADMIN_SERVICE_USER_AD_ROLE))) {
-				String message = String.format("Bruker må være medlem av gruppen \"%s\"", ADMIN_SERVICE_USER_AD_ROLE);
+			} else if (isFalse(isUserInTokenHasRole(authorizationToken, adminServiceUserAdRole))) {
+				String message = String.format("Bruker må være medlem av gruppen \"%s\"", adminServiceUserAdRole);
 				log.warn(message);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
 				return false;
