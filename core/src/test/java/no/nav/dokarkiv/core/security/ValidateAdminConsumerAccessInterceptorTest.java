@@ -2,7 +2,6 @@ package no.nav.dokarkiv.core.security;
 
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -28,15 +27,12 @@ public class ValidateAdminConsumerAccessInterceptorTest {
 	protected static final String OIDC_TOKEN_AZURE = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjJaUXBKM1VwYmpBWVhZR2FYRUpsOGxWMFRPSSJ9.eyJhdWQiOiI1N2MwNDBjOC01NzQ3LTRjM2UtOTA4ZS00OGQ0MWEzYmE1OTEiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vOTY2YWM1NzItZjViNy00YmJlLWFhODgtYzc2NDE5YzBmODUxL3YyLjAiLCJpYXQiOjE2NjQ5NzE4NDksIm5iZiI6MTY2NDk3MTg0OSwiZXhwIjoxNjY0OTc1NzQ5LCJhaW8iOiJFMlpnWUVoL3FybGpvZkZ6NnczTEV4TmwxWFIrQVFBPSIsImF6cCI6Ijc0ZGI3OTNlLTVlODgtNDM3Ny1iY2Q3LWI4ZmI1YWIwYzBhMyIsImF6cGFjciI6IjEiLCJvaWQiOiJjMzk2OWU3ZC05Nzk3LTQzZDMtODkyYS02OTU3NzM5ZTNlNGQiLCJyaCI6IjAuQVVjQWNzVnFscmYxdmt1cWlNZGtHY0Q0VWNoQXdGZEhWejVNa0k1STFCbzdwWkZIQUFBLiIsInJvbGVzIjpbImFjY2Vzc19hc19hcHBsaWNhdGlvbiJdLCJzdWIiOiJjMzk2OWU3ZC05Nzk3LTQzZDMtODkyYS02OTU3NzM5ZTNlNGQiLCJ0aWQiOiI5NjZhYzU3Mi1mNWI3LTRiYmUtYWE4OC1jNzY0MTljMGY4NTEiLCJ1dGkiOiJrWUotY0JsR2wwQ0dFNUZtU2lXTUFBIiwidmVyIjoiMi4wIiwiYXpwX25hbWUiOiJkZXYtZnNzOnRlYW1kb2t1bWVudGhhbmR0ZXJpbmc6am9hcmthZG1pbi1xMSJ9.d7XM9hZsmB5apgdivncKQrFj06KbZRgk0WQeZOo5qWBNLBUGKsD-Mbx_4TzlL5mo5TebSpHN7LNIDcQUyyMwqslEzOJSZScR7W6Wm0gqpbe1gK1KjB3Fjjv4PxReEnEzaEaNdmPxJDXqxrlhO0GoI1Ecyd2xP3wCEHj-C2NAyRbn5ARRw6LVSaUjBKBSi4S2pgJisXOsELfh83bWeLSUQVPH8qmJopEgsYEFxpMWgHPxFvO4fOBd-S_tg3RH6H_bnKVWYtdZwbEtPOVzOLMGGvA3YsGyQnTeuFeWVcIx7CITSqoYowX9S72p6AlRXgAoUKAeFm3BR1516aHrYGDY1Q";
 	private final ValidateAdminConsumerAccessInterceptor validateAdminConsumerAccessInterceptor = new ValidateAdminConsumerAccessInterceptor(azureAdGraphService);
 
-	@BeforeAll
-	public void setUp() {
-		ReflectionTestUtils.setField(validateAdminConsumerAccessInterceptor,"adminServiceUserAdRole", "0000-GA-joark-vedlikehold");
-	}
-
 	@Test
 	public void shouldAllowAccessToJoarkadminServiceUserAndNavUserMemberOfJoarkVedlikeholdGroup() throws Exception {
 		when(azureAdGraphService.hentFulltNavn(any())).thenReturn("Z990782");
 		when(azureAdGraphService.userInGroup("Z990067", "0000-GA-joark-vedlikehold")).thenReturn(true);
+		ReflectionTestUtils.setField(validateAdminConsumerAccessInterceptor,"adminServiceUserAdRole", "0000-GA-joark-vedlikehold");
+
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_ADMIN_USER);
 		request.addHeader(NavHeaders.NAV_CONSUMER_TOKEN, OIDC_TOKEN_JOARKADMIN_USER_TEST);
@@ -50,6 +46,7 @@ public class ValidateAdminConsumerAccessInterceptorTest {
 	public void shouldDenyAccessToNonJoarkAdminConsumerUserWhenOnlyAuthorizationTokenIsPresent() throws Exception {
 		when(azureAdGraphService.hentFulltNavn(any())).thenReturn("Z990782");
 		when(azureAdGraphService.userInGroup("Z990782", "0000-GA-joark-vedlikehold")).thenReturn(true);
+		ReflectionTestUtils.setField(validateAdminConsumerAccessInterceptor,"adminServiceUserAdRole", "0000-GA-joark-vedlikehold");
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_DOKARKIV_USER_TEST);
@@ -65,6 +62,7 @@ public class ValidateAdminConsumerAccessInterceptorTest {
 	public void shouldDenyAccessToNonJoarkAdminConsumerUser() throws Exception {
 		when(azureAdGraphService.hentFulltNavn(any())).thenReturn("Z990782");
 		when(azureAdGraphService.userInGroup("Z990782", "0000-GA-joark-vedlikehold")).thenReturn(true);
+		ReflectionTestUtils.setField(validateAdminConsumerAccessInterceptor,"adminServiceUserAdRole", "0000-GA-joark-vedlikehold");
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_ADMIN_USER);
@@ -81,7 +79,7 @@ public class ValidateAdminConsumerAccessInterceptorTest {
 	public void shouldDenyAccessToNavUserNotMemberOfJoarkVedlikehold() throws Exception {
 		when(azureAdGraphService.hentFulltNavn(any())).thenReturn("Z990782");
 		when(azureAdGraphService.userInGroup("Z990782", "0000-GA-joark-vedlikehold")).thenReturn(false);
-
+		ReflectionTestUtils.setField(validateAdminConsumerAccessInterceptor,"adminServiceUserAdRole", "0000-GA-joark-vedlikehold");
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_ADMIN_USER);
 		request.addHeader(NavHeaders.NAV_CONSUMER_TOKEN, OIDC_TOKEN_JOARKADMIN_USER_TEST);
