@@ -19,7 +19,6 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.FjernVedleggTilknyttetJournalpost;
-import no.nav.dokarkiv.journalpost.v1.services.KnyttTilAnnenSakService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
@@ -29,7 +28,6 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
-import no.nav.dokarkiv.journalpost.v1.validators.KnyttTilAnnenSakValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import no.nav.security.token.support.core.api.Protected;
@@ -77,7 +75,6 @@ public class ArkiverOgJournalfoerRestController {
 	private final OpprettJournalpostService opprettJournalpostService;
 	private final OpprettJournalpostRequestValidator opprettJournalpostRequestValidator;
 	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
-	private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
 	private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
 
 	@Inject
@@ -93,7 +90,6 @@ public class ArkiverOgJournalfoerRestController {
 		this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
 		this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
 		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
-		this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
 	}
 
 	@Transactional
@@ -130,7 +126,7 @@ public class ArkiverOgJournalfoerRestController {
 			MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for oppdatering av distribusjonsinfo for journalpostId={}", journalpostId);
 			validateId(journalpostId, "journalpostId");
-			oppdaterDistribusjonsinfoValidator.validateRequest(journalpostId, request);
+			OppdaterDistribusjonsinfoValidator.validateRequest(journalpostId, request);
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 			oppdaterDistribusjonsinfoService.oppdaterDistribusjonsinfo(Long.parseLong(journalpostId), request);

@@ -59,4 +59,13 @@ public final class CommonValidator {
 			throw new IllegalArgumentException(String.format("%s skal være numerisk", feltnavn));
 		}
 	}
+
+	public static void validateNotNull(Object o, String feltnavn) {
+		validateNotNull(o, feltnavn, null);
+	}
+	public static void validateNotNull(Object o, String feltnavn, String ekstraInformasjon) {
+		if (o == null) {
+			throw new InputValideringFeiletException(feltnavn + " kan ikke være null" + (ekstraInformasjon != null ? ", " + ekstraInformasjon : "" ) + "!" );
+		}
+	}
 }
