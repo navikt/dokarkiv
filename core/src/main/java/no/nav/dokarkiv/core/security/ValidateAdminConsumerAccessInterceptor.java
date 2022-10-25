@@ -22,11 +22,12 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 	private final AzureAdGraphService azureAdGraphService;
 
 	private static final String ADMIN_SERVICE_USER = "srvjoarkadmin";
-	@Value("${azure.ad.admin.role}")
-	private String adminServiceUserAdRole;
 
-	public ValidateAdminConsumerAccessInterceptor(AzureAdGraphService azureAdGraphService) {
+	private final String adminServiceUserAdRole;
+
+	public ValidateAdminConsumerAccessInterceptor(AzureAdGraphService azureAdGraphService, String adminServiceUserAdRole) {
 		this.azureAdGraphService = azureAdGraphService;
+		this.adminServiceUserAdRole = adminServiceUserAdRole;
 	}
 
 	@Override
