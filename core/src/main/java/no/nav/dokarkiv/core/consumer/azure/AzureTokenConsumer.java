@@ -75,7 +75,7 @@ public class AzureTokenConsumer implements TokenConsumer {
 					azureConfig.getAppClientId() + "&client_secret=" + azureConfig.getAppClientSecret();
 			HttpEntity<String> requestEntity = new HttpEntity<>(form, headers);
 
-			return restTemplate.exchange(azureConfig.getTokenUrl(), POST, requestEntity, TokenResponse.class)
+			return restTemplate.exchange(azureConfig.getAppTokenUrl(), POST, requestEntity, TokenResponse.class)
 					.getBody();
 		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw new AzureTokenException(String.format("Klarte ikke hente token fra Azure. Feilet med httpstatus=%s. Feilmelding=%s", e.getStatusCode(), e.getMessage()), e);
