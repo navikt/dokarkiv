@@ -72,6 +72,8 @@ spec:
       value: {{ DOKARKIV_PROXY_HOST }}
     - name: DOKARKIV_PROXY_PORT
       value: "{{ DOKARKIV_PROXY_PORT }}"
+    - name: AZURE_AD_ADMIN_ROLE
+      value: {{ AZURE_AD_ADMIN_ROLE }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
