@@ -2,7 +2,6 @@ package no.nav.dokarkiv.dokumentproduksjoninfo;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.consumer.azure.TokenConsumer;
 import no.nav.dokarkiv.core.consumer.azure.TokenResponse;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
@@ -49,11 +48,6 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 
 	@Configuration
 	public static class Config {
-
-		@Bean
-		public TokenConsumer tokenConsumer() {
-			return (TokenConsumer) token -> new TokenResponse();
-		}
 
 		@Bean
 		public AzureAdGraphService azureAdGraphService() {

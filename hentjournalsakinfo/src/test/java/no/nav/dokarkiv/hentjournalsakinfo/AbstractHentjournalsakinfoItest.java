@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.consumer.azure.TokenConsumer;
 import no.nav.dokarkiv.core.consumer.azure.TokenResponse;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -60,11 +59,6 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 															  @Value("${ldap.serviceuser.basedn}") String serviceuserBaseDn) {
 			// kan ikke teste gruppemedlemskap pga embedded unboundid ldap server ikke støtter det.
 			return new BasicAuthRestInterceptor(baseDn, serviceuserBaseDn, null, ldapTemplate, cacheManager);
-		}
-
-		@Bean
-		public TokenConsumer tokenConsumer() {
-			return (TokenConsumer) token -> new TokenResponse();
 		}
 
 		@Bean

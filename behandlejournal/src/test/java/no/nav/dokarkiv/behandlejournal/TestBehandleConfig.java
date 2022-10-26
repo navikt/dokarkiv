@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.behandlejournal;
 
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.consumer.azure.TokenConsumer;
 import no.nav.dokarkiv.core.consumer.azure.TokenResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,11 +11,6 @@ import static org.mockito.Mockito.when;
 
 @Configuration
 public class TestBehandleConfig {
-
-	@Bean
-	public TokenConsumer tokenConsumer() {
-		return (TokenConsumer) token -> new TokenResponse();
-	}
 
 	@Bean
 	public AzureAdGraphService azureAdGraphService() {

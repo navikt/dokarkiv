@@ -95,7 +95,7 @@ public class AzureAdFlowSporingHandler {
 				MDC.put(MDCConstants.MDC_CONSUMER_ID, appClaim);
 			} else {
 				handleClientCredentialGrantFlowAppContext(appClaim);
-				log.error(ERROR_MELDING_PREFIX + " Fant ikke NAVIdent={} i onprem Active Directory. " + ERROR_MELDING_SUFFIX, navUserIdHeader);
+				log.error(ERROR_MELDING_PREFIX + " Fant ikke NAVIdent={} i Microsoft Graph." + ERROR_MELDING_SUFFIX, navUserIdHeader);
 			}
 		} else {
 			handleClientCredentialGrantFlowAppContext(appClaim);

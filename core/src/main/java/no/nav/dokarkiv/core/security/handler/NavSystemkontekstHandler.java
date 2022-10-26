@@ -56,7 +56,7 @@ public class NavSystemkontekstHandler {
 				MDC.put(MDCConstants.MDC_USER_NAME, fulltNavn);
 				MDC.put(MDCConstants.MDC_CONSUMER_ID, consumerId);
 			} else {
-				log.error(ERROR_MELDING_PREFIX + " Fant ikke NAVIdent={} i onprem Active Directory. " + ERROR_MELDING_SUFFIX, navUserIdHeader);
+				log.error(ERROR_MELDING_PREFIX + " Fant ikke NAVIdent={} i Microsoft Graph." + ERROR_MELDING_SUFFIX, navUserIdHeader);
 				handleServiceUserContext(consumerId);
 			}
 		} else {

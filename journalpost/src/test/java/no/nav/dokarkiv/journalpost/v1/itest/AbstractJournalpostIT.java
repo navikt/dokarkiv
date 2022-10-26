@@ -3,7 +3,6 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.consumer.azure.TokenConsumer;
 import no.nav.dokarkiv.core.consumer.azure.TokenResponse;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -58,11 +57,6 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	@Configuration
 	public static class Config {
-		@Bean
-		public TokenConsumer tokenConsumer() {
-			return (TokenConsumer) token -> new TokenResponse();
-		}
-
 		@Bean
 		public AzureAdGraphService azureAdGraphService() {
 			AzureAdGraphService azureAdGraphServiceMock = mock(AzureAdGraphService.class);

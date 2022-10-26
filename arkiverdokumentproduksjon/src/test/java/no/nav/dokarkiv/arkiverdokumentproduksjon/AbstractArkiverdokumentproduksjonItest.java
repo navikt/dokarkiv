@@ -2,7 +2,6 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.consumer.azure.TokenConsumer;
 import no.nav.dokarkiv.core.consumer.azure.TokenResponse;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
@@ -71,12 +70,6 @@ public abstract class AbstractArkiverdokumentproduksjonItest {
 		public GoogleCloudBucketStorage dokprodMellomlagerStorage() {
 			return mock(GoogleCloudBucketStorage.class);
 		}
-
-		@Bean
-		public TokenConsumer tokenConsumer() {
-			return (TokenConsumer) token -> new TokenResponse();
-		}
-
 		@Bean
 		public AzureAdGraphService azureAdGraphService() {
 			AzureAdGraphService azureAdGraphServiceMock = mock(AzureAdGraphService.class);

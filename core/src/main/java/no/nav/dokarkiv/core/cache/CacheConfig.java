@@ -58,13 +58,9 @@ public class CacheConfig {
 						.expireAfterWrite(50, MINUTES)
 						.maximumSize(1)
 						.build()),
-				new CaffeineCache(AZURE_HENT_FULLT_NAVN, Caffeine.newBuilder()
-						.expireAfterWrite(50, MINUTES)
-						.maximumSize(1)
-						.build()),
 				new CaffeineCache(AZURE_HENT_AD_GRUPPER, Caffeine.newBuilder()
 						.expireAfterWrite(50, MINUTES)
-						.maximumSize(1)
+						.maximumSize(10000)
 						.build())));
 		return manager;
 	}

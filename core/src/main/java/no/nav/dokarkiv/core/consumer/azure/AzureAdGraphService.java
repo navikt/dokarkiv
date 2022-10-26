@@ -28,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_HENT_AD_GRUPPER;
-import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_HENT_FULLT_NAVN;
+import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -38,21 +38,21 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class AzureAdGraphService {
 
 
-	private final TokenConsumer tokenConsumer;
+	private final AzureToken azureToken;
 	public static final String BRUKER_IKKE_FUNNET = "Azure AD - Bruker ikke funnet";
 
 	public static final String MICROSOFT_GRAPH_SCOPE_V2 = "https://graph.microsoft.com/";
 	public static final String MICROSOFT_GRAPH_SCOPE_APP = MICROSOFT_GRAPH_SCOPE_V2 + ".default";
 	private final RestTemplate restTemplate;
 
-	public AzureAdGraphService(TokenConsumer tokenConsumer,
+	public AzureAdGraphService(AzureToken azureToken,
 							   RestTemplate restTemplate) {
-		this.tokenConsumer = tokenConsumer;
+		this.azureToken = azureToken;
 		this.restTemplate = restTemplate;
 	}
 
 
-	@Cacheable(value = AZURE_HENT_FULLT_NAVN, key = "#navIdent")
+	@Cacheable(value = NAVUSER_CACHE, key = "#navIdent")
 	@Retryable(include = Exception.class, exclude = {DokarkivFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public String hentFulltNavn(String navIdent) {
 		User user = getUser(navIdent);
@@ -68,7 +68,7 @@ public class AzureAdGraphService {
 	}
 
 	private String getUserToken() {
-		return tokenConsumer.getClientCredentialToken(MICROSOFT_GRAPH_SCOPE_APP).getAccess_token();
+		return azureToken.getClientCredentialToken(MICROSOFT_GRAPH_SCOPE_APP).getAccess_token();
 	}
 
 	GraphServiceClient<Request> getGraphClient(String accessToken) {
@@ -89,7 +89,8 @@ public class AzureAdGraphService {
 				.select("givenname, surname")
 				.get().getCurrentPage();
 		if (res.size() != 1) {
-			throw new DokarkivFunctionalException(String.format("Azure AD finner ikke bruker med ident=%s. %s", navIdent, BRUKER_IKKE_FUNNET));
+			log.warn(String.format("Azure AD finner ikke bruker med ident=%s. %s", navIdent, BRUKER_IKKE_FUNNET));
+			return null;
 		}
 		return res.get(0);
 	}
