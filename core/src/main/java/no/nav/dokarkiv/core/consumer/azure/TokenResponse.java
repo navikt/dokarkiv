@@ -14,4 +14,5 @@ public class TokenResponse {
 	private String token_type;
 	private String expires_in;
 	private String error;
+	private String ext_expires_in;
 }
