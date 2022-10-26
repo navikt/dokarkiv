@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.controllers.BulkOppdaterDistribusjonsinfoRestController.Result.FAILED;
@@ -55,15 +56,18 @@ public class BulkOppdaterDistribusjonsinfoRestController {
 			MDC.put(MDC_REQUEST_ID, "bulkOppdaterDistribusjonsinfo");
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for bulk oppdatering av distribusjonsinfo for {} journalposter", request.getJournalposter().size());
 
-			oppdaterDistribusjonsinfoValidator.validateRequest(request);
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 			Map<Result, List<JournalpostResponse>> results =  request.getJournalposter().stream()
-					.map(oppdaterDistribusjonsinfoService::oppdaterDistribusjonsinfoFromBulk)
+					.map(journalpostWithDistribusjonsinfo -> {
+						JournalpostResponse journalpostResponse = oppdaterDistribusjonsinfoValidator.validateRequest(journalpostWithDistribusjonsinfo);
+						if (journalpostResponse.getErrormessage() != null ) return journalpostResponse;
+					return oppdaterDistribusjonsinfoService.validerOgOppdaterDistribusjonsinfoFromBulk(journalpostWithDistribusjonsinfo);
+					})
 					.collect(Collectors.groupingBy(journalpost -> journalpost.getErrormessage() != null ? FAILED : SUCCESS, Collectors.toList()));
 
 			log.info(MDC.get(MDC_REQUEST_ID) + " har oppdatert distribusjonsinfo for {} journalposter (suksess: {}, feilet: {})",
-					request.getJournalposter().size(), results.get(SUCCESS).size(), results.get(FAILED).size());
+					request.getJournalposter().size(), results.getOrDefault(SUCCESS, emptyList()).size(), results.getOrDefault(FAILED, emptyList()).size());
 			return ResponseEntity.ok().body( new BulkOppdaterDistribusjonsinfoResponse(new JournalpostResultResponse(results.get(SUCCESS), results.get(FAILED))) );
 		} finally {
 			MDC.clear();

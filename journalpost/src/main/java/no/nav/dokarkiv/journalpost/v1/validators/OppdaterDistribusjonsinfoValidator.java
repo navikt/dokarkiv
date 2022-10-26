@@ -4,10 +4,12 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeOppdatereDistribusjonsinfoException;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.WithUtsendingsKanal;
-import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.BulkOppdaterDistribusjonsinfoRequest;
+import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.JournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.JournalpostWithDistribusjonsinfo;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
@@ -29,29 +31,29 @@ public class OppdaterDistribusjonsinfoValidator {
 
 	private final Validator springSuppliedValidator;
 
-    private static final List<JournalStatusCode> ALLOWED_STATES_FOR_DISTRIBUTION = Arrays.asList(FS, FL);
+	private static final List<JournalStatusCode> ALLOWED_STATES_FOR_DISTRIBUTION = Arrays.asList(FS, FL);
 
 	public OppdaterDistribusjonsinfoValidator(Validator validator) {
 		this.springSuppliedValidator = validator;
 	}
 
 	public static void validateRequest(String journalpostId, OppdaterDistribusjonsinfoRequest request) {
-        validateId(journalpostId, "journalpostId");
-        validateBoolean(request.getSettStatusEkspedert(), "settStatusEkspedert");
+		validateId(journalpostId, "journalpostId");
+		validateBoolean(request.getSettStatusEkspedert(), "settStatusEkspedert");
 
-        if(isNotBlank(request.getUtsendingsKanal())) {
-            try {
-                UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
-            } catch (IllegalArgumentException e) {
-                throw new KanIkkeOppdatereDistribusjonsinfoException(
-                        String.format("Utsendingskanalkode '%s' er ugyldig", request.getUtsendingsKanal()));
-            }
-        }
-    }
+		if (isNotBlank(request.getUtsendingsKanal())) {
+			try {
+				UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
+			} catch (IllegalArgumentException e) {
+				throw new KanIkkeOppdatereDistribusjonsinfoException(
+						String.format("Utsendingskanalkode '%s' er ugyldig", request.getUtsendingsKanal()));
+			}
+		}
+	}
 
-	public void validateRequest(BulkOppdaterDistribusjonsinfoRequest request1) {
-		request1.getJournalposter().forEach(request -> {
-			validateNotNull(request.getJournalpostId(), "journalpostId");
+	public JournalpostResponse validateRequest(JournalpostWithDistribusjonsinfo request) {
+		validateNotNull(request.getJournalpostId(), "journalpostId");
+		try {
 			validateNotNull(request.getForsendelseId(), "forsendelseId");
 			validateBoolean(request.getSettStatusEkspedert(), "settStatusEkspedert");
 
@@ -59,25 +61,21 @@ public class OppdaterDistribusjonsinfoValidator {
 				validateNotNull(request.getEkspedertDato(), "ekspedertDato", "må være satt når settStatusEkspedert=true");
 			}
 
-			try {
-				UtsendingsKanalCode utsendingsKanal = UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
+			UtsendingsKanalCode utsendingsKanal = UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
 
-				switch (utsendingsKanal) {
-					case S -> {
+			switch (utsendingsKanal) {
+				case S ->
 						validerFeltOgInnhold("postadresse", "må være satt når utsendingsKanal=S (sentralprint)", request.getPostadresse());
-					}
-					case SDP -> {
+				case SDP ->
 						validerFeltOgInnhold("digitalpostkasse", "må være satt når utsendingsKanal=SDP (digital post)", request.getDigitalpostkasse());
-					}
-					case NAV_NO -> {
+				case NAV_NO ->
 						validerFeltOgInnhold("varsel", "må være satt når utsendingsKanal=NAV_NO", request.getVarsel());
-					}
-				};
-			} catch (NullPointerException|IllegalArgumentException e) {
-				throw new KanIkkeOppdatereDistribusjonsinfoException(
-						String.format("Utsendingskanalkode '%s' er ugyldig", request.getUtsendingsKanal()));
 			}
-		});
+		} catch (NullPointerException | IllegalArgumentException | InputValideringFeiletException |
+				 KanIkkeOppdatereDistribusjonsinfoException e) {
+			return new JournalpostResponse(request.getJournalpostId(), String.format("Utsendingskanalkode '%s' er ugyldig", request.getUtsendingsKanal()));
+		}
+		return new JournalpostResponse(request.getJournalpostId(), null);
 	}
 
 	private <T> void validerFeltOgInnhold(String feltnavn, String ekstraInformasjon, T feltinnhold) {
@@ -93,22 +91,22 @@ public class OppdaterDistribusjonsinfoValidator {
 	}
 
 	public static void validateJournalpostKanSetteStatusEkspedert(Journalpost journalpost, WithUtsendingsKanal request) {
-        if (!JournalpostTypeCode.U.equals(journalpost.getJournalposttype())) {
-            throw new KanIkkeOppdatereDistribusjonsinfoException(
-                    String.format("Kan ikke ekspedere journalpost med journalposttype=%s", journalpost.getJournalposttype()));
-        }
-        if (!ALLOWED_STATES_FOR_DISTRIBUTION.contains(journalpost.getJournalstatus())) {
-            throw new KanIkkeOppdatereDistribusjonsinfoException(
-                    String.format("Kan ikke ekspedere journalpost med status %s", journalpost.getJournalstatus()));
-        }
-        if(journalpost.getSaksrelasjon() == null || (journalpost.getSaksrelasjon().getFeilregistrert() != null
-                                                     && journalpost.getSaksrelasjon().getFeilregistrert())) {
-            throw new KanIkkeOppdatereDistribusjonsinfoException(
-                    "Kan ikke ekspedere journalpost med tom/feilregistrert saksrelasjon");
-        }
-        if(journalpost.getUtsendingskanal() == null && request.getUtsendingsKanal() == null){
-            throw new KanIkkeOppdatereDistribusjonsinfoException(
-                    String.format("Utsendingskanal er ikke satt, hverken på input eller på journalpost med journalposttype=%s", journalpost.getJournalposttype()));
-        }
-    }
+		if (!JournalpostTypeCode.U.equals(journalpost.getJournalposttype())) {
+			throw new KanIkkeOppdatereDistribusjonsinfoException(
+					String.format("Kan ikke ekspedere journalpost med journalposttype=%s", journalpost.getJournalposttype()));
+		}
+		if (!ALLOWED_STATES_FOR_DISTRIBUTION.contains(journalpost.getJournalstatus())) {
+			throw new KanIkkeOppdatereDistribusjonsinfoException(
+					String.format("Kan ikke ekspedere journalpost med status %s", journalpost.getJournalstatus()));
+		}
+		if (journalpost.getSaksrelasjon() == null || (journalpost.getSaksrelasjon().getFeilregistrert() != null
+				&& journalpost.getSaksrelasjon().getFeilregistrert())) {
+			throw new KanIkkeOppdatereDistribusjonsinfoException(
+					"Kan ikke ekspedere journalpost med tom/feilregistrert saksrelasjon");
+		}
+		if (journalpost.getUtsendingskanal() == null && request.getUtsendingsKanal() == null) {
+			throw new KanIkkeOppdatereDistribusjonsinfoException(
+					String.format("Utsendingskanal er ikke satt, hverken på input eller på journalpost med journalposttype=%s", journalpost.getJournalposttype()));
+		}
+	}
 }

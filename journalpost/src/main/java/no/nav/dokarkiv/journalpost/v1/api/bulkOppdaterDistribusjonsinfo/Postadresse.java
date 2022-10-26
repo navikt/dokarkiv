@@ -6,20 +6,28 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.validation.constraints.Size;
+
 @Builder
 @Getter
 @AllArgsConstructor
 public class Postadresse {
+	@Size(max = 200)
 	@Schema(maxLength = 200)
 	private String adresselinje1;
+	@Size(max = 200)
 	@Schema(maxLength = 200)
 	private String adresselinje2;
+	@Size(max = 200)
 	@Schema(maxLength = 200)
 	private String adresselinje3;
+	@Size(max = 10)
 	@Schema(maxLength = 10)
 	private String postnummer;
+	@Size(max = 200)
 	@Schema(maxLength = 200)
 	private String poststed;
+	@Size(max = 2)
 	@Schema(maxLength = 2)
 	private String landkode;
 }

@@ -6,12 +6,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 @Builder
 @Getter
 @AllArgsConstructor
 public class NavNoVarsel {
-	@Schema(description = "Mottakerens digitale kontaktinformasjon som varsel er sendt til", required = true)
+	@NotBlank
+	@Size(max = 200)
+	@Schema(description = "Mottakerens digitale kontaktinformasjon som varsel er sendt til", required = true, maxLength = 200)
 	private String digitalkontaktinformasjon;
-	@Schema(description = "Varslingstekst som er sendt til mottaker", required = true)
+	@NotBlank
+	@Size(max = 4000)
+	@Schema(description = "Varslingstekst som er sendt til mottaker", required = true, maxLength = 200)
 	private String varseltekst;
 }

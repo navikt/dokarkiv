@@ -34,6 +34,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	static final String URL_JOURNALPOST = "/rest/journalpostapi/v1/journalpost/";
+	static final String URL_BULK_DISTRIBUSJONSINFO_JOURNALPOST = "/rest/journalpostapi/v1/bulkOppdaterDistribusjonsinfo";
 	static final String URL_DOKUMENTINFO = "/rest/journalpostapi/v1/dokumentInfo/";
 	static final String URL_JOURNALPOST_INTERN = "/rest/intern/journalpostapi/v1/journalpost/";
 	static final String URL_PROTECTED_INTERN = "/rest/internal/journalpostapi/v1/";

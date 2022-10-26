@@ -55,7 +55,7 @@ public class OppdaterDistribusjonsinfoService {
         }
     }
 
-	public JournalpostResponse oppdaterDistribusjonsinfoFromBulk(JournalpostWithDistribusjonsinfo journalpostWithDistribusjonsinfo) {
+	public JournalpostResponse validerOgOppdaterDistribusjonsinfoFromBulk(JournalpostWithDistribusjonsinfo journalpostWithDistribusjonsinfo) {
 		return joarkRepository.findById(journalpostWithDistribusjonsinfo.getJournalpostId()).map(journalpost -> {
 			try {
 				if (journalpostWithDistribusjonsinfo.getSettStatusEkspedert()) {
