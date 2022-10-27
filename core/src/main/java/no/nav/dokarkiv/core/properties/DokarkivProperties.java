@@ -17,7 +17,6 @@ import javax.validation.constraints.Positive;
 public class DokarkivProperties {
 
 	private final Database database = new Database();
-	private final Proxy proxy = new Proxy();
 
 	@Data
 	@Validated
@@ -51,14 +50,4 @@ public class DokarkivProperties {
 	}
 
 
-	@Data
-	@Validated
-	public static class Proxy {
-		private String host;
-		private int port;
-
-		public boolean isSet() {
-			return (host != null && !host.equals(""));
-		}
-	}
 }
