@@ -61,13 +61,7 @@ public class AzureToken {
         formData.add("grant_type", ON_BEHALF_OF_GRANT_TYPE);
         formData.add("assertion", token);
 
-        String responseJson = azureClient.post()
-                .body(BodyInserters.fromFormData(formData))
-                .retrieve()
-                .bodyToMono(String.class)
-                .doOnError(this::handleError)
-                .block();
-
+        String responseJson = azureConsumer(formData);
         try {
             Map<String, Object> tokenData = objectMapper.readValue(responseJson, Map.class);
             return (String) tokenData.get("access_token");
@@ -86,14 +80,7 @@ public class AzureToken {
             formData.add("client_secret", azureConfig.getAppClientSecret());
             formData.add("scope", scope);
             formData.add("grant_type", CLIENT_CREDENTIALS);
-
-            String responseJson =  azureClient
-                    .post()
-                    .body(BodyInserters.fromFormData(formData))
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .doOnError(this::handleError)
-                    .block();
+            String responseJson = azureConsumer(formData);
             try {
                 return objectMapper.readValue(responseJson, TokenResponse.class);
             } catch (JsonProcessingException | ClassCastException e) {
@@ -102,6 +89,17 @@ public class AzureToken {
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new AzureTokenException(String.format("Klarte ikke hente token fra Azure. Feilet med httpstatus=%s. Feilmelding=%s", e.getStatusCode(), e.getMessage()), e);
         }
+    }
+
+    private String azureConsumer(MultiValueMap<String, String> formData) {
+        return azureClient
+                .post()
+                .body(BodyInserters.fromFormData(formData))
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnError(this::handleError)
+                .block();
+
     }
 
     private void handleError(Throwable error) {

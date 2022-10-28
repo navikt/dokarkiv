@@ -34,7 +34,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
 @Slf4j
-@Profile({"nais", "local"})
 public class AzureAdGraphService {
 
 
@@ -106,8 +105,6 @@ public class AzureAdGraphService {
 			ResponseEntity<AzureGroupResponse> response = restTemplate.exchange(url, POST, requestEntity, AzureGroupResponse.class);
 			List<AzureGroupResponse.AzureGroup> azureGroups = response.getBody().value();
 			return azureGroups.stream().map(a -> a.id()).collect(Collectors.toList());
-		} catch (HttpClientErrorException | HttpServerErrorException e) {
-			throw new DokarkivTechnicalException(String.format("Kunne ikke hente gruppeinformasjon fra Azure, Feilmelding=%s", e.getMessage()));
 		} catch(Exception e) {
 			throw new DokarkivTechnicalException(String.format("Kunne ikke hente gruppeinformasjon fra Azure, Feilmelding=%s", e.getMessage()));
 		}
