@@ -4,7 +4,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeOppdatereDistribusjonsinfoException;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.WithUtsendingsKanal;
@@ -52,42 +52,52 @@ public class OppdaterDistribusjonsinfoValidator {
 	}
 
 	public JournalpostResponse validateRequest(JournalpostWithDistribusjonsinfo request) {
-		validateNotNull(request.getJournalpostId(), "journalpostId");
 		try {
+			validateNotNull(request.getJournalpostId(), "journalpostId");
 			validateNotNull(request.getForsendelseId(), "forsendelseId");
 			validateBoolean(request.getSettStatusEkspedert(), "settStatusEkspedert");
 
 			if (request.getSettStatusEkspedert()) {
 				validateNotNull(request.getEkspedertDato(), "ekspedertDato", "må være satt når settStatusEkspedert=true");
 			}
+		} catch (DokarkivFunctionalException e) {
+			return JournalpostResponse.error(request.getJournalpostId(), e.getMessage());
+		}
 
+		try {
 			UtsendingsKanalCode utsendingsKanal = UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
 
-			switch (utsendingsKanal) {
+			String valideringsfeil = switch (utsendingsKanal) {
 				case S ->
 						validerFeltOgInnhold("postadresse", "må være satt når utsendingsKanal=S (sentralprint)", request.getPostadresse());
 				case SDP ->
 						validerFeltOgInnhold("digitalpostkasse", "må være satt når utsendingsKanal=SDP (digital post)", request.getDigitalpostkasse());
 				case NAV_NO ->
 						validerFeltOgInnhold("varsel", "må være satt når utsendingsKanal=NAV_NO", request.getVarsel());
+				default -> null;
+			};
+			if (valideringsfeil != null) {
+				return JournalpostResponse.error(request.getJournalpostId(), valideringsfeil);
 			}
-		} catch (NullPointerException | IllegalArgumentException | InputValideringFeiletException |
-				 KanIkkeOppdatereDistribusjonsinfoException e) {
-			return new JournalpostResponse(request.getJournalpostId(), String.format("Utsendingskanalkode '%s' er ugyldig", request.getUtsendingsKanal()));
+			return JournalpostResponse.ok(request.getJournalpostId());
+		} catch (NullPointerException | IllegalArgumentException enumParseException) {
+			return JournalpostResponse.error(request.getJournalpostId(), String.format("Utsendingskanalkode '%s' er ugyldig", request.getUtsendingsKanal()));
+		} catch (DokarkivFunctionalException e) {
+			return JournalpostResponse.error(request.getJournalpostId(), e.getMessage());
 		}
-		return new JournalpostResponse(request.getJournalpostId(), null);
 	}
 
-	private <T> void validerFeltOgInnhold(String feltnavn, String ekstraInformasjon, T feltinnhold) {
+	private <T> String validerFeltOgInnhold(String feltnavn, String ekstraInformasjon, T feltinnhold) {
 		validateNotNull(feltinnhold, feltnavn, ekstraInformasjon);
 		Set<ConstraintViolation<T>> validationErrors = springSuppliedValidator.validate(feltinnhold);
 		if (validationErrors.size() > 0) {
-			throw new KanIkkeOppdatereDistribusjonsinfoException("%s er ugyldig: {%s}".formatted(
+			return "%s er ugyldig: %s".formatted(
 					feltnavn,
 					validationErrors.stream()
 							.map(ConstraintViolation::getMessage)
-							.collect(Collectors.joining(","))));
+							.collect(Collectors.joining(",")));
 		}
+		return null;
 	}
 
 	public static void validateJournalpostKanSetteStatusEkspedert(Journalpost journalpost, WithUtsendingsKanal request) {

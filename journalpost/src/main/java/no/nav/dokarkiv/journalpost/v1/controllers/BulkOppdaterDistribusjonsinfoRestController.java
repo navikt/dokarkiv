@@ -60,18 +60,27 @@ public class BulkOppdaterDistribusjonsinfoRestController {
 
 			Map<Result, List<JournalpostResponse>> results =  request.getJournalposter().stream()
 					.map(journalpostWithDistribusjonsinfo -> {
-						JournalpostResponse journalpostResponse = oppdaterDistribusjonsinfoValidator.validateRequest(journalpostWithDistribusjonsinfo);
-						if (journalpostResponse.getErrormessage() != null ) return journalpostResponse;
-					return oppdaterDistribusjonsinfoService.validerOgOppdaterDistribusjonsinfoFromBulk(journalpostWithDistribusjonsinfo);
+						JournalpostResponse valideringsresultat = oppdaterDistribusjonsinfoValidator.validateRequest(journalpostWithDistribusjonsinfo);
+						if (valideringsresultat.getErrormessage() != null ) {
+							return valideringsresultat;
+						}
+						return oppdaterDistribusjonsinfoService.oppdaterDistribusjonsinfoFromBulk(journalpostWithDistribusjonsinfo);
 					})
-					.collect(Collectors.groupingBy(journalpost -> journalpost.getErrormessage() != null ? FAILED : SUCCESS, Collectors.toList()));
+					.collect(Collectors.groupingBy(BulkOppdaterDistribusjonsinfoRestController::categoriseJournalpostProcessingResult, Collectors.toList()));
 
+			results.getOrDefault(FAILED, emptyList()).stream()
+					.map(result -> "Journalpost Feilet: journalpostId=%s, feilmelding=%s".formatted(result.getJournalpostId(), result.getErrormessage()))
+					.forEach(log::warn);
 			log.info(MDC.get(MDC_REQUEST_ID) + " har oppdatert distribusjonsinfo for {} journalposter (suksess: {}, feilet: {})",
 					request.getJournalposter().size(), results.getOrDefault(SUCCESS, emptyList()).size(), results.getOrDefault(FAILED, emptyList()).size());
 			return ResponseEntity.ok().body( new BulkOppdaterDistribusjonsinfoResponse(new JournalpostResultResponse(results.get(SUCCESS), results.get(FAILED))) );
 		} finally {
 			MDC.clear();
 		}
+	}
+
+	private static Result categoriseJournalpostProcessingResult(JournalpostResponse journalpostResponse) {
+		return journalpostResponse.getErrormessage() != null ? FAILED : SUCCESS;
 	}
 
 	enum Result {
