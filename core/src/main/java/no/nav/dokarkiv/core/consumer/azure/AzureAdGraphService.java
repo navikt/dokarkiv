@@ -34,6 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
 @Slf4j
+@Profile({"nais", "local"})
 public class AzureAdGraphService {
 
 
