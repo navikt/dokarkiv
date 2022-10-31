@@ -14,27 +14,20 @@ import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of TJOARK106 - AvbrytVedlegg
- *
- * @author Roar Bjurstrom, Visma Consulting
- */
 @Component
 public class DefaultAvbrytVedleggService implements AvbrytVedleggService {
 
-	@Inject
-	private AvbrytVedleggValidator validator;
+	private final AvbrytVedleggValidator validator;
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private final SporingPopulator sporingPopulator;
 
-	@Inject
-	private JoarkRepositorySkjermet joarkRepository;
-
-	@Inject
-	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
-
-	@Inject
-	private SporingPopulator sporingPopulator;
+	public DefaultAvbrytVedleggService(AvbrytVedleggValidator validator, JoarkRepositorySkjermet joarkRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, SporingPopulator sporingPopulator) {
+		this.validator = validator;
+		this.joarkRepository = joarkRepository;
+		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
+		this.sporingPopulator = sporingPopulator;
+	}
 
 	@Override
 	public void avbrytVedlegg(AvbrytVedleggRequestTo request) throws NoJournalpostFoundException,

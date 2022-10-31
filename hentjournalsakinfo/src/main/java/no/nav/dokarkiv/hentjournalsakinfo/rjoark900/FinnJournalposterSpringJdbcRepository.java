@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
-import static no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalpostSqlGenerator.finnJournalposterSql;
-
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
@@ -11,7 +9,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,9 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
+import static no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalpostSqlGenerator.finnJournalposterSql;
+
 @Repository
 class FinnJournalposterSpringJdbcRepository {
 	private static final ResultSetExtractor<List<JournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
@@ -40,7 +36,6 @@ class FinnJournalposterSpringJdbcRepository {
 	private final GsakCteMapper gsakCteMapper;
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
-	@Inject
 	public FinnJournalposterSpringJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
 		this.gsakCteMapper = new GsakCteMapper();
 		this.jdbcTemplate = jdbcTemplate;

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
@@ -38,8 +37,6 @@ public class SkjermArkivenhetRestController {
 
 	private final SkjermArkivEnhetOrchestrator skjermArkivEnhetOrchestrator;
 
-
-	@Inject
 	public SkjermArkivenhetRestController(SkjermArkivEnhetOrchestrator skjermArkivEnhetOrchestrator) {
 		this.skjermArkivEnhetOrchestrator = skjermArkivEnhetOrchestrator;
 	}

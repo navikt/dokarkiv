@@ -20,28 +20,24 @@ import no.nav.dokarkiv.behandlejournal.v2.tjoark065.JournalfoerNotatHenvendelseR
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of BehandleJournalServiceBi
- *
- * @author Joakim Bjørnstad, Visma Consulting
- */
 @Component
 public class DefaultBehandleJournalService implements BehandleJournalServiceBi {
 
-	@Inject
-	private ArkiverUstrukturertKrav arkiverUstrukturertKrav;
-	@Inject
-	private LagreVedleggPaaJournalpost lagreVedleggPaaJournalpost;
-	@Inject
-	private JournalfoerInngaaendeHenvendelse journalfoerInngaaendeHenvendelse;
-	@Inject
-	private FerdigstillDokumentopplasting ferdigstillDokumentopplasting;
-	@Inject
-	private JournalfoerUtgaaendeHenvendelse journalfoerUtgaaendeHenvendelse;
-	@Inject
-	private JournalfoerNotatHenvendelse journalfoerNotatHenvendelse;
+	private final ArkiverUstrukturertKrav arkiverUstrukturertKrav;
+	private final LagreVedleggPaaJournalpost lagreVedleggPaaJournalpost;
+	private final JournalfoerInngaaendeHenvendelse journalfoerInngaaendeHenvendelse;
+	private final FerdigstillDokumentopplasting ferdigstillDokumentopplasting;
+	private final JournalfoerUtgaaendeHenvendelse journalfoerUtgaaendeHenvendelse;
+	private final JournalfoerNotatHenvendelse journalfoerNotatHenvendelse;
+
+	public DefaultBehandleJournalService(ArkiverUstrukturertKrav arkiverUstrukturertKrav, LagreVedleggPaaJournalpost lagreVedleggPaaJournalpost, JournalfoerInngaaendeHenvendelse journalfoerInngaaendeHenvendelse, FerdigstillDokumentopplasting ferdigstillDokumentopplasting, JournalfoerUtgaaendeHenvendelse journalfoerUtgaaendeHenvendelse, JournalfoerNotatHenvendelse journalfoerNotatHenvendelse) {
+		this.arkiverUstrukturertKrav = arkiverUstrukturertKrav;
+		this.lagreVedleggPaaJournalpost = lagreVedleggPaaJournalpost;
+		this.journalfoerInngaaendeHenvendelse = journalfoerInngaaendeHenvendelse;
+		this.ferdigstillDokumentopplasting = ferdigstillDokumentopplasting;
+		this.journalfoerUtgaaendeHenvendelse = journalfoerUtgaaendeHenvendelse;
+		this.journalfoerNotatHenvendelse = journalfoerNotatHenvendelse;
+	}
 
 	@Override
 	public ArkiverUstrukturertKravResponse arkiverUstrukturertKrav(

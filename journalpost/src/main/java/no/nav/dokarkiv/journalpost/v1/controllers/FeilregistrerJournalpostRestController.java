@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import java.util.List;
 
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
@@ -64,7 +63,6 @@ public class FeilregistrerJournalpostRestController {
 	private final AbacSecurityService abacSecurityServiceV2;
 	private final UtgaarService utgaarService;
 
-	@Inject
 	public FeilregistrerJournalpostRestController(
 			final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService,
 			final UkjentBrukerService ukjentBrukerService,

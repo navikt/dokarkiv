@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark910;
 
-import static no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerSqlGenerator.dokumentoversiktBrukerSql;
-
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
 import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
@@ -10,7 +8,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,9 +16,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
+import static no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerSqlGenerator.dokumentoversiktBrukerSql;
+
 @Repository
 class DokumentoversiktBrukerSpringJdbcRepository {
 	private static final ResultSetExtractor<List<JournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
@@ -49,7 +45,6 @@ class DokumentoversiktBrukerSpringJdbcRepository {
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
-	@Inject
 	public DokumentoversiktBrukerSpringJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}

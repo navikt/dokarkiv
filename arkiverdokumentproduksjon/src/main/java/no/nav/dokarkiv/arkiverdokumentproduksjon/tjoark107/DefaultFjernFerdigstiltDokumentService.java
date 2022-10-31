@@ -14,27 +14,20 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of the {@link FjernFerdigstiltDokumentService}
- *
- * @author Stig Strøm
- */
 @Component
 public class DefaultFjernFerdigstiltDokumentService implements FjernFerdigstiltDokumentService {
 
-	@Inject
-	private JoarkRepositorySkjermet joarkRepository;
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final DokumentFilRepository dokumentFilRepository;
+	private final FjernFerdigstiltDokumentValidator fjernFerdigstiltDokumentValidator;
+	private final SporingPopulator sporingPopulator;
 
-	@Inject
-	private DokumentFilRepository dokumentFilRepository;
-
-	@Inject
-	private FjernFerdigstiltDokumentValidator fjernFerdigstiltDokumentValidator;
-
-	@Inject
-	private SporingPopulator sporingPopulator;
+	public DefaultFjernFerdigstiltDokumentService(JoarkRepositorySkjermet joarkRepository, DokumentFilRepository dokumentFilRepository, FjernFerdigstiltDokumentValidator fjernFerdigstiltDokumentValidator, SporingPopulator sporingPopulator) {
+		this.joarkRepository = joarkRepository;
+		this.dokumentFilRepository = dokumentFilRepository;
+		this.fjernFerdigstiltDokumentValidator = fjernFerdigstiltDokumentValidator;
+		this.sporingPopulator = sporingPopulator;
+	}
 
 	@Override
 	public void fjernFerdigstiltDokument(FjernFerdigstiltDokumentRequestTo request) throws NoJournalpostFoundException,

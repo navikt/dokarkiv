@@ -8,6 +8,7 @@ import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFResponse;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.ClassPathResource;
@@ -23,11 +24,6 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for DefaultSettMetadataIDLF
- *
- * @author Per Kristian Foss, Visma Sirius
- */
 public class DefaultSettMetadataIDLFTest {
 
 	private static final String DEMO_DLF_FILENAME = "EESSI.dlf";

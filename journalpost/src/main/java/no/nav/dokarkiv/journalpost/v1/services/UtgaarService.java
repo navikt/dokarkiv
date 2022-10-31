@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +36,6 @@ public class UtgaarService {
 	static final List<JournalStatusCode> JOURNAL_STATUS_AVBRUTT_DOKUMENT_RESERVERT = Arrays.asList(A, D, R);
 	static final List<JournalpostTypeCode> JOURNALPOSTTYPE_INNGAAENDE_NOTAT = Arrays.asList(I, N);
 
-	@Inject
 	public UtgaarService(final JoarkRepository joarkRepository, final LagreAksjonsLoggService aksjonsLoggService) {
 		this.joarkRepository = joarkRepository;
 		this.aksjonsLoggService = aksjonsLoggService;

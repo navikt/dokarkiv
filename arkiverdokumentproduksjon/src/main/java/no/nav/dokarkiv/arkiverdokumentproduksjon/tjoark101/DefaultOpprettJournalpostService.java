@@ -12,22 +12,18 @@ import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of the OpprettJournalpostService
- *
- * @author Stig Strøm
- */
 @Component
 public class DefaultOpprettJournalpostService implements OpprettJournalpostService {
 
-	@Inject
-    private JoarkRepositorySkjermet joarkRepository;
-	@Inject
-	private OpprettJournalpostValidator opprettJournalpostValidator;
-	@Inject
-	private DokumentFilerDelegate dokumentFilerDelegate;
+    private final JoarkRepositorySkjermet joarkRepository;
+	private final OpprettJournalpostValidator opprettJournalpostValidator;
+	private final DokumentFilerDelegate dokumentFilerDelegate;
+
+	public DefaultOpprettJournalpostService(JoarkRepositorySkjermet joarkRepository, OpprettJournalpostValidator opprettJournalpostValidator, DokumentFilerDelegate dokumentFilerDelegate) {
+		this.joarkRepository = joarkRepository;
+		this.opprettJournalpostValidator = opprettJournalpostValidator;
+		this.dokumentFilerDelegate = dokumentFilerDelegate;
+	}
 
 	@Override
 	public OpprettJournalpostResponseTo opprettJournalpost(

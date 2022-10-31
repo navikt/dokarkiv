@@ -6,20 +6,17 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementation of DokumentFilerDelegate.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
- */
 @Component
 public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 
-	@Inject
 	private DokumentFilRepository dokumentFilRepository;
+
+	public DefaultDokumentFilerDelegate(DokumentFilRepository dokumentFilRepository) {
+		this.dokumentFilRepository = dokumentFilRepository;
+	}
 
 	/**
 	 * {@inheritDoc}

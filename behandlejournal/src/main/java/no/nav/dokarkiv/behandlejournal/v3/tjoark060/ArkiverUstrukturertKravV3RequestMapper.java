@@ -5,15 +5,12 @@ import no.nav.dokarkiv.behandlejournal.SporingUtil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
 @Component
 public class ArkiverUstrukturertKravV3RequestMapper {
 
 	private final ArkiverUstrukturertKravV3JournalpostMapper journalpostMapper;
 	private final SporingMapper sporingMapper;
 
-	@Inject
 	public ArkiverUstrukturertKravV3RequestMapper(ArkiverUstrukturertKravV3JournalpostMapper journalpostMapper, SporingMapper sporingMapper) {
 		this.journalpostMapper = journalpostMapper;
 		this.sporingMapper = sporingMapper;

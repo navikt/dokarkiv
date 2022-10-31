@@ -9,21 +9,14 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.UUID;
 
-/**
- * Implementation of <code>HentDokumentUrl</code>.
- *
- * @author Thomas Eugen Bjørge, Sirius IT
- * @author Magnus Skuland, Sirius IT
- * @author Thao Thao Nguyen, Visma Sirius
- */
 @Component
 public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements HentDokumentUrl {
 
@@ -34,7 +27,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 
-	@Inject
+	@Autowired
 	private DokumentUrlInfoRepository dokumentUrlInfoRepository;
 
 	public HentDokumentUrlResponse hentDokumentUrl(HentDokumentUrlRequest hentDokumentUrlRequest)

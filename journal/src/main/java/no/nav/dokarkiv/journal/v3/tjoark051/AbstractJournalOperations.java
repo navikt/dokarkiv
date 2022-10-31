@@ -15,21 +15,19 @@ import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.apache.commons.lang3.BooleanUtils;
 
-import javax.inject.Inject;
-
 /**
  * Common operations for the different functions in JournalV1 and JournalV2
  * (TJOARK050,TJOARK051,TJOARK052)
- *
- * @author Stig Strøm
  */
 public abstract class AbstractJournalOperations {
 
-	@Inject
-	private JoarkRepositorySkjermet joarkRepository;
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final DokumentFilSkjermetRepository dokumentFilRepository;
 
-	@Inject
-	private DokumentFilSkjermetRepository dokumentFilRepository;
+	public AbstractJournalOperations(JoarkRepositorySkjermet joarkRepository, DokumentFilSkjermetRepository dokumentFilRepository) {
+		this.joarkRepository = joarkRepository;
+		this.dokumentFilRepository = dokumentFilRepository;
+	}
 
 	/**
 	 * Finds the journalpost for a journalpostId

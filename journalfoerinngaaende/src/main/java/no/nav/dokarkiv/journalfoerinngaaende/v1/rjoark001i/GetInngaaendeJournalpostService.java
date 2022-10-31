@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark001i;
 
-import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.Dokument;
+import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
@@ -9,20 +9,15 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Service
 public class GetInngaaendeJournalpostService {
 
     private final JoarkRepositorySkjermet joarkRepository;
 	private final GetInngaaendeJournalpostMapper getInngaaendeJournalpostMapper;
 
-	@Inject
     public GetInngaaendeJournalpostService(JoarkRepositorySkjermet joarkRepository,
 										   GetInngaaendeJournalpostMapper getInngaaendeJournalpostMapper) {
 		this.joarkRepository = joarkRepository;

@@ -18,25 +18,22 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Set;
 
-/**
- * Implementation of ArkiverDokumentOgFerdigstillJournalpost
- *
- * @author Torgeir Cook
- */
 @Component
 public class DefaultOppdaterJournalpostArkiverDokumentService implements OppdaterJournalpostArkiverDokumentService {
 
-	@Inject
-	private SporingPopulator sporingPopulator;
-	@Inject
-    private JoarkRepositorySkjermet joarkRepository;
-	@Inject
-	private OppdaterJournalpostArkiverDokumentValidator validator;
-	@Inject
-	private DokumentFilerDelegate dokumentFilerDelegate;
+	private final SporingPopulator sporingPopulator;
+    private final JoarkRepositorySkjermet joarkRepository;
+	private final OppdaterJournalpostArkiverDokumentValidator validator;
+	private final DokumentFilerDelegate dokumentFilerDelegate;
+
+	public DefaultOppdaterJournalpostArkiverDokumentService(SporingPopulator sporingPopulator, JoarkRepositorySkjermet joarkRepository, OppdaterJournalpostArkiverDokumentValidator validator, DokumentFilerDelegate dokumentFilerDelegate) {
+		this.sporingPopulator = sporingPopulator;
+		this.joarkRepository = joarkRepository;
+		this.validator = validator;
+		this.dokumentFilerDelegate = dokumentFilerDelegate;
+	}
 
 	@Override
 	public void oppdaterJournalpostArkiverDokument(OppdaterJournalpostArkiverDokumentRequestTo request) throws UgyldigInputException, ObjektIkkeFunnetException, KanIkkeFerdigstillesException, FeilStrukturException, AlleredeFerdigstiltException {

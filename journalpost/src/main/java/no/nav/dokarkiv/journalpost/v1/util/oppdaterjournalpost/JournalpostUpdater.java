@@ -21,7 +21,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,6 @@ public class JournalpostUpdater {
 	private final BrukerRepository brukerRepository;
 	private final IdentConsumer identConsumer;
 
-	@Inject
 	public JournalpostUpdater(BrukerRepository brukerRepository, IdentConsumer identConsumer) {
 		this.brukerRepository = brukerRepository;
 		this.identConsumer = identConsumer;

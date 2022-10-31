@@ -2,12 +2,9 @@ package no.nav.dokarkiv.journal.v3;
 
 import no.nav.dokarkiv.core.exceptions.AbstractJournalFaultInfoPopulator;
 import no.nav.tjeneste.virksomhet.journal.v3.feil.ForretningsmessigUnntak;
+import org.springframework.stereotype.Component;
 
-/**
- * Implementation of JournalV3FaultInfoPopulator.
- *
- * @author Stig Strøm
- */
+@Component
 public class DefaultJournalV3FaultInfoPopulator extends AbstractJournalFaultInfoPopulator implements
 		JournalV3FaultInfoPopulator {
 

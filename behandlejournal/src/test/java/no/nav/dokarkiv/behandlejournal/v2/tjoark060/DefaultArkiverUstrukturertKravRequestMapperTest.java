@@ -15,11 +15,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Test class for the ArkiverUstrukturertKravRequestMapper.
- *
- * @author Rune Romundstad, Visma Consulting
- */
 @ExtendWith(MockitoExtension.class)
 public class DefaultArkiverUstrukturertKravRequestMapperTest {
 	private static final String SPORING_FORNAVN = "fornavn";

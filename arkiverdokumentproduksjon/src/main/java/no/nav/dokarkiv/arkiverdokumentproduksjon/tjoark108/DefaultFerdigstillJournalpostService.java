@@ -14,24 +14,18 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of the {@link FerdigstillJournalpostService}
- *
- * @author Stig Strøm
- */
 @Component
 public class DefaultFerdigstillJournalpostService implements FerdigstillJournalpostService {
 
-	@Inject
-    private JoarkRepositorySkjermet joarkRepository;
+    private final JoarkRepositorySkjermet joarkRepository;
+	private final FerdigstillJournalpostValidator validator;
+	private final SporingPopulator sporingPopulator;
 
-	@Inject
-	private FerdigstillJournalpostValidator validator;
-
-	@Inject
-	private SporingPopulator sporingPopulator;
+	public DefaultFerdigstillJournalpostService(JoarkRepositorySkjermet joarkRepository, FerdigstillJournalpostValidator validator, SporingPopulator sporingPopulator) {
+		this.joarkRepository = joarkRepository;
+		this.validator = validator;
+		this.sporingPopulator = sporingPopulator;
+	}
 
 	@Override
 	public void ferdigstillJournalpost(FerdigstillJournalpostRequestTo request) throws NoJournalpostFoundException,

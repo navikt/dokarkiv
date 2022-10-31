@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1;
 
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.tjenester.journalfoerinngaaende.GetJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.PostLogiskVedleggRequest;
@@ -34,8 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
@@ -44,10 +41,6 @@ import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.DELETE_ACTI
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.UPDATE_ACTION;
 
-
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Slf4j
 @Protected
 @RestController
@@ -61,7 +54,6 @@ public class JournalfoerInngaaendeRestController {
 	private final UpdateInngaaendeJournalpostDokumentService updateInngaaendeJournalpostDokumentService;
 	private final OppdaterLogiskVedleggValidator oppdaterLogiskVedleggValidator;
 
-	@Inject
 	public JournalfoerInngaaendeRestController(GetInngaaendeJournalpostService getInngaaendeJournalpostService,
 											   UpdateInngaaendeJournalpostService updateInngaaendeJournalpostService,
 											   LogiskVedleggService logiskVedleggService,

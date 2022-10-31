@@ -24,10 +24,10 @@ import no.nav.dokarkiv.core.journalbehandling.DefaultMandatoryFieldsVerifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,9 +49,6 @@ import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaen
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.TITTEL;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {DefaultMandatoryFieldsVerifier.class,
 		OpprettUtgaaendeJournalpostArkiverDokumentValidator.class,
@@ -66,7 +63,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 
 	private Journalpost journalpost;
 
-	@Inject
+	@Autowired
 	private OpprettUtgaaendeJournalpostArkiverDokumentValidator validator;
 
 	@BeforeEach

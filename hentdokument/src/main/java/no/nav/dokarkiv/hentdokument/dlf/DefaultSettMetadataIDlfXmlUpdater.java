@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.hentdokument.dlf;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.MetadataXmlUpdateFailedException;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataForKopiering;
@@ -12,7 +10,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.inject.Inject;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,11 +28,8 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Implementation of SettMetadataIDlfXmlUpdater.
- *
- * @author Thomas Eugen Bjørge, Visma Consulting
- */
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 @Component
 public class DefaultSettMetadataIDlfXmlUpdater implements SettMetadataIDlfXmlUpdater {
 
@@ -53,7 +47,6 @@ public class DefaultSettMetadataIDlfXmlUpdater implements SettMetadataIDlfXmlUpd
 	private final VedleggUrlRetriever vedleggUrlRetriever;
 	private final String metadataXmlEncoding;
 
-	@Inject
 	public DefaultSettMetadataIDlfXmlUpdater(VedleggUrlRetriever vedleggUrlRetriever,
 											 @Value("${hentdokument.dlf.metadataXmlEncoding}") String metadataXmlEncoding) {
 		this.vedleggUrlRetriever = vedleggUrlRetriever;

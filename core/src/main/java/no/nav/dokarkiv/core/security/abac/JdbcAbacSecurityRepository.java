@@ -10,15 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-/**
- * Implementation of AbacSecurityRepository
- *
- * @author Martin Burheim Tingstad, Visma Consulting AS
- */
 @Repository
 public class JdbcAbacSecurityRepository implements AbacSecurityRepository {
 
@@ -28,8 +22,11 @@ public class JdbcAbacSecurityRepository implements AbacSecurityRepository {
 	private static final String FINN_BRUKERE_PAA_JOURNALPOST = "select cast(bruker_id as varchar(11)) from T_BRUKER where journalpost_id = :journalpostId";
 	private static final String FINN_FAGOMRADE_PAA_JOURNALPOST = "select K_FAGOMRADE from T_JOURNALPOST where journalpost_id = :journalpostId";
 
-	@Inject
-	private EntityManager entityManager;
+	private final EntityManager entityManager;
+
+	public JdbcAbacSecurityRepository(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
 
 	private Query getQuery(String query, Long journalpostId) {
 		return entityManager.unwrap(Session.class).createSQLQuery(query).setParameter("journalpostId", journalpostId);

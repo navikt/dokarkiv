@@ -3,12 +3,11 @@ package no.nav.dokarkiv.core.security.ldap;
 import no.nav.dokarkiv.core.security.LdapConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import javax.inject.Inject;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -19,7 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ActiveProfiles({"itest", "ldap"})
 public class NavLdapServiceIT {
 
-	@Inject
+	@Autowired
 	private NavLdapService navLdapService;
 
 	@Test

@@ -1,10 +1,5 @@
 package no.nav.dokarkiv.core.security;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.ldap.query.LdapQueryBuilder.query;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.cache.CacheConfig;
 import no.nav.dokarkiv.core.exceptions.CouldNotDecodeBasicAuthToken;
@@ -17,15 +12,16 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.HardcodedFilter;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 import java.util.Optional;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.ldap.query.LdapQueryBuilder.query;
+
 @Slf4j
 public class BasicAuthRestInterceptor implements HandlerInterceptor {
 
@@ -36,8 +32,6 @@ public class BasicAuthRestInterceptor implements HandlerInterceptor {
 	private final LdapTemplate ldapTemplate;
 	private final CacheManager cacheManager;
 
-
-	@Inject
 	public BasicAuthRestInterceptor(String baseDn,
 									String serviceuserBasedn,
 									String requiredGroupMember,

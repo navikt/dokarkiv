@@ -21,10 +21,10 @@ import no.nav.dokarkiv.core.journalbehandling.DefaultMandatoryFieldsVerifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.inject.Inject;
 import java.util.Date;
 
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
@@ -35,11 +35,6 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * Validator test for {@link DefaultOpprettJournalpostArkiverDokumentValidator}
- *
- * @author Stig Strøm
- */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {DefaultMandatoryFieldsVerifier.class,
 		DefaultOpprettJournalpostArkiverDokumentValidator.class,
@@ -55,7 +50,7 @@ public class DefaultOpprettJournalpostArkiverDokumentValidatorTest {
 
 	private Journalpost journalpost;
 
-	@Inject
+	@Autowired
 	private OpprettJournalpostArkiverDokumentValidator validator;
 
 	@BeforeEach

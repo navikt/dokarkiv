@@ -35,8 +35,6 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,8 +49,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementSakstypeCounter;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
 
-@Service
-@Named("oppdaterMetadataJournalpost")
+@Service("oppdaterMetadataJournalpost")
 @Slf4j
 public class OppdaterJournalpostService {
 
@@ -69,7 +66,6 @@ public class OppdaterJournalpostService {
 	private final HentSakerRepository hentSakerRepository;
 	private final MeterRegistry meterRegistry;
 
-	@Inject
 	public OppdaterJournalpostService(JoarkRepositorySkjermet joarkRepository,
 									  JournalpostUpdater journalpostUpdater,
 									  SaksrelasjonUpdater saksrelasjonUpdater,

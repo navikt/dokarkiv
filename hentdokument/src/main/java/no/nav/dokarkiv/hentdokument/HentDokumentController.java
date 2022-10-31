@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-
 @Slf4j
 @Unprotected
 @RestController
@@ -37,7 +35,6 @@ public class HentDokumentController {
 
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 
-	@Inject
 	public HentDokumentController(HentDokumentUrlInfo hentDokumentUrlInfo, HentDokument hentDokument) {
 		this.hentDokumentUrlInfo = hentDokumentUrlInfo;
 		this.hentDokument = hentDokument;

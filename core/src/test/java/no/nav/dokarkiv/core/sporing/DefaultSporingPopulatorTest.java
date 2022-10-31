@@ -6,8 +6,10 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
@@ -21,34 +23,27 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 
-/**
- * Unit tests for DefaultSporingPopulator.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
- */
+@ExtendWith(MockitoExtension.class)
 public class DefaultSporingPopulatorTest {
 
 	@Mock
 	private KildeNavnPopulator kildeNavnPopulatorMock;
 
+	@InjectMocks
 	private DefaultSporingPopulator sporingPopulator;
 
-	private final long id = 100;
-	private String kildeNavn = "Unittest";
+	private final String kildeNavn = "Unittest";
 	private final String endretAvNavn = "Siri Saksbehandler";
 	private final String opprettetAvNavn = "Sigurd Saksbehandler";
 
 	@BeforeEach
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-		sporingPopulator = new DefaultSporingPopulator();
-		sporingPopulator.setKildeNavnPopulator(kildeNavnPopulatorMock);
-
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder().componentId(kildeNavn).build());
 	}
 
 	@Test
-	public void shouldPopulateEndretAvNavn() throws Exception {
+	public void shouldPopulateEndretAvNavn() {
+		long id = 100;
 		Journalpost journalpost = createCompleteJournalpostStructure(id);
 
 		sporingPopulator.populateSporingInfo(journalpost, endretAvNavn);
@@ -57,7 +52,7 @@ public class DefaultSporingPopulatorTest {
 	}
 
 	@Test
-	public void shouldPopulateOpprettetAvNavn() throws Exception {
+	public void shouldPopulateOpprettetAvNavn() {
 		Journalpost journalpost = createCompleteJournalpostStructure();
 
 		sporingPopulator.populateSporingInfo(journalpost, opprettetAvNavn);
@@ -66,7 +61,7 @@ public class DefaultSporingPopulatorTest {
 	}
 
 	@Test
-	public void shouldCallKildeNavnPopulator() throws Exception {
+	public void shouldCallKildeNavnPopulator() {
 		Journalpost journalpost = createCompleteJournalpostStructure();
 
 		sporingPopulator.populateSporingInfo(journalpost, opprettetAvNavn);

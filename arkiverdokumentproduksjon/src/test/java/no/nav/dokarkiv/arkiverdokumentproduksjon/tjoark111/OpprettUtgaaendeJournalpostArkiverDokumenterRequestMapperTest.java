@@ -14,10 +14,9 @@ import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import javax.inject.Inject;
 
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertBruker;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil.assertDokumentinfoRelasjon;
@@ -45,7 +44,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 		DefaultKildeNavnPopulator.class})
 public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapperTest {
 
-	@Inject
+	@Autowired
 	private OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper requestMapper;
 
 	@BeforeEach

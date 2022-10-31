@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
-
 import com.google.common.base.Strings;
 import io.micrometer.core.annotation.Timed;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -57,14 +55,16 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
+
+import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
 
 /**
  * Implementation of JAX-WS-generated service interface ArkiverDokumentproduksjonV1. Bootstraps the
@@ -85,7 +85,7 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 	// hardkodet, siden appid ikke er tilgjenglig i api
 	private static final String DOKPROS_APPID = "dokumentproduksjon";
 
-	@Inject
+	@Autowired
 	private ArkiverDokumentproduksjonV1 arkiverDokumentproduksjonProvider;
 
 	@Resource

@@ -21,13 +21,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestTemplate;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Configuration
 @Import(AbacAnnotationConfig.class)
 public class MainAbacConfig {
@@ -58,7 +54,6 @@ public class MainAbacConfig {
 
 	@Bean
 	@Primary
-	@Inject
 	AbacSecurityService abacArkivSecurityService(AbacService abacArkivService, AbacLogger abaclog,
 												 AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository,
 												 JoarkRepositorySkjermet joarkRepositorySkjermet) {

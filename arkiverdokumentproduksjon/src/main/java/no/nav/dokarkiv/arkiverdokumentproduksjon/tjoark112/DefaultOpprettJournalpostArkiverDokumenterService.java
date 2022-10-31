@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
-import static org.assertj.core.util.Strings.isNullOrEmpty;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -17,16 +13,14 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Implementation of OpprettJournalpostArkiverDokumentService
- *
- * @author Cook, Torgeir
- */
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
+import static org.assertj.core.util.Strings.isNullOrEmpty;
+
 @Component
 @Slf4j
 public class DefaultOpprettJournalpostArkiverDokumenterService implements OpprettJournalpostArkiverDokumenterService {
@@ -36,7 +30,6 @@ public class DefaultOpprettJournalpostArkiverDokumenterService implements Oppret
 	private final DokumentFilerDelegate dokumentFilerDelegate;
 	private final OpprettJournalpostArkiverDokumenterRequestMapper opprettJournalpostArkiverDokumenterRequestMapper;
 
-	@Inject
 	public DefaultOpprettJournalpostArkiverDokumenterService(JoarkRepositorySkjermet joarkRepository,
 															 OpprettJournalpostArkiverDokumenterValidator opprettJournalpostArkiverDokumenterValidator,
 															 DokumentFilerDelegate dokumentFilerDelegate,

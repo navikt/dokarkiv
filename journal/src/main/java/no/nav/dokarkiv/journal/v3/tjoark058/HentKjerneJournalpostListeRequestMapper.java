@@ -1,8 +1,6 @@
 package no.nav.dokarkiv.journal.v3.tjoark058;
 
 
-import static no.nav.dokarkiv.core.util.DateConverterUtil.convertXMLGregorianCalendarToDate;
-
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -19,11 +17,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Request mapper for TJOARK058
- *
- * @author Stig Strøm, Acando
- */
+import static no.nav.dokarkiv.core.util.DateConverterUtil.convertXMLGregorianCalendarToDate;
+
 @Component
 public class HentKjerneJournalpostListeRequestMapper {
 
