@@ -21,6 +21,7 @@ import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -28,7 +29,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,9 +50,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = {RepositoryConfig.class, AksjonsLoggServiceImpl.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
@@ -61,13 +58,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ActiveProfiles("itest")
 public class AksjonsLoggIT {
 
-	@Inject
+	@Autowired
 	private AksjonsLoggService aksjonsLoggService;
 
-	@Inject
+	@Autowired
 	private AksjonsLoggRepository aksjonsLoggRepository;
 
-	@Inject
+	@Autowired
 	private JoarkRepository joarkRepository;
 
 	private long journalpostId;

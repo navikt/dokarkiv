@@ -15,7 +15,7 @@ import no.nav.tjeneste.virksomhet.journal.v3.JournalV3;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,9 +23,7 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -34,7 +32,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
+@SpringBootTest(
+		webEnvironment = NONE,
+		classes = {CoreConfig.class, JournalV3Config.class, TokenGeneratorConfiguration.class},
+		properties = {"spring.main.allow-bean-definition-overriding=true"}
+)
+@ActiveProfiles({"itest", "wiremock"})
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class, JournalV3Config.class, TokenGeneratorConfiguration.class, SporingHandlerInterceptorTest.TestConfig.class},
@@ -48,21 +53,21 @@ public abstract class AbstractJournalV3Itest {
 
 	protected static final String INTERN_BRUKER_USER_ID = "srvjoarkadmin";
 
-	@Inject
+	@Autowired
 	protected JournalV3 journalV3Provider;
-	@Inject
+	@Autowired
 	protected JoarkRepositorySkjermet joarkRepository;
-	@Inject
+	@Autowired
 	protected DokumentFilRepository dokumentFilRepository;
-	@Inject
+	@Autowired
 	protected JournalpostDokumentInfoRelasjonRepository relasjonRepository;
-	@Inject
+	@Autowired
 	protected DokumentinfoRepository dokumentinfoRepository;
-	@Inject
+	@Autowired
 	protected DokumentUrlInfoRepository dokumentUrlInfoRepository;
-	@Inject
+	@Autowired
 	protected SkjermingServiceTest skjermingService;
-	@Inject
+	@Autowired
 	protected EntityManager entityManager;
 
 	@BeforeEach

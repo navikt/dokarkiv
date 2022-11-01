@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark902;
 
-import static no.nav.dokarkiv.hentjournalsakinfo.rjoark902.HentJournalpostSqlGenerator.hentJournalpostSql;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
@@ -10,9 +8,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
+
+import static no.nav.dokarkiv.hentjournalsakinfo.rjoark902.HentJournalpostSqlGenerator.hentJournalpostSql;
 
 @Slf4j
 @Repository
@@ -23,7 +22,6 @@ class HentJournalpostSpringJdbcRepository {
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
-	@Inject
 	public HentJournalpostSpringJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}

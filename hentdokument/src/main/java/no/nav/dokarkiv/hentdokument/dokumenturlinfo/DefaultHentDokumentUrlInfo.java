@@ -10,23 +10,14 @@ import no.nav.dokarkiv.hentdokument.exceptions.DokumentUrlNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Default implementation of the HentDokumentUrlInfo.
- *
- * @author Magnus Skuland, Sirius IT
- * @author Eirik Bergande, Sirius IT
- * @author Thomas Eugen Bjørge, Visma Consulting
- */
 @Component
 public class DefaultHentDokumentUrlInfo extends AbstractDocumentOperation implements HentDokumentUrlInfo {
 
 	private final long defaultTimeToLiveMillis;
 	private final DokumentUrlInfoRepository dokumentUrlInfoRepository;
 
-	@Inject
 	public DefaultHentDokumentUrlInfo(@Value("${hentdokument.dokumenturl.urlTimeToLiveMinutes:1}") long urlTimeToLiveMinutes,
 									  DokumentUrlInfoRepository dokumentUrlInfoRepository) {
 		this.defaultTimeToLiveMillis = minutesToMillis(urlTimeToLiveMinutes);

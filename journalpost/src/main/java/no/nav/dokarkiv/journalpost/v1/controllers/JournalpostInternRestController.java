@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
@@ -39,9 +38,6 @@ import static no.nav.dokarkiv.core.util.DecodeUtils.decodeBasicAuth;
 import static no.nav.dokarkiv.core.util.DecodeUtils.isBasicAuth;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
-/**
- * @author Olav Røstvold Thorsen, Visma Consulting.
- */
 @Tag(name="journalpostapi - internt", description = "Interne tjenester mot journalpost")
 @Slf4j
 @Unprotected
@@ -53,7 +49,6 @@ public class JournalpostInternRestController {
 	private final KopierJournalpostService kopierJournalpostService;
 	private static final String SRVDOKARKIVPROXY = "srvdokarkivproxy";
 
-	@Inject
 	public JournalpostInternRestController(
 			final TilknyttVedleggService tilknyttVedleggService,
 			final KopierJournalpostService kopierJournalpostService) {

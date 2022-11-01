@@ -4,12 +4,8 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Repository
 public class SafHentDokumentRepository {
 	private static final String DOKUMENT_BY_ID_AND_VARIANT_SQL = "select new " +
@@ -31,7 +27,6 @@ public class SafHentDokumentRepository {
 
 	private final EntityManager entityManager;
 
-	@Inject
 	public SafHentDokumentRepository(EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}

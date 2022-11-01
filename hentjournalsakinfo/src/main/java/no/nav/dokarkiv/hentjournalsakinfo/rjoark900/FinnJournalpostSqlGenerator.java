@@ -7,9 +7,6 @@ import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 final class FinnJournalpostSqlGenerator {
 	private FinnJournalpostSqlGenerator() {
 		//ikke instansier

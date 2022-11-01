@@ -13,43 +13,40 @@ import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Value
 public class JournalpostDto {
-	private final Long journalpostId;
-	private final Long prevJournalpostId;
-	private final Long nextJournalpostId;
-	private final Long totaltAntall;
-	private final String innhold;
-	private final FagomradeCode fagomrade;
-	private final String behandlingstema;
-	private final String behandlingstemanavn;
-	private final JournalStatusCode journalstatus;
-	private final String avsenderMottakerId;
-	private final AvsenderMottakerIdTypeCode avsenderMottakerIdType;
-	private final String avsenderMottakerNavn;
-	private final String avsenderMottakerLand;
-	private final String journalforendeEnhet;
-	private final String journalfortAvNavn;
-	private final String opprettetAvNavn;
-	private final MottaksKanalCode mottakskanal;
-	private final UtsendingsKanalCode utsendingskanal;
-	private final JournalpostTypeCode journalposttype;
-	private final SaksrelasjonDto saksrelasjon;
-	private final BrukerDto bruker;
-	private final Date datoOpprettet;
-	private final Date mottattDato;
-	private final Date journalDato;
-	private final Date dokumentDato;
-	private final Date avsReturDato;
-	private final Date sendtPrintDato;
-	private final Date ekspedertDato;
-	private final SkjermingTypeCode skjerming;
-	private final String antallRetur;
-	private final String kanalReferanseId;
-	private final List<TilleggsopplysningDto> tilleggsopplysninger;
-	private final List<DokumentInfoDto> dokumenter;
-	private final InnsynCode innsyn;
+	Long journalpostId;
+	Long prevJournalpostId;
+	Long nextJournalpostId;
+	Long totaltAntall;
+	String innhold;
+	FagomradeCode fagomrade;
+	String behandlingstema;
+	String behandlingstemanavn;
+	JournalStatusCode journalstatus;
+	String avsenderMottakerId;
+	AvsenderMottakerIdTypeCode avsenderMottakerIdType;
+	String avsenderMottakerNavn;
+	String avsenderMottakerLand;
+	String journalforendeEnhet;
+	String journalfortAvNavn;
+	String opprettetAvNavn;
+	MottaksKanalCode mottakskanal;
+	UtsendingsKanalCode utsendingskanal;
+	JournalpostTypeCode journalposttype;
+	SaksrelasjonDto saksrelasjon;
+	BrukerDto bruker;
+	Date datoOpprettet;
+	Date mottattDato;
+	Date journalDato;
+	Date dokumentDato;
+	Date avsReturDato;
+	Date sendtPrintDato;
+	Date ekspedertDato;
+	SkjermingTypeCode skjerming;
+	String antallRetur;
+	String kanalReferanseId;
+	List<TilleggsopplysningDto> tilleggsopplysninger;
+	List<DokumentInfoDto> dokumenter;
+	InnsynCode innsyn;
 }

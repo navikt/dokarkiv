@@ -6,21 +6,16 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Default implementation of SettDatoSendtService
- *
- * @author Joakim Bjørnstad, Visma Consulting
- */
 @Component
 public class DefaultSettDatoSendtService implements SettDatoSendtService {
 
-	@Inject
-    private JoarkRepositorySkjermet joarkRepository;
+    private final JoarkRepositorySkjermet joarkRepository;
+	private final SporingPopulator sporingPopulator;
 
-	@Inject
-	private SporingPopulator sporingPopulator;
+	public DefaultSettDatoSendtService(JoarkRepositorySkjermet joarkRepository, SporingPopulator sporingPopulator) {
+		this.joarkRepository = joarkRepository;
+		this.sporingPopulator = sporingPopulator;
+	}
 
 	@Override
 	public void settDatoSendt(SettDatoSendtRequestTo domainRequest) {

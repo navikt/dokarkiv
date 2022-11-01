@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Value
 @Builder
 public class HentTilgangJournalpostResponse {

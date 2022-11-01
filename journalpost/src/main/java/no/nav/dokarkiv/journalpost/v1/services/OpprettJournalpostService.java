@@ -31,7 +31,6 @@ import no.nav.dokarkiv.journalpost.v1.util.opprettjournalpost.OpprettJournalpost
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -67,7 +66,6 @@ public class OpprettJournalpostService {
 	private final OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils;
 	private final MeterRegistry meterRegistry;
 
-	@Inject
 	public OpprettJournalpostService(final JoarkRepository joarkRepository,
 									 final DokumentFilRepository dokumentFilRepository,
 									 final OpprettJournalpostApiRequestMapper opprettJournalpostApiRequestMapper,

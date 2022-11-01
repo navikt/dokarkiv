@@ -5,21 +5,20 @@ import no.nav.dokarkiv.behandlejournal.SporingUtil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
 /**
- * Implementation of {@link ArkiverUstrukturertKravRequestMapper}. Maps request
- * from FIM to Joark domain.
- * 
- * @author Rune Romundstad, Visma Consulting
+ * Implementation of {@link ArkiverUstrukturertKravRequestMapper}.
+ * Maps request from FIM to Joark domain.
  */
 @Component
 public class DefaultArkiverUstrukturertKravRequestMapper implements ArkiverUstrukturertKravRequestMapper {
 
-	@Inject
-	private JournalpostMapper journalpostMapper;
-	@Inject
-	private SporingMapper sporingMapper;
+	private final JournalpostMapper journalpostMapper;
+	private final SporingMapper sporingMapper;
+
+	public DefaultArkiverUstrukturertKravRequestMapper(JournalpostMapper journalpostMapper, SporingMapper sporingMapper) {
+		this.journalpostMapper = journalpostMapper;
+		this.sporingMapper = sporingMapper;
+	}
 
 	/** {@inheritDoc} */
 	@Override

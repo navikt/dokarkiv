@@ -52,11 +52,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit test class for BehandleJournalProvider.
- *
- * @author Rune Romundstad, Visma Consulting
- */
 @ExtendWith(MockitoExtension.class)
 public class BehandleJournalProviderTest {
 	private static final String SPORING_FORNAVN = "Sigrid";
@@ -96,7 +91,7 @@ public class BehandleJournalProviderTest {
 	private JournalfoerNotatHenvendelseResponseMapper journalfoerNotatHenvendelseResponseMapperMock;
 
 	@InjectMocks
-	private BehandleJournalProvider behandleJournalProvider = new BehandleJournalProvider();
+	private BehandleJournalProvider behandleJournalProvider;
 	private JournalpostIkkeFunnet journalpostIkkeFunnet;
 
 	@BeforeEach

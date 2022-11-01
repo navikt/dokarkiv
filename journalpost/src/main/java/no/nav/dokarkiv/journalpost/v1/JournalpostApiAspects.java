@@ -12,8 +12,6 @@ import org.aspectj.lang.annotation.Before;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
@@ -25,8 +23,11 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 @Slf4j
 public class JournalpostApiAspects {
 
-    @Inject
-    private AbacSecurityService abacSecurityService;
+    private final AbacSecurityService abacSecurityService;
+
+    public JournalpostApiAspects(AbacSecurityService abacSecurityService) {
+        this.abacSecurityService = abacSecurityService;
+    }
 
     @Before("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerJournalpostRestController.*(..)) && args(journalpostId)")
     public void aConfigureMDC(JoinPoint point, String journalpostId) {

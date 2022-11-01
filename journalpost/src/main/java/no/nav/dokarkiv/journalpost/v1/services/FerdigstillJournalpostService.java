@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
@@ -20,7 +19,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -45,7 +43,6 @@ public class FerdigstillJournalpostService {
 	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
 	private final AksjonsLoggService aksjonsLoggService;
 
-	@Inject
 	public FerdigstillJournalpostService(final JoarkRepository joarkRepository,
 										 final AksjonsLoggService aksjonsLoggService) {
 		this.joarkRepository = joarkRepository;

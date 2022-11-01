@@ -6,10 +6,10 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 
 @Value
 public class VariantDto {
-	private final VariantFormatCode variantf;
-	private final String filnavn;
-	private final String filuuid;
-	private final String filtype;
-	private final String filstorrelse;
-	private final SkjermingTypeCode skjerming;
+	VariantFormatCode variantf;
+	String filnavn;
+	String filuuid;
+	String filtype;
+	String filstorrelse;
+	SkjermingTypeCode skjerming;
 }

@@ -102,7 +102,7 @@ public class BehandleJournalV3ProviderTest {
 	private JournalfoerNotatHenvendelseV3ResponseMapper journalfoerNotatHenvendelseResponseMapperMock;
 
 	@InjectMocks
-	private BehandleJournalV3Provider behandleJournalV3Provider = new BehandleJournalV3Provider();
+	private BehandleJournalV3Provider behandleJournalV3Provider;
 	private JournalpostIkkeFunnet journalpostIkkeFunnet;
 
 	@BeforeEach

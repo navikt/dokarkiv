@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark904;
 
-import static no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusSql.finnJournalposterStatusSql;
-
 import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
 import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
@@ -10,13 +8,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import java.sql.Timestamp;
 import java.util.List;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
+import static no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusSql.finnJournalposterStatusSql;
+
 @Repository
 class FinnJournalposterStatusJdbcRepository {
 	private static final ResultSetExtractor<List<JournalpostDto>> RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
@@ -24,7 +20,6 @@ class FinnJournalposterStatusJdbcRepository {
 			.newResultSetExtractor(JournalpostDto.class);
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
-	@Inject
 	FinnJournalposterStatusJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}

@@ -9,24 +9,19 @@ import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
 import org.apache.commons.lang3.ArrayUtils;
 
-import javax.inject.Inject;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-/**
- * Common validation class for Journalpost for the Operations in the
- * BehandleJournal service.
- *
- * @author Rune Romundstad, Visma Consulting
- */
 public abstract class AbstractBehandleJournalV3JournalpostValidator implements BehandleJournalJournalpostValidator {
 
-	@Inject
 	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
-
-	@Inject
 	protected JournalpostStructureVerifier journalpostStructureVerifier;
+
+	public AbstractBehandleJournalV3JournalpostValidator(MandatoryFieldsVerifier mandatoryFieldsVerifier, JournalpostStructureVerifier journalpostStructureVerifier) {
+		this.mandatoryFieldsVerifier = mandatoryFieldsVerifier;
+		this.journalpostStructureVerifier = journalpostStructureVerifier;
+	}
 
 	protected void performCommonValidation(Journalpost journalpost) {
 		mandatoryFieldsVerifier.verifyFields(journalpost);

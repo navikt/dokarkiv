@@ -11,22 +11,19 @@ import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 
 import java.time.LocalDateTime;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Value
 public class TilgangJournalpostDto {
-	private final String journalpostId;
-	private final JournalStatusCode journalStatus;
-	private final JournalpostTypeCode journalpostType;
-	private final FagomradeCode fagomrade;
-	private final LocalDateTime datoOpprettet;
-	private final LocalDateTime journalfoertDato;
-	private final MottaksKanalCode mottakskanal;
-	private final SkjermingTypeCode skjerming;
-	private final String avsenderMottakerId;
-	private final TilgangBrukerDto bruker;
-	private final TilgangSakDto sak;
-	private final TilgangDokumentInfoDto dokument;
-	private final InnsynCode innsyn;
+	String journalpostId;
+	JournalStatusCode journalStatus;
+	JournalpostTypeCode journalpostType;
+	FagomradeCode fagomrade;
+	LocalDateTime datoOpprettet;
+	LocalDateTime journalfoertDato;
+	MottaksKanalCode mottakskanal;
+	SkjermingTypeCode skjerming;
+	String avsenderMottakerId;
+	TilgangBrukerDto bruker;
+	TilgangSakDto sak;
+	TilgangDokumentInfoDto dokument;
+	InnsynCode innsyn;
 }

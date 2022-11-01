@@ -1,9 +1,6 @@
 package no.nav.dokarkiv.arkivervariant.rjoark103;
 
 
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FILUUID;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
-
 import no.nav.dokarkiv.arkivervariant.exception.VariantFormatAlreadyExistsException;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
@@ -14,16 +11,17 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Objects;
+
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FILUUID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
 
 
 @Service
@@ -33,7 +31,6 @@ public class ArkiverVariantService {
 	private final DokumentFilRepository dokumentFilRepository;
 	private final LagreAksjonsLoggService lagreAksjonsLoggService;
 
-	@Inject
 	public ArkiverVariantService(DokumentinfoRepository dokumentinfoRepository,
 								 DokumentFilRepository dokumentFilRepository, LagreAksjonsLoggService lagreAksjonsLoggService) {
 		this.dokumentinfoRepository = dokumentinfoRepository;

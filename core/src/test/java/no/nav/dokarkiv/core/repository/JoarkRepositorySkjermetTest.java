@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,7 +20,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +32,6 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
@@ -42,22 +39,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("itest")
 public class JoarkRepositorySkjermetTest {
 
-	@Inject
+	@Autowired
 	private JoarkRepositorySkjermet joarkRepositorySkjermet;
 
-	@Inject
+	@Autowired
 	private JoarkRepository joarkRepository;
 
-	@Inject
+	@Autowired
 	private DokumentinfoRepository dokumentinfoRepository;
 
-	@Inject
+	@Autowired
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
-	@Inject
+	@Autowired
 	private SkjermingService skjermingService;
 
-	@Inject
+	@Autowired
 	private EntityManager entityManager;
 
 	public static final String KANAL_REFERANSE_ID = "kanal";

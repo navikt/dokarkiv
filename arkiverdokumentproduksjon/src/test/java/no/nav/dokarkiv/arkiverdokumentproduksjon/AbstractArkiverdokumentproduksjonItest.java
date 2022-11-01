@@ -12,26 +12,20 @@ import no.nav.dokarkiv.core.storage.GoogleCloudBucketStorage;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {AbstractArkiverdokumentproduksjonItest.Config.class, CoreConfig.class,
 				ArkiverDokumentproduksjonConfig.class, TokenGeneratorConfiguration.class},
@@ -45,13 +39,13 @@ public abstract class AbstractArkiverdokumentproduksjonItest {
 	public static String ITEST_USERID = "itestuser";
 	public static String ITEST_COMPONENTID = "itest";
 
-	@Inject
+	@Autowired
 	protected ArkiverDokumentproduksjonV1 arkiverDokumentproduksjonProvider;
-	@Inject
+	@Autowired
 	protected JoarkRepositorySkjermet joarkRepository;
-	@Inject
+	@Autowired
 	protected DokumentinfoRepository dokumentinfoRepository;
-	@Inject
+	@Autowired
 	protected DokumentFilRepository dokumentFilRepository;
 
 	@BeforeEach

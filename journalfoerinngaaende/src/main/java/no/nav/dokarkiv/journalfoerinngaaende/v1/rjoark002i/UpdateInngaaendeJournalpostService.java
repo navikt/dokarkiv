@@ -1,13 +1,5 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark002i;
 
-import static no.nav.dok.tjenester.journalfoerinngaaende.response.Status.MANGLER;
-import static no.nav.dok.tjenester.journalfoerinngaaende.response.Status.MANGLER_IKKE;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.support.JournalpostValidator.validateJournalpostStatuser;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.support.JournalpostValidator.validateJournalpostStruktur;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
-import static org.hibernate.annotations.common.util.StringHelper.isEmpty;
-import static org.hibernate.annotations.common.util.StringHelper.isNotEmpty;
-
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostResponse;
 import no.nav.dok.tjenester.journalfoerinngaaende.response.Dokument;
@@ -22,23 +14,26 @@ import no.nav.dokarkiv.core.exceptions.KunneIkkeEndeligJournalfoereException;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @author Paul Magne Lunde, Visma Consulting
- */
+import static no.nav.dok.tjenester.journalfoerinngaaende.response.Status.MANGLER;
+import static no.nav.dok.tjenester.journalfoerinngaaende.response.Status.MANGLER_IKKE;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.support.JournalpostValidator.validateJournalpostStatuser;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.support.JournalpostValidator.validateJournalpostStruktur;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.convertStringToLong;
+import static org.hibernate.annotations.common.util.StringHelper.isEmpty;
+import static org.hibernate.annotations.common.util.StringHelper.isNotEmpty;
+
 @Service
 public class UpdateInngaaendeJournalpostService {
 
     private final JoarkRepositorySkjermet joarkRepository;
 	private final PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper;
 
-	@Inject
     public UpdateInngaaendeJournalpostService(JoarkRepositorySkjermet joarkRepository,
 											  PutInngaaendeJournalpostMapper putInngaaendeJournalpostMapper) {
 		this.joarkRepository = joarkRepository;

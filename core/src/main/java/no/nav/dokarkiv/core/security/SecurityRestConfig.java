@@ -11,8 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.inject.Named;
-
 /**
  * Vi bruker spring-security for standard filtre.
  * token-support tar seg av autorisasjon til rest-tjenester.
@@ -40,7 +38,6 @@ public class SecurityRestConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	@Named("basicAuthReadAccessRestInterceptor")
 	HandlerInterceptor basicAuthReadAccessRestInterceptor(LdapTemplate ldapTemplate,
 														  CacheManager cacheManager,
 														  @Value("${ldap.basedn}") String baseDn,

@@ -1,8 +1,6 @@
 package no.nav.dokarkiv.journal.v3;
 
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-
 import io.micrometer.core.annotation.Timed;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -20,10 +18,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.soap.Addressing;
+
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
 @WebService(targetNamespace = "http://nav.no/tjeneste/virksomhet/journal/v3/Binding",
 		serviceName = "Journal_v3",
@@ -37,8 +36,11 @@ public class JournalV3Endpoint implements JournalV3 {
 
 	private static final String DEFAULT_APPID = "joark:Journal_v3";
 
-	@Inject
-	private JournalV3 journalV3Provider;
+	private final JournalV3 journalV3Provider;
+
+	public JournalV3Endpoint(JournalV3 journalV3Provider) {
+		this.journalV3Provider = journalV3Provider;
+	}
 
 	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark058"}, percentiles = {0.5, 0.95})
 	@Override

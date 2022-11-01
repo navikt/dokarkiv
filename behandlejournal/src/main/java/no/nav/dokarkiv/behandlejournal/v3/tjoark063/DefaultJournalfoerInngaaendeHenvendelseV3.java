@@ -11,23 +11,18 @@ import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of JournalfoerInngaaendeHenvendelseMedHoveddokument
- *
- * @author Rune Romundstad, Visma Consulting
- */
 @Component
-public class DefaultJournalfoerInngaaendeHenvendelseV3 implements
-		JournalfoerInngaaendeHenvendelse {
+public class DefaultJournalfoerInngaaendeHenvendelseV3 implements JournalfoerInngaaendeHenvendelse {
 
-	@Inject
-	private JoarkRepositorySkjermet joarkRepository;
-	@Inject
-	private JournalfoerInngaaendeHenvendelseV3Validator behandleJournalJournalpostValidator;
-	@Inject
-	private DokumentFilerDelegate dokumentFilerDelegate;
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalfoerInngaaendeHenvendelseV3Validator behandleJournalJournalpostValidator;
+	private final DokumentFilerDelegate dokumentFilerDelegate;
+
+	public DefaultJournalfoerInngaaendeHenvendelseV3(JoarkRepositorySkjermet joarkRepository, JournalfoerInngaaendeHenvendelseV3Validator behandleJournalJournalpostValidator, DokumentFilerDelegate dokumentFilerDelegate) {
+		this.joarkRepository = joarkRepository;
+		this.behandleJournalJournalpostValidator = behandleJournalJournalpostValidator;
+		this.dokumentFilerDelegate = dokumentFilerDelegate;
+	}
 
 	@Override
 	public JournalfoerInngaaendeHenvendelseResponse journalfoerInngaaendeHenvendelse(

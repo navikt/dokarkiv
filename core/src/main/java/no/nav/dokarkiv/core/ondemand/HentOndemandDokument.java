@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import javax.inject.Inject;
-
 /**
  * Tjenesten henter OnDemand og DLF dokumenter fra Joark ved bruk av hentdokumenturl servleten.
  * <p>
@@ -22,15 +20,12 @@ import javax.inject.Inject;
  * <p>
  * For DLF så har Joark mye custom logikk som fletter data inn i DLF filen og denne kompleksiteten er heller ikke
  * portert til dokarkiv.
- *
- * @author Joakim Bjørnstad, Jbit AS
  */
 @Component
 public class HentOndemandDokument {
 	private final RestTemplate restTemplate;
 	private final HentDokumentUrl hentDokumentUrl;
 
-	@Inject
 	public HentOndemandDokument(RestTemplate restTemplate, HentDokumentUrl hentDokumentUrl) {
 		this.restTemplate = restTemplate;
 		this.hentDokumentUrl = hentDokumentUrl;

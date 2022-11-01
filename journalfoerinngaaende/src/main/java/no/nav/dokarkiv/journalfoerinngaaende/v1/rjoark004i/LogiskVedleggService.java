@@ -17,14 +17,9 @@ import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.DOKUMENT_ID;
 import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.JOURNALPOST_ID;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Service
 public class LogiskVedleggService {
 
@@ -33,7 +28,6 @@ public class LogiskVedleggService {
 	private final PostLogiskVedleggRequestMapper postLogiskVedleggRequestMapper;
 	private static final String JOURNALPOST_IKKE_FUNNET = "Kunne ikke finne journalpost med journalpostId=%s i joark";
 
-	@Inject
 	public LogiskVedleggService(JoarkRepositorySkjermet joarkRepository,
 								SkannetInnholdRepository skannetInnholdRepository,
 								PostLogiskVedleggRequestMapper postLogiskVedleggRequestMapper) {

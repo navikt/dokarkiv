@@ -1,10 +1,5 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark002i;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assertNotNull;
-import static org.apache.logging.log4j.util.Strings.isNotBlank;
-
 import no.nav.dok.tjenester.journalfoerinngaaende.ArkivSakWithArkivsakSystemEnum;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutJournalpostRequest;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -17,14 +12,21 @@ import no.nav.dokarkiv.core.repository.BrukerRepository;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Set;
+
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils.assertNotNull;
+import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Component
 public class PutInngaaendeJournalpostMapper {
 
-	@Inject
-	private BrukerRepository brukerRepository;
+	private final BrukerRepository brukerRepository;
+
+	public PutInngaaendeJournalpostMapper(BrukerRepository brukerRepository) {
+		this.brukerRepository = brukerRepository;
+	}
 
 	public void oppdaterJournalpost(Journalpost journalpost, PutJournalpostRequest putJournalpostRequest) {
 

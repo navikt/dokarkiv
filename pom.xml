@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.3</version>
+		<version>2.7.5</version>
 	</parent>
 
 	<groupId>no.nav.dokarkiv</groupId>
@@ -35,23 +35,25 @@
 		<java.version>17</java.version>
 		<argLine>-Xmx2048m</argLine>
 
-		<javax.inject.version>1</javax.inject.version>
 		<jakarta.jws-api.version>1.1.1</jakarta.jws-api.version>
-		<oracle.version>19.15.0.0.1</oracle.version>
-		<cxf.version>3.5.3</cxf.version>
+		<oracle.version>19.16.0.0</oracle.version>
+		<cxf.version>3.5.4</cxf.version>
 		<simpleflatmapper.version>8.2.3</simpleflatmapper.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
 		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
-		<jaxb2-basics-runtime.version>0.12.0</jaxb2-basics-runtime.version>
-		<java-jwt.version>3.19.2</java-jwt.version>
+		<java-jwt.version>4.2.1</java-jwt.version>
+		<jaxb2-basics-runtime.version>0.13.1</jaxb2-basics-runtime.version>
 
+		<!-- Versjon større enn 2.10.0 gir trøbbel med 'You are currently running with version 2.0.0 of google-api-client.
+		You need at least version 1.15 of google-api-client to run version 1.25.0 of the
+		Cloud Key Management Service (KMS) API library -->
 		<google-cloud-storage.version>2.10.0</google-cloud-storage.version>
 		<tink.version>1.7.0</tink.version>
 
 		<bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
-		<commons.io.version>2.11.0</commons.io.version>
-		<springdoc-openapi-ui.version>1.6.11</springdoc-openapi-ui.version>
+		<commons-io.version>2.11.0</commons-io.version>
+		<springdoc-openapi-ui.version>1.6.12</springdoc-openapi-ui.version>
 
 		<!-- NAV -->
 		<modig-security.version>3.0.6</modig-security.version>
@@ -176,11 +178,6 @@
 				<version>${simpleflatmapper.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.inject</groupId>
-				<artifactId>javax.inject</artifactId>
-				<version>${javax.inject.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>jakarta.jws</groupId>
 				<artifactId>jakarta.jws-api</artifactId>
 				<version>${jakarta.jws-api.version}</version>
@@ -270,7 +267,7 @@
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>${commons.io.version}</version>
+				<version>${commons-io.version}</version>
 			</dependency>
 
 			<!-- Tjenestegrensesnitt -->

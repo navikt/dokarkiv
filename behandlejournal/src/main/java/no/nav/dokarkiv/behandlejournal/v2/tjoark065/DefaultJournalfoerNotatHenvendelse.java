@@ -12,21 +12,17 @@ import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of JournalfoerNotatHenvendelse
- *
- * @author Joakim Bjørnstad, Visma Consulting
- */
 @Component
 public class DefaultJournalfoerNotatHenvendelse implements JournalfoerNotatHenvendelse {
-	@Inject
-	private JournalfoerNotatHenvendelseValidator behandleJournalJournalpostValidator;
-	@Inject
-	private DokumentFilerDelegate dokumentFilerDelegate;
-	@Inject
-    private JoarkRepositorySkjermet joarkRepository;
+	private final JournalfoerNotatHenvendelseValidator behandleJournalJournalpostValidator;
+	private final DokumentFilerDelegate dokumentFilerDelegate;
+    private final JoarkRepositorySkjermet joarkRepository;
+
+	public DefaultJournalfoerNotatHenvendelse(JournalfoerNotatHenvendelseValidator behandleJournalJournalpostValidator, DokumentFilerDelegate dokumentFilerDelegate, JoarkRepositorySkjermet joarkRepository) {
+		this.behandleJournalJournalpostValidator = behandleJournalJournalpostValidator;
+		this.dokumentFilerDelegate = dokumentFilerDelegate;
+		this.joarkRepository = joarkRepository;
+	}
 
 	@Override
 	public JournalfoerNotatHenvendelseResponse journalfoerNotatHenvendelse(

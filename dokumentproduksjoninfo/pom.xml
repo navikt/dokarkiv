@@ -17,10 +17,6 @@
 			<artifactId>core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>no.nav.tjenester.brevogarkiv</groupId>
 			<artifactId>dokumentproduksjoninfo-tjenestespesifikasjon</artifactId>
 			<classifier>jaxws</classifier>

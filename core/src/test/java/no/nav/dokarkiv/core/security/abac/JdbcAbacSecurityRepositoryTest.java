@@ -22,13 +22,13 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.Date;
 
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
@@ -50,9 +50,9 @@ import static org.hamcrest.Matchers.nullValue;
 @Transactional
 @ActiveProfiles("itest")
 public class JdbcAbacSecurityRepositoryTest {
-	@Inject
+	@Autowired
 	private JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
-	@Inject
+	@Autowired
 	private JoarkRepositorySkjermet joarkRepository;
 
 	@BeforeEach

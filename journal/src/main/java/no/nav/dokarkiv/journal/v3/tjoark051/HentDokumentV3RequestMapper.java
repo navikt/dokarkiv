@@ -5,11 +5,6 @@ import no.nav.tjeneste.virksomhet.journal.v3.meldinger.HentDokumentRequest;
 import org.springframework.stereotype.Component;
 
 
-/**
- * Class for mapping wsRequest to domainRequest for HentDokument(TJOARK051)
- *
- * @author Stig Strøm
- */
 @Component
 public class HentDokumentV3RequestMapper {
 

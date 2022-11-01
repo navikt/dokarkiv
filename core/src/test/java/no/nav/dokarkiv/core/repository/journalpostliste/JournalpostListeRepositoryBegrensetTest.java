@@ -16,6 +16,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -23,16 +24,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class, JournalpostListeRepository.class})
@@ -40,19 +37,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ActiveProfiles("itest")
 public class JournalpostListeRepositoryBegrensetTest {
 
-	@Inject
+	@Autowired
 	private JoarkRepository joarkRepository;
 
-	@Inject
+	@Autowired
 	private DokumentinfoRepository dokumentinfoRepository;
 
-	@Inject
+	@Autowired
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 
-	@Inject
+	@Autowired
 	private JournalpostListeRepository journalpostListeRepository;
 
-	@Inject
+	@Autowired
 	private SkjermingService skjermingService;
 
 	@BeforeEach

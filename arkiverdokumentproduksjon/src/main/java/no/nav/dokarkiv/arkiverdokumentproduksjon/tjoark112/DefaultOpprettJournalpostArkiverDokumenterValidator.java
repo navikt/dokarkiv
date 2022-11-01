@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
-import static org.apache.commons.lang3.StringUtils.contains;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -12,20 +9,15 @@ import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
 import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import static org.apache.commons.lang3.StringUtils.contains;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
-/**
- * Validates Journalpost for OpprettOgFerdigstillJournalpost
- *
- * @author Stig Strøm
- */
 @Component
 public class DefaultOpprettJournalpostArkiverDokumenterValidator implements OpprettJournalpostArkiverDokumenterValidator {
 
 	private final JournalpostStructureVerifier verifier;
 	private final MandatoryFieldsVerifier mandatoryFieldsVerifier;
 
-	@Inject
 	public DefaultOpprettJournalpostArkiverDokumenterValidator(JournalpostStructureVerifier verifier, MandatoryFieldsVerifier mandatoryFieldsVerifier) {
 		this.verifier = verifier;
 		this.mandatoryFieldsVerifier = mandatoryFieldsVerifier;

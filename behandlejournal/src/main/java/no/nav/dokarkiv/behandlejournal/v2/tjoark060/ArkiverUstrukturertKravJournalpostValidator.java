@@ -3,16 +3,17 @@ package no.nav.dokarkiv.behandlejournal.v2.tjoark060;
 import no.nav.dokarkiv.behandlejournal.v2.AbstractBehandleJournalJournalpostValidator;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
+import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
+import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-/**
- * Validates Journalpost for arkiverUstrukturertKrav operation.
- *
- * @author Thomas Eugen Bjørge, Visma Consulting
- */
 @Component
 public class ArkiverUstrukturertKravJournalpostValidator extends AbstractBehandleJournalJournalpostValidator {
+
+	public ArkiverUstrukturertKravJournalpostValidator(MandatoryFieldsVerifier mandatoryFieldsVerifier, JournalpostStructureVerifier journalpostStructureVerifier) {
+		super(mandatoryFieldsVerifier, journalpostStructureVerifier);
+	}
 
 	/**
 	 * {@inheritDoc}

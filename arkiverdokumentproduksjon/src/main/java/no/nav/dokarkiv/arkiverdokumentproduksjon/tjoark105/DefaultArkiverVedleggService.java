@@ -12,27 +12,20 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Default implementation of ArkiverVedleggService
- *
- * @author Magnar Brandsdal, Visma Consulting
- */
 @Component
 public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 
-	@Inject
-	private JoarkRepositorySkjermet joarkRepository;
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final ArkiverVedleggValidator arkiverVedleggValidator;
+	private final DokumentFilerDelegate dokumentFilerDelegate;
+	private final SporingPopulator sporingPopulator;
 
-	@Inject
-	private ArkiverVedleggValidator arkiverVedleggValidator;
-
-	@Inject
-	private DokumentFilerDelegate dokumentFilerDelegate;
-
-	@Inject
-	private SporingPopulator sporingPopulator;
+	public DefaultArkiverVedleggService(JoarkRepositorySkjermet joarkRepository, ArkiverVedleggValidator arkiverVedleggValidator, DokumentFilerDelegate dokumentFilerDelegate, SporingPopulator sporingPopulator) {
+		this.joarkRepository = joarkRepository;
+		this.arkiverVedleggValidator = arkiverVedleggValidator;
+		this.dokumentFilerDelegate = dokumentFilerDelegate;
+		this.sporingPopulator = sporingPopulator;
+	}
 
 	@Override
 	public ArkiverVedleggResponseTo arkiverVedlegg(ArkiverVedleggRequestTo arkiverVedleggRequest)

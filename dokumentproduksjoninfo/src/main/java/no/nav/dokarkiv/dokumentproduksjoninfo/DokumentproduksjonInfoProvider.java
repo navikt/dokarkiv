@@ -39,42 +39,32 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.inject.Inject;
 import java.util.List;
 
-/**
- * Provider delegate for the DokumentproduksjonInfo webservice
- *
- * @author Thomas Eugen Bjørge, Visma Consulting
- */
 @Slf4j
 @Component
 public class DokumentproduksjonInfoProvider implements DokumentproduksjonInfoV1 {
 
-	@Inject 
-	private HentJournalOgDokumentStatus hentJournalOgDokumentStatus;
+	private final HentJournalOgDokumentStatus hentJournalOgDokumentStatus;
+	private final HentJournalpostInfoService hentJournalpostInfoService;
+	private final HentFerdigstilteDokumenterService hentFerdigstilteDokumenterService;
+	private final HentJournalOgDokumentStatusRequestMapper hentJournalOgDokumentStatusRequestMapper;
+	private final HentJournalOgDokumentStatusResponseMapper hentJournalOgDokumentStatusResponseMapper;
+	private final HentJournalpostInfoRequestMapper hentJournalpostInfoRequestMapper;
+	private final HentJournalpostInfoResponseMapper hentJournalpostInfoResponseMapper;
+	private final HentFerdigstilteDokumenterResponseMapper hentFerdigstilteDokumenterResponseMapper;
 
-	@Inject
-	private HentJournalpostInfoService hentJournalpostInfoService;
+	public DokumentproduksjonInfoProvider(HentJournalOgDokumentStatus hentJournalOgDokumentStatus, HentJournalpostInfoService hentJournalpostInfoService, HentFerdigstilteDokumenterService hentFerdigstilteDokumenterService, HentJournalOgDokumentStatusRequestMapper hentJournalOgDokumentStatusRequestMapper, HentJournalOgDokumentStatusResponseMapper hentJournalOgDokumentStatusResponseMapper, HentJournalpostInfoRequestMapper hentJournalpostInfoRequestMapper, HentJournalpostInfoResponseMapper hentJournalpostInfoResponseMapper, HentFerdigstilteDokumenterResponseMapper hentFerdigstilteDokumenterResponseMapper) {
+		this.hentJournalOgDokumentStatus = hentJournalOgDokumentStatus;
+		this.hentJournalpostInfoService = hentJournalpostInfoService;
+		this.hentFerdigstilteDokumenterService = hentFerdigstilteDokumenterService;
+		this.hentJournalOgDokumentStatusRequestMapper = hentJournalOgDokumentStatusRequestMapper;
+		this.hentJournalOgDokumentStatusResponseMapper = hentJournalOgDokumentStatusResponseMapper;
+		this.hentJournalpostInfoRequestMapper = hentJournalpostInfoRequestMapper;
+		this.hentJournalpostInfoResponseMapper = hentJournalpostInfoResponseMapper;
+		this.hentFerdigstilteDokumenterResponseMapper = hentFerdigstilteDokumenterResponseMapper;
+	}
 
-	@Inject
-	private HentFerdigstilteDokumenterService hentFerdigstilteDokumenterService;
-	
-	@Inject
-	private HentJournalOgDokumentStatusRequestMapper hentJournalOgDokumentStatusRequestMapper;
-	
-	@Inject
-	private HentJournalOgDokumentStatusResponseMapper hentJournalOgDokumentStatusResponseMapper;
-
-	@Inject
-	private HentJournalpostInfoRequestMapper hentJournalpostInfoRequestMapper;
-
-	@Inject
-	private HentJournalpostInfoResponseMapper hentJournalpostInfoResponseMapper;
-
-	@Inject
-	private HentFerdigstilteDokumenterResponseMapper hentFerdigstilteDokumenterResponseMapper;
-	
 	@Transactional(readOnly = true)
 	@Override
 	public HentJournalOgDokumentStatusResponse hentJournalOgDokumentStatus(HentJournalOgDokumentStatusRequest request)

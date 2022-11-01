@@ -3,17 +3,16 @@ package no.nav.dokarkiv.behandlejournal.v2.tjoark063;
 import no.nav.dokarkiv.behandlejournal.v2.AbstractBehandleJournalJournalpostValidator;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
+import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
 import org.springframework.stereotype.Component;
 
-/**
- * Validates Journalpost for journalfoerInngaaendeHenvendelse
- * operation.
- *
- * @author Thomas Eugen Bjørge, Visma Consulting
- */
 @Component
-public class JournalfoerInngaaendeHenvendelseValidator extends
-		AbstractBehandleJournalJournalpostValidator {
+public class JournalfoerInngaaendeHenvendelseValidator extends AbstractBehandleJournalJournalpostValidator {
+
+	public JournalfoerInngaaendeHenvendelseValidator(MandatoryFieldsVerifier mandatoryFieldsVerifier, JournalpostStructureVerifier journalpostStructureVerifier) {
+		super(mandatoryFieldsVerifier, journalpostStructureVerifier);
+	}
 
 	@Override
 	public void validate(Journalpost journalpost) {

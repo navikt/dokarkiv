@@ -19,7 +19,6 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.FjernVedleggTilknyttetJournalpost;
-import no.nav.dokarkiv.journalpost.v1.services.KnyttTilAnnenSakService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
@@ -29,7 +28,6 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
-import no.nav.dokarkiv.journalpost.v1.validators.KnyttTilAnnenSakValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import no.nav.security.token.support.core.api.Protected;
@@ -48,7 +46,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -80,7 +77,6 @@ public class ArkiverOgJournalfoerRestController {
 	private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
 	private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
 
-	@Inject
 	public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
 											  final OppdaterJournalpostService oppdaterJournalpostService,
 											  final OpprettJournalpostService opprettJournalpostService,

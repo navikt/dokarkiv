@@ -12,18 +12,16 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.Set;
 
-/**
- *
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Service
 public class HentJournalpostInfoService {
 
-	@Inject
-    private JoarkRepositorySkjermet joarkRepository;
+    private final JoarkRepositorySkjermet joarkRepository;
+
+	public HentJournalpostInfoService(JoarkRepositorySkjermet joarkRepository) {
+		this.joarkRepository = joarkRepository;
+	}
 
 	public HentJournalpostInfoResponseTo hentJournalOgDokumentStatus(HentJournalpostInfoRequestTo request)
 			throws NoJournalpostFoundException, NoDokumentInfoFoundException {

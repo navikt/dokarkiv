@@ -19,7 +19,6 @@ import no.nav.dokarkiv.exception.ArkivVariantkkeFunnetException;
 import no.nav.dokarkiv.exception.JournalpostKanIkkeSlettesException;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +46,6 @@ public class SlettArkivenhetService {
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final EntityManager entityManager;
 
-	@Inject
 	public SlettArkivenhetService(JoarkDeleteRepository deleteRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, EntityManager entityManager) {
 		this.deleteRepository = deleteRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;

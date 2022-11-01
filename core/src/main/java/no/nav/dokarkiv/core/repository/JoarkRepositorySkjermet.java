@@ -1,27 +1,22 @@
 package no.nav.dokarkiv.core.repository;
 
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 public class JoarkRepositorySkjermet {
 
 	private final JoarkRepository joarkRepository;
 	private final SkjermingService skjermingService;
 
-	@Inject
 	public JoarkRepositorySkjermet(JoarkRepository joarkRepository, SkjermingService skjermingService) {
 		this.joarkRepository = joarkRepository;
 		this.skjermingService = skjermingService;

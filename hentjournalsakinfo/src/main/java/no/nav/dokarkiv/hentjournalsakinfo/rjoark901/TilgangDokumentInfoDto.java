@@ -7,23 +7,20 @@ import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Value
 @Builder
 @AllArgsConstructor
 public class TilgangDokumentInfoDto {
 
-	private final String dokumentinfoId;
-	private final DokumentStatusCode dokumentstatus;
-	private final String brevkode;
-	private final DokumentKategoriCode kategori;
-	private final Boolean organinternt;
-	private final Boolean innskrenketPartsinnsyn;
-	private final Boolean innskrenketTredjepart;
-	private final Boolean kassert;
-	private final SkjermingTypeCode skjerming;
-	private final TilgangVariantDto variant;
+	String dokumentinfoId;
+	DokumentStatusCode dokumentstatus;
+	String brevkode;
+	DokumentKategoriCode kategori;
+	Boolean organinternt;
+	Boolean innskrenketPartsinnsyn;
+	Boolean innskrenketTredjepart;
+	Boolean kassert;
+	SkjermingTypeCode skjerming;
+	TilgangVariantDto variant;
 
 }

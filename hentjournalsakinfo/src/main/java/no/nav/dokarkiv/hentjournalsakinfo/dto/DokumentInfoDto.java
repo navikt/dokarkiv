@@ -9,28 +9,25 @@ import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Value
 public class DokumentInfoDto {
-	private final Long dokumentInfoId;
+	Long dokumentInfoId;
 	@JsonIgnore
-	private final String tilknyttetSom;
+	String tilknyttetSom;
 	@JsonIgnore
-	private final Long jpRelasjonId;
-	private final DokumentStatusCode dokumentstatus;
-	private final Date datoFerdigstilt;
-	private final String brevkode;
-	private final String dokumenttypeId;
-	private final List<VariantDto> varianter;
-	private final String tittel;
-	private final SkjermingTypeCode skjerming;
-	private final Long origJournalpostId;
-	private final Boolean kassert;
-	private final List<LogiskVedleggDto> logiske;
-	private final DokumentKategoriCode kategori;
-	private final Boolean organInternt;
-	private final Boolean innskrPartsinnsyn;
-	private final Boolean innskrTredjepart;
+	Long jpRelasjonId;
+	DokumentStatusCode dokumentstatus;
+	Date datoFerdigstilt;
+	String brevkode;
+	String dokumenttypeId;
+	List<VariantDto> varianter;
+	String tittel;
+	SkjermingTypeCode skjerming;
+	Long origJournalpostId;
+	Boolean kassert;
+	List<LogiskVedleggDto> logiske;
+	DokumentKategoriCode kategori;
+	Boolean organInternt;
+	Boolean innskrPartsinnsyn;
+	Boolean innskrTredjepart;
 }
