@@ -17,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
@@ -56,6 +54,9 @@ public class AzureAdGraphService {
 	@Retryable(include = Exception.class, exclude = {DokarkivFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public String hentFulltNavn(String navIdent) {
 		User user = getUser(navIdent);
+		if (user == null) {
+			return null;
+		}
 		return user.givenName + " " + user.surname;
 	}
 
@@ -63,6 +64,9 @@ public class AzureAdGraphService {
 	@Retryable(include = Exception.class, exclude = {DokarkivFunctionalException.class}, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Boolean userInGroup(String navIdent, String adGroup) {
 		User user = getUser(navIdent);
+		if (user == null) {
+			return false;
+		}
 		List<String> groups = getAzureGroupsByPrincipal(user.id);
 		return groups.contains(adGroup);
 	}
@@ -106,7 +110,7 @@ public class AzureAdGraphService {
 			ResponseEntity<AzureGroupResponse> response = restTemplate.exchange(url, POST, requestEntity, AzureGroupResponse.class);
 			List<AzureGroupResponse.AzureGroup> azureGroups = response.getBody().value();
 			return azureGroups.stream().map(a -> a.id()).collect(Collectors.toList());
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new DokarkivTechnicalException(String.format("Kunne ikke hente gruppeinformasjon fra Azure, Feilmelding=%s", e.getMessage()));
 		}
 	}
