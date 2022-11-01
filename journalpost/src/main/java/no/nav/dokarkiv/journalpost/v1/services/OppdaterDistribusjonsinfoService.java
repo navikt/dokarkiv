@@ -11,6 +11,7 @@ import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.Journalp
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.JournalpostWithDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.ChangeTracker;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdater;
+import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdaterFromBulk;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -62,7 +63,7 @@ public class OppdaterDistribusjonsinfoService {
 					validateJournalpostKanSetteStatusEkspedert(journalpost, journalpostWithDistribusjonsinfo);
 				}
 
-				ChangeTracker trackStatusSattTilEkspedert = journalpostUpdater.updateFields(journalpost, journalpostWithDistribusjonsinfo);
+				ChangeTracker trackStatusSattTilEkspedert = JournalpostUpdaterFromBulk.updateFields(journalpost, journalpostWithDistribusjonsinfo);
 
 				joarkRepository.save(journalpost);
 
