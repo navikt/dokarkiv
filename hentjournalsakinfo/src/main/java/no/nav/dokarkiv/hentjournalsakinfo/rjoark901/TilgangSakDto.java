@@ -10,24 +10,21 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Value
 @Builder
 @AllArgsConstructor
 public class TilgangSakDto {
 
-	private final String sakId;
-	private final FagsystemCode fagsystem;
-	private final Boolean feilregistrert;
-	private final String aktoerId;
-	private final String tema;
-	private final String fagsakNr;
-	private final String orgnr;
-	private final String applikasjon;
-	private final String opprettetAv;
-	private final LocalDateTime opprettetTidspunkt;
+	String sakId;
+	FagsystemCode fagsystem;
+	Boolean feilregistrert;
+	String aktoerId;
+	String tema;
+	String fagsakNr;
+	String orgnr;
+	String applikasjon;
+	String opprettetAv;
+	LocalDateTime opprettetTidspunkt;
 
 	// "Opprettet tidspunkt iht. ISO-8601"
 	public String getOpprettetTidspunkt() {

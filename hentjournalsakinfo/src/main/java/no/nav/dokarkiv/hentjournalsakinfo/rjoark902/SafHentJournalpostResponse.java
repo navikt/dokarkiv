@@ -8,7 +8,7 @@ import lombok.Value;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SafHentJournalpostResponse {
 
-	private final HentJournalpostDto hentJournalpostDto;
+	HentJournalpostDto hentJournalpostDto;
 
 	public SafHentJournalpostResponse(@JsonProperty("hentJournalpostDto") HentJournalpostDto hentJournalpostDto) {
 		this.hentJournalpostDto = hentJournalpostDto;

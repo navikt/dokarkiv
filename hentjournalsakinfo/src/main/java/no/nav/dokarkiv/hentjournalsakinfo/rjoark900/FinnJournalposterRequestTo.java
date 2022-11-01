@@ -8,9 +8,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 
 import java.util.List;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Data
 @NoArgsConstructor
 public class FinnJournalposterRequestTo {
