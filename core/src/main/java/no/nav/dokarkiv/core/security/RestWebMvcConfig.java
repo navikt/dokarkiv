@@ -31,8 +31,6 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
                             MultiIssuerConfiguration multiIssuerConfiguration,
                             AzureAdGraphService azureAdGraphService,
                             @Value("${azure.ad.admin.role}") String azureAdAdminRole,
-                            @Lazy @Named("basicAuthReadAccessRestInterceptor") HandlerInterceptor basicAuthReadAccessRestInterceptor,
-                            NavLdapService navLdapService,
                             @Lazy HandlerInterceptor basicAuthReadAccessRestInterceptor,
                             MeterRegistry meterRegistry) {
         this.tokenValidationContextHolder = tokenValidationContextHolder;

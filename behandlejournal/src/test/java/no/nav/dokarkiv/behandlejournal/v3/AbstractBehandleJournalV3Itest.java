@@ -36,12 +36,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, BehandleJournalV3Config.class, TokenGeneratorConfiguration.class, TestBehandleConfig.class})
 @SpringBootTest(
 		webEnvironment = NONE,
-		classes = {CoreConfig.class, BehandleJournalV3Config.class, TokenGeneratorConfiguration.class}
+		classes = {CoreConfig.class, BehandleJournalV3Config.class, TokenGeneratorConfiguration.class, TestBehandleConfig.class}
 )
 @ActiveProfiles({"itest", "wiremock"})
 @AutoConfigureTestDatabase

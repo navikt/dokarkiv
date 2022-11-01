@@ -34,17 +34,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
-@SpringBootTest(
-		webEnvironment = NONE,
-		classes = {CoreConfig.class, JournalV3Config.class, TokenGeneratorConfiguration.class},
-		properties = {"spring.main.allow-bean-definition-overriding=true"}
-)
-@ActiveProfiles({"itest", "wiremock"})
-@ExtendWith(SpringExtension.class)
+@ActiveProfiles({"itest", "wiremock", "registry"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class, JournalV3Config.class, TokenGeneratorConfiguration.class, SporingHandlerInterceptorTest.TestConfig.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles({"itest", "wiremock", "registry"})
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @AutoConfigureWireMock(port = 0)
