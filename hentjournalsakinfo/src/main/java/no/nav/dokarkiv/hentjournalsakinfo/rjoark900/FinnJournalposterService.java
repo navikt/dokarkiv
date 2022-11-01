@@ -4,17 +4,12 @@ import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.List;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Component
 public class FinnJournalposterService {
 	private final FinnJournalposterSpringJdbcRepository finnJournalposterSpringJdbcRepository;
 
-	@Inject
 	public FinnJournalposterService(FinnJournalposterSpringJdbcRepository finnJournalposterSpringJdbcRepository) {
 		this.finnJournalposterSpringJdbcRepository = finnJournalposterSpringJdbcRepository;
 	}

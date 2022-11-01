@@ -17,21 +17,17 @@ import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrel
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 public class DefaultAvbrytJournalpostUpdaterTest {
 	private static final Long JOURNALPOST_ID = 42L;
 	private static final String ENDRET_AV_NAVN = "endretFlagg av navn";
 
-	private DefaultAvbrytJournalpostUpdater avbrytJournalpostUpdater = new DefaultAvbrytJournalpostUpdater();
+	private DefaultAvbrytJournalpostUpdater avbrytJournalpostUpdater;
 
 	@BeforeEach
 	public void setUp() {
 		RequestContextSetter.setRequestContextForUnitTest();
-		DefaultSporingPopulator sporingPopulator = new DefaultSporingPopulator();
-		sporingPopulator.setKildeNavnPopulator(new DefaultKildeNavnPopulator());
-		avbrytJournalpostUpdater.setSporingPopulator(sporingPopulator);
+		DefaultSporingPopulator sporingPopulator = new DefaultSporingPopulator(new DefaultKildeNavnPopulator());
+		avbrytJournalpostUpdater = new DefaultAvbrytJournalpostUpdater(sporingPopulator);
 	}
 
 	@Test

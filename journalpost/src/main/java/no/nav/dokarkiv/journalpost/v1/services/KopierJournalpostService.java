@@ -13,7 +13,6 @@ import no.nav.dokarkiv.journalpost.v1.validators.KopierJournalpostValidator;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Collections;
 
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOST_ID;
@@ -31,7 +30,6 @@ public class KopierJournalpostService {
 	private final KopierJournalpostValidator kopierJournalpostValidator;
 	private final JournalpostCopier journalpostCopier;
 
-	@Inject
 	public KopierJournalpostService(final JoarkRepository joarkRepository, final LagreAksjonsLoggService aksjonsLoggService) {
 		this.joarkRepository = joarkRepository;
 		this.aksjonsLoggService = aksjonsLoggService;

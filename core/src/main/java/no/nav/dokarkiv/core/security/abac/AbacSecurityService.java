@@ -12,7 +12,6 @@ import no.nav.freg.abac.core.dto.response.XacmlResponse;
 import no.nav.freg.abac.core.service.AbacService;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,9 +21,6 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_TILKNYTTET
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_TEMA;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-/**
- * @author Martin Burheim Tingstad, Visma Consulting AS
- */
 @Slf4j
 public class AbacSecurityService {
 
@@ -37,8 +33,6 @@ public class AbacSecurityService {
 	private final JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
 	private final JoarkRepositorySkjermet joarkRepositorySkjermet;
 
-
-	@Inject
 	public AbacSecurityService(AbacLogger abaclog, AbacService abacService,
 							   AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository,
 							   JoarkRepositorySkjermet joarkRepositorySkjermet) {

@@ -1,19 +1,11 @@
 package no.nav.dokarkiv.journal.v3;
 
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_SAK;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
-import static no.nav.dokarkiv.core.security.abac.AbacSecurityService.ACCESS_DENIED;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
-import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.security.abac.AuthorizationException;
-import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.journal.v3.tjoark050.HentDokumentURLV3RequestMapper;
 import no.nav.dokarkiv.journal.v3.tjoark050.HentDokumentUrlRequestTo;
 import no.nav.dokarkiv.journal.v3.tjoark050.HentDokumentUrlResponseTo;
@@ -53,15 +45,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_DOKUMENT;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_SAK;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
+import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
+import static no.nav.dokarkiv.core.security.abac.AbacSecurityService.ACCESS_DENIED;
+import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.READ_ACTION;
 
 /**
  * POJO JournalV3Provider that maps from and to WS model and delegates to
  * Service implementations.
- *
- * @author Stig Strøm
  */
 @Slf4j
 @Component
@@ -72,26 +68,31 @@ public class JournalV3Provider implements JournalV3 {
 	static final String JOURNAL_V3_HENT_DOKUMENT = JOURNAL_V3 + ".hentDokument";
 	private static final String JOURNAL_V3_HENT_DOKUMENT_URL = JOURNAL_V3 + ".hentDokumentURL";
 	
-	private JournalV3FaultInfoPopulator faultInfoPopulator = new DefaultJournalV3FaultInfoPopulator();
-	
-	@Inject
-	private HentKjerneJournalpostListeRequestValidator hentKjerneJournalpostListeRequestValidator;
-	@Inject
-	private HentKjerneJournalpostListeService hentKjerneJournalpostListeService;
-	@Inject
-	private Tjoark051HentDokumentService tjoark051HentDokumentService;
-	@Inject
-	private AbacSecurityService abacSecurityService;
-	@Inject
-	private HentDokumentUrlService hentDokumentUrlService;
-	@Inject
-	private AbacContext abacContext;
-	@Inject
-	private HentKjerneJournalpostListeResponseMapper hentKjerneJournalpostListeResponseMapper;
+	private final JournalV3FaultInfoPopulator faultInfoPopulator;
+	private final HentKjerneJournalpostListeRequestValidator hentKjerneJournalpostListeRequestValidator;
+	private final HentKjerneJournalpostListeService hentKjerneJournalpostListeService;
+	private final Tjoark051HentDokumentService tjoark051HentDokumentService;
+	private final AbacSecurityService abacSecurityService;
+	private final HentDokumentUrlService hentDokumentUrlService;
+	private final AbacContext abacContext;
+	private final HentKjerneJournalpostListeResponseMapper hentKjerneJournalpostListeResponseMapper;
+	private final HentKjerneJournalpostListeRequestMapper hentKjerneJournalpostListeRequestMapper;
+	private final HentDokumentV3RequestMapper hentDokumentRequestMapper;
+	private final HentDokumentURLV3RequestMapper hentDokumentURLV3RequestMapper;
 
-	private HentKjerneJournalpostListeRequestMapper hentKjerneJournalpostListeRequestMapper = new HentKjerneJournalpostListeRequestMapper();
-	private HentDokumentV3RequestMapper hentDokumentRequestMapper = new HentDokumentV3RequestMapper();
-	private HentDokumentURLV3RequestMapper hentDokumentURLV3RequestMapper = new HentDokumentURLV3RequestMapper();
+	public JournalV3Provider(JournalV3FaultInfoPopulator faultInfoPopulator, HentKjerneJournalpostListeRequestValidator hentKjerneJournalpostListeRequestValidator, HentKjerneJournalpostListeService hentKjerneJournalpostListeService, Tjoark051HentDokumentService tjoark051HentDokumentService, AbacSecurityService abacSecurityService, HentDokumentUrlService hentDokumentUrlService, AbacContext abacContext, HentKjerneJournalpostListeResponseMapper hentKjerneJournalpostListeResponseMapper, HentKjerneJournalpostListeRequestMapper hentKjerneJournalpostListeRequestMapper, HentDokumentV3RequestMapper hentDokumentRequestMapper, HentDokumentURLV3RequestMapper hentDokumentURLV3RequestMapper) {
+		this.faultInfoPopulator = faultInfoPopulator;
+		this.hentKjerneJournalpostListeRequestValidator = hentKjerneJournalpostListeRequestValidator;
+		this.hentKjerneJournalpostListeService = hentKjerneJournalpostListeService;
+		this.tjoark051HentDokumentService = tjoark051HentDokumentService;
+		this.abacSecurityService = abacSecurityService;
+		this.hentDokumentUrlService = hentDokumentUrlService;
+		this.abacContext = abacContext;
+		this.hentKjerneJournalpostListeResponseMapper = hentKjerneJournalpostListeResponseMapper;
+		this.hentKjerneJournalpostListeRequestMapper = hentKjerneJournalpostListeRequestMapper;
+		this.hentDokumentRequestMapper = hentDokumentRequestMapper;
+		this.hentDokumentURLV3RequestMapper = hentDokumentURLV3RequestMapper;
+	}
 	
 	@Override
 	@Transactional(readOnly = true)

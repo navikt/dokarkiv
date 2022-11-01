@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
-import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
-import static org.assertj.core.util.Strings.isNullOrEmpty;
-
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -16,22 +13,21 @@ import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
+import static org.assertj.core.util.Strings.isNullOrEmpty;
 
-/**
- * Implementation of OpprettJournalpostArkiverDokumentService
- *
- * @author Cook, Torgeir
- */
 @Service
 public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJournalpostArkiverDokumentService {
 
-	@Inject
-    private JoarkRepositorySkjermet joarkRepository;
-	@Inject
-	private OpprettJournalpostArkiverDokumentValidator opprettJournalpostArkiverDokumentValidator;
-	@Inject
-	private DokumentFilerDelegate dokumentFilerDelegate;
+    private final JoarkRepositorySkjermet joarkRepository;
+	private final OpprettJournalpostArkiverDokumentValidator opprettJournalpostArkiverDokumentValidator;
+	private final DokumentFilerDelegate dokumentFilerDelegate;
+
+	public DefaultOpprettJournalpostArkiverDokumentService(JoarkRepositorySkjermet joarkRepository, OpprettJournalpostArkiverDokumentValidator opprettJournalpostArkiverDokumentValidator, DokumentFilerDelegate dokumentFilerDelegate) {
+		this.joarkRepository = joarkRepository;
+		this.opprettJournalpostArkiverDokumentValidator = opprettJournalpostArkiverDokumentValidator;
+		this.dokumentFilerDelegate = dokumentFilerDelegate;
+	}
 
 	@Override
 	public OpprettJournalpostArkiverDokumentResponseTo opprettJournalpostArkiverDokument(

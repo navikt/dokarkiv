@@ -4,20 +4,15 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import org.hibernate.jpa.QueryHints;
 import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import java.util.Optional;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Repository
 public class CustomJournalpostDokumentInfoRelasjonRepositoryImpl implements CustomJournalpostDokumentInfoRelasjonRepository {
     private final EntityManager entityManager;
 
-    @Inject
     public CustomJournalpostDokumentInfoRelasjonRepositoryImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
     }

@@ -11,8 +11,8 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.inject.Inject;
 import javax.xml.datatype.DatatypeFactory;
 import java.util.Optional;
 
@@ -33,14 +33,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-/**
- * Integration tests for the opprettOgFerdigstillJournalpost operation in the ArkiverDokumentproduksjon webservice
- *
- * @author Torgeir Cook
- */
 public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokumentproduksjonItest {
 
-	@Inject
+	@Autowired
 	private BucketStorage dokprodMellomlagerStorage;
 
 	private no.nav.dokarkiv.core.domain.entities.Journalpost persistedJournalpost;

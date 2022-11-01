@@ -6,19 +6,11 @@ import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of SporingMapper.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
- */
 @Component
 public class BehandleJournalSporingMapper implements SporingMapper {
 
 	private final KildeNavnPopulator kildeNavnPopulator;
 
-	@Inject
 	BehandleJournalSporingMapper(KildeNavnPopulator kildeNavnPopulator) {
 		this.kildeNavnPopulator = kildeNavnPopulator;
 	}

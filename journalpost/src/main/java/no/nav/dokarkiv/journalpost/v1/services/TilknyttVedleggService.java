@@ -25,16 +25,11 @@ import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggValidator;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-
-/**
- * @author Olav Røstvold Thorsen, Visma Consulting.
- */
 
 @Service(value = "tilknyttVedleggService")
 @Slf4j
@@ -52,7 +47,6 @@ public class TilknyttVedleggService {
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
 	public static final String BEARER = "Bearer ";
 
-	@Inject
 	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AccessLookupJournalpost accessLookupJournalpost, TokenGrantValidator tokenGrantValidator) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentFilRepository = dokumentFilRepository;

@@ -1,11 +1,5 @@
 package no.nav.dokarkiv.rjoark100;
 
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
-import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.JournalpostDokumentInfoPair;
@@ -25,13 +19,18 @@ import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
+import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 @Service
 @Slf4j
@@ -43,7 +42,6 @@ public class EndreSkjermingArkivenhetService {
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final EntityManager entityManager;
 
-	@Inject
 	public EndreSkjermingArkivenhetService(
 			SkjermingService skjermingService, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, EntityManager entityManager) {
 		this.skjermingService = skjermingService;

@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
-import static org.apache.commons.lang3.Validate.isTrue;
-import static org.apache.commons.lang3.Validate.notNull;
-import static org.springframework.util.Assert.hasLength;
-
 import com.google.common.base.Strings;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ValideringAvVedleggFeiletException;
@@ -18,22 +14,23 @@ import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Validator for OpprettUtgaaendeJournalpostArkiverDokument
- *
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
+import static org.apache.commons.lang3.Validate.isTrue;
+import static org.apache.commons.lang3.Validate.notNull;
+import static org.springframework.util.Assert.hasLength;
+
 @Component
 public class OpprettUtgaaendeJournalpostArkiverDokumentValidator {
 
 	private static final List<JournalStatusCode> VEDLEGG_EXPECTED_JOURNALSTATUSES = Arrays.asList(JournalStatusCode.J, JournalStatusCode.FS, JournalStatusCode.FL, JournalStatusCode.E);
-	@Inject
-	protected MandatoryFieldsVerifier mandatoryFieldsVerifier;
+	private final MandatoryFieldsVerifier mandatoryFieldsVerifier;
+
+	public OpprettUtgaaendeJournalpostArkiverDokumentValidator(MandatoryFieldsVerifier mandatoryFieldsVerifier) {
+		this.mandatoryFieldsVerifier = mandatoryFieldsVerifier;
+	}
 
 	public void validateRequiredFields(final OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo) throws UgyldigInputException {
 		StringBuilder message = new StringBuilder();

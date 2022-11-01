@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +29,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -41,9 +41,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @ExtendWith(SpringExtension.class)
 @DataLdapTest
 @ContextConfiguration(classes = {
@@ -59,7 +56,7 @@ public class SporingHandlerInterceptorTest {
 	public static final String USER_ID = "Z990782";
 	public static final String USER_NAME = "Stasjonsmester Tidemann";
 
-	@Inject
+	@Autowired
 	private MeterRegistry meterRegistry;
 
 	@Configuration
@@ -71,9 +68,9 @@ public class SporingHandlerInterceptorTest {
 		}
 	}
 
-	@Inject
+	@Autowired
 	private SporingHandlerInterceptor sporingHandlerInterceptor;
-	@Inject
+	@Autowired
 	private JwtTokenValidationFilter validationFilter;
 	private final MockFilterChain filterChain = new MockFilterChain() {
 		@Override

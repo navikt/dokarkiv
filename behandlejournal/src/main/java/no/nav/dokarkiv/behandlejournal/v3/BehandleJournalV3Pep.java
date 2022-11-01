@@ -1,13 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v3;
 
-import static no.nav.abac.xacml.NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY;
-import static no.nav.abac.xacml.NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_GSAK_SAKSID;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_PENSJON_SAKSID;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_TILKNYTTET_FNR;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_TEMA;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-
 import no.nav.dokarkiv.behandlejournal.v3.tjoark065.JournalfoerNotatHenvendelseRequest;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -23,19 +15,22 @@ import no.nav.freg.abac.core.dto.response.XacmlResponse;
 import no.nav.freg.abac.core.service.AbacService;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
+import static no.nav.abac.xacml.NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY;
+import static no.nav.abac.xacml.NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_GSAK_SAKSID;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_PENSJON_SAKSID;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_TILKNYTTET_FNR;
+import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_TEMA;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 @Component
 public class BehandleJournalV3Pep {
 	private final AbacService abacService;
 	private final AbacContext abacContext;
 	private final AbacLogger abacLogger;
 
-	@Inject
 	public BehandleJournalV3Pep(AbacService abacService, AbacContext abacContext, AbacLogger abacLogger) {
 		this.abacService = abacService;
 		this.abacContext = abacContext;

@@ -7,24 +7,18 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of the AvbrytJournalpostService
- *
- * @author Stig Strøm
- */
 @Component
 public class DefaultAvbrytJournalpostService implements AvbrytJournalpostService {
 
-	@Inject
-	private JoarkRepositorySkjermet joarkRepository;
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final AvbrytJournalpostUpdater avbrytJournalpostUpdater;
+	private final AvbrytJournalpostValidator validator;
 
-	@Inject
-	private AvbrytJournalpostUpdater avbrytJournalpostUpdater;
-
-	@Inject
-	private AvbrytJournalpostValidator validator;
+	public DefaultAvbrytJournalpostService(JoarkRepositorySkjermet joarkRepository, AvbrytJournalpostUpdater avbrytJournalpostUpdater, AvbrytJournalpostValidator validator) {
+		this.joarkRepository = joarkRepository;
+		this.avbrytJournalpostUpdater = avbrytJournalpostUpdater;
+		this.validator = validator;
+	}
 
 	@Override
 	public void avbrytJournalpost(AvbrytJournalpostRequestTo domainRequest) throws NoJournalpostFoundException, UgyldigJournalStatusOvergangException {

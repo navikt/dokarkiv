@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
-import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
-import static org.apache.commons.lang3.StringUtils.trim;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -24,20 +21,20 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasj
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * Implementation of OpprettJournalpostArkiverDokumentRequestMapper
- *
- * @author Sigurd Midttun
- */
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
+import static org.apache.commons.lang3.StringUtils.trim;
+
 @Component
 public class OpprettJournalpostArkiverDokumentRequestMapper {
 
-	@Inject
-	private KildeNavnPopulator kildeNavnPopulator;
+	private final KildeNavnPopulator kildeNavnPopulator;
+
+	public OpprettJournalpostArkiverDokumentRequestMapper(KildeNavnPopulator kildeNavnPopulator) {
+		this.kildeNavnPopulator = kildeNavnPopulator;
+	}
 
 	public OpprettJournalpostArkiverDokumentRequestTo map(OpprettJournalpostArkiverDokumentRequest wsRequest) {
 		no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost journalpost = wsRequest

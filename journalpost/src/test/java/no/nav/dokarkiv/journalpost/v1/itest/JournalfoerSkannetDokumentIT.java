@@ -9,13 +9,13 @@ import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggResponse;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 
-	@Inject
+	@Autowired
 	SkannetInnholdRepository skannetInnholdRepository;
 
 	private static final String LOGISK_VEDLEGG = "/logiskVedlegg/";

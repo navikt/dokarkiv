@@ -1,20 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109;
 
-import static java.util.Arrays.asList;
-import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
-import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.GEN;
-import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.OPP;
-import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.FEI;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
-import static org.springframework.util.StringUtils.collectionToDelimitedString;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoInnskrenketPartsinnsynException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoIsOrganInterntException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoNotFoundException;
@@ -40,12 +25,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.EnumSet;
 
-/**
- * @author Thomas Kåsene, Visma Consulting AS
- */
+import static java.util.Arrays.asList;
+import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.FEI;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.GEN;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.OPP;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
+import static org.springframework.util.StringUtils.collectionToDelimitedString;
+
 @Component
 public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements KnyttDokumentTilJournalpostSomVedleggService {
 
@@ -67,14 +63,15 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 	private static final String FAGOMRAADE_MESSAGE = "Journalpost source with journalpostId=%d must have fagomrade 'OPP','GEN' or 'FEI', or it must be equal"
 			+ " to fagomrade on the target journalpost (journalpostId=%d)";
 
-	@Inject
-	private KnyttDokumentTilJournalpostSomVedleggValidator validator;
+	private final KnyttDokumentTilJournalpostSomVedleggValidator validator;
+    private final JoarkRepositorySkjermet joarkRepository;
+	private final SporingPopulator sporingPopulator;
 
-	@Inject
-    private JoarkRepositorySkjermet joarkRepository;
-
-	@Inject
-	private SporingPopulator sporingPopulator;
+	public DefaultKnyttDokumentTilJournalpostSomVedleggService(KnyttDokumentTilJournalpostSomVedleggValidator validator, JoarkRepositorySkjermet joarkRepository, SporingPopulator sporingPopulator) {
+		this.validator = validator;
+		this.joarkRepository = joarkRepository;
+		this.sporingPopulator = sporingPopulator;
+	}
 
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY)

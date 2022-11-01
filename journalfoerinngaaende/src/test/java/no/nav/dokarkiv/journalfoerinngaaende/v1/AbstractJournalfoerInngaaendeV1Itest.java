@@ -14,7 +14,7 @@ import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
@@ -27,12 +27,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import wiremock.com.google.common.io.Resources;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.net.URL;
@@ -43,10 +41,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TokenGeneratorConfiguration.class})
 @ActiveProfiles({"itest", "wiremock", "ldap"})
@@ -66,15 +60,15 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
     protected final String PERSON_USER_ID = "Z990782";
     protected static final String JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER = "/rest/journalfoerinngaaende/v1/journalposter/";
     protected static final ObjectMapper mapper = new ObjectMapper();
-    @Inject
+    @Autowired
     protected JoarkRepositorySkjermet joarkRepository;
-    @Inject
+    @Autowired
     protected SkannetInnholdRepository skannetInnholdRepository;
-    @Inject
+    @Autowired
     protected TestRestTemplate restTemplate;
-    @Inject
+    @Autowired
     protected DokumentinfoRepository dokumentinfoRepository;
-    @Inject
+    @Autowired
     protected EntityManager entityManager;
 
 	@BeforeEach

@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.journalfoerinngaaende.v1.rjoark003i;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentRequest;
 import no.nav.dok.tjenester.journalfoerinngaaende.PutDokumentResponse;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -17,13 +13,13 @@ import no.nav.dokarkiv.journalfoerinngaaende.v1.util.Utils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 @Component
 public class UpdateInngaaendeJournalpostDokumentService {
 	private final List<String> validDokumentKategorier = Arrays.asList(DokumentKategoriCode.SED.name(), DokumentKategoriCode.SOK
@@ -32,7 +28,6 @@ public class UpdateInngaaendeJournalpostDokumentService {
 	private final DokumentinfoRepository dokumentinfoRepository;
 	private final JoarkRepositorySkjermet joarkRepository;
 
-	@Inject
 	public UpdateInngaaendeJournalpostDokumentService(DokumentinfoRepository dokumentinfoRepository,
 													  JoarkRepositorySkjermet joarkRepository) {
 		this.dokumentinfoRepository = dokumentinfoRepository;

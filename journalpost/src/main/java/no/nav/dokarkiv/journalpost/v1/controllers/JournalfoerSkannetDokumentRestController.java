@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -44,7 +42,6 @@ public class JournalfoerSkannetDokumentRestController {
     private static final String LOGISK_VEDLEGG_ID_STRING = "logiskVedleggId";
     private static final String TITTEL_STRING = "tittel";
 
-    @Inject
     public JournalfoerSkannetDokumentRestController(final LogiskVedleggService logiskVedleggService) {
         this.logiskVedleggService = logiskVedleggService;
     }

@@ -9,17 +9,14 @@ import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.DokumentproduksjonInfoV1;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class, DokumentproduksjonInfoConfig.class, TokenGeneratorConfiguration.class})
 @ActiveProfiles("itest")
@@ -28,13 +25,13 @@ import javax.transaction.Transactional;
 @Transactional
 public abstract class AbstractDokumentproduksjoninfoItest {
 
-	@Inject
+	@Autowired
 	protected DokumentproduksjonInfoV1 dokumentproduksjonInfoProvider;
-	@Inject
+	@Autowired
 	protected JoarkRepositorySkjermet joarkRepository;
-	@Inject
+	@Autowired
 	protected DokumentFilRepository dokumentFilRepository;
-	@Inject
+	@Autowired
 	protected SkjermingServiceTest skjermingService;
 
 	@BeforeEach

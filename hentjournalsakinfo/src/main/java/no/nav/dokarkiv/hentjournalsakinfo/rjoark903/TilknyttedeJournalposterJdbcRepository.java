@@ -1,19 +1,15 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark903;
 
-import static no.nav.dokarkiv.hentjournalsakinfo.rjoark903.TilknyttedeJournalposterSql.GJENBRUKTE_JOURNALPOSTER_SQL;
-
 import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import java.util.List;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
+import static no.nav.dokarkiv.hentjournalsakinfo.rjoark903.TilknyttedeJournalposterSql.GJENBRUKTE_JOURNALPOSTER_SQL;
+
 @Repository
 class TilknyttedeJournalposterJdbcRepository {
 	private static final ResultSetExtractor<List<TilknyttetJournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
@@ -21,7 +17,6 @@ class TilknyttedeJournalposterJdbcRepository {
 			.newResultSetExtractor(TilknyttetJournalpostDto.class);
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
-	@Inject
 	TilknyttedeJournalposterJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}

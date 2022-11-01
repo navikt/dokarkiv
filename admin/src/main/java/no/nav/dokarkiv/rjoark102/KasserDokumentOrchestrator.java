@@ -1,13 +1,12 @@
 package no.nav.dokarkiv.rjoark102;
 
-import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,8 +19,6 @@ public class KasserDokumentOrchestrator {
 	private final LagreAksjonsLoggService lagreAksjonsLoggService;
 	private final JournalpostDokumentInfoRelasjonRepository relasjonRepository;
 
-
-	@Inject
 	public KasserDokumentOrchestrator(KasserDokumentService kasserDokumentService, KasserSkjermDokumentService kasserSkjermDokumentService, LagreAksjonsLoggService lagreAksjonsLoggService, JournalpostDokumentInfoRelasjonRepository relasjonRepository) {
 		this.kasserDokumentService = kasserDokumentService;
 		this.kasserSkjermDokumentService = kasserSkjermDokumentService;

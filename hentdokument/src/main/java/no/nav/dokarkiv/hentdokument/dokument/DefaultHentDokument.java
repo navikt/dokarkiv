@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.hentdokument.dokument;
 
-import static no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlConstants.HENT_DOKUMENT_SERVLET_PARAM;
-import static org.apache.logging.log4j.util.Strings.isNotEmpty;
-
 import no.nav.dokarkiv.core.dokumenturl.AbstractDocumentOperation;
 import no.nav.dokarkiv.core.dokumenturl.MimeTypeMapper;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -18,28 +15,24 @@ import no.nav.dokarkiv.hentdokument.dlf.SettMetadataIDLF;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataForUthenting;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFRequest;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-/**
- * Implementation of <code>Hentdokumentservice</code>.
- *
- * @author Carl-Henrik Wolf Lund, Bekk Consulting
- * @author Lamisi Gurah Blackman, Accenture
- * @author Thomas Eugen Bjørge, Visma Sirius
- */
+import static no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlConstants.HENT_DOKUMENT_SERVLET_PARAM;
+import static org.apache.logging.log4j.util.Strings.isNotEmpty;
+
 @Component
 public class DefaultHentDokument extends AbstractDocumentOperation implements HentDokument {
 
 	@Value("${joark.hentdokument.baseurl}")
 	private String joarkUrl;
-	@Inject
+	@Autowired
 	private HentOndemandDokument hentOndemandDokument;
-	@Inject
+	@Autowired
 	private SettMetadataIDLF settMetadataIDLF;
 
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();

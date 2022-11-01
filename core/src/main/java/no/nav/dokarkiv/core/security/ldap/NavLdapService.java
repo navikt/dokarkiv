@@ -1,10 +1,5 @@
 package no.nav.dokarkiv.core.security.ldap;
 
-import static java.lang.String.format;
-import static no.nav.dokarkiv.core.cache.CacheConfig.NAVSERVICEUSER_CACHE;
-import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
-import static org.springframework.ldap.query.LdapQueryBuilder.query;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.security.AuthenticationResult;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,11 +10,11 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import static java.lang.String.format;
+import static no.nav.dokarkiv.core.cache.CacheConfig.NAVSERVICEUSER_CACHE;
+import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
+import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Component
 @Slf4j
 public class NavLdapService {
@@ -27,7 +22,6 @@ public class NavLdapService {
 	private final String serviceuserBasedn;
 	private final LdapTemplate ldapTemplate;
 
-	@Inject
 	public NavLdapService(@Value("${ldap.navuser.basedn}") String navuserBasedn, @Value("${ldap.serviceuser.basedn}") String serviceuserBasedn,
 						  LdapTemplate ldapTemplate) {
 		this.navuserBasedn = navuserBasedn;

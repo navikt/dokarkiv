@@ -13,7 +13,7 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -25,28 +25,23 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(
+		webEnvironment = RANDOM_PORT,
 		classes = {CoreConfig.class, HentJournalsakinfoConfig.class, LdapConfig.class,
 				AbstractHentjournalsakinfoItest.Config.class, TokenGeneratorConfiguration.class},
-		properties = {"spring.main.allow-bean-definition-overriding=true"})
+		properties = {"spring.main.allow-bean-definition-overriding=true"}
+)
 @ActiveProfiles({"itest", "wiremock", "ldap"})
 public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 
 	@Configuration
 	static class Config {
 		@Bean
-		@Named("basicAuthReadAccessRestInterceptor")
 		HandlerInterceptor basicAuthReadAccessRestInterceptor(LdapTemplate ldapTemplate,
 															  CacheManager cacheManager,
 															  @Value("${ldap.basedn}") String baseDn,
@@ -59,22 +54,22 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 	protected static final String USERNAME = "srvsaf";
 	protected static final String PASSWORD = "hemmelig";
 
-	@Inject
+	@Autowired
 	protected TestRestTemplate restTemplate;
 
-	@Inject
+	@Autowired
 	protected JoarkRepository joarkRepository;
 
-	@Inject
+	@Autowired
 	protected SakRepository sakRepository;
 
-	@Inject
+	@Autowired
 	protected DokumentinfoRepository dokumentInfoRepository;
 
-	@Inject
+	@Autowired
 	protected DokumentFilRepository dokumentFilRepository;
 
-	@Inject
+	@Autowired
 	protected ObjectMapper objectMapper;
 
 	@BeforeEach

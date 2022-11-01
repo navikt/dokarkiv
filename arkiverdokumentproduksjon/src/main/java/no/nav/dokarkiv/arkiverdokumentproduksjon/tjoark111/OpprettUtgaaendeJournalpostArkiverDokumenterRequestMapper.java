@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
-import static no.nav.dokarkiv.core.util.ConverterUtils.stringToEnum;
-import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
-import static org.apache.commons.lang3.StringUtils.trim;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -27,7 +23,6 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasj
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -37,14 +32,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
+import static no.nav.dokarkiv.core.util.ConverterUtils.stringToEnum;
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
+import static org.apache.commons.lang3.StringUtils.trim;
+
 @Component
 public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 
-	@Inject
-	private KildeNavnPopulator kildeNavnPopulator;
+	private final KildeNavnPopulator kildeNavnPopulator;
+
+	public OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper(KildeNavnPopulator kildeNavnPopulator) {
+		this.kildeNavnPopulator = kildeNavnPopulator;
+	}
 
 	public OpprettUtgaaendeJournalpostArkiverDokumentRequestTo map(OpprettUtgaaendeJournalpostArkiverDokumentRequest wsRequest) {
 

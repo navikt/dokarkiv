@@ -8,23 +8,23 @@ import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.ondemand.HentOndemandDokument;
-import no.nav.tjeneste.virksomhet.journal.v3.HentDokumentSikkerhetsbegrensning;
+import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
+import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
 /**
  * The service layer class for HentDokument(TJOARK051 and TJOARK054)
- *
- * @author Stig Strøm
- * @author Thomas Kåsene, Visma Consulting AS
  */
 @Component
 public class Tjoark051HentDokumentService extends AbstractJournalOperations {
 
-	@Inject
-	private HentOndemandDokument hentOndemandDokument;
+	private final HentOndemandDokument hentOndemandDokument;
+
+	public Tjoark051HentDokumentService(JoarkRepositorySkjermet joarkRepository, DokumentFilSkjermetRepository dokumentFilRepository, HentOndemandDokument hentOndemandDokument) {
+		super(joarkRepository, dokumentFilRepository);
+		this.hentOndemandDokument = hentOndemandDokument;
+	}
 
 	/**
 	 * Search and retrieves the document, will get documents from OnDemand as well

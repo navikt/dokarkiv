@@ -13,7 +13,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.inject.Inject;
 import java.net.URI;
 import java.time.Duration;
 import java.util.HashMap;
@@ -32,11 +31,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-/**
- * PDL implementasjon av {@link IdentConsumer}
- *
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Component
 public class PdlIdentConsumer implements IdentConsumer {
 	private static final String HEADER_PDL_NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
@@ -47,7 +41,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 	private final StsRestConsumer stsRestConsumer;
 	private final URI pdlUri;
 
-	@Inject
 	public PdlIdentConsumer(@Value("${pdl.url}") String pdlUrl,
 							RestTemplateBuilder restTemplateBuilder,
 							StsRestConsumer stsRestConsumer) {

@@ -6,20 +6,20 @@ import no.nav.dokarkiv.core.repository.journalpostliste.HentMinJPListeParameters
 import no.nav.dokarkiv.core.repository.journalpostliste.JournalpostListeRepository;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Service for TJOARK058
- *
- * @author Stig Strøm, Acando
  */
 @Component
 public class DefaultHentKjerneJournalpostListeService implements HentKjerneJournalpostListeService {
 
-	@Inject
-	private JournalpostListeRepository journalpostListeRepository;
+	private final JournalpostListeRepository journalpostListeRepository;
+
+	public DefaultHentKjerneJournalpostListeService(JournalpostListeRepository journalpostListeRepository) {
+		this.journalpostListeRepository = journalpostListeRepository;
+	}
 
 	@Override
 	public HentKjerneJournalpostListeResponseTo hentKjerneJournalpostListe(

@@ -8,20 +8,14 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.logging.AuditLogger;
 import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.inject.Inject;
-
-/**
- * Contains functionality shared between HentDokument and HentDokumentUrl.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
- */
 public abstract class AbstractDocumentOperation {
 
-	@Inject
+	@Autowired
 	protected JoarkRepositorySkjermet joarkRepository;
 
-	@Inject
+	@Autowired
 	protected DokumentFilSkjermetRepository dokumentFilRepository;
 
 	public void setJoarkRepository(JoarkRepositorySkjermet joarkRepository) {

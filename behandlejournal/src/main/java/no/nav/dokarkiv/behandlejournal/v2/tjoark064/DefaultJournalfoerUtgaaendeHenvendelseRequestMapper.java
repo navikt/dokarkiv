@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v2.tjoark064;
 
-import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
-
 import no.nav.dokarkiv.behandlejournal.SporingMapper;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -31,22 +29,20 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerutgaaendehenvendelse.JournalfoertDokumentInfo;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Implementation of
- * JournalfoerUtgaaendeHenvendelseRequestMapper
- *
- * @author Joakim Bjørnstad, Visma Consulting
- */
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
+
 @Component
 public class DefaultJournalfoerUtgaaendeHenvendelseRequestMapper implements
 		JournalfoerUtgaaendeHenvendelseRequestMapper {
 
-	@Inject
-	private SporingMapper sporingMapper;
+	private final SporingMapper sporingMapper;
+
+	public DefaultJournalfoerUtgaaendeHenvendelseRequestMapper(SporingMapper sporingMapper) {
+		this.sporingMapper = sporingMapper;
+	}
 
 	@Override
 	public JournalfoerUtgaaendeHenvendelseRequest map(

@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
-import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
-import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_MULTIPLIER;
-
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
@@ -19,16 +16,14 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
+import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_MULTIPLIER;
 
-@Service
-@Named("journalfoerSkannetDokumentService")
+@Service("journalfoerSkannetDokumentService")
 public class LogiskVedleggService {
     private final SkannetInnholdRepository skannetInnholdRepository;
     private final DokumentinfoRepository dokumentinfoRepository;
 
-    @Inject
     public LogiskVedleggService(final SkannetInnholdRepository skannetInnholdRepository, final DokumentinfoRepository dokumentinfoRepository) {
         this.skannetInnholdRepository = skannetInnholdRepository;
         this.dokumentinfoRepository = dokumentinfoRepository;

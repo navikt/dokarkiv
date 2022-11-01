@@ -1,21 +1,16 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark910;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.List;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Component
 public class DokumentoversiktBrukerService {
 	private final DokumentoversiktBrukerSpringJdbcRepository dokumentoversiktBrukerSpringJdbcRepository;
 
-	@Inject
 	public DokumentoversiktBrukerService(DokumentoversiktBrukerSpringJdbcRepository dokumentoversiktBrukerSpringJdbcRepository) {
 		this.dokumentoversiktBrukerSpringJdbcRepository = dokumentoversiktBrukerSpringJdbcRepository;
 	}

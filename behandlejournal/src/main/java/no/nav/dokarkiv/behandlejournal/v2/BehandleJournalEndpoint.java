@@ -16,10 +16,10 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerUtgaae
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerUtgaaendeHenvendelseResponse;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
@@ -44,7 +44,7 @@ public class BehandleJournalEndpoint implements BehandleJournalV2 {
 	@Resource
 	private WebServiceContext webServiceContext;
 
-	@Inject
+	@Autowired
 	private BehandleJournalV2 behandleJournalProvider;
 
 	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark060"}, percentiles = {0.5, 0.95})

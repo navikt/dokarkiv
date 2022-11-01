@@ -15,7 +15,6 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,7 +29,6 @@ public class FeilregistrerSakstilknytningService {
     private final JoarkRepository joarkRepository;
     private final SaksrelasjonRepository saksrelasjonRepository;
 
-    @Inject
     public FeilregistrerSakstilknytningService(final JoarkRepository joarkRepository,
                                                final SaksrelasjonRepository saksrelasjonRepository) {
         this.joarkRepository = joarkRepository;

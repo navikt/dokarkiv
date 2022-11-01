@@ -16,23 +16,18 @@ import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of {@link ArkiverUstrukturertKrav}
- *
- * @author Joakim Bjørnstad, Visma Consulting
- * @author Thomas Eugen Bjørge, Visma Consulting
- */
 @Component
 public class DefaultArkiverUstrukturertKravV3 implements ArkiverUstrukturertKrav {
 
-	@Inject
-	private JoarkRepositorySkjermet joarkRepository;
-	@Inject
-	private DokumentFilerDelegate dokumentFilerDelegate;
-	@Inject
-	private ArkiverUstrukturertKravV3JournalpostValidator behandleJournalJournalpostValidator;
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final DokumentFilerDelegate dokumentFilerDelegate;
+	private final ArkiverUstrukturertKravV3JournalpostValidator behandleJournalJournalpostValidator;
+
+	public DefaultArkiverUstrukturertKravV3(JoarkRepositorySkjermet joarkRepository, DokumentFilerDelegate dokumentFilerDelegate, ArkiverUstrukturertKravV3JournalpostValidator behandleJournalJournalpostValidator) {
+		this.joarkRepository = joarkRepository;
+		this.dokumentFilerDelegate = dokumentFilerDelegate;
+		this.behandleJournalJournalpostValidator = behandleJournalJournalpostValidator;
+	}
 
 	@Override
 	public ArkiverUstrukturertKravResponse arkiverUstrukturertKrav(

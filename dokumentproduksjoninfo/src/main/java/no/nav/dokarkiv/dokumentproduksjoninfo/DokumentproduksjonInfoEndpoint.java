@@ -14,7 +14,6 @@ import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.He
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoResponse;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.soap.Addressing;
@@ -37,8 +36,11 @@ import javax.xml.ws.soap.MTOM;
 @Service
 public class DokumentproduksjonInfoEndpoint implements DokumentproduksjonInfoV1 {
 
-	@Inject
-	private DokumentproduksjonInfoV1 dokumentproduksjonInfoProvider;
+	private final DokumentproduksjonInfoV1 dokumentproduksjonInfoProvider;
+
+	public DokumentproduksjonInfoEndpoint(DokumentproduksjonInfoV1 dokumentproduksjonInfoProvider) {
+		this.dokumentproduksjonInfoProvider = dokumentproduksjonInfoProvider;
+	}
 
 	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark120"}, percentiles = {0.5, 0.95})
 	@Override
