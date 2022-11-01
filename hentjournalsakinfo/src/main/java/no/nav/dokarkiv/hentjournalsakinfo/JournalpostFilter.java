@@ -32,12 +32,12 @@ public class JournalpostFilter {
 
 	public JournalpostFilter(FinnJournalposterRequestTo finnJournalposterRequestTo) {
 		this.fraDato = LocalDate.parse(finnJournalposterRequestTo.getFraDato());
-		if(isBlank(finnJournalposterRequestTo.getTilDato())) {
+		if (isBlank(finnJournalposterRequestTo.getTilDato())) {
 			this.tilDato = null;
 		} else {
 			this.tilDato = LocalDate.parse(finnJournalposterRequestTo.getTilDato());
 		}
-		if(finnJournalposterRequestTo.getAlleIdenter() == null || finnJournalposterRequestTo.getAlleIdenter().isEmpty()) {
+		if (finnJournalposterRequestTo.getAlleIdenter() == null || finnJournalposterRequestTo.getAlleIdenter().isEmpty()) {
 			this.alleIdenter = Collections.emptyList();
 		} else {
 			this.alleIdenter = finnJournalposterRequestTo.getAlleIdenter().stream().map(ident -> {
@@ -71,7 +71,7 @@ public class JournalpostFilter {
 	}
 
 	private boolean isOrganisasjon(String ident) {
-		if(ident == null) {
+		if (ident == null) {
 			return false;
 		} else {
 			return ident.length() == 9;

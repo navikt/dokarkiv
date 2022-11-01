@@ -86,36 +86,6 @@ public class HentJournalsakinfoController {
 
 	@Transactional(readOnly = true)
 	@ResponseBody
-	@PostMapping(value = "/dokumentoversiktbruker")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark910"}, percentiles = {0.5, 0.95})
-	public DokumentoversiktBrukerResponseTo dokumentoversiktBruker(@RequestBody DokumentoversiktBrukerRequestTo dokumentoversiktBrukerRequestTo) {
-		try {
-			log.info("rjoark910 henter dokumentoversikt til bruker for request={}.", dokumentoversiktBrukerRequestTo);
-			DokumentoversiktBrukerResponseTo dokumentoversiktBrukerResponseTo = dokumentoversiktBrukerService.hentDokumentoversiktBruker(dokumentoversiktBrukerRequestTo);
-			log.info("rjoark910 fant og returnerer {} journalposter med request={}.", dokumentoversiktBrukerResponseTo.getJournalposter().size(), dokumentoversiktBrukerRequestTo);
-			return dokumentoversiktBrukerResponseTo;
-		} finally {
-			MDC.clear();
-		}
-	}
-
-	@Transactional(readOnly = true)
-	@ResponseBody
-	@PostMapping(value = "/finnjournalposterstatus")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark904"}, percentiles = {0.5, 0.95})
-	public FinnJournalposterStatusResponseTo finnJournalposterStatus(@RequestBody FinnJournalposterStatusRequestTo finnJournalposterStatusRequestTo) {
-		try {
-			log.info("rjoark904 finner journalposter med request={}.", finnJournalposterStatusRequestTo);
-			FinnJournalposterStatusResponseTo finnJournalposterStatusResponseTo = finnJournalposterStatusService.finnJournalposterStatus(finnJournalposterStatusRequestTo);
-			log.info("rjoark904 fant og returnerer {} journalposter med request={}.", finnJournalposterStatusResponseTo.getTilgangJournalposter().size(), finnJournalposterStatusRequestTo);
-			return finnJournalposterStatusResponseTo;
-		} finally {
-			MDC.clear();
-		}
-	}
-
-	@Transactional(readOnly = true)
-	@ResponseBody
 	@GetMapping(value = "/henttilgangjournalpost/{journalpostId}/{dokumentInfoId}/{variantFormat}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark901"}, percentiles = {0.5, 0.95})
 	public HentTilgangJournalpostResponse hentTilgangJournalpost(@PathVariable Long journalpostId,
@@ -152,6 +122,36 @@ public class HentJournalsakinfoController {
 		try {
 			log.info("rjoark903 har mottatt forespørsel om tilknyttede journalposter for dokumentInfoId={} med tilknytning={}", dokumentInfoId, tilknytning);
 			return tilknyttedeJournalposterService.tilknyttedeJournalposter(dokumentInfoId, tilknytning);
+		} finally {
+			MDC.clear();
+		}
+	}
+
+	@Transactional(readOnly = true)
+	@ResponseBody
+	@PostMapping(value = "/finnjournalposterstatus")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark904"}, percentiles = {0.5, 0.95})
+	public FinnJournalposterStatusResponseTo finnJournalposterStatus(@RequestBody FinnJournalposterStatusRequestTo finnJournalposterStatusRequestTo) {
+		try {
+			log.info("rjoark904 finner journalposter med request={}.", finnJournalposterStatusRequestTo);
+			FinnJournalposterStatusResponseTo finnJournalposterStatusResponseTo = finnJournalposterStatusService.finnJournalposterStatus(finnJournalposterStatusRequestTo);
+			log.info("rjoark904 fant og returnerer {} journalposter med request={}.", finnJournalposterStatusResponseTo.getTilgangJournalposter().size(), finnJournalposterStatusRequestTo);
+			return finnJournalposterStatusResponseTo;
+		} finally {
+			MDC.clear();
+		}
+	}
+
+	@Transactional(readOnly = true)
+	@ResponseBody
+	@PostMapping(value = "/dokumentoversiktbruker")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark910"}, percentiles = {0.5, 0.95})
+	public DokumentoversiktBrukerResponseTo dokumentoversiktBruker(@RequestBody DokumentoversiktBrukerRequestTo dokumentoversiktBrukerRequestTo) {
+		try {
+			log.info("rjoark910 henter dokumentoversikt til bruker for request={}.", dokumentoversiktBrukerRequestTo);
+			DokumentoversiktBrukerResponseTo dokumentoversiktBrukerResponseTo = dokumentoversiktBrukerService.hentDokumentoversiktBruker(dokumentoversiktBrukerRequestTo);
+			log.info("rjoark910 fant og returnerer {} journalposter med request={}.", dokumentoversiktBrukerResponseTo.getJournalposter().size(), dokumentoversiktBrukerRequestTo);
+			return dokumentoversiktBrukerResponseTo;
 		} finally {
 			MDC.clear();
 		}
