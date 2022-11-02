@@ -81,15 +81,14 @@ public class JournalpostUpdater {
 			journalpost.setEkspedertDato(OffsetDateTime.now());
 			tracker.setEndretFlagg(true);
 			tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), JournalStatusCode.E.name());
+			journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
+			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		}
+
 		if (request.getDatoLest() != null && journalpost.getLestDato() == null) {
 			journalpost.setLestDato(request.getDatoLest());
 		}
 
-		if (tracker.isEndretFlagg()) {
-			journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
-			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		}
 		return tracker;
 	}
 
