@@ -33,6 +33,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -87,7 +88,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();
 
 		OffsetDateTime ekspedertDato = OffsetDateTime.now();
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
 				.settStatusEkspedert(true).ekspedertDato(ekspedertDato)
 				.digitalpostkasse(new DigitalPost(POSTKASSEADRESSE, POSTKASSE_LEVERANDØR)));
 
@@ -125,7 +126,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 				.map(Journalpost::getJournalpostId)
 				.toList();
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(journalpostIds.stream()
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(journalpostIds.stream()
 				.map(journalpostId -> createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
 						.settStatusEkspedert(true).ekspedertDato(ekspedertDato)
 						.digitalpostkasse(new DigitalPost(POSTKASSEADRESSE, POSTKASSE_LEVERANDØR)))
@@ -154,22 +155,22 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
 		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.S)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.S)
 				.digitalpostkasse(new DigitalPost("enadresse#1234", "leverandør")));
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.NAV_NO)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.NAV_NO)
 				.digitalpostkasse(new DigitalPost("enadresse#1234", "leverandør")));
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
 				.varsel(new NavNoVarsel("en indentifikator", "Hei hei, her er en melding.")));
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.S)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.S)
 				.postadresse(null));
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.NAV_NO)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.NAV_NO)
 				.varsel(null));
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
 				.digitalpostkasse(null));
 
 		TestTransaction.start();
@@ -185,13 +186,13 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
 		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
 				.digitalpostkasse(new DigitalPost(null, "leverandør")));
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.S)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.S)
 				.postadresse(new Postadresse("gate gate", null, null, "1234", "agurk", "adfgh")));
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.NAV_NO)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.NAV_NO)
 				.varsel(new NavNoVarsel(null, "Hei hei, her er en melding.")));
 
 		TestTransaction.start();
@@ -203,19 +204,46 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void bulkUpdateDistribusjonsinfoShouldUpdateUtsendingsinfoIfJournalpostAlreadyHasUtsendingsinfo() {
+		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
+		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();
+
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(1, 0, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
+				.digitalpostkasse(new DigitalPost("adresse", "leverandør")));
+
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(1, 0, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.S)
+				.postadresse(new Postadresse("gate gate", null, null, "1234", "Oslo", "NO")));
+
+		TestTransaction.start();
+
+		Journalpost journalpostEtterOppdatering = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+
+		// The "new" info
+		assertEquals(journalpostEtterOppdatering.getUtsendingskanal(), UtsendingsKanalCode.S);
+		assertNotNull(journalpostEtterOppdatering.getUtsendingsInfo().getFysiskPostadresse());
+		assertEquals("gate gate", journalpostEtterOppdatering.getUtsendingsInfo().getFysiskPostadresse().getAdresselinje1());
+
+		// check that the "old" info is kept
+		assertNotNull(journalpostEtterOppdatering.getUtsendingsInfo().getDigitalPostadresse());
+		assertEquals("adresse", journalpostEtterOppdatering.getUtsendingsInfo().getDigitalPostadresse().getAdresse());
+
+		TestTransaction.end();
+	}
+
+	@Test
 	public void bulkUpdateDistribusjonsinfoShouldValidateBasicRequirementsJournalpost() {
 		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
 		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
 				.settStatusEkspedert(null)
 				.digitalpostkasse(new DigitalPost(null, "leverandør")));
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.S)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.S)
 				.settStatusEkspedert(true).ekspedertDato(null)
 				.postadresse(new Postadresse("gate gate", null, null, "1234", "agurk", "adfgh")));
 
-		performBulkOppdaterDistribusjonsinfoAssertSuccess(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.NAV_NO)
+		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.NAV_NO)
 				.forsendelseId(null)
 				.varsel(new NavNoVarsel(null, "Hei hei, her er en melding.")));
 
@@ -236,10 +264,10 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 				.utsendingsKanal(kanal.name());
 	}
 
-	private BulkOppdaterDistribusjonsinfoResponse performBulkOppdaterDistribusjonsinfoAssertSuccess(JournalpostWithDistribusjonsinfo.JournalpostWithDistribusjonsinfoBuilder... journalpostbuilders) {
-		return performBulkOppdaterDistribusjonsinfoAssertSuccess(journalpostbuilders.length, 0, journalpostbuilders);
+	private BulkOppdaterDistribusjonsinfoResponse performBulkOppdaterDistribusjonsinfoAssertOkResponse(JournalpostWithDistribusjonsinfo.JournalpostWithDistribusjonsinfoBuilder... journalpostbuilders) {
+		return performBulkOppdaterDistribusjonsinfoAssertOkResponse(journalpostbuilders.length, 0, journalpostbuilders);
 	}
-	private BulkOppdaterDistribusjonsinfoResponse performBulkOppdaterDistribusjonsinfoAssertSuccess(int updated, int failed, JournalpostWithDistribusjonsinfo.JournalpostWithDistribusjonsinfoBuilder... journalpostbuilders) {
+	private BulkOppdaterDistribusjonsinfoResponse performBulkOppdaterDistribusjonsinfoAssertOkResponse(int updated, int failed, JournalpostWithDistribusjonsinfo.JournalpostWithDistribusjonsinfoBuilder... journalpostbuilders) {
 		BulkOppdaterDistribusjonsinfoResponse bulkOppdaterDistribusjonsinfoResponse = performBulkOppdaterDistribusjonsinfo(HttpStatus.OK, BulkOppdaterDistribusjonsinfoResponse.class, journalpostbuilders);
 		assertEquals(updated, bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getOppdatert() == null ? 0 : bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getOppdatert().size());
 		assertEquals(failed, bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getFeilet() == null ? 0 : bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getFeilet().size());
