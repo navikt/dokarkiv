@@ -5,19 +5,15 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of SporingPopulator.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
- */
 @Component
 public class DefaultSporingPopulator implements SporingPopulator {
 
-	@Inject
 	private KildeNavnPopulator kildeNavnPopulator;
-	
+
+	public DefaultSporingPopulator(KildeNavnPopulator kildeNavnPopulator) {
+		this.kildeNavnPopulator = kildeNavnPopulator;
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public void populateSporingInfo(Journalpost journalpost, String opprettetEndretNavn) {

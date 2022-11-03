@@ -5,18 +5,18 @@ import no.nav.dokarkiv.behandlejournal.v2.AbstractBehandleJournalJournalpostVali
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
+import no.nav.dokarkiv.core.journalbehandling.JournalpostStructureVerifier;
+import no.nav.dokarkiv.core.journalbehandling.MandatoryFieldsVerifier;
 import org.springframework.stereotype.Component;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-/**
- * Validator for the JournalfoerUtgaaendeHenvendelseMedHoveddokument service
- *
- * @author Joakim Bjørnstad, Visma Consulting
- */
 @Component
-public class JournalfoerUtgaaendeHenvendelseValidator extends
-		AbstractBehandleJournalJournalpostValidator {
+public class JournalfoerUtgaaendeHenvendelseValidator extends AbstractBehandleJournalJournalpostValidator {
+
+	public JournalfoerUtgaaendeHenvendelseValidator(MandatoryFieldsVerifier mandatoryFieldsVerifier, JournalpostStructureVerifier journalpostStructureVerifier) {
+		super(mandatoryFieldsVerifier, journalpostStructureVerifier);
+	}
 
 	@Override
 	public void validate(Journalpost journalpost) {

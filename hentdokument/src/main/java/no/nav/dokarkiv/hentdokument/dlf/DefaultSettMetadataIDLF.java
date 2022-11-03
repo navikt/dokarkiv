@@ -6,10 +6,10 @@ import no.nav.dokarkiv.core.dokumenturl.AbstractDocumentOperation;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFRequest;
 import no.nav.dokarkiv.hentdokument.dlf.to.SettMetadataIDLFResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,11 +18,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-/**
- * Implementation of SettMetadataIDLF.
- *
- * @author Per Kristian Foss, Visma Sirius
- */
 @Component
 public class DefaultSettMetadataIDLF extends AbstractDocumentOperation implements SettMetadataIDLF {
 
@@ -31,7 +26,7 @@ public class DefaultSettMetadataIDLF extends AbstractDocumentOperation implement
 	 */
 	public static final String DLF_METADATA_XML_FILE = "DLF/D/Customer 1.xml";
 
-	@Inject
+	@Autowired
 	private SettMetadataIDlfXmlUpdater settMetadataIDlfXmlUpdater;
 	@Value("${hentdokument.dlf.metadataXmlEncoding}")
 	private String metadataXmlEncoding;

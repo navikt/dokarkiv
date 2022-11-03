@@ -5,9 +5,6 @@ import static no.nav.modig.security.tilgangskontroll.policy.pip.PicketLinkAttrib
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.springframework.stereotype.Service;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Service
 public class HentTilgangJournalpostService {
 

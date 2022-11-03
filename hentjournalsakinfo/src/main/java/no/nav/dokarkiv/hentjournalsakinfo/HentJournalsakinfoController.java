@@ -36,12 +36,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import java.util.Base64;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Slf4j
 @Unprotected
 @RestController
@@ -57,7 +53,6 @@ public class HentJournalsakinfoController {
 	private final HentTilgangJournalpostService hentTilgangJournalpostService;
 	private final TilknyttedeJournalposterService tilknyttedeJournalposterService;
 
-	@Inject
 	public HentJournalsakinfoController(SafHentDokumentService safHentDokumentService,
 										SafHentJournalpostService safHentJournalpostService,
 										FinnJournalposterService finnJournalposterService,

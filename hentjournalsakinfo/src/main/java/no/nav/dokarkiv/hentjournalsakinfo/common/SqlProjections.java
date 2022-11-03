@@ -2,9 +2,6 @@ package no.nav.dokarkiv.hentjournalsakinfo.common;
 
 import lombok.experimental.UtilityClass;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @UtilityClass
 public final class SqlProjections {
 	public static final String RELEVANTE_DATA =

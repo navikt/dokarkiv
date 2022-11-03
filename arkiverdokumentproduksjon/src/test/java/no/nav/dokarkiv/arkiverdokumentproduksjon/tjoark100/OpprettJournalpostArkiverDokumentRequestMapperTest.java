@@ -14,19 +14,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentDataUtil.PERSONIDENT;
 
-/**
- * Test class for
- * DefaultOpprettJournalpostArkiverDokumentRequestMapper.
- *
- * @author Stig Strøm
- */
 @ExtendWith(MockitoExtension.class)
 public class OpprettJournalpostArkiverDokumentRequestMapperTest {
+
 	@Mock
 	private KildeNavnPopulator kildeNavnPopulator;
 
 	@InjectMocks
-	private OpprettJournalpostArkiverDokumentRequestMapper requestMapper = new OpprettJournalpostArkiverDokumentRequestMapper();
+	private OpprettJournalpostArkiverDokumentRequestMapper requestMapper;
 
 	@BeforeEach
 	public void setUp() throws Exception {

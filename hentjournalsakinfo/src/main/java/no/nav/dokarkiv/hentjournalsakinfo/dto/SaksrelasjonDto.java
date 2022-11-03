@@ -9,9 +9,6 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 
 import java.time.ZonedDateTime;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Data
 @Builder
 public class SaksrelasjonDto {

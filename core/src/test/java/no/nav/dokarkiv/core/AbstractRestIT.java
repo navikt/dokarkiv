@@ -16,6 +16,7 @@ import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -28,7 +29,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.util.Objects;
@@ -39,9 +39,6 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @ExtendWith(SpringExtension.class)
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
@@ -50,25 +47,25 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
 @AutoConfigureDataLdap
 @Transactional
 public abstract class AbstractRestIT {
-	@Inject
+	@Autowired
 	protected JoarkRepository joarkRepository;
-	@Inject
+	@Autowired
 	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
-	@Inject
+	@Autowired
 	protected DokumentinfoRepository dokumentinfoRepository;
-	@Inject
+	@Autowired
 	protected TestRestTemplate restTemplate;
-	@Inject
+	@Autowired
 	protected SkjermingService skjermingService;
-	@Inject
+	@Autowired
 	protected SkjermingServiceTest skjermingServiceTest;
-	@Inject
+	@Autowired
 	protected AksjonsLoggRepository aksjonsLoggRepository;
-	@Inject
+	@Autowired
 	protected EntityManager entityManager;
-	@Inject
+	@Autowired
 	protected DokumentFilRepository dokumentFilRepository;
-	@Inject
+	@Autowired
 	protected SakRepository sakRepository;
 
 	protected static final String BEARER = "Bearer ";

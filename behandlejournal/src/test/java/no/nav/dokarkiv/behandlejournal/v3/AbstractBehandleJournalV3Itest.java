@@ -13,7 +13,7 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v3.binding.BehandleJournalV3;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,9 +21,7 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -35,10 +33,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, BehandleJournalV3Config.class, TokenGeneratorConfiguration.class})
+@SpringBootTest(
+		webEnvironment = NONE,
+		classes = {CoreConfig.class, BehandleJournalV3Config.class, TokenGeneratorConfiguration.class}
+)
 @ActiveProfiles({"itest", "wiremock"})
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
@@ -46,13 +46,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 @Transactional
 public abstract class AbstractBehandleJournalV3Itest {
 
-	@Inject
+	@Autowired
 	protected BehandleJournalV3 behandleJournalV3Provider;
-	@Inject
+	@Autowired
 	protected JoarkRepositorySkjermet joarkRepository;
-	@Inject
+	@Autowired
 	protected DokumentinfoRepository dokumentinfoRepository;
-	@Inject
+	@Autowired
 	protected DokumentFilRepository dokumentFilRepository;
 
 	@BeforeEach

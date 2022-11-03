@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.core.domain.service;
 
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -11,24 +8,22 @@ import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 @Transactional
 @Component
 public class SkjermingService {
 
-	private JoarkRepository joarkRepository;
+	private final JoarkRepository joarkRepository;
 
 	private final EntityManager entityManager;
 
-	@Inject
 	public SkjermingService(JoarkRepository joarkRepository, EntityManager entityManager) {
 		this.joarkRepository = joarkRepository;
 		this.entityManager = entityManager;

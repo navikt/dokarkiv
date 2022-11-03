@@ -8,13 +8,13 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static no.nav.dokarkiv.core.domain.builder.DokumentFilBuilder.getDokumentFilBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
@@ -26,11 +26,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for DefaultDokumentFilerDelegate.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
- */
+@ExtendWith(MockitoExtension.class)
 public class DefaultDokumentFilerDelegateTest {
 
 	@Mock
@@ -45,15 +41,8 @@ public class DefaultDokumentFilerDelegateTest {
 	private final byte[] fileContent = "fileContent".getBytes();
 	private Journalpost journalpost;
 
-	@BeforeEach
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-		dokumentFilerDelegate = new DefaultDokumentFilerDelegate();
-		dokumentFilerDelegate.setDokumentFilRepository(dokumentFilRepositoryMock);
-	}
-
 	@Test
-	public void shouldSaveNewDokumentFil() throws Exception {
+	public void shouldSaveNewDokumentFil() {
 		FilDetaljer filDetaljer = getFilDetaljerBuilder()
 				.fileContent(fileContent)
 				.build();
@@ -61,7 +50,6 @@ public class DefaultDokumentFilerDelegateTest {
 		journalpost = getJournalpostBuilder()
 				.dokumentInfoRelasjoner(createDokumentInfoRelasjonWith(filDetaljer))
 				.build();
-
 
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 
@@ -71,7 +59,7 @@ public class DefaultDokumentFilerDelegateTest {
 	}
 
 	@Test
-	public void shouldUpdateExistingDokumentFil() throws Exception {
+	public void shouldUpdateExistingDokumentFil() {
 		FilDetaljer filDetaljer = createFilDetaljer();
 
 		journalpost = getJournalpostBuilder()
@@ -94,7 +82,7 @@ public class DefaultDokumentFilerDelegateTest {
 	}
 
 	@Test
-	public void shouldSaveNewDokumentFilWhenExistingDokumentFilNotFound() throws Exception {
+	public void shouldSaveNewDokumentFilWhenExistingDokumentFilNotFound() {
 		FilDetaljer filDetaljer = createFilDetaljer();
 
 		journalpost = getJournalpostBuilder()

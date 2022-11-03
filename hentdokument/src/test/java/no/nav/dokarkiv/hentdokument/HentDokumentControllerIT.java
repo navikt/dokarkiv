@@ -36,7 +36,7 @@ import org.assertj.core.util.DateUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,10 +46,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -65,7 +63,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, HentDokumentConfig.class, TokenGeneratorConfiguration.class})
 @ActiveProfiles({"itest", "wiremock"})
@@ -86,21 +83,21 @@ public class HentDokumentControllerIT {
 	private static final String ON_DEMAND_ID = "onDemandId";
 	private static final byte[] ONDEMAND_FIL_CONTENT = "e-business".getBytes();
 
-	@Inject
+	@Autowired
 	private DokumentUrlInfoRepository dokumentUrlInfoRepository;
-	@Inject
+	@Autowired
 	private JoarkRepositorySkjermet joarkRepository;
-	@Inject
+	@Autowired
 	private DokumentFilRepository dokumentFilRepository;
-	@Inject
+	@Autowired
 	private JournalpostDokumentInfoRelasjonRepository relasjonRepository;
-	@Inject
+	@Autowired
 	private DokumentinfoRepository dokumentinfoRepository;
-	@Inject
+	@Autowired
 	private TestRestTemplate testRestTemplate;
-	@Inject
+	@Autowired
 	private SkjermingServiceTest skjermingService;
-	@Inject
+	@Autowired
 	private EntityManager entityManager;
 
 	@BeforeEach

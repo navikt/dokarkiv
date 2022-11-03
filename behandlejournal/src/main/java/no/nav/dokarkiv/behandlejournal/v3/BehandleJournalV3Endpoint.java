@@ -22,10 +22,10 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerUtgaae
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerUtgaaendeHenvendelseResponse;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.LagreVedleggPaaJournalpostRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.LagreVedleggPaaJournalpostResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
@@ -50,7 +50,7 @@ public class BehandleJournalV3Endpoint implements BehandleJournalV3 {
 	@Resource
 	private WebServiceContext webServiceContext;
 
-	@Inject
+	@Autowired
 	private BehandleJournalV3 behandleJournalProvider;
 
 	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark060_v3"}, percentiles = {0.5, 0.95})

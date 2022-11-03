@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
-import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.ValideringAvVedleggFeiletException;
@@ -15,23 +13,24 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
+import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
+
 @Component
 @Slf4j
 public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 
-	@Inject
-	private JoarkRepositorySkjermet joarkRepository;
-	@Inject
-	private DokumentFilerDelegate dokumentFilerDelegate;
-	@Inject
-	private OpprettUtgaaendeJournalpostArkiverDokumentValidator validator;
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final DokumentFilerDelegate dokumentFilerDelegate;
+	private final OpprettUtgaaendeJournalpostArkiverDokumentValidator validator;
+
+	public OpprettUtgaaendeJournalpostArkiverDokumentService(JoarkRepositorySkjermet joarkRepository, DokumentFilerDelegate dokumentFilerDelegate, OpprettUtgaaendeJournalpostArkiverDokumentValidator validator) {
+		this.joarkRepository = joarkRepository;
+		this.dokumentFilerDelegate = dokumentFilerDelegate;
+		this.validator = validator;
+	}
 
 	public OpprettUtgaaendeJournalpostArkiverDokumentResponseTo opprettUtgaaendeJournalpostArkiverDokument(OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo) throws UgyldigInputException, ValideringAvVedleggFeiletException {
 

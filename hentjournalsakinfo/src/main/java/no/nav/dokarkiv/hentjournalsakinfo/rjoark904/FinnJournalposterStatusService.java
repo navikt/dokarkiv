@@ -5,19 +5,14 @@ import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.EnumSet;
 import java.util.List;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Component
 public class FinnJournalposterStatusService {
 	private static final EnumSet GYLDIGE_JOURNALSTATUSER = EnumSet.of(JournalStatusCode.U, JournalStatusCode.UB);
 	private final FinnJournalposterStatusJdbcRepository finnJournalposterStatusJdbcRepository;
 
-	@Inject
 	public FinnJournalposterStatusService(FinnJournalposterStatusJdbcRepository finnJournalposterStatusJdbcRepository) {
 		this.finnJournalposterStatusJdbcRepository = finnJournalposterStatusJdbcRepository;
 	}

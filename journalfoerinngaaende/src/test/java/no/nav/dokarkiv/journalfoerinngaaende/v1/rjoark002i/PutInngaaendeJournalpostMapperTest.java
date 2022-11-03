@@ -29,8 +29,7 @@ public class PutInngaaendeJournalpostMapperTest {
 	private Journalpost journalpost;
 
 	@InjectMocks
-	private PutInngaaendeJournalpostMapper mapper = new PutInngaaendeJournalpostMapper();
-
+	private PutInngaaendeJournalpostMapper mapper;
 
 	@Test
 	public void shouldUpdateJournalpost() {

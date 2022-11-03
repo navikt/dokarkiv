@@ -14,20 +14,15 @@ import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdate
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdaterFromBulk;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator.validateJournalpostKanSetteStatusEkspedert;
 
-@Service
-@Named("oppdaterDistribusjonsinfo")
+@Service("oppdaterDistribusjonsinfo")
 public class OppdaterDistribusjonsinfoService {
 
     private final JoarkRepositorySkjermet joarkRepository;
     private final JournalpostUpdater journalpostUpdater;
     private final LagreAksjonsLoggService aksjonsLoggService;
 
-    @Inject
     public OppdaterDistribusjonsinfoService(JoarkRepositorySkjermet joarkRepository,
                                       JournalpostUpdater journalpostUpdater,
                                             LagreAksjonsLoggService aksjonsLoggService) {

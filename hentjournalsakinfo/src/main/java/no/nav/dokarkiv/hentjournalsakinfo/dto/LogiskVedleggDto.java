@@ -2,11 +2,8 @@ package no.nav.dokarkiv.hentjournalsakinfo.dto;
 
 import lombok.Value;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Value
 public class LogiskVedleggDto {
-	private final String vedleggId;
-	private final String tittel;
+	String vedleggId;
+	String tittel;
 }

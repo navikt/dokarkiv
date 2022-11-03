@@ -11,8 +11,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.inject.Named;
-
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
@@ -29,7 +27,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
     public RestWebMvcConfig(TokenValidationContextHolder tokenValidationContextHolder,
                             MultiIssuerConfiguration multiIssuerConfiguration,
                             NavLdapService navLdapService,
-                            @Lazy @Named("basicAuthReadAccessRestInterceptor") HandlerInterceptor basicAuthReadAccessRestInterceptor,
+                            @Lazy HandlerInterceptor basicAuthReadAccessRestInterceptor,
                             MeterRegistry meterRegistry) {
         this.tokenValidationContextHolder = tokenValidationContextHolder;
         this.multiIssuerConfiguration = multiIssuerConfiguration;

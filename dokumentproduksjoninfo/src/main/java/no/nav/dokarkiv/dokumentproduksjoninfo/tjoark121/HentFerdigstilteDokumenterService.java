@@ -16,31 +16,23 @@ import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.IllegalVariantFormatExc
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.JournalpostNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Service-klasse for å hente ferdigstilte dokumenter (TJOARK121)
- * 
- * 
- * @author Stig Strøm
- *
- */
 @Service
 public class HentFerdigstilteDokumenterService {
 
-	@Inject
-	private JoarkRepositorySkjermet joarkRepository;
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final DokumentFilSkjermetRepository dokumentFilRepository;
+	private final HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator;
+	private final SkjermingService skjermingService;
 
-	@Inject
-	private DokumentFilSkjermetRepository dokumentFilRepository;
-	
-	@Inject
-	private HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator;
-
-	@Inject
-	private SkjermingService skjermingService;
+	public HentFerdigstilteDokumenterService(JoarkRepositorySkjermet joarkRepository, DokumentFilSkjermetRepository dokumentFilRepository, HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator, SkjermingService skjermingService) {
+		this.joarkRepository = joarkRepository;
+		this.dokumentFilRepository = dokumentFilRepository;
+		this.hentFerdigstilteRokumenterValidator = hentFerdigstilteRokumenterValidator;
+		this.skjermingService = skjermingService;
+	}
 
 	/**
 	 * 

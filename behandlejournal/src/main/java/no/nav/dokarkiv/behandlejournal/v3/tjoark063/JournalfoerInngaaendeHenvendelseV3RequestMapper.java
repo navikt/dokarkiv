@@ -29,7 +29,6 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.behandlejournal
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.informasjon.journalfoerinngaaendehenvendelse.JournalfoertDokumentInfo;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +37,6 @@ public class JournalfoerInngaaendeHenvendelseV3RequestMapper {
 
 	private final SporingMapper sporingMapper;
 
-	@Inject
 	public JournalfoerInngaaendeHenvendelseV3RequestMapper(SporingMapper sporingMapper) {
 		this.sporingMapper = sporingMapper;
 	}

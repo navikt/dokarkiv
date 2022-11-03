@@ -11,16 +11,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 class GsakCteMapper {
 	private static final int ORACLE_IN_SELECTION_MAX_ELEMENTS = 1000;
 
 	@Value
 	class GsakCte {
-		private final String cteSql;
-		private final Map<String, List<String>> gsakIdParams;
+		String cteSql;
+		Map<String, List<String>> gsakIdParams;
 
 		boolean isGsakerExists() {
 			return !gsakIdParams.isEmpty();

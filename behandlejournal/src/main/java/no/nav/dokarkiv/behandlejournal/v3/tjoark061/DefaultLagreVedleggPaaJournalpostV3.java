@@ -23,29 +23,25 @@ import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Implementation of LagreVedleggPaaJournalpost.
- *
- * @author Rune Romundstad, Visma Consulting
- */
 @Component
 public class DefaultLagreVedleggPaaJournalpostV3 implements LagreVedleggPaaJournalpost {
 
-	@Inject
-	private JoarkRepositorySkjermet joarkRepository;
-	@Inject
-	private DokumentinfoRepository dokumentinfoRepository;
-	@Inject
-	private DokumentFilRepository dokumentFilRepository;
-	@Inject
-	private KildeNavnPopulator kildeNavnPopulator;
-
-	@Value("${behandlejournal.v3.lagreVedleggPaaJournalpost.vedleggDokumentTypeId}")
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentFilRepository dokumentFilRepository;
+	private final KildeNavnPopulator kildeNavnPopulator;
 	private String vedleggDokumentTypeId;
+
+	public DefaultLagreVedleggPaaJournalpostV3(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, KildeNavnPopulator kildeNavnPopulator, @Value("${behandlejournal.v3.lagreVedleggPaaJournalpost.vedleggDokumentTypeId}") String vedleggDokumentTypeId) {
+		this.joarkRepository = joarkRepository;
+		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.dokumentFilRepository = dokumentFilRepository;
+		this.kildeNavnPopulator = kildeNavnPopulator;
+		this.vedleggDokumentTypeId = vedleggDokumentTypeId;
+	}
 
 	/**
 	 * {@inheritDoc}

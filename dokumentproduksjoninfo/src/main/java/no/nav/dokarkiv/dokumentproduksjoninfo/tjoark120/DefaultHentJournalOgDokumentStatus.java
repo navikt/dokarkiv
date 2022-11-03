@@ -11,18 +11,14 @@ import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of HentJournalOgDokumentStatus.
- *
- * @author Thomas Eugen Bjørge, Visma Consulting
- */
 @Service
 public class DefaultHentJournalOgDokumentStatus implements HentJournalOgDokumentStatus {
 
-	@Inject
-    private JoarkRepositorySkjermet joarkRepository;
+    private final JoarkRepositorySkjermet joarkRepository;
+
+	public DefaultHentJournalOgDokumentStatus(JoarkRepositorySkjermet joarkRepository) {
+		this.joarkRepository = joarkRepository;
+	}
 
 	@Override
 	public HentJournalOgDokumentStatusResponseTo hentJournalOgDokumentStatus(HentJournalOgDokumentStatusRequestTo request)

@@ -12,19 +12,15 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
-/**
- * Implementation of {@link FerdigstillDokumentopplasting}.
- *
- * @author Joakim Bjørnstad, Visma Consulting
- */
 @Component
 public class DefaultFerdigstillDokumentopplasting implements FerdigstillDokumentopplasting {
-	@Inject
-	private JoarkRepositorySkjermet joarkRepository;
-	@Inject
-	private SporingPopulator sporingPopulator;
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final SporingPopulator sporingPopulator;
+
+	public DefaultFerdigstillDokumentopplasting(JoarkRepositorySkjermet joarkRepository, SporingPopulator sporingPopulator) {
+		this.joarkRepository = joarkRepository;
+		this.sporingPopulator = sporingPopulator;
+	}
 
 	/**
 	 * {@inheritDoc}

@@ -46,7 +46,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,7 +76,6 @@ public class ArkiverOgJournalfoerRestController {
 	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
 	private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
 
-	@Inject
 	public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
 											  final OppdaterJournalpostService oppdaterJournalpostService,
 											  final OpprettJournalpostService opprettJournalpostService,

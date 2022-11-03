@@ -2,9 +2,6 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark902;
 
 import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 final class HentJournalpostSqlGenerator {
 	private HentJournalpostSqlGenerator() {
 		//ikke instansier

@@ -11,7 +11,6 @@ import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -26,7 +25,6 @@ public class OpprettJournalpostPDFAUtils {
 	private final MeterRegistry meterRegistry;
 	private static final Pattern BRUKER_PATTERN = Pattern.compile("[a-zA-Z]\\d{6}");
 
-	@Inject
 	public OpprettJournalpostPDFAUtils(MeterRegistry meterRegistry) {
 		this.meterRegistry = meterRegistry;
 	}

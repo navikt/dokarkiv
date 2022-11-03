@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
-import static java.lang.Long.parseLong;
-
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -10,16 +8,16 @@ import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
+
+import static java.lang.Long.parseLong;
 
 @Component
 public class UkjentBrukerService {
     private final JoarkRepository joarkRepository;
     private static final List<JournalStatusCode> validJournalStatusList = Arrays.asList(JournalStatusCode.U, JournalStatusCode.OD, JournalStatusCode.M, JournalStatusCode.MO);
 
-    @Inject
     public UkjentBrukerService(final JoarkRepository joarkRepository) {
         this.joarkRepository = joarkRepository;
     }

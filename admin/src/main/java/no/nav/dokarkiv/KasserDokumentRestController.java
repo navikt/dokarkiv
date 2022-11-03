@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
@@ -35,7 +33,6 @@ public class KasserDokumentRestController {
 	private final KasserDokumentValidator validator;
 	private final KasserDokumentOrchestrator kasserDokumentOrchestrator;
 
-	@Inject
 	public KasserDokumentRestController(
 			KasserDokumentValidator validator,
 			KasserDokumentOrchestrator kasserDokumentOrchestrator) {

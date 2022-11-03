@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.repository.JoarkRepository;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +33,6 @@ public class AvbrytService {
     static final String FIKK_AVBRUTT = "Journalposten ble satt til avbrutt";
     static final List<JournalStatusCode> JOURNAL_STATUS_CODE_DOKUMENT_RESERVERT = Arrays.asList(D, R);
 
-    @Inject
     public AvbrytService(final JoarkRepository joarkRepository,
                          final LagreAksjonsLoggService aksjonsLoggService
     ) {

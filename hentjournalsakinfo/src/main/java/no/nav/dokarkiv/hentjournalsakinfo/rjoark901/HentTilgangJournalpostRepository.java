@@ -5,19 +5,14 @@ import org.hibernate.query.Query;
 import org.hibernate.transform.ResultTransformer;
 import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Repository
 class HentTilgangJournalpostRepository {
 
     private final EntityManager entityManager;
 
-    @Inject
     public HentTilgangJournalpostRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
     }

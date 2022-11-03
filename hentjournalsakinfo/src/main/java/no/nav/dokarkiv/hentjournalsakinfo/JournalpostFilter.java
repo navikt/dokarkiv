@@ -17,21 +17,18 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Value
 public class JournalpostFilter {
 	public static final long JOURNALPOST_ID_MAX = 999999999L;
 	public static final long JOURNALPOST_ID_MIN = 0L;
-	private final LocalDate fraDato;
-	private final LocalDate tilDato;
-	private final List<String> alleIdenter;
-	private final List<String> inkluderJournalStatus;
-	private final List<String> inkluderJournalpostType;
-	private final boolean visFeilregistrerte;
-	private final int antallRader;
-	private final Long journalpostIdPeker;
+	LocalDate fraDato;
+	LocalDate tilDato;
+	List<String> alleIdenter;
+	List<String> inkluderJournalStatus;
+	List<String> inkluderJournalpostType;
+	boolean visFeilregistrerte;
+	int antallRader;
+	Long journalpostIdPeker;
 
 	public JournalpostFilter(FinnJournalposterRequestTo finnJournalposterRequestTo) {
 		this.fraDato = LocalDate.parse(finnJournalposterRequestTo.getFraDato());

@@ -1,26 +1,23 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Component
 public class SettJournalpostAttributterService {
 
-	@Inject
-	private JoarkRepositorySkjermet joarkRepository;
+	private final JoarkRepositorySkjermet joarkRepository;
+	private final SporingPopulator sporingPopulator;
 
-	@Inject
-	private SporingPopulator sporingPopulator;
+	public SettJournalpostAttributterService(JoarkRepositorySkjermet joarkRepository, SporingPopulator sporingPopulator) {
+		this.joarkRepository = joarkRepository;
+		this.sporingPopulator = sporingPopulator;
+	}
 
 	public void settJournalpostAttributter(SettJournalpostAttributterRequestTo domainRequest) {
 		for (Long journalpostId : domainRequest.getJournalpostIds()) {

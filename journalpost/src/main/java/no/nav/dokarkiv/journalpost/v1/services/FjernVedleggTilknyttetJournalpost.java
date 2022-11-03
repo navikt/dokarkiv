@@ -15,12 +15,6 @@ import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostReque
 import no.nav.dokarkiv.journalpost.v1.validators.FjernVedleggTilknyttetJournalpostValidator;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-
-/**
- * @author Tsigab Angosom Gebremedhin, NAV.
- */
-
 @Service(value = "fjernVedleggService")
 @Slf4j
 public class FjernVedleggTilknyttetJournalpost {
@@ -30,7 +24,6 @@ public class FjernVedleggTilknyttetJournalpost {
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final FjernVedleggTilknyttetJournalpostValidator fjernVedleggTilknyttetJournalpostValidator;
 
-	@Inject
 	public FjernVedleggTilknyttetJournalpost(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository,
 											 JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
 		this.joarkRepository = joarkRepository;

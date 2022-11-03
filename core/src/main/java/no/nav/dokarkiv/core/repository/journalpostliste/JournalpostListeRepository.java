@@ -7,21 +7,16 @@ import org.hibernate.criterion.Projections;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Repository
 @Transactional
 public class JournalpostListeRepository {
 
 	private final EntityManager entityManager;
 
-	@Inject
 	public JournalpostListeRepository(EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}
