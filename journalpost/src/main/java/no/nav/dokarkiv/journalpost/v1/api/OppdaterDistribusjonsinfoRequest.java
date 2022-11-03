@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 @Builder
 @Getter
 @AllArgsConstructor
-public class OppdaterDistribusjonsinfoRequest {
+public class OppdaterDistribusjonsinfoRequest implements WithUtsendingsKanal {
     @Schema(
             description = "Setter status 'ekspedert' på journalposten. Dvs. at journalposten har blitt distribuert til bruker"
     )
