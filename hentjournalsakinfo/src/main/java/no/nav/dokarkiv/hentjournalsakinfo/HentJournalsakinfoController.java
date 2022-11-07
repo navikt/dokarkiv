@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Base64;
@@ -70,7 +69,6 @@ public class HentJournalsakinfoController {
 	}
 
 	@Transactional(readOnly = true)
-	@ResponseBody
 	@PostMapping(value = "/finnjournalposter")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark900"}, percentiles = {0.5, 0.95})
 	public FinnJournalposterResponseTo finnJournalposter(@RequestBody FinnJournalposterRequestTo finnJournalposterRequestTo) {
@@ -85,7 +83,6 @@ public class HentJournalsakinfoController {
 	}
 
 	@Transactional(readOnly = true)
-	@ResponseBody
 	@GetMapping(value = "/henttilgangjournalpost/{journalpostId}/{dokumentInfoId}/{variantFormat}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark901"}, percentiles = {0.5, 0.95})
 	public HentTilgangJournalpostResponse hentTilgangJournalpost(@PathVariable Long journalpostId,
@@ -101,7 +98,6 @@ public class HentJournalsakinfoController {
 	}
 
 	@Transactional(readOnly = true)
-	@ResponseBody
 	@RequestMapping(value = "/hentjournalpost/{journalpostId}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark902"}, percentiles = {0.5, 0.95})
 	public SafHentJournalpostResponse safHentJournalpost(@PathVariable Long journalpostId) {
@@ -114,7 +110,6 @@ public class HentJournalsakinfoController {
 	}
 
 	@Transactional(readOnly = true)
-	@ResponseBody
 	@RequestMapping(value = "/tilknyttedejournalposter/{dokumentInfoId}/{tilknytning}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark903"}, percentiles = {0.5, 0.95})
 	public TilknyttedeJournalposterResponse tilknyttedeJournalposter(@PathVariable Long dokumentInfoId,
@@ -128,7 +123,6 @@ public class HentJournalsakinfoController {
 	}
 
 	@Transactional(readOnly = true)
-	@ResponseBody
 	@PostMapping(value = "/finnjournalposterstatus")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark904"}, percentiles = {0.5, 0.95})
 	public FinnJournalposterStatusResponseTo finnJournalposterStatus(@RequestBody FinnJournalposterStatusRequestTo finnJournalposterStatusRequestTo) {
@@ -143,7 +137,6 @@ public class HentJournalsakinfoController {
 	}
 
 	@Transactional(readOnly = true)
-	@ResponseBody
 	@PostMapping(value = "/dokumentoversiktbruker")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark910"}, percentiles = {0.5, 0.95})
 	public DokumentoversiktBrukerResponseTo dokumentoversiktBruker(@RequestBody DokumentoversiktBrukerRequestTo dokumentoversiktBrukerRequestTo) {
