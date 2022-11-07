@@ -15,7 +15,6 @@ import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -40,7 +39,6 @@ record Sak(
 		Boolean feilregistrert,
 		String orgnr,
 		String opprettetAv,
-		ZonedDateTime opprettetTid,
 		LocalDateTime opprettetTidspunkt
 ) {
 }
