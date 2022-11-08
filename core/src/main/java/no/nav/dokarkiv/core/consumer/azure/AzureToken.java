@@ -14,13 +14,9 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-
-import java.util.Map;
 
 import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE;
 
@@ -50,6 +46,13 @@ public class AzureToken {
         return fetchAccessToken(token, scope);
     }
 
+    @Retry(name = AZURE_TOKEN_INSTANCE)
+    @CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
+    @Cacheable(AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE)
+    public String clientCredentialAccessToken(String scope) {
+        return fetchAccessToken(null, scope);
+    }
+
     private String fetchAccessToken(String token, String scope) {
 
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -57,42 +60,15 @@ public class AzureToken {
         formData.add("client_secret", azureConfig.getAppClientSecret());
         formData.add("scope", scope);
 
-        formData.add("requested_token_use", ON_BEHALF_OF);
-        formData.add("grant_type", ON_BEHALF_OF_GRANT_TYPE);
-        formData.add("assertion", token);
-
-        String responseJson = azureConsumer(formData);
-        try {
-            Map<String, Object> tokenData = objectMapper.readValue(responseJson, Map.class);
-            return (String) tokenData.get("access_token");
-        } catch (JsonProcessingException | ClassCastException e) {
-            throw new AzureTokenException(String.format("Klarte ikke parse token fra Azure. Feilmelding=%s", e.getMessage()), e);
-        }
-    }
-
-    @Retry(name = AZURE_TOKEN_INSTANCE)
-    @CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
-    @Cacheable(AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE)
-    public TokenResponse getClientCredentialToken(String scope) {
-        try {
-            MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-            formData.add("client_id", azureConfig.getAppClientId());
-            formData.add("client_secret", azureConfig.getAppClientSecret());
-            formData.add("scope", scope);
+        if(token != null) {
+            formData.add("requested_token_use", ON_BEHALF_OF);
+            formData.add("grant_type", ON_BEHALF_OF_GRANT_TYPE);
+            formData.add("assertion", token);
+        } else {
             formData.add("grant_type", CLIENT_CREDENTIALS);
-            String responseJson = azureConsumer(formData);
-            try {
-                return objectMapper.readValue(responseJson, TokenResponse.class);
-            } catch (JsonProcessingException | ClassCastException e) {
-                throw new AzureTokenException(String.format("Klarte ikke parse token fra Azure. Feilmelding=%s", e.getMessage()), e);
-            }
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            throw new AzureTokenException(String.format("Klarte ikke hente token fra Azure. Feilet med httpstatus=%s. Feilmelding=%s", e.getStatusCode(), e.getMessage()), e);
         }
-    }
 
-    private String azureConsumer(MultiValueMap<String, String> formData) {
-        return azureClient
+        String responseJson = azureClient
                 .post()
                 .body(BodyInserters.fromFormData(formData))
                 .retrieve()
@@ -100,6 +76,11 @@ public class AzureToken {
                 .doOnError(this::handleError)
                 .block();
 
+        try {
+            return objectMapper.readValue(responseJson, TokenResponse.class).getAccess_token();
+        } catch (JsonProcessingException e) {
+            throw new AzureTokenException(String.format("Klarte ikke parse token fra Azure. Feilmelding=%s", e.getMessage()), e);
+        }
     }
 
     private void handleError(Throwable error) {
