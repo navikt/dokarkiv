@@ -56,7 +56,7 @@ public class CacheConfig {
 						.build()),
 				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(50, MINUTES)
-						.maximumSize(1)
+						.maximumSize(10)
 						.build()),
 				new CaffeineCache(AZURE_HENT_AD_GRUPPER, Caffeine.newBuilder()
 						.expireAfterWrite(50, MINUTES)

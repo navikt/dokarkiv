@@ -60,20 +60,19 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 	private static final String UKJENT = "UKJENT";
 	private final HeaderTokenExtractor headerTokenExtractor;
 	private final AzureAdFlowSporingHandler azureAdFlowSporingHandler;
-	private final AzureAdGraphService azureAdGraphService;
 	private final NavSystemkontekstHandler navSystemkontekstHandler;
 	private final NavCombinedBrukerSystemkontekstHandler navCombinedBrukerSystemkontekstHandler;
 	private final TokenValidationContextHolder tokenValidationContextHolder;
 
 	public SporingHandlerInterceptor(TokenValidationContextHolder tokenValidationContextHolder,
 									 MultiIssuerConfiguration multiIssuerConfiguration,
-									 MeterRegistry meterRegistry, AzureAdGraphService azureAdGraphService) {
+									 MeterRegistry meterRegistry,
+									 AzureAdGraphService azureAdGraphService) {
 		this.tokenValidationContextHolder = tokenValidationContextHolder;
 		this.meterRegistry = meterRegistry;
-		this.azureAdGraphService = azureAdGraphService;
 		this.headerTokenExtractor = new HeaderTokenExtractor();
 		this.azureAdFlowSporingHandler = new AzureAdFlowSporingHandler(azureAdGraphService);
-		this.navSystemkontekstHandler = new NavSystemkontekstHandler(this.azureAdGraphService);
+		this.navSystemkontekstHandler = new NavSystemkontekstHandler(azureAdGraphService);
 		this.navCombinedBrukerSystemkontekstHandler = new NavCombinedBrukerSystemkontekstHandler(azureAdGraphService,
 				multiIssuerConfiguration.getIssuer(ISSUER_RESTSTS).orElseThrow().getTokenValidator());
 	}

@@ -81,7 +81,7 @@ public class ValidateAdminConsumerAccessInterceptorTest {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		boolean result = validateAdminConsumerAccessInterceptor.preHandle(request, response, new Object());
 		assertThat(result, is(false));
-		assertThat(response.getErrorMessage(), is("Bruker må være medlem av gruppen \"0000-GA-joark-vedlikehold\""));
+		assertThat(response.getErrorMessage(), is("NAVIdent må være medlem av gruppen guid=\"0000-GA-joark-vedlikehold\" i Azure AD"));
 	}
 
 	@Test

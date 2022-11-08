@@ -2,8 +2,6 @@ package no.nav.dokarkiv.core.consumer.azure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.AzureTokenException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
@@ -26,7 +24,6 @@ public class AzureToken {
 
     private static final String ON_BEHALF_OF_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
     private static final String ON_BEHALF_OF = "on_behalf_of";
-    private static final String AZURE_TOKEN_INSTANCE = "azuretoken";
     private static final String CLIENT_CREDENTIALS = "client_credentials";
 
     private final AzureConfig azureConfig;
@@ -46,8 +43,7 @@ public class AzureToken {
         return fetchAccessToken(token, scope);
     }
 
-    @Retry(name = AZURE_TOKEN_INSTANCE)
-    @CircuitBreaker(name = AZURE_TOKEN_INSTANCE)
+    @Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
     @Cacheable(AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE)
     public String clientCredentialAccessToken(String scope) {
         return fetchAccessToken(null, scope);

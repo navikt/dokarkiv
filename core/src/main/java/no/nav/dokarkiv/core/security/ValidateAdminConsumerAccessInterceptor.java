@@ -55,8 +55,8 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
 				return false;
 			} else if (isFalse(isUserInTokenHasRole(authorizationToken, adminServiceUserAdRole))) {
-				String message = String.format("Bruker må være medlem av gruppen \"%s\"", adminServiceUserAdRole);
-				log.warn(message);
+				String message = String.format("NAVIdent må være medlem av gruppen guid=\"%s\" i Azure AD", adminServiceUserAdRole);
+				log.error(message);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
 				return false;
 			}
@@ -71,8 +71,7 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 
 	public boolean isUserInTokenHasRole(String token, String ldapGroup) {
 		String userId = getSubjectFromToken(token);
-		String fulltNavn = azureAdGraphService.hentFulltNavn(userId);
-		return fulltNavn != null && azureAdGraphService.userInGroup(userId, ldapGroup);
+		return azureAdGraphService.userInGroup(userId, ldapGroup);
 	}
 
 	public boolean isTokenBelongsToUser(String token, String subject) {
