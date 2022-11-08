@@ -21,7 +21,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,18 +78,17 @@ public class JournalpostUpdater {
 		}
 		if (request.getSettStatusEkspedert()) {
 			journalpost.setJournalstatus(JournalStatusCode.E);
-			journalpost.setEkspedertDato(new Date());
+			journalpost.setEkspedertDato(OffsetDateTime.now());
 			tracker.setEndretFlagg(true);
 			tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), JournalStatusCode.E.name());
+			journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
+			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		}
+
 		if (request.getDatoLest() != null && journalpost.getLestDato() == null) {
 			journalpost.setLestDato(request.getDatoLest());
 		}
 
-		if (tracker.isEndretFlagg()) {
-			journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
-			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		}
 		return tracker;
 	}
 

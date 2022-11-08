@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.domain.entities;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -18,6 +19,7 @@ import javax.persistence.Table;
 @Table(name = "t_utsendings_info")
 @NoArgsConstructor
 @Getter
+@Setter
 public class UtsendingsInfo {
 
 	@Id

@@ -68,7 +68,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	private FaktiskDistribusjonskanalCode faktiskDistribusjonskanal;
 	private Boolean elektroniskDistribusjon;
 	private Boolean signatur;
-	private Date ekspedertDato;
+	private OffsetDateTime ekspedertDato;
 	private OffsetDateTime lestDato;
 	private Date mottattAdressatDato;
 	private String opprettetKildeNavn;
@@ -111,7 +111,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	public JournalpostBuilder faktiskDistribusjonskanal(FaktiskDistribusjonskanalCode value) {
 		this.faktiskDistribusjonskanal = value; return this; }
 	public JournalpostBuilder elektroniskDistribusjon(Boolean value) { this.elektroniskDistribusjon = value; return this; }
-	public JournalpostBuilder ekspedertDato(Date value) { this.ekspedertDato = value; return this; }
+	public JournalpostBuilder ekspedertDato(OffsetDateTime value) { this.ekspedertDato = value; return this; }
 	public JournalpostBuilder lestDato(OffsetDateTime value) { this.lestDato = value; return this; }
 	public JournalpostBuilder mottattAdressatDato(Date value) { this.mottattAdressatDato = value; return this; }
 	public JournalpostBuilder opprettetKildeNavn(String value) { this.opprettetKildeNavn = value; return this; }

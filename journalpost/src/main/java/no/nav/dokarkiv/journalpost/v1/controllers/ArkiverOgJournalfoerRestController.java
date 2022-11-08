@@ -74,7 +74,6 @@ public class ArkiverOgJournalfoerRestController {
 	private final OpprettJournalpostService opprettJournalpostService;
 	private final OpprettJournalpostRequestValidator opprettJournalpostRequestValidator;
 	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
-	private final OppdaterDistribusjonsinfoValidator oppdaterDistribusjonsinfoValidator;
 	private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
 
 	public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
@@ -89,7 +88,6 @@ public class ArkiverOgJournalfoerRestController {
 		this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
 		this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
 		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
-		this.oppdaterDistribusjonsinfoValidator = new OppdaterDistribusjonsinfoValidator();
 	}
 
 	@Transactional
@@ -126,7 +124,7 @@ public class ArkiverOgJournalfoerRestController {
 			MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for oppdatering av distribusjonsinfo for journalpostId={}", journalpostId);
 			validateId(journalpostId, "journalpostId");
-			oppdaterDistribusjonsinfoValidator.validateRequest(journalpostId, request);
+			OppdaterDistribusjonsinfoValidator.validateRequest(journalpostId, request);
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
 			oppdaterDistribusjonsinfoService.oppdaterDistribusjonsinfo(Long.parseLong(journalpostId), request);

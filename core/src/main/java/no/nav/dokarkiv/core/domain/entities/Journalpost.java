@@ -238,7 +238,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Kryssreferanse> kryssreferanser = new HashSet<>();
 
-	@OneToOne(mappedBy = "journalpost")
+	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private UtsendingsInfo utsendingsInfo;
 
@@ -252,7 +252,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param journalpostId DB-id for the instance.
-	 * @param version DB-version for the instance.
+	 * @param version       DB-version for the instance.
 	 */
 	public Journalpost(Long journalpostId, long version) {
 		this.journalpostId = journalpostId;
@@ -1296,9 +1296,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 *
 	 * @param ekspedertDato the ekspedertDato to set
 	 */
-	public void setEkspedertDato(Date ekspedertDato) {
+	public void setEkspedertDato(OffsetDateTime ekspedertDato) {
 		if (ekspedertDato != null) {
-			this.ekspedertDato = new Date(ekspedertDato.getTime());
+			this.ekspedertDato = Date.from(ekspedertDato.toInstant());
 		} else {
 			this.ekspedertDato = null;
 		}
@@ -1555,37 +1555,52 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	/**
 	 * @param navNoVarsling utsendingsinfo for Nav.no to attach to this journalpost. Journalpost must have
-	 * utsendingskanal = NAV_NO
+	 *                      utsendingskanal = NAV_NO
 	 */
 	public void setUtsendingsInfo(UtsendingsInfo.NavNoVarsling navNoVarsling) {
 		if (this.utsendingskanal != UtsendingsKanalCode.NAV_NO) {
 			throw new IllegalArgumentException(String.format("Can not set UtsendingsInfo of type %s for utsendingskanal=%s",
 					UtsendingsInfo.NavNoVarsling.class.getSimpleName(), this.utsendingskanal));
 		}
-		this.utsendingsInfo = new UtsendingsInfo(this, navNoVarsling);
+		if (this.utsendingsInfo != null) {
+			this.utsendingsInfo.setNavNoVarsling(navNoVarsling);
+		} else {
+			this.utsendingsInfo = new UtsendingsInfo(this, navNoVarsling);
+		}
 	}
+
 	/**
 	 * @param digitalPostadresse utsendingsinfo for Digital post to attach to this journalpost. Journalpost must have
-	 * utsendingskanal = SDP
+	 *                           utsendingskanal = SDP
 	 */
 	public void setUtsendingsInfo(UtsendingsInfo.DigitalPostadresse digitalPostadresse) {
 		if (this.utsendingskanal != UtsendingsKanalCode.SDP) {
 			throw new IllegalArgumentException(String.format("Can not set UtsendingsInfo of type %s for utsendingskanal=%s",
 					UtsendingsInfo.DigitalPostadresse.class.getSimpleName(), this.utsendingskanal));
 		}
-		this.utsendingsInfo = new UtsendingsInfo(this, digitalPostadresse);
+		if (this.utsendingsInfo != null) {
+			this.utsendingsInfo.setDigitalPostadresse(digitalPostadresse);
+		} else {
+			this.utsendingsInfo = new UtsendingsInfo(this, digitalPostadresse);
+		}
 	}
+
 	/**
 	 * @param fysiskPostadresse utsendingsinfo for Sentralprint to attach to this journalpost. Journalpost must have
-	 * utsendingskanal = S
+	 *                          utsendingskanal = S
 	 */
 	public void setUtsendingsInfo(UtsendingsInfo.FysiskPostadresse fysiskPostadresse) {
 		if (this.utsendingskanal != UtsendingsKanalCode.S) {
 			throw new IllegalArgumentException(String.format("Can not set UtsendingsInfo of type %s for utsendingskanal=%s",
-			UtsendingsInfo.FysiskPostadresse.class.getSimpleName(), this.utsendingskanal));
+					UtsendingsInfo.FysiskPostadresse.class.getSimpleName(), this.utsendingskanal));
 		}
-		this.utsendingsInfo = new UtsendingsInfo(this, fysiskPostadresse);
+		if (this.utsendingsInfo != null) {
+			this.utsendingsInfo.setFysiskPostadresse(fysiskPostadresse);
+		} else {
+			this.utsendingsInfo = new UtsendingsInfo(this, fysiskPostadresse);
+		}
 	}
+
 	/**
 	 * Updates a Journalpost with values from the Journalpost created by the
 	 * scanning process (re-scanning, scenario 2b).
@@ -1621,9 +1636,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		return list;
 	}
 
-	public Optional<TilknyttetJournalpostSomCode> findTilknyttetSomByDokumentinfoId(long dokumentinfoId){
+	public Optional<TilknyttetJournalpostSomCode> findTilknyttetSomByDokumentinfoId(long dokumentinfoId) {
 		for (JournalpostDokumentInfoRelasjon rel : getJournalpostDokumentInfoRelasjoner()) {
-			if(rel.getDokumentInfo().getId() == dokumentinfoId)
+			if (rel.getDokumentInfo().getId() == dokumentinfoId)
 				return Optional.of(rel.getTilknyttetJournalpostSom());
 		}
 		return Optional.empty();

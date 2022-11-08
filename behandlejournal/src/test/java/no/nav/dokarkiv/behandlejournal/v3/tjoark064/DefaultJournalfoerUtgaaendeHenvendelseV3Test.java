@@ -22,6 +22,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
@@ -163,7 +165,7 @@ public class DefaultJournalfoerUtgaaendeHenvendelseV3Test {
 				.utsendingskanal(UtsendingsKanalCode.EESSI)
 				.fagomrade(FagomradeCode.AAP)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
-				.ekspedertDato(DateProvider.getToday())
+				.ekspedertDato(OffsetDateTime.from(DateProvider.getToday().toInstant().atZone(ZoneId.of("Europe/Oslo"))))
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)

@@ -126,7 +126,7 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
-	protected HttpHeaders createHeadersWithServiceUserToken() throws IOException {
+	protected HttpHeaders createHeadersWithServiceUserToken() {
 		return createHeadersWithServiceUserToken(SERVICE_USER_ID);
 	}
 
