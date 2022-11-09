@@ -23,26 +23,26 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @JsonInclude(NON_NULL)
 public record Journalpost(
 		long journalpostId,
-		FagomradeCode fagomraade, // fagomrade
-		JournalStatusCode status, // journalstatus
-		JournalpostTypeCode type, // journalposttype
-		RelevanteDatoer relevanteDatoer,
+		FagomradeCode fagomraade,
+		JournalStatusCode status,
+		JournalpostTypeCode type,
+		String kanalreferanseId,
 		MottaksKanalCode mottakskanal,
 		UtsendingsKanalCode utsendingskanal,
-		String kanalreferanseId, // kanalReferanseId
-		InnsynCode innsyn, // innsyn i sak eller journalpost?
-		SkjermingTypeCode skjerming, // skjerming på sak eller journalpost?
 		AvsenderMottaker avsenderMottaker,
+		InnsynCode innsyn,
+		SkjermingTypeCode skjerming,
+		RelevanteDatoer relevanteDatoer,
 		List<Tilleggsopplysning> tilleggsopplysninger,
 
 		// Brukt av saf
-		String behandlingstemakode, // behandlingstema
+		String behandlingstemakode,
 		String behandlingstemanavn,
 		Long nextJournalpostId,
 		Long totaltAntall,
-		String innhold, // kva er innhaldet?
-		String journalfoerendeEnhet, // journalforendeEnhet
-		String journalfoertAvNavn, // journalfortAvNavn
+		String innhold, // endre namn til tittel?
+		String journalfoerendeEnhet,
+		String journalfoertAvNavn,
 		String opprettetAvNavn,
 		String antallRetur,
 
@@ -55,14 +55,14 @@ public record Journalpost(
 
 @JsonInclude(NON_NULL)
 record Sak(
-		String id, // sakId
+		String id,
 		String aktoerId,
 		FagsystemCode fagsystem,
 		String tema,
 		String fagsakNr,
 		String applikasjon,
 		Boolean feilregistrert,
-		String orgNr, //orgnr
+		String orgNr,
 		String opprettetAv,
 		LocalDateTime opprettetTidspunkt
 ) {
@@ -78,71 +78,77 @@ record Saksrelasjon(
 
 @JsonInclude(NON_NULL)
 record RelevanteDatoer(
+		Date forsendelseMottatt, // mottattDato
 		Date opprettet, // datoOpprettet
-		Date dokument, // dokumentDato
+		Date hoveddokument, // dokumentDato
 		Date journalfoert, // journalDato
 		Date sendtPrint, // sendtPrintDato
 		Date ekspedert, // ekspedertDato
-		Date retur, // avsReturDato
-		Date mottatt // mottattDato
+		Date retur // avsReturDato
 ) {
 }
 
 record Tilleggsopplysning(
-		String noekkel, // nokkel
+		String noekkel,
 		String verdi
 ) {
 }
 
 @JsonInclude(NON_NULL)
 record AvsenderMottaker(
-		String id, // avsenderMottakerId
-		AvsenderMottakerIdTypeCode type, // avsenderMottakerIdType
+		String id,
+		AvsenderMottakerIdTypeCode type,
 
 		// Brukt av saf
-		String navn, // avsenderMottakerNavn
-		String land // avsenderMottakerLand
+		String navn,
+		String land
 ) {
 }
 
 record Bruker(
-		String id, // brukerId
-		String type // brukerIdType
+		String id,
+		String type
 ) {
 }
 
 @JsonInclude(NON_NULL)
 record Dokumentinfo(
-		Long id, // dokumentInfoId
-		DokumentStatusCode status, // dokumentstatus
+		Long id,
+		DokumentStatusCode status,
 		Date datoFerdigstilt,
 		String brevkode,
 		String dokumenttypeId,
 		String tittel,
 		SkjermingTypeCode skjerming,
-		Long originalJournalpostId, // origJournalpostId
+		Long originalJournalpostId,
 		Boolean kassert,
 		DokumentKategoriCode kategori,
 		List<Variant> varianter,
-		List<LogiskVedlegg> logiskeVedlegg, // logiske
+		List<LogiskVedlegg> logiskeVedlegg,
 
 		// Brukt av safselvbetjening - skal bli faset ut
-		Boolean organinternt, // organInternt
-		Boolean innskrenketPartsinnsyn, // innskrPartsinnsyn
-		Boolean innskrenketTredjepart // innskrTredjepart
+		Boolean organinternt,
+		Boolean innskrenketPartsinnsyn,
+		Boolean innskrenketTredjepart
 ) {
 }
 
 @JsonInclude(NON_NULL)
 record Variant(
-		VariantFormatCode format, // variantf
-		SkjermingTypeCode skjerming, // skjerming her også??
-		String filnavn,
-		String filuuid,
-		String filtype,
-		String filstoerrelse // filstorrelse
+		VariantFormatCode format,
+		SkjermingTypeCode skjerming,
+		Fil fil
 ) {
 }
+
+record Fil(
+		String navn,
+		String uuid,
+		String type,
+		String stoerrelse
+) {
+}
+
 
 record LogiskVedlegg(
 		String vedleggId,
