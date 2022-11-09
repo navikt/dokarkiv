@@ -20,11 +20,35 @@ import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
-public record Dokarkivdata(
+@JsonInclude(NON_NULL)
+public record Journalpost(
+		long journalpostId,
+		FagomradeCode fagomraade, // fagomrade
+		JournalStatusCode status, // journalstatus
+		JournalpostTypeCode type, // journalposttype
+		RelevanteDatoer relevanteDatoer,
+		MottaksKanalCode mottakskanal,
+		UtsendingsKanalCode utsendingskanal,
+		String kanalreferanseId, // kanalReferanseId
+		InnsynCode innsyn, // innsyn i sak eller journalpost?
+		SkjermingTypeCode skjerming, // skjerming på sak eller journalpost?
+		AvsenderMottaker avsenderMottaker,
+		List<Tilleggsopplysning> tilleggsopplysninger,
+
+		// Spesifikt for saf
+		String behandlingstemakode, // behandlingstema
+		String behandlingstemanavn,
+		Long nextJournalpostId,
+		Long totaltAntall, // total mengd journalpostar?
+		String innhold, // kva er innhaldet?
+		String journalfoerendeEnhet, // journalforendeEnhet
+		String journalfoertAvNavn, // journalfortAvNavn
+		String opprettetAvNavn,
+		String antallRetur,
+
 		Sak sak,
-		Journalpost journalpost,
-		List<Dokumentinfo> dokumenter,
-		Bruker bruker
+		Bruker bruker,
+		List<Dokumentinfo> dokumenter
 ) {
 }
 
@@ -40,36 +64,6 @@ record Sak(
 		String orgnr,
 		String opprettetAv,
 		LocalDateTime opprettetTidspunkt
-) {
-}
-
-@JsonInclude(NON_NULL)
-record Journalpost(
-		Long journalpostId,
-		FagomradeCode fagomraade, // fagomrade
-		JournalStatusCode status, // journalstatus
-		JournalpostTypeCode type, // journalposttype
-		RelevanteDatoer relevanteDatoer,
-		MottaksKanalCode mottakskanal,
-		UtsendingsKanalCode utsendingskanal,
-		String kanalreferanseId, // kanalReferanseId
-		InnsynCode innsyn, // innsyn i sak eller journalpost?
-		SkjermingTypeCode skjerming, // skjerming på sak eller journalpost?
-		List<Tilleggsopplysning> tilleggsopplysninger,
-		AvsenderMottaker avsenderMottaker,
-
-//		Long prevJournalpostId, // Ikkje brukt av safsjølvbetening eller saf
-
-		// Spesifikt for saf
-		String behandlingstemakode, // behandlingstema
-		String behandlingstemanavn,
-		Long nextJournalpostId,
-		Long totaltAntall, // total mengd journalpostar?
-		String innhold, // kva er innhaldet?
-		String journalfoerendeEnhet, // journalforendeEnhet
-		String journalfoertAvNavn, // journalfortAvNavn
-		String opprettetAvNavn,
-		String antallRetur
 ) {
 }
 
@@ -98,7 +92,7 @@ record AvsenderMottaker(
 		// Spesifikt for saf
 		String navn, // avsenderMottakerNavn
 		String land // avsenderMottakerLand
-){
+) {
 }
 
 record Bruker(
@@ -110,24 +104,22 @@ record Bruker(
 @JsonInclude(NON_NULL)
 record Dokumentinfo(
 		Long id, // dokumentInfoId
-//		@JsonIgnore
-//		String tilknyttetSom;
-//		@JsonIgnore
-//		Long jpRelasjonId;
 		DokumentStatusCode status, // dokumentstatus
 		Date datoFerdigstilt,
 		String brevkode,
 		String dokumenttypeId,
-		List<Variant> varianter,
 		String tittel,
 		SkjermingTypeCode skjerming,
 		Long originalJournalpostId, // origJournalpostId
 		Boolean kassert,
+		DokumentKategoriCode kategori,
+		List<Variant> varianter,
 		List<LogiskVedlegg> logiskeVedlegg, // logiske
-		DokumentKategoriCode kategori
-//		Boolean organinternt, // organInternt -> visstnok utfasa
-//		Boolean innskrenketPartsinnsyn, // innskrPartsinnsyn -> visstnok utfasa
-//		Boolean innskrenketTredjepart // innskrTredjepart -> visstnok utfasa
+
+		// Bruk av safselvbetjening
+		Boolean organinternt, // organInternt -> skal bli utfasa
+		Boolean innskrenketPartsinnsyn, // innskrPartsinnsyn -> skal bli utfasa
+		Boolean innskrenketTredjepart // innskrTredjepart -> skal bli utfasa
 ) {
 }
 
