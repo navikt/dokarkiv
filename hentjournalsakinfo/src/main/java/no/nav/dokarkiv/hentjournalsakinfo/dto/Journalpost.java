@@ -24,6 +24,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 public record Journalpost(
 		long journalpostId,
 		FagomradeCode fagomraade,
+		String fagomraadenavn,
 		JournalStatusCode status,
 		JournalpostTypeCode type,
 		String kanalreferanseId,
@@ -35,44 +36,20 @@ public record Journalpost(
 		RelevanteDatoer relevanteDatoer,
 		List<Tilleggsopplysning> tilleggsopplysninger,
 
-		// Brukt av saf
+		Bruker bruker,
+		Saksrelasjon saksrelasjon,
+		List<Dokumentinfo> dokumenter,
+
+		// Ikke brukt av safselvbetjening
 		String behandlingstemakode,
 		String behandlingstemanavn,
-		Long nextJournalpostId,
-		Long totaltAntall,
-		String innhold, // endre namn til tittel?
+		String innhold,
 		String journalfoerendeEnhet,
 		String journalfoertAvNavn,
 		String opprettetAvNavn,
 		String antallRetur,
-
-		Sak sak,
-		Saksrelasjon saksrelasjon,
-		Bruker bruker,
-		List<Dokumentinfo> dokumenter
-) {
-}
-
-@JsonInclude(NON_NULL)
-record Sak(
-		String id,
-		String aktoerId,
-		FagsystemCode fagsystem,
-		String tema,
-		String fagsakNr,
-		String applikasjon,
-		Boolean feilregistrert,
-		String orgNr,
-		String opprettetAv,
-		LocalDateTime opprettetTidspunkt
-) {
-}
-
-@JsonInclude(NON_NULL)
-record Saksrelasjon(
-		FagsystemCode fagsystem,
-		Boolean feilregistrert,
-		LocalDateTime opprettetTidspunkt
+		Long nextJournalpostId,
+		Long totaltAntall
 ) {
 }
 
@@ -105,6 +82,26 @@ record AvsenderMottaker(
 ) {
 }
 
+@JsonInclude(NON_NULL)
+record Saksrelasjon(
+		String sakId,
+		FagsystemCode fagsystem,
+		Boolean feilregistrert,
+		Sak sak
+) {
+}
+
+record Sak(
+		String aktoerId,
+		String tema,
+		String fagsakNr,
+		String applikasjon,
+		String orgNr,
+		String opprettetAv,
+		LocalDateTime opprettetTidspunkt
+) {
+}
+
 record Bruker(
 		String id,
 		String type
@@ -113,7 +110,7 @@ record Bruker(
 
 @JsonInclude(NON_NULL)
 record Dokumentinfo(
-		Long id,
+		Long dokumentinfoId,
 		DokumentStatusCode status,
 		Date datoFerdigstilt,
 		String brevkode,
@@ -123,10 +120,10 @@ record Dokumentinfo(
 		Long originalJournalpostId,
 		Boolean kassert,
 		DokumentKategoriCode kategori,
-		List<Variant> varianter,
+		List<Fildetaljer> fildetaljer,
 		List<LogiskVedlegg> logiskeVedlegg,
 
-		// Brukt av safselvbetjening - skal bli faset ut
+		// Ikke brukt av saf - skal bli faset ut
 		Boolean organinternt,
 		Boolean innskrenketPartsinnsyn,
 		Boolean innskrenketTredjepart
@@ -134,21 +131,15 @@ record Dokumentinfo(
 }
 
 @JsonInclude(NON_NULL)
-record Variant(
+record Fildetaljer(
 		VariantFormatCode format,
 		SkjermingTypeCode skjerming,
-		Fil fil
-) {
-}
-
-record Fil(
 		String navn,
 		String uuid,
 		String type,
 		String stoerrelse
 ) {
 }
-
 
 record LogiskVedlegg(
 		String vedleggId,
