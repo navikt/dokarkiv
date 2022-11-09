@@ -35,11 +35,11 @@ public record Journalpost(
 		AvsenderMottaker avsenderMottaker,
 		List<Tilleggsopplysning> tilleggsopplysninger,
 
-		// Spesifikt for saf
+		// Brukt av saf
 		String behandlingstemakode, // behandlingstema
 		String behandlingstemanavn,
 		Long nextJournalpostId,
-		Long totaltAntall, // total mengd journalpostar?
+		Long totaltAntall,
 		String innhold, // kva er innhaldet?
 		String journalfoerendeEnhet, // journalforendeEnhet
 		String journalfoertAvNavn, // journalfortAvNavn
@@ -47,6 +47,7 @@ public record Journalpost(
 		String antallRetur,
 
 		Sak sak,
+		Saksrelasjon saksrelasjon,
 		Bruker bruker,
 		List<Dokumentinfo> dokumenter
 ) {
@@ -61,8 +62,16 @@ record Sak(
 		String fagsakNr,
 		String applikasjon,
 		Boolean feilregistrert,
-		String orgnr,
+		String orgNr, //orgnr
 		String opprettetAv,
+		LocalDateTime opprettetTidspunkt
+) {
+}
+
+@JsonInclude(NON_NULL)
+record Saksrelasjon(
+		FagsystemCode fagsystem,
+		Boolean feilregistrert,
 		LocalDateTime opprettetTidspunkt
 ) {
 }
@@ -89,7 +98,8 @@ record Tilleggsopplysning(
 record AvsenderMottaker(
 		String id, // avsenderMottakerId
 		AvsenderMottakerIdTypeCode type, // avsenderMottakerIdType
-		// Spesifikt for saf
+
+		// Brukt av saf
 		String navn, // avsenderMottakerNavn
 		String land // avsenderMottakerLand
 ) {
@@ -116,10 +126,10 @@ record Dokumentinfo(
 		List<Variant> varianter,
 		List<LogiskVedlegg> logiskeVedlegg, // logiske
 
-		// Bruk av safselvbetjening
-		Boolean organinternt, // organInternt -> skal bli utfasa
-		Boolean innskrenketPartsinnsyn, // innskrPartsinnsyn -> skal bli utfasa
-		Boolean innskrenketTredjepart // innskrTredjepart -> skal bli utfasa
+		// Brukt av safselvbetjening - skal bli faset ut
+		Boolean organinternt, // organInternt
+		Boolean innskrenketPartsinnsyn, // innskrPartsinnsyn
+		Boolean innskrenketTredjepart // innskrTredjepart
 ) {
 }
 
