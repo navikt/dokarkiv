@@ -315,6 +315,11 @@
       "app": "gosys-q2",
       "namespace": "isa",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "dokdistavstemming",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss"
     }
   ]
 }
