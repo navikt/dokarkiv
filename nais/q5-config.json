@@ -38,5 +38,12 @@
   "APPDYNAMICS": "/apikey/appdynamics/dev",
   "APPD_NAME": "dokarkiv_q5",
   "DOKARKIV_DATABASE_POOLSIZE": "20",
-  "SPRINGDOC_ENABLED": "true"
+  "SPRINGDOC_ENABLED": "true",
+  "AZURE_IAC_RULES": [
+    {
+      "app": "saf",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss"
+    }
+  ]
 }
