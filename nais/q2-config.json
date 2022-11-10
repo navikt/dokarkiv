@@ -187,6 +187,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "etterlatte-brev-distribusjon",
+      "namespace": "etterlatte",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "spinnsyn-arkivering",
       "namespace": "flex",
       "cluster": "dev-gcp"
