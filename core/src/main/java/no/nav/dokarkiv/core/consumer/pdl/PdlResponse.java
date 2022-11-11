@@ -40,9 +40,17 @@ public class PdlResponse {
     public static class PdlErrorExtension {
         private String code;
         private String classification;
+        private Details details;
+    }
+
+    @Data
+    public static class Details {
+        private String type;
+        private String cause;
+        private String policy;
     }
 
     public enum PdlGruppe {
-        FOLKEREGISTERIDENT, AKTORID, NPID;
+        FOLKEREGISTERIDENT, AKTORID, NPID
     }
 }
