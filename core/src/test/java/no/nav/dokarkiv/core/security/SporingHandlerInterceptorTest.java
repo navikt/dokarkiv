@@ -1,10 +1,11 @@
 package no.nav.dokarkiv.core.security;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.NavHeaders;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.security.token.support.filter.JwtTokenValidationFilter;
 import no.nav.security.token.support.spring.EnableJwtTokenValidationConfiguration;
 import no.nav.security.token.support.test.JwtTokenGenerator;
@@ -40,17 +41,16 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @DataLdapTest
 @ContextConfiguration(classes = {
 		SporingHandlerInterceptorTest.TestConfig.class,
-		LdapConfig.class,
 		SporingHandlerInterceptor.class,
-		NavLdapService.class,
 		EnableJwtTokenValidationConfiguration.class,
 		TokenGeneratorConfiguration.class})
-@ActiveProfiles({"itest", "ldap", "registry"})
+@ActiveProfiles({"itest", "registry"})
 public class SporingHandlerInterceptorTest {
 	public static final String SERVICE_USER = "srvdokarkiv";
 	public static final String USER_ID = "Z990782";
@@ -64,7 +64,15 @@ public class SporingHandlerInterceptorTest {
 	public static class TestConfig {
 		@Bean
 		public MeterRegistry meterRegistry() {
-			return mock(MeterRegistry.class);
+			return new SimpleMeterRegistry();
+		}
+
+		@Bean
+		public AzureAdGraphService azureAdGraphService() {
+			AzureAdGraphService azureAdGraphServiceMock = mock(AzureAdGraphService.class);
+			when(azureAdGraphServiceMock.hentFulltNavn(USER_ID)).thenReturn(USER_NAME);
+			when(azureAdGraphServiceMock.hentFulltNavn(SERVICE_USER)).thenReturn(null);
+			return azureAdGraphServiceMock;
 		}
 	}
 

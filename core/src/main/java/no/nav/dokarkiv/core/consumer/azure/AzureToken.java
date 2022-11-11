@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.AzureTokenException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.security.azure.AzureConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.util.Map;
+import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE;
 
 @Slf4j
 @Component
@@ -23,6 +24,7 @@ public class AzureToken {
 
     private static final String ON_BEHALF_OF_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
     private static final String ON_BEHALF_OF = "on_behalf_of";
+    private static final String CLIENT_CREDENTIALS = "client_credentials";
 
     private final AzureConfig azureConfig;
     private final ObjectMapper objectMapper;
@@ -41,6 +43,12 @@ public class AzureToken {
         return fetchAccessToken(token, scope);
     }
 
+    @Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
+    @Cacheable(AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE)
+    public String clientCredentialAccessToken(String scope) {
+        return fetchAccessToken(null, scope);
+    }
+
     private String fetchAccessToken(String token, String scope) {
 
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -48,11 +56,16 @@ public class AzureToken {
         formData.add("client_secret", azureConfig.getAppClientSecret());
         formData.add("scope", scope);
 
-        formData.add("requested_token_use", ON_BEHALF_OF);
-        formData.add("grant_type", ON_BEHALF_OF_GRANT_TYPE);
-        formData.add("assertion", token);
+        if(token != null) {
+            formData.add("requested_token_use", ON_BEHALF_OF);
+            formData.add("grant_type", ON_BEHALF_OF_GRANT_TYPE);
+            formData.add("assertion", token);
+        } else {
+            formData.add("grant_type", CLIENT_CREDENTIALS);
+        }
 
-        String responseJson = azureClient.post()
+        String responseJson = azureClient
+                .post()
                 .body(BodyInserters.fromFormData(formData))
                 .retrieve()
                 .bodyToMono(String.class)
@@ -60,9 +73,8 @@ public class AzureToken {
                 .block();
 
         try {
-            Map<String, Object> tokenData = objectMapper.readValue(responseJson, Map.class);
-            return (String) tokenData.get("access_token");
-        } catch (JsonProcessingException | ClassCastException e) {
+            return objectMapper.readValue(responseJson, TokenResponse.class).getAccess_token();
+        } catch (JsonProcessingException e) {
             throw new AzureTokenException(String.format("Klarte ikke parse token fra Azure. Feilmelding=%s", e.getMessage()), e);
         }
     }

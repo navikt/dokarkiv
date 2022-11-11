@@ -60,6 +60,7 @@
 		<abac-spring.version>1.6.0</abac-spring.version>
 		<token-support.version>1.3.19</token-support.version>
 		<verapdf.version>1.20.1</verapdf.version>
+		<microsoft.graph.version>5.31.0</microsoft.graph.version>
 
 		<!-- Tjenestegrensesnitt -->
 		<behandlejournal-v2-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v2-tjenestespesifikasjon.version>
@@ -307,6 +308,13 @@
 				<groupId>org.springdoc</groupId>
 				<artifactId>springdoc-openapi-ui</artifactId>
 				<version>${springdoc-openapi-ui.version}</version>
+			</dependency>
+
+			<dependency>
+				<!-- Include the sdk as a dependency -->
+				<groupId>com.microsoft.graph</groupId>
+				<artifactId>microsoft-graph</artifactId>
+				<version>${microsoft.graph.version}</version>
 			</dependency>
 
 			<!-- provided og test -->

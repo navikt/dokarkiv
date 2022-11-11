@@ -2,6 +2,7 @@ package no.nav.dokarkiv;
 
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -10,8 +11,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
-import no.nav.dokarkiv.core.security.ldap.NavUser;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.apache.commons.collections15.IteratorUtils;
@@ -23,8 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +41,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, AdminConfig.class, AbstractAdminIT.Config.class, TokenGeneratorConfiguration.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ActiveProfiles({"itest", "wiremock", "ldap"})
+@ActiveProfiles({"itest", "wiremock"})
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected static final String URL_KASSERDOKUMENT = "/rest/admin/kasserdokument/";
@@ -56,27 +53,14 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	public static class Config {
 		@Bean
-		NavLdapService navLdapService() {
-			NavLdapService mockNavLdapService = mock(NavLdapService.class);
-			when(mockNavLdapService.findByUserId(PERSON_USER_ID)).thenReturn(NavUser.builder()
-					.memberOf(new HashSet<>(Arrays.asList("0000-GA-joark-vedlikehold")))
-					.userId(PERSON_USER_ID)
-					.userExistsInLdap(true)
-					.build());
-			when(mockNavLdapService.findByUserId(NO_ACCESS_PERSON_USER_ID)).thenReturn(NavUser.builder()
-					.memberOf(new HashSet<>(Arrays.asList("0000-GA-NOTHING")))
-					.userId(NO_ACCESS_PERSON_USER_ID)
-					.userExistsInLdap(true)
-					.build());
-			when(mockNavLdapService.findByServiceuserId(SERVICE_USER_ID)).thenReturn(NavUser.builder()
-					.userId(SERVICE_USER_ID)
-					.userExistsInLdap(true)
-					.build());
-			when(mockNavLdapService.findByServiceuserId(NO_ACCESS_SERVICE_USER_ID)).thenReturn(NavUser.builder()
-					.userId(NO_ACCESS_SERVICE_USER_ID)
-					.userExistsInLdap(true)
-					.build());
-			return mockNavLdapService;
+		AzureAdGraphService azureAdGraphService() {
+			AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);
+			when(azureAdGraphService.hentFulltNavn(PERSON_USER_ID)).thenReturn(PERSON_USER_NAME);
+			when(azureAdGraphService.userInGroup(PERSON_USER_ID, "0000-GA-joark-vedlikehold")).thenReturn(true);
+
+			when(azureAdGraphService.hentFulltNavn(NO_ACCESS_PERSON_USER_ID)).thenReturn(NO_ACCESS_PERSON_USER_ID);
+			when(azureAdGraphService.userInGroup(NO_ACCESS_PERSON_USER_ID, "0000-GA-joark-vedlikehold")).thenReturn(false);
+			return azureAdGraphService;
 		}
 
 	}

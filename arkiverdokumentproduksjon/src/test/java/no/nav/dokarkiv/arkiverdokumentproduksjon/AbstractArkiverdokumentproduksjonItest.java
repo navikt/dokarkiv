@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
+import no.nav.dokarkiv.core.consumer.azure.TokenResponse;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
@@ -20,7 +22,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.transaction.Transactional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {AbstractArkiverdokumentproduksjonItest.Config.class, CoreConfig.class,
@@ -59,6 +63,12 @@ public abstract class AbstractArkiverdokumentproduksjonItest {
 		@Bean
 		public GoogleCloudBucketStorage dokprodMellomlagerStorage() {
 			return mock(GoogleCloudBucketStorage.class);
+		}
+		@Bean
+		public AzureAdGraphService azureAdGraphService() {
+			AzureAdGraphService azureAdGraphServiceMock = mock(AzureAdGraphService.class);
+			when(azureAdGraphServiceMock.hentFulltNavn(any())).thenReturn("Username");
+			return azureAdGraphServiceMock;
 		}
 	}
 }

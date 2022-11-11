@@ -1,10 +1,11 @@
 package no.nav.dokarkiv.core.security;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.security.token.support.core.configuration.MultiIssuerConfiguration;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -20,20 +21,24 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
     private final TokenValidationContextHolder tokenValidationContextHolder;
     private final MultiIssuerConfiguration multiIssuerConfiguration;
-    private final NavLdapService navLdapService;
+    private final AzureAdGraphService azureAdGraphService;
     private final HandlerInterceptor basicAuthReadAccessRestInterceptor;
     private final MeterRegistry meterRegistry;
+    private final String azureAdAdminRole;
+
 
     public RestWebMvcConfig(TokenValidationContextHolder tokenValidationContextHolder,
                             MultiIssuerConfiguration multiIssuerConfiguration,
-                            NavLdapService navLdapService,
+                            AzureAdGraphService azureAdGraphService,
+                            @Value("${azure.ad.admin.role}") String azureAdAdminRole,
                             @Lazy HandlerInterceptor basicAuthReadAccessRestInterceptor,
                             MeterRegistry meterRegistry) {
         this.tokenValidationContextHolder = tokenValidationContextHolder;
         this.multiIssuerConfiguration = multiIssuerConfiguration;
-        this.navLdapService = navLdapService;
+        this.azureAdGraphService = azureAdGraphService;
         this.basicAuthReadAccessRestInterceptor = basicAuthReadAccessRestInterceptor;
         this.meterRegistry = meterRegistry;
+        this.azureAdAdminRole = azureAdAdminRole;
     }
 
     @Override
@@ -41,11 +46,11 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(basicAuthReadAccessRestInterceptor)
                 .addPathPatterns("/hentjournalsakinfo/**");
 
-        registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, navLdapService, meterRegistry))
+        registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, meterRegistry, azureAdGraphService))
                 .excludePathPatterns("/rest/intern/**")
                 .addPathPatterns("/rest/**");
 
-        registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(navLdapService))
+        registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(azureAdGraphService, azureAdAdminRole))
                 .addPathPatterns("/rest/admin/**");
 
         registry.addInterceptor(new PopulateMDCHandler())

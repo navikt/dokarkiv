@@ -48,4 +48,6 @@ public class DokarkivProperties {
 		@Positive
 		private int poolsize = 60;
 	}
+
+
 }

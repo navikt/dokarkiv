@@ -7,11 +7,11 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.NavHeaders;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.security.handler.AzureAdFlowSporingHandler;
 import no.nav.dokarkiv.core.security.handler.NavCombinedBrukerSystemkontekstHandler;
 import no.nav.dokarkiv.core.security.handler.NavSystemkontekstHandler;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
 import no.nav.modig.core.context.SubjectHandler;
 import no.nav.security.token.support.core.configuration.MultiIssuerConfiguration;
 import no.nav.security.token.support.core.context.TokenValidationContext;
@@ -66,13 +66,14 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 
 	public SporingHandlerInterceptor(TokenValidationContextHolder tokenValidationContextHolder,
 									 MultiIssuerConfiguration multiIssuerConfiguration,
-									 NavLdapService navLdapService, MeterRegistry meterRegistry) {
+									 MeterRegistry meterRegistry,
+									 AzureAdGraphService azureAdGraphService) {
 		this.tokenValidationContextHolder = tokenValidationContextHolder;
 		this.meterRegistry = meterRegistry;
 		this.headerTokenExtractor = new HeaderTokenExtractor();
-		this.azureAdFlowSporingHandler = new AzureAdFlowSporingHandler(navLdapService);
-		this.navSystemkontekstHandler = new NavSystemkontekstHandler(navLdapService);
-		this.navCombinedBrukerSystemkontekstHandler = new NavCombinedBrukerSystemkontekstHandler(navLdapService,
+		this.azureAdFlowSporingHandler = new AzureAdFlowSporingHandler(azureAdGraphService);
+		this.navSystemkontekstHandler = new NavSystemkontekstHandler(azureAdGraphService);
+		this.navCombinedBrukerSystemkontekstHandler = new NavCombinedBrukerSystemkontekstHandler(azureAdGraphService,
 				multiIssuerConfiguration.getIssuer(ISSUER_RESTSTS).orElseThrow().getTokenValidator());
 	}
 

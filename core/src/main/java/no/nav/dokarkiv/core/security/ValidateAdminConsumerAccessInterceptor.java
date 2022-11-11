@@ -3,14 +3,13 @@ package no.nav.dokarkiv.core.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
-import no.nav.dokarkiv.core.security.ldap.NavUser;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Set;
 
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -20,13 +19,15 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 public class ValidateAdminConsumerAccessInterceptor implements HandlerInterceptor {
 
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
-	private final NavLdapService navLdapService;
+	private final AzureAdGraphService azureAdGraphService;
 
 	private static final String ADMIN_SERVICE_USER = "srvjoarkadmin";
-	private static final String ADMIN_SERVICE_USER_AD_ROLE = "0000-GA-joark-vedlikehold";
 
-	public ValidateAdminConsumerAccessInterceptor(NavLdapService navLdapService) {
-		this.navLdapService = navLdapService;
+	private final String adminServiceUserAdRole;
+
+	public ValidateAdminConsumerAccessInterceptor(AzureAdGraphService azureAdGraphService, String adminServiceUserAdRole) {
+		this.azureAdGraphService = azureAdGraphService;
+		this.adminServiceUserAdRole = adminServiceUserAdRole;
 	}
 
 	@Override
@@ -53,9 +54,9 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 				log.warn(message);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
 				return false;
-			} else if (isFalse(isUserInTokenHasRole(authorizationToken, ADMIN_SERVICE_USER_AD_ROLE))) {
-				String message = String.format("Bruker må være medlem av gruppen \"%s\"", ADMIN_SERVICE_USER_AD_ROLE);
-				log.warn(message);
+			} else if (isFalse(isUserInTokenHasRole(authorizationToken, adminServiceUserAdRole))) {
+				String message = String.format("NAVIdent må være medlem av gruppen guid=\"%s\" i Azure AD", adminServiceUserAdRole);
+				log.error(message);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
 				return false;
 			}
@@ -70,12 +71,7 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 
 	public boolean isUserInTokenHasRole(String token, String ldapGroup) {
 		String userId = getSubjectFromToken(token);
-		NavUser user = navLdapService.findByUserId(userId);
-		return user.isUserExistsInLdap() && contains(user.getMemberOf(), ldapGroup);
-	}
-
-	private boolean contains(Set<String> l, String s) {
-		return l.stream().anyMatch(x -> x.contains(s));
+		return azureAdGraphService.userInGroup(userId, ldapGroup);
 	}
 
 	public boolean isTokenBelongsToUser(String token, String subject) {

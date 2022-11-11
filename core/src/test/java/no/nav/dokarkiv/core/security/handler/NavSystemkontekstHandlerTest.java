@@ -10,8 +10,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
-import no.nav.dokarkiv.core.security.ldap.NavUser;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.test.JwkGenerator;
 import org.junit.jupiter.api.Test;
@@ -42,8 +41,8 @@ class NavSystemkontekstHandlerTest {
 	private static final String USER_NAVIDENT = "D999999";
 	private static final String USER_NAME = "Donald Duck";
 
-	private final NavLdapService navLdapServiceMock = mock(NavLdapService.class);
-	private final NavSystemkontekstHandler navSystemkontekstHandler = new NavSystemkontekstHandler(navLdapServiceMock);
+	private final AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);
+	private final NavSystemkontekstHandler navSystemkontekstHandler = new NavSystemkontekstHandler(azureAdGraphService);
 
 	@Test
 	void shouldReturnFalseWhenHandledRestStsToken() throws IOException {
@@ -57,11 +56,7 @@ class NavSystemkontekstHandlerTest {
 
 	@Test
 	void shouldReturnFalseWhenHandledRestStsTokenWithNavUserIdHeader() throws IOException {
-		when(navLdapServiceMock.findByUserId(USER_NAVIDENT)).thenReturn(NavUser.builder()
-				.userId(USER_NAVIDENT)
-				.displayName(USER_NAME)
-				.userExistsInLdap(true)
-				.build());
+		when(azureAdGraphService.hentFulltNavn(USER_NAVIDENT)).thenReturn(USER_NAME);
 		boolean handle = navSystemkontekstHandler.handle(createRestStsToken(defaultRestStsClaimsSet(APP_CLAIM_SUB)), new MockHttpServletResponse(), USER_NAVIDENT);
 		assertThat(handle).isFalse();
 
@@ -72,11 +67,7 @@ class NavSystemkontekstHandlerTest {
 
 	@Test
 	void shouldSetServiceuserContextWhenHandledRestStsTokenAndInvalidNavIdentFormat() throws IOException {
-		when(navLdapServiceMock.findByUserId(USER_NAVIDENT)).thenReturn(NavUser.builder()
-				.userId(USER_NAVIDENT)
-				.displayName(USER_NAME)
-				.userExistsInLdap(true)
-				.build());
+		when(azureAdGraphService.hentFulltNavn(USER_NAVIDENT)).thenReturn(USER_NAME);
 		boolean handle = navSystemkontekstHandler.handle(createRestStsToken(defaultRestStsClaimsSet(APP_CLAIM_SUB)), new MockHttpServletResponse(), "DD99999");
 		assertThat(handle).isFalse();
 
@@ -87,9 +78,7 @@ class NavSystemkontekstHandlerTest {
 
 	@Test
 	void shouldSetServiceuserContextWhenHandledRestStsTokenAndNavIdentNotFoundInLdap() throws IOException {
-		when(navLdapServiceMock.findByUserId("Z111111")).thenReturn(NavUser.builder()
-				.userExistsInLdap(false)
-				.build());
+		when(azureAdGraphService.hentFulltNavn("Z111111")).thenReturn(null);
 		boolean handle = navSystemkontekstHandler.handle(createRestStsToken(defaultRestStsClaimsSet(APP_CLAIM_SUB)), new MockHttpServletResponse(), "Z111111");
 		assertThat(handle).isFalse();
 

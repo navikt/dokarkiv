@@ -2,8 +2,7 @@ package no.nav.dokarkiv.core.security.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
-import no.nav.dokarkiv.core.security.ldap.NavUser;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.security.token.support.core.exceptions.JwtTokenValidatorException;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.core.validation.JwtTokenValidator;
@@ -24,11 +23,11 @@ import java.io.IOException;
  */
 @Slf4j
 public class NavCombinedBrukerSystemkontekstHandler {
-    private final NavLdapService navLdapService;
+    private final AzureAdGraphService azureAdGraphService;
     private final JwtTokenValidator restStsTokenValidator;
 
-    public NavCombinedBrukerSystemkontekstHandler(NavLdapService navLdapService, JwtTokenValidator restStsTokenValidator) {
-        this.navLdapService = navLdapService;
+    public NavCombinedBrukerSystemkontekstHandler(AzureAdGraphService azureAdGraphService, JwtTokenValidator restStsTokenValidator) {
+        this.azureAdGraphService = azureAdGraphService;
         this.restStsTokenValidator = restStsTokenValidator;
     }
 
@@ -39,10 +38,10 @@ public class NavCombinedBrukerSystemkontekstHandler {
 
     private boolean handleBrukerkontekst(JwtToken openAmToken, HttpServletResponse response) throws IOException {
         final String userId = openAmToken.getSubject();
-        final NavUser navUser = navLdapService.findByUserId(userId);
-        if (navUser.isUserExistsInLdap()) {
+        final String fulltNavn = azureAdGraphService.hentFulltNavn(userId);
+        if (fulltNavn != null) {
             MDC.put(MDCConstants.MDC_USER_ID, userId);
-            MDC.put(MDCConstants.MDC_USER_NAME, navUser.getFullname());
+            MDC.put(MDCConstants.MDC_USER_NAME, fulltNavn);
         } else {
             String message = "Authorization headeren må ha JWT som er utstedt av issuer OpenAM og tilhøre saksbehandler hvis både Authorization og Nav-Consumer-Token headerene er satt. " +
                     "Grunnen til dette er at Authorization headeren propagerer brukerkontekst og Nav-Consumer-Token header systemkontekst. " +

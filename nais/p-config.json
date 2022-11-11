@@ -38,6 +38,7 @@
   "APPD_NAME": "dokarkiv",
   "DOKARKIV_DATABASE_POOLSIZE": "60",
   "SPRINGDOC_ENABLED": "false",
+  "AZURE_AD_ADMIN_ROLE": "cc9f8c69-9a8b-4cd1-a1c7-d5e993cc7e5a",
   "AZURE_IAC_RULES": [
     {
       "app": "salesforce",

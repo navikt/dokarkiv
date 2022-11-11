@@ -37,5 +37,6 @@
   "APPDYNAMICS": "/apikey/appdynamics/dev",
   "APPD_NAME": "dokarkiv_q4",
   "DOKARKIV_DATABASE_POOLSIZE": "20",
-  "SPRINGDOC_ENABLED": "true"
+  "SPRINGDOC_ENABLED": "true",
+  "AZURE_AD_ADMIN_ROLE": "9732f7dd-550f-4aba-b64a-e1db5428604b"
 }

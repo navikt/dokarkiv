@@ -66,6 +66,8 @@ spec:
       value: {{ DOKPRODMELLOMLAGER_KEYID }}
     - name: SPRINGDOC_ENABLED
       value: "{{ SPRINGDOC_ENABLED }}"
+    - name: AZURE_AD_ADMIN_ROLE
+      value: {{ AZURE_AD_ADMIN_ROLE }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}

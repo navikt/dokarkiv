@@ -10,8 +10,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.security.ldap.NavLdapService;
-import no.nav.dokarkiv.core.security.ldap.NavUser;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.test.JwkGenerator;
 import org.junit.jupiter.api.Test;
@@ -40,8 +39,8 @@ class AzureAdFlowSporingHandlerTest {
 	private static final String USER_CLAIM_NAVIDENT = "P999999";
 	private static final String USER_CLAIM_NAME = "Donald Duck";
 
-	private final NavLdapService navLdapServiceMock = mock(NavLdapService.class);
-	private final AzureAdFlowSporingHandler azureAdFlowSporingHandler = new AzureAdFlowSporingHandler(navLdapServiceMock);
+	private final AzureAdGraphService azureAdGraphServiceMock = mock(AzureAdGraphService.class);
+	private final AzureAdFlowSporingHandler azureAdFlowSporingHandler = new AzureAdFlowSporingHandler(azureAdGraphServiceMock);
 
 	@Test
 	void shouldHandleClientCredentialGrantFlowWhenAppTokenContainsIdTypClaim() {
@@ -63,11 +62,7 @@ class AzureAdFlowSporingHandlerTest {
 
 	@Test
 	void shouldHandleClientCredentialGrantFlowWhenNavUserIdHeaderSet() {
-		when(navLdapServiceMock.findByUserId(USER_CLAIM_NAVIDENT)).thenReturn(NavUser.builder()
-				.userId(USER_CLAIM_NAVIDENT)
-				.displayName(USER_CLAIM_NAME)
-				.userExistsInLdap(true)
-				.build());
+		when(azureAdGraphServiceMock.hentFulltNavn(USER_CLAIM_NAVIDENT)).thenReturn(USER_CLAIM_NAME);
 		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantToken(), USER_CLAIM_NAVIDENT);
 
 		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(USER_CLAIM_NAVIDENT);
@@ -77,9 +72,7 @@ class AzureAdFlowSporingHandlerTest {
 
 	@Test
 	void shouldSetAppContextWhenNavUserIdHeaderSetAndNotExistsInLdap() {
-		when(navLdapServiceMock.findByUserId(USER_CLAIM_NAVIDENT)).thenReturn(NavUser.builder()
-				.userExistsInLdap(false)
-				.build());
+		when(azureAdGraphServiceMock.hentFulltNavn(USER_CLAIM_NAVIDENT)).thenReturn(null);
 		azureAdFlowSporingHandler.handle(createAzureClientCredentialGrantToken(), USER_CLAIM_NAVIDENT);
 
 		assertThat(MDC.get(MDCConstants.MDC_USER_ID)).isEqualTo(APP_CLAIM_AZP_NAME_PARSED);
