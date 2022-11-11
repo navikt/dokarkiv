@@ -14,9 +14,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 public class GsakCteMapperTest {
 
 	private final GsakCteMapper gsakCteMapper = new GsakCteMapper();
@@ -35,12 +32,14 @@ public class GsakCteMapperTest {
 		assertTrue(gsakCte.isGsakerExists());
 		assertTrue(gsakCte.getGsakIdParams().containsKey("gsakIds0"));
 		assertThat(gsakCte.getCteSql(), is(
-				"     gsaksaker AS\n" +
-						"       (SELECT s.journalpost_id\n" +
-						"        FROM t_saksrelasjon s\n" +
-						"        WHERE (s.k_fagsystem = 'FS22' AND s.sak_nr_fk IN (:gsakIds0))\n" +
-						"          AND (s.feilregistrert IS NULL OR (s.feilregistrert IN (:visFeilregistrert)))\n" +
-						"       ),\n"));
+				"""
+						     gsaksaker AS
+						       (SELECT s.journalpost_id
+						        FROM t_saksrelasjon s
+						        WHERE (s.k_fagsystem = 'FS22' AND s.sak_nr_fk IN (:gsakIds0))
+						          AND (s.feilregistrert IS NULL OR (s.feilregistrert IN (:visFeilregistrert)))
+						       ),
+						"""));
 	}
 
 	@Test
@@ -49,12 +48,14 @@ public class GsakCteMapperTest {
 		assertTrue(gsakCte.isGsakerExists());
 		assertTrue(gsakCte.getGsakIdParams().containsKey("gsakIds0"));
 		assertThat(gsakCte.getCteSql(), is(
-				"     gsaksaker AS\n" +
-						"       (SELECT s.journalpost_id\n" +
-						"        FROM t_saksrelasjon s\n" +
-						"        WHERE (s.k_fagsystem = 'FS22' AND s.sak_nr_fk IN (:gsakIds0))\n" +
-						"          AND (s.feilregistrert = 1)\n" +
-						"       ),\n"));
+				"""
+						     gsaksaker AS
+						       (SELECT s.journalpost_id
+						        FROM t_saksrelasjon s
+						        WHERE (s.k_fagsystem = 'FS22' AND s.sak_nr_fk IN (:gsakIds0))
+						          AND (s.feilregistrert = 1)
+						       ),
+						"""));
 	}
 
 	@Test
@@ -65,11 +66,13 @@ public class GsakCteMapperTest {
 		assertTrue(gsakCte.getGsakIdParams().containsKey("gsakIds0"));
 		assertTrue(gsakCte.getGsakIdParams().containsKey("gsakIds1"));
 		assertThat(gsakCte.getCteSql(), is(
-				"     gsaksaker AS\n" +
-						"       (SELECT s.journalpost_id\n" +
-						"        FROM t_saksrelasjon s\n" +
-						"        WHERE (s.k_fagsystem = 'FS22' AND (s.sak_nr_fk IN (:gsakIds0) OR s.sak_nr_fk IN (:gsakIds1)))\n" +
-						"          AND (s.feilregistrert IS NULL OR (s.feilregistrert IN (:visFeilregistrert)))\n" +
-						"       ),\n"));
+				"""
+						     gsaksaker AS
+						       (SELECT s.journalpost_id
+						        FROM t_saksrelasjon s
+						        WHERE (s.k_fagsystem = 'FS22' AND (s.sak_nr_fk IN (:gsakIds0) OR s.sak_nr_fk IN (:gsakIds1)))
+						          AND (s.feilregistrert IS NULL OR (s.feilregistrert IN (:visFeilregistrert)))
+						       ),
+						"""));
 	}
 }

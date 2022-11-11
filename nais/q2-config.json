@@ -188,6 +188,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "etterlatte-brev-distribusjon",
+      "namespace": "etterlatte",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "spinnsyn-arkivering",
       "namespace": "flex",
       "cluster": "dev-gcp"
@@ -315,6 +320,11 @@
     {
       "app": "gosys-q2",
       "namespace": "isa",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "dokdistavstemming",
+      "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"
     }
   ]

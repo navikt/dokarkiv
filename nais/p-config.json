@@ -304,6 +304,11 @@
       "app": "gosys",
       "namespace": "isa",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "dokdistavstemming",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss"
     }
   ]
 }
