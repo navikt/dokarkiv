@@ -330,6 +330,11 @@
       "app": "gosys-q1",
       "namespace": "isa",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "meldekort-api-q1",
+      "namespace": "meldekort",
+      "cluster": "dev-gcp"
     }
   ]
 }

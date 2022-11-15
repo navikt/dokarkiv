@@ -326,6 +326,11 @@
       "app": "dokdistavstemming",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "meldekort-api-q2",
+      "namespace": "meldekort",
+      "cluster": "dev-gcp"
     }
   ]
 }
