@@ -309,6 +309,11 @@
       "app": "dokdistavstemming",
       "namespace": "teamdokumenthandtering",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "meldekort-api",
+      "namespace": "meldekort",
+      "cluster": "prod-gcp"
     }
   ]
 }
