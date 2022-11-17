@@ -121,6 +121,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "im-joark",
+      "namespace": "helsearbeidsgiver",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "jfr-infotrygd",
       "namespace": "isa",
       "cluster": "prod-fss"
