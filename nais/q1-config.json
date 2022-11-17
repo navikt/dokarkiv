@@ -82,6 +82,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "kabal-document",
+      "namespace": "klage",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "safselvbetjening",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"
