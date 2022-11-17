@@ -137,6 +137,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "im-joark",
+      "namespace": "helsearbeidsgiver",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "asynkron",
       "namespace": "farskapsportal",
       "cluster": "dev-gcp"
