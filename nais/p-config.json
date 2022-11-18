@@ -76,6 +76,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "klage-arkiver-journalpost",
+      "namespace": "klage",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "safselvbetjening",
       "namespace": "teamdokumenthandtering",
       "cluster": "prod-fss"
