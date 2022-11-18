@@ -52,6 +52,7 @@ public class Sak {
 					* OMSORGSPENGER
 					* HJELPEMIDLER
 					* BARNEBRILLER
+					* EY (Etterlatteytelser)
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",
