@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.apache.logging.log4j.util.Strings;
+import org.slf4j.MDC;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,6 +17,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
@@ -23,11 +27,10 @@ import java.util.stream.Collectors;
 @Slf4j
 class AksjonsLoggMapper {
 
-	public AksjonsLogg mapToAksjonsLogg(AksjonsLoggTO aksjonsLoggTO, List<ArkivElementEndringTO> arkivElementEndringTOList, Journalpost journalpost) {
+	public static AksjonsLogg mapToAksjonsLoggAndSetDefaults(AksjonsLoggTO aksjonsLoggTO, List<ArkivElementEndringTO> arkivElementEndringTOList, Journalpost journalpost) {
 		String componentId = RequestContextHolder.currentRequestContext().getComponentId();
-		String userId = RequestContextHolder.currentRequestContext().getUserId();
 
-		String utfoertAv = Strings.isEmpty(aksjonsLoggTO.getUtfoertAv()) ? userId : aksjonsLoggTO.getUtfoertAv();
+		final String utfoertAv = Strings.isEmpty(aksjonsLoggTO.getUtfoertAv()) ? MDC.get(MDC_USER_ID) : aksjonsLoggTO.getUtfoertAv();
 
 		AksjonsLogg aksjonsLogg = AksjonsLogg.builder()
 				.tidspunkt(LocalDateTime.now())
@@ -48,15 +51,15 @@ class AksjonsLoggMapper {
 		return aksjonsLogg;
 	}
 
-	private String mapArkivsaksnummer(Journalpost journalpost) {
+	private static String mapArkivsaksnummer(Journalpost journalpost) {
 		return journalpost != null && journalpost.getSaksrelasjon() != null ? journalpost.getSaksrelasjon().getSakId() : null;
 	}
 
-	private FagsystemCode mapArkivsaksystem(Journalpost journalpost) {
+	private static FagsystemCode mapArkivsaksystem(Journalpost journalpost) {
 		return journalpost != null && journalpost.getSaksrelasjon() != null ? journalpost.getSaksrelasjon().getFagsystem() : null;
 	}
 
-	private String mapBruker(String bruker, Journalpost journalpost) {
+	private static String mapBruker(String bruker, Journalpost journalpost) {
 	    if (Strings.isNotEmpty(bruker)) {
 			return bruker;
 		} else if (journalpost != null && journalpost.getBrukere() != null && !journalpost.getBrukere().isEmpty()) {
@@ -75,7 +78,7 @@ class AksjonsLoggMapper {
 		}
 	}
 
-	private Set<ArkivElementEndring> mapArkivElementEndring(List<ArkivElementEndringTO> arkivElementEndringTOList) {
+	private static Set<ArkivElementEndring> mapArkivElementEndring(List<ArkivElementEndringTO> arkivElementEndringTOList) {
 		return arkivElementEndringTOList.stream()
 				.map(arkivElementEndringTO -> ArkivElementEndring.builder()
 						.arkivElement(arkivElementEndringTO.getArkivElement())
