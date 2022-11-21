@@ -21,5 +21,6 @@ public enum Fagsaksystem {
     SUPSTONAD,
     OMSORGSPENGER,
     HJELPEMIDLER,
-    BARNEBRILLER
+    BARNEBRILLER,
+    EY
 }
