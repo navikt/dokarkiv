@@ -12,10 +12,15 @@ public class JournalpostResponse {
 	private String errormessage;
 
 	public static JournalpostResponse ok(long journalpostId) {
-		return new JournalpostResponse(journalpostId, null);
+		return JournalpostResponse.builder()
+				.journalpostId(journalpostId)
+				.build();
 	}
 
-	public static JournalpostResponse error(Long journalpostId, String errormessage) {
-		return new JournalpostResponse(journalpostId, errormessage);
+	public static JournalpostResponse error(long journalpostId, String errormessage) {
+		return JournalpostResponse.builder()
+				.journalpostId(journalpostId)
+				.errormessage(errormessage)
+				.build();
 	}
 }
