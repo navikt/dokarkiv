@@ -27,6 +27,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -114,30 +115,50 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 	public void happyPathBulkUpdateDistribusjonsinfoWithVolume() {
 		OffsetDateTime ekspedertDato = OffsetDateTime.now();
 		List<Journalpost> journalposts = IntStream.range(0, 40)
-				.mapToObj(__ -> createJournalpost())
+				.mapToObj(__ -> createJournalpost(JournalStatusCode.M))
+				.toList();
+		List<Journalpost> journalpostsEkspedert = IntStream.range(0, 5)
+				.mapToObj(__ -> createJournalpost(JournalStatusCode.E))
+				.toList();
+		List<Journalpost> journalpostsAvbrutt = IntStream.range(0, 5)
+				.mapToObj(__ -> createJournalpost(JournalStatusCode.A))
+				.toList();
+		List<Journalpost> journalpostsUtgoer = IntStream.range(0, 5)
+				.mapToObj(__ -> createJournalpost(JournalStatusCode.U))
+				.toList();
+		List<Journalpost> journalpostsM = IntStream.range(0, 5)
+				.mapToObj(__ -> createJournalpost(JournalStatusCode.M))
 				.toList();
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		List<Long> journalpostIds = journalposts.stream()
+
+		List<Journalpost> jpFerdigstill = journalposts.stream()
 				.map(Journalpost::getJournalpostId)
 				.map(this::ferdigstill)
-				.map(Journalpost::getJournalpostId)
 				.toList();
+		List<Journalpost> collectJp = Stream.of(journalpostsAvbrutt, journalpostsUtgoer, journalpostsEkspedert,
+						jpFerdigstill, journalpostsM)
+				.flatMap(Collection::stream).toList();
 
-		performBulkOppdaterDistribusjonsinfoAssertOkResponse(journalpostIds.stream()
+		List<Long> jpAll = collectJp.stream().map(Journalpost::getJournalpostId).sorted().toList();
+
+		BulkOppdaterDistribusjonsinfoResponse distribusjonsinfoResponse = performBulkOppdaterDistribusjonsinfoAssertOkResponse(jpAll.stream()
 				.map(journalpostId -> createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
 						.settStatusEkspedert(true).ekspedertDato(ekspedertDato)
 						.digitalpostkasse(new DigitalPost(POSTKASSEADRESSE, POSTKASSE_LEVERANDØR)))
 				.toArray(JournalpostWithDistribusjonsinfo.JournalpostWithDistribusjonsinfoBuilder[]::new)
 		);
 
-		Journalpost ekspedertJournalpost = joarkRepository.findById(journalpostIds.get(0)).orElseThrow(RuntimeException::new);
+		assertEquals(55, distribusjonsinfoResponse.getJournalposter().getOppdatert().size());
+		assertEquals(journalpostsM.size(), distribusjonsinfoResponse.getJournalposter().getFeilet().size());
+
+		Journalpost ekspedertJournalpost = joarkRepository.findById(jpAll.get(0)).orElseThrow(RuntimeException::new);
 		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost2 = joarkRepository.findById(journalpostIds.get(1)).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost2 = joarkRepository.findById(jpAll.get(1)).orElseThrow(RuntimeException::new);
 
 		assertEquals(UtsendingsKanalCode.SDP, ferdigstiltJournalpost2.getUtsendingskanal());
 		assertTrue(Duration.between(ekspedertDato.toInstant(), ferdigstiltJournalpost2.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
@@ -150,6 +171,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		TestTransaction.end();
 	}
+
 	@Test
 	public void bulkUpdateDistribusjonsinfoShouldRejectMismatchingUtsendingskanal() {
 		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
@@ -265,12 +287,16 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 	}
 
 	private BulkOppdaterDistribusjonsinfoResponse performBulkOppdaterDistribusjonsinfoAssertOkResponse(JournalpostWithDistribusjonsinfo.JournalpostWithDistribusjonsinfoBuilder... journalpostbuilders) {
-		return performBulkOppdaterDistribusjonsinfoAssertOkResponse(journalpostbuilders.length, 0, journalpostbuilders);
+		BulkOppdaterDistribusjonsinfoResponse bulkOppdaterDistribusjonsinfoResponse = performBulkOppdaterDistribusjonsinfoAssertOkResponse(journalpostbuilders.length, 0, journalpostbuilders);
+		return bulkOppdaterDistribusjonsinfoResponse;
 	}
+
 	private BulkOppdaterDistribusjonsinfoResponse performBulkOppdaterDistribusjonsinfoAssertOkResponse(int updated, int failed, JournalpostWithDistribusjonsinfo.JournalpostWithDistribusjonsinfoBuilder... journalpostbuilders) {
 		BulkOppdaterDistribusjonsinfoResponse bulkOppdaterDistribusjonsinfoResponse = performBulkOppdaterDistribusjonsinfo(HttpStatus.OK, BulkOppdaterDistribusjonsinfoResponse.class, journalpostbuilders);
-		assertEquals(updated, bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getOppdatert() == null ? 0 : bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getOppdatert().size());
-		assertEquals(failed, bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getFeilet() == null ? 0 : bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getFeilet().size());
+		int oppdatertJp = journalpostbuilders.length - (bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getFeilet() == null ? 0 : bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getFeilet().size());
+		int failedJp = bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getFeilet() == null ? 0 : bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getFeilet().size();
+		assertEquals(oppdatertJp, bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getOppdatert() == null ? 0 : bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getOppdatert().size());
+		assertEquals(failedJp, bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getFeilet() == null ? 0 : bulkOppdaterDistribusjonsinfoResponse.getJournalposter().getFeilet().size());
 		return bulkOppdaterDistribusjonsinfoResponse;
 	}
 
@@ -301,7 +327,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 	}
 
 	private Journalpost createFerdigstiltJournalpost() {
-		Journalpost journalpost = createJournalpost();
+		Journalpost journalpost = createJournalpost(JournalStatusCode.M);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -320,10 +346,10 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		return joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 	}
 
-	private Journalpost createJournalpost() {
+	private Journalpost createJournalpost(JournalStatusCode statusCode) {
 		abacPermit();
 
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, statusCode).build();
 		joarkRepository.save(journalpost);
 		return journalpost;
 	}
