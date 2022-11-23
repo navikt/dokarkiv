@@ -49,6 +49,7 @@ public class TilknyttetJournalpostDto {
 	private Date avsReturDato;
 	private Date sendtPrintDato;
 	private Date ekspedertDato;
+	private Date lestDato;
 	private SkjermingTypeCode skjerming;
 	private String antallRetur;
 	private String kanalReferanseId;

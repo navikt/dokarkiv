@@ -8,6 +8,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithGjenbruktHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
@@ -20,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 	private static final String TILKNYTTEDEJOURNALPOSTER_GJENBRUK = "/hentjournalsakinfo/tilknyttedejournalposter/{dokumentInfoId}/GJENBRUK";
 	private static final String ANTALL_RETUR = "3";
+	private static final Date LESTDATO = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
 	@Test
 	public void shouldReturnEmptyResponseWhenNotFound() {
@@ -78,6 +83,7 @@ public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 		assertThat(journalpostDto.getDokumenter().get(0).getDokumentInfoId(), is(hoveddokument.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(1).getDokumentInfoId(), is(vedlegg1.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(2).getDokumentInfoId(), is(vedlegg2.getDokumentInfoId()));
+		assertEquals(LESTDATO, journalpostDto.getLestDato());
 	}
 
 	private ResponseEntity<TilknyttedeJournalposterResponse> tilknyttedeJournalposterGjenbrukRest(final Long dokumentInfoId) {

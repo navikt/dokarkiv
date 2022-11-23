@@ -43,6 +43,7 @@ public class JournalpostDto {
 	Date avsReturDato;
 	Date sendtPrintDato;
 	Date ekspedertDato;
+	Date lestDato;
 	SkjermingTypeCode skjerming;
 	String antallRetur;
 	String kanalReferanseId;
