@@ -15,8 +15,7 @@ import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdate
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdaterFromBulk;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.EnumSet;
 import java.util.Optional;
 
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
@@ -27,7 +26,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinf
 @Service("oppdaterDistribusjonsinfo")
 public class OppdaterDistribusjonsinfoService {
 
-	private static final List<JournalStatusCode> JOURNAL_STATUSER_INKLUDERT_IN_RESPONSEN = Arrays.asList(E, A, U);
+	private static final EnumSet<JournalStatusCode> IKKE_OPPDATER_MED_JOURNALSTATUS = EnumSet.of(E, A, U);
 	private final JoarkRepositorySkjermet joarkRepository;
 	private final JournalpostUpdater journalpostUpdater;
 	private final LagreAksjonsLoggService aksjonsLoggService;
@@ -90,7 +89,6 @@ public class OppdaterDistribusjonsinfoService {
 	}
 
 	private boolean isFeilregistrertOrJournalStatusEorAorU(Journalpost jp) {
-		return (jp.getSaksrelasjon() == null || (jp.getSaksrelasjon().getFeilregistrert() != null
-				&& jp.getSaksrelasjon().getFeilregistrert())) || JOURNAL_STATUSER_INKLUDERT_IN_RESPONSEN.contains(jp.getJournalstatus());
+		return jp.isFeilregistrert() || IKKE_OPPDATER_MED_JOURNALSTATUS.contains(jp.getJournalstatus());
 	}
 }
