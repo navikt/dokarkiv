@@ -73,7 +73,7 @@ public class AksjonsLoggIT {
 
 	@BeforeEach
 	public void setUp() {
-		MDC.put(MDC_USER_ID, USER_ID);
+		RequestContextUtil.createAndSetUsername(USER_ID, APPLICATION);
 		aksjonsLoggRepository.deleteAll();
 		Journalpost journalpost = joarkRepository.save(TestDataGenerator.createJournalpostWithHoveddokument());
 		this.journalpostId = journalpost.getJournalpostId();

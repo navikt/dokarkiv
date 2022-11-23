@@ -10,9 +10,6 @@ import org.slf4j.MDC;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 class AksjonsLoggValidator {
 
 	public void validateArkivElementToList(List<ArkivElementEndringTO> arkivElementEndringTOList) {

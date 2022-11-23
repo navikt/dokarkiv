@@ -20,10 +20,6 @@ import java.util.stream.Collectors;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
-
 @Slf4j
 class AksjonsLoggMapper {
 

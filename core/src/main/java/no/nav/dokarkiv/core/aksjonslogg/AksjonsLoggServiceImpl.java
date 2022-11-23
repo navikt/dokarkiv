@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @Component
 @Slf4j
 public class AksjonsLoggServiceImpl implements AksjonsLoggService {
