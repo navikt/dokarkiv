@@ -73,7 +73,7 @@ public class AzureToken {
                 .block();
 
         try {
-            return objectMapper.readValue(responseJson, TokenResponse.class).getAccess_token();
+            return objectMapper.readValue(responseJson, TokenResponse.class).accessToken();
         } catch (JsonProcessingException e) {
             throw new AzureTokenException(String.format("Klarte ikke parse token fra Azure. Feilmelding=%s", e.getMessage()), e);
         }
