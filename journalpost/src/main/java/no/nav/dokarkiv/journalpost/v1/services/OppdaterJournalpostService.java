@@ -41,6 +41,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_METADATA;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
@@ -177,7 +178,6 @@ public class OppdaterJournalpostService {
 				.journalpostId(journalpostId)
 				.hjemmel(null)
 				.melding(hentMeldingFraAksjonsType(aksjon))
-				.utfoertAv(null)
 				.build();
 		try {
 			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, endringer);
