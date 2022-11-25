@@ -10,21 +10,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @Component
 @Slf4j
 public class AksjonsLoggServiceImpl implements AksjonsLoggService {
 
 	private final AksjonsLoggRepository aksjonsLoggRepository;
-	private final AksjonsLoggMapper aksjonsLoggMapper;
 	private final AksjonsLoggValidator aksjonsLoggValidator;
 	private final JoarkRepository joarkRepository;
 
 	public AksjonsLoggServiceImpl(AksjonsLoggRepository aksjonsLoggRepository, JoarkRepository joarkRepository) {
 		this.aksjonsLoggRepository = aksjonsLoggRepository;
-		this.aksjonsLoggMapper = new AksjonsLoggMapper();
 		this.aksjonsLoggValidator = new AksjonsLoggValidator();
 		this.joarkRepository = joarkRepository;
 	}
@@ -40,8 +35,7 @@ public class AksjonsLoggServiceImpl implements AksjonsLoggService {
 				joarkRepository.findById(aksjonsLoggTO.getJournalpostId())
 					.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", aksjonsLoggTO.getJournalpostId())));
 
-
-		AksjonsLogg aksjonsLogg = aksjonsLoggMapper.mapToAksjonsLogg(aksjonsLoggTO, arkivElementEndringTOList, journalpost);
+		AksjonsLogg aksjonsLogg = AksjonsLoggMapper.mapToAksjonsLoggAndSetDefaults(aksjonsLoggTO, arkivElementEndringTOList, journalpost);
 
 		aksjonsLoggRepository.save(aksjonsLogg);
 	}

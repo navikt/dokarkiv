@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.stelvio;
 
+import no.nav.dokarkiv.core.MDCConstants;
 import org.slf4j.MDC;
 
 /**
@@ -25,6 +26,7 @@ public final class MDCOperations {
 			}
 			if (requestContext.getUserId() != null) {
 				MDC.put(MdcConstants.MDC_USER, requestContext.getUserId());
+				MDC.put(MDCConstants.MDC_USER_ID, requestContext.getUserId());
 			}
 			if (requestContext.getTransactionId() != null) {
 				MDC.put(MdcConstants.MDC_TRANSACTION, requestContext.getTransactionId());

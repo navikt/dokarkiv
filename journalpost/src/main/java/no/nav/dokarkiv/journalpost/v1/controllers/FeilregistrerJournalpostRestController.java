@@ -149,7 +149,6 @@ public class FeilregistrerJournalpostRestController {
 		aksjonsLoggTo = AksjonsLoggTO.builder()
 				.aksjon(aksjon)
 				.journalpostId(Long.parseLong(journalpostId))
-				.utfoertAv(MDC.get(MDC_USER_ID))
 				.hjemmel("ARKL")
 				.melding(melding)
 				.build();
