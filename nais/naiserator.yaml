@@ -112,7 +112,6 @@ spec:
       - kvPath: {{ APPDYNAMICS }}
         mountPath: "/var/run/secrets/nais.io/appdynamics"
   webproxy: true
-{{#if AZURE_IAC_RULES}}
   azure:
     application:
       enabled: true
@@ -120,6 +119,7 @@ spec:
         extra:
           - "NAVident"
           - "azp_name"
+{{#if AZURE_IAC_RULES}}
   accessPolicy:
     inbound:
       rules:
