@@ -39,7 +39,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
@@ -110,13 +109,7 @@ public class OpprettJournalpostService {
 
 		joarkRepository.save(journalpost);
 
-		populerAksjonslogg(journalpost.getJournalpostId(), OPPRETT, sakOptional);
-		if (journalpost.getInnsyn() != null) {
-			populerAksjonslogg(journalpost.getJournalpostId(), OVERSTYR_INNSYN, sakOptional);
-		}
-		if (sakOptional.isPresent()) {
-			populerAksjonslogg(journalpost.getJournalpostId(), SAKSTILKNYTNING, sakOptional);
-		}
+		populerAksjonsloggFromChanges(journalpost.getJournalpostId(), sakOptional);
 
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
 
@@ -185,12 +178,40 @@ public class OpprettJournalpostService {
 		dokumentFilList.forEach(dokumentFilRepository::save);
 	}
 
-	private void populerAksjonslogg(Long journalpostId, AksjonsTypeCode aksjon, Optional<Sak> sakOptional) {
-		Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new);
-		String bruker = null;
-		if (!journalpost.getBrukere().isEmpty()) {
-			bruker = journalpost.getBrukere().iterator().next().getBrukerId();
+	private void populerAksjonsloggFromChanges(Long journalpostId, Optional<Sak> sakOptional) {
+		final Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new);
+		final String brukerId = journalpost.getBrukere().stream()
+				.findFirst()
+				.map(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId)
+				.orElse(null);
+
+		populerAksjonslogg(journalpostId, OPPRETT, brukerId, Stream.of(
+						arkivElementEndringNew("Journalpost.fagomrade", journalpost.getFagomrade().name()),
+						arkivElementEndringNew("Journalpost.innhold", journalpost.getInnhold()),
+						arkivElementEndringNew("journalpost.avsend_mottaker", journalpost.getAvsenderMottaker()),
+						arkivElementEndringNew("journalpost.avsend_mottak_id", journalpost.getAvsenderMottakerId()),
+						arkivElementEndringNew("journalpost.journalf_enhet", journalpost.getJournalForendeEnhetId()),
+						arkivElementEndringNew("bruker.bruker_id", brukerId)
+				).filter(elementEndring -> Objects.nonNull(elementEndring.getTilVerdi()))
+				.toList());
+
+		if (journalpost.getInnsyn() != null) {
+			populerAksjonslogg(journalpostId, OVERSTYR_INNSYN, brukerId, singletonList(
+					arkivElementEndringNew("Journalpost.k_innsyn", journalpost.getInnsyn().toString())
+			));
 		}
+
+		sakOptional.ifPresent(sak ->
+				populerAksjonslogg(journalpostId, SAKSTILKNYTNING, brukerId, Stream.of(
+								arkivElementEndringNew("Saksrelasjon.sakId", journalpost.getSaksrelasjon().getSakId()),
+								arkivElementEndringNew("Saksrelasjon.fagsystem", journalpost.getSaksrelasjon().getFagsystem().name()),
+								arkivElementEndringNew("Sak.fagsaknr", sak.getFagsakNr()),
+								arkivElementEndringNew("Sak.applikasjon", sak.getApplikasjon())
+						).filter(elementEndring -> Objects.nonNull(elementEndring.getTilVerdi()))
+						.toList()));
+	}
+
+	private void populerAksjonslogg(Long journalpostId, AksjonsTypeCode aksjon, String bruker, List<ArkivElementEndringTO> aksjonsloggendringer) {
 		AksjonsLoggTO aksjonsLoggTo = AksjonsLoggTO.builder()
 				.aksjon(aksjon)
 				.journalpostId(journalpostId)
@@ -199,7 +220,7 @@ public class OpprettJournalpostService {
 				.build();
 
 		try {
-			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, mapAksjonsloggendringer(journalpost, aksjon, bruker, sakOptional));
+			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, aksjonsloggendringer);
 		} catch (UgyldigAksjonsLoggException e) {
 			log.warn("Kunne ikke skrive til AksjonsLogg: " + e.getMessage());
 		}
@@ -211,33 +232,6 @@ public class OpprettJournalpostService {
 		} else {
 			return "Journalpost " + aksjon;
 		}
-	}
-
-	private static List<ArkivElementEndringTO> mapAksjonsloggendringer(Journalpost journalpost, AksjonsTypeCode aksjon, String bruker, Optional<Sak> sak) {
-		return switch (aksjon) {
-			case OVERSTYR_INNSYN -> singletonList(ArkivElementEndringTO.builder()
-					.arkivElement("Journalpost.k_innsyn")
-					.fraVerdi(null)
-					.tilVerdi(journalpost.getInnsyn().toString())
-					.build());
-			case OPPRETT -> Stream.of(
-							arkivElementEndringNew("Journalpost.fagomrade", journalpost.getFagomrade().name() /* t_journalpost.k_fagomrade */),
-							arkivElementEndringNew("Journalpost.innhold", journalpost.getInnhold() /* t_journalpost.innhold */),
-							arkivElementEndringNew("journalpost.avsend_mottaker", journalpost.getAvsenderMottaker() /* t_journalpost.avsend_mottaker */),
-							arkivElementEndringNew("journalpost.avsend_mottak_id", journalpost.getAvsenderMottakerId() /* t_journalpost.avsend_mottak_id */),
-							arkivElementEndringNew("journalpost.journalf_enhet", journalpost.getJournalForendeEnhetId() /* t_journalpost.journalf_enhet */),
-							arkivElementEndringNew("bruker.bruker_id", bruker /* innholdet i t_bruker.bruker_id */)
-					).filter(elementEndring -> Objects.nonNull(elementEndring.getTilVerdi()))
-					.toList();
-			case SAKSTILKNYTNING -> Stream.of(
-							arkivElementEndringNew("Saksrelasjon.sakId", journalpost.getSaksrelasjon().getSakId() /* t_saksrelasjon.sak_nr_fk */),
-							arkivElementEndringNew("Saksrelasjon.fagsystem", journalpost.getSaksrelasjon().getFagsystem().name() /* t_saksrelasjon.k_fagsystem */),
-							arkivElementEndringNew("Sak.fagsaknr", sak.get().getFagsakNr() /* t_sak.fagsaknr */),
-							arkivElementEndringNew("Sak.applikasjon", sak.get().getApplikasjon()/* t_sak.applikasjon */)
-					).filter(elementEndring -> Objects.nonNull(elementEndring.getTilVerdi()))
-					.toList();
-			default -> emptyList();
-		};
 	}
 
 	// Bruker eksternReferanseId for å se etter duplikater
