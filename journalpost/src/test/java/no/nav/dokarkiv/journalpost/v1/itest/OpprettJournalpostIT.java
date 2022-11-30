@@ -93,6 +93,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanal;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -171,7 +172,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 		restStsToken();
 
-		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
 				.overstyrInnsynsregler(overstyrInnsynsregler.toString())
 				.build();
 
@@ -185,7 +186,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(2));
-		assertEquals(2, aksjonsLoggList.size());
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
@@ -200,7 +200,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 		restStsToken();
 
-		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
 				.overstyrInnsynsregler(null)
 				.build();
 
@@ -327,7 +327,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(2));
-		assertEquals(2, aksjonsLoggList.size());
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
@@ -768,7 +767,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 		restStsToken();
 
-		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
 				.tema(TEMA_FOR)
 				.tittel(INNHOLD)
 				.journalfoerendeEnhet("9999")
@@ -820,7 +819,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 		restStsToken();
 
-		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
 				.tema(TEMA_FOR)
 				.tittel(INNHOLD)
 				.bruker(Bruker.builder()
