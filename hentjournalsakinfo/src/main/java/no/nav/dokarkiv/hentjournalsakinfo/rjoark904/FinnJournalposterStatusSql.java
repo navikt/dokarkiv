@@ -37,6 +37,7 @@ class FinnJournalposterStatusSql {
 				"                              j.dato_dokument        AS dokumentdato,\n" +
 				"                              j.dato_avs_retur       AS avsreturdato,\n" +
 				"                              j.dato_sendt_print     AS sendtprintdato,\n" +
+				"                              j.dato_lest            AS lestdato,\n" +
 				"                              j.k_skjerming_type     AS skjerming,\n" +
 				"                              s.sak_nr_fk            AS saksrelasjon_sakid,\n" +
 				"                              s.feilregistrert       AS saksrelasjon_feilregistrert,\n" +

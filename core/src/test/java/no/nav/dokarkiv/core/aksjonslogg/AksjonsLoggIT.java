@@ -21,6 +21,7 @@ import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -33,6 +34,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVELEMENT;

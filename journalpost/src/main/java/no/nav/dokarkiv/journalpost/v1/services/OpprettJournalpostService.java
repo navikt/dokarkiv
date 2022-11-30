@@ -41,6 +41,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OVERSTYR_INNSYN;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
@@ -185,7 +186,6 @@ public class OpprettJournalpostService {
 		AksjonsLoggTO aksjonsLoggTo = AksjonsLoggTO.builder()
 				.aksjon(aksjon)
 				.journalpostId(journalpostId)
-				.utfoertAv(MDC.get(MDC_CONSUMER_ID))
 				.bruker(isNotBlank(bruker) ? bruker : UKJENT)
 				.melding(mapAksjonsloggmelding(aksjon))
 				.build();

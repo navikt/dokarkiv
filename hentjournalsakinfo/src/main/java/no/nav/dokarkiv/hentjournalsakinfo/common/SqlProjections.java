@@ -29,6 +29,7 @@ public final class SqlProjections {
 					j.dato_dokument                 AS dokumentdato,
 					j.dato_avs_retur                AS avsreturdato,
 					j.dato_sendt_print              AS sendtprintdato,
+					j.dato_lest                     AS lestdato,
 					j.k_skjerming_type              AS skjerming,
 					j.antall_retur                  AS antallretur,
 					j.kanal_referanse_id            AS kanalreferanseid,

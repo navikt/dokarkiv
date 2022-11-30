@@ -26,6 +26,7 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,6 +72,7 @@ public class TestDataGenerator {
 	public static final Integer ANTALL_RETUR = 3;
 	public static final String KANAL_REFERANSE_ID = "KANAL REFERANSE ID";
 	public static final String AKTOER_ID = "111113333333";
+	private static final Date LESTDATO = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
@@ -88,6 +90,7 @@ public class TestDataGenerator {
 				.antallRetur(ANTALL_RETUR)
 				.kanalReferanseId(KANAL_REFERANSE_ID)
 				.innsyn(BRUK_STANDARDREGLER)
+				.lestDato(LESTDATO)
 				.build();
 
 		journalpost.addBruker(createBruker());

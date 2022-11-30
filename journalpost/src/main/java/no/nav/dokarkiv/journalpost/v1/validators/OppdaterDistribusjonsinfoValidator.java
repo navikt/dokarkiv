@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.Arrays;
-import java.util.List;
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,7 @@ public class OppdaterDistribusjonsinfoValidator {
 
 	private final Validator springSuppliedValidator;
 
-	private static final List<JournalStatusCode> ALLOWED_STATES_FOR_DISTRIBUTION = Arrays.asList(FS, FL);
+	private static final EnumSet<JournalStatusCode> ALLOWED_STATES_FOR_DISTRIBUTION = EnumSet.of(FS, FL);
 
 	public OppdaterDistribusjonsinfoValidator(Validator validator) {
 		this.springSuppliedValidator = validator;
@@ -68,12 +67,9 @@ public class OppdaterDistribusjonsinfoValidator {
 			UtsendingsKanalCode utsendingsKanal = UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
 
 			String valideringsfeil = switch (utsendingsKanal) {
-				case S ->
-						validerFeltOgInnhold("postadresse", "må være satt når utsendingsKanal=S (sentralprint)", request.getPostadresse());
-				case SDP ->
-						validerFeltOgInnhold("digitalpostkasse", "må være satt når utsendingsKanal=SDP (digital post)", request.getDigitalpostkasse());
-				case NAV_NO ->
-						validerFeltOgInnhold("varsel", "må være satt når utsendingsKanal=NAV_NO", request.getVarsel());
+				case S -> validerFeltOgInnhold("postadresse", "må være satt når utsendingsKanal=S (sentralprint)", request.getPostadresse());
+				case SDP -> validerFeltOgInnhold("digitalpostkasse", "må være satt når utsendingsKanal=SDP (digital post)", request.getDigitalpostkasse());
+				case NAV_NO -> validerFeltOgInnhold("varsel", "må være satt når utsendingsKanal=NAV_NO", request.getVarsel());
 				default -> null;
 			};
 			if (valideringsfeil != null) {
@@ -109,8 +105,7 @@ public class OppdaterDistribusjonsinfoValidator {
 			throw new KanIkkeOppdatereDistribusjonsinfoException(
 					String.format("Kan ikke ekspedere journalpost med status %s", journalpost.getJournalstatus()));
 		}
-		if (journalpost.getSaksrelasjon() == null || (journalpost.getSaksrelasjon().getFeilregistrert() != null
-				&& journalpost.getSaksrelasjon().getFeilregistrert())) {
+		if (journalpost.isFeilregistrert()) {
 			throw new KanIkkeOppdatereDistribusjonsinfoException(
 					"Kan ikke ekspedere journalpost med tom/feilregistrert saksrelasjon");
 		}

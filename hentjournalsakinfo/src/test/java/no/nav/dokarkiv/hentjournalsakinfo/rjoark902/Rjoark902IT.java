@@ -13,15 +13,24 @@ import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.DokumentInfoDto;
+import org.joda.time.DateTimeField;
+import org.joda.time.LocalDateTime;
+import org.joda.time.field.OffsetDateTimeField;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID;
@@ -52,6 +61,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	private static final String SAKID = "6293";
 	private static final FagsystemCode SAKRELASJONFAGSYSTEM = FagsystemCode.FS22;
 	private static final Boolean SAKFEILREGISTRERT = true;
+	private static final Date LESTDATO = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
 	private static final DokumentStatusCode DOKUMENTSTATUS = DokumentStatusCode.UNDER_REDIGERING;
 	private static final String BREVKODE = "test dokumentinfo brevkode";
@@ -87,6 +97,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		assertEquals(SAKFEILREGISTRERT, responseJournalpost.getSaksrelasjon().getFeilregistrert());
 		assertEquals(ANTALL_RETUR, responseJournalpost.getAntallRetur());
 		assertEquals(KANAL_REFERANSE_ID, responseJournalpost.getKanalReferanseId());
+		assertEquals(LESTDATO, responseJournalpost.getLestDato());
 
 		DokumentInfoDto responseDokumentInfo = responseJournalpost.getDokumenter().get(0);
 
@@ -152,6 +163,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		journalpost.setMottakskanal(MOTTAKSKANAL);
 		journalpost.setUtsendingskanal(UTSENDINGSKANAL);
 		journalpost.setJournalposttype(JOURNALPOST_TYPE_CODE);
+		journalpost.setLestDato(OffsetDateTime.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault())));
 
 		journalpost.getSaksrelasjon().setSakId(SAKID);
 		journalpost.getSaksrelasjon().setFeilregistrert(SAKFEILREGISTRERT);
