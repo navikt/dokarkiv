@@ -151,10 +151,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(AVSENDER_MOTTAKER_LAND, journalpost.getLand());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(5));
 
 		ArrayList<DokumentFil> dokumentFilList = Lists.newArrayList(dokumentFilRepository.findAll());
 		assertEquals(3, dokumentFilList.size());
@@ -184,11 +184,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(overstyrInnsynsregler, journalpost.getInnsyn());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(2, aksjonsLoggList.size());
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(3));
 
 		assertEquals(OVERSTYR_INNSYN, aksjonsLoggList.get(1).getAksjon());
 		assertEquals(1, aksjonsLoggList.get(1).getArkivElementEndringer().size());
@@ -212,11 +213,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNull(journalpost.getInnsyn());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(3));
 	}
 
 	@Test
@@ -237,10 +238,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalStatusCode.D, journalpost.getJournalstatus());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(5));
 	}
 
 	@Test
@@ -261,10 +262,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalStatusCode.D, journalpost.getJournalstatus());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(5));
 	}
 
 	@Test
@@ -295,7 +296,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(6));
 
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(1).getBruker());
@@ -325,11 +326,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals("0123", journalpost.getJournalForendeEnhetId());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(2, aksjonsLoggList.size());
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(6));
 
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(1).getBruker());
@@ -529,7 +531,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.PERSON);
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(aksjonsLoggList.get(0).getBruker(), FNR);
 	}
 
@@ -636,7 +638,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(joarkRepository.findAll().iterator().next().getBrukere().size(), 0);
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(aksjonsLoggList.get(0).getBruker(), UKJENT);
 	}
 
@@ -671,7 +673,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.ORGANISASJON);
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(aksjonsLoggList.get(0).getBruker(), BRUKER_ID_ORGANISASJON);
 	}
 
@@ -754,11 +756,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(5));
 	}
 
 	@Test
@@ -806,11 +808,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(6));
 	}
 
 	@Test
@@ -856,11 +858,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNull(journalpost.getJournalForendeEnhetId());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(6));
 	}
 
 	@Test

@@ -16,4 +16,8 @@ public class ArkivElementEndringTO {
 	private String arkivElement;
 	private String fraVerdi;
 	private String tilVerdi;
+
+	public static ArkivElementEndringTO arkivElementEndringNew(String arkivElement, String tilVerdi) {
+		return new ArkivElementEndringTO(arkivElement, null, tilVerdi);
+	}
 }

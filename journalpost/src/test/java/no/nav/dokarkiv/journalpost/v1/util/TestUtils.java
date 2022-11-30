@@ -46,6 +46,7 @@ import java.util.List;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
+import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
 
 /**
@@ -557,7 +558,7 @@ public class TestUtils {
 	}
 
 	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createMinimalRequest(JournalpostType journalpostType) {
-		return OpprettJournalpostRequest.builder()
+		var minimalRequest = OpprettJournalpostRequest.builder()
 				.journalposttype(journalpostType)
 				.tema(FagomradeCode.FOR.name())
 				.dokumenter(Collections.singletonList(
@@ -566,6 +567,15 @@ public class TestUtils {
 								.brevkode(BREVKODE1)
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
 								.build()));
+		if (!NOTAT.equals(journalpostType)) {
+			return minimalRequest.avsenderMottaker(AvsenderMottaker.builder()
+					.id(AVSENDER_ID_PERSON)
+					.idType(AvsenderMottakerIdType.FNR)
+					.navn(AVSENDER_NAVN)
+					.land(AVSENDER_MOTTAKER_LAND)
+					.build());
+		}
+		return minimalRequest;
 	}
 
 
