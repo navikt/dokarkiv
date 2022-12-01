@@ -49,6 +49,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OVERSTYR_INNSYN;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.ALTINN;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
@@ -435,6 +436,16 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		Saksrelasjon saksrelasjon = joarkRepository.findAll().iterator().next().getSaksrelasjon();
 		assertEquals(saksrelasjon.getSakId(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList, hasSize(2));
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+
+		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(2));
+
+		assertEquals(SAKSTILKNYTNING, aksjonsLoggList.get(1).getAksjon());
+		assertThat(aksjonsLoggList.get(1).getArkivElementEndringer(), hasSize(3));
 	}
 
 	@Test

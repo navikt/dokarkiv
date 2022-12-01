@@ -186,12 +186,13 @@ public class OpprettJournalpostService {
 				.orElse(null);
 
 		populerAksjonslogg(journalpostId, OPPRETT, brukerId, Stream.of(
-						arkivElementEndringNew("Journalpost.fagomrade", journalpost.getFagomrade().name()),
+						arkivElementEndringNew("Journalpost.fagomrade",
+								journalpost.getFagomrade() != null ? journalpost.getFagomrade().name() : null),
 						arkivElementEndringNew("Journalpost.innhold", journalpost.getInnhold()),
-						arkivElementEndringNew("journalpost.avsend_mottaker", journalpost.getAvsenderMottaker()),
-						arkivElementEndringNew("journalpost.avsend_mottak_id", journalpost.getAvsenderMottakerId()),
-						arkivElementEndringNew("journalpost.journalf_enhet", journalpost.getJournalForendeEnhetId()),
-						arkivElementEndringNew("bruker.bruker_id", brukerId)
+						arkivElementEndringNew("Journalpost.avsend_mottaker", journalpost.getAvsenderMottaker()),
+						arkivElementEndringNew("Journalpost.avsend_mottak_id", journalpost.getAvsenderMottakerId()),
+						arkivElementEndringNew("Journalpost.journalf_enhet", journalpost.getJournalForendeEnhetId()),
+						arkivElementEndringNew("Bruker.bruker_id", brukerId)
 				).filter(elementEndring -> Objects.nonNull(elementEndring.getTilVerdi()))
 				.toList());
 
@@ -201,14 +202,14 @@ public class OpprettJournalpostService {
 			));
 		}
 
-		sakOptional.ifPresent(sak ->
-				populerAksjonslogg(journalpostId, SAKSTILKNYTNING, brukerId, Stream.of(
-								arkivElementEndringNew("Saksrelasjon.sakId", journalpost.getSaksrelasjon().getSakId()),
-								arkivElementEndringNew("Saksrelasjon.fagsystem", journalpost.getSaksrelasjon().getFagsystem().name()),
-								arkivElementEndringNew("Sak.fagsaknr", sak.getFagsakNr()),
-								arkivElementEndringNew("Sak.applikasjon", sak.getApplikasjon())
-						).filter(elementEndring -> Objects.nonNull(elementEndring.getTilVerdi()))
-						.toList()));
+		sakOptional.ifPresent(sak -> populerAksjonslogg(journalpostId, SAKSTILKNYTNING, brukerId, Stream.of(
+						arkivElementEndringNew("Saksrelasjon.sakId", journalpost.getSaksrelasjon().getSakId()),
+						arkivElementEndringNew("Saksrelasjon.fagsystem",
+								journalpost.getSaksrelasjon().getFagsystem() != null ? journalpost.getSaksrelasjon().getFagsystem().name() : null),
+						arkivElementEndringNew("Sak.fagsaknr", sak.getFagsakNr()),
+						arkivElementEndringNew("Sak.applikasjon", sak.getApplikasjon())
+				).filter(elementEndring -> Objects.nonNull(elementEndring.getTilVerdi()))
+				.toList()));
 	}
 
 	private void populerAksjonslogg(Long journalpostId, AksjonsTypeCode aksjon, String bruker, List<ArkivElementEndringTO> aksjonsloggendringer) {
