@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -414,7 +415,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		restStsToken();
 		happyAktoerIdStub();
 
-		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
 				.tema(TEMA_SYM)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
@@ -442,7 +443,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(2));
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(4));
 
 		assertEquals(SAKSTILKNYTNING, aksjonsLoggList.get(1).getAksjon());
 		assertThat(aksjonsLoggList.get(1).getArkivElementEndringer(), hasSize(3));
@@ -485,7 +486,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		restStsToken();
 		happyAktoerIdStub();
 
-		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
 				.tema(TEMA_TIL)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(AO01).build())
@@ -507,6 +508,16 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		Saksrelasjon saksrelasjon = joarkRepository.findAll().iterator().next().getSaksrelasjon();
 		assertEquals(saksrelasjon.getSakId(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList, hasSize(2));
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+
+		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(4));
+
+		assertEquals(SAKSTILKNYTNING, aksjonsLoggList.get(1).getAksjon());
+		assertThat(aksjonsLoggList.get(1).getArkivElementEndringer(), hasSize(4));
 	}
 
 	@Test
