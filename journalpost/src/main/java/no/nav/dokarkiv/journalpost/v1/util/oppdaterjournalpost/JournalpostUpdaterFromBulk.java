@@ -1,20 +1,23 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
-import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
-import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.DigitalPost;
-import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.NavNoVarsel;
-import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.Postadresse;
-import org.slf4j.MDC;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
+import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.DigitalPost;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.JournalpostWithDistribusjonsinfo;
+import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.NavNoVarsel;
+import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.Postadresse;
+import org.slf4j.MDC;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
 
 public class JournalpostUpdaterFromBulk {
+
+	private static final String UNKNOWN_ALPHA3_LANDKODE = "???";
+	private static final String UNKNOWN_ALPHA2_LANDKODE = "??";
 
 	public static ChangeTracker updateFields(Journalpost journalpost, JournalpostWithDistribusjonsinfo request) {
 		ChangeTracker tracker = new ChangeTracker();
@@ -43,13 +46,14 @@ public class JournalpostUpdaterFromBulk {
 	}
 
 	private static UtsendingsInfo.FysiskPostadresse from(Postadresse postadresse) {
-		return new UtsendingsInfo.FysiskPostadresse(
+
+		return postadresse == null ? null : new UtsendingsInfo.FysiskPostadresse(
 				postadresse.getAdresselinje1(),
 				postadresse.getAdresselinje2(),
 				postadresse.getAdresselinje3(),
 				postadresse.getPostnummer(),
 				postadresse.getPoststed(),
-				postadresse.getLandkode()
+				UNKNOWN_ALPHA3_LANDKODE.equals(postadresse.getLandkode()) ? UNKNOWN_ALPHA2_LANDKODE : postadresse.getLandkode()
 		);
 	}
 
@@ -57,7 +61,7 @@ public class JournalpostUpdaterFromBulk {
 		return new UtsendingsInfo.DigitalPostadresse(digitalpost.getDigitalpostkasseadresse(), digitalpost.getDigitalpostkasseleverandor());
 	}
 
-	private static UtsendingsInfo.NavNoVarsling from(NavNoVarsel navNoVarsel){
+	private static UtsendingsInfo.NavNoVarsling from(NavNoVarsel navNoVarsel) {
 		return new UtsendingsInfo.NavNoVarsling(navNoVarsel.getDigitalkontaktinformasjon(), navNoVarsel.getVarseltekst());
 	}
 }
