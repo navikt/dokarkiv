@@ -58,6 +58,21 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "arbeid-og-inntekt",
+      "namespace": "team-inntekt",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "arbeid-og-inntekt-ascension",
+      "namespace": "team-inntekt",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "arbeid-og-inntekt-q2",
+      "namespace": "team-inntekt",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "omsorgspenger-journalforing",
       "namespace": "omsorgspenger",
       "cluster": "dev-gcp"
