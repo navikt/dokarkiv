@@ -46,6 +46,11 @@
       "cluster": "prod-external"
     },
     {
+      "app": "arbeid-og-inntekt",
+      "namespace": "team-inntekt",
+      "cluster": "prod-fss"
+    },
+    {
       "app": "familie-integrasjoner",
       "namespace": "teamfamilie",
       "cluster": "prod-fss"
