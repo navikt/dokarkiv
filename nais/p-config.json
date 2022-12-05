@@ -334,6 +334,16 @@
       "app": "meldekort-api",
       "namespace": "meldekort",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "pensjon-pen",
+      "namespace": "pensjondeployer",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "pensjon-psak",
+      "namespace": "pensjondeployer",
+      "cluster": "prod-fss"
     }
   ]
 }

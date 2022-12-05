@@ -380,6 +380,16 @@
       "app": "meldekort-api-q1",
       "namespace": "meldekort",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "pensjon-pen-q1",
+      "namespace": "teampensjon",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "pensjon-psak-q1",
+      "namespace": "teampensjon",
+      "cluster": "dev-fss"
     }
   ]
 }
