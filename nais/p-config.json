@@ -46,6 +46,11 @@
       "cluster": "prod-external"
     },
     {
+      "app": "arbeid-og-inntekt",
+      "namespace": "team-inntekt",
+      "cluster": "prod-fss"
+    },
+    {
       "app": "familie-integrasjoner",
       "namespace": "teamfamilie",
       "cluster": "prod-fss"
@@ -329,6 +334,16 @@
       "app": "meldekort-api",
       "namespace": "meldekort",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "pensjon-pen",
+      "namespace": "pensjondeployer",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "pensjon-psak",
+      "namespace": "pensjondeployer",
+      "cluster": "prod-fss"
     }
   ]
 }

@@ -52,6 +52,16 @@
       "cluster": "dev-external"
     },
     {
+      "app": "arbeid-og-inntekt-q1",
+      "namespace": "team-inntekt",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "arbeid-og-inntekt-ascension",
+      "namespace": "team-inntekt",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "familie-integrasjoner",
       "namespace": "teamfamilie",
       "cluster": "dev-fss"
@@ -237,6 +247,26 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "eux-neessi-q1",
+      "namespace": "eessibasis",
+      "cluster": "dev-fss"
+    },
+     {
+      "app": "eux-neessi-q1",
+      "namespace": "eessibasis",
+      "cluster": "dev-gcp"
+    }, 
+    {
+      "app": "eux-fagmodul-journalfoering-q1",
+      "namespace": "eessibasis",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "eux-fagmodul-journalfoering-q1",
+      "namespace": "eessibasis",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "eessi-pensjon-journalforing-q2",
       "namespace": "eessipensjon",
       "cluster": "dev-gcp"
@@ -350,6 +380,16 @@
       "app": "meldekort-api-q1",
       "namespace": "meldekort",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "pensjon-pen-q1",
+      "namespace": "teampensjon",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "pensjon-psak-q1",
+      "namespace": "teampensjon",
+      "cluster": "dev-fss"
     }
   ]
 }

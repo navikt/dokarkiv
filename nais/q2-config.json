@@ -58,6 +58,21 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "arbeid-og-inntekt",
+      "namespace": "team-inntekt",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "arbeid-og-inntekt-ascension",
+      "namespace": "team-inntekt",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "arbeid-og-inntekt-q2",
+      "namespace": "team-inntekt",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "omsorgspenger-journalforing",
       "namespace": "omsorgspenger",
       "cluster": "dev-gcp"
@@ -228,12 +243,22 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "eux-helloeu-app-q2",
+      "app": "eux-neessi-q2",
       "namespace": "eessibasis",
       "cluster": "dev-fss"
     },
-     {
-      "app": "eux-helloeu-app-q2",
+    {
+      "app": "eux-neessi-q2",
+      "namespace": "eessibasis",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "eux-fagmodul-journalfoering-q2",
+      "namespace": "eessibasis",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "eux-fagmodul-journalfoering-q2",
       "namespace": "eessibasis",
       "cluster": "dev-gcp"
     },
@@ -341,6 +366,16 @@
       "app": "meldekort-api-q2",
       "namespace": "meldekort",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "pensjon-pen-q2",
+      "namespace": "teampensjon",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "pensjon-psak-q2",
+      "namespace": "teampensjon",
+      "cluster": "dev-fss"
     }
   ]
 }

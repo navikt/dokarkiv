@@ -153,8 +153,12 @@ public class PdlIdentConsumer implements IdentConsumer {
 			if (pdlPersonResponse.getData().getHentPerson() != null && !pdlPersonResponse.getData().getHentPerson().getNavn().isEmpty()) {
 				return pdlPersonResponse.getData().getHentPerson().getNavn().get(0).getNavn();
 			} else {
-				if (PERSON_IKKE_FUNNET_CODE.equals(pdlPersonResponse.getErrors().get(0).getExtensions().getCode())) {
-					throw new PersonIkkeFunnetException("Fant ikke navn for person i pdl.");
+				if(pdlPersonResponse.getErrors() == null || pdlPersonResponse.getErrors().isEmpty()) {
+					throw new PdlFunctionalException("Person har ikke navn i pdl.");
+				} else {
+					if (PERSON_IKKE_FUNNET_CODE.equals(pdlPersonResponse.getErrors().get(0).getExtensions().getCode())) {
+						throw new PersonIkkeFunnetException("Fant ikke navn for person i pdl.");
+					}
 				}
 				throw new PdlFunctionalException("Kunne ikke hente navn for aktørid i pdl. " + pdlPersonResponse.getErrors());
 			}

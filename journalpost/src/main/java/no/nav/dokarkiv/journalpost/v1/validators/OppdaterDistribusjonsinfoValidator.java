@@ -67,7 +67,6 @@ public class OppdaterDistribusjonsinfoValidator {
 			UtsendingsKanalCode utsendingsKanal = UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
 
 			String valideringsfeil = switch (utsendingsKanal) {
-				case S -> validerFeltOgInnhold("postadresse", "må være satt når utsendingsKanal=S (sentralprint)", request.getPostadresse());
 				case SDP -> validerFeltOgInnhold("digitalpostkasse", "må være satt når utsendingsKanal=SDP (digital post)", request.getDigitalpostkasse());
 				case NAV_NO -> validerFeltOgInnhold("varsel", "må være satt når utsendingsKanal=NAV_NO", request.getVarsel());
 				default -> null;

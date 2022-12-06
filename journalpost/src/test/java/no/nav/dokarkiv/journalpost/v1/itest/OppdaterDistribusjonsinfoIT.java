@@ -42,6 +42,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 	private static final String POSTKASSEADRESSE = "enadresse#1234";
 	private static final String POSTKASSE_LEVERANDØR = "postkasseleverandør";
+	private static final String LANDKODE = "NO";
 
 	@Test
 	public void happyPathUpdateDistribusjonsinfo() {
@@ -173,6 +174,51 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shouldBulkUpdateDistribusjonsinfoWithEmptyPostadresse() {
+		OffsetDateTime ekspedertDato = OffsetDateTime.now();
+		List<Journalpost> journalposts = IntStream.range(0, 10)
+				.mapToObj(__ -> createJournalpost(JournalStatusCode.M))
+				.toList();
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+
+		List<Journalpost> ferdigstiltJp = journalposts.stream()
+				.map(Journalpost::getJournalpostId)
+				.map(this::ferdigstill)
+				.toList();
+
+		List<Long> jpAll = ferdigstiltJp.stream().map(Journalpost::getJournalpostId).sorted().toList();
+
+		BulkOppdaterDistribusjonsinfoResponse distribusjonsinfoResponse = performBulkOppdaterDistribusjonsinfoAssertOkResponse(jpAll.stream()
+				.map(journalpostId -> createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.S)
+						.settStatusEkspedert(true).ekspedertDato(ekspedertDato)
+						.postadresse(null))
+				.toArray(JournalpostWithDistribusjonsinfo.JournalpostWithDistribusjonsinfoBuilder[]::new)
+		);
+
+		assertEquals(10, distribusjonsinfoResponse.getJournalposter().getOppdatert().size());
+
+		Journalpost ekspedertJournalpost = joarkRepository.findById(jpAll.get(0)).orElseThrow(RuntimeException::new);
+		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
+
+		TestTransaction.start();
+		Journalpost ferdigstiltJournalpost2 = joarkRepository.findById(jpAll.get(1)).orElseThrow(RuntimeException::new);
+
+		assertEquals(UtsendingsKanalCode.S, ferdigstiltJournalpost2.getUtsendingskanal());
+		assertTrue(Duration.between(ekspedertDato.toInstant(), ferdigstiltJournalpost2.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
+
+		UtsendingsInfo utsendingsInfo = ferdigstiltJournalpost2.getUtsendingsInfo();
+		assertNull(utsendingsInfo.getNavNoVarsling());
+		assertNull(utsendingsInfo.getFysiskPostadresse());
+		assertNull(utsendingsInfo.getDigitalPostadresse());
+
+		TestTransaction.end();
+	}
+
+
+	@Test
 	public void bulkUpdateDistribusjonsinfoShouldRejectMismatchingUtsendingskanal() {
 		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
 		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();
@@ -198,7 +244,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		TestTransaction.start();
 
 		Journalpost journalpostEtterOppdateringsforsok = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
-		assertNull(journalpostEtterOppdateringsforsok.getUtsendingskanal());
+		assertEquals(UtsendingsKanalCode.S, journalpostEtterOppdateringsforsok.getUtsendingskanal());
 
 		TestTransaction.end();
 	}
@@ -212,7 +258,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 				.digitalpostkasse(new DigitalPost(null, "leverandør")));
 
 		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.S)
-				.postadresse(new Postadresse("gate gate", null, null, "1234", "agurk", "adfgh")));
+				.postadresse(new Postadresse("gate gate", null, null, "1234", "agurk", LANDKODE)));
 
 		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.NAV_NO)
 				.varsel(new NavNoVarsel(null, "Hei hei, her er en melding.")));
@@ -220,7 +266,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		TestTransaction.start();
 
 		Journalpost journalpostEtterOppdateringsforsok = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
-		assertNull(journalpostEtterOppdateringsforsok.getUtsendingskanal());
+		assertEquals(UtsendingsKanalCode.S, journalpostEtterOppdateringsforsok.getUtsendingskanal());
 
 		TestTransaction.end();
 	}
@@ -287,8 +333,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 	}
 
 	private BulkOppdaterDistribusjonsinfoResponse performBulkOppdaterDistribusjonsinfoAssertOkResponse(JournalpostWithDistribusjonsinfo.JournalpostWithDistribusjonsinfoBuilder... journalpostbuilders) {
-		BulkOppdaterDistribusjonsinfoResponse bulkOppdaterDistribusjonsinfoResponse = performBulkOppdaterDistribusjonsinfoAssertOkResponse(journalpostbuilders.length, 0, journalpostbuilders);
-		return bulkOppdaterDistribusjonsinfoResponse;
+		return performBulkOppdaterDistribusjonsinfoAssertOkResponse(journalpostbuilders.length, 0, journalpostbuilders);
 	}
 
 	private BulkOppdaterDistribusjonsinfoResponse performBulkOppdaterDistribusjonsinfoAssertOkResponse(int updated, int failed, JournalpostWithDistribusjonsinfo.JournalpostWithDistribusjonsinfoBuilder... journalpostbuilders) {

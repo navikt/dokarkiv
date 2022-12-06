@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import org.verapdf.core.ModelParsingException;
+import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
 import org.verapdf.pdfa.Foundries;
 import org.verapdf.pdfa.PDFAParser;
 import org.verapdf.pdfa.PDFAValidator;
-import org.verapdf.pdfa.VeraGreenfieldFoundryProvider;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 import org.verapdf.pdfa.results.TestAssertion;
 import org.verapdf.pdfa.results.ValidationResult;
@@ -34,7 +34,6 @@ public class PDFAValidatorUtil {
 	public static final Set NOT_A_PDFA = new HashSet<>(Arrays.asList("Dokumentet er ikke en PDFA"));
 	public static final Set NON_VALID_PDFA_VERSION = new HashSet<>(Arrays.asList("Dokumentet er ikke på et av de lovlige formatene"));
 
-	//Static init to initialize the FoundryProvider
 	static {
 		VeraGreenfieldFoundryProvider.initialise();
 	}
