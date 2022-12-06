@@ -598,6 +598,15 @@ public class TestUtils {
 				.build();
 	}
 
+	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createMinimalRequestWithAvsenderMottaker(JournalpostType journalpostType) {
+		return createMinimalRequest(journalpostType).avsenderMottaker(AvsenderMottaker.builder()
+				.id(AVSENDER_ID_PERSON)
+				.idType(AvsenderMottakerIdType.FNR)
+				.navn(AVSENDER_NAVN)
+				.land(AVSENDER_MOTTAKER_LAND)
+				.build());
+	}
+
 	public static OpprettJournalpostRequest createRequestAvsenderMottaker(JournalpostType journalpostType, AvsenderMottaker avsenderMottaker) {
 		return OpprettJournalpostRequest.builder()
 				.journalposttype(journalpostType)

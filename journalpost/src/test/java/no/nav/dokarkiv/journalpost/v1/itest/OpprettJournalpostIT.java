@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -49,6 +50,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OVERSTYR_INNSYN;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.ALTINN;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
@@ -93,6 +95,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanal;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -151,10 +154,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(AVSENDER_MOTTAKER_LAND, journalpost.getLand());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(5));
 
 		ArrayList<DokumentFil> dokumentFilList = Lists.newArrayList(dokumentFilRepository.findAll());
 		assertEquals(3, dokumentFilList.size());
@@ -171,7 +174,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 		restStsToken();
 
-		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
 				.overstyrInnsynsregler(overstyrInnsynsregler.toString())
 				.build();
 
@@ -184,11 +187,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(overstyrInnsynsregler, journalpost.getInnsyn());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(2, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(3));
 
 		assertEquals(OVERSTYR_INNSYN, aksjonsLoggList.get(1).getAksjon());
 		assertEquals(1, aksjonsLoggList.get(1).getArkivElementEndringer().size());
@@ -199,7 +202,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 		restStsToken();
 
-		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
 				.overstyrInnsynsregler(null)
 				.build();
 
@@ -212,11 +215,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNull(journalpost.getInnsyn());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(3));
 	}
 
 	@Test
@@ -237,10 +240,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalStatusCode.D, journalpost.getJournalstatus());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(5));
 	}
 
 	@Test
@@ -261,10 +264,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalStatusCode.D, journalpost.getJournalstatus());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(5));
 	}
 
 	@Test
@@ -295,7 +298,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(6));
 
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(1).getBruker());
@@ -325,11 +328,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals("0123", journalpost.getJournalForendeEnhetId());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(2, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(6));
 
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(1).getBruker());
@@ -412,7 +415,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		restStsToken();
 		happyAktoerIdStub();
 
-		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
 				.tema(TEMA_SYM)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
@@ -434,6 +437,16 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		Saksrelasjon saksrelasjon = joarkRepository.findAll().iterator().next().getSaksrelasjon();
 		assertEquals(saksrelasjon.getSakId(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList, hasSize(2));
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+
+		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(4));
+
+		assertEquals(SAKSTILKNYTNING, aksjonsLoggList.get(1).getAksjon());
+		assertThat(aksjonsLoggList.get(1).getArkivElementEndringer(), hasSize(3));
 	}
 
 	@Test
@@ -473,7 +486,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		restStsToken();
 		happyAktoerIdStub();
 
-		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
 				.tema(TEMA_TIL)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(AO01).build())
@@ -495,6 +508,16 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		Saksrelasjon saksrelasjon = joarkRepository.findAll().iterator().next().getSaksrelasjon();
 		assertEquals(saksrelasjon.getSakId(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		assertThat(aksjonsLoggList, hasSize(2));
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+
+		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(4));
+
+		assertEquals(SAKSTILKNYTNING, aksjonsLoggList.get(1).getAksjon());
+		assertThat(aksjonsLoggList.get(1).getArkivElementEndringer(), hasSize(4));
 	}
 
 	@Test
@@ -529,7 +552,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.PERSON);
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(aksjonsLoggList.get(0).getBruker(), FNR);
 	}
 
@@ -636,7 +659,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(joarkRepository.findAll().iterator().next().getBrukere().size(), 0);
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(aksjonsLoggList.get(0).getBruker(), UKJENT);
 	}
 
@@ -671,7 +694,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.ORGANISASJON);
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(aksjonsLoggList.get(0).getBruker(), BRUKER_ID_ORGANISASJON);
 	}
 
@@ -754,11 +777,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(5));
 	}
 
 	@Test
@@ -766,7 +789,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 		restStsToken();
 
-		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
 				.tema(TEMA_FOR)
 				.tittel(INNHOLD)
 				.journalfoerendeEnhet("9999")
@@ -806,11 +829,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(6));
 	}
 
 	@Test
@@ -818,7 +841,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 		restStsToken();
 
-		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
 				.tema(TEMA_FOR)
 				.tittel(INNHOLD)
 				.bruker(Bruker.builder()
@@ -856,11 +879,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNull(journalpost.getJournalForendeEnhetId());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
-		assertEquals(1, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertTrue(aksjonsLoggList.get(0).getArkivElementEndringer().isEmpty());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(6));
 	}
 
 	@Test
