@@ -73,4 +73,6 @@
 <!--	 Remove spam from VeraPDF -->
 	<logger name="org.verapdf.pd.font.Encoding" additivity="false" level="ERROR"/>
 	<logger name="org.verapdf.gf.model.factory.operators.OperatorParser" additivity="false" level="ERROR"/>
+	<logger name="org.verapdf.gf.model.impl.pd.util.PDResourcesHandler" additivity="false" level="ERROR"/>
+	<logger name="org.verapdf.cos.filters.COSFilterRegistry" additivity="false" level="ERROR"/>
 </included>
