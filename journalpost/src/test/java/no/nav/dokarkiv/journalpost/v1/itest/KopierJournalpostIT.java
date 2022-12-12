@@ -195,6 +195,34 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(kopiertJournalpost.getKanalReferanseId().length(), journalpost.getKanalReferanseId().length() + 9);
 	}
 
+	@Test
+	public void shouldUpdateJournalStatus() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalposttype(JournalpostTypeCode.U);
+
+		Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+
+		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
+		var requestEntity = new HttpEntity<>(headers);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN + KOPIER_QUERY + journalpostId, HttpMethod.POST, requestEntity, String.class);
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+
+		Journalpost kopiertJournalpost = joarkRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
+		journalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+
+		assertEquals(JournalStatusCode.FL, journalpost.getJournalstatus());
+		assertEquals(JournalStatusCode.D, kopiertJournalpost.getJournalstatus());
+
+	}
+
 
 	@AfterEach
 	public void closeTransaction() {
