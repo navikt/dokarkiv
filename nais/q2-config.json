@@ -183,6 +183,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "trygderetten-vedlegg-q2",
+      "namespace": "isa",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "jfr-generell-q2",
       "namespace": "isa",
       "cluster": "dev-fss"
