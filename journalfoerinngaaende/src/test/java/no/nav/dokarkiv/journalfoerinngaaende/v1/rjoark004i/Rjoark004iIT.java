@@ -66,8 +66,8 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
         assertThat(responseEntity.getBody(), is(notNullValue()));
 
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/postLogiskVedlegg_PersonUser_and_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+                getBearerTokenBody(requestHttpEntity.getHeaders(), HttpHeaders.AUTHORIZATION),
+                getBearerTokenBody(requestHttpEntity.getHeaders(), NAV_CONSUMER_TOKEN)))));
 
         TestTransaction.start();
         SkannetInnhold skannetinnhold = skannetInnholdRepository.findById(Long.parseLong(responseEntity.getBody()
@@ -96,7 +96,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + restStsToken(SERVICE_USER_ID));
 
         HttpEntity<PostLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
@@ -107,7 +107,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
         assertThat(responseEntity.getBody(), is(notNullValue()));
 
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/postLogiskVedlegg_only_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+                getBearerTokenBody(requestHttpEntity.getHeaders(), HttpHeaders.AUTHORIZATION)))));
 
         TestTransaction.start();
         SkannetInnhold skannetinnhold = skannetInnholdRepository.findById(Long.parseLong(responseEntity.getBody()
@@ -161,7 +161,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, openAmToken(PERSON_USER_ID));
 
         HttpEntity<PostLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
@@ -294,8 +294,8 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
         assertThat(responseEntity.getBody(), containsString("Oppdatering av logiskVedlegg med logiskVedleggId="));
 
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putLogiskVedlegg_PersonUser_and_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+                getBearerTokenBody(requestHttpEntity.getHeaders(), HttpHeaders.AUTHORIZATION),
+                getBearerTokenBody(requestHttpEntity.getHeaders(), NAV_CONSUMER_TOKEN)))));
 
         TestTransaction.start();
         Journalpost resultJournalpost = joarkRepository.findById(Long.parseLong(journalpostId)).get();
@@ -334,7 +334,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + restStsToken(SERVICE_USER_ID));
 
 
         HttpEntity<PutLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
@@ -346,7 +346,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
         assertThat(responseEntity.getBody(), containsString("Oppdatering av logiskVedlegg med logiskVedleggId="));
 
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putLogiskVedlegg_only_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+                getBearerTokenBody(requestHttpEntity.getHeaders(), HttpHeaders.AUTHORIZATION)))));
 
         TestTransaction.start();
         Journalpost resultJournalpost = joarkRepository.findById(Long.parseLong(journalpostId)).get();
@@ -385,7 +385,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, openAmToken(PERSON_USER_ID));
 
         HttpEntity<PutLogiskVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
@@ -560,13 +560,14 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
+        HttpEntity<?> httpEntity = createHeaders();
         ResponseEntity<String> responseEntity = restTemplate.exchange(
-                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, createHeaders(), String.class);
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, httpEntity, String.class);
 
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/deleteLogiskVedlegg_PersonUser_and_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+                getBearerTokenBody(httpEntity.getHeaders(), HttpHeaders.AUTHORIZATION),
+                getBearerTokenBody(httpEntity.getHeaders(), NAV_CONSUMER_TOKEN)))));
 
         TestTransaction.start();
         Journalpost resultJournalpost = joarkRepository.findById(journalpostId).get();
@@ -613,13 +614,13 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + restStsToken(SERVICE_USER_ID));
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(
                 JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, new HttpEntity(headers), String.class);
 
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/deleteLogiskVedlegg_only_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+                getBearerTokenBody(headers, HttpHeaders.AUTHORIZATION)))));
 
         TestTransaction.start();
         Journalpost resultJournalpost = joarkRepository.findById(journalpostId).get();
@@ -668,7 +669,7 @@ public class Rjoark004iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, openAmToken(PERSON_USER_ID));
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(
                 JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId + "/dokumenter/" + dokumentId + "/logiskeVedlegg/" + logiskVedleggId, HttpMethod.DELETE, new HttpEntity(headers), String.class);

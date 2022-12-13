@@ -3,12 +3,10 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.consumer.azure.TokenResponse;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.security.TokenGrantValidator;
 import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -34,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, JournalpostConfig.class, TokenGeneratorConfiguration.class},
+		classes = {CoreConfig.class, JournalpostConfig.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles({"itest", "wiremock"})
 @AutoConfigureWireMock(port = 0)

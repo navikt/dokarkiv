@@ -11,7 +11,9 @@ import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.core.security.SporingHandlerInterceptorTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
+import no.nav.security.mock.oauth2.MockOAuth2Server;
+import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback;
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +38,8 @@ import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -43,19 +47,18 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, TokenGeneratorConfiguration.class, SporingHandlerInterceptorTest.TestConfig.class})
+		classes = {CoreConfig.class, JournalfoerInngaaendeConfig.class, SporingHandlerInterceptorTest.TestConfig.class})
 @ActiveProfiles({"itest", "wiremock", "registry"})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @AutoConfigureDataLdap
 @AutoConfigureWireMock(port = 0)
+@EnableMockOAuth2Server
 @Transactional
 public abstract class AbstractJournalfoerInngaaendeV1Itest {
 
     public static final String BEARER_PREFIX = "Bearer ";
-    protected String OIDC_TOKEN_PERSON_USER_TEST;
-    protected String OIDC_TOKEN_SERVICE_USER_TEST;
     protected String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
     protected final String SERVICE_USER_ID = "srvdokarkiv";
     protected final String PERSON_USER_ID = "Z990782";
@@ -72,15 +75,8 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
     @Autowired
     protected EntityManager entityManager;
 
-	@BeforeEach
-    public void setUp() {
-        OIDC_TOKEN_PERSON_USER_TEST = getTokenWithSubject(PERSON_USER_ID);
-        OIDC_TOKEN_SERVICE_USER_TEST = getTokenWithSubject(SERVICE_USER_ID);
-    }
-
-    protected String getTokenWithSubject(final String subject) {
-        return restTemplate.getForObject("/local/jwt?subject=" + subject, String.class);
-    }
+    @Autowired
+    private MockOAuth2Server server;
 
 	@BeforeAll
     public static void setupItest() {
@@ -118,19 +114,19 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
         return journalpost;
     }
 
-    protected HttpEntity createHeaders() {
+    protected HttpEntity<?> createHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_PERSON_USER_TEST);
-        headers.add(NAV_CONSUMER_TOKEN, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
-        return new HttpEntity(headers);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + openAmToken(PERSON_USER_ID));
+        headers.add(NAV_CONSUMER_TOKEN, BEARER_PREFIX + restStsToken(SERVICE_USER_ID));
+        return new HttpEntity<>(headers);
     }
 
     protected HttpHeaders oidcHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_PERSON_USER_TEST);
-        headers.add(NAV_CONSUMER_TOKEN, BEARER_PREFIX +  OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + openAmToken(PERSON_USER_ID));
+        headers.add(NAV_CONSUMER_TOKEN, BEARER_PREFIX +  restStsToken(SERVICE_USER_ID));
         return headers;
     }
 
@@ -152,7 +148,31 @@ public abstract class AbstractJournalfoerInngaaendeV1Itest {
         return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(resourcename));
     }
 
-    protected String getOidcTokenBody(String oidcToken) {
-        return JWT.decode(oidcToken).getPayload();
+    protected String getBearerTokenBody(HttpHeaders headers, String header) {
+        return JWT.decode(headers.getFirst(header).split(BEARER_PREFIX)[1]).getPayload();
+    }
+
+    protected String restStsToken(String subject) {
+        return token("reststs", subject, Map.of());
+    }
+
+    protected String openAmToken(String subject) {
+        return token("openam", subject, Map.of());
+    }
+
+    protected String token(String issuer, String subject, Map<String, Object> claims) {
+        String audience = "aud-localhost";
+        return server.issueToken(
+                issuer,
+                "dokarkiv-itest",
+                new DefaultOAuth2TokenCallback(
+                        issuer,
+                        subject,
+                        "JWT",
+                        List.of(audience),
+                        claims,
+                        3600
+                )
+        ).serialize();
     }
 }

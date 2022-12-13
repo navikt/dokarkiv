@@ -50,7 +50,8 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
                 .endretAvNavn("saksbehandlersen"));
         Long journalpostId = journalpost.getJournalpostId();
 
-        HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+        HttpHeaders headers = oidcHeaders();
+        HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
         ResponseEntity<PutJournalpostResponse> responseEntity = restTemplate.exchange(
                 JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.PUT, requestHttpEntity, PutJournalpostResponse.class);
@@ -61,8 +62,8 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
         assertThat(responseEntity.getBody().isHarEndeligJF(), is(true));
 
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendejournalpost_PersonUser_and_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+                getBearerTokenBody(headers, HttpHeaders.AUTHORIZATION),
+                getBearerTokenBody(headers, NAV_CONSUMER_TOKEN)))));
 
 
         TestTransaction.start();
@@ -99,7 +100,7 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + restStsToken(SERVICE_USER_ID));
 
         HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
@@ -112,7 +113,7 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
         assertThat(responseEntity.getBody().isHarEndeligJF(), is(true));
 
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendejournalpost_only_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+                getBearerTokenBody(headers, HttpHeaders.AUTHORIZATION)))));
 
 
         TestTransaction.start();
@@ -146,7 +147,7 @@ public class Rjoark002iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_PERSON_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + openAmToken(PERSON_USER_ID));
 
         HttpEntity<PutJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 

@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.security.BasicAuthRestInterceptor;
 import no.nav.dokarkiv.core.security.LdapConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,13 +33,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @SpringBootTest(
 		webEnvironment = RANDOM_PORT,
 		classes = {CoreConfig.class, HentJournalsakinfoConfig.class, LdapConfig.class,
-				AbstractHentjournalsakinfoItest.Config.class, TokenGeneratorConfiguration.class},
+				AbstractHentjournalsakinfoItest.Config.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"}
 )
 @ActiveProfiles({"itest", "wiremock", "ldap"})

@@ -2,14 +2,13 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.consumer.azure.TokenResponse;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.dokarkiv.core.storage.GoogleCloudBucketStorage;
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +27,12 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {AbstractArkiverdokumentproduksjonItest.Config.class, CoreConfig.class,
-				ArkiverDokumentproduksjonConfig.class, TokenGeneratorConfiguration.class},
+				ArkiverDokumentproduksjonConfig.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@EnableMockOAuth2Server
 @Transactional
 public abstract class AbstractArkiverdokumentproduksjonItest {
 
