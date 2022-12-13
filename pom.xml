@@ -58,7 +58,7 @@
 		<!-- NAV -->
 		<modig-security.version>3.0.6</modig-security.version>
 		<abac-spring.version>1.6.0</abac-spring.version>
-		<token-support.version>2.1.9</token-support.version>
+		<token-support.version>2.1.4</token-support.version>
 		<verapdf.version>1.22.2</verapdf.version>
 		<microsoft.graph.version>5.31.0</microsoft.graph.version>
 
