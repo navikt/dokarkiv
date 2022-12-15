@@ -219,7 +219,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add("Nav-Consumer-Id", NAV_CONSUMER_ID);
-		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + getTokenWithSubject(serviceUser));
+		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + restStsToken(serviceUser));
 
 		return headers;
 	}

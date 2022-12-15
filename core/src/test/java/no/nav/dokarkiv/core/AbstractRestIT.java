@@ -13,6 +13,9 @@ import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
+import no.nav.security.mock.oauth2.MockOAuth2Server;
+import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback;
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
@@ -46,6 +51,7 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
 @AutoConfigureCache
 @AutoConfigureDataLdap
 @Transactional
+@EnableMockOAuth2Server
 public abstract class AbstractRestIT {
 	@Autowired
 	protected JoarkRepository joarkRepository;
@@ -67,6 +73,8 @@ public abstract class AbstractRestIT {
 	protected DokumentFilRepository dokumentFilRepository;
 	@Autowired
 	protected SakRepository sakRepository;
+	@Autowired
+	private MockOAuth2Server server;
 
 	protected static final String BEARER = "Bearer ";
 	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
@@ -106,8 +114,8 @@ public abstract class AbstractRestIT {
 	protected HttpHeaders createHeadersWithUserAndServiceUserToken() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + getTokenWithSubject(PERSON_USER_ID));
-		headers.add(NAV_CONSUMER_TOKEN, BEARER + getTokenWithSubject(SERVICE_USER_ID));
+		headers.add(HttpHeaders.AUTHORIZATION, BEARER + openAmToken(PERSON_USER_ID));
+		headers.add(NAV_CONSUMER_TOKEN, BEARER + restStsToken(SERVICE_USER_ID));
 		headers.add(NavHeaders.NAV_CALL_ID, "itest");
 		return headers;
 	}
@@ -119,8 +127,8 @@ public abstract class AbstractRestIT {
 	protected HttpHeaders createHeadersWithUserAndServiceUserTokenAndConsumerId(String consumerId) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setBearerAuth(getTokenWithSubject(PERSON_USER_ID));
-		headers.add(NAV_CONSUMER_TOKEN, BEARER + getTokenWithSubject(SERVICE_USER_ID));
+		headers.setBearerAuth(openAmToken(PERSON_USER_ID));
+		headers.add(NAV_CONSUMER_TOKEN, BEARER + restStsToken(SERVICE_USER_ID));
 		headers.add(NavHeaders.NAV_CALL_ID, "Nav-CallId");
 		headers.add(NavHeaders.NAV_CONSUMER_ID, consumerId);
 		return headers;
@@ -133,7 +141,7 @@ public abstract class AbstractRestIT {
 	protected HttpHeaders createHeadersWithServiceUserToken(String serviceUserId) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + getTokenWithSubject(serviceUserId));
+		headers.add(HttpHeaders.AUTHORIZATION, BEARER + restStsToken(serviceUserId));
 		headers.add(NavHeaders.NAV_CALL_ID, "itest");
 		return headers;
 	}
@@ -141,7 +149,7 @@ public abstract class AbstractRestIT {
 	protected HttpHeaders createHeadersWithServiceUserTokenAndUserIdHeader(String serviceUserId, String userId) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + getTokenWithSubject(serviceUserId));
+		headers.add(HttpHeaders.AUTHORIZATION, BEARER + restStsToken(serviceUserId));
 		headers.add(NavHeaders.NAV_CALL_ID, "itest");
 		headers.add(NavHeaders.NAV_USER_ID, userId);
 		return headers;
@@ -171,7 +179,30 @@ public abstract class AbstractRestIT {
 		return newJp;
 	}
 
-	protected String getTokenWithSubject(final String subject) {
-		return restTemplate.getForObject("/local/jwt?subject=" + subject, String.class);
+	protected String restStsToken(String subject) {
+		return token("reststs", subject, Map.of());
+	}
+
+	protected String openAmToken(String subject) {
+		return token("openam", subject, Map.of());
+	}
+
+	protected String azureToken(String subject) {
+		return token("azurev2", subject, Map.of());
+	}
+	protected String token(String issuer, String subject, Map<String, Object> claims) {
+		String audience = "aud-localhost";
+		return server.issueToken(
+				issuer,
+				"dokarkiv-itest",
+				new DefaultOAuth2TokenCallback(
+						issuer,
+						subject,
+						"JWT",
+						List.of(audience),
+						claims,
+						3600
+				)
+		).serialize();
 	}
 }
