@@ -45,7 +45,6 @@ public class TilknyttVedleggService {
 	private final AccessLookupJournalpost accessLookupJournalpost;
 	private final TokenGrantValidator tokenGrantValidator;
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
-	public static final String BEARER = "Bearer ";
 
 	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AccessLookupJournalpost accessLookupJournalpost, TokenGrantValidator tokenGrantValidator) {
 		this.joarkRepository = joarkRepository;
@@ -197,7 +196,7 @@ public class TilknyttVedleggService {
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.tilknyttetAvNavn(tilKnyttetAvNavn)
 				.build();
-		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(tilKnyttetAvNavn);
+		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		return journalpostDokumentInfoRelasjon;
 	}
 

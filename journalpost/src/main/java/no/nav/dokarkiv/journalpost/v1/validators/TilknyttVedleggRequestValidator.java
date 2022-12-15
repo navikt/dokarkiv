@@ -9,14 +9,11 @@ import org.slf4j.MDC;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-/**
- * @author Olav Røstvold Thorsen, Visma Consulting.
- */
 public class TilknyttVedleggRequestValidator {
 
 	public void validateRequest(TilknyttVedleggRequest request) {
 		if (isBlank(MDC.get(MDC_CONSUMER_ID))) {
-			throw new InvalidNavConsumerIdFunctionalException(String.format("Nav-Consumer-Id kan ikke være null"));
+			throw new InvalidNavConsumerIdFunctionalException("Fant ikke consumerId i MDC. Dette skal utledes automatisk fra token. Ta kontakt med #team_dokumentløsninger");
 		}
 		validateTilknyttetAvNavn(request.getTilknyttetAvNavn());
 		if (!request.getDokument().isEmpty()) {
@@ -36,7 +33,6 @@ public class TilknyttVedleggRequestValidator {
 		}
 		if (isBlank(dokumentVedlegg.getDokumentInfoId())) {
 			throw new InputValideringFeiletException("DokumentInfoId må være satt");
-
 		}
 	}
 }
