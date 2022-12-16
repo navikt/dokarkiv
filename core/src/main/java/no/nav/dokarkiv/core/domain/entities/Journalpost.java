@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -73,6 +74,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 @Getter
 @Setter
 @AllArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**
@@ -89,6 +91,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			@Parameter(name = "initial_value", value = "200000000")})
 	@Column(name = "journalpost_id", nullable = false)
 	@Setter(AccessLevel.NONE)
+	@ToString.Include
 	private Long journalpostId;
 
 	@Column(name = "journalf_enhet", length = 20)
@@ -855,16 +858,58 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		}
 	}
 
-	/**
-	 * Setter for the lestDato property.
-	 *
-	 * @param lestDato the lestDato to set
-	 */
 	public void setLestDato(OffsetDateTime lestDato) {
 		if (lestDato != null) {
 			this.lestDato = Date.from(lestDato.toInstant());
 		} else {
 			this.lestDato = null;
+		}
+	}
+	public void setAvsendtReturDato(Date avsendtReturDato) {
+		if (avsendtReturDato != null) {
+			this.avsendtReturDato = new Date(avsendtReturDato.getTime());
+		} else {
+			this.avsendtReturDato = null;
+		}
+	}
+
+	public void setSendtPrintDato(Date sendtPrintDato) {
+		if (sendtPrintDato != null) {
+			this.sendtPrintDato = new Date(sendtPrintDato.getTime());
+		} else {
+			this.sendtPrintDato = null;
+		}
+	}
+
+	public void setJournalDato(Date journalDato) {
+		if (journalDato != null) {
+			this.journalDato = new Date(journalDato.getTime());
+		} else {
+			this.journalDato = null;
+		}
+	}
+
+	public void setDokumentDato(Date dokumentDato) {
+		if (dokumentDato != null) {
+			this.dokumentDato = new Date(dokumentDato.getTime());
+		} else {
+			this.dokumentDato = null;
+		}
+	}
+
+	public void setMottattDato(Date mottattDato) {
+		if (mottattDato != null) {
+			this.mottattDato = new Date(mottattDato.getTime());
+		} else {
+			this.mottattDato = null;
+		}
+	}
+
+	public void setMottattAdressatDato(Date mottattAdressatDato) {
+		if (mottattAdressatDato != null) {
+			this.mottattAdressatDato = new Date(mottattAdressatDato.getTime());
+		} else {
+			this.mottattAdressatDato = null;
 		}
 	}
 
