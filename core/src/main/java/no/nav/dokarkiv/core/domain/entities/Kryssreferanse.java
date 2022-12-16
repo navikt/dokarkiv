@@ -37,14 +37,14 @@ public class Kryssreferanse extends AbstractPersistentVersionedDomainObjectWithK
 	@Column(name = "kryssreferanse_id", nullable = false)
 	private Long kryssreferanseId;
 	
-	@Column(name = "referanse_id", nullable = false)
+	@Column(name = "referanse_id", nullable = false, length = 20)
 	private String referanseId;
 	
 	@Column(name = "referanse_nr")
 	private Long referanseNr;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_referanse_t", nullable = false)
+	@Column(name = "k_referanse_t", nullable = false, length = 20)
 	private ReferanseTypeCode referanseType;
 	
 	/**

@@ -44,7 +44,7 @@ public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 	private String brukerId;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_bruker_t", nullable = false)
+	@Column(name = "k_bruker_t", nullable = false, length = 20)
 	private BrukerTypeCode brukerType;
 
 	/**

@@ -41,20 +41,20 @@ public class DokumentUrlInfo extends AbstractPersistentVersionedDomainObject {
 	@Column(name = "doctoken", nullable = false, length = 36)
 	private String doctoken;
 
-	@ManyToOne
-	@JoinColumn(name = "journalpost_id", nullable = false)
-	private Journalpost journalpost;
-
 	@Column(name = "tidspunkt", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date tidspunkt;
 
 	@Column(name = "fil_uuid", nullable = false, length = 36)
 	private String filUuid;
-	
+
 	@Column(name = "ttl_minutes")
 	private Long timeToLiveMinutes;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "journalpost_id", nullable = false)
+	private Journalpost journalpost;
+
 	/**
 	 * Default constructor.
 	 */

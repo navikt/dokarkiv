@@ -51,15 +51,15 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@Embedded
 	private JournalpostDokumentInfoRelasjonId embeddedId;
 
-	@Column(name = "tilknyttet_av_navn", nullable = false)
+	@Column(name = "tilknyttet_av_navn", nullable = false, length = 50)
 	private String tilknyttetAvNavn;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_tilkn_jp_som", nullable = false)
+	@Column(name = "k_tilkn_jp_som", nullable = false, length = 20)
 	private TilknyttetJournalpostSomCode tilknyttetJournalpostSom;
 
-	@Column(name = "k_skjerming_type")
 	@Enumerated(EnumType.STRING)
+	@Column(name = "k_skjerming_type", length = 50)
 	private SkjermingTypeCode skjermingType;
 
 	@ManyToOne(fetch = FetchType.LAZY)

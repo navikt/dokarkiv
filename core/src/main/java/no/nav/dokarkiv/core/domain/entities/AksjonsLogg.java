@@ -70,7 +70,7 @@ public class AksjonsLogg {
 	private String arkivsaksnummer;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "arkivsaksystem")
+	@Column(name = "arkivsaksystem", length = 50)
 	private FagsystemCode arkivsaksystem;
 
 	@Column(name = "hjemmel", length = 50)

@@ -93,7 +93,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "journalpost_id", nullable = false)
 	private Long journalpostId;
 
-	@Column(name = "journalf_enhet")
+	@Column(name = "journalf_enhet", length = 20)
 	private String journalForendeEnhetId;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -111,36 +111,36 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "dato_avs_retur")
 	private Date avsendtReturDato;
 
-	@Column(name = "innhold")
+	@Column(name = "innhold", length = 500)
 	private String innhold;
 
-	@Column(name = "krav_type")
+	@Column(name = "krav_type", length = 20)
 	private String kravtype;
 
-	@Column(name = "merknad")
+	@Column(name = "merknad", length = 2000)
 	private String merknad;
 
-	@Column(name = "fordeling")
+	@Column(name = "fordeling", length = 200)
 	private String fordeling;
 
-	@Column(name = "original_bestilt")
+	@Column(name = "original_bestilt", length = 1)
 	private Boolean originaltBestilt;
 
-	@Column(name = "opprettet_av_navn")
+	@Column(name = "opprettet_av_navn", length = 50)
 	private String opprettetAvNavn;
 
-	@Column(name = "endret_av_navn")
+	@Column(name = "endret_av_navn", length = 50)
 	private String endretAvNavn;
 
-	@Column(name = "kanal_referanse_id")
+	@Column(name = "kanal_referanse_id", length = 200)
 	private String kanalReferanseId;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_fagomrade", nullable = false)
+	@Column(name = "k_fagomrade", nullable = false, length = 20)
 	private FagomradeCode fagomrade;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_journal_s", nullable = false)
+	@Column(name = "k_journal_s", nullable = false, length = 20)
 	private JournalStatusCode journalstatus;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -157,7 +157,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_avsend_mottak_id_t", length = 20)
 	private AvsenderMottakerIdTypeCode avsenderMottakerIdType;
 
-	@Column(name = "journalfort_av_navn")
+	@Column(name = "journalfort_av_navn", length = 50)
 	private String journalfortAvNavn;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -165,21 +165,21 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	private Date mottattDato;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_mottaks_kanal")
+	@Column(name = "k_mottaks_kanal", length = 20)
 	private MottaksKanalCode mottakskanal;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_utsendings_kanal")
+	@Column(name = "k_utsendings_kanal", length = 20)
 	private UtsendingsKanalCode utsendingskanal;
 
-	@Column(name = "land")
+	@Column(name = "land", length = 50)
 	private String land;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_fakt_dis_kanal")
+	@Column(name = "k_fakt_dis_kanal", length = 20)
 	private FaktiskDistribusjonskanalCode faktiskDistribusjonskanal;
 
-	@Column(name = "elektronisk_distr")
+	@Column(name = "elektronisk_distr", length = 1)
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean elektroniskDistribusjon;
 
@@ -196,17 +196,17 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	private Date mottattAdressatDato;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_journalpost_t", nullable = false)
+	@Column(name = "k_journalpost_t", nullable = false, length = 20)
 	private JournalpostTypeCode journalposttype;
 
-	@Column(name = "signatur")
+	@Column(name = "signatur", length = 1)
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean signatur;
 
-	@Column(name = "k_behandlingstema")
+	@Column(name = "k_behandlingstema", length = 20)
 	private String behandlingstema;
 
-	@Column(name = "k_skjerming_type")
+	@Column(name = "k_skjerming_type", length = 50)
 	@Enumerated(EnumType.STRING)
 	private SkjermingTypeCode skjermingType;
 

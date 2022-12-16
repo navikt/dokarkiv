@@ -42,17 +42,17 @@ public class Saksrelasjon extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "saksrelasjon_id", nullable = false)
 	private Long saksrelasjonId;
 
-	@Column(name = "sak_nr_fk", nullable = false)
+	@Column(name = "sak_nr_fk", nullable = false, length = 20)
 	private String sakId;
 
 	@Column(name = "feilregistrert")
 	private Boolean feilregistrert;
 
-	@Column(name = "endret_av_navn")
+	@Column(name = "endret_av_navn", length = 50)
 	private String endretAvNavn;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_fagsystem", nullable = false)
+	@Column(name = "k_fagsystem", nullable = false, length = 20)
 	private FagsystemCode fagsystem;
 
 	@JsonIgnore

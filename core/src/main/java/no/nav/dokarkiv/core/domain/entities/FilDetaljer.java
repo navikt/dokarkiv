@@ -1,16 +1,12 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.annotations.GenericGenerator;
@@ -31,6 +27,10 @@ import javax.persistence.Transient;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
+
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Domain object that represents fildetaljer
@@ -54,23 +54,23 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	private Long fildetaljerId;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_fil_t", nullable = false)
+	@Column(name = "k_fil_t", nullable = false, length = 20)
 	private FilTypeCode filtype;
 	
 	@Column(name = "fil_uuid", nullable = false, length = 36)
 	private String filUuid;
 
-	@Column(name = "on_demand_id_fk")
+	@Column(name = "on_demand_id_fk", length = 50)
 	private String onDemandId;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_ondemand_inst")
+	@Column(name = "k_ondemand_inst", length = 20)
 	private OnDemandInstansCode onDemandInstans;
 	
-	@Column(name = "fil_navn")
+	@Column(name = "fil_navn", length = 200)
 	private String filnavn;
 	
-	@Column(name = "batch_navn")
+	@Column(name = "batch_navn", length = 200)
 	private String batchNavn;
 	
 	@Column(name = "fil_storrelse")
@@ -80,11 +80,11 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	private Long metaforceInstanceId;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_variant_format", nullable = false)
+	@Column(name = "k_variant_format", nullable = false, length = 20)
 	private VariantFormatCode variantFormat;
 
-	@Column(name = "k_skjerming_type")
 	@Enumerated(EnumType.STRING)
+	@Column(name = "k_skjerming_type", length = 50)
 	private SkjermingTypeCode skjermingType;
 
 	@JsonIgnore

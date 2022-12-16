@@ -25,33 +25,33 @@ public class DokumentmalInfo extends AbstractPersistentDomainObject {
 	private static final long serialVersionUID = -7954343015588597536L;
 
 	@Id
-	@Column(name = "brev_kode", nullable = false)
+	@Column(name = "brev_kode", nullable = false, length = 50)
 	private String brevkode;
 	
-	@Column(name = "brev_gruppe", nullable = false)
+	@Column(name = "brev_gruppe", nullable = false, length = 50)
 	private String brevgruppe;
 	
-	@Column(name = "tittel", nullable = false)
+	@Column(name = "tittel", nullable = false, length = 500)
 	private String tittel;
 	
-	@Column(name = "redigerbart", nullable = false)
+	@Column(name = "redigerbart", nullable = false, length = 1)
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean redigerbart;
 	
-	@Column(name = "organ_internt")
+	@Column(name = "organ_internt", length = 1)
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean organInternt;
 	
-	@Column(name = "sensitivt")
+	@Column(name = "sensitivt", length = 1)
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean sensitivt;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_kategori_t", nullable = false)
+	@Column(name = "k_kategori_t", nullable = false, length = 20)
 	private DokumentKategoriCode dokumentKategori;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_journalpost_t", nullable = false)
+	@Column(name = "k_journalpost_t", nullable = false, length = 20)
 	private JournalpostTypeCode journalpostType;
 
 	/**

@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,6 +45,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 /**
  * Domain entity class that represents document info.
  *
@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "T_DOKUMENT_INFO")
-@Builder  (toBuilder = true)
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKilde {
 
@@ -79,45 +79,45 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "dokument_info_id", nullable = false)
 	private Long dokumentInfoId;
 
-	@Column(name = "brev_kode")
+	@Column(name = "brev_kode", length = 50)
 	private String brevkode;
 
-	@Column(name = "brev_gruppe")
+	@Column(name = "brev_gruppe", length = 50)
 	private String brevgruppe;
 
-	@Column(name = "konvertert_system")
+	@Column(name = "konvertert_system", length = 20)
 	private String konvertertFraSystem;
 
 	@Column(name = "sensitivt")
 	private Boolean sensitivt;
 
-	@Column(name = "endret_av_navn")
+	@Column(name = "endret_av_navn", length = 50)
 	private String endretAvNavn;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_kategori_t")
+	@Column(name = "k_kategori_t", length = 20)
 	private DokumentKategoriCode kategori;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_dokument_s")
+	@Column(name = "k_dokument_s", length = 20)
 	private DokumentStatusCode dokumentstatus;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_dok_ferdig")
 	private Date dokumentFerdigDato;
 
-	@Column(name = "tittel")
+	@Column(name = "tittel", length = 500)
 	private String tittel;
 
-	@Column(name = "innskr_partsinnsyn")
+	@Column(name = "innskr_partsinnsyn", length = 1)
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean innskrenketPartsinnsyn;
 
-	@Column(name = "innskr_partsinnsyn_tredjepart")
+	@Column(name = "innskr_partsinnsyn_tredjepart", length = 1)
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean innskrenketPartsinnsynFraTredjepart;
 
-	@Column(name = "organ_internt")
+	@Column(name = "organ_internt", length = 1)
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean organInternt;
 
@@ -125,14 +125,18 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@JoinColumn(name = "orig_journalpost_id")
 	private Journalpost originalJournalpost;
 
-	@Column(name = "dokumenttype_id")
+	@Column(name = "dokumenttype_id", length = 20)
 	private String dokumenttypeId;
 
 	@Column(name = "dato_kassert")
 	private LocalDateTime datoKassert;
 
-	@Column(name = "kassert_av_navn")
+	@Column(name = "kassert_av_navn", length = 20)
 	private String kassertAvNavn;
+
+	@Column(name = "kassert", length = 1)
+	@Type(type = "org.hibernate.type.TrueFalseType")
+	private Boolean kassert;
 
 	@ElementCollection
 	@JoinTable(name = "t_dok_info_tillegg", joinColumns = @JoinColumn(name = "dokument_info_id", nullable = false))
@@ -157,10 +161,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Builder.Default
 	private Set<FilDetaljer> fildetaljerListe = new HashSet<>();
 
-	@Column(name = "kassert")
-	@Type(type = "org.hibernate.type.TrueFalseType")
-	private Boolean kassert;
-
 
 	/**
 	 * Default constructor.
@@ -172,7 +172,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param dokumentInfoId DB-id for the instance.
-	 * @param version DB-version for the instance.
+	 * @param version        DB-version for the instance.
 	 */
 	public DokumentInfo(Long dokumentInfoId, long version) {
 		this.dokumentInfoId = dokumentInfoId;
@@ -686,7 +686,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * Sets whether or not a third-party source has marked this document as unviewable.
 	 *
 	 * @param innskrenketPartsinnsyn The boolean value to which the innskrenketPartsinnsynFraTredjepart
-	 * property should be set.
+	 *                               property should be set.
 	 */
 	public void setInnskrenketPartsinnsynFraTredjepart(Boolean innskrenketPartsinnsyn) {
 		this.innskrenketPartsinnsynFraTredjepart = innskrenketPartsinnsyn;

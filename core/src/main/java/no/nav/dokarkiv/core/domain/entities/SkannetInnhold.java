@@ -41,7 +41,7 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 	@Column(name = "vedlegg_innhold", length = VEDLEGG_INNHOLD_LENGTH)
 	private String vedleggInnhold;
 
-	@Column(name = "dokumenttypeid")
+	@Column(name = "dokumenttypeid", length = 50)
 	private String dokumenttypeid;
 
 	/**
