@@ -4,8 +4,7 @@ import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
 
 /**
  * Enum for codes in T_K_FAGOMRADE.
- * 
- * @author Thomas Eugen Bjørge, Sirius IT
+ *
  */
 public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 
@@ -126,7 +125,17 @@ public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 	/** Barnepensjon */
 	EYB,
 	/** Omstillingsstønad */
-	EYO;
+	EYO,
+	/** Kontroll anmeldelse */
+	KTA,
+	/** Fiskerpensjon */
+	FIP,
+	/** Arbeidsrådgivning skjermet */
+	ARS,
+	/** Arbeidsrådgivning psykologtester */
+	ARP,
+	/** Klage lønnsgaranti */
+	KLL;
 
 	/** {@inheritDoc} */
 	@Override
