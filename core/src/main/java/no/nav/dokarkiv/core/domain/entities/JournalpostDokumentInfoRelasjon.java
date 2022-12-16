@@ -1,8 +1,11 @@
 package no.nav.dokarkiv.core.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -25,14 +28,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * Domain object that represents the table used to keep track of the relation between
- * Journalposts and DokumentInfos
- *
- * @author Per Kristian Foss, Visma Sirius
+ * Mange til mange relasjon mellom {@link Journalpost} og {@link DokumentInfo}
  */
 @Entity
 @Table(name = "T_JP_DOK_INFO_REL")
 @Builder
+@Getter
+@Setter
 @AllArgsConstructor
 public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersionedDomainObjectWithKilde {
 
@@ -46,9 +48,11 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@GenericGenerator(name = "journalpostDokumentInfoRelasjon_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
 			parameters = {@Parameter(name = "sequence_name", value = "T_JP_DOK_INFO_REL_SEQ")})
 	@Column(name = "jp_dok_info_rel_id", nullable = false)
+	@Setter(AccessLevel.NONE)
 	private Long journalpostDokumentInfoRelasjonId;
 
 	@Embedded
+	@Setter(AccessLevel.NONE)
 	private JournalpostDokumentInfoRelasjonId embeddedId;
 
 	@Column(name = "tilknyttet_av_navn", nullable = false, length = 50)
@@ -60,6 +64,7 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_skjerming_type", length = 50)
+	@Setter(AccessLevel.NONE)
 	private SkjermingTypeCode skjermingType;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -142,96 +147,10 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 		return tilknyttetJournalpostSom == TilknyttetJournalpostSomCode.VEDLEGG;
 	}
 
-	/**
-	 * Getter for the journalpostDokumentInfoRelasjonId property.
-	 *
-	 * @return the journalpostDokumentInfoRelasjonId
-	 */
-	public Long getJournalpostDokumentInfoRelasjonId() {
-		return journalpostDokumentInfoRelasjonId;
-	}
-
-	/**
-	 * Getter for the tilknyttetAvNavn property.
-	 *
-	 * @return the tilknyttetAvNavn
-	 */
-	public String getTilknyttetAvNavn() {
-		return tilknyttetAvNavn;
-	}
-
-	/**
-	 * Setter for the tilknyttetAvNavn property.
-	 *
-	 * @param tilknyttetAvNavn the tilknyttetAvNavn to set
-	 */
-	public void setTilknyttetAvNavn(String tilknyttetAvNavn) {
-		this.tilknyttetAvNavn = tilknyttetAvNavn;
-	}
-
-	/**
-	 * Getter for the tilknyttetJournalpostSom property.
-	 *
-	 * @return the tilknyttetJournalpostSom
-	 */
-	public TilknyttetJournalpostSomCode getTilknyttetJournalpostSom() {
-		return tilknyttetJournalpostSom;
-	}
-
-	/**
-	 * Setter for the tilknyttetJournalpostSom property.
-	 *
-	 * @param tilknyttetJournalpostSom the tilknyttetJournalpostSom to set
-	 */
-	public void setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode tilknyttetJournalpostSom) {
-		this.tilknyttetJournalpostSom = tilknyttetJournalpostSom;
-	}
-
-	public SkjermingTypeCode getSkjermingType() {
-		return skjermingType;
-	}
-
-	public void setSkjermingType(SkjermingTypeCode skjermingType) {
-		throw new UnsupportedOperationException("Skjerming skal bare settes gjennom SkjermingService");
-	}
-
-	/**
-	 * Getter for the dokumentInfo property.
-	 *
-	 * @return the dokumentInfo
-	 */
-	public DokumentInfo getDokumentInfo() {
-		return dokumentInfo;
-	}
-
-	/**
-	 * Setter for the dokumentInfo property.
-	 *
-	 * @param dokumentInfo the dokumentInfo to set
-	 */
 	public void setDokumentInfo(DokumentInfo dokumentInfo) {
 		this.dokumentInfo = dokumentInfo;
 		if (dokumentInfo != null && dokumentInfo.getJournalpostRelasjoner() != null) {
 			dokumentInfo.addJournalpostRelasjon(this);
 		}
 	}
-
-	/**
-	 * Getter for the journalpost property.
-	 *
-	 * @return the journalpost
-	 */
-	public Journalpost getJournalpost() {
-		return journalpost;
-	}
-
-	/**
-	 * Setter for the journalpost property.
-	 *
-	 * @param journalpost the journalpost to set
-	 */
-	public void setJournalpost(Journalpost journalpost) {
-		this.journalpost = journalpost;
-	}
-
 }

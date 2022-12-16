@@ -26,7 +26,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author Ugur Alpay Cenar, Visma Consulting.
+ * Inneholder vesentlige endringer på Journalpost eller DokumentInfo.
+ *
+ * @see ArkivElementEndring
  */
 @Entity
 @Table(name = "T_AKSJONSLOGG")

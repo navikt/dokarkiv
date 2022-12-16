@@ -17,7 +17,7 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 /**
- * @author Ugur Alpay Cenar, Visma Consulting.
+ * Inneholder metadata om sakstilknytningen til fagsystemet.
  */
 @Entity
 @Table(name = "SAK")

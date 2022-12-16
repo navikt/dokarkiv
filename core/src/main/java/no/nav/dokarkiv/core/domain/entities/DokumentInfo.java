@@ -50,10 +50,7 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 /**
- * Domain entity class that represents document info.
- *
- * @author Thomas Eugen Bjørge, Sirius IT
- * @author Thomas Kåsene, Visma Consulting AS
+ * Holder rede på metadata for et dokument.
  */
 @Entity
 @Table(name = "T_DOKUMENT_INFO")
@@ -202,19 +199,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		if (dokumentInfoIdIsSet()) {
 			verifyStringNotBlank(endretAvNavn, "endretAvNavn");
 		}
-		verifyDokumentStatus(journalpost);
-
-		verifyFieldsForNonLenientJournalstatuses(journalpost);
-		verifyFieldsForEndeligJournalforing(journalpost);
-	}
-
-	/**
-	 * Verify that all mandatory fields are set except endretAvNavn. Some fields are only required
-	 * given certain journalStatuses and journalpostTypes.
-	 *
-	 * @param journalpost The journalpost which has a relation to this DokumentInfo
-	 */
-	public void verifyMandatoryFieldsForInngaaendeJournal(Journalpost journalpost) {
 		verifyDokumentStatus(journalpost);
 
 		verifyFieldsForNonLenientJournalstatuses(journalpost);
@@ -884,7 +868,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	public boolean isKassert() {
-		return this.kassert == null ? false : this.kassert;
+		return this.kassert != null && this.kassert;
 	}
 
 }

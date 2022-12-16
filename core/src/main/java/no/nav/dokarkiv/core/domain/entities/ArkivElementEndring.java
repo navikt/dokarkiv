@@ -23,9 +23,10 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 
-
 /**
- * @author Ugur Alpay Cenar, Visma Consulting.
+ * Sporer endringene på metadata felt knyttet til Journalpost eller DokumentInfo.
+ *
+ * @see AksjonsLogg
  */
 @Entity
 @Table(name = "t_arkiv_element_endring")
@@ -67,7 +68,7 @@ public class ArkivElementEndring {
 	 */
 	public String toStringElementFraTil() {
 		// Håndterer tilVerdi som er en timestamp, i tilfelle disse er litt forskjellig under test.
-		if(tilVerdi != null && tilVerdi.matches("\\d{4}-\\d{2}-\\d{2}.*")){
+		if (tilVerdi != null && tilVerdi.matches("\\d{4}-\\d{2}-\\d{2}.*")) {
 			return String.format("ArkivElementEndring(arkivElement=%s, fraVerdi=%s, tilVerdi=%s)", arkivElement, fraVerdi, tilVerdi.split("\\.")[0]);
 		} else {
 			return String.format("ArkivElementEndring(arkivElement=%s, fraVerdi=%s, tilVerdi=%s)", arkivElement, fraVerdi, tilVerdi);

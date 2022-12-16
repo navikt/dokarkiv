@@ -7,24 +7,21 @@ import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 
 /**
- * Abstract base class for all persistent domain objects.
- * 
- * @author Thomas Eugen Bjørge, Sirius IT
- * @author Magnus Skuland, Sirius IT
+ * Abstrakt klasse for sporingsinfo under oppretting og endring av entitet.
  */
 @SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class AbstractPersistentDomainObject implements Serializable {
 
 	/**
-	 * All persistent classes need a change stamp:
+	 * All persistent classes need a change stamp
 	 */
 	@Embedded
 	private ChangeStamp changeStamp;
 
 	/**
 	 * Returns the change stamp
-	 * 
+	 *
 	 * @return The change stamp
 	 */
 	public ChangeStamp getChangeStamp() {
@@ -33,15 +30,16 @@ public abstract class AbstractPersistentDomainObject implements Serializable {
 
 	/**
 	 * Sets the change stamp.
-	 * 
-	 * @param changeStamp
-	 *            The change stamp to set
+	 *
+	 * @param changeStamp The change stamp to set
 	 */
 	public void setChangeStamp(ChangeStamp changeStamp) {
 		this.changeStamp = changeStamp;
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

@@ -1,13 +1,15 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FaktiskDistribusjonskanalCode;
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -63,18 +65,13 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 
 /**
- * Domain entity that represents journalposts.
- *
- * @author Thomas Eugen Bjørge, Sirius IT
- * @author Magnus Skuland, Sirius IT
- * @author Stian Landsnes, Sirius IT
- * @author Rune Romundstad, Sirius IT
- * @author Thao Thanh Nguyen, Visma Sirius
- * @author Lamisi Gurah Blackman, Accenture
+ * Inneholder metadata om en samling av dokumenter, hvilken bruker de gjelder og sakstilknytning.
  */
 @Entity
 @Table(name = "T_JOURNALPOST")
 @Builder(toBuilder = true)
+@Getter
+@Setter
 @AllArgsConstructor
 public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKilde {
 
@@ -91,6 +88,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			@Parameter(name = "sequence_name", value = "T_JOURNALPOST_SEQ"),
 			@Parameter(name = "initial_value", value = "200000000")})
 	@Column(name = "journalpost_id", nullable = false)
+	@Setter(AccessLevel.NONE)
 	private Long journalpostId;
 
 	@Column(name = "journalf_enhet", length = 20)
@@ -208,6 +206,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	@Column(name = "k_skjerming_type", length = 50)
 	@Enumerated(EnumType.STRING)
+	@Setter(AccessLevel.NONE)
 	private SkjermingTypeCode skjermingType;
 
 	@Column(name = "k_innsyn", length = 50)
@@ -307,17 +306,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	public void verifyMandatoryFieldsSkipJournalforendeEnhetId() {
 		verifyAlwaysRequiredFields();
 		verifyFieldsForNonLenientStatuses();
-		verifyFieldsForEndeligJournalforing();
-	}
-
-	/**
-	 * Verify that all mandatory fields are set except endretAvNavn before ferdigstilling.
-	 * Some fields are only required given certain journalStatuses and journalpostTypes.
-	 */
-	public void verifyMandatoryFieldsNotEndretAvNavn() {
-		verifyMinimumAlwaysRequiredFields();
-		verifyFieldsForNonLenientStatuses();
-		verifyJournalforendeEnhetIdForJournalfortJournalforing();
 		verifyFieldsForEndeligJournalforing();
 	}
 
@@ -701,306 +689,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	/**
-	 * Getter for the antallRetur property.
-	 *
-	 * @return the antallRetur
-	 */
-	public Integer getAntallRetur() {
-		return antallRetur;
-	}
-
-	/**
-	 * Setter for the antallRetur property.
-	 *
-	 * @param antallRetur the antallRetur to set
-	 */
-	public void setAntallRetur(Integer antallRetur) {
-		this.antallRetur = antallRetur;
-	}
-
-	/**
-	 * Getter for the datoAvsRetur property.
-	 *
-	 * @return the datoAvsRetur
-	 */
-	public Date getAvsendtReturDato() {
-		if (avsendtReturDato != null) {
-			return new Date(avsendtReturDato.getTime());
-		}
-		return null;
-	}
-
-	/**
-	 * Setter for the datoAvsRetur property.
-	 *
-	 * @param avsendtReturDato the datoAvsRetur to set
-	 */
-	public void setAvsendtReturDato(Date avsendtReturDato) {
-		if (avsendtReturDato != null) {
-			this.avsendtReturDato = new Date(avsendtReturDato.getTime());
-		} else {
-			this.avsendtReturDato = null;
-		}
-	}
-
-	/**
-	 * Getter for the datoSendtPrint property.
-	 *
-	 * @return the datoSendtPrint
-	 */
-	public Date getSendtPrintDato() {
-		if (sendtPrintDato != null) {
-			return new Date(sendtPrintDato.getTime());
-		}
-		return null;
-	}
-
-	/**
-	 * Setter for the datoSendtPrint property.
-	 *
-	 * @param sendtPrintDato the datoSendtPrint to set
-	 */
-	public void setSendtPrintDato(Date sendtPrintDato) {
-		if (sendtPrintDato != null) {
-			this.sendtPrintDato = new Date(sendtPrintDato.getTime());
-		} else {
-			this.sendtPrintDato = null;
-		}
-	}
-
-	/**
-	 * Getter for the journalDato property.
-	 *
-	 * @return the journalDato
-	 */
-	public Date getJournalDato() {
-		if (journalDato != null) {
-			return new Date(journalDato.getTime());
-		}
-		return null;
-	}
-
-	/**
-	 * Setter for the journalDato property.
-	 *
-	 * @param journalDato the journalDato to set
-	 */
-	public void setJournalDato(Date journalDato) {
-		if (journalDato != null) {
-			this.journalDato = new Date(journalDato.getTime());
-		} else {
-			this.journalDato = null;
-		}
-	}
-
-	/**
-	 * Getter for the kanalReferanseId property.
-	 *
-	 * @return the kanalReferanseId
-	 */
-	public String getKanalReferanseId() {
-		return kanalReferanseId;
-	}
-
-	/**
-	 * Setter for the kanalReferanseId property.
-	 *
-	 * @param kanalReferanseId the kanalReferanseId to set
-	 */
-	public void setKanalReferanseId(String kanalReferanseId) {
-		this.kanalReferanseId = kanalReferanseId;
-	}
-
-	/**
-	 * Getter for the endretAvNavn property.
-	 *
-	 * @return the endretAvNavn
-	 */
-	public String getEndretAvNavn() {
-		return endretAvNavn;
-	}
-
-	/**
-	 * Setter for the endretAvNavn property.
-	 *
-	 * @param endretAvNavn the endretAvNavn to set
-	 */
-	public void setEndretAvNavn(String endretAvNavn) {
-		this.endretAvNavn = endretAvNavn;
-	}
-
-	/**
-	 * Getter for the fagomrade property.
-	 *
-	 * @return the fagomrade
-	 */
-	public FagomradeCode getFagomrade() {
-		return fagomrade;
-	}
-
-	/**
-	 * Setter for the fagomrade property.
-	 *
-	 * @param fagomrade the fagomrade to set
-	 */
-	public void setFagomrade(FagomradeCode fagomrade) {
-		this.fagomrade = fagomrade;
-	}
-
-	/**
-	 * Getter for the fordeling property.
-	 *
-	 * @return the fordeling
-	 */
-	public String getFordeling() {
-		return fordeling;
-	}
-
-	/**
-	 * Setter for the fordeling property.
-	 *
-	 * @param fordeling the fordeling to set
-	 */
-	public void setFordeling(String fordeling) {
-		this.fordeling = fordeling;
-	}
-
-	/**
-	 * Getter for the innhold property.
-	 *
-	 * @return the innhold
-	 */
-	public String getInnhold() {
-		return innhold;
-	}
-
-	/**
-	 * Setter for the innhold property.
-	 *
-	 * @param innhold the innhold to set
-	 */
-	public void setInnhold(String innhold) {
-		this.innhold = innhold;
-	}
-
-	/**
-	 * Getter for the journalForendeEnhetId property.
-	 *
-	 * @return the journalForendeEnhetId
-	 */
-	public String getJournalForendeEnhetId() {
-		return journalForendeEnhetId;
-	}
-
-	/**
-	 * Setter for the journalForendeEnhetId property.
-	 *
-	 * @param journalForendeEnhetId the journalForendeEnhetId to set
-	 */
-	public void setJournalForendeEnhetId(String journalForendeEnhetId) {
-		this.journalForendeEnhetId = journalForendeEnhetId;
-	}
-
-	/**
-	 * Getter for the journalstatus property.
-	 *
-	 * @return the journalstatus
-	 */
-	public JournalStatusCode getJournalstatus() {
-		return journalstatus;
-	}
-
-	/**
-	 * Setter for the journalstatus property.
-	 *
-	 * @param journalstatus the journalstatus to set
-	 */
-	public void setJournalstatus(JournalStatusCode journalstatus) {
-		this.journalstatus = journalstatus;
-	}
-
-	/**
-	 * Getter for the kravType property.
-	 *
-	 * @return the kravType
-	 */
-	public String getKravtype() {
-		return kravtype;
-	}
-
-	/**
-	 * Setter for the kravType property.
-	 *
-	 * @param kravtype the kravType to set
-	 */
-	public void setKravtype(String kravtype) {
-		this.kravtype = kravtype;
-	}
-
-	/**
-	 * Getter for the merknad property.
-	 *
-	 * @return the merknad
-	 */
-	public String getMerknad() {
-		return merknad;
-	}
-
-	/**
-	 * Setter for the merknad property.
-	 *
-	 * @param merknad the merknad to set
-	 */
-	public void setMerknad(String merknad) {
-		this.merknad = merknad;
-	}
-
-	/**
-	 * Getter for the opprettetAvNavn property.
-	 *
-	 * @return the opprettetAvNavn
-	 */
-	public String getOpprettetAvNavn() {
-		return opprettetAvNavn;
-	}
-
-	/**
-	 * Setter for the opprettetAvNavn property.
-	 *
-	 * @param opprettetAvNavn the opprettetAvNavn to set
-	 */
-	public void setOpprettetAvNavn(String opprettetAvNavn) {
-		this.opprettetAvNavn = opprettetAvNavn;
-	}
-
-	/**
-	 * Getter for the originalBestilt property.
-	 *
-	 * @return the originalBestilt
-	 */
-	public Boolean getOriginaltBestilt() {
-		return originaltBestilt;
-	}
-
-	/**
-	 * Setter for the originalBestilt property.
-	 *
-	 * @param originaltBestilt the originalBestilt to set
-	 */
-	public void setOriginaltBestilt(Boolean originaltBestilt) {
-		this.originaltBestilt = originaltBestilt;
-	}
-
-	/**
-	 * Getter for the journalpostId property.
-	 *
-	 * @return the journalpostId
-	 */
-	public Long getJournalpostId() {
-		return journalpostId;
-	}
-
-	/**
 	 * Getter for the brukere property.
 	 *
 	 * @return the brukere
@@ -1036,16 +724,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		brukere.clear();
 	}
 
-
-	/**
-	 * Getter for the saksrelasjon property.
-	 *
-	 * @return the saksrelasjon
-	 */
-	public Saksrelasjon getSaksrelasjon() {
-		return saksrelasjon;
-	}
-
 	/**
 	 * Whether this Journalpost is feilregistrert or not. Checks the attached sak, if any exists.
 	 *
@@ -1065,363 +743,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		if (saksrelasjon != null) {
 			saksrelasjon.setJournalpost(this);
 		}
-	}
-
-	/**
-	 * Getter for the dokumentDato property.
-	 *
-	 * @return the dokumentDato
-	 */
-	public Date getDokumentDato() {
-		if (dokumentDato != null) {
-			return new Date(dokumentDato.getTime());
-		}
-		return null;
-	}
-
-	/**
-	 * Setter for the dokumentDato property.
-	 *
-	 * @param dokumentDato the dokumentDato to set
-	 */
-	public void setDokumentDato(Date dokumentDato) {
-		if (dokumentDato != null) {
-			this.dokumentDato = new Date(dokumentDato.getTime());
-		} else {
-			this.dokumentDato = null;
-		}
-	}
-
-	/**
-	 * Getter for the avsenderMottaker property.
-	 *
-	 * @return the avsenderMottaker
-	 */
-	public String getAvsenderMottaker() {
-		return avsenderMottaker;
-	}
-
-	/**
-	 * Setter for the avsenderMottaker property.
-	 *
-	 * @param avsenderMottaker the avsenderMottaker to set
-	 */
-	public void setAvsenderMottaker(String avsenderMottaker) {
-		this.avsenderMottaker = avsenderMottaker;
-	}
-
-	/**
-	 * Getter for the avsenderMottakerId property.
-	 *
-	 * @return the avsenderMottakerId
-	 */
-	public String getAvsenderMottakerId() {
-		return avsenderMottakerId;
-	}
-
-	/**
-	 * Setter for the avsenderMottakerId property.
-	 *
-	 * @param avsenderMottakerId the avsenderMottakerId to set
-	 */
-	public void setAvsenderMottakerId(String avsenderMottakerId) {
-		this.avsenderMottakerId = avsenderMottakerId;
-	}
-
-	/**
-	 * Getter for the avsenderMottakerIdType property.
-	 *
-	 * @return the avsenderMottakerIdType
-	 */
-	public AvsenderMottakerIdTypeCode getAvsenderMottakerIdType() {
-		return avsenderMottakerIdType;
-	}
-
-	/**
-	 * Setter for the avsenderMottakerIdType property.
-	 *
-	 * @param avsenderMottakerIdType the avsenderMottakerIdType to set
-	 */
-	public void setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode avsenderMottakerIdType) {
-		this.avsenderMottakerIdType = avsenderMottakerIdType;
-	}
-
-	/**
-	 * Getter for the journalfortAvNavn property.
-	 *
-	 * @return the journalfortAvNavn
-	 */
-	public String getJournalfortAvNavn() {
-		return journalfortAvNavn;
-	}
-
-	/**
-	 * Setter for the journalfortAvNavn property.
-	 *
-	 * @param journalfortAvNavn the journalfortAvNavn to set
-	 */
-	public void setJournalfortAvNavn(String journalfortAvNavn) {
-		this.journalfortAvNavn = journalfortAvNavn;
-	}
-
-	/**
-	 * Getter for the mottattDato property.
-	 *
-	 * @return the mottattDato
-	 */
-	public Date getMottattDato() {
-		if (mottattDato != null) {
-			return new Date(mottattDato.getTime());
-		}
-		return null;
-	}
-
-	/**
-	 * Setter for the mottattDato property.
-	 *
-	 * @param mottattDato the mottattDato to set
-	 */
-	public void setMottattDato(Date mottattDato) {
-		if (mottattDato != null) {
-			this.mottattDato = new Date(mottattDato.getTime());
-		} else {
-			this.mottattDato = null;
-		}
-	}
-
-	/**
-	 * Getter for the mottakskanal property.
-	 *
-	 * @return the mottakskanal
-	 */
-	public MottaksKanalCode getMottakskanal() {
-		return mottakskanal;
-	}
-
-	/**
-	 * Setter for the mottakskanal property.
-	 *
-	 * @param mottakskanal the mottakskanal to set
-	 */
-	public void setMottakskanal(MottaksKanalCode mottakskanal) {
-		this.mottakskanal = mottakskanal;
-	}
-
-	/**
-	 * Getter for the utsendingskanal property.
-	 *
-	 * @return the utsendingskanal
-	 */
-	public UtsendingsKanalCode getUtsendingskanal() {
-		return utsendingskanal;
-	}
-
-	/**
-	 * Setter for the utsendingskanal property.
-	 *
-	 * @param utsendingskanal the utsendingskanal to set
-	 */
-	public void setUtsendingskanal(UtsendingsKanalCode utsendingskanal) {
-		this.utsendingskanal = utsendingskanal;
-	}
-
-	/**
-	 * Getter for the land property.
-	 *
-	 * @return the land
-	 */
-	public String getLand() {
-		return land;
-	}
-
-	/**
-	 * Setter for the land property.
-	 *
-	 * @param land the land to set
-	 */
-	public void setLand(String land) {
-		this.land = land;
-	}
-
-	/**
-	 * Getter for the faktiskDistribusjonskanal property.
-	 *
-	 * @return the faktiskDistribusjonskanal
-	 */
-	public FaktiskDistribusjonskanalCode getFaktiskDistribusjonskanal() {
-		return faktiskDistribusjonskanal;
-	}
-
-	/**
-	 * Setter for the faktiskDistribusjonskanal property.
-	 *
-	 * @param faktiskDistribusjonskanal the faktiskDistribusjonskanal to set
-	 */
-	public void setFaktiskDistribusjonskanal(FaktiskDistribusjonskanalCode faktiskDistribusjonskanal) {
-		this.faktiskDistribusjonskanal = faktiskDistribusjonskanal;
-	}
-
-	/**
-	 * Getter for the elektroniskDistribusjon property.
-	 *
-	 * @return the elektroniskDistribusjon
-	 */
-	public Boolean getElektroniskDistribusjon() {
-		return elektroniskDistribusjon;
-	}
-
-	/**
-	 * Setter for the elektroniskDistribusjon property.
-	 *
-	 * @param elektroniskDistribusjon the elektroniskDistribusjon to set
-	 */
-	public void setElektroniskDistribusjon(Boolean elektroniskDistribusjon) {
-		this.elektroniskDistribusjon = elektroniskDistribusjon;
-	}
-
-	/**
-	 * Getter for the ekspedertDato property.
-	 *
-	 * @return the ekspedertDato
-	 */
-	public Date getEkspedertDato() {
-		if (ekspedertDato != null) {
-			return new Date(ekspedertDato.getTime());
-		}
-		return null;
-	}
-
-	/**
-	 * Setter for the ekspedertDato property.
-	 *
-	 * @param ekspedertDato the ekspedertDato to set
-	 */
-	public void setEkspedertDato(OffsetDateTime ekspedertDato) {
-		if (ekspedertDato != null) {
-			this.ekspedertDato = Date.from(ekspedertDato.toInstant());
-		} else {
-			this.ekspedertDato = null;
-		}
-	}
-
-	/**
-	 * Getter for the lestDato property.
-	 *
-	 * @return the lestDato
-	 */
-	public Date getLestDato() {
-		if (lestDato != null) {
-			return new Date(lestDato.getTime());
-		}
-		return null;
-	}
-
-	/**
-	 * Setter for the lestDato property.
-	 *
-	 * @param lestDato the lestDato to set
-	 */
-	public void setLestDato(OffsetDateTime lestDato) {
-		if (lestDato != null) {
-			this.lestDato = Date.from(lestDato.toInstant());
-		} else {
-			this.lestDato = null;
-		}
-	}
-
-	/**
-	 * Getter for the mottattAdressatDato property.
-	 *
-	 * @return the mottattAdressatDato
-	 */
-	public Date getMottattAdressatDato() {
-		if (mottattAdressatDato != null) {
-			return new Date(mottattAdressatDato.getTime());
-		}
-		return null;
-	}
-
-	/**
-	 * Setter for the mottattAdressatDato property.
-	 *
-	 * @param mottattAdressatDato the mottattAdressatDato to set
-	 */
-	public void setMottattAdressatDato(Date mottattAdressatDato) {
-		if (mottattAdressatDato != null) {
-			this.mottattAdressatDato = new Date(mottattAdressatDato.getTime());
-		} else {
-			this.mottattAdressatDato = null;
-		}
-	}
-
-	/**
-	 * Getter for the journalposttype property.
-	 *
-	 * @return the journalposttype
-	 */
-	public JournalpostTypeCode getJournalposttype() {
-		return journalposttype;
-	}
-
-	/**
-	 * Setter for the journalposttype property.
-	 *
-	 * @param journalposttype the journalposttype to set
-	 */
-	public void setJournalposttype(JournalpostTypeCode journalposttype) {
-		this.journalposttype = journalposttype;
-	}
-
-	/**
-	 * Getter for the signatur property.
-	 *
-	 * @return the signartur
-	 */
-	public Boolean getSignatur() {
-		return signatur;
-	}
-
-	/**
-	 * Setter for the signatur property.
-	 *
-	 * @param signatur the signatur to set
-	 */
-	public void setSignatur(Boolean signatur) {
-		this.signatur = signatur;
-	}
-
-	/**
-	 * Getter for the behandlingstema property.
-	 *
-	 * @return the behandlingstema
-	 */
-	public String getBehandlingstema() {
-		return behandlingstema;
-	}
-
-	/**
-	 * Setter for the behandlingstema property.
-	 *
-	 * @param behandlingstema the behandlingstema to set
-	 */
-	public void setBehandlingstema(String behandlingstema) {
-		this.behandlingstema = behandlingstema;
-	}
-
-	public SkjermingTypeCode getSkjermingType() {
-		return skjermingType;
-	}
-
-	public void setSkjermingType(SkjermingTypeCode skjermingType) {
-		throw new UnsupportedOperationException("Skjerming skal bare settes gjennom SkjermingService");
-	}
-
-	public InnsynCode getInnsyn() {
-		return innsyn;
-	}
-
-	public void setInnsyn(InnsynCode innsyn) {
-		this.innsyn = innsyn;
 	}
 
 	/**
@@ -1507,24 +828,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	/**
-	 * Getter for the tilleggsopplysninger property.
-	 *
-	 * @return the tilleggsopplysninger
-	 */
-	public Map<String, String> getTilleggsopplysninger() {
-		return tilleggsopplysninger;
-	}
-
-	/**
-	 * Setter for the tilleggsopplysninger property.
-	 *
-	 * @param tilleggsopplysninger the tilleggsopplysninger to set
-	 */
-	public void setTilleggsopplysninger(Map<String, String> tilleggsopplysninger) {
-		this.tilleggsopplysninger = tilleggsopplysninger;
-	}
-
-	/**
 	 * Getter for the kryssreferanser property.
 	 *
 	 * @return the kryssreferanser
@@ -1544,13 +847,25 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		}
 	}
 
+	public void setEkspedertDato(OffsetDateTime ekspedertDato) {
+		if (ekspedertDato != null) {
+			this.ekspedertDato = Date.from(ekspedertDato.toInstant());
+		} else {
+			this.ekspedertDato = null;
+		}
+	}
+
 	/**
-	 * Getter for the utsendingsInfo property
+	 * Setter for the lestDato property.
 	 *
-	 * @return Utsendingsinfo
+	 * @param lestDato the lestDato to set
 	 */
-	public UtsendingsInfo getUtsendingsInfo() {
-		return utsendingsInfo;
+	public void setLestDato(OffsetDateTime lestDato) {
+		if (lestDato != null) {
+			this.lestDato = Date.from(lestDato.toInstant());
+		} else {
+			this.lestDato = null;
+		}
 	}
 
 	/**
@@ -1601,41 +916,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		}
 	}
 
-	/**
-	 * Updates a Journalpost with values from the Journalpost created by the
-	 * scanning process (re-scanning, scenario 2b).
-	 *
-	 * @param journalpostFromScanning The journalpost created from scanning.
-	 */
-	public void updateJournalpostWithScanningValues(Journalpost journalpostFromScanning) {
-		setMottattDato(journalpostFromScanning.getMottattDato());
-		setMottakskanal(journalpostFromScanning.getMottakskanal());
-		removeBrukere(getBrukere());
-		Set<Bruker> brukereFromScanning = journalpostFromScanning.getBrukere();
-		for (Bruker bruker : brukereFromScanning) {
-			Bruker newBruker = new Bruker();
-			newBruker.setBrukerId(bruker.getBrukerId());
-			newBruker.setBrukerType(bruker.getBrukerType());
-			addBruker(newBruker);
-		}
-		DokumentInfo tmpDokInfo = getDokumentInfoFromJpDokInfoRelasjoner(0);
-		if (tmpDokInfo.getTittel() == null) {
-			tmpDokInfo.setTittel(getInnhold());
-		}
-	}
-
-	public List<FilDetaljer> findAllFilDetaljerByFilTypeCode(FilTypeCode type) {
-		List<FilDetaljer> list = new ArrayList<>();
-		for (JournalpostDokumentInfoRelasjon rel : getJournalpostDokumentInfoRelasjoner()) {
-			for (FilDetaljer fd : rel.getDokumentInfo().getFildetaljerListe()) {
-				if (fd.getFiltype().equals(type)) {
-					list.add(fd);
-				}
-			}
-		}
-		return list;
-	}
-
 	public Optional<TilknyttetJournalpostSomCode> findTilknyttetSomByDokumentinfoId(long dokumentinfoId) {
 		for (JournalpostDokumentInfoRelasjon rel : getJournalpostDokumentInfoRelasjoner()) {
 			if (rel.getDokumentInfo().getId() == dokumentinfoId)
@@ -1646,10 +926,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	public boolean hasHoveddokumentRelasjon() {
 		return findHoveddokumentDokumentInfoRelasjon() != null;
-	}
-
-	public boolean hasAnyDokumentInfoRelasjoner() {
-		return !getJournalpostDokumentInfoRelasjoner().isEmpty();
 	}
 
 	public boolean hasAnyDokumentInfoRelasjonerIncludingSkjermet() {

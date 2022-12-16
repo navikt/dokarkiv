@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import lombok.Getter;
+import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.annotations.GenericGenerator;
@@ -15,22 +17,14 @@ import javax.persistence.Table;
 import java.util.Arrays;
 
 /**
- * Domain object representing the table used to store files.
- *
- * @author Thomas Eugen Bjørge, Sirius IT
+ * Seperat tabell for dokumentfiler. Metadata og dokumenter er adskilt.
+ * fil_uuid er er en indeks som FilDetaljer holder rede på.
  */
 @Entity
 @Table(name = "T_DOKUMENT_FIL")
+@Getter
+@Setter
 public class DokumentFil extends AbstractPersistentVersionedDomainObjectWithKilde {
-
-	/**
-	 * Named Parameter
-	 */
-	public static final String NP_FIL_UUID = "filUuid";
-	/**
-	 * Named Query
-	 */
-	public static final String NQ_FIND_BY_FIL_UUID = "DokumentFil.findDokumentFilByFilUuid";
 
 	/**
 	 * ID used for serialization.
@@ -79,42 +73,6 @@ public class DokumentFil extends AbstractPersistentVersionedDomainObjectWithKild
 		if (fil != null) {
 			this.fil = Arrays.copyOf(fil, fil.length);
 		}
-	}
-
-	/**
-	 * Getter for the id property.
-	 *
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * Setter for the id property.
-	 *
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * Getter for the filUuid property.
-	 *
-	 * @return the filUuid
-	 */
-	public String getFilUuid() {
-		return filUuid;
-	}
-
-	/**
-	 * Setter for the filUuid property.
-	 *
-	 * @param filUuid the filUuid to set
-	 */
-	public void setFilUuid(String filUuid) {
-		this.filUuid = filUuid;
 	}
 
 	/**

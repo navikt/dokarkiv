@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.domain;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import lombok.Getter;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -24,7 +25,7 @@ import java.util.Date;
  * is being called when changes are made.
  * </em>
  * </p>
- *
+ * <p>
  * This class holds information about:
  * <ul>
  * <li>Who created the object embedding this <code>ChangeStamp</code> object</li>
@@ -32,24 +33,22 @@ import java.util.Date;
  * <li>Who made changes to the object embedding this <code>ChangeStamp</code> object</li>
  * <li>When was the changes made to the object embedding this <code>ChangeStamp</code> object</li>
  * </ul>
- *
- *
- * @author Morten Andersen-Gott (Accenture)
- *
  */
 @Embeddable
+@Getter
+@ToString
 public class ChangeStamp implements Serializable {
 
 	private static final long serialVersionUID = 61541164562562288L;
 
-	@Column(name = "opprettet_av", insertable = true, updatable = false, nullable = false)
+	@Column(name = "opprettet_av", updatable = false, nullable = false, length = 40)
 	private String createdBy;
 
-	@Column(name = "dato_opprettet", insertable = true, updatable = false, nullable = false)
+	@Column(name = "dato_opprettet", updatable = false, nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdDate;
 
-	@Column(name = "endret_av")
+	@Column(name = "endret_av", length = 40)
 	private String updatedBy;
 
 	@Column(name = "dato_endret")
@@ -60,8 +59,7 @@ public class ChangeStamp implements Serializable {
 	 * Constructs a new ChangeStamp. The constructor should only be called once, when the object embedding this
 	 * <code>ChangeStamp</code> object is actually created for the first time.
 	 *
-	 * @param userId
-	 *            the user id that creates object embedding this <code>ChangeStamp</code> object
+	 * @param userId the user id that creates object embedding this <code>ChangeStamp</code> object
 	 */
 	public ChangeStamp(String userId) {
 		this.createdBy = userId;
@@ -83,14 +81,10 @@ public class ChangeStamp implements Serializable {
 	 * Constructor with arguments. This constructor should only be used by mappers, to populate an already existing
 	 * changestamp!. For creating new changestamps, use the constructor with user id as parameter.
 	 *
-	 * @param createdBy
-	 *            Created by user id
-	 * @param createdDate
-	 *            Creation date
-	 * @param updatedBy
-	 *            Last updated by user id
-	 * @param updatedDate
-	 *            Last updated date
+	 * @param createdBy   Created by user id
+	 * @param createdDate Creation date
+	 * @param updatedBy   Last updated by user id
+	 * @param updatedDate Last updated date
 	 */
 	public ChangeStamp(String createdBy, Date createdDate, String updatedBy, Date updatedDate) {
 		this.createdBy = createdBy;
@@ -102,58 +96,10 @@ public class ChangeStamp implements Serializable {
 	/**
 	 * Method called whenever the object embedding this <code>ChangeStamp</code> object has been updated.
 	 *
-	 * @param userId
-	 *            user id that made the update
+	 * @param userId user id that made the update
 	 */
 	public void updatedBy(String userId) {
 		updatedBy = userId;
 		updatedDate = new Date();
 	}
-
-	/**
-	 * Gets the change by.
-	 *
-	 * @return username that made the change
-	 */
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	/**
-	 * Gets created at date.
-	 *
-	 * @return sql timestamp for the creation of the object embedding <code>this</code>
-	 */
-	public Date getCreatedDate() {
-		return createdDate == null ? null : new Date(createdDate.getTime());
-	}
-
-	/**
-	 * Gets changed at date.
-	 *
-	 * @return sql timestamp for the most recent change to the object embedding <code>this</code>
-	 */
-	public Date getUpdatedDate() {
-		return updatedDate == null ? null : new Date(updatedDate.getTime());
-	}
-
-	/**
-	 * Gets the user id that made the most recent change.
-	 *
-	 * @return user id of user that made the most recent change to the object embedding <code>this</code>
-	 */
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
-
-	public String toString() {
-		ToStringBuilder builder = new ToStringBuilder(this);
-		builder.append("createdBy", createdBy);
-		builder.append("createdDate", createdDate);
-		builder.append("updatedBy", updatedBy);
-		builder.append("updatedDate", updatedDate);
-
-		return builder.toString();
-	}
-
 }
