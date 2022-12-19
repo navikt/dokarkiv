@@ -324,7 +324,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add("Nav-Consumer-Id", NAV_CONSUMER_ID);
-		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + getTokenWithSubject(consumer));
+		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + openAmToken(consumer));
 
 		return headers;
 	}

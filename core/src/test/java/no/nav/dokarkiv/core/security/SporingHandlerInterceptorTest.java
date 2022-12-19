@@ -6,10 +6,11 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
+import no.nav.security.mock.oauth2.MockOAuth2Server;
+import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback;
 import no.nav.security.token.support.filter.JwtTokenValidationFilter;
 import no.nav.security.token.support.spring.EnableJwtTokenValidationConfiguration;
-import no.nav.security.token.support.test.JwtTokenGenerator;
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +37,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -48,8 +51,8 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration(classes = {
 		SporingHandlerInterceptorTest.TestConfig.class,
 		SporingHandlerInterceptor.class,
-		EnableJwtTokenValidationConfiguration.class,
-		TokenGeneratorConfiguration.class})
+		EnableJwtTokenValidationConfiguration.class})
+@EnableMockOAuth2Server
 @ActiveProfiles({"itest", "registry"})
 public class SporingHandlerInterceptorTest {
 	public static final String SERVICE_USER = "srvdokarkiv";
@@ -57,7 +60,7 @@ public class SporingHandlerInterceptorTest {
 	public static final String USER_NAME = "Stasjonsmester Tidemann";
 
 	@Autowired
-	private MeterRegistry meterRegistry;
+	private MockOAuth2Server server;
 
 	@Configuration
 	@Profile("registry")
@@ -179,14 +182,32 @@ public class SporingHandlerInterceptorTest {
 	}
 
 	private String getServiceUserToken() {
-		return "Bearer " + getTokenWithSubject(SERVICE_USER);
+		return "Bearer " + restStsToken(SERVICE_USER);
 	}
 
 	private String getUserToken() {
-		return "Bearer " + getTokenWithSubject(USER_ID);
+		return "Bearer " + openAmToken(USER_ID);
+	}
+	private String restStsToken(String subject) {
+		return token("reststs", subject, Map.of());
 	}
 
-	private String getTokenWithSubject(final String subject) {
-		return JwtTokenGenerator.createSignedJWT(subject).serialize();
+	protected String openAmToken(String subject) {
+		return token("openam", subject, Map.of());
+	}
+	protected String token(String issuer, String subject, Map<String, Object> claims) {
+		String audience = "aud-localhost";
+		return server.issueToken(
+				issuer,
+				"dokarkiv-itest",
+				new DefaultOAuth2TokenCallback(
+						issuer,
+						subject,
+						"JWT",
+						List.of(audience),
+						claims,
+						3600
+				)
+		).serialize();
 	}
 }

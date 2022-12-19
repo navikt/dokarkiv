@@ -28,9 +28,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 public class Rjoark001iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
     @Test
@@ -40,13 +37,14 @@ public class Rjoark001iIT extends AbstractJournalfoerInngaaendeV1Itest {
         Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J));
         String journalpostId = journalpost.getJournalpostId().toString();
 
+        HttpEntity httpEntity = createHeaders();
         ResponseEntity<GetJournalpostResponse> responseEntity = restTemplate.exchange(
-                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, createHeaders(), GetJournalpostResponse.class);
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, httpEntity, GetJournalpostResponse.class);
 
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         final String expectedAbacPayload = format(stringFromClasspath("abac/getInngaaendejournalpost_PersonUser_and_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST));
+                getBearerTokenBody(httpEntity.getHeaders(), HttpHeaders.AUTHORIZATION),
+                getBearerTokenBody(httpEntity.getHeaders(), NAV_CONSUMER_TOKEN));
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(expectedAbacPayload)));
         assertThat(responseEntity.getBody().getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.ENDELIG));
     }
@@ -60,14 +58,16 @@ public class Rjoark001iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.TEXT_PLAIN);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
+        String restStsToken = restStsToken(SERVICE_USER_ID);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + restStsToken);
 
-		ResponseEntity<GetJournalpostResponse> responseEntity = restTemplate.exchange(
-                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, new HttpEntity(headers), GetJournalpostResponse.class);
+        HttpEntity requestEntity = new HttpEntity(headers);
+        ResponseEntity<GetJournalpostResponse> responseEntity = restTemplate.exchange(
+                JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, requestEntity, GetJournalpostResponse.class);
 
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/getInngaaendejournalpost_only_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+                getBearerTokenBody(headers, HttpHeaders.AUTHORIZATION)))));
         assertThat(responseEntity.getBody().getJournalTilstand(), is(GetJournalpostResponse.JournalTilstand.ENDELIG));
     }
 
@@ -80,7 +80,7 @@ public class Rjoark001iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.TEXT_PLAIN);
-        headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, openAmToken(PERSON_USER_ID));
 
         ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
                 JOURNALFOER_INNGAAENDE_V1_JOURNALPOSTER + journalpostId, HttpMethod.GET, new HttpEntity(headers),

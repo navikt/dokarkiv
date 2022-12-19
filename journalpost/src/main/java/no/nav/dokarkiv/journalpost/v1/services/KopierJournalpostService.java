@@ -82,9 +82,9 @@ public class KopierJournalpostService {
 		if (JournalpostTypeCode.I.equals(type)) {
 			journalpost.setJournalstatus(JournalStatusCode.OD);
 		} else if (JournalpostTypeCode.U.equals(type)) {
-			journalpost.setJournalstatus(JournalStatusCode.R);
+			journalpost.setJournalstatus(JournalStatusCode.D);
 		} else { // Notat
-			journalpost.setJournalstatus(JournalStatusCode.R);
+			journalpost.setJournalstatus(JournalStatusCode.D);
 		}
 	}
 }

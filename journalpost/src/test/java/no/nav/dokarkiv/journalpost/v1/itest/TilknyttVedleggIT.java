@@ -53,14 +53,14 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private static final String UGYLDIG_JOURNALPOST = "12312312312";
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
-	private static final String ACTOR = "saks-behandler";
+	private static final String BRUKER = "saks-behandler";
 	private static final String CONSUMER = "ikkesrvdokarkivproxy";
 
 	@BeforeEach
 	void setup() {
 		stubAzure();
 
-		when(tokenGrantValidator.validateOnBehalfOfAccessToken(any())).thenReturn(new JWTClaimsSet.Builder().subject(ACTOR).build());
+		when(tokenGrantValidator.validateOnBehalfOfAccessToken(any())).thenReturn(new JWTClaimsSet.Builder().subject(BRUKER).build());
 	}
 
 	@Test
@@ -164,6 +164,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentFil sourceDokumentFil1 = dokumentFilRepository.findByFilUuid(sourceFilDetaljer1.getFilUuid());
 		DokumentFil dokumentFilKopi1 = dokumentFilRepository.findByFilUuid(filDetaljerKopi1.getFilUuid());
 
+		assertRelasjon(journalpostTilknyttetVedlegg1.getJournalpostId(), dokumentInfoKopi1);
 		assertDokumentInfo(sourceDokumentInfo1, dokumentInfoKopi1);
 		assertFildetaljer(sourceFilDetaljer1, filDetaljerKopi1);
 		assertDokumentFil(sourceDokumentFil1, dokumentFilKopi1);
@@ -183,6 +184,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentFil sourceDokumentFil2 = dokumentFilRepository.findByFilUuid(sourceFilDetaljer2.getFilUuid());
 		DokumentFil dokumentFilKopi2 = dokumentFilRepository.findByFilUuid(filDetaljerKopi2.getFilUuid());
 
+		assertRelasjon(journalpostTilknyttetVedlegg2.getJournalpostId(), dokumentInfoKopi2);
 		assertDokumentInfo(sourceDokumentInfo2, dokumentInfoKopi2);
 		assertFildetaljer(sourceFilDetaljer2, filDetaljerKopi2);
 		assertDokumentFil(sourceDokumentFil2, dokumentFilKopi2);
@@ -262,6 +264,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentFil sourceDokumentFil1 = dokumentFilRepository.findByFilUuid(sourceFilDetaljer1.getFilUuid());
 		DokumentFil dokumentFilKopi1 = dokumentFilRepository.findByFilUuid(filDetaljerKopi1.getFilUuid());
 
+		assertRelasjon(journalpostTilknyttetVedlegg1.getJournalpostId(), dokumentInfoKopi1);
 		assertDokumentInfo(sourceDokumentInfo1, dokumentInfoKopi1);
 		assertFildetaljer(sourceFilDetaljer1, filDetaljerKopi1);
 		assertDokumentFil(sourceDokumentFil1, dokumentFilKopi1);
@@ -281,6 +284,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentFil sourceDokumentFil2 = dokumentFilRepository.findByFilUuid(sourceFilDetaljer2.getFilUuid());
 		DokumentFil dokumentFilKopi2 = dokumentFilRepository.findByFilUuid(filDetaljerKopi2.getFilUuid());
 
+		assertRelasjon(journalpostTilknyttetVedlegg2.getJournalpostId(), dokumentInfoKopi2);
 		assertDokumentInfo(sourceDokumentInfo2, dokumentInfoKopi2);
 		assertFildetaljer(sourceFilDetaljer2, filDetaljerKopi2);
 		assertDokumentFil(sourceDokumentFil2, dokumentFilKopi2);
@@ -414,6 +418,12 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(ArsakKode.IKKE_FUNNET));
 		TestTransaction.end();
+	}
+
+	private void assertRelasjon(Long journalpostIdTilknyttet, DokumentInfo dokumentInfoKopi) {
+		JournalpostDokumentInfoRelasjon tilknyttetRelasjon = dokumentInfoKopi.findJournalpostRelasjonByJournalpostId(journalpostIdTilknyttet);
+		assertThat(tilknyttetRelasjon.getTilknyttetAvNavn(), is(BRUKER));
+		assertThat(tilknyttetRelasjon.getOpprettetKildeNavn(), is(CONSUMER));
 	}
 
 	private void assertDokumentInfo(DokumentInfo sourceDokumentInfo, DokumentInfo dokumentInfoKopi) {

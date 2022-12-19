@@ -1,6 +1,6 @@
 package no.nav.dokarkiv;
 
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -14,10 +14,11 @@ import javax.transaction.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = {Application.class, TokenGeneratorConfiguration.class, TestConfig.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = {Application.class, TestConfig.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@EnableMockOAuth2Server
 @Transactional
 public class ApplicationIT {
 

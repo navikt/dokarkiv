@@ -1,33 +1,19 @@
 package no.nav.dokarkiv.core.security.handler;
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JOSEObjectType;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSSigner;
-import com.nimbusds.jose.crypto.RSASSASigner;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.security.token.support.core.jwt.JwtToken;
-import no.nav.security.token.support.test.JwkGenerator;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
-import java.util.Date;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
+import static no.nav.dokarkiv.core.security.handler.SelfSignedTokenFactory.createAzureToken;
+import static no.nav.dokarkiv.core.security.handler.SelfSignedTokenFactory.defaultAzureClaimSet;
+import static no.nav.dokarkiv.core.security.handler.SelfSignedTokenFactory.defaultNavClaimSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 class AzureAdFlowSporingHandlerTest {
 	private static final String APP_CLAIM_AZP = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 	private static final String APP_CLAIM_SUB = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
@@ -171,45 +157,8 @@ class AzureAdFlowSporingHandlerTest {
 	}
 
 	private JwtToken createAzureOnBehalfOfTokenWithoutNavIdent() {
-		return createAzureToken(defaultNavClaimSet(APP_CLAIM_SUB, USER_CLAIM_OID, APP_CLAIM_AZP, APP_CLAIM_AZP_NAME,null)
+		return createAzureToken(defaultNavClaimSet(APP_CLAIM_SUB, USER_CLAIM_OID, APP_CLAIM_AZP, APP_CLAIM_AZP_NAME, null)
 				.claim(AzureAdFlowSporingHandler.PROFILE_SCOPE_CLAIM_NAME, USER_CLAIM_NAME));
 	}
 
-	JwtToken createAzureToken(JWTClaimsSet.Builder azureClaimSetBuilder) {
-		return new JwtToken(createSignedJWT(JwkGenerator.getDefaultRSAKey(), azureClaimSetBuilder.build()).serialize());
-	}
-
-	JWTClaimsSet.Builder defaultNavClaimSet(String subject, String oid, String azp, String azpname, String navIdent) {
-		return defaultAzureClaimSet(subject, oid, azp)
-				.claim(AzureAdFlowSporingHandler.NAV_CUSTOM_CLAIM_NAVIDENT, navIdent)
-				.claim(AzureAdFlowSporingHandler.NAV_CUSTOM_CLAIM_AZP_NAME, azpname);
-	}
-
-	JWTClaimsSet.Builder defaultAzureClaimSet(String subject, String oid, String azp) {
-		Date now = new Date();
-		return new JWTClaimsSet.Builder()
-				.subject(subject)
-				.jwtID(UUID.randomUUID().toString())
-				.claim(AzureAdFlowSporingHandler.DEFAULT_CLAIM_OID, oid)
-				.claim(AzureAdFlowSporingHandler.DEFAULT_CLAIM_AZP, azp)
-				.notBeforeTime(now)
-				.issueTime(now)
-				.expirationTime(new Date(now.getTime() + TimeUnit.MINUTES.toMillis(60)));
-	}
-
-	SignedJWT createSignedJWT(RSAKey rsaJwk, JWTClaimsSet claimsSet) {
-		try {
-			JWSHeader.Builder header = new JWSHeader.Builder(JWSAlgorithm.RS256)
-					.keyID(rsaJwk.getKeyID())
-					.type(JOSEObjectType.JWT);
-
-			SignedJWT signedJWT = new SignedJWT(header.build(), claimsSet);
-			JWSSigner signer = new RSASSASigner(rsaJwk.toPrivateKey());
-			signedJWT.sign(signer);
-
-			return signedJWT;
-		} catch (JOSEException e) {
-			throw new RuntimeException(e);
-		}
-	}
 }

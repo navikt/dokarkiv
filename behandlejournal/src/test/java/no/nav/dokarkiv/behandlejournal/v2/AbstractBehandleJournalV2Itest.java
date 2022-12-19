@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,10 +22,11 @@ import javax.transaction.Transactional;
 import java.util.Date;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, BehandleJournalV2Config.class, TokenGeneratorConfiguration.class, TestBehandleConfig.class})
+		classes = {CoreConfig.class, BehandleJournalV2Config.class, TestBehandleConfig.class})
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@EnableMockOAuth2Server
 @Transactional
 public abstract class AbstractBehandleJournalV2Itest {
 

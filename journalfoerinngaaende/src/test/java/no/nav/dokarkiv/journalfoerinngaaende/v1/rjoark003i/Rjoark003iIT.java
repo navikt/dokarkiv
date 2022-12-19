@@ -61,8 +61,8 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
         assertThat(responseEntity.getBody().getDokumentId(), is(dokumentId.toString()));
 
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendeDokument_PersonUser_and_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_PERSON_USER_TEST),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+                getBearerTokenBody(httpEntity.getHeaders(), HttpHeaders.AUTHORIZATION),
+                getBearerTokenBody(httpEntity.getHeaders(), NAV_CONSUMER_TOKEN)))));
 
         TestTransaction.start();
         DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentId).get();
@@ -84,7 +84,7 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + restStsToken(SERVICE_USER_ID));
 
         HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest().withDokumentTypeId(DOKUMNETTYPE_ID_UPDATE)
                 .withNavSkjemaId(BREVKODE_UPDATE)
@@ -104,7 +104,7 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
         assertThat(responseEntity.getBody().getDokumentId(), is(dokumentId.toString()));
 
         verify(postRequestedFor(urlEqualTo("/abac")).withRequestBody(equalToJson(format(stringFromClasspath("abac/putInngaaendeDokument_only_ServiceUser.json"),
-                getOidcTokenBody(OIDC_TOKEN_SERVICE_USER_TEST)))));
+                getBearerTokenBody(headers, HttpHeaders.AUTHORIZATION)))));
 
         TestTransaction.start();
         DokumentInfo dokumentInfo = dokumentinfoRepository.findById(dokumentId).get();
@@ -126,7 +126,7 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_PERSON_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + openAmToken(PERSON_USER_ID));
 
         HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest().withDokumentTypeId(DOKUMNETTYPE_ID_UPDATE)
                 .withNavSkjemaId(BREVKODE_UPDATE)
@@ -154,7 +154,7 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + restStsToken(SERVICE_USER_ID));
         HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest().withDokumentTypeId(DOKUMNETTYPE_ID_UPDATE)
                 .withNavSkjemaId(BREVKODE_UPDATE)
                 .withTittel(DOKUMENT_TITTEL_UPDATE)
@@ -185,7 +185,7 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + restStsToken(SERVICE_USER_ID));
         HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest().withDokumentTypeId(DOKUMNETTYPE_ID_UPDATE)
                 .withNavSkjemaId(BREVKODE_UPDATE)
                 .withTittel(DOKUMENT_TITTEL_UPDATE)
@@ -214,7 +214,7 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + restStsToken(SERVICE_USER_ID));
         HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest()
                 .withNavSkjemaId(BREVKODE_UPDATE)
                 .withTittel(DOKUMENT_TITTEL_UPDATE), headers);
@@ -238,7 +238,7 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
     public void shouldFailWhenDokumentInfoNotFound() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + restStsToken(SERVICE_USER_ID));
         HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest()
                 .withNavSkjemaId(BREVKODE_UPDATE)
                 .withTittel(DOKUMENT_TITTEL_UPDATE), headers);
@@ -265,7 +265,7 @@ public class Rjoark003iIT extends AbstractJournalfoerInngaaendeV1Itest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + OIDC_TOKEN_SERVICE_USER_TEST);
+        headers.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + restStsToken(SERVICE_USER_ID));
         HttpEntity httpEntity = new HttpEntity(new PutDokumentRequest().withDokumentKategori("SJO"), headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(

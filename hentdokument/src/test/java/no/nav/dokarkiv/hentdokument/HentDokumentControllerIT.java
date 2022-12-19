@@ -30,7 +30,7 @@ import no.nav.dokarkiv.core.security.SporingHandlerInterceptorTest;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.assertj.core.util.DateUtil;
@@ -65,11 +65,12 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, HentDokumentConfig.class, TokenGeneratorConfiguration.class, SporingHandlerInterceptorTest.TestConfig.class})
+		classes = {CoreConfig.class, HentDokumentConfig.class, SporingHandlerInterceptorTest.TestConfig.class})
 @ActiveProfiles({"itest", "wiremock", "registry"})
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @AutoConfigureWireMock(port = 0)
+@EnableMockOAuth2Server
 @Transactional
 public class HentDokumentControllerIT {
 

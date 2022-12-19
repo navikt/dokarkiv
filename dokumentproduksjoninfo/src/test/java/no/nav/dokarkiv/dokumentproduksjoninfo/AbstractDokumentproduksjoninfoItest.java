@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.DokumentproduksjonInfoV1;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +25,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, DokumentproduksjonInfoConfig.class, TokenGeneratorConfiguration.class, AbstractDokumentproduksjoninfoItest.Config.class})
+		classes = {CoreConfig.class, DokumentproduksjonInfoConfig.class, AbstractDokumentproduksjoninfoItest.Config.class})
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@EnableMockOAuth2Server
 @Transactional
 public abstract class AbstractDokumentproduksjoninfoItest {
 

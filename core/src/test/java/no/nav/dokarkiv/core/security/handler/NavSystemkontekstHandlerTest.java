@@ -1,18 +1,7 @@
 package no.nav.dokarkiv.core.security.handler;
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JOSEObjectType;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSSigner;
-import com.nimbusds.jose.crypto.RSASSASigner;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.security.token.support.core.jwt.JwtToken;
-import no.nav.security.token.support.test.JwkGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,19 +9,13 @@ import org.slf4j.MDC;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
+import static no.nav.dokarkiv.core.security.handler.SelfSignedTokenFactory.createRestStsToken;
+import static no.nav.dokarkiv.core.security.handler.SelfSignedTokenFactory.defaultRestStsClaimsSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @ExtendWith(MockitoExtension.class)
 class NavSystemkontekstHandlerTest {
 
@@ -45,7 +28,7 @@ class NavSystemkontekstHandlerTest {
 	private final NavSystemkontekstHandler navSystemkontekstHandler = new NavSystemkontekstHandler(azureAdGraphService);
 
 	@Test
-	void shouldReturnFalseWhenHandledRestStsToken() throws IOException {
+	void shouldReturnFalseWhenHandledRestStsToken() throws Exception {
 		boolean handle = navSystemkontekstHandler.handle(createRestStsToken(defaultRestStsClaimsSet(APP_CLAIM_SUB)), new MockHttpServletResponse(), null);
 		assertThat(handle).isFalse();
 
@@ -55,7 +38,7 @@ class NavSystemkontekstHandlerTest {
 	}
 
 	@Test
-	void shouldReturnFalseWhenHandledRestStsTokenWithNavUserIdHeader() throws IOException {
+	void shouldReturnFalseWhenHandledRestStsTokenWithNavUserIdHeader() throws Exception {
 		when(azureAdGraphService.hentFulltNavn(USER_NAVIDENT)).thenReturn(USER_NAME);
 		boolean handle = navSystemkontekstHandler.handle(createRestStsToken(defaultRestStsClaimsSet(APP_CLAIM_SUB)), new MockHttpServletResponse(), USER_NAVIDENT);
 		assertThat(handle).isFalse();
@@ -66,7 +49,7 @@ class NavSystemkontekstHandlerTest {
 	}
 
 	@Test
-	void shouldSetServiceuserContextWhenHandledRestStsTokenAndInvalidNavIdentFormat() throws IOException {
+	void shouldSetServiceuserContextWhenHandledRestStsTokenAndInvalidNavIdentFormat() throws Exception {
 		when(azureAdGraphService.hentFulltNavn(USER_NAVIDENT)).thenReturn(USER_NAME);
 		boolean handle = navSystemkontekstHandler.handle(createRestStsToken(defaultRestStsClaimsSet(APP_CLAIM_SUB)), new MockHttpServletResponse(), "DD99999");
 		assertThat(handle).isFalse();
@@ -77,7 +60,7 @@ class NavSystemkontekstHandlerTest {
 	}
 
 	@Test
-	void shouldSetServiceuserContextWhenHandledRestStsTokenAndNavIdentNotFoundInLdap() throws IOException {
+	void shouldSetServiceuserContextWhenHandledRestStsTokenAndNavIdentNotFoundInLdap() throws Exception {
 		when(azureAdGraphService.hentFulltNavn("Z111111")).thenReturn(null);
 		boolean handle = navSystemkontekstHandler.handle(createRestStsToken(defaultRestStsClaimsSet(APP_CLAIM_SUB)), new MockHttpServletResponse(), "Z111111");
 		assertThat(handle).isFalse();
@@ -88,44 +71,10 @@ class NavSystemkontekstHandlerTest {
 	}
 
 	@Test
-	void shouldReturnTrueWhenHandledRestStsTokenNoServiceUser() throws IOException {
+	void shouldReturnTrueWhenHandledRestStsTokenNoServiceUser() throws Exception {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		boolean handle = navSystemkontekstHandler.handle(createRestStsToken(defaultRestStsClaimsSet(USER_NAVIDENT)), response, null);
 		assertThat(handle).isTrue();
 		assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
-	}
-
-	JwtToken createRestStsToken(JWTClaimsSet.Builder restStsClaimsBuilder) {
-		return new JwtToken(createSignedJWT(JwkGenerator.getDefaultRSAKey(), restStsClaimsBuilder.build()).serialize());
-	}
-
-	JWTClaimsSet.Builder defaultRestStsClaimsSet(String subject) {
-		Date now = new Date();
-		return new JWTClaimsSet.Builder()
-				.subject(subject)
-				.claim("aud", Arrays.asList(subject, "preprod.local"))
-				.claim("azp", subject)
-				.claim("identType", "Systemressurs")
-				.issuer("https://security-token-service.nais.preprod.local")
-				.jwtID(UUID.randomUUID().toString())
-				.notBeforeTime(now)
-				.issueTime(now)
-				.expirationTime(new Date(now.getTime() + TimeUnit.MINUTES.toMillis(60)));
-	}
-
-	SignedJWT createSignedJWT(RSAKey rsaJwk, JWTClaimsSet claimsSet) {
-		try {
-			JWSHeader.Builder header = new JWSHeader.Builder(JWSAlgorithm.RS256)
-					.keyID(rsaJwk.getKeyID())
-					.type(JOSEObjectType.JWT);
-
-			SignedJWT signedJWT = new SignedJWT(header.build(), claimsSet);
-			JWSSigner signer = new RSASSASigner(rsaJwk.toPrivateKey());
-			signedJWT.sign(signer);
-
-			return signedJWT;
-		} catch (JOSEException e) {
-			throw new RuntimeException(e);
-		}
 	}
 }

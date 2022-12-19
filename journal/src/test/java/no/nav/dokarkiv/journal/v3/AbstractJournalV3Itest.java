@@ -10,7 +10,7 @@ import no.nav.dokarkiv.core.security.SporingHandlerInterceptorTest;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import no.nav.tjeneste.virksomhet.journal.v3.JournalV3;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
@@ -32,15 +32,15 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
 @ActiveProfiles({"itest", "wiremock", "registry"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-		classes = {CoreConfig.class, JournalV3Config.class, TokenGeneratorConfiguration.class, SporingHandlerInterceptorTest.TestConfig.class},
+		classes = {CoreConfig.class, JournalV3Config.class, SporingHandlerInterceptorTest.TestConfig.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @AutoConfigureWireMock(port = 0)
+@EnableMockOAuth2Server
 @Transactional
 public abstract class AbstractJournalV3Itest {
 

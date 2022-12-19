@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.binding.BehandleJournalV3;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
@@ -38,12 +38,13 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(
 		webEnvironment = NONE,
-		classes = {CoreConfig.class, BehandleJournalV3Config.class, TokenGeneratorConfiguration.class, TestBehandleConfig.class}
+		classes = {CoreConfig.class, BehandleJournalV3Config.class, TestBehandleConfig.class}
 )
 @ActiveProfiles({"itest", "wiremock"})
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @AutoConfigureWireMock(port = 0)
+@EnableMockOAuth2Server
 @Transactional
 public abstract class AbstractBehandleJournalV3Itest {
 
