@@ -14,6 +14,7 @@ import no.nav.dokarkiv.hentjournalsakinfo.dto.BrukerDto;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.DokumentInfoDto;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.SaksrelasjonDto;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.TilleggsopplysningDto;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.UtsendingsInfoDto;
 
 import java.util.Date;
 import java.util.List;
@@ -56,4 +57,5 @@ public class TilknyttetJournalpostDto {
 	private List<TilleggsopplysningDto> tilleggsopplysninger;
 	private List<DokumentInfoDto> dokumenter;
 	private InnsynCode innsyn;
+	private UtsendingsInfoDto utsendingsInfo;
 }

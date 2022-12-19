@@ -71,4 +71,19 @@ public final class SqlProjections {
 					fd.fil_storrelse                AS dokumenter_varianter_filstorrelse,
 					tsi.skannet_innhold_id          AS dokumenter_logiske_vedleggid,
 					tsi.vedlegg_innhold             AS dokumenter_logiske_tittel""";
+
+
+	public static final String UTSENDINGSINFO_DATA = """
+   					,
+   					ut.adresselinje1                AS utsendingsInfo_fysiskPostadresse_adresselinje1,
+					ut.adresselinje2                AS utsendingsInfo_fysiskPostadresse_adresselinje2,
+					ut.adresselinje3                AS utsendingsInfo_fysiskPostadresse_adresselinje3,
+					ut.postnummer					AS utsendingsInfo_fysiskPostadresse_postnummer,
+					ut.poststed						AS utsendingsInfo_fysiskPostadresse_poststed,
+					ut.landkode						AS utsendingsInfo_fysiskPostadresse_landkode,
+					ut.digitalpostkasseadresse      AS utsendingsInfo_digitalPostadresse_digitalpostkasseadresse,
+					ut.digitalpostkasseleverandor   AS utsendingsInfo_digitalPostadresse_postkasseLeverandor,
+					ut.digital_kontaktinformasjon	AS utsendingsInfo_navNoVarsling_varselSendtTil,
+					ut.varslingstekst				AS utsendingsInfo_navNoVarsling_varseltekst""";
+
 }

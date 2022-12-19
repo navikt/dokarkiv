@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark902;
 
 import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
+import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.UTSENDINGSINFO_DATA;
 
 final class HentJournalpostSqlGenerator {
 	private HentJournalpostSqlGenerator() {
@@ -9,9 +10,10 @@ final class HentJournalpostSqlGenerator {
 
 	// Spørringen finner journalposter tilknyttet sak og midlertidige journalposter.
 	static String hentJournalpostSql() {
-		return "	SELECT " + RELEVANTE_DATA +
+		return "	SELECT " + RELEVANTE_DATA + UTSENDINGSINFO_DATA +
 				"       	FROM t_journalpost j\n" +
 				"               LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
+				"               LEFT JOIN t_utsendings_info ut ON ut.journalpost_id = j.journalpost_id\n" +
 				"               LEFT JOIN sak sa ON sa.id = to_number(s.sak_nr_fk)\n" +
 				"               LEFT JOIN t_jp_tillegg t ON j.journalpost_id = t.journalpost_id" +
 				"               LEFT JOIN t_k_behandlingstema bt ON j.k_behandlingstema = bt.k_behandlingstema" +
