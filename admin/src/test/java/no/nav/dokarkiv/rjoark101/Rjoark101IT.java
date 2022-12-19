@@ -35,7 +35,6 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_DO
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_TILKNYTTET_SOM;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoVedleggRelasjon;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithSplittetHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,10 +52,10 @@ public class Rjoark101IT extends AbstractAdminIT {
 	@Test
 	public void skalSletteJournalpostMedHoveddokumentOgEnVedlegg() throws IOException {
 		abacPermit();
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		saveJournalpost(journalpost);
 
 		createDokumentInfoVedleggRelasjon(journalpost);
@@ -167,9 +166,9 @@ public class Rjoark101IT extends AbstractAdminIT {
 	@Test
 	public void skalSletteJournalpostMedHoveddokumentOgVedleggSomErGjenbruktFraEnAnnenJournalpost() throws IOException {
 		abacPermit();
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
-		Journalpost journalpostSomSkalSlettes = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpostSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 
 		DokumentInfo dokumentInfoVedleggGjenbrukt = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		journalpostSomSkalSlettes.addJournalpostDokumentInfoRelasjon(createVedleggRelasjon(journalpostSomSkalSlettes, dokumentInfoVedleggGjenbrukt));
@@ -285,9 +284,9 @@ public class Rjoark101IT extends AbstractAdminIT {
 	@Test
 	public void skalFeileVedSlettingAvJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedlegg() throws IOException {
 		abacPermit();
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 
 		DokumentInfo dokumentInfoVedlegg = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		journalpost.addJournalpostDokumentInfoRelasjon(createVedleggRelasjon(journalpost, dokumentInfoVedlegg));
@@ -344,7 +343,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalIkkeSletteJournalpostSomErSplittet() throws IOException {
 		abacPermit();
 
-		Journalpost journalpostOriginal = createJournalpostWithHoveddokument();
+		Journalpost journalpostOriginal = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpostSplit1 = createJournalpostWithSplittetHoveddokument(journalpostOriginal);
 		Journalpost journalpostSplit2 = createJournalpostWithSplittetHoveddokument(journalpostOriginal);
 
@@ -419,9 +418,9 @@ public class Rjoark101IT extends AbstractAdminIT {
 	@Test
 	public void skalSletteJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedleggEtterSlettingAvRelasjonene() throws IOException {
 		abacPermit();
-		Journalpost journalpostMedDokumentSomVedlegg = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
-		Journalpost journalpostSomSkalSlettes = createJournalpostWithHoveddokument();
+		Journalpost journalpostMedDokumentSomVedlegg = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpostSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		createDokumentInfoVedleggRelasjon(journalpostSomSkalSlettes);
 
 		DokumentInfo dokumentInfoHoveddokument = journalpostSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon()
@@ -525,10 +524,10 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalSletteDokumentInfoSomErBareTilknyttetEnJournalpost() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
-		Journalpost journalpostMedDokumentSomSkalSlettes = createJournalpostWithHoveddokument();
+		Journalpost journalpostMedDokumentSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		JournalpostDokumentInfoRelasjon hoveddokumentRelasjon = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon();
 		JournalpostDokumentInfoRelasjon vedleggRelasjonSomSlettes = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
 		JournalpostDokumentInfoRelasjon vedleggRelasjon2 = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
@@ -614,10 +613,10 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalSletteHoveddokumentOgBytteVedleggRelasjonTilHoveddokumentForJournalpostMedFlereRelasjoner() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
-		Journalpost journalpostMedDokumentSomSkalSlettes = createJournalpostWithHoveddokument();
+		Journalpost journalpostMedDokumentSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSlettes = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
@@ -713,7 +712,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		abacPermit();
 
 
-		Journalpost journalpostMedDokumentSomSkalSlettes = createJournalpostWithHoveddokument();
+		Journalpost journalpostMedDokumentSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSlettes = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
@@ -830,10 +829,10 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalSletteDokumentInfoSomErEnesteDokumentPåEnJournalpostOgVedleggPåEnAnnenJournalpost() throws IOException {
 		abacPermit();
 
-		Journalpost journalpostSomHarDokumentSomVedlegg = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpostSomHarDokumentSomVedlegg = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
-		Journalpost journalpostSomHarDokumentSomHoveddok = createJournalpostWithHoveddokument();
+		Journalpost journalpostSomHarDokumentSomHoveddok = createUniqueJournalpostWithHoveddokument();
 		JournalpostDokumentInfoRelasjon relasjonVedlegg = TestDataGenerator.createVedleggRelasjon(journalpostSomHarDokumentSomVedlegg, journalpostSomHarDokumentSomHoveddok
 				.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo());
@@ -931,7 +930,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalFeileVedSlettingAvDokumentInfoSomErSplittet() throws IOException {
 		abacPermit();
 
-		Journalpost origJournalpost = createJournalpostWithHoveddokument();
+		Journalpost origJournalpost = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost = createJournalpostWithSplittetHoveddokument(origJournalpost);
 		saveJournalpost(origJournalpost);
 		saveJournalpost(journalpost);
@@ -1003,7 +1002,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalSletteFilOgFildetaljer() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoMedVariantSomSkalSlettes = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 		saveJournalpost(journalpost);
@@ -1066,7 +1065,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalFeileHvisVariantSomSkalSlettesIkkeFinnes() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		saveJournalpost(journalpost);
 
 		TestTransaction.flagForCommit();

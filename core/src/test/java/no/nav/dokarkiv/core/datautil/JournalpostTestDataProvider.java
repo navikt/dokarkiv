@@ -1,17 +1,5 @@
 package no.nav.dokarkiv.core.datautil;
 
-import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
-import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
-import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createHovedDokumentInfoFP;
-import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
-import static no.nav.dokarkiv.core.datautil.JournalpostDokumentInfoRelasjonTestDataProvider.createHoveddokumentRelasjon;
-import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createSaksrelasjon;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
-import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
-import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
-
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
@@ -27,13 +15,22 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.UUID;
+
+import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
+import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
+import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createHovedDokumentInfoFP;
+import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
+import static no.nav.dokarkiv.core.datautil.JournalpostDokumentInfoRelasjonTestDataProvider.createHoveddokumentRelasjon;
+import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createSaksrelasjon;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
 
 /**
  * Provides helpers for building {@link JournalpostBuilder}-instances
- *
- * @author Roar Bjurstrom, Visma Consulting.
- * @author Thomas Kåsene, Visma Consulting AS
- * @author Torgeir Cook, Visma Consulting AS
  */
 public final class JournalpostTestDataProvider {
 
@@ -100,9 +97,9 @@ public final class JournalpostTestDataProvider {
 
 	public static JournalpostBuilder buildJournalpost(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus) {
 		return getJournalpostBuilder()
-                .addOriginalJournalpost(true)
+				.addOriginalJournalpost(true)
 				.avsenderMottakerId("1")
-				.kanalReferanseId("kanalreferansseId")
+				.kanalReferanseId("kanalreferanseId-" + UUID.randomUUID())
 				.mottattDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
 				.mottakskanal(NAV_NO)
 				.fagomrade(FagomradeCode.PEN)

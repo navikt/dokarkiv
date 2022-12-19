@@ -22,7 +22,6 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.AKTOER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.PSAK_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createGsak;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createPsakSaksrelasjon;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,9 +39,9 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 
 	@Test
 	public void shouldFindAllJournalpostWithJournalstatusFS() {
-		Journalpost ferdigstiltJournalpost1 = createJournalpostWithHoveddokument();
+		Journalpost ferdigstiltJournalpost1 = createUniqueJournalpost();
 		ferdigstiltJournalpost1.getSaksrelasjon().setSakId("1");
-		Journalpost ferdigstiltJournalpost2 = createJournalpostWithHoveddokument();
+		Journalpost ferdigstiltJournalpost2 = createUniqueJournalpost();
 		ferdigstiltJournalpost2.getSaksrelasjon().setSakId("2");
 		joarkRepository.save(ferdigstiltJournalpost1);
 		joarkRepository.save(ferdigstiltJournalpost2);
@@ -60,8 +59,8 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 
 	@Test
 	public void shouldFindAllJournalpostForGsakAndPsak() {
-		Journalpost gsakJournalpost = createJournalpostWithHoveddokument();
-		Journalpost psakJournalpost = createJournalpostWithHoveddokument();
+		Journalpost gsakJournalpost = createUniqueJournalpost();
+		Journalpost psakJournalpost = createUniqueJournalpost();
 		psakJournalpost.setSaksrelasjon(createPsakSaksrelasjon());
 		gsakJournalpost.getSaksrelasjon().setSakId("1");
 		sakRepository.save(createGsak());
@@ -84,7 +83,7 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 		dokumentInfoRepository.save(vedlegg2);
 		DokumentInfo vedlegg1 = createDokumentInfo();
 		dokumentInfoRepository.save(vedlegg1);
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createUniqueJournalpost();
 		journalpost.getSaksrelasjon().setSakId("1");
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
 		createVedleggRelasjon(journalpost, vedlegg1);

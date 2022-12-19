@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Class for generating test data for Joark repository tests
@@ -47,7 +48,7 @@ public class TestDataUtils {
 	private static Boolean isFeilregistrert = null;
 	private static final JournalpostTypeCode journalpostType = JournalpostTypeCode.U;
 
-	public static final String KANAL_REFERANSE_ID = "kanal";
+	public static final String KANAL_REFERANSE_ID = "kanalreferanse";
 	public static final String TILLEGGSOPPLYSNINGER_KEY = "keey";
 	public static final String TILLEGGSOPPLYSNINGER_VALUE = "value";
 
@@ -203,7 +204,7 @@ public class TestDataUtils {
 				.journalpostId((long) 300000000)
 				.journalForendeEnhetId("test")
 				.journalDato(date)
-				.kanalReferanseId("kanal")
+				.kanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID())
 				.endretAvNavn("test")
 				.fagomrade(fagomradeCode)
 				.mottakskanal(MottaksKanalCode.NAV_NO)

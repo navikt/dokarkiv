@@ -133,7 +133,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "endret_av_navn", length = 50)
 	private String endretAvNavn;
 
-	@Column(name = "kanal_referanse_id", length = 200)
+	@Column(name = "kanal_referanse_id", unique = true, length = 200)
 	private String kanalReferanseId;
 
 	@Enumerated(EnumType.STRING)
