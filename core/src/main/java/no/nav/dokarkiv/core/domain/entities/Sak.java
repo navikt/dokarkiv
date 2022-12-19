@@ -17,7 +17,7 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 /**
- * @author Ugur Alpay Cenar, Visma Consulting.
+ * Inneholder metadata om sakstilknytningen til fagsystemet.
  */
 @Entity
 @Table(name = "SAK")
@@ -35,22 +35,22 @@ public class Sak {
 	@Column(name = "id", nullable = false, length = 11)
 	private Long sakId;
 
-	@Column(name = "tema", nullable = false)
+	@Column(name = "tema", nullable = false, length = 40)
 	private String tema;
 
-	@Column(name = "applikasjon")
+	@Column(name = "applikasjon", length = 40)
 	private String applikasjon;
 
-	@Column(name = "fagsaknr")
+	@Column(name = "fagsaknr", length = 40)
 	private String fagsakNr;
 
-	@Column(name = "aktoerid")
+	@Column(name = "aktoerid", length = 40)
 	private String aktoerId;
 
-	@Column(name = "orgnr")
+	@Column(name = "orgnr", length = 9)
 	private String orgnr;
 
-	@Column(name = "opprettet_av", nullable = false)
+	@Column(name = "opprettet_av", nullable = false, length = 40)
 	private String opprettetAv;
 
 	@Column(name = "opprettet_tidspunkt", nullable = false)

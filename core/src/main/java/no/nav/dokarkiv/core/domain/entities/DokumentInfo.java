@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -49,16 +49,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
+
 /**
- * Domain entity class that represents document info.
- *
- * @author Thomas Eugen Bjørge, Sirius IT
- * @author Thomas Kåsene, Visma Consulting AS
+ * Holder rede på metadata for et dokument.
  */
 @Entity
 @Table(name = "T_DOKUMENT_INFO")
-@Builder  (toBuilder = true)
+@Builder(toBuilder = true)
+@Getter
+@Setter
 @AllArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**
@@ -77,47 +81,49 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 			parameters = {@Parameter(name = "sequence_name", value = "T_DOKUMENT_INFO_SEQ"),
 					@Parameter(name = "initial_value", value = "200000000")})
 	@Column(name = "dokument_info_id", nullable = false)
+	@Setter(AccessLevel.NONE)
+	@ToString.Include
 	private Long dokumentInfoId;
 
-	@Column(name = "brev_kode")
+	@Column(name = "brev_kode", length = 50)
 	private String brevkode;
 
-	@Column(name = "brev_gruppe")
+	@Column(name = "brev_gruppe", length = 50)
 	private String brevgruppe;
 
-	@Column(name = "konvertert_system")
+	@Column(name = "konvertert_system", length = 20)
 	private String konvertertFraSystem;
 
 	@Column(name = "sensitivt")
 	private Boolean sensitivt;
 
-	@Column(name = "endret_av_navn")
+	@Column(name = "endret_av_navn", length = 50)
 	private String endretAvNavn;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_kategori_t")
+	@Column(name = "k_kategori_t", length = 20)
 	private DokumentKategoriCode kategori;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "k_dokument_s")
+	@Column(name = "k_dokument_s", length = 20)
 	private DokumentStatusCode dokumentstatus;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_dok_ferdig")
 	private Date dokumentFerdigDato;
 
-	@Column(name = "tittel")
+	@Column(name = "tittel", length = 500)
 	private String tittel;
 
-	@Column(name = "innskr_partsinnsyn")
+	@Column(name = "innskr_partsinnsyn", length = 1)
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean innskrenketPartsinnsyn;
 
-	@Column(name = "innskr_partsinnsyn_tredjepart")
+	@Column(name = "innskr_partsinnsyn_tredjepart", length = 1)
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean innskrenketPartsinnsynFraTredjepart;
 
-	@Column(name = "organ_internt")
+	@Column(name = "organ_internt", length = 1)
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean organInternt;
 
@@ -125,14 +131,18 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@JoinColumn(name = "orig_journalpost_id")
 	private Journalpost originalJournalpost;
 
-	@Column(name = "dokumenttype_id")
+	@Column(name = "dokumenttype_id", length = 20)
 	private String dokumenttypeId;
 
 	@Column(name = "dato_kassert")
 	private LocalDateTime datoKassert;
 
-	@Column(name = "kassert_av_navn")
+	@Column(name = "kassert_av_navn", length = 20)
 	private String kassertAvNavn;
+
+	@Column(name = "kassert", length = 1)
+	@Type(type = "org.hibernate.type.TrueFalseType")
+	private Boolean kassert;
 
 	@ElementCollection
 	@JoinTable(name = "t_dok_info_tillegg", joinColumns = @JoinColumn(name = "dokument_info_id", nullable = false))
@@ -157,10 +167,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Builder.Default
 	private Set<FilDetaljer> fildetaljerListe = new HashSet<>();
 
-	@Column(name = "kassert")
-	@Type(type = "org.hibernate.type.TrueFalseType")
-	private Boolean kassert;
-
 
 	/**
 	 * Default constructor.
@@ -172,7 +178,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param dokumentInfoId DB-id for the instance.
-	 * @param version DB-version for the instance.
+	 * @param version        DB-version for the instance.
 	 */
 	public DokumentInfo(Long dokumentInfoId, long version) {
 		this.dokumentInfoId = dokumentInfoId;
@@ -202,19 +208,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		if (dokumentInfoIdIsSet()) {
 			verifyStringNotBlank(endretAvNavn, "endretAvNavn");
 		}
-		verifyDokumentStatus(journalpost);
-
-		verifyFieldsForNonLenientJournalstatuses(journalpost);
-		verifyFieldsForEndeligJournalforing(journalpost);
-	}
-
-	/**
-	 * Verify that all mandatory fields are set except endretAvNavn. Some fields are only required
-	 * given certain journalStatuses and journalpostTypes.
-	 *
-	 * @param journalpost The journalpost which has a relation to this DokumentInfo
-	 */
-	public void verifyMandatoryFieldsForInngaaendeJournal(Journalpost journalpost) {
 		verifyDokumentStatus(journalpost);
 
 		verifyFieldsForNonLenientJournalstatuses(journalpost);
@@ -455,127 +448,12 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	/**
-	 * Getter for the brevGruppe property.
-	 *
-	 * @return the brevGruppe
-	 */
-	public String getBrevgruppe() {
-		return brevgruppe;
-	}
-
-	/**
-	 * Setter for the brevGruppe property.
-	 *
-	 * @param brevgruppe the brevGruppe to set
-	 */
-	public void setBrevgruppe(String brevgruppe) {
-		this.brevgruppe = brevgruppe;
-	}
-
-	/**
-	 * Getter for the brevKode property.
-	 *
-	 * @return the brevKode
-	 */
-	public String getBrevkode() {
-		return brevkode;
-	}
-
-	/**
-	 * Setter for the brevKode property.
-	 *
-	 * @param brevkode the brevKode to set
-	 */
-	public void setBrevkode(String brevkode) {
-		this.brevkode = brevkode;
-	}
-
-	/**
-	 * Getter for the kategori property.
-	 *
-	 * @return the kategori
-	 */
-	public DokumentKategoriCode getKategori() {
-		return kategori;
-	}
-
-	/**
-	 * Setter for the kategori property.
-	 *
-	 * @param kategori the kategori to set
-	 */
-	public void setKategori(DokumentKategoriCode kategori) {
-		this.kategori = kategori;
-	}
-
-	/**
-	 * Getter for the konvertertSystem property.
-	 *
-	 * @return the konvertertSystem
-	 */
-	public String getKonvertertFraSystem() {
-		return konvertertFraSystem;
-	}
-
-	/**
-	 * Setter for the konvertertSystem property.
-	 *
-	 * @param konvertertFraSystem the konvertertSystem to set
-	 */
-	public void setKonvertertFraSystem(String konvertertFraSystem) {
-		this.konvertertFraSystem = konvertertFraSystem;
-	}
-
-	/**
-	 * Getter for the sensitivt property.
-	 *
-	 * @return the sensitivt
-	 */
-	public Boolean getSensitivt() {
-		return sensitivt;
-	}
-
-	/**
-	 * Setter for the sensitivt property.
-	 *
-	 * @param sensitivt the sensitivt to set
-	 */
-	public void setSensitivt(Boolean sensitivt) {
-		this.sensitivt = sensitivt;
-	}
-
-	/**
-	 * Getter for the endretAvNavn property.
-	 *
-	 * @return the endretAvNavn
-	 */
-	public String getEndretAvNavn() {
-		return endretAvNavn;
-	}
-
-	/**
-	 * Setter for the endretAvNavn property.
-	 *
-	 * @param endretAvNavn the endretAvNavn to set
-	 */
-	public void setEndretAvNavn(String endretAvNavn) {
-		this.endretAvNavn = endretAvNavn;
-	}
-
-	/**
 	 * Getter for the skannetInnhold property.
 	 *
 	 * @return the skannetInnhold
 	 */
 	public Set<SkannetInnhold> getSkannetInnholdListe() {
 		return Collections.unmodifiableSet(skannetInnholdListe);
-	}
-
-	/**
-	 * Empties the skannetInnhold list.
-	 */
-	public void clearSkannetInnholdListe() {
-		skannetInnholdListe.clear();
 	}
 
 	/**
@@ -589,216 +467,12 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		}
 	}
 
-	/**
-	 * Getter for the dokumentInfoId property.
-	 *
-	 * @return the dokumentInfoId
-	 */
-	public Long getDokumentInfoId() {
-		return dokumentInfoId;
-	}
-
-	/**
-	 * Getter for the dokumentstatus property.
-	 *
-	 * @return the dokumentstatus
-	 */
-	public DokumentStatusCode getDokumentstatus() {
-		return dokumentstatus;
-	}
-
-	/**
-	 * Setter for the dokumentstatus property.
-	 *
-	 * @param dokumentstatus the dokumentstatus to set
-	 */
-	public void setDokumentstatus(DokumentStatusCode dokumentstatus) {
-		this.dokumentstatus = dokumentstatus;
-	}
-
-	/**
-	 * Getter for the dokumentFerdigDato property.
-	 *
-	 * @return the dokumentFerdigDato
-	 */
-	public Date getDokumentFerdigDato() {
-		if (dokumentFerdigDato != null) {
-			return new Date(dokumentFerdigDato.getTime());
-		}
-		return null;
-	}
-
-	/**
-	 * Setter for the dokumentFerdigDato property.
-	 *
-	 * @param dokumentFerdigDato the dokumentFerdigDato to set
-	 */
 	public void setDokumentFerdigDato(Date dokumentFerdigDato) {
 		if (dokumentFerdigDato != null) {
 			this.dokumentFerdigDato = new Date(dokumentFerdigDato.getTime());
 		} else {
 			this.dokumentFerdigDato = null;
 		}
-	}
-
-	/**
-	 * Getter for the tittel property.
-	 *
-	 * @return the tittel
-	 */
-	public String getTittel() {
-		return tittel;
-	}
-
-	/**
-	 * Setter for the tittel property.
-	 *
-	 * @param tittel the tittel to set
-	 */
-	public void setTittel(String tittel) {
-		this.tittel = tittel;
-	}
-
-	/**
-	 * @return the innskrPartinnsyn
-	 */
-	public Boolean getInnskrenketPartsinnsyn() {
-		return innskrenketPartsinnsyn;
-	}
-
-	/**
-	 * @param innskrenketPartsinnsyn the innskrPartinnsyn to set
-	 */
-	public void setInnskrenketPartsinnsyn(Boolean innskrenketPartsinnsyn) {
-		this.innskrenketPartsinnsyn = innskrenketPartsinnsyn;
-	}
-
-	/**
-	 * Getter for the {@link #innskrenketPartsinnsynFraTredjepart} property.
-	 *
-	 * @return The value of the {@link #innskrenketPartsinnsynFraTredjepart} property.
-	 */
-	public Boolean getInnskrenketPartsinnsynFraTredjepart() {
-		return innskrenketPartsinnsynFraTredjepart;
-	}
-
-	/**
-	 * Sets whether or not a third-party source has marked this document as unviewable.
-	 *
-	 * @param innskrenketPartsinnsyn The boolean value to which the innskrenketPartsinnsynFraTredjepart
-	 * property should be set.
-	 */
-	public void setInnskrenketPartsinnsynFraTredjepart(Boolean innskrenketPartsinnsyn) {
-		this.innskrenketPartsinnsynFraTredjepart = innskrenketPartsinnsyn;
-	}
-
-	/**
-	 * Getter for the organInternt property.
-	 *
-	 * @return the organInternt
-	 */
-	public Boolean getOrganInternt() {
-		return organInternt;
-	}
-
-	/**
-	 * Setter for the organInternt property.
-	 *
-	 * @param organInternt the organInternt to set
-	 */
-	public void setOrganInternt(Boolean organInternt) {
-		this.organInternt = organInternt;
-	}
-
-	/**
-	 * Getter for the originalJournalpost property.
-	 *
-	 * @return the originalJournalpost
-	 */
-	public Journalpost getOriginalJournalpost() {
-		return originalJournalpost;
-	}
-
-	/**
-	 * Setter for the originalJournalpost property.
-	 *
-	 * @param originalJournalpost the originalJournalpost to set
-	 */
-	public void setOriginalJournalpost(Journalpost originalJournalpost) {
-		this.originalJournalpost = originalJournalpost;
-	}
-
-	/**
-	 * Getter for the dokumenttypeId property.
-	 *
-	 * @return the dokumenttypeId
-	 */
-	public String getDokumenttypeId() {
-		return dokumenttypeId;
-	}
-
-	/**
-	 * Setter for the dokumenttypeId property.
-	 *
-	 * @param dokumenttypeId the dokumenttypeId to set
-	 */
-	public void setDokumenttypeId(String dokumenttypeId) {
-		this.dokumenttypeId = dokumenttypeId;
-	}
-
-	/**
-	 * Getter for the datoKassert property.
-	 *
-	 * @return the datoKassert
-	 */
-	public LocalDateTime getDatoKassert() {
-		return datoKassert;
-	}
-
-	/**
-	 * Setter for the datoKassert property.
-	 *
-	 * @param datoKassert the datoKassert to set
-	 */
-	public void setDatoKassert(LocalDateTime datoKassert) {
-		this.datoKassert = datoKassert;
-	}
-
-	/**
-	 * Getter for the kassertAvNavn property.
-	 *
-	 * @return the kassertAvNavn
-	 */
-	public String getKassertAvNavn() {
-		return kassertAvNavn;
-	}
-
-	/**
-	 * Setter for the kassertAvNavn property.
-	 *
-	 * @param kassertAvNavn the kassertAvNavn to set
-	 */
-	public void setKassertAvNavn(String kassertAvNavn) {
-		this.kassertAvNavn = kassertAvNavn;
-	}
-
-	/**
-	 * Getter for the tilleggsopplysninger property.
-	 *
-	 * @return the tilleggsopplysninger
-	 */
-
-	public Map<String, String> getTilleggsopplysninger() {
-		return tilleggsopplysninger;
-	}
-
-	/**
-	 * Setter for the tilleggsopplysninger property.
-	 *
-	 * @param tilleggsopplysninger the tilleggsopplysninger to set
-	 */
-	public void setTilleggsopplysninger(Map<String, String> tilleggsopplysninger) {
-		this.tilleggsopplysninger = tilleggsopplysninger;
 	}
 
 	/**
@@ -884,7 +558,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	public boolean isKassert() {
-		return this.kassert == null ? false : this.kassert;
+		return this.kassert != null && this.kassert;
 	}
 
 }

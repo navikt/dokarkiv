@@ -39,6 +39,7 @@ public class OpprettJournalpostServiceTest {
 				.journalposttype(JournalpostTypeCode.I)
 				.kanalReferanseId(eksternReferanseId)
 				.build();
+		when(joarkRepository.existsByKanalReferanseId(eksternReferanseId)).thenReturn(true);
 		when(joarkRepository.findTopByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
 		OpprettJournalpostResult result = opprettJournalpostService.opprettJournalpost(request);
 		assertTrue(result.isAlreadyOpprettet());
@@ -57,6 +58,7 @@ public class OpprettJournalpostServiceTest {
 				.journalposttype(JournalpostTypeCode.U)
 				.kanalReferanseId(eksternReferanseId)
 				.build();
+		when(joarkRepository.existsByKanalReferanseId(eksternReferanseId)).thenReturn(true);
 		when(joarkRepository.findTopByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
 		OpprettJournalpostResult result = opprettJournalpostService.opprettJournalpost(request);
 		assertTrue(result.isAlreadyOpprettet());

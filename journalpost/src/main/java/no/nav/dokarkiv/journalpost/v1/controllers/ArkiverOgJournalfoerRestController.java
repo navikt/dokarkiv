@@ -232,7 +232,6 @@ public class ArkiverOgJournalfoerRestController {
 				ferdigstillJournalpostService.setJournalfoerendeEnhetNull(journalpostId, null);
 			}
 
-
 			return ResponseEntity
 					.status(httpStatus)
 					.body(OpprettJournalpostResponse.builder()

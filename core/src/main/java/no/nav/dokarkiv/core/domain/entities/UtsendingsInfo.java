@@ -15,6 +15,9 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+/**
+ * Inneholder metadata om utsending av {@link Journalpost}
+ */
 @Entity
 @Table(name = "t_utsendings_info")
 @NoArgsConstructor

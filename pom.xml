@@ -74,6 +74,7 @@
 		<spring-cloud-contract-wiremock.version>2.1.5.RELEASE</spring-cloud-contract-wiremock.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
+		<datasource-proxy-spring-boot-starter.version>1.8.1</datasource-proxy-spring-boot-starter.version>
 
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
@@ -328,6 +329,12 @@
 				<groupId>no.nav.security</groupId>
 				<artifactId>token-validation-spring-test</artifactId>
 				<version>${token-support.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.github.gavlyukovskiy</groupId>
+				<artifactId>datasource-proxy-spring-boot-starter</artifactId>
+				<version>${datasource-proxy-spring-boot-starter.version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>

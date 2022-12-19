@@ -26,7 +26,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author Ugur Alpay Cenar, Visma Consulting.
+ * Inneholder vesentlige endringer på Journalpost eller DokumentInfo.
+ *
+ * @see ArkivElementEndring
  */
 @Entity
 @Table(name = "T_AKSJONSLOGG")
@@ -70,7 +72,7 @@ public class AksjonsLogg {
 	private String arkivsaksnummer;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "arkivsaksystem")
+	@Column(name = "arkivsaksystem", length = 50)
 	private FagsystemCode arkivsaksystem;
 
 	@Column(name = "hjemmel", length = 50)

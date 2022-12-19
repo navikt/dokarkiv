@@ -1,14 +1,17 @@
 package no.nav.dokarkiv.core.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 /**
- * Abstract base class for all persistent domain objects with version field.
- * 
- * @author Thomas Eugen Bjørge, Sirius IT
+ * Abstrakt klasse som alle JPA entiteter arver fra.
  */
 @SuppressWarnings("serial")
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class AbstractPersistentVersionedDomainObjectWithKilde extends AbstractPersistentVersionedDomainObject
 		implements Identifiable {
@@ -16,53 +19,16 @@ public abstract class AbstractPersistentVersionedDomainObjectWithKilde extends A
 
 	@Column(name = "opprettet_kilde_navn", nullable = false, updatable = false, length = KILDE_NAVN_LENGTH)
 	private String opprettetKildeNavn;
-	
+
 	@Column(name = "endret_kilde_navn", length = KILDE_NAVN_LENGTH)
 	private String endretKildeNavn;
 
 	/**
 	 * Checks if the Id is set.
-	 * 
+	 *
 	 * @return true if Id is set, false otherwise.
 	 */
 	public boolean hasId() {
 		return getId() != null;
 	}
-	
-	/**
-	 * Getter for the opprettetKildeNavn property.
-	 *
-	 * @return the opprettetKildeNavn
-	 */
-	public String getOpprettetKildeNavn() {
-		return opprettetKildeNavn;
-	}
-
-	/**
-	 * Setter for the opprettetKildeNavn property.
-	 *
-	 * @param opprettetKildeNavn the opprettetKildeNavn to set
-	 */
-	public void setOpprettetKildeNavn(String opprettetKildeNavn) {
-		this.opprettetKildeNavn = opprettetKildeNavn;
-	}
-
-	/**
-	 * Getter for the endretKildeNavn property.
-	 *
-	 * @return the endretKildeNavn
-	 */
-	public String getEndretKildeNavn() {
-		return endretKildeNavn;
-	}
-
-	/**
-	 * Setter for the endretKildeNavn property.
-	 *
-	 * @param endretKildeNavn the endretKildeNavn to set
-	 */
-	public void setEndretKildeNavn(String endretKildeNavn) {
-		this.endretKildeNavn = endretKildeNavn;
-	}
-
 }
