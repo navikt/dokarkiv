@@ -1,7 +1,10 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -14,15 +17,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * Domain entity that represents skannet innhold.
- *
- * @author Thomas Eugen Bjørge, Sirius IT
- * @author Per Kristian Foss, Visma Sirius
+ * Inneholder metadata om logiske vedlegg relatert til skanning.
  */
-@Builder
-@AllArgsConstructor
 @Entity
 @Table(name = "T_SKANNET_INNHOLD")
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
 public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithKilde {
 	public static final int VEDLEGG_INNHOLD_LENGTH = 550;
 	private static final long serialVersionUID = 4377297136994040373L;
@@ -33,6 +35,7 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 			parameters = {@Parameter(name = "sequence_name", value = "T_SKANNET_INNHOLD_SEQ"),
 					@Parameter(name = "initial_value", value = "200000000")})
 	@Column(name = "skannet_innhold_id", nullable = false)
+	@Setter(AccessLevel.NONE)
 	private Long skannetInnholdId;
 
 	@Column(name = "vedlegg_nr")
@@ -41,7 +44,7 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 	@Column(name = "vedlegg_innhold", length = VEDLEGG_INNHOLD_LENGTH)
 	private String vedleggInnhold;
 
-	@Column(name = "dokumenttypeid")
+	@Column(name = "dokumenttypeid", length = 50)
 	private String dokumenttypeid;
 
 	/**
@@ -54,7 +57,7 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 	 * Constructor that assigns immutable properties. Used for testing.
 	 *
 	 * @param skannetInnholdId DB-id for the instance.
-	 * @param version DB-version for the instance.
+	 * @param version          DB-version for the instance.
 	 */
 	public SkannetInnhold(Long skannetInnholdId, long version) {
 		this.skannetInnholdId = skannetInnholdId;
@@ -74,68 +77,5 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 	 */
 	public void verifyMandatoryFields() {
 		verifyStringNotBlank(vedleggInnhold, "vedleggInnhold");
-	}
-
-	/**
-	 * Getter for the skannetInnholdId property.
-	 *
-	 * @return the skannetInnholdId
-	 */
-	public Long getSkannetInnholdId() {
-		return skannetInnholdId;
-	}
-
-	/**
-	 * Getter for the vedleggInnhold property.
-	 *
-	 * @return the vedleggInnhold
-	 */
-	public String getVedleggInnhold() {
-		return vedleggInnhold;
-	}
-
-	/**
-	 * Setter for the vedleggInnhold property.
-	 *
-	 * @param vedleggInnhold the vedleggInnhold to set
-	 */
-	public void setVedleggInnhold(String vedleggInnhold) {
-		this.vedleggInnhold = vedleggInnhold;
-	}
-
-	/**
-	 * Getter for the vedleggNr property.
-	 *
-	 * @return the vedleggNr
-	 */
-	public Integer getVedleggNr() {
-		return vedleggNr;
-	}
-
-	/**
-	 * Setter for the vedleggNr property.
-	 *
-	 * @param vedleggNr the vedleggNr to set
-	 */
-	public void setVedleggNr(Integer vedleggNr) {
-		this.vedleggNr = vedleggNr;
-	}
-
-	/**
-	 * Getter for the dokumenttypeid property
-	 *
-	 * @return the dokumenttypeid
-	 */
-	public String getDokumenttypeid() {
-		return dokumenttypeid;
-	}
-
-	/**
-	 * Setter for the dokumenttypeid property
-	 *
-	 * @param dokumenttypeid the dokumenttypeid to set
-	 */
-	public void setDokumenttypeid(String dokumenttypeid) {
-		this.dokumenttypeid = dokumenttypeid;
 	}
 }

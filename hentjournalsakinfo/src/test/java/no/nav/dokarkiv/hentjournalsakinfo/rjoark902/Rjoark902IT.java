@@ -47,7 +47,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	private static final String HENTJOURNALSAKINFO_HENTJOURNALPOST = "/hentjournalsakinfo/hentjournalpost/";
 	private static final String AVSENDER = "bob";
 	private static final String JOURNALFOERT_AV = "test user journalfoert";
-	private static final String JOURNALFOERENDE_ENHET = "test journalfoerende enhet";
+	private static final String JOURNALFOERENDE_ENHET = "2990";
 	private static final JournalpostTypeCode JOURNALPOST_TYPE_CODE = JournalpostTypeCode.U;
 	private static final String INNHOLD = "test innhold";
 	private static final FagomradeCode FAGOMRADE = FagomradeCode.PEN;

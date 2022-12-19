@@ -90,12 +90,15 @@ public class OpprettJournalpostService {
 	}
 
 	public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
-
-		Optional<Journalpost> existingJournalpost = findExisitingJournalpostWithEksternReferanseId(request.getEksternReferanseId());
-		if (existingJournalpost.isPresent()) {
-			final Journalpost journalpost = existingJournalpost.get();
-			log.warn("Journalpost med eksternReferanseId={} for kanal={} finnes fra før. Oppretter ikke ny journalpost.", request.getEksternReferanseId(), journalpost.getMottakskanal());
-			return new OpprettJournalpostResult(journalpost, true);
+		final String eksternReferanseId = request.getEksternReferanseId();
+		boolean journalpostExists = isJournalpostExists(eksternReferanseId);
+		if (journalpostExists) {
+			Optional<Journalpost> existingJournalpost = findJournalpostByEksternReferanseId(eksternReferanseId);
+			if(existingJournalpost.isPresent()) {
+				final Journalpost journalpost = existingJournalpost.get();
+				log.warn("Journalpost med eksternReferanseId={} for kanal={} finnes fra før. Oppretter ikke ny journalpost.", eksternReferanseId, journalpost.getMottakskanal());
+				return new OpprettJournalpostResult(journalpost, true);
+			}
 		}
 
 		Optional<Sak> sakOptional = hentSak(request);
@@ -235,8 +238,10 @@ public class OpprettJournalpostService {
 		}
 	}
 
-	// Bruker eksternReferanseId for å se etter duplikater
-	private Optional<Journalpost> findExisitingJournalpostWithEksternReferanseId(String eksternReferanseId) {
+	private boolean isJournalpostExists(String eksternReferanseId) {
+		return isNotBlank(eksternReferanseId) && joarkRepository.existsByKanalReferanseId(eksternReferanseId);
+	}
+	private Optional<Journalpost> findJournalpostByEksternReferanseId(String eksternReferanseId) {
 		//eksternReferanseId == kanalReferanseId
 		return isBlank(eksternReferanseId) ? Optional.empty() : joarkRepository.findTopByKanalReferanseId(eksternReferanseId);
 	}

@@ -11,7 +11,6 @@ import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
-import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -567,7 +566,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWithKanalAsNull, OpprettJournalpostResponse.class);
 
-		Journalpost emptyKanalJournalpost = joarkRepository.findJournalpostAllByKanalReferanseId(requestWithKanalAsNull.getEksternReferanseId()).get(0);
+		Journalpost emptyKanalJournalpost = joarkRepository.findTopByKanalReferanseId(requestWithKanalAsNull.getEksternReferanseId()).get();
 		assertNotNull(emptyKanalJournalpost);
 	}
 
@@ -582,7 +581,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWithKanalAsEmpty, OpprettJournalpostResponse.class);
 
-		Journalpost emptyKanalJournalpost = joarkRepository.findJournalpostAllByKanalReferanseId(requestWithKanalAsEmpty.getEksternReferanseId()).get(0);
+		Journalpost emptyKanalJournalpost = joarkRepository.findTopByKanalReferanseId(requestWithKanalAsEmpty.getEksternReferanseId()).get();
 		assertNotNull(emptyKanalJournalpost);
 	}
 
@@ -1209,9 +1208,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		ResponseEntity<OpprettJournalpostResponse> firstResponse = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 		ResponseEntity<OpprettJournalpostResponse> secondResponse = restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class);
 
-		List<Journalpost> allJournalpostByKanalReferanseId = joarkRepository.findJournalpostAllByKanalReferanseId(request.getEksternReferanseId());
-
-		assertEquals(1, allJournalpostByKanalReferanseId.size());
 		assertEquals(firstResponse.getBody().getJournalpostId(), secondResponse.getBody().getJournalpostId());
 	}
 
