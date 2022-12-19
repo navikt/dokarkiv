@@ -12,9 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 
 	@Query(value = "SELECT jt.journalpost_id FROM t_jp_tillegg jt WHERE jt.nokkel = :nokkel AND jt.verdi = :verdi", nativeQuery = true)

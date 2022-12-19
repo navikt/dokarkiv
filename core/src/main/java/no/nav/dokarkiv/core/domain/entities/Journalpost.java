@@ -865,6 +865,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			this.lestDato = null;
 		}
 	}
+
 	public void setAvsendtReturDato(Date avsendtReturDato) {
 		if (avsendtReturDato != null) {
 			this.avsendtReturDato = new Date(avsendtReturDato.getTime());

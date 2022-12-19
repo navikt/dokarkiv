@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -61,6 +62,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 @Getter
 @Setter
 @AllArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**
@@ -80,6 +82,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 					@Parameter(name = "initial_value", value = "200000000")})
 	@Column(name = "dokument_info_id", nullable = false)
 	@Setter(AccessLevel.NONE)
+	@ToString.Include
 	private Long dokumentInfoId;
 
 	@Column(name = "brev_kode", length = 50)

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
@@ -45,6 +46,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Getter
 @Setter
 @AllArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	/**
@@ -58,6 +60,7 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 			parameters = {@Parameter(name = "sequence_name", value = "T_FIL_DETALJER_SEQ")})
 	@Column(name = "fil_detaljer_id", nullable = false)
 	@Setter(AccessLevel.NONE)
+	@ToString.Include
 	private Long fildetaljerId;
 
 	@Enumerated(EnumType.STRING)
