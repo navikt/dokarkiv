@@ -1,9 +1,7 @@
 package no.nav.dokarkiv.core.repository;
 
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -31,12 +29,6 @@ public interface JoarkRepository extends CrudRepository<Journalpost, Long> {
 
 	@Query(value = "SELECT jt.ORIG_JOURNALPOST_ID FROM T_DOKUMENT_INFO jt WHERE jt.DOKUMENT_INFO_ID = :dokumentinfoId", nativeQuery = true)
 	Long findJournalpostIdByDokumentinfoId(@Param("dokumentinfoId") String dokumentinfoId);
-
-	@Query(value = "select j from Journalpost j join j.saksrelasjon s where s.sakId IN :sakId and s.fagsystem = :fagsystem")
-	@EntityGraph(attributePaths = {"brukere", "tilleggsopplysninger", "journalpostDokumentInfoRelasjoner", "kryssreferanser", "behandlingsrelasjon",
-			"journalpostDokumentInfoRelasjoner.dokumentInfo.tilleggsopplysninger", "journalpostDokumentInfoRelasjoner.dokumentInfo.skannetInnholdListe",
-			"journalpostDokumentInfoRelasjoner.dokumentInfo.fildetaljerListe", "journalpostDokumentInfoRelasjoner.dokumentInfo.journalpostRelasjoner"})
-	Optional<List<Journalpost>> findJournalposterBySakIdAndFagsystem(@Param("sakId") List<String> sakIdList, @Param("fagsystem") FagsystemCode fagsystemCode);
 
 	@Query(value = "SELECT * FROM t_journalpost j WHERE j.k_journal_s IN ('M', 'MO') AND j.k_journalpost_t = 'I' AND j.dato_opprettet <= :tilOgMedDato", nativeQuery = true)
 	Optional<List<Journalpost>> findUbehandledeJournalposts(@Param("tilOgMedDato") Date tilOgMedDato);
