@@ -16,10 +16,9 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Arrays;
 
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDigitalPostadresse;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createFysiskPostadresse;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createNavNoVarsling;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,11 +38,11 @@ public class Rjoark904IT extends AbstractHentjournalsakinfoItest {
 	@Test
 	public void shouldFindOnlyOneJournalpostWhenMoreMatchingForPagination() {
 		Journalpost utgaattJournalpost1 = createJournalpostWithHoveddokument();
-		utgaattJournalpost1.setUtsendingsInfo(createDigitalPostadresse());
 		utgaattJournalpost1.setJournalstatus(JournalStatusCode.U);
+		utgaattJournalpost1.setUtsendingsInfo(createNavNoVarsling());
 		Journalpost utgaattJournalpost2 = createJournalpostWithHoveddokument();
 		utgaattJournalpost2.setJournalstatus(JournalStatusCode.U);
-		utgaattJournalpost2.setUtsendingsInfo(createFysiskPostadresse());
+		utgaattJournalpost2.setUtsendingsInfo(createNavNoVarsling());
 		joarkRepository.save(utgaattJournalpost1);
 		joarkRepository.save(utgaattJournalpost2);
 		TestTransaction.flagForCommit();
