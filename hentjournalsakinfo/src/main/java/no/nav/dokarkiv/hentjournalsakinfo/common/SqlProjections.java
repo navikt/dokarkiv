@@ -74,16 +74,16 @@ public final class SqlProjections {
 
 
 	public static final String UTSENDINGSINFO_DATA = """
-   					,
-   					ut.adresselinje1                AS utsendingsInfo_fysiskPostadresse_adresselinje1,
-					ut.adresselinje2                AS utsendingsInfo_fysiskPostadresse_adresselinje2,
-					ut.adresselinje3                AS utsendingsInfo_fysiskPostadresse_adresselinje3,
-					ut.postnummer					AS utsendingsInfo_fysiskPostadresse_postnummer,
-					ut.poststed						AS utsendingsInfo_fysiskPostadresse_poststed,
-					ut.landkode						AS utsendingsInfo_fysiskPostadresse_landkode,
-					ut.digitalpostkasseadresse      AS utsendingsInfo_digitalPostadresse_digitalpostkasseadresse,
-					ut.digitalpostkasseleverandor   AS utsendingsInfo_digitalPostadresse_postkasseLeverandor,
-					ut.digital_kontaktinformasjon	AS utsendingsInfo_navNoVarsling_varselSendtTil,
-					ut.varslingstekst				AS utsendingsInfo_navNoVarsling_varseltekst""";
+        			,
+   					ut.adresselinje1                AS utsendingsInfo_fysiskpostadresse_adresselinje1,
+					ut.adresselinje2                AS utsendingsInfo_fysiskpostadresse_adresselinje2,
+					ut.adresselinje3                AS utsendingsInfo_fysiskpostadresse_adresselinje3,
+					ut.postnummer					AS utsendingsInfo_fysiskpostadresse_postnummer,
+					ut.poststed						AS utsendingsInfo_fysiskpostadresse_poststed,
+					ut.landkode						AS utsendingsInfo_fysiskpostadresse_landkode,
+					ut.digitalpostkasseadresse      AS utsendingsInfo_digitalpostadresse_digitalpostkasseadresse,
+					ut.digitalpostkasseleverandor   AS utsendingsInfo_digitalpostadresse_postkasseleverandor,
+					ut.digital_kontaktinformasjon	AS utsendingsInfo_navnovarsling_varselsendttil,
+					ut.varslingstekst				AS utsendingsInfo_navnovarsling_varseltekst""";
 
 }

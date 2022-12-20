@@ -2,6 +2,8 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark904;
 
 import lombok.experimental.UtilityClass;
 
+import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.UTSENDINGSINFO_DATA;
+
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
@@ -64,8 +66,10 @@ class FinnJournalposterStatusSql {
 				"                              fd.k_fil_t             AS dokumenter_varianter_filtype,\n" +
 				"                              tsi.skannet_innhold_id AS dokumenter_logiske_vedleggid,\n" +
 				"                              tsi.vedlegg_innhold    AS dokumenter_logiske_tittel\n" +
+				UTSENDINGSINFO_DATA +
 				"                       FROM t_journalpost j\n" +
 				"                                LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
+				"               				 LEFT JOIN t_utsendings_info ut ON ut.journalpost_id = j.journalpost_id\n" +
 				"                                LEFT JOIN t_jp_tillegg t ON j.journalpost_id = t.journalpost_id\n" +
 				"                                LEFT JOIN t_k_behandlingstema bt ON j.k_behandlingstema = bt.k_behandlingstema\n" +
 				"                                LEFT JOIN t_bruker b ON j.journalpost_id = b.journalpost_id\n" +
