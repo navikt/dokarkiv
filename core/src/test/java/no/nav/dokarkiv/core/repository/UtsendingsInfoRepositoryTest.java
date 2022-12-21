@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("itest")
 public class UtsendingsInfoRepositoryTest {
 	@Autowired
-	UtsendingsInfoRepository utsendingsInfoRepository;
+	UtsendingsInfoTestRepository utsendingsInfoTestRepository;
 	@Autowired
 	DokumentFilRepository dokumentFilRepository;
 	@Autowired
@@ -52,12 +52,12 @@ public class UtsendingsInfoRepositoryTest {
 	public void cleanUp() {
 		TestTransaction.end();
 		dokumentFilRepository.deleteAll();
-		utsendingsInfoRepository.deleteAll();
+		utsendingsInfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
 	}
 
 	@Test
-	public void shouldSuccessfullySaveUtsendingsinfoForJournalPost() {
+	public void shouldSuccessfullySaveUtsendingsinfoForJournalpost() {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
@@ -74,7 +74,7 @@ public class UtsendingsInfoRepositoryTest {
 
 
 		assertThat(utsendingsInfo.getId(), equalTo(journalpost.getId()));
-		assertTrue(utsendingsInfoRepository.findById(journalpost.getJournalpostId()).isPresent(), "Det skal finnes en utsendingsinfo med journalpostId som id");
+		assertTrue(utsendingsInfoTestRepository.findById(journalpost.getJournalpostId()).isPresent(), "Det skal finnes en utsendingsinfo med journalpostId som id");
 	}
 
 	@Test
