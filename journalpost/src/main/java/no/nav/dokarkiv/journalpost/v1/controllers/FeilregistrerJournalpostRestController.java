@@ -40,7 +40,6 @@ import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ADMIN_UPDATE_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
-import static no.nav.dokarkiv.journalpost.v1.services.FeilregistrerSakstilknytningService.FEILREGISTRERING_OPPHEVET_MESSAGE;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_AVBRYT;
@@ -57,6 +56,9 @@ public class FeilregistrerJournalpostRestController {
 
 	private static final String FIKK_UKJENT_BRUKER = "Journalposten fikk status Ukjent Bruker";
 	public static final String FEILREGISTRERT_MESSAGE = "Saksrelasjonen ble feilregistrert";
+	public static final String FEILREGISTRERT_CONFLICT_MESSAGE = "Saksrelasjon kan være feilregistrert fra før. Forsøk på nytt";
+	public static final String FEILREGISTRERING_OPPHEVET_MESSAGE = "Feilregistreringen ble opphevet";
+	public static final String FEILREGISTRERING_OPPHEVET_CONFLICT_MESSAGE = "Saksrelasjon feilregistrering kan være opphevet fra før. Forsøk på nytt";
 	private final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService;
 	private final UkjentBrukerService ukjentBrukerService;
 	private final AvbrytService avbrytService;
@@ -90,7 +92,7 @@ public class FeilregistrerJournalpostRestController {
 			log.info(MDC.get(MDC_REQUEST_ID) + " har feilregistrert journalpost med journalpostId={}", journalpostId);
 		} catch (ObjectOptimisticLockingFailureException e) {
 			log.warn(MDC.get(MDC_REQUEST_ID) + " feilregistrerte ikke journalpost med journalpostId={}. Flere kall forsøker å endre saksrelasjon samtidig", journalpostId, e);
-			return ResponseEntity.status(CONFLICT).body("Saksrelasjon kan være feilregistrert fra før. Forsøk på nytt");
+			return ResponseEntity.status(CONFLICT).body(FEILREGISTRERT_CONFLICT_MESSAGE);
 		}
 		return ResponseEntity.ok().body(FEILREGISTRERT_MESSAGE);
 	}
@@ -105,7 +107,7 @@ public class FeilregistrerJournalpostRestController {
 			log.info(MDC.get(MDC_REQUEST_ID) + " har opphevet feilregistrering av journalpost med journalpostId={}", journalpostId);
 		} catch (ObjectOptimisticLockingFailureException e) {
 			log.warn(MDC.get(MDC_REQUEST_ID) + " opphevet ikke feilregistrering for journalpost med journalpostId={}. Flere kall forsøker å endre saksrelasjon samtidig", journalpostId, e);
-			return ResponseEntity.status(CONFLICT).body("Saksrelasjon feilregistrering kan være opphevet fra før. Forsøk på nytt");
+			return ResponseEntity.status(CONFLICT).body(FEILREGISTRERING_OPPHEVET_CONFLICT_MESSAGE);
 		}
 		return ResponseEntity.ok().body(FEILREGISTRERING_OPPHEVET_MESSAGE);
 	}

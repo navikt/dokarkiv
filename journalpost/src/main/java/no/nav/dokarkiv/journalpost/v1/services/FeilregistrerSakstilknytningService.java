@@ -23,11 +23,11 @@ import java.util.List;
 import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
+import static no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerJournalpostRestController.FEILREGISTRERING_OPPHEVET_MESSAGE;
 
 @Slf4j
 @Component
 public class FeilregistrerSakstilknytningService {
-    public static final String FEILREGISTRERING_OPPHEVET_MESSAGE = "Feilregistreringen ble opphevet";
 
     private final AksjonsLoggService aksjonsLoggService;
     private final JoarkRepository joarkRepository;
