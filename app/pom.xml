@@ -45,10 +45,6 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>journalfoerinngaaende</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>admin</artifactId>
 		</dependency>
 		<dependency>
