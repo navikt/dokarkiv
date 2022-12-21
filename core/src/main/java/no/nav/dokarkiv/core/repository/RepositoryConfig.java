@@ -21,9 +21,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Properties;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Slf4j
 @EntityScan(basePackages = {
 		"no.nav.dokarkiv.core.domain.entities",

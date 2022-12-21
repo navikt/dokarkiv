@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.repository.journalpostliste;
 
 import com.google.common.collect.Lists;
+import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -28,7 +29,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
+import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -288,11 +291,15 @@ public class JournalpostListeRepositoryIT {
 
 	private Journalpost createJournalpostWithSaksrelasjon(String saksnr, boolean isFeilregistrert, FagomradeCode fagomrade,
 														  FagsystemCode fagsystem, JournalpostTypeCode journalpostType) {
-		return joarkRepository.save(TestDataUtils.createJournalpostWithSaksrelasjon(saksnr, isFeilregistrert, fagomrade, fagsystem, journalpostType).build());
+		JournalpostBuilder journalpostWithSaksrelasjon = TestDataUtils.createJournalpostWithSaksrelasjon(saksnr, isFeilregistrert, fagomrade, fagsystem, journalpostType);
+		journalpostWithSaksrelasjon.kanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
+		return joarkRepository.save(journalpostWithSaksrelasjon.build());
 	}
 
 	private Journalpost createJournalpost(Date date, JournalStatusCode journalStatus, FagomradeCode fagomradeCode) {
-		return joarkRepository.save(TestDataUtils.createJournalpost(saksnr, date, journalStatus, fagomradeCode).build());
+		JournalpostBuilder journalpost = TestDataUtils.createJournalpost(saksnr, date, journalStatus, fagomradeCode);
+		journalpost.kanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
+		return joarkRepository.save(journalpost.build());
 	}
 
 	private HentMinJPListeParameters createHentMinJPListeParameters() {

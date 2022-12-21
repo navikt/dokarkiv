@@ -25,9 +25,11 @@ import org.springframework.util.Base64Utils;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -468,6 +470,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 		journalpostSladdet.setOpprettetKildeNavn("opprettetKildeNavn");
 		journalpostSladdet.setEndretKildeNavn("endretKildeNavn");
 		journalpostSladdet.setEndretAvNavn("endretAvNavn");
+		journalpostSladdet.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
 
 		DokumentInfo dokumentInfo = journalpostSladdet.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfo.removeFilDetaljer(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON));
@@ -483,7 +486,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 		journalpostArkiv.setOpprettetKildeNavn("opprettetKildeNavn");
 		journalpostArkiv.setEndretKildeNavn("endretKildeNavn");
 		journalpostArkiv.setEndretAvNavn("endretAvNavn");
-
+		journalpostArkiv.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
 
 		DokumentInfo dokumentInfo = journalpostArkiv.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfo.removeFilDetaljer(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON));

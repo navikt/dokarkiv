@@ -23,6 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -30,6 +31,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
@@ -262,5 +265,11 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected void assertThatDokumentFilIsNotDeleted(String filuuid) {
 		assertThat(dokumentFilRepository.findByFilUuid(filuuid), notNullValue());
+	}
+
+	protected Journalpost createUniqueJournalpostWithHoveddokument() {
+		Journalpost journalpostWithHoveddokument = createJournalpostWithHoveddokument();
+		journalpostWithHoveddokument.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
+		return journalpostWithHoveddokument;
 	}
 }

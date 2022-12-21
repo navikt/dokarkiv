@@ -27,6 +27,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -36,6 +37,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.util.stream.Collectors.joining;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.FunctionalMatcher.where;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -480,6 +482,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		journalpostSladdet.setOpprettetKildeNavn("opprettetKildeNavn");
 		journalpostSladdet.setEndretKildeNavn("endretKildeNavn");
 		journalpostSladdet.setEndretAvNavn("endretAvNavn");
+		journalpostSladdet.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
 
 		DokumentInfo dokumentInfo = journalpostSladdet.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfo.removeFilDetaljer(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON));
@@ -495,6 +498,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		journalpostArkiv.setOpprettetKildeNavn("opprettetKildeNavn");
 		journalpostArkiv.setEndretKildeNavn("endretKildeNavn");
 		journalpostArkiv.setEndretAvNavn("endretAvNavn");
+		journalpostArkiv.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
 
 		DokumentInfo dokumentInfo = journalpostArkiv.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfo.removeFilDetaljer(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON));

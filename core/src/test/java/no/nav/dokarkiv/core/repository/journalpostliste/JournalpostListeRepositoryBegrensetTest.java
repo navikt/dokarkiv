@@ -26,7 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
+import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
+import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -71,10 +74,8 @@ public class JournalpostListeRepositoryBegrensetTest {
 
 	@Test
 	public void shouldNotCountJournalpostWhenBegrenset() {
-		Journalpost journalpostBegrenset = TestDataUtils.createJournalpost(SAKID, DateTime.now()
-				.toDate(), JournalStatusCode.J, FAGOMRADE).build();
-		Journalpost journalpost = TestDataUtils.createJournalpost(SAKID, DateTime.now()
-				.toDate(), JournalStatusCode.J, FAGOMRADE).build();
+		Journalpost journalpostBegrenset = createUniqueJournalpost();
+		Journalpost journalpost = createUniqueJournalpost();
 		joarkRepository.save(journalpost);
 		joarkRepository.save(journalpostBegrenset);
 		skjermingService.setJournalpostSkjerming(journalpostBegrenset.getJournalpostId(), SkjermingTypeCode.POL);
@@ -98,10 +99,8 @@ public class JournalpostListeRepositoryBegrensetTest {
 
 	@Test
 	public void shouldNotGetJournalpostWhenBegrenset() {
-		Journalpost journalpostBegrenset = TestDataUtils.createJournalpost(SAKID, DateTime.now()
-				.toDate(), JournalStatusCode.J, FAGOMRADE).build();
-		Journalpost journalpost = TestDataUtils.createJournalpost(SAKID, DateTime.now()
-				.toDate(), JournalStatusCode.J, FAGOMRADE).build();
+		Journalpost journalpostBegrenset = createUniqueJournalpost();
+		Journalpost journalpost = createUniqueJournalpost();
 		joarkRepository.save(journalpost);
 		joarkRepository.save(journalpostBegrenset);
 		skjermingService.setJournalpostSkjerming(journalpostBegrenset.getJournalpostId(), SkjermingTypeCode.POL);
@@ -124,5 +123,10 @@ public class JournalpostListeRepositoryBegrensetTest {
 		assertThat(journalpostListBegrensetAll.size(), is(2));
 	}
 
-
+	private Journalpost createUniqueJournalpost() {
+		return createJournalpost(SAKID, DateTime.now()
+				.toDate(), JournalStatusCode.J, FAGOMRADE)
+				.kanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID())
+				.build();
+	}
 }

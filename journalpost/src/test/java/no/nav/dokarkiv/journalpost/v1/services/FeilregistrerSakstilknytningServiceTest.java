@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.FeilregistreringAlleredeOpphevetException;
@@ -9,6 +11,8 @@ import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.SaksrelasjonRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,6 +24,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +36,11 @@ public class FeilregistrerSakstilknytningServiceTest {
 
 	@Mock
 	private JoarkRepository joarkRepository;
+	@Mock
+	private AksjonsLoggService aksjonsLoggService;
+
+	@Captor
+	private ArgumentCaptor<List<ArkivElementEndringTO>> arkivElementEndringCaptor;
 
 	@InjectMocks
 	private FeilregistrerSakstilknytningService feilregistrerSakstilknytningService;
@@ -59,11 +70,13 @@ public class FeilregistrerSakstilknytningServiceTest {
 	public void feilregistrerSakstilknytning() {
 		Long journalpostId = 1L;
 		when(joarkRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
-		when(saksrelasjonRepository.findSaksrelasjonByJournalpostId(any(String.class))).thenReturn(
+		when(saksrelasjonRepository.findByJournalpostId(eq(1L))).thenReturn(
 				Optional.of(Saksrelasjon.builder().build()));
 
-		List<ArkivElementEndringTO> arkivElementEndringTOS = feilregistrerSakstilknytningService.feilregistrerSakstilknytning(String.valueOf(journalpostId));
+		feilregistrerSakstilknytningService.feilregistrerSakstilknytning(String.valueOf(journalpostId));
+		verify(aksjonsLoggService).validateAndSaveAksjonsLogg(any(AksjonsLoggTO.class), arkivElementEndringCaptor.capture());
 
+		var arkivElementEndringTOS = arkivElementEndringCaptor.getValue();
 		assertThat(arkivElementEndringTOS.size(), is(1));
 		assertThat(arkivElementEndringTOS.get(0).getFraVerdi(), is("false"));
 		assertThat(arkivElementEndringTOS.get(0).getTilVerdi(), is("true"));
@@ -74,7 +87,7 @@ public class FeilregistrerSakstilknytningServiceTest {
 	public void kanIkkeOpphevFeilregistrertSakstilknytningForJournalpostUtenFeilregistrering() {
 		Long journalpostId = 1L;
 		when(joarkRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
-		when(saksrelasjonRepository.findSaksrelasjonByJournalpostId(any(String.class))).thenReturn(
+		when(saksrelasjonRepository.findByJournalpostId(eq(1L))).thenReturn(
 				Optional.of(Saksrelasjon.builder().build()));
 
 		assertThrows(FeilregistreringAlleredeOpphevetException.class,
@@ -86,7 +99,7 @@ public class FeilregistrerSakstilknytningServiceTest {
 	public void opphevFeilregistrertSakstilknytning() {
 		Long journalpostId = 1L;
 		when(joarkRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
-		when(saksrelasjonRepository.findSaksrelasjonByJournalpostId(any(String.class))).thenReturn(
+		when(saksrelasjonRepository.findByJournalpostId(eq(1L))).thenReturn(
 				Optional.of(Saksrelasjon.builder().feilregistrert(true).build()));
 
 		feilregistrerSakstilknytningService.opphevFeilregistrertSakstilknytning(String.valueOf(journalpostId));

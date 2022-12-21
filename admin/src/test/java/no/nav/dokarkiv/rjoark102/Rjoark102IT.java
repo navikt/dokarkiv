@@ -69,8 +69,8 @@ public class Rjoark102IT extends AbstractAdminIT {
 	public void skalKassereDokumentSomErKnyttetTilFlereJournalposter() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
 		dokumentInfoSomSkalKasseres.addFilDetaljer(createFildetaljerOgFil(dokumentInfoSomSkalKasseres, ARKIV, FIL_UUID_ARKIV));

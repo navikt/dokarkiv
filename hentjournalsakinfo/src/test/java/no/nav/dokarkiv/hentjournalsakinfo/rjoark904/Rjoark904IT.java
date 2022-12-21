@@ -17,7 +17,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.util.Arrays;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,9 +35,9 @@ public class Rjoark904IT extends AbstractHentjournalsakinfoItest {
 
 	@Test
 	public void shouldFindOnlyOneJournalpostWhenMoreMatchingForPagination() {
-		Journalpost utgaattJournalpost1 = createJournalpostWithHoveddokument();
+		Journalpost utgaattJournalpost1 = createUniqueJournalpost();
 		utgaattJournalpost1.setJournalstatus(JournalStatusCode.U);
-		Journalpost utgaattJournalpost2 = createJournalpostWithHoveddokument();
+		Journalpost utgaattJournalpost2 = createUniqueJournalpost();
 		utgaattJournalpost2.setJournalstatus(JournalStatusCode.U);
 		joarkRepository.save(utgaattJournalpost1);
 		joarkRepository.save(utgaattJournalpost2);
@@ -62,9 +61,9 @@ public class Rjoark904IT extends AbstractHentjournalsakinfoItest {
 
 	@Test
 	public void shouldFindJournalpostWithJournalstatusU() {
-		Journalpost utgaattJournalpost = createJournalpostWithHoveddokument();
+		Journalpost utgaattJournalpost = createUniqueJournalpost();
 		utgaattJournalpost.setJournalstatus(JournalStatusCode.U);
-		Journalpost ferdigstiltJournalpost = createJournalpostWithHoveddokument();
+		Journalpost ferdigstiltJournalpost = createUniqueJournalpost();
 		joarkRepository.save(utgaattJournalpost);
 		joarkRepository.save(ferdigstiltJournalpost);
 		TestTransaction.flagForCommit();
@@ -77,9 +76,9 @@ public class Rjoark904IT extends AbstractHentjournalsakinfoItest {
 
 	@Test
 	public void shouldFindJournalpostWithJournalstatusUB() {
-		Journalpost ukjentbrukerJournalpost = createJournalpostWithHoveddokument();
+		Journalpost ukjentbrukerJournalpost = createUniqueJournalpost();
 		ukjentbrukerJournalpost.setJournalstatus(JournalStatusCode.UB);
-		Journalpost ferdigstiltJournalpost = createJournalpostWithHoveddokument();
+		Journalpost ferdigstiltJournalpost = createUniqueJournalpost();
 		joarkRepository.save(ukjentbrukerJournalpost);
 		joarkRepository.save(ferdigstiltJournalpost);
 		TestTransaction.flagForCommit();
@@ -96,7 +95,7 @@ public class Rjoark904IT extends AbstractHentjournalsakinfoItest {
 		dokumentInfoRepository.save(vedlegg2);
 		DokumentInfo vedlegg1 = createDokumentInfo();
 		dokumentInfoRepository.save(vedlegg1);
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createUniqueJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.U);
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
 		createVedleggRelasjon(journalpost, vedlegg1);

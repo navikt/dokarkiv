@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.core.repository;
 
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
@@ -8,6 +10,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -57,7 +62,6 @@ public class JoarkRepositorySkjermetTest {
 	@Autowired
 	private EntityManager entityManager;
 
-	public static final String KANAL_REFERANSE_ID = "kanal";
 	public static final String TILLEGGSOPPLYSNINGER_KEY = "keey";
 	public static final String TILLEGGSOPPLYSNINGER_VALUE = "value";
 
@@ -73,7 +77,6 @@ public class JoarkRepositorySkjermetTest {
 		dokumentinfoRepository.deleteAll();
 		joarkRepository.deleteAll();
 		entityManager.createNativeQuery("Delete from t_jp_tillegg").getFirstResult();
-
 	}
 
 	@Test
@@ -97,6 +100,8 @@ public class JoarkRepositorySkjermetTest {
 		Journalpost journalpost = createJournalpost();
 		journalpost = joarkRepository.save(journalpost);
 		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
 
 		assertTrue(joarkRepository.existsById(journalpost.getId()));
 		assertTrue(joarkRepositorySkjermet.existsById(journalpost.getId()));
@@ -173,8 +178,8 @@ public class JoarkRepositorySkjermetTest {
 
 	@Test
 	public void shouldNotFindSkjermetJournalpost() {
-		Journalpost journalpost = createJournalpost();
-		Journalpost journalpostSkjermet = createJournalpost();
+		Journalpost journalpost = createUniqueJournalpost();
+		Journalpost journalpostSkjermet = createUniqueJournalpost();
 
 		journalpost = joarkRepository.save(journalpost);
 		journalpostSkjermet = joarkRepository.save(journalpostSkjermet);
@@ -284,10 +289,10 @@ public class JoarkRepositorySkjermetTest {
 
 	@Test
 	public void shouldNotReturnSkjermetJournalpostIdForFindAllJournalpostIdsByDokumentInfoId() {
-		Journalpost journalpost = createJournalpost();
+		Journalpost journalpost = createUniqueJournalpost();
 		joarkRepository.save(journalpost);
 
-		Journalpost journalpostSkjermet = createJournalpost();
+		Journalpost journalpostSkjermet = createUniqueJournalpost();
 
 		Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -311,5 +316,11 @@ public class JoarkRepositorySkjermetTest {
 		assertThat(joarkRepositorySkjermet.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId)
 				.get(0), is(journalpost.getJournalpostId()));
 
+	}
+
+	static Journalpost createUniqueJournalpost() {
+		return createJournalpost("123", DateTime.now().toDate(), JournalStatusCode.J, FagomradeCode.PEN)
+				.kanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID())
+				.build();
 	}
 }

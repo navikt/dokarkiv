@@ -24,6 +24,7 @@ import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +38,6 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
 import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ADMIN_UPDATE_ACTION;
 import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
@@ -45,6 +45,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEI
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_AVBRYT;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_UTGAAR;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
+import static org.springframework.http.HttpStatus.CONFLICT;
 
 @Slf4j
 @Protected
@@ -54,8 +55,10 @@ import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJEN
 public class FeilregistrerJournalpostRestController {
 
 	private static final String FIKK_UKJENT_BRUKER = "Journalposten fikk status Ukjent Bruker";
-	private static final String FEILREGISTRERING_OPPHEVET = "Feilregistreringen ble opphevet";
-
+	public static final String FEILREGISTRERT_MESSAGE = "Saksrelasjonen ble feilregistrert";
+	public static final String FEILREGISTRERT_CONFLICT_MESSAGE = "Saksrelasjon kan være feilregistrert fra før. Forsøk på nytt";
+	public static final String FEILREGISTRERING_OPPHEVET_MESSAGE = "Feilregistreringen ble opphevet";
+	public static final String FEILREGISTRERING_OPPHEVET_CONFLICT_MESSAGE = "Saksrelasjon feilregistrering kan være opphevet fra før. Forsøk på nytt";
 	private final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService;
 	private final UkjentBrukerService ukjentBrukerService;
 	private final AvbrytService avbrytService;
@@ -79,28 +82,34 @@ public class FeilregistrerJournalpostRestController {
 		this.utgaarService = statusUtgaarService;
 	}
 
-	@Transactional
 	@SwaggerFeilregistrerSakstilknytning
 	@PatchMapping("/{journalpostId}/feilregistrer/" + FEILREGISTRER_SAKSTILKNYTNING)
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark401"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> feilregistrerSakstilkytning(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
-		List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId);
-		populerAksjonslogg(journalpostId, AksjonsTypeCode.FEILREGISTRER_SAKSTILKNYTNING, arkivElementEndringTOList, "Saksrelasjonen ble feilregistrert");
-		log.info(MDC.get(MDC_REQUEST_ID) + " har feilregistrert journalpost med journalpostId={}", journalpostId);
-		return ResponseEntity.ok().body("Saksrelasjonen ble feilregistrert");
+		try {
+			feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId);
+			log.info(MDC.get(MDC_REQUEST_ID) + " har feilregistrert journalpost med journalpostId={}", journalpostId);
+		} catch (ObjectOptimisticLockingFailureException e) {
+			log.warn(MDC.get(MDC_REQUEST_ID) + " feilregistrerte ikke journalpost med journalpostId={}. Flere kall forsøker å endre saksrelasjon samtidig", journalpostId, e);
+			return ResponseEntity.status(CONFLICT).body(FEILREGISTRERT_CONFLICT_MESSAGE);
+		}
+		return ResponseEntity.ok().body(FEILREGISTRERT_MESSAGE);
 	}
 
-	@Transactional
 	@SwaggerOpphevFeilregistrertSakstilknytning
 	@PatchMapping("/{journalpostId}/feilregistrer/" + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING)
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark402"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> opphevFeilregistrertSakstilknytning(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
-		List<ArkivElementEndringTO> arkivElementEndringTOList = feilregistrerSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostId);
-		populerAksjonslogg(journalpostId, AksjonsTypeCode.OPPHEV_FEILREGISTRERING, arkivElementEndringTOList, FEILREGISTRERING_OPPHEVET);
-		log.info(MDC.get(MDC_REQUEST_ID) + " har opphevet feilregistrering av journalpost med journalpostId={}", journalpostId);
-		return ResponseEntity.ok().body(FEILREGISTRERING_OPPHEVET);
+		try {
+			feilregistrerSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostId);
+			log.info(MDC.get(MDC_REQUEST_ID) + " har opphevet feilregistrering av journalpost med journalpostId={}", journalpostId);
+		} catch (ObjectOptimisticLockingFailureException e) {
+			log.warn(MDC.get(MDC_REQUEST_ID) + " opphevet ikke feilregistrering for journalpost med journalpostId={}. Flere kall forsøker å endre saksrelasjon samtidig", journalpostId, e);
+			return ResponseEntity.status(CONFLICT).body(FEILREGISTRERING_OPPHEVET_CONFLICT_MESSAGE);
+		}
+		return ResponseEntity.ok().body(FEILREGISTRERING_OPPHEVET_MESSAGE);
 	}
 
 	@Transactional
