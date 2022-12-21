@@ -1,9 +1,10 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark910;
 
-import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
+import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.UTSENDINGSINFO_DATA;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -57,9 +58,10 @@ final class DokumentoversiktBrukerSqlGenerator {
 				"                                      AND tj.k_journal_s IN ('M', 'MO', 'D')\n" +
 				"                                      AND " + feilregistrertSelectionSql(dokumentoversiktBrukerFilter.isKunFeilregistrerte()) + "\n" +
 				"     ),\n" +
-				"     relevantedata AS (SELECT " + RELEVANTE_DATA +
+				"     relevantedata AS (SELECT " + RELEVANTE_DATA + UTSENDINGSINFO_DATA +
 				"                       FROM t_journalpost j\n" +
 				"                                LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
+				"               				 LEFT JOIN t_utsendings_info ut ON ut.journalpost_id = j.journalpost_id\n" +
 				// Viktig at man alltid bruker primærnøkkelen SAK.id
 				// En cast av SAK.id til noe annet vil ikke treffe index og resultatet blir FULL TABLE SCAN i eksekveringsplanen.
 				"                                LEFT JOIN sak sa ON sa.id = to_number(s.sak_nr_fk)\n" +

@@ -4,6 +4,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.SDP;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AKTOER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.PSAK_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
@@ -42,6 +44,8 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 	public void shouldFindAllJournalpostWithJournalstatusFS() {
 		Journalpost ferdigstiltJournalpost1 = createJournalpostWithHoveddokument();
 		ferdigstiltJournalpost1.getSaksrelasjon().setSakId("1");
+		ferdigstiltJournalpost1.setUtsendingskanal(SDP);
+		ferdigstiltJournalpost1.setUtsendingsInfo(TestDataGenerator.createDigitalPostadresse());
 		Journalpost ferdigstiltJournalpost2 = createJournalpostWithHoveddokument();
 		ferdigstiltJournalpost2.getSaksrelasjon().setSakId("2");
 		joarkRepository.save(ferdigstiltJournalpost1);

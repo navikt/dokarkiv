@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
+import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.UTSENDINGSINFO_DATA;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerSpringJdbcRepository.CTE_ALIAS_AKTOERID;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerSpringJdbcRepository.CTE_ALIAS_MIDLERTIDIGE;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerSpringJdbcRepository.CTE_ALIAS_ORGNR;
@@ -82,9 +83,10 @@ public class DokumentoversiktBrukerSqlGeneratorTest {
 						"                                      AND tj.k_journal_s IN ('M', 'MO', 'D')\n" +
 						"                                      AND (s.feilregistrert IS NULL OR (s.feilregistrert IN (:visFeilregistrert)))\n" +
 						"     ),\n" +
-						"     relevantedata AS (SELECT " + RELEVANTE_DATA +
+						"     relevantedata AS (SELECT " + RELEVANTE_DATA + UTSENDINGSINFO_DATA +
 						"                       FROM t_journalpost j\n" +
 						"                                LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
+						"               				 LEFT JOIN t_utsendings_info ut ON ut.journalpost_id = j.journalpost_id\n" +
 						"                                LEFT JOIN sak sa ON sa.id = to_number(s.sak_nr_fk)\n" +
 						"                                LEFT JOIN t_jp_tillegg t ON j.journalpost_id = t.journalpost_id\n" +
 						"                                LEFT JOIN t_k_behandlingstema bt ON j.k_behandlingstema = bt.k_behandlingstema\n" +
