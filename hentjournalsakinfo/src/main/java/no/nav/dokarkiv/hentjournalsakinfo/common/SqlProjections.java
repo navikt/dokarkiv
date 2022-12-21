@@ -82,7 +82,6 @@ public final class SqlProjections {
 					ut.poststed						AS utsendingsInfo_fysiskpostadresse_poststed,
 					ut.landkode						AS utsendingsInfo_fysiskpostadresse_landkode,
 					ut.digitalpostkasseadresse      AS utsendingsInfo_digitalpostadresse_digitalpostkasseadresse,
-					ut.digitalpostkasseleverandor   AS utsendingsInfo_digitalpostadresse_postkasseleverandor,
 					ut.digital_kontaktinformasjon	AS utsendingsInfo_navnovarsling_varselsendttil,
 					ut.varslingstekst				AS utsendingsInfo_navnovarsling_varseltekst""";
 

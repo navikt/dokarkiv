@@ -10,7 +10,6 @@ public class UtsendingsInfoDto {
 
 	@Value
 	public static class FysiskPostadresse {
-
 		String adresselinje1;
 		String adresselinje2;
 		String adresselinje3;
@@ -22,7 +21,6 @@ public class UtsendingsInfoDto {
 	@Value
 	public static class DigitalPostadresse {
 		String digitalpostkasseAdresse;
-		String postkasseLeverandor;
 	}
 
 	@Value
