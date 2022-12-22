@@ -12,7 +12,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
@@ -27,19 +27,19 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER
 @Service
 public class ArkiverVariantService {
 
-	private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final DokumentFilRepository dokumentFilRepository;
 	private final LagreAksjonsLoggService lagreAksjonsLoggService;
 
-	public ArkiverVariantService(DokumentinfoRepository dokumentinfoRepository,
+	public ArkiverVariantService(DokumentInfoRepository dokumentInfoRepository,
 								 DokumentFilRepository dokumentFilRepository, LagreAksjonsLoggService lagreAksjonsLoggService) {
-		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.lagreAksjonsLoggService = lagreAksjonsLoggService;
 	}
 
 	public ArkiverVariantResponse arkiverVariant(ArkiverVariantRequest request, String melding, String utfoertAv, String hjemmel) {
-		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
+		DokumentInfo dokumentInfo = dokumentInfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
 						request.getDokumentInfoId())));
 
@@ -96,7 +96,7 @@ public class ArkiverVariantService {
 
 		dokumentFilRepository.save(filDetaljer.createDokumentFil());
 		// FIXME
-		dokumentinfoRepository.persist(dokumentInfo);
+		dokumentInfoRepository.persist(dokumentInfo);
 		return filDetaljer;
 	}
 }

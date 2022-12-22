@@ -77,7 +77,7 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 		createRequest(journalpost.getJournalpostId().toString());
 		lagreVedleggPaaJournalpostResponse = behandleJournalV3Provider
 				.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-		persistedDokumentInfo = dokumentinfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
+		persistedDokumentInfo = dokumentInfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
 				.getDokumentId())).get();
 		fildetaljer = persistedDokumentInfo.getFildetaljerListe().iterator().next();
 	}
@@ -139,7 +139,7 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 		createRequest(journalpost.getJournalpostId().toString());
 		lagreVedleggPaaJournalpostResponse = behandleJournalV3Provider
 				.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-		persistedDokumentInfo = dokumentinfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
+		persistedDokumentInfo = dokumentInfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
 				.getDokumentId())).get();
 
 		assertNotNull(persistedDokumentInfo);

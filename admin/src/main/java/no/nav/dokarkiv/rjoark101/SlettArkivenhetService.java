@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
@@ -43,14 +43,14 @@ public class SlettArkivenhetService {
 	private final JoarkDeleteRepository deleteRepository;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final JoarkRepository joarkRepository;
-	private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final EntityManager entityManager;
 
-	public SlettArkivenhetService(JoarkDeleteRepository deleteRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, EntityManager entityManager) {
+	public SlettArkivenhetService(JoarkDeleteRepository deleteRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository, DokumentInfoRepository dokumentInfoRepository, EntityManager entityManager) {
 		this.deleteRepository = deleteRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.joarkRepository = joarkRepository;
-		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.entityManager = entityManager;
 	}
 
@@ -73,7 +73,7 @@ public class SlettArkivenhetService {
 	}
 
 	public Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> slettDokumentInfo(Long dokumentInfoId) {
-		if (isFalse(dokumentinfoRepository.existsById(dokumentInfoId))) {
+		if (isFalse(dokumentInfoRepository.existsById(dokumentInfoId))) {
 			throw new DokumentInfoIkkeFunnetException(String.format("Fant ingen dokumentInfo med dokumentInfoId=%s i databasen", dokumentInfoId));
 		}
 
@@ -92,7 +92,7 @@ public class SlettArkivenhetService {
 	public List<ArkivElementEndringTO> slettDokumentFil(Long dokumentInfoId, VariantFormatCode variant) {
 
 		//Sjekk om dokumentInfo eksisterer
-		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId)
+		DokumentInfo dokumentInfo = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId)
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Fant ikke dokument med dokumentInfoId=%s i Joark databasen", dokumentInfoId)));
 
 		//Sjekk om fildetaljer eksisterer
@@ -175,7 +175,7 @@ public class SlettArkivenhetService {
 
 	private void validerAtJournalpostIkkeErSplittet(Journalpost journalpost) {
 		List<DokumentInfo> dokumenterMedJournalpostSattSomOriginalJournalpost =
-				dokumentinfoRepository.findByOriginalJournalpostJournalpostId(journalpost.getJournalpostId());
+				dokumentInfoRepository.findByOriginalJournalpostJournalpostId(journalpost.getJournalpostId());
 
 		if (dokumenterMedJournalpostSattSomOriginalJournalpost.size() > journalpost.getJournalpostDokumentInfoRelasjonerAdmin()
 				.size()) {

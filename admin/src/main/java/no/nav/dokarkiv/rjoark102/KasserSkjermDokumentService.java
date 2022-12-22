@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,10 +23,10 @@ import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
 @Service
 public class KasserSkjermDokumentService {
 
-	private final DokumentinfoRepository dokumentInfoRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final SkjermingService skjermingService;
 
-	public KasserSkjermDokumentService(DokumentinfoRepository dokumentInfoRepository, SkjermingService skjermingService) {
+	public KasserSkjermDokumentService(DokumentInfoRepository dokumentInfoRepository, SkjermingService skjermingService) {
 		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.skjermingService = skjermingService;
 	}

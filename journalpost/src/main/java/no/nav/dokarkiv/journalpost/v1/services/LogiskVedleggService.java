@@ -4,7 +4,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.LogiskVedleggIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
@@ -21,17 +21,17 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 @Service("journalfoerSkannetDokumentService")
 public class LogiskVedleggService {
 	private final SkannetInnholdRepository skannetInnholdRepository;
-	private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 
-	public LogiskVedleggService(final SkannetInnholdRepository skannetInnholdRepository, final DokumentinfoRepository dokumentinfoRepository) {
+	public LogiskVedleggService(final SkannetInnholdRepository skannetInnholdRepository, final DokumentInfoRepository dokumentInfoRepository) {
 		this.skannetInnholdRepository = skannetInnholdRepository;
-		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 	}
 
 	@Transactional
 	public String leggTilLogiskVedlegg(String dokumentInfoId, LeggTilLogiskVedleggRequest request) {
 		try {
-			DokumentInfo dokumentInfo = dokumentinfoRepository.getReferenceById(parseLong(dokumentInfoId));
+			DokumentInfo dokumentInfo = dokumentInfoRepository.getReferenceById(parseLong(dokumentInfoId));
 
 			SkannetInnhold skannetInnhold = SkannetInnhold.builder()
 					.vedleggInnhold(request.getTittel())

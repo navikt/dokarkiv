@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.core.skjerming;
 
-import static java.util.Objects.nonNull;
-
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -9,7 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.Optional;
+
+import static java.util.Objects.nonNull;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -27,13 +27,13 @@ public class SkjermingServiceTest {
 
 	private final SkjermingService skjermingService;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
-	private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final EntityManager entityManager;
 
-	public SkjermingServiceTest(SkjermingService skjermingService, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, DokumentinfoRepository dokumentinfoRepository, EntityManager entityManager) {
+	public SkjermingServiceTest(SkjermingService skjermingService, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, DokumentInfoRepository dokumentInfoRepository, EntityManager entityManager) {
 		this.skjermingService = skjermingService;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
-		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.entityManager = entityManager;
 	}
 
@@ -83,7 +83,7 @@ public class SkjermingServiceTest {
 
 
 	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjermingTypeCode) {
-		Optional<DokumentInfo> dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId);
+		Optional<DokumentInfo> dokumentInfo = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId);
 		if (dokumentInfo.isPresent()) {
 			FilDetaljer filDetaljer = dokumentInfo.get().findFilDetaljerByVariantFormatAdmin(variant);
 			if (nonNull(filDetaljer) && skjermingTypeCode.equals(filDetaljer.getSkjermingType())) {

@@ -15,7 +15,7 @@ import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
@@ -56,7 +56,7 @@ public class OppdaterJournalpostService {
 	private static final String APPLIKASJON_FS22 = "FS22";
 
 	private final JoarkRepositorySkjermet joarkRepository;
-	private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final JournalpostUpdater journalpostUpdater;
 	private final SaksrelasjonUpdater saksrelasjonUpdater;
 	private final DokumentInfoUpdater dokumentInfoUpdater;
@@ -69,7 +69,7 @@ public class OppdaterJournalpostService {
 	public OppdaterJournalpostService(JoarkRepositorySkjermet joarkRepository,
 									  JournalpostUpdater journalpostUpdater,
 									  SaksrelasjonUpdater saksrelasjonUpdater,
-									  DokumentinfoRepository dokumentinfoRepository,
+									  DokumentInfoRepository dokumentInfoRepository,
 									  DokumentInfoUpdater dokumentInfoUpdater,
 									  LagreAksjonsLoggService lagreAksjonsLoggService,
 									  AksjonsLoggService aksjonsLoggService,
@@ -77,7 +77,7 @@ public class OppdaterJournalpostService {
 									  final HentSakerRepository hentSakerRepository,
 									  final MeterRegistry meterRegistry) {
 		this.joarkRepository = joarkRepository;
-		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.journalpostUpdater = journalpostUpdater;
 		this.saksrelasjonUpdater = saksrelasjonUpdater;
 		this.dokumentInfoUpdater = dokumentInfoUpdater;
@@ -131,7 +131,7 @@ public class OppdaterJournalpostService {
 
 				changeTracker = dokumentInfoUpdater.updateFields(dokumentInfo, dokument);
 				// FIXME analyse
-				dokumentinfoRepository.update(dokumentInfo);
+				dokumentInfoRepository.update(dokumentInfo);
 				if (!changeTracker.getChanges().isEmpty()) {
 					lagreAksjonsLoggService.lagreAksjonsLogg(
 							ENDRE_METADATA, dokumentInfo.getDokumentInfoId(), null,

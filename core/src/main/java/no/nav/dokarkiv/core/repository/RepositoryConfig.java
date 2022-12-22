@@ -29,7 +29,7 @@ import java.util.Properties;
 @EnableJpaRepositories(basePackageClasses = {
 		JoarkRepository.class,
 		DokumentFilRepository.class,
-		DokumentinfoRepository.class,
+		DokumentInfoRepository.class,
 		JournalpostDokumentInfoRelasjonRepository.class,
 		JoarkDeleteRepository.class,
 		AksjonsLoggRepository.class,

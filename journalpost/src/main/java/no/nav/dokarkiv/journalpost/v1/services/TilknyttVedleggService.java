@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.security.TokenGrantValidator;
@@ -37,7 +37,7 @@ public class TilknyttVedleggService {
 
 	private final JoarkRepositorySkjermet joarkRepository;
 	private final ShallowDokumentInfoCopier shallowDokumentInfoCopier;
-	private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final DokumentFilRepository dokumentFilRepository;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final TilknyttVedleggValidator tilknyttVedleggValidator;
@@ -46,13 +46,13 @@ public class TilknyttVedleggService {
 	private final TokenGrantValidator tokenGrantValidator;
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
 
-	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AccessLookupJournalpost accessLookupJournalpost, TokenGrantValidator tokenGrantValidator) {
+	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentInfoRepository dokumentInfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AccessLookupJournalpost accessLookupJournalpost, TokenGrantValidator tokenGrantValidator) {
 		this.joarkRepository = joarkRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.accessLookupJournalpost = accessLookupJournalpost;
 		this.tokenGrantValidator = tokenGrantValidator;
 		this.shallowDokumentInfoCopier = new ShallowDokumentInfoCopier();
-		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.tilknyttVedleggValidator = new TilknyttVedleggValidator();
 		this.tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
@@ -91,7 +91,7 @@ public class TilknyttVedleggService {
 
 		for (DokumentVedlegg dokumentVedlegg : tilknyttVedleggRequest.getDokument()) {
 			Journalpost sourceJournalpost = joarkRepository.findById(dokumentVedlegg.getKildeJournalpostId()).orElse(null);
-			DokumentInfo sourceDokumentInfo = dokumentinfoRepository.findByDokumentInfoId(Long.parseLong(dokumentVedlegg.getDokumentInfoId()))
+			DokumentInfo sourceDokumentInfo = dokumentInfoRepository.findByDokumentInfoId(Long.parseLong(dokumentVedlegg.getDokumentInfoId()))
 					.orElse(null);
 			FilDetaljer filDetaljerSladdet = finnSladdetFildetaljer(sourceDokumentInfo);
 			FilDetaljer filDetaljerArkiv = finnArkivFildetaljer(sourceDokumentInfo);
@@ -130,7 +130,7 @@ public class TilknyttVedleggService {
 
 		dokumentFilRepository.save(dokumentFilCopy);
 		// FIXME analyse
-		dokumentinfoRepository.persist(dokumentInfoCopy);
+		dokumentInfoRepository.persist(dokumentInfoCopy);
 
 		tilknyttDokumentInfoSomVedleggPaaJournalpost(tilKnyttetAvNavn, dokumentInfoCopy, dokumentVedlegg, journalpost, feiledeDokumenterList);
 	}
