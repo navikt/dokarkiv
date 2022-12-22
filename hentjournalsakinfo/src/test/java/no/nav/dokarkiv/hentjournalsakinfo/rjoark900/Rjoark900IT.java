@@ -82,9 +82,9 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 	@Test
 	public void shouldReturnVedleggOrderedByRelasjonId() {
 		DokumentInfo vedlegg2 = createDokumentInfo();
-		dokumentInfoRepository.save(vedlegg2);
+		dokumentInfoRepository.persist(vedlegg2);
 		DokumentInfo vedlegg1 = createDokumentInfo();
-		dokumentInfoRepository.save(vedlegg1);
+		dokumentInfoRepository.persist(vedlegg1);
 		Journalpost journalpost = createUniqueJournalpost();
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
 		createVedleggRelasjon(journalpost, vedlegg1);
@@ -111,7 +111,8 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 	@Test
 	public void shouldReturnNewDokumenInfoValues() {
 		DokumentInfo vedlegg = createDokumentInfoWithMoreData();
-		dokumentInfoRepository.save(vedlegg);
+		// FIXME persistAndFlush?
+		dokumentInfoRepository.persist(vedlegg);
 		Journalpost journalpost = createUniqueJournalpost();
 		createVedleggRelasjon(journalpost, vedlegg);
 		joarkRepository.save(journalpost);

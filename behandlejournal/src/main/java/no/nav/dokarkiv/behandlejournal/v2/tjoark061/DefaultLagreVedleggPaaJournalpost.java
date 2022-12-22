@@ -70,7 +70,8 @@ public class DefaultLagreVedleggPaaJournalpost implements LagreVedleggPaaJournal
 		updateJournalpostAndDokumentInfoValues(journalpost, dokumentInfo, sporingsMetaData);
 
 		persistDokumenter(dokumentInfo);
-		DokumentInfo savedDokumentInfo = dokumentinfoRepository.save(dokumentInfo);
+		// FIXME
+		DokumentInfo savedDokumentInfo = dokumentinfoRepository.persist(dokumentInfo);
 		joarkRepository.save(journalpost);
 		return new LagreVedleggPaaJournalpostResponse(savedDokumentInfo.getDokumentInfoId());
 	}

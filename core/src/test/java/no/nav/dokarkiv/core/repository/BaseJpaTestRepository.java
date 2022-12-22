@@ -26,4 +26,11 @@ public interface BaseJpaTestRepository<T, ID> extends BaseJpaRepository<T, ID> {
 	 * Sletter alle entiteter dette repository behandler.
 	 */
 	void deleteAll();
+
+	/**
+	 * Returnerer antall entiteter.
+	 *
+	 * @return antall entiteter.
+	 */
+	long count();
 }

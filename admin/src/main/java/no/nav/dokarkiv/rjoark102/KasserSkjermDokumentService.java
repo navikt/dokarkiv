@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.rjoark102;
 
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
-import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
-
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -16,6 +12,10 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_KASSERT;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
+import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -55,7 +55,8 @@ public class KasserSkjermDokumentService {
 						() -> new DokumentInfoIkkeFunnetException(String.format(
 								"Fant ikke dokument med dokumentInfoId=%s", dokumentInfoId)));
 		dokumentInfoForSkjerming.setKassert(kassert);
-		dokumentInfoRepository.save(dokumentInfoForSkjerming);
+		// FIXME riktig?
+		dokumentInfoRepository.persist(dokumentInfoForSkjerming);
 		return Arrays.asList(
 				ArkivElementEndringTO.builder()
 						.arkivElement(DOKUMENT_INFO_KASSERT)

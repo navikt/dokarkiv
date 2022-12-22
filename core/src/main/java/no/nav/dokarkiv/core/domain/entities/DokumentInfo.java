@@ -151,8 +151,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Builder.Default
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 
-	@OneToMany
-	@JoinColumn(name = "dokument_info_id", nullable = false)
+	@OneToMany(mappedBy = "dokumentInfo")
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	@Builder.Default
 	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<>();

@@ -95,7 +95,8 @@ public class ArkiverVariantService {
 		dokumentInfo.addFilDetaljer(filDetaljer);
 
 		dokumentFilRepository.save(filDetaljer.createDokumentFil());
-		dokumentinfoRepository.save(dokumentInfo);
+		// FIXME
+		dokumentinfoRepository.persist(dokumentInfo);
 		return filDetaljer;
 	}
 }

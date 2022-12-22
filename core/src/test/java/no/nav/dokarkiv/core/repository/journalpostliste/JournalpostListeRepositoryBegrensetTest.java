@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
@@ -44,7 +44,7 @@ public class JournalpostListeRepositoryBegrensetTest {
 	private JoarkRepository joarkRepository;
 
 	@Autowired
-	private DokumentinfoRepository dokumentinfoRepository;
+	private DokumentInfoTestRepository dokumentInfoTestRepository;
 
 	@Autowired
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
@@ -68,7 +68,7 @@ public class JournalpostListeRepositoryBegrensetTest {
 	public void cleanUp() {
 		TestTransaction.end();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
-		dokumentinfoRepository.deleteAll();
+		dokumentInfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
 	}
 

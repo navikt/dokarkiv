@@ -2,8 +2,8 @@ package no.nav.dokarkiv.journal.v3;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.security.SporingHandlerInterceptorTest;
@@ -55,7 +55,7 @@ public abstract class AbstractJournalV3Itest {
 	@Autowired
 	protected JournalpostDokumentInfoRelasjonRepository relasjonRepository;
 	@Autowired
-	protected DokumentinfoRepository dokumentinfoRepository;
+	protected DokumentInfoTestRepository dokumentInfoTestRepository;
 	@Autowired
 	protected DokumentUrlInfoRepository dokumentUrlInfoRepository;
 	@Autowired
@@ -66,7 +66,7 @@ public abstract class AbstractJournalV3Itest {
 	@BeforeEach
 	public void setUpItest() {
 		relasjonRepository.deleteAll();
-		dokumentinfoRepository.deleteAll();
+		dokumentInfoTestRepository.deleteAll();
 		dokumentUrlInfoRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
 		joarkRepository.deleteAll();

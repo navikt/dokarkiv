@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
@@ -9,63 +8,54 @@ import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
-import org.hibernate.StaleObjectStateException;
 import org.slf4j.MDC;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
-import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_MULTIPLIER;
+import javax.persistence.EntityNotFoundException;
+
+import static java.lang.Long.parseLong;
+import static java.lang.String.format;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
 @Service("journalfoerSkannetDokumentService")
 public class LogiskVedleggService {
-    private final SkannetInnholdRepository skannetInnholdRepository;
-    private final DokumentinfoRepository dokumentinfoRepository;
+	private final SkannetInnholdRepository skannetInnholdRepository;
+	private final DokumentinfoRepository dokumentinfoRepository;
 
-    public LogiskVedleggService(final SkannetInnholdRepository skannetInnholdRepository, final DokumentinfoRepository dokumentinfoRepository) {
-        this.skannetInnholdRepository = skannetInnholdRepository;
-        this.dokumentinfoRepository = dokumentinfoRepository;
-    }
+	public LogiskVedleggService(final SkannetInnholdRepository skannetInnholdRepository, final DokumentinfoRepository dokumentinfoRepository) {
+		this.skannetInnholdRepository = skannetInnholdRepository;
+		this.dokumentinfoRepository = dokumentinfoRepository;
+	}
 
-    @Retryable(
-            include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
-            backoff = @Backoff(delay = RETRY_DELAY, multiplier = RETRY_MULTIPLIER)
-    )
-    public String leggTilLogiskVedlegg(String dokumentInfoId, LeggTilLogiskVedleggRequest request) {
-        DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(Long.parseLong(dokumentInfoId))
-                .orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kunne ikke finne dokumentInfo med dokumentInfoId=%s i joark", dokumentInfoId)));
+	@Transactional
+	public String leggTilLogiskVedlegg(String dokumentInfoId, LeggTilLogiskVedleggRequest request) {
+		try {
+			DokumentInfo dokumentInfo = dokumentinfoRepository.getReferenceById(parseLong(dokumentInfoId));
 
-        SkannetInnhold skannetInnhold = SkannetInnhold.builder().vedleggInnhold(request.getTittel()).build();
-        skannetInnhold.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
+			SkannetInnhold skannetInnhold = SkannetInnhold.builder()
+					.vedleggInnhold(request.getTittel())
+					.dokumentInfo(dokumentInfo)
+					.build();
+			skannetInnhold.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
+			skannetInnholdRepository.persist(skannetInnhold);
+			return skannetInnhold.getSkannetInnholdId().toString();
+		} catch (EntityNotFoundException e) {
+			throw new DokumentInfoIkkeFunnetException(format("Kunne ikke finne dokumentInfo med dokumentInfoId=%s i joark", dokumentInfoId), e);
+		}
+	}
 
-        dokumentInfo.addSkannetInnhold(skannetInnhold);
-        skannetInnhold = skannetInnholdRepository.save(skannetInnhold);
+	@Transactional
+	public void endreLogiskVedlegg(String logiskVedleggId, EndreLogiskVedleggRequest request) {
+		SkannetInnhold skannetInnhold = skannetInnholdRepository.findById(parseLong(logiskVedleggId))
+				.orElseThrow(() -> new LogiskVedleggIkkeFunnetException(format("Kunne ikke finne logisk vedlegg med logiskVedleggId=%s i joark", logiskVedleggId)));
 
-        return skannetInnhold.getSkannetInnholdId().toString();
-    }
+		skannetInnhold.setVedleggInnhold(request.getTittel());
+		skannetInnhold.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+	}
 
-    @Retryable(
-            include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
-            backoff = @Backoff(delay = RETRY_DELAY, multiplier = RETRY_MULTIPLIER)
-    )
-    public void endreLogiskVedlegg(String dokumentInfoId, String logiskVedleggId, EndreLogiskVedleggRequest request) {
-        SkannetInnhold skannetInnhold = skannetInnholdRepository.findSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(logiskVedleggId, dokumentInfoId)
-                .orElseThrow(() -> new LogiskVedleggIkkeFunnetException(String.format("Kunne ikke finne logisk vedlegg med logiskVedleggId=%s og dokumentId=%s i Joark", logiskVedleggId, dokumentInfoId)));
-
-        skannetInnhold.setVedleggInnhold(request.getTittel());
-        skannetInnhold.setEndretKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
-        skannetInnholdRepository.save(skannetInnhold);
-    }
-
-    public void slettLogiskVedlegg(String dokumentInfoId, String logiskVedleggId) {
-        if (!skannetInnholdRepository.findSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(logiskVedleggId, dokumentInfoId).isPresent()) {
-            throw new LogiskVedleggIkkeFunnetException(
-                    String.format("Kunne ikke finne logisk vedlegg med logiskVedleggId=%s og dokumentId=%s i Joark", logiskVedleggId, dokumentInfoId)
-            );
-        } else {
-            skannetInnholdRepository.deleteSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(logiskVedleggId, dokumentInfoId);
-        }
-    }
+	@Transactional
+	public void slettLogiskVedlegg(String logiskVedleggId) {
+		skannetInnholdRepository.deleteBySkannetInnholdId(parseLong(logiskVedleggId));
+	}
 }

@@ -49,7 +49,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalSkjermesSomKassert
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findByDokumentInfoId(dokumentInfoSomSkalSkjermesSomKassert
 				.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), POL);
@@ -104,7 +104,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalSkjermesSomKassert
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findByDokumentInfoId(dokumentInfoSomSkalSkjermesSomKassert
 				.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), null);

@@ -260,7 +260,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThat(dokInfoEtterKall.get()
 				.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV)
@@ -308,7 +308,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThat(dokInfoEtterKall.get()
 				.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV)
@@ -364,7 +364,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThat(dokInfoEtterKall.get()
 				.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV)

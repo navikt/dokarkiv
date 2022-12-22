@@ -127,7 +127,8 @@ public class KasserDokumentService {
 							.build()
 			);
 		}
-		dokumentInfoRepository.save(dokumentInfo);
+		// FIXME riktig ?
+		dokumentInfoRepository.persist(dokumentInfo);
 		return arkivElementEndringTOList;
 	}
 

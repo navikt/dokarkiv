@@ -91,10 +91,11 @@ public class Rjoark904IT extends AbstractHentjournalsakinfoItest {
 
 	@Test
 	public void shouldReturnVedleggOrderedByRelasjonId() {
+		// FIXME
 		DokumentInfo vedlegg2 = createDokumentInfo();
-		dokumentInfoRepository.save(vedlegg2);
+		dokumentInfoRepository.persist(vedlegg2);
 		DokumentInfo vedlegg1 = createDokumentInfo();
-		dokumentInfoRepository.save(vedlegg1);
+		dokumentInfoRepository.persist(vedlegg1);
 		Journalpost journalpost = createUniqueJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.U);
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);

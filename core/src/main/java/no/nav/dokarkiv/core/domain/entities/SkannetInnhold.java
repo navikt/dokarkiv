@@ -11,9 +11,12 @@ import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -46,6 +49,10 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 
 	@Column(name = "dokumenttypeid", length = 50)
 	private String dokumenttypeid;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "dokument_info_id")
+	private DokumentInfo dokumentInfo;
 
 	/**
 	 * Default constructor.

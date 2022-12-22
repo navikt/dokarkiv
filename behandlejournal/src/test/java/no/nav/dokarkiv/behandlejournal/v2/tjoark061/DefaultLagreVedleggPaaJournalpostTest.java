@@ -76,7 +76,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	@BeforeEach
 	public void init() {
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder().componentId(COMPONENT_ID).build());
-		lenient().when(dokumentinfoRepositoryMock.save(any())).thenReturn(DokumentInfo.builder().dokumentInfoId(DOKUMENT_ID).build());
+		lenient().when(dokumentinfoRepositoryMock.persist(any())).thenReturn(DokumentInfo.builder().dokumentInfoId(DOKUMENT_ID).build());
 		service.setVedleggDokumentTypeId(VEDLEGG_DOKUMENT_TYPE_ID);
 	}
 	@Test

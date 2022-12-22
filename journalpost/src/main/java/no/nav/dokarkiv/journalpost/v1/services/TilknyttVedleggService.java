@@ -129,7 +129,8 @@ public class TilknyttVedleggService {
 		dokumentInfoCopy.addFilDetaljer(fildetaljerCopy);
 
 		dokumentFilRepository.save(dokumentFilCopy);
-		dokumentinfoRepository.save(dokumentInfoCopy);
+		// FIXME analyse
+		dokumentinfoRepository.persist(dokumentInfoCopy);
 
 		tilknyttDokumentInfoSomVedleggPaaJournalpost(tilKnyttetAvNavn, dokumentInfoCopy, dokumentVedlegg, journalpost, feiledeDokumenterList);
 	}

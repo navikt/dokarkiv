@@ -162,7 +162,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected void assertThatDokumentInfoIsDeleted(DokumentInfo dokumentInfo) {
 		Long dokumentInfoId = dokumentInfo.getDokumentInfoId();
-		assertThat(dokumentinfoRepository.findById(dokumentInfoId).isPresent(), is(false));
+		assertThat(dokumentInfoTestRepository.findById(dokumentInfoId).isPresent(), is(false));
 		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId).size(), is(0));
 		assertThat(entityManager.createNativeQuery("select '1' from t_dok_info_tillegg where dokument_info_id= :dok")
 				.setParameter("dok", dokumentInfoId)
@@ -230,7 +230,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected void assertThatDokumentInfoIsNotDeleted(DokumentInfo dokumentInfo) {
 		Long dokumentInfoId = dokumentInfo.getDokumentInfoId();
-		assertThat(dokumentinfoRepository.findById(dokumentInfoId).isPresent(), is(true));
+		assertThat(dokumentInfoTestRepository.findById(dokumentInfoId).isPresent(), is(true));
 		assertThat(entityManager.createNativeQuery("select '1' from t_dok_info_tillegg where dokument_info_id= :dok")
 				.setParameter("dok", dokumentInfoId)
 				.getResultList()
