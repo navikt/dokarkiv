@@ -202,7 +202,7 @@ public class EndreSkjermingArkivenhetService {
 
 
 	private FilDetaljer hentFildetaljerByVariantFormat(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
-		return dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId)
+		return dokumentInfoRepository.findById(dokumentInfoId)
 				.orElseThrow(() ->
 						new DokumentInfoIkkeFunnetException(String.format("Fant ikke dokumentInfo med dokumentInfoId=%s", dokumentInfoId)))
 				.findFilDetaljerByVariantFormatAdmin(variantFormatCode);

@@ -50,13 +50,11 @@ public class KasserSkjermDokumentService {
 	}
 
 	private List<ArkivElementEndringTO> oppdaterKassertParameter(Long dokumentInfoId, boolean kassert) {
-		DokumentInfo dokumentInfoForSkjerming = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId)
+		DokumentInfo dokumentInfoForSkjerming = dokumentInfoRepository.findById(dokumentInfoId)
 				.orElseThrow(
 						() -> new DokumentInfoIkkeFunnetException(String.format(
 								"Fant ikke dokument med dokumentInfoId=%s", dokumentInfoId)));
 		dokumentInfoForSkjerming.setKassert(kassert);
-		// FIXME riktig?
-		dokumentInfoRepository.persist(dokumentInfoForSkjerming);
 		return Arrays.asList(
 				ArkivElementEndringTO.builder()
 						.arkivElement(DOKUMENT_INFO_KASSERT)
@@ -69,7 +67,7 @@ public class KasserSkjermDokumentService {
 
 	private List<ArkivElementEndringTO> endreSkjermingForAlleFildetaljer(Long dokumentInfoId, SkjermingTypeCode skjermingTypeCode) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
-		DokumentInfo dokumentInfoForSkjerming = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId)
+		DokumentInfo dokumentInfoForSkjerming = dokumentInfoRepository.findById(dokumentInfoId)
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format(
 						"Fant ikke dokument med dokumentInfoId=%s", dokumentInfoId)));
 

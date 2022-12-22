@@ -130,8 +130,6 @@ public class OppdaterJournalpostService {
 				assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
 
 				changeTracker = dokumentInfoUpdater.updateFields(dokumentInfo, dokument);
-				// FIXME analyse
-				dokumentInfoRepository.update(dokumentInfo);
 				if (!changeTracker.getChanges().isEmpty()) {
 					lagreAksjonsLoggService.lagreAksjonsLogg(
 							ENDRE_METADATA, dokumentInfo.getDokumentInfoId(), null,

@@ -108,7 +108,6 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 
 	@Test
 	public void shouldReturnVedleggOrderedByRelasjonId() {
-		// FIXME for mye her?
 		DokumentInfo vedlegg2 = createDokumentInfo();
 		dokumentInfoRepository.persist(vedlegg2);
 		DokumentInfo vedlegg1 = createDokumentInfo();
@@ -136,7 +135,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	@Test
 	public void shouldFailToGetJournalpost() {
 		buildAndPersistJournalpost();
-		Long journalpostId = 54321L;
+		long journalpostId = 54321L;
 
 		String uri = HENTJOURNALSAKINFO_HENTJOURNALPOST + journalpostId;
 		ResponseEntity<SafHentJournalpostResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponse.class);

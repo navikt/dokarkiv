@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
@@ -30,7 +31,7 @@ public class UtsendingsInfo {
 	private long journalpostId;
 
 	@MapsId
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "journalpost_id", referencedColumnName = "journalpost_id", nullable = false)
 	private Journalpost journalpost;
 

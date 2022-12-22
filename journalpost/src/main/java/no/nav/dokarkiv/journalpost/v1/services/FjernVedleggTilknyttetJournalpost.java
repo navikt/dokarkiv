@@ -56,7 +56,7 @@ public class FjernVedleggTilknyttetJournalpost {
 	}
 
 	private DokumentInfo hentDokumentInfo(Long dokumentId) {
-		return dokumentInfoRepository.findByDokumentInfoId(dokumentId)
+		return dokumentInfoRepository.findById(dokumentId)
 				.orElseThrow(() -> new DokumentIkkeFunnetException(String.format("Fant ikke dokument med dokumentInfoId=%s", dokumentId)));
 	}
 }

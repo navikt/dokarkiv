@@ -91,7 +91,7 @@ public class TilknyttVedleggService {
 
 		for (DokumentVedlegg dokumentVedlegg : tilknyttVedleggRequest.getDokument()) {
 			Journalpost sourceJournalpost = joarkRepository.findById(dokumentVedlegg.getKildeJournalpostId()).orElse(null);
-			DokumentInfo sourceDokumentInfo = dokumentInfoRepository.findByDokumentInfoId(Long.parseLong(dokumentVedlegg.getDokumentInfoId()))
+			DokumentInfo sourceDokumentInfo = dokumentInfoRepository.findById(Long.parseLong(dokumentVedlegg.getDokumentInfoId()))
 					.orElse(null);
 			FilDetaljer filDetaljerSladdet = finnSladdetFildetaljer(sourceDokumentInfo);
 			FilDetaljer filDetaljerArkiv = finnArkivFildetaljer(sourceDokumentInfo);
@@ -129,7 +129,6 @@ public class TilknyttVedleggService {
 		dokumentInfoCopy.addFilDetaljer(fildetaljerCopy);
 
 		dokumentFilRepository.save(dokumentFilCopy);
-		// FIXME analyse
 		dokumentInfoRepository.persist(dokumentInfoCopy);
 
 		tilknyttDokumentInfoSomVedleggPaaJournalpost(tilKnyttetAvNavn, dokumentInfoCopy, dokumentVedlegg, journalpost, feiledeDokumenterList);

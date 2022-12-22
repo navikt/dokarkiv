@@ -92,7 +92,7 @@ public class SlettArkivenhetService {
 	public List<ArkivElementEndringTO> slettDokumentFil(Long dokumentInfoId, VariantFormatCode variant) {
 
 		//Sjekk om dokumentInfo eksisterer
-		DokumentInfo dokumentInfo = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId)
+		DokumentInfo dokumentInfo = dokumentInfoRepository.findById(dokumentInfoId)
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Fant ikke dokument med dokumentInfoId=%s i Joark databasen", dokumentInfoId)));
 
 		//Sjekk om fildetaljer eksisterer

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FILUUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
 
@@ -39,8 +40,8 @@ public class ArkiverVariantService {
 	}
 
 	public ArkiverVariantResponse arkiverVariant(ArkiverVariantRequest request, String melding, String utfoertAv, String hjemmel) {
-		DokumentInfo dokumentInfo = dokumentInfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
-				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
+		DokumentInfo dokumentInfo = dokumentInfoRepository.findById(request.getDokumentInfoId())
+				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
 						request.getDokumentInfoId())));
 
 		sjekkOmVariantFinnes(dokumentInfo, request.getVariant());
@@ -73,7 +74,7 @@ public class ArkiverVariantService {
 	private void sjekkOmVariantFinnes(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode) {
 		FilDetaljer variantFildetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormatCode);
 		if (Objects.nonNull(variantFildetaljer)) {
-			throw new VariantFormatAlreadyExistsException(String.format("Det finnes allerede en variant: %s for dokumentInfoId: %s", variantFormatCode
+			throw new VariantFormatAlreadyExistsException(format("Det finnes allerede en variant: %s for dokumentInfoId: %s", variantFormatCode
 					.name(), dokumentInfo.getDokumentInfoId()));
 		}
 	}
@@ -95,7 +96,6 @@ public class ArkiverVariantService {
 		dokumentInfo.addFilDetaljer(filDetaljer);
 
 		dokumentFilRepository.save(filDetaljer.createDokumentFil());
-		// FIXME
 		dokumentInfoRepository.persist(dokumentInfo);
 		return filDetaljer;
 	}

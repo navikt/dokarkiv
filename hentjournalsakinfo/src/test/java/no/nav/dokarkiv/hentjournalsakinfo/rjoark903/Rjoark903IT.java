@@ -62,7 +62,6 @@ public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 
 	@Test
 	public void shouldReturnVedleggOrderedByRelasjonId() {
-		// FIXME
 		DokumentInfo vedlegg2 = createDokumentInfo();
 		dokumentInfoRepository.persist(vedlegg2);
 		DokumentInfo vedlegg1 = createDokumentInfo();

@@ -151,7 +151,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Builder.Default
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 
-	@OneToMany(mappedBy = "dokumentInfo")
+	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	@Builder.Default
 	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<>();
@@ -462,6 +462,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public void addSkannetInnhold(SkannetInnhold skannetInnhold) {
 		if (skannetInnhold != null) {
+			skannetInnhold.setDokumentInfo(this);
 			this.skannetInnholdListe.add(skannetInnhold);
 		}
 	}

@@ -111,8 +111,6 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 	@Test
 	public void shouldReturnNewDokumenInfoValues() {
 		DokumentInfo vedlegg = createDokumentInfoWithMoreData();
-		// FIXME persistAndFlush?
-		dokumentInfoRepository.persist(vedlegg);
 		Journalpost journalpost = createUniqueJournalpost();
 		createVedleggRelasjon(journalpost, vedlegg);
 		joarkRepository.save(journalpost);

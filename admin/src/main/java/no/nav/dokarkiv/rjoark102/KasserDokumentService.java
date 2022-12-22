@@ -41,7 +41,7 @@ public class KasserDokumentService {
 	}
 
 	public List<ArkivElementEndringTO> kasserDokument(Long dokumentInfoId, String kassertAvNavn) {
-		DokumentInfo dokumentInfoForKassering = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId)
+		DokumentInfo dokumentInfoForKassering = dokumentInfoRepository.findById(dokumentInfoId)
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format(
 						"Fant ikke dokument med dokumentInfoId=%s", dokumentInfoId)));
 
@@ -127,8 +127,7 @@ public class KasserDokumentService {
 							.build()
 			);
 		}
-		// FIXME riktig ?
-		dokumentInfoRepository.persist(dokumentInfo);
+		dokumentInfoRepository.merge(dokumentInfo);
 		return arkivElementEndringTOList;
 	}
 
