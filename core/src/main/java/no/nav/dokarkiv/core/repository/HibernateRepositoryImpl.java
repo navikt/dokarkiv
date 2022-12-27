@@ -4,6 +4,8 @@ import org.hibernate.Session;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utdrag fra HibernateRepositoryImpl https://github.com/vladmihalcea/hibernate-types
@@ -26,6 +28,15 @@ public class HibernateRepositoryImpl<T> implements HibernateRepository<T> {
 		persist(entity);
 		entityManager.flush();
 		return entity;
+	}
+
+	@Override
+	public <S extends T> List<S> persistAll(Iterable<S> entities) {
+		List<S> result = new ArrayList<>();
+		for(S entity : entities) {
+			result.add(persist(entity));
+		}
+		return result;
 	}
 
 	@Override

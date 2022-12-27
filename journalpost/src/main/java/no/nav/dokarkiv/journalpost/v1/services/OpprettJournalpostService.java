@@ -36,7 +36,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
@@ -177,9 +176,8 @@ public class OpprettJournalpostService {
 	}
 
 	private void persistDokumentFiler(Journalpost journalpost) {
-		List<DokumentFil> dokumentFilList = journalpost.findAllFilDetaljer().stream().map(FilDetaljer::createDokumentFil).collect(Collectors.toList());
-		//FIXME bulk
-		dokumentFilList.forEach(dokumentFilRepository::persist);
+		List<DokumentFil> dokumentFilList = journalpost.findAllFilDetaljer().stream().map(FilDetaljer::createDokumentFil).toList();
+		dokumentFilRepository.persistAll(dokumentFilList);
 	}
 
 	private void populerAksjonsloggFromChanges(Long journalpostId, Optional<Sak> sakOptional) {
