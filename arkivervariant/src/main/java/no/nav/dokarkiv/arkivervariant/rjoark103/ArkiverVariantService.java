@@ -12,7 +12,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FILUUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
 
@@ -27,20 +28,20 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER
 @Service
 public class ArkiverVariantService {
 
-	private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final DokumentFilRepository dokumentFilRepository;
 	private final LagreAksjonsLoggService lagreAksjonsLoggService;
 
-	public ArkiverVariantService(DokumentinfoRepository dokumentinfoRepository,
+	public ArkiverVariantService(DokumentInfoRepository dokumentInfoRepository,
 								 DokumentFilRepository dokumentFilRepository, LagreAksjonsLoggService lagreAksjonsLoggService) {
-		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.lagreAksjonsLoggService = lagreAksjonsLoggService;
 	}
 
 	public ArkiverVariantResponse arkiverVariant(ArkiverVariantRequest request, String melding, String utfoertAv, String hjemmel) {
-		DokumentInfo dokumentInfo = dokumentinfoRepository.findByDokumentInfoId(request.getDokumentInfoId())
-				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
+		DokumentInfo dokumentInfo = dokumentInfoRepository.findById(request.getDokumentInfoId())
+				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
 						request.getDokumentInfoId())));
 
 		sjekkOmVariantFinnes(dokumentInfo, request.getVariant());
@@ -73,7 +74,7 @@ public class ArkiverVariantService {
 	private void sjekkOmVariantFinnes(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode) {
 		FilDetaljer variantFildetaljer = dokumentInfo.findFilDetaljerByVariantFormat(variantFormatCode);
 		if (Objects.nonNull(variantFildetaljer)) {
-			throw new VariantFormatAlreadyExistsException(String.format("Det finnes allerede en variant: %s for dokumentInfoId: %s", variantFormatCode
+			throw new VariantFormatAlreadyExistsException(format("Det finnes allerede en variant: %s for dokumentInfoId: %s", variantFormatCode
 					.name(), dokumentInfo.getDokumentInfoId()));
 		}
 	}
@@ -95,7 +96,7 @@ public class ArkiverVariantService {
 		dokumentInfo.addFilDetaljer(filDetaljer);
 
 		dokumentFilRepository.save(filDetaljer.createDokumentFil());
-		dokumentinfoRepository.save(dokumentInfo);
+		dokumentInfoRepository.persist(dokumentInfo);
 		return filDetaljer;
 	}
 }

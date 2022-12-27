@@ -19,7 +19,7 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -62,7 +62,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	@Mock
 	private JoarkRepositorySkjermet joarkRepositoryMock;
 	@Mock
-	private DokumentinfoRepository dokumentinfoRepositoryMock;
+	private DokumentInfoRepository dokumentInfoRepositoryMock;
 	@Mock
 	private DokumentFilRepository dokumentFilRepositoryMock;
 	@Mock
@@ -76,7 +76,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	@BeforeEach
 	public void init() {
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder().componentId(COMPONENT_ID).build());
-		lenient().when(dokumentinfoRepositoryMock.save(any())).thenReturn(DokumentInfo.builder().dokumentInfoId(DOKUMENT_ID).build());
+		lenient().when(dokumentInfoRepositoryMock.persist(any())).thenReturn(DokumentInfo.builder().dokumentInfoId(DOKUMENT_ID).build());
 		service.setVedleggDokumentTypeId(VEDLEGG_DOKUMENT_TYPE_ID);
 	}
 	@Test

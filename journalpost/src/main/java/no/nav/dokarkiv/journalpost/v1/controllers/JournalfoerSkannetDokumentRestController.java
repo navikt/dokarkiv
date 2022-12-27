@@ -14,7 +14,6 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSlettLogiskVedlegg;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
@@ -32,7 +30,6 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validate
 @Slf4j
 @Protected
 @RestController
-@Transactional
 @RequestMapping("/rest/journalpostapi/v1/dokumentInfo")
 public class JournalfoerSkannetDokumentRestController {
 
@@ -54,15 +51,14 @@ public class JournalfoerSkannetDokumentRestController {
             @PathVariable String logiskVedleggId,
             @RequestBody EndreLogiskVedleggRequest request) {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-        MDC.put(MDC_REQUEST_ID, "endrelogiskvedlegg");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å endre logisk vedlegg med logiskVedleggId={} på dokument med dokumentInfoId={}",
+        log.info("endrelogiskvedlegg har mottatt kall om å endre logisk vedlegg med logiskVedleggId={} på dokument med dokumentInfoId={}",
                 logiskVedleggId, dokumentInfoId);
 
         validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
         validateId(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
         hasText(request.getTittel(), TITTEL_STRING);
 
-        logiskVedleggService.endreLogiskVedlegg(dokumentInfoId, logiskVedleggId, request);
+        logiskVedleggService.endreLogiskVedlegg(logiskVedleggId, request);
 
         log.info("endrelogiskvedlegg har endret logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
         return ResponseEntity.ok("Logisk vedlegg endret");
@@ -75,8 +71,7 @@ public class JournalfoerSkannetDokumentRestController {
             @PathVariable String dokumentInfoId,
             @RequestBody LeggTilLogiskVedleggRequest request) {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-        MDC.put(MDC_REQUEST_ID, "leggtillogiskvedlegg");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å legge til logisk vedlegg på dokument med dokumentInfoId={}", dokumentInfoId);
+        log.info("leggtillogiskvedlegg har mottatt kall om å legge til logisk vedlegg på dokument med dokumentInfoId={}", dokumentInfoId);
 
         validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
         hasText(request.getTittel(), TITTEL_STRING);
@@ -84,7 +79,7 @@ public class JournalfoerSkannetDokumentRestController {
         String logiskVedleggId = logiskVedleggService.leggTilLogiskVedlegg(dokumentInfoId, request);
         LeggTilLogiskVedleggResponse response = LeggTilLogiskVedleggResponse.builder().logiskVedleggId(logiskVedleggId).build();
 
-        log.info("endrelogiskvedlegg har lagt til logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
+        log.info("leggtillogiskvedlegg har lagt til logisk vedlegg med logiskVedleggId={}, dokumentInfoId={}.", logiskVedleggId, dokumentInfoId);
         return ResponseEntity.ok(response);
     }
 
@@ -95,15 +90,14 @@ public class JournalfoerSkannetDokumentRestController {
             @PathVariable String dokumentInfoId,
             @PathVariable String logiskVedleggId) {
         RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-        MDC.put(MDC_REQUEST_ID, "slettlogiskvedlegg");
-        log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å har mottatt kall om å slette logisk vedlegg med logiskVedleggId={} på dokument med dokumentInfoId={}", logiskVedleggId, dokumentInfoId);
+        log.info("slettlogiskvedlegg har mottatt kall om å har mottatt kall om å slette logisk vedlegg med logiskVedleggId={}, dokumentInfoId={}", logiskVedleggId, dokumentInfoId);
 
         validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
         validateId(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
 
-        logiskVedleggService.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId);
+        logiskVedleggService.slettLogiskVedlegg(logiskVedleggId);
 
-        log.info("slettlogiskvedlegg har slettet logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
+        log.info("slettlogiskvedlegg har slettet logisk vedlegg med logiskVedleggId={}, dokumentInfoId={}.", logiskVedleggId, dokumentInfoId);
         return ResponseEntity.ok("Logisk vedlegg slettet");
     }
 }

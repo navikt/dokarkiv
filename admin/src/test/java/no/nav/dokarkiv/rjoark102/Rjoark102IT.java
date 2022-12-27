@@ -86,8 +86,8 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		assertThat(dokumentInfoSomSkalKasseres.getFildetaljerListeAdmin().size(), is(2));
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(2L));
-		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(2L));
-		assertTrue(dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId()).get().isRelatedToMultipleJournalposts());
+		assertThat("Feil antall dokumenter", dokumentInfoTestRepository.count(), is(2L));
+		assertTrue(dokumentInfoTestRepository.findById(dokumentInfoSomSkalKasseres.getDokumentInfoId()).get().isRelatedToMultipleJournalposts());
 
 		var responseEntity = restTemplate.exchange(
 				URL_KASSERDOKUMENT,
@@ -104,7 +104,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		TestTransaction.start();
 
 
-		Optional<DokumentInfo> dokumentInfoAfter = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId());
+		Optional<DokumentInfo> dokumentInfoAfter = dokumentInfoTestRepository.findById(dokumentInfoSomSkalKasseres.getDokumentInfoId());
 		assertTrue(dokumentInfoAfter.isPresent());
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertThat(Duration.between(dokumentInfoAfter.get().getDatoKassert(), LocalDateTime.now()).toMillis(), lessThan(10000L));
@@ -114,7 +114,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), nullValue());
 
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(2L));
-		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(2L));
+		assertThat("Feil antall dokumenter etter kall", dokumentInfoTestRepository.count(), is(2L));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(2));
@@ -196,11 +196,11 @@ public class Rjoark102IT extends AbstractAdminIT {
 		TestTransaction.end();
 		TestTransaction.start();
 
-		Optional<DokumentInfo> dokumentInfoRep = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId());
+		Optional<DokumentInfo> dokumentInfoRep = dokumentInfoTestRepository.findById(dokumentInfoSomSkalKasseres.getDokumentInfoId());
 		assertTrue(dokumentInfoRep.isPresent());
 		assertThat(dokumentInfoRep.get().getFildetaljerListeAdmin().size(), is(2));
 		assertThat("Feil antall journalposter", joarkRepository.count(), is(1L));
-		assertThat("Feil antall dokumenter", dokumentinfoRepository.count(), is(1L));
+		assertThat("Feil antall dokumenter", dokumentInfoTestRepository.count(), is(1L));
 		assertFalse(dokumentInfoSomSkalKasseres.isRelatedToMultipleJournalposts());
 		assertFalse(dokumentInfoSomSkalKasseres.getFildetaljerListe().isEmpty());
 
@@ -217,7 +217,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		TestTransaction.start();
 
-		Optional<DokumentInfo> dokumentInfoAfter = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalKasseres.getDokumentInfoId());
+		Optional<DokumentInfo> dokumentInfoAfter = dokumentInfoTestRepository.findById(dokumentInfoSomSkalKasseres.getDokumentInfoId());
 		assertTrue(dokumentInfoAfter.isPresent());
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn(), is(KASSERT_AV_NAVN));
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
@@ -227,7 +227,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType(), nullValue());
 
 		assertThat("Feil antall journalposter etter kall", joarkRepository.count(), is(1L));
-		assertThat("Feil antall dokumenter etter kall", dokumentinfoRepository.count(), is(1L));
+		assertThat("Feil antall dokumenter etter kall", dokumentInfoTestRepository.count(), is(1L));
 	}
 
 	@Test

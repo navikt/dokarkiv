@@ -22,8 +22,8 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.security.SporingHandlerInterceptorTest;
@@ -94,7 +94,7 @@ public class HentDokumentControllerIT {
 	@Autowired
 	private JournalpostDokumentInfoRelasjonRepository relasjonRepository;
 	@Autowired
-	private DokumentinfoRepository dokumentinfoRepository;
+	private DokumentInfoTestRepository dokumentInfoTestRepository;
 	@Autowired
 	private TestRestTemplate testRestTemplate;
 	@Autowired
@@ -115,7 +115,7 @@ public class HentDokumentControllerIT {
 		dokumentUrlInfoRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
 		relasjonRepository.deleteAll();
-		dokumentinfoRepository.deleteAll();
+		dokumentInfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
 		if (entityManager.isJoinedToTransaction()) {
 			entityManager.flush();

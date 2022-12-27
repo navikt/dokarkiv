@@ -45,7 +45,7 @@ public class DokumentFilSkjermetRepositoryTest {
 	private JoarkRepository joarkRepository;
 
 	@Autowired
-	private DokumentinfoRepository dokumentinfoRepository;
+	private DokumentInfoTestRepository dokumentInfoTestRepository;
 
 	@Autowired
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
@@ -69,7 +69,7 @@ public class DokumentFilSkjermetRepositoryTest {
 		TestTransaction.end();
 		dokumentFilRepository.deleteAll();
 		journalpostDokumentInfoRelasjonRepository.deleteAll();
-		dokumentinfoRepository.deleteAll();
+		dokumentInfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
 	}
 
@@ -90,7 +90,7 @@ public class DokumentFilSkjermetRepositoryTest {
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfo.setKassert(true);
-		dokumentinfoRepository.save(dokumentInfo);
+		dokumentInfoTestRepository.persist(dokumentInfo);
 		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getDokumentInfoId(), ARKIV, SkjermingTypeCode.POL);
@@ -117,7 +117,7 @@ public class DokumentFilSkjermetRepositoryTest {
 		assertThat(dokumentFilBefore.getFil(), is(arkivDokumentFil.getFil()));
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		dokumentinfoRepository.save(dokumentInfo);
+		dokumentInfoTestRepository.persist(dokumentInfo);
 		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getDokumentInfoId(), ARKIV, SkjermingTypeCode.POL);
@@ -145,7 +145,7 @@ public class DokumentFilSkjermetRepositoryTest {
 		hoveddok.setDatoKassert(LocalDateTime.now());
 		hoveddok.setKassert(true);
 		hoveddok.setKassertAvNavn("Navn");
-		dokumentinfoRepository.save(hoveddok);
+		dokumentInfoTestRepository.persist(hoveddok);
 
 		DokumentFil dokumentFilAfter = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
 		assertThat(dokumentFilAfter.getFil(), is(TestDataGenerator.FIL_DUMMY_KASSERT));
@@ -171,7 +171,7 @@ public class DokumentFilSkjermetRepositoryTest {
 		hoveddok.setDatoKassert(LocalDateTime.now());
 		hoveddok.setKassert(true);
 		hoveddok.setKassertAvNavn("Navn");
-		dokumentinfoRepository.save(hoveddok);
+		dokumentInfoTestRepository.persist(hoveddok);
 
 		DokumentFil dokumentFilAfter = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
 		assertThat(dokumentFilAfter.getFil(), is(TestDataGenerator.FIL_DUMMY_KASSERT));

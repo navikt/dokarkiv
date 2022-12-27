@@ -15,7 +15,7 @@ import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
@@ -41,7 +41,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_METADATA;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
@@ -57,7 +56,7 @@ public class OppdaterJournalpostService {
 	private static final String APPLIKASJON_FS22 = "FS22";
 
 	private final JoarkRepositorySkjermet joarkRepository;
-	private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final JournalpostUpdater journalpostUpdater;
 	private final SaksrelasjonUpdater saksrelasjonUpdater;
 	private final DokumentInfoUpdater dokumentInfoUpdater;
@@ -70,7 +69,7 @@ public class OppdaterJournalpostService {
 	public OppdaterJournalpostService(JoarkRepositorySkjermet joarkRepository,
 									  JournalpostUpdater journalpostUpdater,
 									  SaksrelasjonUpdater saksrelasjonUpdater,
-									  DokumentinfoRepository dokumentinfoRepository,
+									  DokumentInfoRepository dokumentInfoRepository,
 									  DokumentInfoUpdater dokumentInfoUpdater,
 									  LagreAksjonsLoggService lagreAksjonsLoggService,
 									  AksjonsLoggService aksjonsLoggService,
@@ -78,7 +77,7 @@ public class OppdaterJournalpostService {
 									  final HentSakerRepository hentSakerRepository,
 									  final MeterRegistry meterRegistry) {
 		this.joarkRepository = joarkRepository;
-		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.journalpostUpdater = journalpostUpdater;
 		this.saksrelasjonUpdater = saksrelasjonUpdater;
 		this.dokumentInfoUpdater = dokumentInfoUpdater;
@@ -131,7 +130,6 @@ public class OppdaterJournalpostService {
 				assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
 
 				changeTracker = dokumentInfoUpdater.updateFields(dokumentInfo, dokument);
-				dokumentinfoRepository.save(dokumentInfo);
 				if (!changeTracker.getChanges().isEmpty()) {
 					lagreAksjonsLoggService.lagreAksjonsLogg(
 							ENDRE_METADATA, dokumentInfo.getDokumentInfoId(), null,

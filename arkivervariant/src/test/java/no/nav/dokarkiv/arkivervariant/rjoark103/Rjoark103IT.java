@@ -66,8 +66,8 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		TestTransaction.start();
-		assertTrue(dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId()).isPresent());
-		DokumentInfo persistedDokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId())
+		assertTrue(dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId()).isPresent());
+		DokumentInfo persistedDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId())
 				.get();
 		assertThat(persistedDokumentInfo.getFildetaljerListeAdmin().size(), is(2));
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV), notNullValue());

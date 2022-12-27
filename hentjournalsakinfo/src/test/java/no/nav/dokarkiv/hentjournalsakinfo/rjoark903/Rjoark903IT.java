@@ -63,9 +63,9 @@ public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 	@Test
 	public void shouldReturnVedleggOrderedByRelasjonId() {
 		DokumentInfo vedlegg2 = createDokumentInfo();
-		dokumentInfoRepository.save(vedlegg2);
+		dokumentInfoRepository.persist(vedlegg2);
 		DokumentInfo vedlegg1 = createDokumentInfo();
-		dokumentInfoRepository.save(vedlegg1);
+		dokumentInfoRepository.persist(vedlegg1);
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
 		createVedleggRelasjon(journalpost, vedlegg1);

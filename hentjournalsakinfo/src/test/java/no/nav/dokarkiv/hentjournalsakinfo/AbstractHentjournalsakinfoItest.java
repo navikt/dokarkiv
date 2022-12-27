@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.core.security.BasicAuthRestInterceptor;
@@ -79,7 +79,7 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 	protected SakRepository sakRepository;
 
 	@Autowired
-	protected DokumentinfoRepository dokumentInfoRepository;
+	protected DokumentInfoRepository dokumentInfoRepository;
 
 	@Autowired
 	protected DokumentFilRepository dokumentFilRepository;

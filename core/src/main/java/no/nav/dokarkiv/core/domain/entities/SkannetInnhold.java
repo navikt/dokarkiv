@@ -5,15 +5,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -25,6 +29,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @AllArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithKilde {
 	public static final int VEDLEGG_INNHOLD_LENGTH = 550;
 	private static final long serialVersionUID = 4377297136994040373L;
@@ -36,6 +41,7 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 					@Parameter(name = "initial_value", value = "200000000")})
 	@Column(name = "skannet_innhold_id", nullable = false)
 	@Setter(AccessLevel.NONE)
+	@ToString.Include
 	private Long skannetInnholdId;
 
 	@Column(name = "vedlegg_nr")
@@ -46,6 +52,10 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 
 	@Column(name = "dokumenttypeid", length = 50)
 	private String dokumenttypeid;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "dokument_info_id", nullable = false)
+	private DokumentInfo dokumentInfo;
 
 	/**
 	 * Default constructor.

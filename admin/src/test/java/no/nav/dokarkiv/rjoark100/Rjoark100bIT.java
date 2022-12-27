@@ -295,7 +295,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		skjermingServiceTest.setVariantSkjermet(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 		reinitTransaction();
 
-		assertThat(dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId())
+		assertThat(dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId())
 				.get()
 				.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV)
 				.getSkjermingType(), is(SkjermingTypeCode.POL));
@@ -315,7 +315,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		reinitTransaction();
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertNull(dokInfoEtterKall.get().findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getSkjermingType());
 
@@ -355,7 +355,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		reinitTransaction();
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertNull(dokInfoEtterKall.get().findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getSkjermingType());
 		assertNull(dokInfoEtterKall.get().findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON).getSkjermingType());
@@ -407,7 +407,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThat(dokInfoEtterKall.get()
 				.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV)

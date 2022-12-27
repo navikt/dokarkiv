@@ -941,7 +941,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		assertThat(journalpostList.size(), is(2));
 		assertThatJournalpostIsNotDeleted(journalpost);
-		List<DokumentInfo> dokumentInfoList = IteratorUtils.toList(dokumentinfoRepository.findAll().iterator());
+		List<DokumentInfo> dokumentInfoList = IteratorUtils.toList(dokumentInfoTestRepository.findAll().iterator());
 		assertThat(dokumentInfoList.size(), is(2));
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
@@ -1014,7 +1014,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		assertThat(journalpostList.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpost);
-		List<DokumentInfo> dokumentInfoList = IteratorUtils.toList(dokumentinfoRepository.findAll().iterator());
+		List<DokumentInfo> dokumentInfoList = IteratorUtils.toList(dokumentInfoTestRepository.findAll().iterator());
 		assertThat(dokumentInfoList.size(), is(1));
 
 		HttpHeaders httpHeaders = createHeadersWithAksjon();
@@ -1076,7 +1076,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		assertThat(journalpostList.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpost);
-		List<DokumentInfo> dokumentInfoList = IteratorUtils.toList(dokumentinfoRepository.findAll().iterator());
+		List<DokumentInfo> dokumentInfoList = IteratorUtils.toList(dokumentInfoTestRepository.findAll().iterator());
 		assertThat(dokumentInfoList.size(), is(1));
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter

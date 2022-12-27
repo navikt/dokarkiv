@@ -23,6 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -162,7 +163,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected void assertThatDokumentInfoIsDeleted(DokumentInfo dokumentInfo) {
 		Long dokumentInfoId = dokumentInfo.getDokumentInfoId();
-		assertThat(dokumentinfoRepository.findById(dokumentInfoId).isPresent(), is(false));
+		assertThat(dokumentInfoTestRepository.findById(dokumentInfoId).isPresent(), is(false));
 		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId).size(), is(0));
 		assertThat(entityManager.createNativeQuery("select '1' from t_dok_info_tillegg where dokument_info_id= :dok")
 				.setParameter("dok", dokumentInfoId)
@@ -230,7 +231,9 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected void assertThatDokumentInfoIsNotDeleted(DokumentInfo dokumentInfo) {
 		Long dokumentInfoId = dokumentInfo.getDokumentInfoId();
-		assertThat(dokumentinfoRepository.findById(dokumentInfoId).isPresent(), is(true));
+		Optional<DokumentInfo> byId = dokumentInfoTestRepository.findById(dokumentInfoId);
+		assertThat(byId.isPresent(), is(true));
+		byId.get().getSkannetInnholdListe();
 		assertThat(entityManager.createNativeQuery("select '1' from t_dok_info_tillegg where dokument_info_id= :dok")
 				.setParameter("dok", dokumentInfoId)
 				.getResultList()

@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostRequest;
@@ -20,14 +20,14 @@ import org.springframework.stereotype.Service;
 public class FjernVedleggTilknyttetJournalpost {
 
 	private final JoarkRepositorySkjermet joarkRepository;
-	private final DokumentinfoRepository dokumentinfoRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final FjernVedleggTilknyttetJournalpostValidator fjernVedleggTilknyttetJournalpostValidator;
 
-	public FjernVedleggTilknyttetJournalpost(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository,
+	public FjernVedleggTilknyttetJournalpost(JoarkRepositorySkjermet joarkRepository, DokumentInfoRepository dokumentInfoRepository,
 											 JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
 		this.joarkRepository = joarkRepository;
-		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.fjernVedleggTilknyttetJournalpostValidator = new FjernVedleggTilknyttetJournalpostValidator();
 	}
@@ -56,7 +56,7 @@ public class FjernVedleggTilknyttetJournalpost {
 	}
 
 	private DokumentInfo hentDokumentInfo(Long dokumentId) {
-		return dokumentinfoRepository.findByDokumentInfoId(dokumentId)
+		return dokumentInfoRepository.findById(dokumentId)
 				.orElseThrow(() -> new DokumentIkkeFunnetException(String.format("Fant ikke dokument med dokumentInfoId=%s", dokumentId)));
 	}
 }
