@@ -59,13 +59,13 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 		journalpostId = journalpost.getId();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
 
-		dokumentFilRepository.save(getDokumentFilBuilder()
+		dokumentFilTestRepository.persist(getDokumentFilBuilder()
 				.filUuid(FILUUID)
 				.fil(FIL_AS_BYTE)
 				.opprettetKildeNavn("Kent Clark")
 				.build());
 
-		dokumentFilRepository.save(getDokumentFilBuilder()
+		dokumentFilTestRepository.persist(getDokumentFilBuilder()
 				.filUuid(FILUUID_SKJERMET)
 				.fil(SKJERMET_AS_BYTE)
 				.opprettetKildeNavn("Clark Kent")

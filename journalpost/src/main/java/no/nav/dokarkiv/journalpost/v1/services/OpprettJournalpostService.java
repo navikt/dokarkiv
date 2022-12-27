@@ -178,7 +178,8 @@ public class OpprettJournalpostService {
 
 	private void persistDokumentFiler(Journalpost journalpost) {
 		List<DokumentFil> dokumentFilList = journalpost.findAllFilDetaljer().stream().map(FilDetaljer::createDokumentFil).collect(Collectors.toList());
-		dokumentFilList.forEach(dokumentFilRepository::save);
+		//FIXME bulk
+		dokumentFilList.forEach(dokumentFilRepository::persist);
 	}
 
 	private void populerAksjonsloggFromChanges(Long journalpostId, Optional<Sak> sakOptional) {

@@ -71,7 +71,7 @@ public class MottaDokumentUtgaaendeSkanningService {
 
             filDetaljerList.forEach(filDetaljer -> {
                 DokumentFil dokumentFil = filDetaljer.createDokumentFil();
-                dokumentFilRepository.save(dokumentFil);
+                dokumentFilRepository.persist(dokumentFil);
             });
             filDetaljerList.forEach(filDetaljer -> journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().addFilDetaljer(filDetaljer));
 

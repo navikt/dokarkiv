@@ -169,7 +169,7 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 
 	private void assertDokumentSaved(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost) {
 		String filUuid = journalpost.findAllFilDetaljer().get(0).getFilUuid();
-		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(filUuid);
+		DokumentFil dokumentFil = dokumentFilTestRepository.findByFilUuid(filUuid);
 		assertThat(dokumentFil.getFil(), is(DOKUMENT));
 	}
 

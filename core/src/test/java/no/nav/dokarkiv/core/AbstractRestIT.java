@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonTestRepository;
@@ -70,7 +70,7 @@ public abstract class AbstractRestIT {
 	@Autowired
 	protected EntityManager entityManager;
 	@Autowired
-	protected DokumentFilRepository dokumentFilRepository;
+	protected DokumentFilTestRepository dokumentFilTestRepository;
 	@Autowired
 	protected SakRepository sakRepository;
 	@Autowired
@@ -102,7 +102,7 @@ public abstract class AbstractRestIT {
 			TestTransaction.start();
 		}
 		aksjonsLoggRepository.deleteAll();
-		dokumentFilRepository.deleteAll();
+		dokumentFilTestRepository.deleteAll();
 		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentInfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
@@ -169,10 +169,10 @@ public abstract class AbstractRestIT {
 
 		newJp.getJournalpostDokumentInfoRelasjoner().forEach(rel -> {
 			rel.getDokumentInfo().getFildetaljerListe().forEach(filDetaljer -> {
-				if (Objects.isNull(dokumentFilRepository.findByFilUuid(filDetaljer.getFilUuid()))) {
+				if (Objects.isNull(dokumentFilTestRepository.findByFilUuid(filDetaljer.getFilUuid()))) {
 					DokumentFil dokumentFil = filDetaljer.createDokumentFil();
 					dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-					dokumentFilRepository.save(dokumentFil);
+					dokumentFilTestRepository.persist(dokumentFil);
 				}
 			});
 		});

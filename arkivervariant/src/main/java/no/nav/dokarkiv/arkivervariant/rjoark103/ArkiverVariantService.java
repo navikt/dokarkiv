@@ -95,7 +95,7 @@ public class ArkiverVariantService {
 		filDetaljer.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		dokumentInfo.addFilDetaljer(filDetaljer);
 
-		dokumentFilRepository.save(filDetaljer.createDokumentFil());
+		dokumentFilRepository.persist(filDetaljer.createDokumentFil());
 		dokumentInfoRepository.persist(dokumentInfo);
 		return filDetaljer;
 	}

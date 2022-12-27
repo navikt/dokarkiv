@@ -160,8 +160,9 @@ public class DefaultLagreVedleggPaaJournalpost implements LagreVedleggPaaJournal
 
 	private void persistDokumenter(DokumentInfo dokumentInfo) {
 		List<DokumentFil> dokumentFiler = createDokumentFilerFromFildetaljer(dokumentInfo);
+		// FIXME BULK
 		for (DokumentFil dokumentFil : dokumentFiler) {
-			dokumentFilRepository.save(dokumentFil);
+			dokumentFilRepository.persist(dokumentFil);
 		}
 	}
 

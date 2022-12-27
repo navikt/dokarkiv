@@ -78,7 +78,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		Map<String, String> tilleggsopplysninger = oppdatertJP.getTilleggsopplysninger();
 		FilDetaljer filDetaljer =
 				oppdatertJP.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getFildetaljerListe().iterator().next();
-		DokumentFil dokumentfil = dokumentFilRepository.findByFilUuid(filDetaljer.getFilUuid());
+		DokumentFil dokumentfil = dokumentFilTestRepository.findByFilUuid(filDetaljer.getFilUuid());
 
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals(JournalStatusCode.FL, oppdatertJP.getJournalstatus());

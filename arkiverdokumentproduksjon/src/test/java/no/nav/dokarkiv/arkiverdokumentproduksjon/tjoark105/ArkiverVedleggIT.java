@@ -86,7 +86,7 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 		assertThat(filDetaljer.getFiltype(), is(FilTypeCode.AXML));
 		assertThat(filDetaljer.getFilstorrelse(), is(String.valueOf(FILE_CONTENT.length)));
 
-		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(filDetaljer.getFilUuid());
+		DokumentFil dokumentFil = dokumentFilTestRepository.findByFilUuid(filDetaljer.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(equalTo(FILE_CONTENT)));
 
 		DateProvider.configure(false, null);

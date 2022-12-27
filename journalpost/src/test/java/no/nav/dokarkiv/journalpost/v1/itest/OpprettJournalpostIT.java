@@ -158,7 +158,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
 		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(5));
 
-		ArrayList<DokumentFil> dokumentFilList = Lists.newArrayList(dokumentFilRepository.findAll());
+		ArrayList<DokumentFil> dokumentFilList = Lists.newArrayList(dokumentFilTestRepository.findAll());
 		assertEquals(3, dokumentFilList.size());
 		dokumentFilList.forEach(dokumentFil -> assertNotNull(dokumentFil.getFil()));
 		assertEquals(2, dokumentFilList.stream()

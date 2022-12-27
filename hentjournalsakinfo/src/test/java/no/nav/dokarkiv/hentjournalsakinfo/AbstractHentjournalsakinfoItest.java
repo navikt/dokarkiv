@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.SakRepository;
@@ -82,7 +82,7 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 	protected DokumentInfoRepository dokumentInfoRepository;
 
 	@Autowired
-	protected DokumentFilRepository dokumentFilRepository;
+	protected DokumentFilTestRepository DokumentFilTestRepository;
 
 	@Autowired
 	protected ObjectMapper objectMapper;

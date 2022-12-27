@@ -128,7 +128,7 @@ public class TilknyttVedleggService {
 		dokumentFilCopy.setOpprettetKildeNavn(consumerId);
 		dokumentInfoCopy.addFilDetaljer(fildetaljerCopy);
 
-		dokumentFilRepository.save(dokumentFilCopy);
+		dokumentFilRepository.persist(dokumentFilCopy);
 		dokumentInfoRepository.persist(dokumentInfoCopy);
 
 		tilknyttDokumentInfoSomVedleggPaaJournalpost(tilKnyttetAvNavn, dokumentInfoCopy, dokumentVedlegg, journalpost, feiledeDokumenterList);

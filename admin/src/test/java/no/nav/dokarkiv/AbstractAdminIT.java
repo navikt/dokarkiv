@@ -194,7 +194,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	}
 
 	protected void assertThatDokumentFilIsDeleted(String filuuid) {
-		assertThat(dokumentFilRepository.findByFilUuid(filuuid), nullValue());
+		assertThat(dokumentFilTestRepository.findByFilUuid(filuuid), nullValue());
 	}
 
 	protected void assertThatJournalpostRelasjonerIsNotDeleted(Journalpost journalpost) {
@@ -267,7 +267,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	}
 
 	protected void assertThatDokumentFilIsNotDeleted(String filuuid) {
-		assertThat(dokumentFilRepository.findByFilUuid(filuuid), notNullValue());
+		assertThat(dokumentFilTestRepository.findByFilUuid(filuuid), notNullValue());
 	}
 
 	protected Journalpost createUniqueJournalpostWithHoveddokument() {
