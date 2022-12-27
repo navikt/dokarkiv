@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.core.dokumenturl;
+package no.nav.dokarkiv.core.util;
 
 import org.apache.commons.lang3.StringUtils;
 
