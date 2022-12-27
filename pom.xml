@@ -22,7 +22,6 @@
 		<module>dokumentproduksjoninfo</module>
 		<module>arkiverdokumentproduksjon</module>
 		<module>behandlejournal</module>
-		<module>journal</module>
 		<module>hentdokument</module>
 		<module>hentjournalsakinfo</module>
 		<module>arkivervariant</module>
@@ -64,7 +63,6 @@
 		<!-- Tjenestegrensesnitt -->
 		<behandlejournal-v2-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v2-tjenestespesifikasjon.version>
 		<behandlejournal-v3-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v3-tjenestespesifikasjon.version>
-		<nav-journal-v3-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</nav-journal-v3-tjenestespesifikasjon.version>
 		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.4.1</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
 		<dokumentproduksjoninfo-tjenestespesifikasjon.version>2.1.1</dokumentproduksjoninfo-tjenestespesifikasjon.version>
 
@@ -122,11 +120,6 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>behandlejournal</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>journal</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -273,11 +266,6 @@
 				<groupId>no.nav.tjenestespesifikasjoner</groupId>
 				<artifactId>nav-fim-behandleJournal-v3-tjenestespesifikasjon</artifactId>
 				<version>${behandlejournal-v3-tjenestespesifikasjon.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.tjenestespesifikasjoner</groupId>
-				<artifactId>nav-journal-v3-tjenestespesifikasjon</artifactId>
-				<version>${nav-journal-v3-tjenestespesifikasjon.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.tjenester.brevogarkiv</groupId>
