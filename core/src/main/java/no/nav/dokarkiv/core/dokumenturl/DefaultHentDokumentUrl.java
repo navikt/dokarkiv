@@ -120,7 +120,7 @@ public class DefaultHentDokumentUrl extends AbstractDocumentOperation implements
 		dokUrl.setTidspunkt(DateProvider.getToday());
 		dokUrl.setFilUuid(filUuid);
 		dokUrl.setTimeToLiveMinutes(timeToLiveMinutes);
-		dokumentUrlInfoRepository.save(dokUrl);
+		dokumentUrlInfoRepository.persist(dokUrl);
 		return token;
 	}
 

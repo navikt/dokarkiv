@@ -1,6 +1,5 @@
-package no.nav.dokarkiv.core.hentdokumenturl;
+package no.nav.dokarkiv.core.util;
 
-import no.nav.dokarkiv.core.util.MimeTypeMapper;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

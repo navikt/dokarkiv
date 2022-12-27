@@ -125,7 +125,7 @@ public class DefaultHentDokumentUrlTest {
 
 		assertUrl(servletUrl);
 
-		verify(dokumentUrlInfoRepositoryMock).save(isA(DokumentUrlInfo.class));
+		verify(dokumentUrlInfoRepositoryMock).persist(isA(DokumentUrlInfo.class));
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class DefaultHentDokumentUrlTest {
 
 		assertUrl(servletUrl);
 
-		verify(dokumentUrlInfoRepositoryMock).save(isA(DokumentUrlInfo.class));
+		verify(dokumentUrlInfoRepositoryMock).persist(isA(DokumentUrlInfo.class));
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public class DefaultHentDokumentUrlTest {
 
 		assertUrl(servletUrl);
 
-		verify(dokumentUrlInfoRepositoryMock).save(isA(DokumentUrlInfo.class));
+		verify(dokumentUrlInfoRepositoryMock).persist(isA(DokumentUrlInfo.class));
 	}
 
 	@Test
@@ -186,7 +186,7 @@ public class DefaultHentDokumentUrlTest {
 		request = new HentDokumentUrlRequest(JOURNALPOST_ID, FIL_UUID, timeToLive);
 		hentDokumentUrl.hentDokumentUrl(request);
 
-		verify(dokumentUrlInfoRepositoryMock).save(dokumentUrlInfoCaptor.capture());
+		verify(dokumentUrlInfoRepositoryMock).persist(dokumentUrlInfoCaptor.capture());
 
 		DokumentUrlInfo dokumentUrlInfo = dokumentUrlInfoCaptor.getValue();
 		assertThat(dokumentUrlInfo.getTimeToLiveMinutes(), is(timeToLive));
