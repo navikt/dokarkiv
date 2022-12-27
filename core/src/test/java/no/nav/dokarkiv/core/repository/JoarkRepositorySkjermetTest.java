@@ -54,7 +54,7 @@ public class JoarkRepositorySkjermetTest {
 	private DokumentInfoTestRepository dokumentInfoTestRepository;
 
 	@Autowired
-	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private JournalpostDokumentInfoRelasjonTestRepository journalpostDokumentInfoRelasjonTestRepository;
 
 	@Autowired
 	private SkjermingService skjermingService;
@@ -73,7 +73,7 @@ public class JoarkRepositorySkjermetTest {
 	@AfterEach
 	public void cleanUp() {
 		TestTransaction.end();
-		journalpostDokumentInfoRelasjonRepository.deleteAll();
+		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentInfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
 		entityManager.createNativeQuery("Delete from t_jp_tillegg").getFirstResult();

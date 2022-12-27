@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonTestRepository;
 import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -56,7 +56,7 @@ public abstract class AbstractRestIT {
 	@Autowired
 	protected JoarkRepository joarkRepository;
 	@Autowired
-	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	protected JournalpostDokumentInfoRelasjonTestRepository journalpostDokumentInfoRelasjonTestRepository;
 	@Autowired
 	protected DokumentInfoTestRepository dokumentInfoTestRepository;
 	@Autowired
@@ -103,7 +103,7 @@ public abstract class AbstractRestIT {
 		}
 		aksjonsLoggRepository.deleteAll();
 		dokumentFilRepository.deleteAll();
-		journalpostDokumentInfoRelasjonRepository.deleteAll();
+		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentInfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
 		sakRepository.deleteAll();

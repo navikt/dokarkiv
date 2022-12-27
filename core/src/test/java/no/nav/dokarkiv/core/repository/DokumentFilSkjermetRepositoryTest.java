@@ -48,7 +48,7 @@ public class DokumentFilSkjermetRepositoryTest {
 	private DokumentInfoTestRepository dokumentInfoTestRepository;
 
 	@Autowired
-	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private JournalpostDokumentInfoRelasjonTestRepository journalpostDokumentInfoRelasjonTestRepository;
 
 	@Autowired
 	private DokumentFilRepository dokumentFilRepository;
@@ -68,7 +68,7 @@ public class DokumentFilSkjermetRepositoryTest {
 	public void cleanUp() {
 		TestTransaction.end();
 		dokumentFilRepository.deleteAll();
-		journalpostDokumentInfoRelasjonRepository.deleteAll();
+		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentInfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
 	}

@@ -45,12 +45,12 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		Long journalpostId = saveJournalpost(journalpostSomSkalFjernes).getJournalpostId();
 		commitAndStartNewTransaction();
 
-		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonPersist = IteratorUtils.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator());
-		JournalpostDokumentInfoRelasjon vedllegJpDokumentInfoRelasjon = IteratorUtils.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator()).stream()
+		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonPersist = IteratorUtils.toList(journalpostDokumentInfoRelasjonTestRepository.findAll().iterator());
+		JournalpostDokumentInfoRelasjon vedllegJpDokumentInfoRelasjon = IteratorUtils.toList(journalpostDokumentInfoRelasjonTestRepository.findAll().iterator()).stream()
 				.filter(jpdok -> VEDLEGG.equals(jpdok.getTilknyttetJournalpostSom()))
 				.findAny()
 				.get();
-		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonByJpBeforeDelete = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId());
+		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonByJpBeforeDelete = journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId());
 
 		List<Journalpost> persitJournalpost = IteratorUtils.toList(joarkRepository.findAll().iterator());
 		assertThat(persitJournalpost.size(), is(3));
@@ -67,9 +67,9 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
 
 		commitAndStartNewTransaction();
-		Optional<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjon = journalpostDokumentInfoRelasjonRepository.findById(vedllegJpDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId());
-		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonByJp = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId());
-		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonAfterDelete = IteratorUtils.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator());
+		Optional<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjon = journalpostDokumentInfoRelasjonTestRepository.findById(vedllegJpDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId());
+		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonByJp = journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId());
+		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonAfterDelete = IteratorUtils.toList(journalpostDokumentInfoRelasjonTestRepository.findAll().iterator());
 		assertThat(response.getStatusCode(), is(HttpStatus.OK));
 		assertThat(jpDokInfoRelasjon.isPresent(), is(false));
 		assertThat(jpDokInfoRelasjonByJp, notNullValue());
@@ -91,7 +91,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		JournalpostDokumentInfoRelasjon vedllegJpDokumentInfoRelasjon = IteratorUtils
-				.toList(journalpostDokumentInfoRelasjonRepository.findAll().iterator()).get(2);
+				.toList(journalpostDokumentInfoRelasjonTestRepository.findAll().iterator()).get(2);
 		List<Journalpost> persitJournalpost = IteratorUtils.toList(joarkRepository.findAll().iterator());
 		Long journalpostId = vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId();
 		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
@@ -104,7 +104,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
 		commitAndStartNewTransaction();
 
-		Optional<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjon = journalpostDokumentInfoRelasjonRepository.findById(vedllegJpDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId());
+		Optional<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjon = journalpostDokumentInfoRelasjonTestRepository.findById(vedllegJpDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId());
 		assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		assertThat(jpDokInfoRelasjon.isPresent(), is(true));
 	}
