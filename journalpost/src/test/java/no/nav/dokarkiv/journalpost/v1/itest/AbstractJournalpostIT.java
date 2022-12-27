@@ -135,7 +135,7 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 	}
 
 	protected void clearSakRepository() {
-		sakRepository.deleteAll();
+		sakTestRepository.deleteAll();
 		commitAndStartNewTransaction();
 	}
 

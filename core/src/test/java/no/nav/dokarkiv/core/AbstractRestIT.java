@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonTestRepository;
-import no.nav.dokarkiv.core.repository.SakRepository;
+import no.nav.dokarkiv.core.repository.SakTestRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -72,7 +72,7 @@ public abstract class AbstractRestIT {
 	@Autowired
 	protected DokumentFilTestRepository dokumentFilTestRepository;
 	@Autowired
-	protected SakRepository sakRepository;
+	protected SakTestRepository sakTestRepository;
 	@Autowired
 	private MockOAuth2Server server;
 
@@ -106,7 +106,7 @@ public abstract class AbstractRestIT {
 		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentInfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
-		sakRepository.deleteAll();
+		sakTestRepository.deleteAll();
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 	}

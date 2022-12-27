@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.core.security.BasicAuthRestInterceptor;
 import no.nav.dokarkiv.core.security.LdapConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -74,9 +73,6 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 
 	@Autowired
 	protected JoarkRepository joarkRepository;
-
-	@Autowired
-	protected SakRepository sakRepository;
 
 	@Autowired
 	protected DokumentInfoRepository dokumentInfoRepository;

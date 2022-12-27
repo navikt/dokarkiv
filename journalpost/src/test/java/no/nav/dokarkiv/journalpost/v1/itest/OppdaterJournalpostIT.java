@@ -487,10 +487,10 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-		assertEquals(sakRepository.count(), 1);
+		assertEquals(sakTestRepository.count(), 1);
 
 		TestTransaction.start();
-		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
 
 		assertEquals(sak.getAktoerId(), AKTOER_ID);
 		assertTrue(isBlank(sak.getOrgnr()));
@@ -512,7 +512,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		happyAktoerIdStub();
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = createGenerellSak();
-		sakRepository.save(sak);
+		sakTestRepository.persist(sak);
 		commitAndStartNewTransaction();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
@@ -521,7 +521,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = buildAndCommit(journalpostBuilder);
 		Long journalpostId = journalpost.getJournalpostId();
 
-		assertEquals(sakRepository.count(), 1);
+		assertEquals(sakTestRepository.count(), 1);
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
@@ -574,10 +574,10 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-		assertEquals(sakRepository.count(), 1);
+		assertEquals(sakTestRepository.count(), 1);
 
 		TestTransaction.start();
-		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
 		assertEquals(sak.getAktoerId(), AKTOER_ID);
 		assertTrue(isBlank(sak.getOrgnr()));
 		assertEquals(sak.getTema(), TEMA);
@@ -619,10 +619,10 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertEquals(sakRepository.count(), 1);
+		assertEquals(sakTestRepository.count(), 1);
 
 		TestTransaction.start();
-		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
 		assertEquals(sak.getAktoerId(), AKTOER_ID);
 
 		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll()
@@ -669,9 +669,9 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertEquals(sakRepository.count(), 1);
+		assertEquals(sakTestRepository.count(), 1);
 		TestTransaction.start();
-		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
 		assertEquals(sak.getAktoerId(), FAIL_AKTOER_ID);
 
 		assertEquals(joarkRepository.findAll().iterator().next().getBrukere().size(), 0);
@@ -710,10 +710,10 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-		assertEquals(sakRepository.count(), 1);
+		assertEquals(sakTestRepository.count(), 1);
 
 		TestTransaction.start();
-		no.nav.dokarkiv.core.domain.entities.Sak sak = sakRepository.findAll().iterator().next();
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
 		assertEquals(sak.getOrgnr(), BRUKER_ID_ORGANISASJON);
 
 		no.nav.dokarkiv.core.domain.entities.Bruker bruker = joarkRepository.findAll()
@@ -736,10 +736,10 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		happyAktoerIdStub();
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = createFagsak();
-		sakRepository.save(sak);
+		sakTestRepository.persist(sak);
 		commitAndStartNewTransaction();
 
-		assertEquals(sakRepository.count(), 1);
+		assertEquals(sakTestRepository.count(), 1);
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen");
@@ -763,7 +763,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-		assertEquals(sakRepository.count(), 1);
+		assertEquals(sakTestRepository.count(), 1);
 
 		TestTransaction.start();
 
@@ -780,7 +780,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 
-		long sakRepositoryCount = sakRepository.count();
+		long sakRepositoryCount = sakTestRepository.count();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen");
@@ -809,7 +809,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		Journalpost oppdatertJournalpost = joarkRepository.findById(journalpostId).get();
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(PEN));
-		assertEquals(sakRepository.count(), sakRepositoryCount);
+		assertEquals(sakTestRepository.count(), sakRepositoryCount);
 
 		TestTransaction.end();
 
