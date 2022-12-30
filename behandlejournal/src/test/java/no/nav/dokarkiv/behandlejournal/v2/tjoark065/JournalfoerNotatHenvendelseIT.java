@@ -38,7 +38,7 @@ public class JournalfoerNotatHenvendelseIT extends AbstractBehandleJournalV2Ites
 		createRequest();
 
 		response = behandleJournalProvider.journalfoerNotat(request);
-		persistedJournalpost = journalpostRepositorySkjermet.findById(Long.valueOf(response.getJournalpostId())).get();
+		persistedJournalpost = journalpostTestRepository.findById(Long.valueOf(response.getJournalpostId())).get();
 	}
 
 	private void createRequest() throws Exception {

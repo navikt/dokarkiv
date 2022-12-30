@@ -42,7 +42,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ActiveProfiles("itest")
 public class DokumentFilSkjermetRepositoryTest {
 	@Autowired
-	private JournalpostRepository journalpostRepository;
+	private JournalpostTestRepository journalpostTestRepository;
 
 	@Autowired
 	private DokumentInfoTestRepository dokumentInfoTestRepository;
@@ -70,7 +70,7 @@ public class DokumentFilSkjermetRepositoryTest {
 		dokumentFilTestRepository.deleteAll();
 		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentInfoTestRepository.deleteAll();
-		journalpostRepository.deleteAll();
+		journalpostTestRepository.deleteAll();
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class DokumentFilSkjermetRepositoryTest {
 		dokumentFilTestRepository.persist(arkivDokumentFil);
 		dokumentFilTestRepository.persist(createDummyDokumentKassert());
 		dokumentFilTestRepository.persist(createDummyDokumentSkjermet());
-		journalpost = journalpostRepository.save(journalpost);
+		journalpost = journalpostTestRepository.persist(journalpost);
 
 		DokumentFil dokumentFilBefore = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
 		assertThat(dokumentFilBefore.getFil(), is(arkivDokumentFil.getFil()));
@@ -111,7 +111,7 @@ public class DokumentFilSkjermetRepositoryTest {
 		dokumentFilTestRepository.persist(arkivDokumentFil);
 		dokumentFilTestRepository.persist(createDummyDokumentKassert());
 		dokumentFilTestRepository.persist(createDummyDokumentSkjermet());
-		journalpost = journalpostRepository.save(journalpost);
+		journalpost = journalpostTestRepository.persist(journalpost);
 
 		DokumentFil dokumentFilBefore = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
 		assertThat(dokumentFilBefore.getFil(), is(arkivDokumentFil.getFil()));
@@ -136,7 +136,7 @@ public class DokumentFilSkjermetRepositoryTest {
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
 		dokumentFilTestRepository.persist(arkivDokumentFil);
 		dokumentFilTestRepository.persist(createDummyDokumentKassert());
-		journalpost = journalpostRepository.save(journalpost);
+		journalpost = journalpostTestRepository.persist(journalpost);
 
 		DokumentFil dokumentFilBefore = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
 		assertThat(dokumentFilBefore.getFil(), is(arkivDokumentFil.getFil()));
@@ -162,7 +162,7 @@ public class DokumentFilSkjermetRepositoryTest {
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
 		dokumentFilTestRepository.persist(arkivDokumentFil);
 		dokumentFilTestRepository.persist(createDummyDokumentKassert());
-		journalpost = journalpostRepository.save(journalpost);
+		journalpost = journalpostTestRepository.persist(journalpost);
 
 		DokumentFil dokumentFilBefore = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
 		assertThat(dokumentFilBefore.getFil(), is(arkivDokumentFil.getFil()));
@@ -195,7 +195,7 @@ public class DokumentFilSkjermetRepositoryTest {
 		dokumentFilTestRepository.persist(arkivDokumentFil);
 		dokumentFilTestRepository.persist(sladdetDokumentFil);
 		dokumentFilTestRepository.persist(createDummyDokumentKassert());
-		journalpost = journalpostRepository.save(journalpost);
+		journalpost = journalpostTestRepository.persist(journalpost);
 
 		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()

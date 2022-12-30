@@ -49,8 +49,8 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 	public void shouldFindAllJournalpostWithJournalstatusFS() {
 		Journalpost ferdigstiltJournalpost1 = createUniqueJournalpost();
 		Journalpost ferdigstiltJournalpost2 = createUniqueJournalpost();
-		journalpostRepository.save(ferdigstiltJournalpost1);
-		journalpostRepository.save(ferdigstiltJournalpost2);
+		journalpostTestRepository.persist(ferdigstiltJournalpost1);
+		journalpostTestRepository.persist(ferdigstiltJournalpost2);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -66,8 +66,8 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		Journalpost gsakJournalpost = createUniqueJournalpost();
 		Journalpost psakJournalpost = createUniqueJournalpost();
 		psakJournalpost.setSaksrelasjon(createPsakSaksrelasjon());
-		journalpostRepository.save(gsakJournalpost);
-		journalpostRepository.save(psakJournalpost);
+		journalpostTestRepository.persist(gsakJournalpost);
+		journalpostTestRepository.persist(psakJournalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		FinnJournalposterRequestTo request = createRequest(JournalStatusCode.FS);
@@ -88,9 +88,9 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		Journalpost journalpost = createUniqueJournalpost();
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
 		createVedleggRelasjon(journalpost, vedlegg1);
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		createVedleggRelasjon(journalpost, vedlegg2);
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -113,7 +113,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		DokumentInfo vedlegg = createDokumentInfoWithMoreData();
 		Journalpost journalpost = createUniqueJournalpost();
 		createVedleggRelasjon(journalpost, vedlegg);
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

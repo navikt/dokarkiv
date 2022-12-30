@@ -65,7 +65,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpost);
@@ -94,7 +94,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 			assertThatDokumentInfoIsDeleted(rel.getDokumentInfo());
 		}
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(2));
 		assertThatJournalpostIsNotDeleted(journalpost1);
 		assertThatJournalpostRelasjonerIsNotDeleted(journalpost1);
@@ -188,7 +188,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpostSomSkalSlettes);
@@ -219,7 +219,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 			}
 		}
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(2));
 
 		assertThatJournalpostIsNotDeleted(journalpost1);
@@ -297,7 +297,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpost);
@@ -320,7 +320,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(3));
 
 		assertThatJournalpostIsNotDeleted(journalpost);
@@ -353,7 +353,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpostOriginal);
@@ -400,7 +400,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 
 		assertThat(journalpostListAfter.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpostOriginal);
@@ -433,7 +433,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostList.size(), is(3));
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
@@ -480,7 +480,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatDokumentInfoIsDeleted(dokumentInfoHoveddokument);
 		assertThatDokumentInfoIsDeleted(journalpostSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(2));
 
 		assertThatJournalpostIsDeleted(journalpostSomSkalSlettes.getJournalpostId());
@@ -545,7 +545,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostList.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
 		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes
@@ -571,7 +571,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		assertThatDokumentInfoIsDeleted(vedleggRelasjonSomSlettes.getDokumentInfo());
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
 		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes
@@ -633,7 +633,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostList.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
 		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes
@@ -657,11 +657,11 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		assertThatDokumentInfoIsDeleted(dokumentInfoSomSkalSlettes);
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
 
-		Journalpost journalpostMedDokumentSomSkalSlettesAfter = journalpostRepository.findById(journalpostMedDokumentSomSkalSlettes.getJournalpostId()).get();
+		Journalpost journalpostMedDokumentSomSkalSlettesAfter = journalpostTestRepository.findById(journalpostMedDokumentSomSkalSlettes.getJournalpostId()).get();
 		JournalpostDokumentInfoRelasjon relHoveddokAfter = journalpostMedDokumentSomSkalSlettesAfter.getJournalpostDokumentInfoRelasjonerAdmin().stream().filter(rel -> rel.getTilknyttetJournalpostSom() == HOVEDDOKUMENT).findAny().get();
 		assertThat(relHoveddokAfter.getDokumentInfo().getDokumentInfoId(), is(vedleggRelasjon.getDokumentInfo().getDokumentInfoId()));
 		assertThat(journalpostMedDokumentSomSkalSlettesAfter.getJournalpostDokumentInfoRelasjonerAdmin().size(), is(1));
@@ -727,7 +727,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostList.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
 		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes
@@ -751,7 +751,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		assertThatDokumentInfoIsDeleted(vedleggRelasjon.getDokumentInfo());
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
 
@@ -776,7 +776,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatDokumentInfoIsDeleted(dokumentInfoSomSkalSlettes);
 		assertThatDokumentInfoIsDeleted(dokumentInfoSomSkalSlettes);
 
-		List<Journalpost> journalpostListAfterHoveddokument = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfterHoveddokument = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostListAfterHoveddokument.size(), is(0));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
@@ -842,7 +842,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(3));
 		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(relasjonVedlegg.getDokumentInfo()
@@ -870,7 +870,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostIsDeleted(journalpostSomHarDokumentSomHoveddok.getJournalpostId());
 		assertThatDokumentInfoIsDeleted(relasjonVedlegg.getDokumentInfo());
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(2));
 		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostSomHarDokumentSomVedlegg
 						.getJournalpostId())
@@ -937,7 +937,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(2));
 		assertThatJournalpostIsNotDeleted(journalpost);
@@ -1010,7 +1010,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpost);
@@ -1072,7 +1072,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		TestTransaction.end();
 
 		TestTransaction.start();
-		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpost);

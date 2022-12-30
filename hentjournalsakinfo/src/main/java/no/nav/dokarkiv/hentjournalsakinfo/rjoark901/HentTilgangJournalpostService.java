@@ -1,22 +1,22 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
-import static no.nav.modig.security.tilgangskontroll.policy.pip.PicketLinkAttributeCacheLocator.log;
-
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.springframework.stereotype.Service;
+
+import static no.nav.modig.security.tilgangskontroll.policy.pip.PicketLinkAttributeCacheLocator.log;
 
 @Service
 public class HentTilgangJournalpostService {
 
-	private final HentTilgangJournalpostRepository hentTilgangJournalpostRepository;
+	private final HentTilgangjournalpostTestRepository hentTilgangjournalpostTestRepository;
 
-	public HentTilgangJournalpostService(HentTilgangJournalpostRepository hentTilgangJournalpostRepository) {
-		this.hentTilgangJournalpostRepository = hentTilgangJournalpostRepository;
+	public HentTilgangJournalpostService(HentTilgangjournalpostTestRepository hentTilgangjournalpostTestRepository) {
+		this.hentTilgangjournalpostTestRepository = hentTilgangjournalpostTestRepository;
 	}
 
 	public HentTilgangJournalpostResponse hentTilgangJournalpost(Long journalpostId, Long dokumentInfoId, VariantFormatCode variantFormat) {
 		try {
-			TilgangJournalpostDto tilgangJournalpostDto = hentTilgangJournalpostRepository.hentTilgangJournalpost(journalpostId, dokumentInfoId, variantFormat);
+			TilgangJournalpostDto tilgangJournalpostDto = hentTilgangjournalpostTestRepository.hentTilgangJournalpost(journalpostId, dokumentInfoId, variantFormat);
 			if (tilgangJournalpostDto == null) {
 				throw new TilgangJournalpostException("Ingen journalpost funnet for journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + ", variantFormat=" + variantFormat.name());
 			}

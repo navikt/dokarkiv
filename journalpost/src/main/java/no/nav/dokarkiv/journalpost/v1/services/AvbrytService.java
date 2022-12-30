@@ -63,7 +63,7 @@ public class AvbrytService {
                 .tilVerdi(journalpost.getJournalstatus().name())
                 .build();
 
-        journalpostRepository.save(journalpost);
+        journalpostRepository.persist(journalpost);
 
         aksjonsLoggService.lagreAksjonsLoggForJournalpost(
                 AVBRYT, journalpost.getJournalpostId(), "ARKL", FIKK_AVBRUTT,

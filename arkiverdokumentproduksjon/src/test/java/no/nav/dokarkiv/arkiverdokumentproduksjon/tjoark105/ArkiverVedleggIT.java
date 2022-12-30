@@ -47,7 +47,7 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 	@Test
 	public void shouldArkiverVedlegg() throws Exception {
 		Journalpost journalpost = createJournalpost(JournalStatusCode.D);
-		journalpostRepositorySkjermet.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
 		arkiverVedleggRequest.setJournalpost(buildJournalpostForWsRequest(journalpost.getId()));
 
@@ -62,14 +62,14 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 		DateProvider.configure(true, "2018-06-20T14:31:54.767");
 
 		Journalpost journalpost = createJournalpost(JournalStatusCode.D);
-		journalpostRepositorySkjermet.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
 		arkiverVedleggRequest.setJournalpost(buildJournalpostForWsRequest(journalpost.getId()));
 		arkiverVedleggRequest.setFerdigstillDokument(true);
 
 		ArkiverVedleggResponse arkiverVedleggResponse = arkiverDokumentproduksjonProvider.arkiverVedlegg(arkiverVedleggRequest);
 
-		Journalpost persistedJournalpost = journalpostRepositorySkjermet.findById(arkiverVedleggResponse.getJournalpostId()).get();
+		Journalpost persistedJournalpost = journalpostTestRepository.findById(arkiverVedleggResponse.getJournalpostId()).get();
 		DokumentInfo dokumentInfo = persistedJournalpost.findDokumentInfoById(arkiverVedleggResponse.getDokumentInfoId());
 
 		assertThat(dokumentInfo.getDokumentstatus(), is(DokumentStatusCode.FERDIGSTILT));
@@ -95,14 +95,14 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 	@Test
 	public void shouldUpdateJournalpostDokumentInforRelasjon() throws Exception {
 		Journalpost journalpost = createJournalpost(JournalStatusCode.D);
-		journalpostRepositorySkjermet.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
 		arkiverVedleggRequest.setJournalpost(buildJournalpostForWsRequest(journalpost.getId()));
 
 		ArkiverVedleggResponse arkiverVedleggResponse = arkiverDokumentproduksjonProvider.arkiverVedlegg(arkiverVedleggRequest);
 
-		Journalpost journalpostFromDb = journalpostRepositorySkjermet.findById(arkiverVedleggResponse.getJournalpostId()).get();
+		Journalpost journalpostFromDb = journalpostTestRepository.findById(arkiverVedleggResponse.getJournalpostId()).get();
 		assertThat(journalpostFromDb.getJournalpostDokumentInfoRelasjoner().size(), is(1));
 
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = journalpostFromDb.getJournalpostDokumentInfoRelasjoner()
@@ -127,7 +127,7 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 	@Test
 	public void shouldThrowExceptionIfIkkeUnderArbeid() throws Exception {
 		Journalpost journalpost = createJournalpost(JournalStatusCode.A);
-		journalpostRepositorySkjermet.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
 		arkiverVedleggRequest.setJournalpost(buildJournalpostForWsRequest(journalpost.getId()));
 

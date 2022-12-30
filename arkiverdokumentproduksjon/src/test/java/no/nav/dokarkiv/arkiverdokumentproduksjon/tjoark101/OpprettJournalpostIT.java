@@ -43,7 +43,7 @@ public class OpprettJournalpostIT extends AbstractArkiverdokumentproduksjonItest
 		createRequest();
 
 		response = arkiverDokumentproduksjonProvider.opprettJournalpost(request);
-		persistedJournalpost = journalpostRepositorySkjermet.findById(Long.valueOf(response.getJournalpostId())).get();
+		persistedJournalpost = journalpostTestRepository.findById(Long.valueOf(response.getJournalpostId())).get();
 	}
 
 	private void createRequest() throws Exception {

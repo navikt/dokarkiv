@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
@@ -28,25 +27,12 @@ public class JournalpostRepositorySkjermet {
 	}
 
 	public Journalpost save(Journalpost journalpost) {
-		return journalpostRepository.save(journalpost);
+		return journalpostRepository.persist(journalpost);
 	}
 
 	public boolean existsById(Long id) {
 		return isFalse(skjermingService.isJournalpostSkjermet(id)) && journalpostRepository
 				.existsById(id);
-	}
-
-	/**
-	 * Only use in test!
-	 */
-	public void deleteAll() {
-		journalpostRepository.deleteAll();
-	}
-
-	public Iterable<Journalpost> findAll() {
-		return StreamSupport.stream(journalpostRepository.findAll().spliterator(), true)
-				.filter(journalpost -> isFalse(skjermingService.isJournalpostSkjermet(journalpost)))
-				.collect(Collectors.toList());
 	}
 
 	public Long findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {

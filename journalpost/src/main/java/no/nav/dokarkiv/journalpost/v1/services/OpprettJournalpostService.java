@@ -109,7 +109,7 @@ public class OpprettJournalpostService {
 
 		persistDokumentFiler(journalpost);
 
-		journalpostRepository.save(journalpost);
+		journalpostRepository.persist(journalpost);
 
 		populerAksjonsloggFromChanges(journalpost.getJournalpostId(), sakOptional);
 

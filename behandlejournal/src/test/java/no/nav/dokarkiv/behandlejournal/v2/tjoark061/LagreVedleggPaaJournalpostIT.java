@@ -166,7 +166,7 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 
 	private Journalpost createAndPersistJournalpostWithHoveddokument() {
 		Journalpost journalpostWithHoveddokument = createJournalpostWithHoveddokument();
-		return journalpostRepositorySkjermet.save(journalpostWithHoveddokument);
+		return journalpostTestRepository.persist(journalpostWithHoveddokument);
 	}
 
 	private Journalpost createJournalpostWithHoveddokument() {

@@ -33,7 +33,7 @@ public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 		Long logiskVedleggId = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentInfoId).getSkannetInnholdListe().iterator().next().getSkannetInnholdId();
 
@@ -60,7 +60,7 @@ public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 
 		commitAndStartNewTransaction();
@@ -87,7 +87,7 @@ public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 		Long logiskVedleggId = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentInfoId).getSkannetInnholdListe().iterator().next().getSkannetInnholdId();
 

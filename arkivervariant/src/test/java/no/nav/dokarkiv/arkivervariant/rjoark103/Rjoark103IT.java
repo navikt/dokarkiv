@@ -41,7 +41,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 	public void shouldSaveFileAsSladdetVariant() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = journalpostRepository.save(opprettHoveddokumentForIT());
+		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -120,7 +120,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 	public void shouldFailWithBadRequestWhenVariantAlreadyExists() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = journalpostRepository.save(opprettHoveddokumentForIT());
+		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -190,7 +190,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 	public void shouldNotAllowOperationIfNotSrvJoarkadminConsumer() {
 		abacPermit();
 
-		Journalpost journalpost = journalpostRepository.save(opprettHoveddokumentForIT());
+		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 

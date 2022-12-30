@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
-import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
@@ -33,7 +33,7 @@ public abstract class AbstractBehandleJournalV2Itest {
 	@Autowired
 	protected BehandleJournalV2 behandleJournalProvider;
 	@Autowired
-    protected JournalpostRepositorySkjermet journalpostRepositorySkjermet;
+    protected JournalpostTestRepository journalpostTestRepository;
 	@Autowired
     protected DokumentInfoRepository dokumentInfoRepository;
 	@Autowired
@@ -41,7 +41,7 @@ public abstract class AbstractBehandleJournalV2Itest {
 
 	@BeforeEach
 	public void setUpItest() {
-		journalpostRepositorySkjermet.deleteAll();
+		journalpostTestRepository.deleteAll();
 		dokumentFilTestRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")

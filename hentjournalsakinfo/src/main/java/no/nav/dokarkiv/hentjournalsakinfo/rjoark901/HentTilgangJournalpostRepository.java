@@ -9,11 +9,11 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 @Repository
-class HentTilgangJournalpostRepository {
+class HentTilgangjournalpostTestRepository {
 
     private final EntityManager entityManager;
 
-    public HentTilgangJournalpostRepository(EntityManager entityManager) {
+    public HentTilgangjournalpostTestRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 

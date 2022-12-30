@@ -57,7 +57,7 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 
 		arkiverDokumentproduksjonProvider.ferdigstillJournalpost(createRequest(ferdigstiltJournalpost));
 
-		Journalpost resultJournalpost = journalpostRepositorySkjermet.findById(ferdigstiltJournalpost.getJournalpostId()).get();
+		Journalpost resultJournalpost = journalpostTestRepository.findById(ferdigstiltJournalpost.getJournalpostId()).get();
 		assertThat(resultJournalpost.getJournalstatus(), is(JournalStatusCode.FS));
 		assertThat(resultJournalpost.getJournalDato(), is(notNullValue()));
 		assertThat(resultJournalpost.getUtsendingskanal(), is(UTSENDINGKANAL));
@@ -79,7 +79,7 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 		request.setUtsendingskanal(UtsendingsKanalCode.L.toString());
 		arkiverDokumentproduksjonProvider.ferdigstillJournalpost(request);
 
-		Journalpost resultJournalpost = journalpostRepositorySkjermet.findById(ferdigstiltJournalpost.getJournalpostId()).get();
+		Journalpost resultJournalpost = journalpostTestRepository.findById(ferdigstiltJournalpost.getJournalpostId()).get();
 		assertThat(resultJournalpost.getJournalstatus(), is(JournalStatusCode.FL));
 		assertThat(resultJournalpost.getUtsendingskanal(), is(UtsendingsKanalCode.L));
 	}
@@ -92,7 +92,7 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 		request.setUtsendingskanal(UtsendingsKanalCode.INGEN_DISTRIBUSJON.toString());
 		arkiverDokumentproduksjonProvider.ferdigstillJournalpost(request);
 
-		Journalpost resultJournalpost = journalpostRepositorySkjermet.findById(ferdigstiltJournalpost.getJournalpostId()).get();
+		Journalpost resultJournalpost = journalpostTestRepository.findById(ferdigstiltJournalpost.getJournalpostId()).get();
 		assertThat(resultJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
 		assertThat(resultJournalpost.getJournalstatus(), is(JournalStatusCode.FL));
 		assertThat(resultJournalpost.getUtsendingskanal(), is(UtsendingsKanalCode.INGEN_DISTRIBUSJON));
@@ -140,7 +140,7 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 
 				.build();
 
-		journalpostRepositorySkjermet.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		return journalpost;
 	}
 

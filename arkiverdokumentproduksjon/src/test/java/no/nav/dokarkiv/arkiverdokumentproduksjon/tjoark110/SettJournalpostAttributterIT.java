@@ -54,7 +54,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 		SettJournalpostAttributterRequest request = createWsRequest(journalpost1.getJournalpostId());
 		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
 
-		Journalpost persistedJournalpost1 = journalpostRepositorySkjermet.findById(journalpost1.getJournalpostId()).get();
+		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 
 		assertThat(persistedJournalpost1.getSendtPrintDato(), is(DateProvider.getToday()));
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
@@ -71,7 +71,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 				.withDatoSendt(null);
 		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
 
-		Journalpost persistedJournalpost1 = journalpostRepositorySkjermet.findById(journalpost1.getJournalpostId()).get();
+		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 
 		assertThat(persistedJournalpost1.getSendtPrintDato(), is(nullValue()));
 		assertThat(persistedJournalpost1.getAntallRetur(), is(nullValue()));
@@ -87,7 +87,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 				.withEndretAvNavn(null);
 		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
 
-		Journalpost persistedJournalpost1 = journalpostRepositorySkjermet.findById(journalpost1.getJournalpostId()).get();
+		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 
 		assertThat(persistedJournalpost1.getSendtPrintDato(), is(DateProvider.getToday()));
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
@@ -104,7 +104,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 				.withUtsendingskanal(null);
 		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
 
-		Journalpost persistedJournalpost1 = journalpostRepositorySkjermet.findById(journalpost1.getJournalpostId()).get();
+		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 
 		assertThat(persistedJournalpost1.getSendtPrintDato(), is(DateProvider.getToday()));
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
@@ -132,7 +132,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 				.withDatoSendt(null);
 		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
 
-		Journalpost persistedJournalpost1 = journalpostRepositorySkjermet.findById(journalpost1.getJournalpostId()).get();
+		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 
 		assertThat(persistedJournalpost1.getSendtPrintDato(), is(nullValue()));
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
@@ -147,8 +147,8 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 		SettJournalpostAttributterRequest request = createWsRequest(journalpost1.getJournalpostId(), journalpost2.getJournalpostId());
 		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
 
-		Journalpost persistedJournalpost1 = journalpostRepositorySkjermet.findById(journalpost1.getJournalpostId()).get();
-		Journalpost persistedJournalpost2 = journalpostRepositorySkjermet.findById(journalpost2.getJournalpostId()).get();
+		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
+		Journalpost persistedJournalpost2 = journalpostTestRepository.findById(journalpost2.getJournalpostId()).get();
 
 		assertThat(persistedJournalpost1.getSendtPrintDato(), is(DateProvider.getToday()));
 		assertThat(persistedJournalpost2.getSendtPrintDato(), is(DateProvider.getToday()));
@@ -167,7 +167,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 		SettJournalpostAttributterRequest request = createWsRequest(journalpost1.getJournalpostId(), journalpost2.getJournalpostId());
 		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
 
-		Journalpost untouchedJournalpost = journalpostRepositorySkjermet.findById(journalpost3.getJournalpostId()).get();
+		Journalpost untouchedJournalpost = journalpostTestRepository.findById(journalpost3.getJournalpostId()).get();
 		assertThat(untouchedJournalpost.getSendtPrintDato(), nullValue());
 	}
 
@@ -209,7 +209,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 
 				.build();
 
-		journalpostRepositorySkjermet.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		return journalpost;
 	}
 

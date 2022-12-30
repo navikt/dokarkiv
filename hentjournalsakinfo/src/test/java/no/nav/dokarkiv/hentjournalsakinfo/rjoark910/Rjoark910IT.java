@@ -43,8 +43,8 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 		ferdigstiltJournalpost1.getSaksrelasjon().setSakId("1");
 		Journalpost ferdigstiltJournalpost2 = createUniqueJournalpost();
 		ferdigstiltJournalpost2.getSaksrelasjon().setSakId("2");
-		journalpostRepository.save(ferdigstiltJournalpost1);
-		journalpostRepository.save(ferdigstiltJournalpost2);
+		journalpostTestRepository.persist(ferdigstiltJournalpost1);
+		journalpostTestRepository.persist(ferdigstiltJournalpost2);
 		sakTestRepository.persist(createGsak());
 		sakTestRepository.persist(createGsak());
 		TestTransaction.flagForCommit();
@@ -64,8 +64,8 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 		psakJournalpost.setSaksrelasjon(createPsakSaksrelasjon());
 		gsakJournalpost.getSaksrelasjon().setSakId("1");
 		sakTestRepository.persist(createGsak());
-		journalpostRepository.save(gsakJournalpost);
-		journalpostRepository.save(psakJournalpost);
+		journalpostTestRepository.persist(gsakJournalpost);
+		journalpostTestRepository.persist(psakJournalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		DokumentoversiktBrukerRequestTo request = createRequest(JournalStatusCode.FS);
@@ -87,9 +87,9 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 		journalpost.getSaksrelasjon().setSakId("1");
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
 		createVedleggRelasjon(journalpost, vedlegg1);
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		createVedleggRelasjon(journalpost, vedlegg2);
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		sakTestRepository.persist(createGsak());
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

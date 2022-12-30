@@ -74,7 +74,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
 		var responseEntity = doPutTransaction(GYLDIG_CONSUMER, request, journalpostId);
 
-		Journalpost oppdatertJP = journalpostRepository.findById(journalpostId).get();
+		Journalpost oppdatertJP = journalpostTestRepository.findById(journalpostId).get();
 		Map<String, String> tilleggsopplysninger = oppdatertJP.getTilleggsopplysninger();
 		FilDetaljer filDetaljer =
 				oppdatertJP.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getFildetaljerListe().iterator().next();
@@ -127,7 +127,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 				));
 
 		var responseEntity = doPutTransaction(GYLDIG_CONSUMER, request, journalpostId);
-		Journalpost oppdatertJP = journalpostRepository.findById(journalpostId).get();
+		Journalpost oppdatertJP = journalpostTestRepository.findById(journalpostId).get();
 
 		Set<FilDetaljer> filDetaljerSet =
 				oppdatertJP.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getFildetaljerListe();
@@ -195,7 +195,6 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 				.builder()
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.journalpost(journalpost)
-				.journalpostDokumentInfoRelasjonId(10L)
 				.dokumentInfo(
 						dokumentInfo
 				)
@@ -343,7 +342,6 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 	) {
 		return JournalpostBuilder
 				.getJournalpostBuilder()
-				.journalpostId(0L)
 				.fagomrade(FagomradeCode.FOR)
 				.opprettetKildeNavn("ITest")
 				.journalpostType(journalpostTypeCode)

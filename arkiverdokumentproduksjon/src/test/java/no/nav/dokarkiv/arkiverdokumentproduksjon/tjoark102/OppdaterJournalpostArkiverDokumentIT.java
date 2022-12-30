@@ -65,7 +65,7 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 	@Test
 	public void shouldArkivereOgFerdigstilleJournalpost() throws Exception {
 		arkiverDokumentproduksjonProvider.oppdaterJournalpostArkiverDokument(request);
-		Journalpost journalpostById = journalpostRepositorySkjermet.findById(journalpost.getJournalpostId()).get();
+		Journalpost journalpostById = journalpostTestRepository.findById(journalpost.getJournalpostId()).get();
 		Long dokumentInfoId = journalpost.findDokumentInfoById(request.getDokumentInfoId()).getDokumentInfoId();
 
 		assertThat(journalpostById.getJournalpostId(), is(request.getJournalpostId()));
@@ -75,7 +75,7 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 	@Test
 	public void shouldVerifyJournalpostFields() throws Exception {
 		arkiverDokumentproduksjonProvider.oppdaterJournalpostArkiverDokument(request);
-		Journalpost journalpostById = journalpostRepositorySkjermet.findById(journalpost.getJournalpostId()).get();
+		Journalpost journalpostById = journalpostTestRepository.findById(journalpost.getJournalpostId()).get();
 
 		assertThat(journalpostById.getJournalstatus(), is(JournalStatusCode.FS));
 		assertThat(journalpostById.getUtsendingskanal().name(), is(UTSENDINGS_KANAL_CODE));
@@ -89,7 +89,7 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 		request.setUtsendingskanal(UtsendingsKanalCode.L.toString());
 
 		arkiverDokumentproduksjonProvider.oppdaterJournalpostArkiverDokument(request);
-		Journalpost journalpostById = journalpostRepositorySkjermet.findById(journalpost.getJournalpostId()).get();
+		Journalpost journalpostById = journalpostTestRepository.findById(journalpost.getJournalpostId()).get();
 
 		assertThat(journalpostById.getJournalstatus(), is(JournalStatusCode.FL));
 		assertThat(journalpostById.getUtsendingskanal(), is(UtsendingsKanalCode.L));
@@ -165,7 +165,7 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 
 				.build();
 
-		journalpostRepositorySkjermet.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		return journalpost;
 	}
 

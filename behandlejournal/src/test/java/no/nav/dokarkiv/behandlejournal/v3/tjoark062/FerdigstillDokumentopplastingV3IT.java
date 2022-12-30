@@ -76,7 +76,7 @@ public class FerdigstillDokumentopplastingV3IT extends AbstractBehandleJournalV3
 
 		behandleJournalV3Provider.ferdigstillDokumentopplasting(request);
 
-		Journalpost ferdigstiltJournalpost = journalpostRepositorySkjermet.findById(journalpost.getJournalpostId()).get();
+		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).get();
 		assertThat(ferdigstiltJournalpost.getJournalstatus(), is(JournalStatusCode.M));
 
 		assertThat(ferdigstiltJournalpost.getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
@@ -98,7 +98,7 @@ public class FerdigstillDokumentopplastingV3IT extends AbstractBehandleJournalV3
 
 		behandleJournalV3Provider.ferdigstillDokumentopplasting(request);
 
-		Journalpost ferdigstiltJournalpost = journalpostRepositorySkjermet.findById(journalpost.getJournalpostId()).get();
+		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).get();
 		assertThat(ferdigstiltJournalpost.getJournalstatus(), is(JournalStatusCode.MO));
 
 		assertThat(ferdigstiltJournalpost.getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
@@ -157,7 +157,7 @@ public class FerdigstillDokumentopplastingV3IT extends AbstractBehandleJournalV3
 																.variantFormat(VariantFormatCode.ARKIV)
 																.fileContent("Test pdf".getBytes()).build()).build())
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT).build()).build();
-		return journalpostRepositorySkjermet.save(build);
+		return journalpostTestRepository.persist(build);
 	}
 
 }

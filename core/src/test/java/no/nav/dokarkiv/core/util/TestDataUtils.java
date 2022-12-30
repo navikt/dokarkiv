@@ -201,7 +201,6 @@ public class TestDataUtils {
 				.opprettetAvNavn("test")
 				.journalposttype(journalpostTypeCode)
 				.journalstatus(journalStatusCode)
-				.journalpostId((long) 300000000)
 				.journalForendeEnhetId("test")
 				.journalDato(date)
 				.kanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID())
@@ -216,7 +215,6 @@ public class TestDataUtils {
 				.sakId("test")
 				.fagsystem(FagsystemCode.PEN)
 				.feilregistrert(false)
-				.saksrelasjonId((long) 300000000)
 				.journalpost(journalpost)
 				.build();
 		saksrelasjon.setOpprettetKildeNavn("test");
