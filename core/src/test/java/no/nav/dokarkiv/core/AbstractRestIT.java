@@ -5,11 +5,11 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepository;
-import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
-import no.nav.dokarkiv.core.repository.SakRepository;
+import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonTestRepository;
+import no.nav.dokarkiv.core.repository.SakTestRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -56,7 +56,7 @@ public abstract class AbstractRestIT {
 	@Autowired
 	protected JoarkRepository joarkRepository;
 	@Autowired
-	protected JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	protected JournalpostDokumentInfoRelasjonTestRepository journalpostDokumentInfoRelasjonTestRepository;
 	@Autowired
 	protected DokumentInfoTestRepository dokumentInfoTestRepository;
 	@Autowired
@@ -70,9 +70,9 @@ public abstract class AbstractRestIT {
 	@Autowired
 	protected EntityManager entityManager;
 	@Autowired
-	protected DokumentFilRepository dokumentFilRepository;
+	protected DokumentFilTestRepository dokumentFilTestRepository;
 	@Autowired
-	protected SakRepository sakRepository;
+	protected SakTestRepository sakTestRepository;
 	@Autowired
 	private MockOAuth2Server server;
 
@@ -102,11 +102,11 @@ public abstract class AbstractRestIT {
 			TestTransaction.start();
 		}
 		aksjonsLoggRepository.deleteAll();
-		dokumentFilRepository.deleteAll();
-		journalpostDokumentInfoRelasjonRepository.deleteAll();
+		dokumentFilTestRepository.deleteAll();
+		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentInfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
-		sakRepository.deleteAll();
+		sakTestRepository.deleteAll();
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 	}
@@ -169,10 +169,10 @@ public abstract class AbstractRestIT {
 
 		newJp.getJournalpostDokumentInfoRelasjoner().forEach(rel -> {
 			rel.getDokumentInfo().getFildetaljerListe().forEach(filDetaljer -> {
-				if (Objects.isNull(dokumentFilRepository.findByFilUuid(filDetaljer.getFilUuid()))) {
+				if (Objects.isNull(dokumentFilTestRepository.findByFilUuid(filDetaljer.getFilUuid()))) {
 					DokumentFil dokumentFil = filDetaljer.createDokumentFil();
 					dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-					dokumentFilRepository.save(dokumentFil);
+					dokumentFilTestRepository.persist(dokumentFil);
 				}
 			});
 		});

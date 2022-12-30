@@ -3,7 +3,7 @@ package no.nav.dokarkiv.behandlejournal.v2;
 import no.nav.dokarkiv.behandlejournal.TestBehandleConfig;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
+import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -37,12 +37,12 @@ public abstract class AbstractBehandleJournalV2Itest {
 	@Autowired
     protected DokumentInfoRepository dokumentInfoRepository;
 	@Autowired
-	protected DokumentFilRepository dokumentFilRepository;
+	protected DokumentFilTestRepository dokumentFilTestRepository;
 
 	@BeforeEach
 	public void setUpItest() {
 		joarkRepository.deleteAll();
-		dokumentFilRepository.deleteAll();
+		dokumentFilTestRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")

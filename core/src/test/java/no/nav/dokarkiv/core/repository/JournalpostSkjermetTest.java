@@ -46,7 +46,7 @@ public class JournalpostSkjermetTest {
 	private DokumentInfoTestRepository dokumentinfoTestRepository;
 
 	@Autowired
-	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private JournalpostDokumentInfoRelasjonTestRepository journalpostDokumentInfoRelasjonTestRepository;
 
 	@Autowired
 	private SkjermingService skjermingService;
@@ -62,7 +62,7 @@ public class JournalpostSkjermetTest {
 	@AfterEach
 	public void cleanUp() {
 		TestTransaction.end();
-		journalpostDokumentInfoRelasjonRepository.deleteAll();
+		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentinfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
 	}

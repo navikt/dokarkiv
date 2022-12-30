@@ -53,7 +53,7 @@ public class DefaultDokumentFilerDelegateTest {
 
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 
-		verify(dokumentFilRepositoryMock).save(dokumentFilCaptor.capture());
+		verify(dokumentFilRepositoryMock).persist(dokumentFilCaptor.capture());
 
 		assertThat(dokumentFilCaptor.getValue().getFil(), is(fileContent));
 	}
@@ -93,7 +93,7 @@ public class DefaultDokumentFilerDelegateTest {
 
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 
-		verify(dokumentFilRepositoryMock).save(dokumentFilCaptor.capture());
+		verify(dokumentFilRepositoryMock).persist(dokumentFilCaptor.capture());
 		assertThat(dokumentFilCaptor.getValue().getFil(), is(fileContent));
 	}
 

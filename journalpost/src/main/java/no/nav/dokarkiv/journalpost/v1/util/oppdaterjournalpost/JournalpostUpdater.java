@@ -51,7 +51,6 @@ public class JournalpostUpdater {
 	}
 
 	public ChangeTracker updateFields(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
-
 		ChangeTracker tracker = new ChangeTracker();
 		updateTittel(journalpost, oppdaterJournalpostRequest, tracker);
 		updateTema(journalpost, oppdaterJournalpostRequest, tracker);
@@ -248,7 +247,6 @@ public class JournalpostUpdater {
 					assertNotNull(oppdaterJournalpostRequest.getBruker().getIdType(), "Bruker.idType");
 					checkIfBrukerTypeIsAktoerId(oldBrukerId, bruker, oppdaterJournalpostRequest, journalpost, endret);
 				});
-
 			}
 		}
 	}
@@ -281,6 +279,5 @@ public class JournalpostUpdater {
 		nyBruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		endret.add(JOURNALPOST_BRUKER, oldBrukerId, nyBruker.getBrukerId());
 		journalpost.addBruker(nyBruker);
-
 	}
 }

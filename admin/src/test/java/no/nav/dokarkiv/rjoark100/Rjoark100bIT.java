@@ -547,7 +547,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 	}
 
 	private void assertDokumentInfoIkkeSkjermet(Long dokumentInfoId) {
-		journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId)
+		journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId)
 				.forEach(rel -> {
 					if (rel.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT) {
 						assertThat(rel.getDokumentInfo()

@@ -39,7 +39,7 @@ public class UtsendingsInfoRepositoryTest {
 	@Autowired
 	UtsendingsInfoTestRepository utsendingsInfoTestRepository;
 	@Autowired
-	DokumentFilRepository dokumentFilRepository;
+	DokumentFilTestRepository dokumentFilTestRepository;
 	@Autowired
 	JoarkRepository joarkRepository;
 
@@ -51,7 +51,7 @@ public class UtsendingsInfoRepositoryTest {
 	@AfterEach
 	public void cleanUp() {
 		TestTransaction.end();
-		dokumentFilRepository.deleteAll();
+		dokumentFilTestRepository.deleteAll();
 		utsendingsInfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
 	}
@@ -61,8 +61,8 @@ public class UtsendingsInfoRepositoryTest {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
-		dokumentFilRepository.save(arkivDokumentFil);
-		dokumentFilRepository.save(createDummyDokumentKassert());
+		dokumentFilTestRepository.persist(arkivDokumentFil);
+		dokumentFilTestRepository.persist(createDummyDokumentKassert());
 		journalpost = joarkRepository.save(journalpost);
 
 		var utsendingsInfoPart = new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
@@ -82,8 +82,8 @@ public class UtsendingsInfoRepositoryTest {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
-		dokumentFilRepository.save(arkivDokumentFil);
-		dokumentFilRepository.save(createDummyDokumentKassert());
+		dokumentFilTestRepository.persist(arkivDokumentFil);
+		dokumentFilTestRepository.persist(createDummyDokumentKassert());
 		joarkRepository.save(journalpost);
 
 		journalpost.setUtsendingskanal(UtsendingsKanalCode.NAV_NO);

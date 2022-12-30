@@ -114,7 +114,7 @@ public class SlettArkivenhetService {
 
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = relasjonList.get(0);
 		vedleggRelasjon.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
-		journalpostDokumentInfoRelasjonRepository.save(vedleggRelasjon);
+		journalpostDokumentInfoRelasjonRepository.merge(vedleggRelasjon);
 
 		Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
 		aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, vedleggRelasjon.getDokumentInfo()

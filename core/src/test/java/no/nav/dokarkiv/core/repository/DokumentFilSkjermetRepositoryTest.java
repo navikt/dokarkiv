@@ -48,10 +48,10 @@ public class DokumentFilSkjermetRepositoryTest {
 	private DokumentInfoTestRepository dokumentInfoTestRepository;
 
 	@Autowired
-	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private JournalpostDokumentInfoRelasjonTestRepository journalpostDokumentInfoRelasjonTestRepository;
 
 	@Autowired
-	private DokumentFilRepository dokumentFilRepository;
+	private DokumentFilTestRepository dokumentFilTestRepository;
 
 	@Autowired
 	private DokumentFilSkjermetRepository dokumentFilSkjermetRepository;
@@ -67,8 +67,8 @@ public class DokumentFilSkjermetRepositoryTest {
 	@AfterEach
 	public void cleanUp() {
 		TestTransaction.end();
-		dokumentFilRepository.deleteAll();
-		journalpostDokumentInfoRelasjonRepository.deleteAll();
+		dokumentFilTestRepository.deleteAll();
+		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentInfoTestRepository.deleteAll();
 		joarkRepository.deleteAll();
 	}
@@ -80,9 +80,9 @@ public class DokumentFilSkjermetRepositoryTest {
 
 		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
-		dokumentFilRepository.save(arkivDokumentFil);
-		dokumentFilRepository.save(createDummyDokumentKassert());
-		dokumentFilRepository.save(createDummyDokumentSkjermet());
+		dokumentFilTestRepository.persist(arkivDokumentFil);
+		dokumentFilTestRepository.persist(createDummyDokumentKassert());
+		dokumentFilTestRepository.persist(createDummyDokumentSkjermet());
 		journalpost = joarkRepository.save(journalpost);
 
 		DokumentFil dokumentFilBefore = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
@@ -108,9 +108,9 @@ public class DokumentFilSkjermetRepositoryTest {
 				.getDokumentInfo()
 				.findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
-		dokumentFilRepository.save(arkivDokumentFil);
-		dokumentFilRepository.save(createDummyDokumentKassert());
-		dokumentFilRepository.save(createDummyDokumentSkjermet());
+		dokumentFilTestRepository.persist(arkivDokumentFil);
+		dokumentFilTestRepository.persist(createDummyDokumentKassert());
+		dokumentFilTestRepository.persist(createDummyDokumentSkjermet());
 		journalpost = joarkRepository.save(journalpost);
 
 		DokumentFil dokumentFilBefore = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
@@ -134,8 +134,8 @@ public class DokumentFilSkjermetRepositoryTest {
 
 		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
-		dokumentFilRepository.save(arkivDokumentFil);
-		dokumentFilRepository.save(createDummyDokumentKassert());
+		dokumentFilTestRepository.persist(arkivDokumentFil);
+		dokumentFilTestRepository.persist(createDummyDokumentKassert());
 		journalpost = joarkRepository.save(journalpost);
 
 		DokumentFil dokumentFilBefore = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
@@ -160,8 +160,8 @@ public class DokumentFilSkjermetRepositoryTest {
 				.getDokumentInfo()
 				.findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
-		dokumentFilRepository.save(arkivDokumentFil);
-		dokumentFilRepository.save(createDummyDokumentKassert());
+		dokumentFilTestRepository.persist(arkivDokumentFil);
+		dokumentFilTestRepository.persist(createDummyDokumentKassert());
 		journalpost = joarkRepository.save(journalpost);
 
 		DokumentFil dokumentFilBefore = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
@@ -192,9 +192,9 @@ public class DokumentFilSkjermetRepositoryTest {
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
 		DokumentFil sladdetDokumentFil = sladdet.createDokumentFil();
 
-		dokumentFilRepository.save(arkivDokumentFil);
-		dokumentFilRepository.save(sladdetDokumentFil);
-		dokumentFilRepository.save(createDummyDokumentKassert());
+		dokumentFilTestRepository.persist(arkivDokumentFil);
+		dokumentFilTestRepository.persist(sladdetDokumentFil);
+		dokumentFilTestRepository.persist(createDummyDokumentKassert());
 		journalpost = joarkRepository.save(journalpost);
 
 		skjermingService.setVariantSkjermet(journalpost.findHoveddokumentDokumentInfoRelasjon()

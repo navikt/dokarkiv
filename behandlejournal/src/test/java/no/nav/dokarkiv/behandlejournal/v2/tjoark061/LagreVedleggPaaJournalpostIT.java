@@ -151,7 +151,7 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 	public void shouldVerifyFileContentForTheAddedVedlegg() throws Exception {
 		setUpJoark();
 
-		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(fildetaljer.getFilUuid());
+		DokumentFil dokumentFil = dokumentFilTestRepository.findByFilUuid(fildetaljer.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(FILECONTENT));
 	}
 

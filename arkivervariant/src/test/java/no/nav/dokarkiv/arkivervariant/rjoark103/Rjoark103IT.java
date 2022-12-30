@@ -74,7 +74,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET), notNullValue());
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)
 				.getFiltype(), is(FilTypeCode.PDF));
-		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)
+		DokumentFil dokumentFil = dokumentFilTestRepository.findByFilUuid(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)
 				.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(FIL));
 		assertThat(responseEntity.getBody().getFilUuid(), is(dokumentFil.getFilUuid()));

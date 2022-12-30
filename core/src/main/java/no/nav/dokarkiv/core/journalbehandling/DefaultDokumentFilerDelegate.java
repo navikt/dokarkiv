@@ -49,7 +49,7 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 	}
 
 	private void saveDokumentFil(DokumentFil dokumentFil) {
-		dokumentFilRepository.save(dokumentFil);
+		dokumentFilRepository.persist(dokumentFil);
 	}
 
 	private void updateExistingDokumentFiler(Journalpost journalpost) {

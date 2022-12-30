@@ -45,8 +45,8 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 		ferdigstiltJournalpost2.getSaksrelasjon().setSakId("2");
 		joarkRepository.save(ferdigstiltJournalpost1);
 		joarkRepository.save(ferdigstiltJournalpost2);
-		sakRepository.save(createGsak());
-		sakRepository.save(createGsak());
+		sakTestRepository.persist(createGsak());
+		sakTestRepository.persist(createGsak());
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -63,7 +63,7 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 		Journalpost psakJournalpost = createUniqueJournalpost();
 		psakJournalpost.setSaksrelasjon(createPsakSaksrelasjon());
 		gsakJournalpost.getSaksrelasjon().setSakId("1");
-		sakRepository.save(createGsak());
+		sakTestRepository.persist(createGsak());
 		joarkRepository.save(gsakJournalpost);
 		joarkRepository.save(psakJournalpost);
 		TestTransaction.flagForCommit();
@@ -90,7 +90,7 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 		joarkRepository.save(journalpost);
 		createVedleggRelasjon(journalpost, vedlegg2);
 		joarkRepository.save(journalpost);
-		sakRepository.save(createGsak());
+		sakTestRepository.persist(createGsak());
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
