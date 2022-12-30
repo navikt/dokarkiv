@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -17,10 +17,10 @@ import java.util.Set;
 @Service
 public class HentJournalpostInfoService {
 
-    private final JoarkRepositorySkjermet joarkRepository;
+    private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 
-	public HentJournalpostInfoService(JoarkRepositorySkjermet joarkRepository) {
-		this.joarkRepository = joarkRepository;
+	public HentJournalpostInfoService(JournalpostRepositorySkjermet journalpostRepositorySkjermet) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 	}
 
 	public HentJournalpostInfoResponseTo hentJournalOgDokumentStatus(HentJournalpostInfoRequestTo request)
@@ -72,7 +72,7 @@ public class HentJournalpostInfoService {
 	}
 
 	private Journalpost findJournalpost(Long journalpostId) throws NoJournalpostFoundException {
-		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId).orElse(null);
 		if (journalpost == null) {
 			throw new NoJournalpostFoundException("Journalpost with id: " + journalpostId + " does not exist", journalpostId);
 		}

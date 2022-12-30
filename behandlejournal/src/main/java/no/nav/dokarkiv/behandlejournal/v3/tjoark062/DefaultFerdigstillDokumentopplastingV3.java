@@ -8,17 +8,17 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultFerdigstillDokumentopplastingV3 implements FerdigstillDokumentopplasting {
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final SporingPopulator sporingPopulator;
 
-	public DefaultFerdigstillDokumentopplastingV3(JoarkRepositorySkjermet joarkRepository, SporingPopulator sporingPopulator) {
-		this.joarkRepository = joarkRepository;
+	public DefaultFerdigstillDokumentopplastingV3(JournalpostRepositorySkjermet journalpostRepositorySkjermet, SporingPopulator sporingPopulator) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.sporingPopulator = sporingPopulator;
 	}
 
@@ -41,7 +41,7 @@ public class DefaultFerdigstillDokumentopplastingV3 implements FerdigstillDokume
 
 	private void handleJoarkFerdigstillDokumentOpplasting(Long journalpostId, SporingsMetaData sporingsMetaData)
 			throws NoJournalpostFoundException {
-		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId).orElse(null);
 		if (journalpost == null) {
 			throw new NoJournalpostFoundException("Journalpost with id: " + journalpostId + " does not exist",
 					journalpostId);

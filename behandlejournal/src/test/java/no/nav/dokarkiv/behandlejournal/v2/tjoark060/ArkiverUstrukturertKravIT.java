@@ -81,7 +81,7 @@ public class ArkiverUstrukturertKravIT extends AbstractBehandleJournalV2Itest {
 		arkiverUstrukturertKravResponse = behandleJournalProvider
 				.arkiverUstrukturertKrav(arkiverUstrukturertKravRequest);
 
-		persistedJournalpost = joarkRepository.findById(Long.parseLong(arkiverUstrukturertKravResponse
+		persistedJournalpost = journalpostRepositorySkjermet.findById(Long.parseLong(arkiverUstrukturertKravResponse
 				.getJournalpostId())).get();
 	}
 
@@ -173,7 +173,7 @@ public class ArkiverUstrukturertKravIT extends AbstractBehandleJournalV2Itest {
 	}
 
 	private no.nav.dokarkiv.core.domain.entities.Journalpost getPersistedJournalposterById(Long id) {
-		return joarkRepository.findById(id).get();
+		return journalpostRepositorySkjermet.findById(id).get();
 	}
 
 	private Journalpost createJournalpost(String temaId) {

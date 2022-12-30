@@ -195,7 +195,7 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 												.build()).build()).build();
 		persistedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()
 				.setOriginalJournalpost(persistedJournalpost);
-		return joarkRepository.save(persistedJournalpost);
+		return journalpostRepositorySkjermet.save(persistedJournalpost);
 	}
 
 	private JournalfoertDokumentInfo createInputJournalfoertDokumentInfo() {

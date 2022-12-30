@@ -45,7 +45,7 @@ public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninf
 
 	@BeforeEach
 	public void setUp() {
-		Journalpost journalpost = joarkRepository.save(buildAndPersistJournalpost());
+		Journalpost journalpost = journalpostRepositorySkjermet.save(buildAndPersistJournalpost());
 		journalpostId = journalpost.getId();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
 		createRequest();
@@ -57,13 +57,13 @@ public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninf
 		Map<String, String> map = new HashMap<>();
 		map.put("key", "val");
 		journalpost.setTilleggsopplysninger(map);
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 
 		Journalpost journalpost2 = buildAndPersistJournalpost();
 		Map<String, String> map2 = new HashMap<>();
 		map2.put("key", "val2");
 		journalpost.setTilleggsopplysninger(map2);
-		joarkRepository.save(journalpost2);
+		journalpostRepositorySkjermet.save(journalpost2);
 	}
 
 

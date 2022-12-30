@@ -8,18 +8,18 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultJournalfoerInngaaendeHenvendelseV3 implements JournalfoerInngaaendeHenvendelse {
 
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final JournalfoerInngaaendeHenvendelseV3Validator behandleJournalJournalpostValidator;
 	private final DokumentFilerDelegate dokumentFilerDelegate;
 
-	public DefaultJournalfoerInngaaendeHenvendelseV3(JoarkRepositorySkjermet joarkRepository, JournalfoerInngaaendeHenvendelseV3Validator behandleJournalJournalpostValidator, DokumentFilerDelegate dokumentFilerDelegate) {
-		this.joarkRepository = joarkRepository;
+	public DefaultJournalfoerInngaaendeHenvendelseV3(JournalpostRepositorySkjermet journalpostRepositorySkjermet, JournalfoerInngaaendeHenvendelseV3Validator behandleJournalJournalpostValidator, DokumentFilerDelegate dokumentFilerDelegate) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.behandleJournalJournalpostValidator = behandleJournalJournalpostValidator;
 		this.dokumentFilerDelegate = dokumentFilerDelegate;
 	}
@@ -35,7 +35,7 @@ public class DefaultJournalfoerInngaaendeHenvendelseV3 implements JournalfoerInn
 		behandleJournalJournalpostValidator.validate(journalpost);
 
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 
 		return createResponse(journalpost);
 	}

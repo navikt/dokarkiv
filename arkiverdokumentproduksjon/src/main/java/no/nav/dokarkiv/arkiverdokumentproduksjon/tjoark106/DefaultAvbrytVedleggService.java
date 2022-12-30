@@ -9,8 +9,8 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
@@ -18,13 +18,13 @@ import org.springframework.stereotype.Component;
 public class DefaultAvbrytVedleggService implements AvbrytVedleggService {
 
 	private final AvbrytVedleggValidator validator;
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final SporingPopulator sporingPopulator;
 
-	public DefaultAvbrytVedleggService(AvbrytVedleggValidator validator, JoarkRepositorySkjermet joarkRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, SporingPopulator sporingPopulator) {
+	public DefaultAvbrytVedleggService(AvbrytVedleggValidator validator, JournalpostRepositorySkjermet journalpostRepositorySkjermet, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, SporingPopulator sporingPopulator) {
 		this.validator = validator;
-		this.joarkRepository = joarkRepository;
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.sporingPopulator = sporingPopulator;
 	}
@@ -36,7 +36,7 @@ public class DefaultAvbrytVedleggService implements AvbrytVedleggService {
 		validator.validateInputRequest(request);
 
 		final Long journalpostId = request.getJournalpostId();
-		Journalpost journalpost = joarkRepository.findById(journalpostId)
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
 				.orElseThrow(() -> new NoJournalpostFoundException("journalpostid=" + journalpostId + " does not exist", journalpostId));
 		validator.validateJournalpost(journalpost, journalpostId);
 

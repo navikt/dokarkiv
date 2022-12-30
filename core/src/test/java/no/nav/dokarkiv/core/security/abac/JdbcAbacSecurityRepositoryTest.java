@@ -16,7 +16,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +53,7 @@ public class JdbcAbacSecurityRepositoryTest {
 	@Autowired
 	private JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
 	@Autowired
-	private JoarkRepositorySkjermet joarkRepository;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -65,7 +65,7 @@ public class JdbcAbacSecurityRepositoryTest {
 
 		Journalpost j = createJournalpost(JournalStatusCode.J);
 
-		joarkRepository.save(j);
+		journalpostRepositorySkjermet.save(j);
 
 		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(j.getJournalpostId());
 		assertThat(abacResources.getFagsystem(), is(FagsystemCode.PEN));
@@ -83,7 +83,7 @@ public class JdbcAbacSecurityRepositoryTest {
 		Bruker b2 = createBruker("02054512313");
 		j.addBruker(b1);
 		j.addBruker(b2);
-		joarkRepository.save(j);
+		journalpostRepositorySkjermet.save(j);
 
 		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(j.getJournalpostId());
 		assertThat(abacResources.getFagsystem(), is(FagsystemCode.PEN));
@@ -101,7 +101,7 @@ public class JdbcAbacSecurityRepositoryTest {
 		j.addBruker(b1);
 		j.addBruker(b2);
 		j.setSaksrelasjon(null);
-		joarkRepository.save(j);
+		journalpostRepositorySkjermet.save(j);
 
 		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(j.getJournalpostId());
 		assertThat(abacResources.getFagsystem(), is(nullValue()));
@@ -116,7 +116,7 @@ public class JdbcAbacSecurityRepositoryTest {
 		Journalpost j = createJournalpost(JournalStatusCode.J);
 		j.clearBrukere();
 
-		joarkRepository.save(j);
+		journalpostRepositorySkjermet.save(j);
 
 		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(j.getJournalpostId());
 		assertThat(abacResources.getFagsystem(), is(FagsystemCode.PEN));
@@ -131,7 +131,7 @@ public class JdbcAbacSecurityRepositoryTest {
 		j.clearBrukere();
 		j.setSaksrelasjon(null);
 
-		joarkRepository.save(j);
+		journalpostRepositorySkjermet.save(j);
 
 		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(j.getJournalpostId());
 		assertThat(abacResources.getFagsystem(), is(nullValue()));
@@ -146,7 +146,7 @@ public class JdbcAbacSecurityRepositoryTest {
 		j.clearBrukere();
 		j.setSaksrelasjon(null);
 
-		joarkRepository.save(j);
+		journalpostRepositorySkjermet.save(j);
 
 		AbacResources abacResources = jdbcAbacSecurityRepository.findAbacResources(j.getJournalpostId());
 		assertThat(abacResources.getFagsystem(), is(nullValue()));

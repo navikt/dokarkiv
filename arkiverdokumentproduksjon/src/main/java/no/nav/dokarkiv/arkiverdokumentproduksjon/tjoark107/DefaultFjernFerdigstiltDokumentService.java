@@ -10,20 +10,20 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultFjernFerdigstiltDokumentService implements FjernFerdigstiltDokumentService {
 
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final DokumentFilRepository dokumentFilRepository;
 	private final FjernFerdigstiltDokumentValidator fjernFerdigstiltDokumentValidator;
 	private final SporingPopulator sporingPopulator;
 
-	public DefaultFjernFerdigstiltDokumentService(JoarkRepositorySkjermet joarkRepository, DokumentFilRepository dokumentFilRepository, FjernFerdigstiltDokumentValidator fjernFerdigstiltDokumentValidator, SporingPopulator sporingPopulator) {
-		this.joarkRepository = joarkRepository;
+	public DefaultFjernFerdigstiltDokumentService(JournalpostRepositorySkjermet journalpostRepositorySkjermet, DokumentFilRepository dokumentFilRepository, FjernFerdigstiltDokumentValidator fjernFerdigstiltDokumentValidator, SporingPopulator sporingPopulator) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.fjernFerdigstiltDokumentValidator = fjernFerdigstiltDokumentValidator;
 		this.sporingPopulator = sporingPopulator;
@@ -52,7 +52,7 @@ public class DefaultFjernFerdigstiltDokumentService implements FjernFerdigstiltD
 	}
 
 	private Journalpost findJournalpost(Long journalpostId) throws NoJournalpostFoundException {
-		return joarkRepository.findById(journalpostId).orElseThrow(() -> new NoJournalpostFoundException("Journalpost with id: " + journalpostId + " does not exist", journalpostId));
+		return journalpostRepositorySkjermet.findById(journalpostId).orElseThrow(() -> new NoJournalpostFoundException("Journalpost with id: " + journalpostId + " does not exist", journalpostId));
 	}
 
 

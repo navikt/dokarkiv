@@ -16,7 +16,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ public class DefaultOpprettJournalpostServiceTest {
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
-	private JoarkRepositorySkjermet joarkRepositoryMock;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 	@Mock
 	private OpprettJournalpostValidator opprettJournalpostValidator;
 	@InjectMocks
@@ -68,7 +68,7 @@ public class DefaultOpprettJournalpostServiceTest {
 		DateProvider.configure(true, TODAY_DATE);
 		journalpost = createJournalpost(null, null);
 		request = new OpprettJournalpostRequestTo(journalpost);
-		lenient().when(joarkRepositoryMock.save(journalpost)).thenReturn(
+		lenient().when(journalpostRepositorySkjermetMock.save(journalpost)).thenReturn(
 				createJournalpost(JOURNALPOST_ID, DOKUMENTINFO_ID));
 	}
 
@@ -78,7 +78,7 @@ public class DefaultOpprettJournalpostServiceTest {
 		response = service.opprettJournalpost(request);
 		verify(opprettJournalpostValidator).validate(journalpost);
 		verify(dokumentFilerDelegateMock).saveUpdateDokumentFiler(journalpost);
-		verify(joarkRepositoryMock).save(journalpost);
+		verify(journalpostRepositorySkjermetMock).save(journalpost);
 		assertThat(response.getJournalpostId(), is(JOURNALPOST_ID));
 		assertThat(response.getDokumentInfoId(), is(DOKUMENTINFO_ID));
 	}

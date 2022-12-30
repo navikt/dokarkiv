@@ -50,7 +50,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathInngaaende() throws IOException {
 		Journalpost journalpost = createJournalpost();
-		Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -66,8 +66,8 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 		TestTransaction.start();
 
-		Journalpost kopiertJournalpost = joarkRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
-		journalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost kopiertJournalpost = journalpostRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
+		journalpost = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(2, journalpost.getJournalpostDokumentInfoRelasjoner().size());
 		assertEquals(2, kopiertJournalpost.getJournalpostDokumentInfoRelasjoner().size());
@@ -117,7 +117,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldReturnForbiddenForWrongConsumer() {
 		Journalpost journalpost = createJournalpost();
-		Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
 
 		HttpHeaders headers = createHeaders(UGYLDIG_CONSUMER);
 		var requestEntity = new HttpEntity<>(headers);
@@ -138,7 +138,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldFailOnMissingNavUserId() {
 		Journalpost journalpost = createJournalpost();
-		Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
 
 		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER, false);
 		var requestEntity = new HttpEntity<>(headers);
@@ -150,7 +150,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldNotUpdateNullKanalReferanseId() {
 		Journalpost journalpost = createJournalpost();
-		Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
 		journalpost.setKanalReferanseId(null);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -165,7 +165,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 		TestTransaction.start();
 
-		Journalpost kopiertJournalpost = joarkRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
+		Journalpost kopiertJournalpost = journalpostRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
 		assertNull(kopiertJournalpost.getKanalReferanseId());
 	}
 
@@ -173,7 +173,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 	public void shouldUpdateKanalReferanseId() {
 		Journalpost journalpost = createJournalpost();
 
-		Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -188,8 +188,8 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 		TestTransaction.start();
 
-		Journalpost kopiertJournalpost = joarkRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
-		journalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost kopiertJournalpost = journalpostRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
+		journalpost = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 		assertFalse(kopiertJournalpost.getKanalReferanseId().isEmpty());
 		assertTrue(kopiertJournalpost.getKanalReferanseId().startsWith(journalpost.getKanalReferanseId()));
 		assertEquals(kopiertJournalpost.getKanalReferanseId().length(), journalpost.getKanalReferanseId().length() + 9);
@@ -200,7 +200,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalposttype(JournalpostTypeCode.U);
 
-		Long journalpostId = joarkRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -215,8 +215,8 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 		TestTransaction.start();
 
-		Journalpost kopiertJournalpost = joarkRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
-		journalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost kopiertJournalpost = journalpostRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
+		journalpost = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(JournalStatusCode.FL, journalpost.getJournalstatus());
 		assertEquals(JournalStatusCode.D, kopiertJournalpost.getJournalstatus());

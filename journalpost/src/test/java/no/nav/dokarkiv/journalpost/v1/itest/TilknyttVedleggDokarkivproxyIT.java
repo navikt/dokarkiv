@@ -75,7 +75,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 
 		completeCurrentAndStartNewTransaction();
 
-		Journalpost journalpostTilknyttetVedlegg = joarkRepository.findById(targetJournalpostId).get();
+		Journalpost journalpostTilknyttetVedlegg = journalpostRepository.findById(targetJournalpostId).get();
 		DokumentInfo sourceDokumentInfo = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		DokumentInfo dokumentInfoKopi = journalpostTilknyttetVedlegg.getJournalpostDokumentInfoRelasjoner()
 				.stream()
@@ -128,7 +128,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		//Assert 1 Sladdet
-		Journalpost journalpostTilknyttetVedlegg1 = joarkRepository.findById(targetJournalpostId).get();
+		Journalpost journalpostTilknyttetVedlegg1 = journalpostRepository.findById(targetJournalpostId).get();
 		DokumentInfo sourceDokumentInfo1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		DokumentInfo dokumentInfoKopi1 = journalpostTilknyttetVedlegg1.getJournalpostDokumentInfoRelasjoner()
 				.stream()
@@ -147,7 +147,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 		assertDokumentFil(sourceDokumentFil1, dokumentFilKopi1);
 
 		//Assert 2 sladdet
-		Journalpost journalpostTilknyttetVedlegg2 = joarkRepository.findById(targetJournalpostId).get();
+		Journalpost journalpostTilknyttetVedlegg2 = journalpostRepository.findById(targetJournalpostId).get();
 		DokumentInfo sourceDokumentInfo2 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		DokumentInfo dokumentInfoKopi2 = journalpostTilknyttetVedlegg2.getJournalpostDokumentInfoRelasjoner()
 				.stream()
@@ -167,7 +167,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 
 
 		//Assert 3 Arkiv
-		Journalpost journalpostTilknyttetVedlegg = joarkRepository.findById(targetJournalpostId).get();
+		Journalpost journalpostTilknyttetVedlegg = journalpostRepository.findById(targetJournalpostId).get();
 		DokumentInfo sourceDokumentInfo3 = sourceJournalpost3.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		DokumentInfo dokumentInfoKopi3 = journalpostTilknyttetVedlegg.getJournalpostDokumentInfoRelasjoner()
 				.stream()
@@ -225,7 +225,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(ArsakKode.UGYLDIG_STATUS));
 
 		//Assert 1 Sladdet
-		Journalpost journalpostTilknyttetVedlegg1 = joarkRepository.findById(journalpostIdVedlegg).get();
+		Journalpost journalpostTilknyttetVedlegg1 = journalpostRepository.findById(journalpostIdVedlegg).get();
 		DokumentInfo sourceDokumentInfo1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		DokumentInfo dokumentInfoKopi1 = journalpostTilknyttetVedlegg1.getJournalpostDokumentInfoRelasjoner()
 				.stream()
@@ -244,7 +244,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 		assertDokumentFil(sourceDokumentFil1, dokumentFilKopi1);
 
 		//Assert 2 sladdet
-		Journalpost journalpostTilknyttetVedlegg2 = joarkRepository.findById(journalpostIdVedlegg).get();
+		Journalpost journalpostTilknyttetVedlegg2 = journalpostRepository.findById(journalpostIdVedlegg).get();
 		DokumentInfo sourceDokumentInfo2 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		DokumentInfo dokumentInfoKopi2 = journalpostTilknyttetVedlegg2.getJournalpostDokumentInfoRelasjoner()
 				.stream()
@@ -263,7 +263,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 		assertDokumentFil(sourceDokumentFil2, dokumentFilKopi2);
 
 		//Assert 3 Arkiv
-		Journalpost journalpostTilknyttetVedlegg = joarkRepository.findById(journalpostIdVedlegg).get();
+		Journalpost journalpostTilknyttetVedlegg = journalpostRepository.findById(journalpostIdVedlegg).get();
 		assertThat(journalpostTilknyttetVedlegg.getJournalpostDokumentInfoRelasjoner()
 				.stream()
 				.anyMatch(j -> j.getDokumentInfo().getDokumentInfoId().equals(sourceDokumentInfoId3)), is(false));
@@ -275,8 +275,8 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 	public void shouldReturnForbiddenForWrongConsumer() {
 		Journalpost journalpostVedlegg = createJournalpostArkiv();
 		Journalpost sourceJournalpost = createJournalpostSladdet();
-		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
-		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
+		Long journalpostIdVedlegg = journalpostRepository.save(journalpostVedlegg).getJournalpostId();
+		Long sourceJournalpostId = journalpostRepository.save(sourceJournalpost).getJournalpostId();
 		when(tokenGrantValidator.validateOnBehalfOfAccessToken(any())).thenThrow(new ConsumerUnauthorizedDokarkivFunctionalException("Access Token is invalid"));
 
 		completeCurrentAndStartNewTransaction();
@@ -299,8 +299,8 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 	public void shouldReturnInvalidRequestForMissingTilknytetAvNavn() {
 		Journalpost journalpostVedlegg = createJournalpostArkiv();
 		Journalpost sourceJournalpost = createJournalpostSladdet();
-		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
-		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
+		Long journalpostIdVedlegg = journalpostRepository.save(journalpostVedlegg).getJournalpostId();
+		Long sourceJournalpostId = journalpostRepository.save(sourceJournalpost).getJournalpostId();
 
 		completeCurrentAndStartNewTransaction();
 
@@ -340,8 +340,8 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 	public void shouldReturnConflictForJournalpostWrongStatus() {
 		Journalpost sourceJournalpost = createJournalpostSladdet();
 		sourceJournalpost.setJournalstatus(JournalStatusCode.M);
-		Long journalpostIdVedlegg = joarkRepository.save(sourceJournalpost).getJournalpostId();
-		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
+		Long journalpostIdVedlegg = journalpostRepository.save(sourceJournalpost).getJournalpostId();
+		Long sourceJournalpostId = journalpostRepository.save(sourceJournalpost).getJournalpostId();
 
 		completeCurrentAndStartNewTransaction();
 
@@ -365,8 +365,8 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 		Journalpost journalpostVedlegg = createJournalpostArkiv();
 		Journalpost sourceJournalpost = createJournalpostSladdet();
 		sourceJournalpost.setJournalstatus(JournalStatusCode.M);
-		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
-		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
+		Long journalpostIdVedlegg = journalpostRepository.save(journalpostVedlegg).getJournalpostId();
+		Long sourceJournalpostId = journalpostRepository.save(sourceJournalpost).getJournalpostId();
 
 		completeCurrentAndStartNewTransaction();
 
@@ -391,8 +391,8 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 	public void shouldReturnFeiletDokumentListeAarsakKodeIkkeFunnet() {
 		Journalpost journalpostVedlegg = createJournalpostArkiv();
 		Journalpost sourceJournalpost = createJournalpostSladdet();
-		Long journalpostIdVedlegg = joarkRepository.save(journalpostVedlegg).getJournalpostId();
-		Long sourceJournalpostId = joarkRepository.save(sourceJournalpost).getJournalpostId();
+		Long journalpostIdVedlegg = journalpostRepository.save(journalpostVedlegg).getJournalpostId();
+		Long sourceJournalpostId = journalpostRepository.save(sourceJournalpost).getJournalpostId();
 
 		completeCurrentAndStartNewTransaction();
 

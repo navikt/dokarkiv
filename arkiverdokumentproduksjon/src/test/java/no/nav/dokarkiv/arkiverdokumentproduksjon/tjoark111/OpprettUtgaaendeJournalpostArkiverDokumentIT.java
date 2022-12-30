@@ -61,7 +61,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpost().setKanalreferanseId("persistedJournalpost");
 		OpprettUtgaaendeJournalpostArkiverDokumentResponse response = arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
-		persistedJournalpost = joarkRepository.findById(response.getJournalpostId()).get();
+		persistedJournalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 				.get(request.getJournalpostDokumentInfoRelasjon().size() - 1)
 				.toString(), is(request.getVedlegg().get(0).getDokumentInfoId()));
 
-		Journalpost journalpost = joarkRepository.findById(response.getJournalpostId()).get();
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
 		assertThat(response.getJournalTilstand(), is(JournalTilstand.FERDIGSTILT));
 		assertThat(journalpost.getJournalstatus(), is(JournalStatusCode.FS));
 		assertThat(journalpost.getJournalfortAvNavn(), is(OPPRETTET_AV_NAVN));
@@ -115,7 +115,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequestWihtOnlyRequiredValues();
 
 		OpprettUtgaaendeJournalpostArkiverDokumentResponse response = arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
-		Journalpost journalpost = joarkRepository.findById(response.getJournalpostId()).get();
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
 		assertThat(journalpost.getUtsendingskanal(), IsNull.nullValue());
 		assertThat("JournalforendeEnhet", journalpost.getJournalForendeEnhetId(), IsNull.nullValue());
 		assertThat(journalpost.getOpprettetAvNavn(), CoreMatchers.is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.OPPRETTET_AV_NAVN));
@@ -156,7 +156,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.setSaksrelasjon(null);
 		OpprettUtgaaendeJournalpostArkiverDokumentResponse response = arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
-		Journalpost journalpost = joarkRepository.findById(response.getJournalpostId()).get();
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
 
 		assertThat(response.getJournalTilstand(), is(JournalTilstand.UNDER_ARBEID));
 		assertThat(journalpost.getJournalstatus(), is(JournalStatusCode.D));
@@ -175,7 +175,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 		request.setForsokFerdigstilling(false);
 		request.setSaksrelasjon(null);
 		OpprettUtgaaendeJournalpostArkiverDokumentResponse response = arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request);
-		Journalpost journalpost = joarkRepository.findById(response.getJournalpostId()).get();
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
 
 		assertThat(response.getJournalTilstand(), is(JournalTilstand.UNDER_ARBEID));
 		assertThat(journalpost.getJournalstatus(), is(JournalStatusCode.D));
@@ -203,7 +203,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	@Test
 	public void shouldThrowIfVedleggRefersToJournalpostWithStatusD() {
 		persistedJournalpost.setJournalstatus(JournalStatusCode.D);
-		persistedJournalpost = joarkRepository.save(persistedJournalpost);
+		persistedJournalpost = journalpostRepositorySkjermet.save(persistedJournalpost);
 
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getVedlegg()
@@ -224,7 +224,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	@Test
 	public void shouldThrowIfVedleggRefersToJournalpostWithFeiletregistertSaksrelasjon() {
 		persistedJournalpost.getSaksrelasjon().setFeilregistrert(true);
-		persistedJournalpost = joarkRepository.save(persistedJournalpost);
+		persistedJournalpost = journalpostRepositorySkjermet.save(persistedJournalpost);
 
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getVedlegg()
@@ -262,7 +262,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 				.next()
 				.getDokumentInfo()
 				.setDokumentstatus(UNDER_REDIGERING);
-		persistedJournalpost = joarkRepository.save(persistedJournalpost);
+		persistedJournalpost = journalpostRepositorySkjermet.save(persistedJournalpost);
 
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getVedlegg()
@@ -287,7 +287,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 				.next()
 				.getDokumentInfo()
 				.setOrganInternt(Boolean.TRUE);
-		persistedJournalpost = joarkRepository.save(persistedJournalpost);
+		persistedJournalpost = journalpostRepositorySkjermet.save(persistedJournalpost);
 
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getVedlegg()
@@ -312,7 +312,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 				.next()
 				.getDokumentInfo()
 				.setInnskrenketPartsinnsyn(Boolean.TRUE);
-		persistedJournalpost = joarkRepository.save(persistedJournalpost);
+		persistedJournalpost = journalpostRepositorySkjermet.save(persistedJournalpost);
 
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getVedlegg()
@@ -341,7 +341,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 				.next();
 		detaljer.setOnDemandInstans(SYFO);
 		detaljer.setOnDemandId("ondemandid");
-		persistedJournalpost = joarkRepository.save(persistedJournalpost);
+		persistedJournalpost = journalpostRepositorySkjermet.save(persistedJournalpost);
 
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getVedlegg()
@@ -369,7 +369,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 				.iterator()
 				.next()
 				.setVariantFormat(VariantFormatCode.PRODUKSJON);
-		persistedJournalpost = joarkRepository.save(persistedJournalpost);
+		persistedJournalpost = journalpostRepositorySkjermet.save(persistedJournalpost);
 
 		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
 		request.getVedlegg()

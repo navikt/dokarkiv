@@ -19,7 +19,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -64,12 +64,12 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 			+ " to fagomrade on the target journalpost (journalpostId=%d)";
 
 	private final KnyttDokumentTilJournalpostSomVedleggValidator validator;
-    private final JoarkRepositorySkjermet joarkRepository;
+    private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final SporingPopulator sporingPopulator;
 
-	public DefaultKnyttDokumentTilJournalpostSomVedleggService(KnyttDokumentTilJournalpostSomVedleggValidator validator, JoarkRepositorySkjermet joarkRepository, SporingPopulator sporingPopulator) {
+	public DefaultKnyttDokumentTilJournalpostSomVedleggService(KnyttDokumentTilJournalpostSomVedleggValidator validator, JournalpostRepositorySkjermet journalpostRepositorySkjermet, SporingPopulator sporingPopulator) {
 		this.validator = validator;
-		this.joarkRepository = joarkRepository;
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.sporingPopulator = sporingPopulator;
 	}
 
@@ -91,12 +91,12 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 
 		validator.validate(request);
 
-		Journalpost journalpostTarget = joarkRepository.findById(request.getKnyttesTilJournalpostId())
+		Journalpost journalpostTarget = journalpostRepositorySkjermet.findById(request.getKnyttesTilJournalpostId())
 				.orElseThrow(() -> new JournalpostNotFoundException("Journalpost with journalpostId=" + request.getKnyttesTilJournalpostId() + " does not exist"));
 		checkIfJournalpostIsUnderProduksjon(journalpostTarget);
 		checkIfJournalpostAllowsEksterneVedlegg(journalpostTarget);
 
-		Journalpost journalpostSource = joarkRepository.findById(request.getKnyttesFraJournalpostId())
+		Journalpost journalpostSource = journalpostRepositorySkjermet.findById(request.getKnyttesFraJournalpostId())
 				.orElseThrow(() -> new JournalpostNotFoundException("Journalpost with journalpostId=" + request.getKnyttesFraJournalpostId() + " does not exist"));
 		checkIfJournalpostHasAllowedJournalstatus(journalpostSource);
 		checkIfJournalpostHasFeilregistrertSaksrelasjon(journalpostSource);

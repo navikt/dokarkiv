@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.JournalpostCopier;
 import no.nav.dokarkiv.journalpost.v1.validators.KopierJournalpostValidator;
 import org.slf4j.MDC;
@@ -25,13 +25,13 @@ public class KopierJournalpostService {
 	private static final String USERID = "userId";
 	private static final String CONSUMERID = "consumerId";
 	private static final String UKJENT = "ukjent";
-	private final JoarkRepository joarkRepository;
+	private final JournalpostRepository journalpostRepository;
 	private final LagreAksjonsLoggService aksjonsLoggService;
 	private final KopierJournalpostValidator kopierJournalpostValidator;
 	private final JournalpostCopier journalpostCopier;
 
-	public KopierJournalpostService(final JoarkRepository joarkRepository, final LagreAksjonsLoggService aksjonsLoggService) {
-		this.joarkRepository = joarkRepository;
+	public KopierJournalpostService(final JournalpostRepository journalpostRepository, final LagreAksjonsLoggService aksjonsLoggService) {
+		this.journalpostRepository = journalpostRepository;
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.kopierJournalpostValidator = new KopierJournalpostValidator();
 		this.journalpostCopier = new JournalpostCopier();
@@ -39,7 +39,7 @@ public class KopierJournalpostService {
 
 	public Long kopierJournalpost(Long journalpostId) {
 		// finn journalpost
-		Journalpost journalpost = joarkRepository.findById(journalpostId)
+		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 		// verifiser at journalpost er i tilstand som kan kopieres - dvs status = FL, FS eller J, eller har saksrelasjon feilregistrert
 		kopierJournalpostValidator.validate(journalpost);
@@ -53,7 +53,7 @@ public class KopierJournalpostService {
 		// låse opp den nye journalpost ved å sette den "tilbake" i status: (eks: FS -> D)
 		resetJournalpoststatus(nyJournalpost);
 
-		nyJournalpost = joarkRepository.save(nyJournalpost);
+		nyJournalpost = journalpostRepository.save(nyJournalpost);
 
 		Long nyJournalpostId = nyJournalpost.getJournalpostId();
 

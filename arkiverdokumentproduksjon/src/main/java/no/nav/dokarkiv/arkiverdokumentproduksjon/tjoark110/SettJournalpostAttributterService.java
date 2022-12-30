@@ -2,7 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
@@ -11,11 +11,11 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Component
 public class SettJournalpostAttributterService {
 
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final SporingPopulator sporingPopulator;
 
-	public SettJournalpostAttributterService(JoarkRepositorySkjermet joarkRepository, SporingPopulator sporingPopulator) {
-		this.joarkRepository = joarkRepository;
+	public SettJournalpostAttributterService(JournalpostRepositorySkjermet journalpostRepositorySkjermet, SporingPopulator sporingPopulator) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.sporingPopulator = sporingPopulator;
 	}
 
@@ -42,7 +42,7 @@ public class SettJournalpostAttributterService {
 	}
 
 	private Journalpost getJournalpost(Long journalpostId) {
-		return joarkRepository.findById(journalpostId)
+		return journalpostRepositorySkjermet.findById(journalpostId)
 				.orElseThrow(() -> new ApplicationException("Could not find Journalpost with journalpostId: " + journalpostId));
 	}
 }

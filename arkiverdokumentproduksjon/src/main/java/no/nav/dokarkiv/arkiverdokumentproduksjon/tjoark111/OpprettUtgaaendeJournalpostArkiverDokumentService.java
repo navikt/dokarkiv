@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -22,12 +22,12 @@ import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
 @Slf4j
 public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final DokumentFilerDelegate dokumentFilerDelegate;
 	private final OpprettUtgaaendeJournalpostArkiverDokumentValidator validator;
 
-	public OpprettUtgaaendeJournalpostArkiverDokumentService(JoarkRepositorySkjermet joarkRepository, DokumentFilerDelegate dokumentFilerDelegate, OpprettUtgaaendeJournalpostArkiverDokumentValidator validator) {
-		this.joarkRepository = joarkRepository;
+	public OpprettUtgaaendeJournalpostArkiverDokumentService(JournalpostRepositorySkjermet journalpostRepositorySkjermet, DokumentFilerDelegate dokumentFilerDelegate, OpprettUtgaaendeJournalpostArkiverDokumentValidator validator) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.dokumentFilerDelegate = dokumentFilerDelegate;
 		this.validator = validator;
 	}
@@ -51,7 +51,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 			updateJournalpostAfterValidation(journalpost, requestTo.getJournalforendeEnhet());
 
 			dokumentFilerDelegate.saveNewDokumentFiler(journalpost);
-			storedJournalpost = joarkRepository.save(journalpost);
+			storedJournalpost = journalpostRepositorySkjermet.save(journalpost);
 			log.info("tjoark111 Har opprettet utgående journalpost med journalpostId={}, hoveddokumentDokumentInfoId={}, journalstatus={}, kanalreferanseId={}, fagområde={}", storedJournalpost
 							.getJournalpostId(), storedJournalpost.findHoveddokumentDokumentInfoRelasjon()
 							.getDokumentInfo()
@@ -112,7 +112,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 
 		for (OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.Vedlegg vedlegg : vedleggList) {
 
-			Journalpost originalJournalpost = joarkRepository.findById(vedlegg.getKnyttesFraJournalpostId())
+			Journalpost originalJournalpost = journalpostRepositorySkjermet.findById(vedlegg.getKnyttesFraJournalpostId())
 					.orElseThrow(() -> new ValideringAvVedleggFeiletException(String.format("tjoark111 Fant ingen knyttet journalpost med journalpostId=%s for vedlegg med dokumentInfoId=%s", vedlegg
 							.getKnyttesFraJournalpostId(), vedlegg.getDokumentInfoId())));
 
@@ -174,7 +174,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 
 	private Journalpost findPreviousJournalpostByKanalReferanseId(String kanalReferanseId) {
 
-		return joarkRepository.findJournalpostByKanalReferanseId(kanalReferanseId).orElse(null);
+		return journalpostRepositorySkjermet.findJournalpostByKanalReferanseId(kanalReferanseId).orElse(null);
 	}
 
 }

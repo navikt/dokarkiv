@@ -43,7 +43,7 @@ public class AvbrytJournalpostIT extends AbstractArkiverdokumentproduksjonItest 
 	@BeforeEach
 	public void setUp() throws Exception {
 		journalpost = createJournalpost(DokumentStatusCode.UNDER_REDIGERING, JournalStatusCode.D);
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 		request = createWsRequest(journalpost.getJournalpostId());
 	}
 
@@ -58,18 +58,18 @@ public class AvbrytJournalpostIT extends AbstractArkiverdokumentproduksjonItest 
 	@Test
 	public void shouldAvbrytFerdigLokalprint() throws Exception {
 		journalpost = createJournalpost(DokumentStatusCode.FERDIGSTILT, JournalStatusCode.D);
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 		request = createWsRequest(journalpost.getJournalpostId());
 		arkiverDokumentproduksjonProvider.avbrytJournalpost(request);
 
-		Journalpost journalpostById = joarkRepository.findById(request.getJournalpostId()).get();
+		Journalpost journalpostById = journalpostRepositorySkjermet.findById(request.getJournalpostId()).get();
 		assertThat(journalpostById.getJournalstatus(), is(JournalStatusCode.A));
 	}
 
 	@Test
 	public void shouldVerifyJournalpostFields() throws Exception {
 		arkiverDokumentproduksjonProvider.avbrytJournalpost(request);
-		Journalpost journalpostById = joarkRepository.findById(request.getJournalpostId()).get();
+		Journalpost journalpostById = journalpostRepositorySkjermet.findById(request.getJournalpostId()).get();
 		Saksrelasjon saksrelasjon = journalpostById.getSaksrelasjon();
 
 		assertThat(journalpostById.getJournalstatus(), is(JournalStatusCode.A));
@@ -80,9 +80,9 @@ public class AvbrytJournalpostIT extends AbstractArkiverdokumentproduksjonItest 
 	@Test
 	public void shouldVerifyJournalpostFieldsWhenDokumentStatusIsNotUnderRedigering() throws Exception {
 		journalpost = createJournalpost(DokumentStatusCode.FERDIGSTILT, JournalStatusCode.D);
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 		arkiverDokumentproduksjonProvider.avbrytJournalpost(request);
-		Journalpost journalpostById = joarkRepository.findById(request.getJournalpostId()).get();
+		Journalpost journalpostById = journalpostRepositorySkjermet.findById(request.getJournalpostId()).get();
 		Saksrelasjon saksrelasjon = journalpostById.getSaksrelasjon();
 
 		assertNotSame(journalpostById.getJournalstatus(), is(JournalStatusCode.A));

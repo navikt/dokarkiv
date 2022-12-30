@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,12 +16,12 @@ public class AksjonsLoggServiceImpl implements AksjonsLoggService {
 
 	private final AksjonsLoggRepository aksjonsLoggRepository;
 	private final AksjonsLoggValidator aksjonsLoggValidator;
-	private final JoarkRepository joarkRepository;
+	private final JournalpostRepository journalpostRepository;
 
-	public AksjonsLoggServiceImpl(AksjonsLoggRepository aksjonsLoggRepository, JoarkRepository joarkRepository) {
+	public AksjonsLoggServiceImpl(AksjonsLoggRepository aksjonsLoggRepository, JournalpostRepository journalpostRepository) {
 		this.aksjonsLoggRepository = aksjonsLoggRepository;
 		this.aksjonsLoggValidator = new AksjonsLoggValidator();
-		this.joarkRepository = joarkRepository;
+		this.journalpostRepository = journalpostRepository;
 	}
 
 	public void validateAndSaveAksjonsLogg(AksjonsLoggTO aksjonsLoggTO, List<ArkivElementEndringTO> arkivElementEndringTOList) {
@@ -32,7 +32,7 @@ public class AksjonsLoggServiceImpl implements AksjonsLoggService {
 		aksjonsLoggValidator.validateArkivElementToList(arkivElementEndringTOList);
 
 		Journalpost journalpost = aksjonsLoggTO.getJournalpostId() == null ? null :
-				joarkRepository.findById(aksjonsLoggTO.getJournalpostId())
+				journalpostRepository.findById(aksjonsLoggTO.getJournalpostId())
 					.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", aksjonsLoggTO.getJournalpostId())));
 
 		AksjonsLogg aksjonsLogg = AksjonsLoggMapper.mapToAksjonsLoggAndSetDefaults(aksjonsLoggTO, arkivElementEndringTOList, journalpost);

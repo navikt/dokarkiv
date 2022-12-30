@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.logging.AbacLogger;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
 import no.nav.freg.abac.core.dto.request.XacmlRequest;
 import no.nav.freg.abac.core.dto.response.Decision;
@@ -31,22 +31,22 @@ public class AbacSecurityService {
 	private final AbacService abacService;
 	private final AbacContext abacContext;
 	private final JdbcAbacSecurityRepository jdbcAbacSecurityRepository;
-	private final JoarkRepositorySkjermet joarkRepositorySkjermet;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 
 	public AbacSecurityService(AbacLogger abaclog, AbacService abacService,
 							   AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository,
-							   JoarkRepositorySkjermet joarkRepositorySkjermet) {
+							   JournalpostRepositorySkjermet journalpostRepositorySkjermet) {
 		this.abaclog = abaclog;
 		this.abacService = abacService;
 		this.abacContext = abacContext;
 		this.jdbcAbacSecurityRepository = jdbcAbacSecurityRepository;
-		this.joarkRepositorySkjermet = joarkRepositorySkjermet;
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 	}
 
 	public void assertAccessToJournalpost(String journalpost) {
 		Long journalpostId = Long.parseLong(journalpost);
 
-		if (!joarkRepositorySkjermet.existsById(journalpostId)) {
+		if (!journalpostRepositorySkjermet.existsById(journalpostId)) {
 			throw new JournalpostIkkeFunnetException("Journalpost ikke funnet. journalpostId=" + journalpostId);
 		}
 

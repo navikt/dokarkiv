@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,12 +17,12 @@ public class DefaultJournalfoerUtgaaendeHenvendelse implements
 		JournalfoerUtgaaendeHenvendelse {
 	private final JournalfoerUtgaaendeHenvendelseValidator behandleJournalJournalpostValidator;
 	private final DokumentFilerDelegate dokumentFilerDelegate;
-    private final JoarkRepositorySkjermet joarkRepository;
+    private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 
-	public DefaultJournalfoerUtgaaendeHenvendelse(JournalfoerUtgaaendeHenvendelseValidator behandleJournalJournalpostValidator, DokumentFilerDelegate dokumentFilerDelegate, JoarkRepositorySkjermet joarkRepository) {
+	public DefaultJournalfoerUtgaaendeHenvendelse(JournalfoerUtgaaendeHenvendelseValidator behandleJournalJournalpostValidator, DokumentFilerDelegate dokumentFilerDelegate, JournalpostRepositorySkjermet journalpostRepositorySkjermet) {
 		this.behandleJournalJournalpostValidator = behandleJournalJournalpostValidator;
 		this.dokumentFilerDelegate = dokumentFilerDelegate;
-		this.joarkRepository = joarkRepository;
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class DefaultJournalfoerUtgaaendeHenvendelse implements
 		updateJournalpost(journalpost);
 		validateJournalpost(journalpost);
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 		return createResponse(journalpost);
 	}
 

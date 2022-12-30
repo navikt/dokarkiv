@@ -16,7 +16,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidBrukerException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,7 +52,7 @@ public class DefaultArkiverUstrukturertKravTest {
 	@InjectMocks
 	private DefaultArkiverUstrukturertKrav service;
 	@Mock
-	private JoarkRepositorySkjermet repositoryMock;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
@@ -144,13 +144,13 @@ public class DefaultArkiverUstrukturertKravTest {
 	}
 
 	@Test
-	public void shouldCallJoarkRepositoryToSaveJournalpost() {
+	public void shouldCallRepositoryToSaveJournalpost() {
 		Journalpost journalpost = createJournalpost(validFnr, FagomradeCode.UFO);
 		request = new ArkiverUstrukturertKravRequest(journalpost);
 
 		service.arkiverUstrukturertKrav(request);
 
-		verify(repositoryMock).save(journalpost);
+		verify(journalpostRepositorySkjermetMock).save(journalpost);
 	}
 
 	@Test

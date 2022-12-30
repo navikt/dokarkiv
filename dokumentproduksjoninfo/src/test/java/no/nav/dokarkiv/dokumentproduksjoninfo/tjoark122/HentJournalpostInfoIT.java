@@ -52,7 +52,7 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 
 	@BeforeEach
 	public void setUp() {
-		Journalpost journalpost = joarkRepository.save(buildJournalpost());
+		Journalpost journalpost = journalpostRepositorySkjermet.save(buildJournalpost());
 		journalpostId = journalpost.getId();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
 	}

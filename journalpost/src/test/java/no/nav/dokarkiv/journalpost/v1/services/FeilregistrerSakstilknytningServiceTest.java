@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.FeilregistreringAlleredeOpphevetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeKnyttetTilSakException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.core.repository.SaksrelasjonRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +35,7 @@ public class FeilregistrerSakstilknytningServiceTest {
 	private SaksrelasjonRepository saksrelasjonRepository;
 
 	@Mock
-	private JoarkRepository joarkRepository;
+	private JournalpostRepository journalpostRepository;
 	@Mock
 	private AksjonsLoggService aksjonsLoggService;
 
@@ -48,7 +48,7 @@ public class FeilregistrerSakstilknytningServiceTest {
 	@Test
 	public void feilregistrerSakstilknytningKanIkkeFinneJournalpost() {
 		Long journalpostId = 1L;
-		when(joarkRepository.existsById(journalpostId)).thenThrow(
+		when(journalpostRepository.existsById(journalpostId)).thenThrow(
 				new JournalpostIkkeFunnetException("Kunne ikke finne journalpost med journalpostId=1 i joark"));
 
 		assertThrows(JournalpostIkkeFunnetException.class,
@@ -59,7 +59,7 @@ public class FeilregistrerSakstilknytningServiceTest {
 	@Test
 	public void feilregistrerSakstilknytningKanIkkeFinneSakstilknytning() {
 		Long journalpostId = 1L;
-		when(joarkRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
+		when(journalpostRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
 
 		assertThrows(JournalpostIkkeKnyttetTilSakException.class,
 				() -> feilregistrerSakstilknytningService.feilregistrerSakstilknytning(String.valueOf(journalpostId)),
@@ -69,7 +69,7 @@ public class FeilregistrerSakstilknytningServiceTest {
 	@Test
 	public void feilregistrerSakstilknytning() {
 		Long journalpostId = 1L;
-		when(joarkRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
+		when(journalpostRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
 		when(saksrelasjonRepository.findByJournalpostId(eq(1L))).thenReturn(
 				Optional.of(Saksrelasjon.builder().build()));
 
@@ -86,7 +86,7 @@ public class FeilregistrerSakstilknytningServiceTest {
 	@Test
 	public void kanIkkeOpphevFeilregistrertSakstilknytningForJournalpostUtenFeilregistrering() {
 		Long journalpostId = 1L;
-		when(joarkRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
+		when(journalpostRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
 		when(saksrelasjonRepository.findByJournalpostId(eq(1L))).thenReturn(
 				Optional.of(Saksrelasjon.builder().build()));
 
@@ -98,7 +98,7 @@ public class FeilregistrerSakstilknytningServiceTest {
 	@Test
 	public void opphevFeilregistrertSakstilknytning() {
 		Long journalpostId = 1L;
-		when(joarkRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
+		when(journalpostRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
 		when(saksrelasjonRepository.findByJournalpostId(eq(1L))).thenReturn(
 				Optional.of(Saksrelasjon.builder().feilregistrert(true).build()));
 

@@ -4,7 +4,7 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.logging.AbacLogger;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
 import no.nav.freg.abac.core.annotation.context.ThreadLocalAbacContext;
 import no.nav.freg.abac.core.dto.request.XacmlAttribute;
@@ -62,14 +62,14 @@ public class AbacSecurityServiceTest {
 	@InjectMocks
 	private AbacSecurityService abacSecurityService;
 	@Mock
-	private JoarkRepositorySkjermet joarkRepositorySkjermet;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 
 	@BeforeEach
 	public void setUp() throws Exception {
 		lenient().when(abacService.evaluate(any(XacmlRequest.class))).thenReturn(new XacmlResponse(Decision.PERMIT, Decision.PERMIT,
 				Collections.<Obligation>emptyList(),
 				Collections.<Advice>emptyList()));
-		lenient().when(joarkRepositorySkjermet.existsById(DEFAULT_JOURNALPOST)).thenReturn(true);
+		lenient().when(journalpostRepositorySkjermet.existsById(DEFAULT_JOURNALPOST)).thenReturn(true);
 		lenient().when(abacContext.getRequest()).thenReturn(new ThreadLocalAbacContext().getRequest());
 	}
 
@@ -133,7 +133,7 @@ public class AbacSecurityServiceTest {
 	public void shouldThrowJournalpostIkkeFunnetException() throws Exception {
 		AbacResources abacResources = new AbacResources();
 		abacResources.setBrukerIds(Arrays.asList("2", "3"));
-		when(joarkRepositorySkjermet.existsById(DEFAULT_JOURNALPOST)).thenReturn(false);
+		when(journalpostRepositorySkjermet.existsById(DEFAULT_JOURNALPOST)).thenReturn(false);
 
 		try {
 			abacSecurityService.assertAccessToJournalpost(String.valueOf(DEFAULT_JOURNALPOST));

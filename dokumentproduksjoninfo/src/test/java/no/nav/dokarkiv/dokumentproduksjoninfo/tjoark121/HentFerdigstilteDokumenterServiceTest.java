@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,7 +53,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 	private static final long DOKUMENT_2 = 2L;
 
 	@Mock
-	private JoarkRepositorySkjermet joarkRepository;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 
 	@Mock
 	private DokumentFilSkjermetRepository dokumentFilRepository;
@@ -70,7 +70,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 
 	@Test
 	public void shouldFetchFerdigstilteDokumenter() throws Exception {
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalpost()));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalpost()));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_1)).thenReturn(createFildetaljer(FILCONTENT_1));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_2)).thenReturn(createFildetaljer(FILCONTENT_2));
 
@@ -89,7 +89,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 	@Test
 	public void shouldFetchFerdigstilteDokumenterSkjermet() throws Exception {
 		Journalpost journalpost = createJournalpostVedleggArkivVariantSkjermet();
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_SLADDET_2)).thenReturn(createFildetaljer(FILUUID_SLADDET_2));
 		when(dokumentFilRepository.findByFilUuid(FILUUID_1)).thenReturn(createFildetaljer(FILCONTENT_1));
 
@@ -107,7 +107,7 @@ public class HentFerdigstilteDokumenterServiceTest {
 
 	@Test
 	public void shouldThrowException_dokumentNotAvailable() throws Exception {
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalpost()));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalpost()));
 
 		assertThrows(FilDetaljerNotFoundException.class,
 				() -> service.hentFerdigstilteDokumenter(JOURNALPOST_ID, Arrays.asList(DOKUMENT_1)));

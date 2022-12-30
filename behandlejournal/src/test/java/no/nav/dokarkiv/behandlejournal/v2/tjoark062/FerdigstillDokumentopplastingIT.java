@@ -75,7 +75,7 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 
 		behandleJournalProvider.ferdigstillDokumentopplasting(request);
 
-		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).get();
+		Journalpost ferdigstiltJournalpost = journalpostRepositorySkjermet.findById(journalpost.getJournalpostId()).get();
 		assertThat(ferdigstiltJournalpost.getJournalstatus(), is(JournalStatusCode.M));
 
 		assertThat(ferdigstiltJournalpost.getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
@@ -97,7 +97,7 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 
 		behandleJournalProvider.ferdigstillDokumentopplasting(request);
 
-		Journalpost ferdigstiltJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).get();
+		Journalpost ferdigstiltJournalpost = journalpostRepositorySkjermet.findById(journalpost.getJournalpostId()).get();
 		assertThat(ferdigstiltJournalpost.getJournalstatus(), is(JournalStatusCode.MO));
 
 		assertThat(ferdigstiltJournalpost.getEndretAvNavn(), is(SPORING_FORNAVN + " " + SPORING_ETTERNAVN));
@@ -156,7 +156,7 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 																.variantFormat(VariantFormatCode.ARKIV)
 																.fileContent("Test pdf".getBytes()).build()).build())
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT).build()).build();
-		return joarkRepository.save(build);
+		return journalpostRepositorySkjermet.save(build);
 	}
 
 }

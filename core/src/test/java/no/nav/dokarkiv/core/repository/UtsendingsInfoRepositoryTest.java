@@ -41,7 +41,7 @@ public class UtsendingsInfoRepositoryTest {
 	@Autowired
 	DokumentFilTestRepository dokumentFilTestRepository;
 	@Autowired
-	JoarkRepository joarkRepository;
+	JournalpostRepository journalpostRepository;
 
 	@BeforeEach
 	public void setUp() {
@@ -53,7 +53,7 @@ public class UtsendingsInfoRepositoryTest {
 		TestTransaction.end();
 		dokumentFilTestRepository.deleteAll();
 		utsendingsInfoTestRepository.deleteAll();
-		joarkRepository.deleteAll();
+		journalpostRepository.deleteAll();
 	}
 
 	@Test
@@ -63,13 +63,13 @@ public class UtsendingsInfoRepositoryTest {
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
 		dokumentFilTestRepository.persist(arkivDokumentFil);
 		dokumentFilTestRepository.persist(createDummyDokumentKassert());
-		journalpost = joarkRepository.save(journalpost);
+		journalpost = journalpostRepository.save(journalpost);
 
 		var utsendingsInfoPart = new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
 				"Hei Bruker! Du har fått en ny melding på nav.no. Hilsen NAV");
 		journalpost.setUtsendingskanal(UtsendingsKanalCode.NAV_NO);
 		journalpost.setUtsendingsInfo(utsendingsInfoPart);
-		journalpost = joarkRepository.save(journalpost);
+		journalpost = journalpostRepository.save(journalpost);
 		UtsendingsInfo utsendingsInfo = journalpost.getUtsendingsInfo();
 
 
@@ -84,7 +84,7 @@ public class UtsendingsInfoRepositoryTest {
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
 		dokumentFilTestRepository.persist(arkivDokumentFil);
 		dokumentFilTestRepository.persist(createDummyDokumentKassert());
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 
 		journalpost.setUtsendingskanal(UtsendingsKanalCode.NAV_NO);
 		assertThrows(IllegalArgumentException.class, () ->

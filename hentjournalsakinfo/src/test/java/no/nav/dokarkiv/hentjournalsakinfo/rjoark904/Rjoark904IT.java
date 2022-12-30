@@ -39,8 +39,8 @@ public class Rjoark904IT extends AbstractHentjournalsakinfoItest {
 		utgaattJournalpost1.setJournalstatus(JournalStatusCode.U);
 		Journalpost utgaattJournalpost2 = createUniqueJournalpost();
 		utgaattJournalpost2.setJournalstatus(JournalStatusCode.U);
-		joarkRepository.save(utgaattJournalpost1);
-		joarkRepository.save(utgaattJournalpost2);
+		journalpostRepository.save(utgaattJournalpost1);
+		journalpostRepository.save(utgaattJournalpost2);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -64,8 +64,8 @@ public class Rjoark904IT extends AbstractHentjournalsakinfoItest {
 		Journalpost utgaattJournalpost = createUniqueJournalpost();
 		utgaattJournalpost.setJournalstatus(JournalStatusCode.U);
 		Journalpost ferdigstiltJournalpost = createUniqueJournalpost();
-		joarkRepository.save(utgaattJournalpost);
-		joarkRepository.save(ferdigstiltJournalpost);
+		journalpostRepository.save(utgaattJournalpost);
+		journalpostRepository.save(ferdigstiltJournalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -79,8 +79,8 @@ public class Rjoark904IT extends AbstractHentjournalsakinfoItest {
 		Journalpost ukjentbrukerJournalpost = createUniqueJournalpost();
 		ukjentbrukerJournalpost.setJournalstatus(JournalStatusCode.UB);
 		Journalpost ferdigstiltJournalpost = createUniqueJournalpost();
-		joarkRepository.save(ukjentbrukerJournalpost);
-		joarkRepository.save(ferdigstiltJournalpost);
+		journalpostRepository.save(ukjentbrukerJournalpost);
+		journalpostRepository.save(ferdigstiltJournalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -99,9 +99,9 @@ public class Rjoark904IT extends AbstractHentjournalsakinfoItest {
 		journalpost.setJournalstatus(JournalStatusCode.U);
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
 		createVedleggRelasjon(journalpost, vedlegg1);
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		createVedleggRelasjon(journalpost, vedlegg2);
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

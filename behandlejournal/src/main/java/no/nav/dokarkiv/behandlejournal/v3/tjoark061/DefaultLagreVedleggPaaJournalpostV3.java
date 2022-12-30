@@ -17,7 +17,7 @@ import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,14 +29,14 @@ import java.util.List;
 @Component
 public class DefaultLagreVedleggPaaJournalpostV3 implements LagreVedleggPaaJournalpost {
 
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final DokumentInfoRepository dokumentInfoRepository;
 	private final DokumentFilRepository dokumentFilRepository;
 	private final KildeNavnPopulator kildeNavnPopulator;
 	private String vedleggDokumentTypeId;
 
-	public DefaultLagreVedleggPaaJournalpostV3(JoarkRepositorySkjermet joarkRepository, DokumentInfoRepository dokumentInfoRepository, DokumentFilRepository dokumentFilRepository, KildeNavnPopulator kildeNavnPopulator, @Value("${behandlejournal.v3.lagreVedleggPaaJournalpost.vedleggDokumentTypeId}") String vedleggDokumentTypeId) {
-		this.joarkRepository = joarkRepository;
+	public DefaultLagreVedleggPaaJournalpostV3(JournalpostRepositorySkjermet journalpostRepositorySkjermet, DokumentInfoRepository dokumentInfoRepository, DokumentFilRepository dokumentFilRepository, KildeNavnPopulator kildeNavnPopulator, @Value("${behandlejournal.v3.lagreVedleggPaaJournalpost.vedleggDokumentTypeId}") String vedleggDokumentTypeId) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.kildeNavnPopulator = kildeNavnPopulator;
@@ -71,12 +71,12 @@ public class DefaultLagreVedleggPaaJournalpostV3 implements LagreVedleggPaaJourn
 
 		persistDokumenter(dokumentInfo);
 		DokumentInfo savedDokumentInfo = dokumentInfoRepository.persist(dokumentInfo);
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 		return new LagreVedleggPaaJournalpostResponse(savedDokumentInfo.getDokumentInfoId());
 	}
 
 	private Journalpost getPersistedJournalpost(Long journalpostId) throws NoJournalpostFoundException {
-		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId).orElse(null);
 		if (journalpost == null) {
 			throw new NoJournalpostFoundException("Journalpost with id: " + journalpostId + " does not exist",
 					journalpostId);

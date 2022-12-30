@@ -13,18 +13,18 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.validator.BrukerValidator;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultArkiverUstrukturertKravV3 implements ArkiverUstrukturertKrav {
 
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final DokumentFilerDelegate dokumentFilerDelegate;
 	private final ArkiverUstrukturertKravV3JournalpostValidator behandleJournalJournalpostValidator;
 
-	public DefaultArkiverUstrukturertKravV3(JoarkRepositorySkjermet joarkRepository, DokumentFilerDelegate dokumentFilerDelegate, ArkiverUstrukturertKravV3JournalpostValidator behandleJournalJournalpostValidator) {
-		this.joarkRepository = joarkRepository;
+	public DefaultArkiverUstrukturertKravV3(JournalpostRepositorySkjermet journalpostRepositorySkjermet, DokumentFilerDelegate dokumentFilerDelegate, ArkiverUstrukturertKravV3JournalpostValidator behandleJournalJournalpostValidator) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.dokumentFilerDelegate = dokumentFilerDelegate;
 		this.behandleJournalJournalpostValidator = behandleJournalJournalpostValidator;
 	}
@@ -50,7 +50,7 @@ public class DefaultArkiverUstrukturertKravV3 implements ArkiverUstrukturertKrav
 	private ArkiverUstrukturertKravResponse handleJoarkdokument(Journalpost journalpost) {
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 
 		return createResponse(journalpost.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo().getDokumentInfoId());

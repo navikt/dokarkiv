@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
@@ -39,29 +39,29 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Slf4j
 public class FerdigstillJournalpostService {
 
-	private final JoarkRepository joarkRepository;
+	private final JournalpostRepository journalpostRepository;
 	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
 	private final AksjonsLoggService aksjonsLoggService;
 
-	public FerdigstillJournalpostService(final JoarkRepository joarkRepository,
+	public FerdigstillJournalpostService(final JournalpostRepository journalpostRepository,
 										 final AksjonsLoggService aksjonsLoggService) {
-		this.joarkRepository = joarkRepository;
+		this.journalpostRepository = journalpostRepository;
 		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
 
 	public void setJournalfoerendeEnhetNull(Long journalpostId, String journalfoerendeEnhet) {
-		Journalpost journalpost = joarkRepository.findById(journalpostId)
+		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 		oppdatertJournalpost(journalpost, journalfoerendeEnhet);
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		log.info("Oppdatert journalfoerendeEnhet={}", journalpost.getJournalForendeEnhetId());
 	}
 
 	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
 	public void ferdigstill(Long journalpostId, FerdigstillJournalpostRequest ferdigstillJournalpostRequest) {
-		Journalpost journalpost = joarkRepository.findById(journalpostId)
+		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
@@ -72,13 +72,13 @@ public class FerdigstillJournalpostService {
 		setJournalpostStatus(journalpost);
 		this.oppdatertJournalpost(journalpost, ferdigstillJournalpostRequest);
 
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 
 		populerAksjonslogg(journalpostId, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
 	}
 
 	public void ferdigstill(Long journalpostId, String journalfoerendeEnhet) {
-		Journalpost journalpost = joarkRepository.findById(journalpostId)
+		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
 		String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
@@ -88,7 +88,7 @@ public class FerdigstillJournalpostService {
 		setJournalpostStatus(journalpost);
 		oppdatertJournalpost(journalpost, journalfoerendeEnhet);
 
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 
 
 		populerAksjonslogg(journalpostId, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
@@ -161,7 +161,7 @@ public class FerdigstillJournalpostService {
 	}
 
 	private void populerAksjonslogg(Long journalpostId, List<ArkivElementEndringTO> arkivElementEndringTOList) {
-		String bruker = joarkRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new).getBrukere().iterator().next().getBrukerId();
+		String bruker = journalpostRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new).getBrukere().iterator().next().getBrukerId();
 		AksjonsLoggTO aksjonsLoggTo = AksjonsLoggTO.builder()
 				.aksjon(FERDIGSTILL)
 				.journalpostId(journalpostId)

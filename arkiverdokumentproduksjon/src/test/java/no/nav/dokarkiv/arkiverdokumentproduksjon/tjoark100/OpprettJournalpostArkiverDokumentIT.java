@@ -44,7 +44,7 @@ public class OpprettJournalpostArkiverDokumentIT extends AbstractArkiverdokument
 	@Test
 	public void shouldVerifyCorrectFieldsInJournalpost() throws Exception {
 		response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(createRequest());
-		persistedJournalpost = joarkRepository.findById(response.getJournalpostId()).get();
+		persistedJournalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
 		OpprettJournalpostArkiverDokumentAssertUtil.assertEqualJournalposts(persistedJournalpost);
 	}
 
@@ -53,7 +53,7 @@ public class OpprettJournalpostArkiverDokumentIT extends AbstractArkiverdokument
 		OpprettJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpost().setUtsendingskanal(UtsendingsKanalCode.L.toString());
 		response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request);
-		persistedJournalpost = joarkRepository.findById(response.getJournalpostId()).get();
+		persistedJournalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
 		assertThat(persistedJournalpost.getUtsendingskanal(), is(UtsendingsKanalCode.L));
 		assertThat(persistedJournalpost.getJournalstatus(), is(JournalStatusCode.FL));
 	}
@@ -132,7 +132,7 @@ public class OpprettJournalpostArkiverDokumentIT extends AbstractArkiverdokument
 		OpprettJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpost().setJournalpostType(JournalpostType.N);
 		response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request);
-		persistedJournalpost = joarkRepository.findById(response.getJournalpostId()).get();
+		persistedJournalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
 		assertThat(persistedJournalpost.getJournalposttype(), is(JournalpostTypeCode.N));
 	}
 
@@ -141,7 +141,7 @@ public class OpprettJournalpostArkiverDokumentIT extends AbstractArkiverdokument
 		OpprettJournalpostArkiverDokumentRequest request = createRequest();
 		request.getJournalpost().setJournalpostType(null);
 		response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request);
-		persistedJournalpost = joarkRepository.findById(response.getJournalpostId()).get();
+		persistedJournalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
 
 		assertThat(persistedJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
 	}
@@ -153,7 +153,7 @@ public class OpprettJournalpostArkiverDokumentIT extends AbstractArkiverdokument
 		request.getJournalpost().setJournalpostType(JournalpostType.N);
 		request.getJournalpost().setUtsendingskanal(null);
 		response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request);
-		persistedJournalpost = joarkRepository.findById(response.getJournalpostId()).get();
+		persistedJournalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
 
 		assertThat(persistedJournalpost.getJournalposttype(), is(JournalpostTypeCode.N));
 	}
@@ -164,7 +164,7 @@ public class OpprettJournalpostArkiverDokumentIT extends AbstractArkiverdokument
 		request.getJournalpost().setUtsendingskanal(null);
 		request.setFerdigstillJournalpost(false);
 		response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokument(request);
-		persistedJournalpost = joarkRepository.findById(response.getJournalpostId()).get();
+		persistedJournalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
 
 		assertThat(persistedJournalpost.getUtsendingskanal(), is(nullValue()));
 	}

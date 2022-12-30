@@ -12,8 +12,8 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.security.TokenGrantValidator;
 import no.nav.dokarkiv.journalpost.v1.api.ArsakKode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
@@ -35,7 +35,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 @Slf4j
 public class TilknyttVedleggService {
 
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final ShallowDokumentInfoCopier shallowDokumentInfoCopier;
 	private final DokumentInfoRepository dokumentInfoRepository;
 	private final DokumentFilRepository dokumentFilRepository;
@@ -46,8 +46,8 @@ public class TilknyttVedleggService {
 	private final TokenGrantValidator tokenGrantValidator;
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
 
-	public TilknyttVedleggService(JoarkRepositorySkjermet joarkRepository, DokumentInfoRepository dokumentInfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AccessLookupJournalpost accessLookupJournalpost, TokenGrantValidator tokenGrantValidator) {
-		this.joarkRepository = joarkRepository;
+	public TilknyttVedleggService(JournalpostRepositorySkjermet journalpostRepositorySkjermet, DokumentInfoRepository dokumentInfoRepository, DokumentFilRepository dokumentFilRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AccessLookupJournalpost accessLookupJournalpost, TokenGrantValidator tokenGrantValidator) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.accessLookupJournalpost = accessLookupJournalpost;
 		this.tokenGrantValidator = tokenGrantValidator;
@@ -84,13 +84,13 @@ public class TilknyttVedleggService {
 		List<FeiledeDokumenter> feiledeDokumenter = new ArrayList<>();
 		String tilKnyttetAvNavn = tilknyttVedleggRequest.getTilknyttetAvNavn();
 
-		Journalpost targetJournalpost = joarkRepository.findById(targetJournalpostId)
+		Journalpost targetJournalpost = journalpostRepositorySkjermet.findById(targetJournalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", targetJournalpostId)));
 		tilknyttVedleggValidator.validateJournalpostStatus(targetJournalpost);
 
 
 		for (DokumentVedlegg dokumentVedlegg : tilknyttVedleggRequest.getDokument()) {
-			Journalpost sourceJournalpost = joarkRepository.findById(dokumentVedlegg.getKildeJournalpostId()).orElse(null);
+			Journalpost sourceJournalpost = journalpostRepositorySkjermet.findById(dokumentVedlegg.getKildeJournalpostId()).orElse(null);
 			DokumentInfo sourceDokumentInfo = dokumentInfoRepository.findById(Long.parseLong(dokumentVedlegg.getDokumentInfoId()))
 					.orElse(null);
 			FilDetaljer filDetaljerSladdet = finnSladdetFildetaljer(sourceDokumentInfo);
@@ -181,7 +181,7 @@ public class TilknyttVedleggService {
 		try {
 			journalpostDokumentInfoRelasjon = createJournalpostDokumentInfoRelasjon(tilKnyttetAvNavn, dokumentInfo, journalpost);
 			journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
-			joarkRepository.save(journalpost);
+			journalpostRepositorySkjermet.save(journalpost);
 			log.info("Journalpost med journalpostId={} har fått tilknyttet dokument vedlegg fra DokumentInfoId={} ", journalpost
 					.getJournalpostId(), dokumentInfo.getDokumentInfoId());
 		} catch (Exception e) {
@@ -227,7 +227,7 @@ public class TilknyttVedleggService {
 	}
 
 	private Boolean checkDuplicateDokumentInfoRelasjon(Long targetJournalpostId, DokumentInfo dokumentInfo) {
-		return joarkRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfo.getDokumentInfoId())
+		return journalpostRepositorySkjermet.findAllJournalpostIdsByDokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.contains(targetJournalpostId);
 	}
 

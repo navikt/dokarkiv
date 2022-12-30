@@ -8,20 +8,20 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final ArkiverVedleggValidator arkiverVedleggValidator;
 	private final DokumentFilerDelegate dokumentFilerDelegate;
 	private final SporingPopulator sporingPopulator;
 
-	public DefaultArkiverVedleggService(JoarkRepositorySkjermet joarkRepository, ArkiverVedleggValidator arkiverVedleggValidator, DokumentFilerDelegate dokumentFilerDelegate, SporingPopulator sporingPopulator) {
-		this.joarkRepository = joarkRepository;
+	public DefaultArkiverVedleggService(JournalpostRepositorySkjermet journalpostRepositorySkjermet, ArkiverVedleggValidator arkiverVedleggValidator, DokumentFilerDelegate dokumentFilerDelegate, SporingPopulator sporingPopulator) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.arkiverVedleggValidator = arkiverVedleggValidator;
 		this.dokumentFilerDelegate = dokumentFilerDelegate;
 		this.sporingPopulator = sporingPopulator;
@@ -32,7 +32,7 @@ public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 			throws NoJournalpostFoundException {
 		arkiverVedleggValidator.validate(arkiverVedleggRequest);
 
-		Journalpost journalpost = joarkRepository.findById(arkiverVedleggRequest.getJournalpostId())
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(arkiverVedleggRequest.getJournalpostId())
 				.orElseThrow(() -> new NoJournalpostFoundException("journalpostId=" + arkiverVedleggRequest.getJournalpostId() + " does not exist", arkiverVedleggRequest
 						.getJournalpostId()));
 
@@ -41,7 +41,7 @@ public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 		oppdaterJournalpostMedDokumentInfo(journalpost, arkiverVedleggRequest);
 
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
-		Journalpost mergedJournalpost = joarkRepository.save(journalpost);
+		Journalpost mergedJournalpost = journalpostRepositorySkjermet.save(journalpost);
 		String attachedFilUuid = arkiverVedleggRequest.getDokumentInfo().getFildetaljerListe().iterator().next().getFilUuid();
 		Long dokumentInfoId = mergedJournalpost.findFilDetaljerByFilUuid(attachedFilUuid).getDokumentInfo().getDokumentInfoId();
 
