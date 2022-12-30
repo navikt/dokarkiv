@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -21,7 +21,6 @@ import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -34,7 +33,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVELEMENT;
@@ -67,7 +65,7 @@ public class AksjonsLoggIT {
 	private AksjonsLoggRepository aksjonsLoggRepository;
 
 	@Autowired
-	private JoarkRepository joarkRepository;
+	private JournalpostRepository journalpostRepository;
 
 	private long journalpostId;
 
@@ -75,7 +73,7 @@ public class AksjonsLoggIT {
 	public void setUp() {
 		RequestContextUtil.createAndSetUsername(USER_ID, APPLICATION);
 		aksjonsLoggRepository.deleteAll();
-		Journalpost journalpost = joarkRepository.save(TestDataGenerator.createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostRepository.save(TestDataGenerator.createJournalpostWithHoveddokument());
 		this.journalpostId = journalpost.getJournalpostId();
 	}
 
@@ -123,7 +121,7 @@ public class AksjonsLoggIT {
 
 	@Test
 	public void shouldGetMostRecentBruker() throws UgyldigAksjonsLoggException {
-		Journalpost journalpost = joarkRepository.findById(journalpostId)
+		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(JournalpostIkkeFunnetException::new);
 		String nyBrukerId = "12345678910";
 		Bruker nyBruker = Bruker.builder()
@@ -132,7 +130,7 @@ public class AksjonsLoggIT {
 				.build();
 		nyBruker.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		journalpost.addBruker(nyBruker);
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 
 		AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTO.setBruker(null);

@@ -15,7 +15,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
-    private JoarkRepositorySkjermet joarkRepositoryMock;
+    private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 	@Mock
 	private OpprettJournalpostArkiverDokumentValidator opprettJournalpostArkiverDokumentValidator;
 	@InjectMocks
@@ -71,7 +71,7 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 		journalpost = createJournalpost().build();
 		requestFerdigstillJournalpost = new OpprettJournalpostArkiverDokumentRequestTo(journalpost, FERDIGSTILL_JOURNALPOST);
 		requestIkkeFerdigstillJournalpost = new OpprettJournalpostArkiverDokumentRequestTo(journalpost, IKKE_FERDIGSTILL_JOURNALPOST);
-		lenient().when(joarkRepositoryMock.save(journalpost)).thenReturn(createdJournalpost());
+		lenient().when(journalpostRepositorySkjermetMock.save(journalpost)).thenReturn(createdJournalpost());
 	}
 	
 	@Test
@@ -79,7 +79,7 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 		response = service.opprettJournalpostArkiverDokument(requestFerdigstillJournalpost);
 		verify(opprettJournalpostArkiverDokumentValidator).validate(journalpost, FERDIGSTILL_JOURNALPOST);
 		verify(dokumentFilerDelegateMock).saveUpdateDokumentFiler(journalpost);
-		verify(joarkRepositoryMock).save(journalpost);
+		verify(journalpostRepositorySkjermetMock).save(journalpost);
 		assertThat(response.getJournalpostId(), is(JOURNALPOST_ID));
 	}
 	
@@ -180,7 +180,7 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 		response = service.opprettJournalpostArkiverDokument(requestFerdigstillJournalpost);
 		verify(opprettJournalpostArkiverDokumentValidator).validate(journalpost, FERDIGSTILL_JOURNALPOST);
 		verify(dokumentFilerDelegateMock).saveUpdateDokumentFiler(journalpost);
-		verify(joarkRepositoryMock).save(journalpost);
+		verify(journalpostRepositorySkjermetMock).save(journalpost);
 		assertThat(response.getJournalpostId(), is(JOURNALPOST_ID));
 		assertThat(journalpost.getJournalposttype(), is(JournalpostTypeCode.I));
 	}
@@ -192,7 +192,7 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 		response = service.opprettJournalpostArkiverDokument(requestFerdigstillJournalpost);
 		verify(opprettJournalpostArkiverDokumentValidator).validate(journalpost, FERDIGSTILL_JOURNALPOST);
 		verify(dokumentFilerDelegateMock).saveUpdateDokumentFiler(journalpost);
-		verify(joarkRepositoryMock).save(journalpost);
+		verify(journalpostRepositorySkjermetMock).save(journalpost);
 		assertThat(response.getJournalpostId(), is(JOURNALPOST_ID));
 		assertThat(journalpost.getJournalposttype(), is(JournalpostTypeCode.U));
 	}

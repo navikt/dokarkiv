@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +44,7 @@ public class DefaultFjernFerdigstiltDokumentServiceTest {
 	private SporingPopulator sporingPopulator;
 
 	@Mock
-	private JoarkRepositorySkjermet joarkRepository;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 
 	@Mock
 	private DokumentFilRepository dokumentFilRepository;
@@ -55,12 +55,12 @@ public class DefaultFjernFerdigstiltDokumentServiceTest {
 	@Test
 	public void shouldRunOk() {
 		Journalpost journalpost = testJournalpost();
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		service.fjernFerdigstiltDokument(request);
 
 		verify(validator).validateInputRequest(request);
 		verify(validator).validate(journalpost, request);
-		verify(joarkRepository).findById(JOURNALPOST_ID);
+		verify(journalpostRepositorySkjermetMock).findById(JOURNALPOST_ID);
 		verify(sporingPopulator).populateSporingInfo(journalpost, ENDRET_AV_NAVN);
 		verify(dokumentFilRepository).deleteByFilUuid("filuid");
 	}
@@ -68,7 +68,7 @@ public class DefaultFjernFerdigstiltDokumentServiceTest {
 
 	@Test
 	public void shouldThrowException_cannotFindJournalpost() {
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.ofNullable(null));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.ofNullable(null));
 
 		assertThrows(NoJournalpostFoundException.class,
 				() -> service.fjernFerdigstiltDokument(request));

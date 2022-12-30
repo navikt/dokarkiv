@@ -9,19 +9,19 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultJournalfoerNotatHenvendelseV3 implements JournalfoerNotatHenvendelse {
 	private final JournalfoerNotatHenvendelseV3Validator behandleJournalJournalpostValidator;
 	private final DokumentFilerDelegate dokumentFilerDelegate;
-    private final JoarkRepositorySkjermet joarkRepository;
+    private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 
-	public DefaultJournalfoerNotatHenvendelseV3(JournalfoerNotatHenvendelseV3Validator behandleJournalJournalpostValidator, DokumentFilerDelegate dokumentFilerDelegate, JoarkRepositorySkjermet joarkRepository) {
+	public DefaultJournalfoerNotatHenvendelseV3(JournalfoerNotatHenvendelseV3Validator behandleJournalJournalpostValidator, DokumentFilerDelegate dokumentFilerDelegate, JournalpostRepositorySkjermet journalpostRepositorySkjermet) {
 		this.behandleJournalJournalpostValidator = behandleJournalJournalpostValidator;
 		this.dokumentFilerDelegate = dokumentFilerDelegate;
-		this.joarkRepository = joarkRepository;
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class DefaultJournalfoerNotatHenvendelseV3 implements JournalfoerNotatHen
 		updateJournalpost(journalpost);
 		behandleJournalJournalpostValidator.validate(journalpost);
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 		return createResponse(journalpost);
 	}
 

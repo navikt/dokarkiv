@@ -16,7 +16,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +60,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	private OppdaterJournalpostArkiverDokumentRequestTo requestTo;
 
 	@Mock
-	private JoarkRepositorySkjermet repositoryMock;
+	private JournalpostRepositorySkjermet repositoryMock;
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock

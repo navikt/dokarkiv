@@ -16,7 +16,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.core.sporing.DefaultSporingPopulator;
@@ -58,7 +58,7 @@ public class OpprettJournalpostService {
 	private static final String APPLIKASJON_FS22 = "FS22";
 	private static final String SKANMOTOVRIG = "srvskanmotovrig";
 
-	private final JoarkRepository joarkRepository;
+	private final JournalpostRepository journalpostRepository;
 	private final DokumentFilRepository dokumentFilRepository;
 	private final OpprettJournalpostApiRequestMapper opprettJournalpostApiRequestMapper;
 	private final DefaultSporingPopulator defaultSporingPopulator;
@@ -68,7 +68,7 @@ public class OpprettJournalpostService {
 	private final OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils;
 	private final MeterRegistry meterRegistry;
 
-	public OpprettJournalpostService(final JoarkRepository joarkRepository,
+	public OpprettJournalpostService(final JournalpostRepository journalpostRepository,
 									 final DokumentFilRepository dokumentFilRepository,
 									 final OpprettJournalpostApiRequestMapper opprettJournalpostApiRequestMapper,
 									 final DefaultSporingPopulator defaultSporingPopulator,
@@ -77,7 +77,7 @@ public class OpprettJournalpostService {
 									 final HentSakerRepository hentSakerRepository,
 									 final OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils,
 									 final MeterRegistry meterRegistry) {
-		this.joarkRepository = joarkRepository;
+		this.journalpostRepository = journalpostRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.opprettJournalpostApiRequestMapper = opprettJournalpostApiRequestMapper;
 		this.defaultSporingPopulator = defaultSporingPopulator;
@@ -109,7 +109,7 @@ public class OpprettJournalpostService {
 
 		persistDokumentFiler(journalpost);
 
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 
 		populerAksjonsloggFromChanges(journalpost.getJournalpostId(), sakOptional);
 
@@ -181,7 +181,7 @@ public class OpprettJournalpostService {
 	}
 
 	private void populerAksjonsloggFromChanges(Long journalpostId, Optional<Sak> sakOptional) {
-		final Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new);
+		final Journalpost journalpost = journalpostRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new);
 		final String brukerId = journalpost.getBrukere().stream()
 				.findFirst()
 				.map(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId)
@@ -238,10 +238,10 @@ public class OpprettJournalpostService {
 	}
 
 	private boolean isJournalpostExists(String eksternReferanseId) {
-		return isNotBlank(eksternReferanseId) && joarkRepository.existsByKanalReferanseId(eksternReferanseId);
+		return isNotBlank(eksternReferanseId) && journalpostRepository.existsByKanalReferanseId(eksternReferanseId);
 	}
 	private Optional<Journalpost> findJournalpostByEksternReferanseId(String eksternReferanseId) {
 		//eksternReferanseId == kanalReferanseId
-		return isBlank(eksternReferanseId) ? Optional.empty() : joarkRepository.findTopByKanalReferanseId(eksternReferanseId);
+		return isBlank(eksternReferanseId) ? Optional.empty() : journalpostRepository.findTopByKanalReferanseId(eksternReferanseId);
 	}
 }

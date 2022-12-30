@@ -20,7 +20,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -60,7 +60,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	private static final long DOKUMENT_ID = 100L;
 
 	@Mock
-	private JoarkRepositorySkjermet joarkRepositoryMock;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 	@Mock
 	private DokumentInfoRepository dokumentInfoRepositoryMock;
 	@Mock
@@ -119,7 +119,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	public void shouldThrowExceptionIfNoJournalpostIdInDb() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID, new DokumentInfo(),
 				createSporingsMetaData());
-		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.empty());
+		when(journalpostRepositorySkjermetMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.empty());
 
 		assertThrows(NoJournalpostFoundException.class,
 				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
@@ -130,7 +130,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	public void shouldThrowExceptionIfDuplicateDokumentVariants() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID,
 				createDokumentInfoWithDuplicateDokumentVariant(), createSporingsMetaData());
-		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(createJournalpostWithHoveddokument()));
+		when(journalpostRepositorySkjermetMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(createJournalpostWithHoveddokument()));
 
 		assertThrows(InvalidJournalpostStructureException.class,
 				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
@@ -141,7 +141,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	public void shouldThrowExceptionIfFilTypeMissingInDokumentInnhold() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID,
 				createInputDokumentInfoWithMissingFiltype(), createSporingsMetaData());
-		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(createJournalpostWithHoveddokument()));
+		when(journalpostRepositorySkjermetMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(createJournalpostWithHoveddokument()));
 
 		assertThrows(ApplicationException.class,
 				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
@@ -152,7 +152,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	public void shouldThrowExceptionIfVariantFormatMissingInDokumentInnhold() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID,
 				createInputDokumentInfoWithMissingVariantFormat(), createSporingsMetaData());
-		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(createJournalpostWithHoveddokument()));
+		when(journalpostRepositorySkjermetMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(createJournalpostWithHoveddokument()));
 
 		assertThrows(ApplicationException.class,
 				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
@@ -163,7 +163,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 	public void shouldThrowExceptionIfFileContentMissingInDokumentInnhold() {
 		lagreVedleggPaaJournalpostRequest = new LagreVedleggPaaJournalpostRequest(JOURNALPOST_ID,
 				createInputDokumentInfoWithMissingFileContent(), createSporingsMetaData());
-		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(createJournalpostWithHoveddokument()));
+		when(journalpostRepositorySkjermetMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(createJournalpostWithHoveddokument()));
 
 		assertThrows(ApplicationException.class,
 				() -> service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest),
@@ -177,7 +177,7 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 				createInputDokumentInfo(filnavn), createSporingsMetaData());
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setOriginalJournalpost(journalpost);
-		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(journalpost));
 
 		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
 
@@ -191,12 +191,12 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 				createInputDokumentInfoBrukeroppgittTittel(filnavn), createSporingsMetaData());
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setOriginalJournalpost(journalpost);
-		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(journalpost));
 
 		service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
 
 		verifyDokumentInfoAddedAsVedleggOnJournalpost(journalpost, filnavn);
-		assertThat(joarkRepositoryMock.findById(JOURNALPOST_ID).get().findDokumentInfoById(DOKUMENT_ID).getTittel(), is(BRUKEROPPGITT_TITTEL));
+		assertThat(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID).get().findDokumentInfoById(DOKUMENT_ID).getTittel(), is(BRUKEROPPGITT_TITTEL));
 	}
 
 	@Test
@@ -206,12 +206,12 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 				createSporingsMetaData());
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setOriginalJournalpost(journalpost);
-		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(journalpost));
 
 		LagreVedleggPaaJournalpostResponse lagreVedleggPaaJournalpost = service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
 
 		assertThat(lagreVedleggPaaJournalpost.getDokumentId(), is(vedlegg.getDokumentInfoId()));
-		assertThat(joarkRepositoryMock.findById(JOURNALPOST_ID).get().findDokumentInfoById(DOKUMENT_ID).getTittel(), is(TITTEL));
+		assertThat(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID).get().findDokumentInfoById(DOKUMENT_ID).getTittel(), is(TITTEL));
 	}
 
 	@Test
@@ -221,13 +221,13 @@ public class DefaultLagreVedleggPaaJournalpostTest {
 				createSporingsMetaData());
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setOriginalJournalpost(journalpost);
-		when(joarkRepositoryMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(eq(JOURNALPOST_ID))).thenReturn(Optional.of(journalpost));
 
 		LagreVedleggPaaJournalpostResponse lagreVedleggPaaJournalpost = service.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
 
 
 		assertThat(lagreVedleggPaaJournalpost.getDokumentId(), is(vedlegg.getDokumentInfoId()));
-		assertThat(joarkRepositoryMock.findById(JOURNALPOST_ID).get().findDokumentInfoById(DOKUMENT_ID).getTittel(), is(BRUKEROPPGITT_TITTEL));
+		assertThat(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID).get().findDokumentInfoById(DOKUMENT_ID).getTittel(), is(BRUKEROPPGITT_TITTEL));
 	}
 
 	private SporingsMetaData createSporingsMetaData() {

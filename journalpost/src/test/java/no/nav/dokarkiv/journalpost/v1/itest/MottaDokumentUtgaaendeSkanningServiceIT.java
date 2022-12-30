@@ -74,7 +74,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
 		var responseEntity = doPutTransaction(GYLDIG_CONSUMER, request, journalpostId);
 
-		Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
+		Journalpost oppdatertJP = journalpostRepository.findById(journalpostId).get();
 		Map<String, String> tilleggsopplysninger = oppdatertJP.getTilleggsopplysninger();
 		FilDetaljer filDetaljer =
 				oppdatertJP.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getFildetaljerListe().iterator().next();
@@ -127,7 +127,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 				));
 
 		var responseEntity = doPutTransaction(GYLDIG_CONSUMER, request, journalpostId);
-		Journalpost oppdatertJP = joarkRepository.findById(journalpostId).get();
+		Journalpost oppdatertJP = journalpostRepository.findById(journalpostId).get();
 
 		Set<FilDetaljer> filDetaljerSet =
 				oppdatertJP.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getFildetaljerListe();

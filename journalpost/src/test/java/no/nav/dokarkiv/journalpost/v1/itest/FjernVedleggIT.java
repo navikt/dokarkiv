@@ -52,7 +52,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 				.get();
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonByJpBeforeDelete = journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId());
 
-		List<Journalpost> persitJournalpost = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> persitJournalpost = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(persitJournalpost.size(), is(3));
 		assertThat(jpDokInfoRelasjonPersist.size(), is(4));
 		assertThat(jpDokInfoRelasjonByJpBeforeDelete.size(), is(2));
@@ -92,7 +92,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 
 		JournalpostDokumentInfoRelasjon vedllegJpDokumentInfoRelasjon = IteratorUtils
 				.toList(journalpostDokumentInfoRelasjonTestRepository.findAll().iterator()).get(2);
-		List<Journalpost> persitJournalpost = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> persitJournalpost = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		Long journalpostId = vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId();
 		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
 				.dokumentId(vedllegJpDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId().toString())

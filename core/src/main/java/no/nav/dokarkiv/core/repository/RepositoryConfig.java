@@ -30,7 +30,7 @@ import java.util.Properties;
 @EnableTransactionManagement
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Configuration
-@Import(value = {JoarkRepositorySkjermet.class, DokumentFilSkjermetRepository.class})
+@Import(value = {JournalpostRepositorySkjermet.class, DokumentFilSkjermetRepository.class})
 public class RepositoryConfig {
 	@Bean
 	@Primary

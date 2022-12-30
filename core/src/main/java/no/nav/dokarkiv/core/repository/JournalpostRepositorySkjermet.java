@@ -12,27 +12,27 @@ import java.util.stream.StreamSupport;
 
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
-public class JoarkRepositorySkjermet {
+public class JournalpostRepositorySkjermet {
 
-	private final JoarkRepository joarkRepository;
+	private final JournalpostRepository journalpostRepository;
 	private final SkjermingService skjermingService;
 
-	public JoarkRepositorySkjermet(JoarkRepository joarkRepository, SkjermingService skjermingService) {
-		this.joarkRepository = joarkRepository;
+	public JournalpostRepositorySkjermet(JournalpostRepository journalpostRepository, SkjermingService skjermingService) {
+		this.journalpostRepository = journalpostRepository;
 		this.skjermingService = skjermingService;
 	}
 
 	public Optional<Journalpost> findById(Long id) {
 		return skjermingService.isJournalpostSkjermet(id) ? Optional.empty() :
-				joarkRepository.findById(id);
+				journalpostRepository.findById(id);
 	}
 
 	public Journalpost save(Journalpost journalpost) {
-		return joarkRepository.save(journalpost);
+		return journalpostRepository.save(journalpost);
 	}
 
 	public boolean existsById(Long id) {
-		return isFalse(skjermingService.isJournalpostSkjermet(id)) && joarkRepository
+		return isFalse(skjermingService.isJournalpostSkjermet(id)) && journalpostRepository
 				.existsById(id);
 	}
 
@@ -40,17 +40,17 @@ public class JoarkRepositorySkjermet {
 	 * Only use in test!
 	 */
 	public void deleteAll() {
-		joarkRepository.deleteAll();
+		journalpostRepository.deleteAll();
 	}
 
 	public Iterable<Journalpost> findAll() {
-		return StreamSupport.stream(joarkRepository.findAll().spliterator(), true)
+		return StreamSupport.stream(journalpostRepository.findAll().spliterator(), true)
 				.filter(journalpost -> isFalse(skjermingService.isJournalpostSkjermet(journalpost)))
 				.collect(Collectors.toList());
 	}
 
 	public Long findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
-		Journalpost journalpost = joarkRepository.findJournalpostByTilleggsopplysningerNokkelAndVerdi(nokkel, verdi)
+		Journalpost journalpost = journalpostRepository.findJournalpostByTilleggsopplysningerNokkelAndVerdi(nokkel, verdi)
 				.orElse(null);
 		if (Objects.nonNull(journalpost) && isFalse(skjermingService.isJournalpostSkjermet(journalpost))) {
 			return journalpost.getJournalpostId();
@@ -59,7 +59,7 @@ public class JoarkRepositorySkjermet {
 	}
 
 	public Optional<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, String mottakskanal) {
-		Optional<Journalpost> journalpost = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottakskanal);
+		Optional<Journalpost> journalpost = journalpostRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottakskanal);
 
 		if (journalpost.isPresent()) {
 			return skjermingService.isJournalpostSkjermet(journalpost.get()) ? Optional.empty() : journalpost;
@@ -69,11 +69,11 @@ public class JoarkRepositorySkjermet {
 	}
 
 	public Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
-		return joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
+		return journalpostRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
 	}
 
 	public Long findJournalpostIdByDokumentinfoId(String dokumentinfoId) {
-		Long jpId = joarkRepository.findJournalpostIdByDokumentinfoId(dokumentinfoId);
+		Long jpId = journalpostRepository.findJournalpostIdByDokumentinfoId(dokumentinfoId);
 		if (jpId == null) {
 			return null;
 		}
@@ -81,7 +81,7 @@ public class JoarkRepositorySkjermet {
 	}
 
 	public List<Long> findAllJournalpostIdsByDokumentInfoId(Long dokumentInfoId) {
-		List<Long> journalpostIds = joarkRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId)
+		List<Long> journalpostIds = journalpostRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId)
 				.stream().map(SkjermingService::convertBigToLong).collect(Collectors.toList());
 		return journalpostIds.stream()
 				.filter(journalpostId -> isFalse(skjermingService.isJournalpostSkjermet(journalpostId)))
@@ -89,7 +89,7 @@ public class JoarkRepositorySkjermet {
 	}
 
 	public Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId) {
-		Optional<Journalpost> journalpost = joarkRepository.findTopByKanalReferanseId(kanalReferanseId);
+		Optional<Journalpost> journalpost = journalpostRepository.findTopByKanalReferanseId(kanalReferanseId);
 
 		if (journalpost.isPresent()) {
 			return skjermingService.isJournalpostSkjermet(journalpost.get()) ? Optional.empty() : journalpost;
@@ -99,7 +99,7 @@ public class JoarkRepositorySkjermet {
 	}
 
 	public List<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, MottaksKanalCode mottaksKanalCode) {
-		List<Journalpost> journalpostList = joarkRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottaksKanalCode);
+		List<Journalpost> journalpostList = journalpostRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottaksKanalCode);
 		return journalpostList.stream()
 				.filter(journalpost -> isFalse(skjermingService.isJournalpostSkjermet(journalpost)))
 				.collect(Collectors.toList());

@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.security.abac;
 
 import no.nav.dokarkiv.core.logging.AbacLogger;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.freg.abac.core.annotation.context.AbacContext;
 import no.nav.freg.abac.core.consumer.AbacConsumer;
 import no.nav.freg.abac.core.service.AbacService;
@@ -56,10 +56,10 @@ public class MainAbacConfig {
 	@Primary
 	AbacSecurityService abacArkivSecurityService(AbacService abacArkivService, AbacLogger abaclog,
 												 AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository,
-												 JoarkRepositorySkjermet joarkRepositorySkjermet) {
+												 JournalpostRepositorySkjermet journalpostRepositorySkjermet) {
 		return new AbacSecurityService(abaclog, abacArkivService,
 				abacContext, jdbcAbacSecurityRepository,
-				joarkRepositorySkjermet);
+				journalpostRepositorySkjermet);
 	}
 
 	@Bean
@@ -75,9 +75,9 @@ public class MainAbacConfig {
 	@Bean
 	AbacSecurityService abacArkivV2SecurityService(@Qualifier("abacArkivV2Service") AbacService abacArkivV2Service, AbacLogger abaclog,
 												   AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository,
-												   JoarkRepositorySkjermet joarkRepositorySkjermet) {
+												   JournalpostRepositorySkjermet journalpostRepositorySkjermet) {
 			return new AbacSecurityService(abaclog, abacArkivV2Service,
 					abacContext, jdbcAbacSecurityRepository,
-					joarkRepositorySkjermet);
+					journalpostRepositorySkjermet);
 		}
 	}

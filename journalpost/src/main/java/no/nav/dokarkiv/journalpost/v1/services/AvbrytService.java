@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -27,21 +27,21 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 @Component
 @Slf4j
 public class AvbrytService {
-    private final JoarkRepository joarkRepository;
+    private final JournalpostRepository journalpostRepository;
     private final LagreAksjonsLoggService aksjonsLoggService;
 
     static final String FIKK_AVBRUTT = "Journalposten ble satt til avbrutt";
     static final List<JournalStatusCode> JOURNAL_STATUS_CODE_DOKUMENT_RESERVERT = Arrays.asList(D, R);
 
-    public AvbrytService(final JoarkRepository joarkRepository,
+    public AvbrytService(final JournalpostRepository journalpostRepository,
                          final LagreAksjonsLoggService aksjonsLoggService
     ) {
-        this.joarkRepository = joarkRepository;
+        this.journalpostRepository = journalpostRepository;
         this.aksjonsLoggService = aksjonsLoggService;
     }
 
     public String avbryt(String journalpostId) {
-        Journalpost journalpost = joarkRepository.findById(parseLong(journalpostId))
+        Journalpost journalpost = journalpostRepository.findById(parseLong(journalpostId))
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
         JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
@@ -63,7 +63,7 @@ public class AvbrytService {
                 .tilVerdi(journalpost.getJournalstatus().name())
                 .build();
 
-        joarkRepository.save(journalpost);
+        journalpostRepository.save(journalpost);
 
         aksjonsLoggService.lagreAksjonsLoggForJournalpost(
                 AVBRYT, journalpost.getJournalpostId(), "ARKL", FIKK_AVBRUTT,

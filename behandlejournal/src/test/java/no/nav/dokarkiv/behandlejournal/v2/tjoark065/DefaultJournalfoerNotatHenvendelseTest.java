@@ -14,7 +14,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,7 +51,7 @@ public class DefaultJournalfoerNotatHenvendelseTest {
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
-    private JoarkRepositorySkjermet joarkRepositoryMock;
+    private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 	@InjectMocks
 	private DefaultJournalfoerNotatHenvendelse service;
 	private JournalfoerNotatHenvendelseRequest request;
@@ -71,7 +71,7 @@ public class DefaultJournalfoerNotatHenvendelseTest {
 		response = service.journalfoerNotatHenvendelse(request);
 		verify(behandleJournalJournalpostValidatorMock).validate(journalpost);
 		verify(dokumentFilerDelegateMock).saveUpdateDokumentFiler(journalpost);
-		verify(joarkRepositoryMock).save(journalpost);
+		verify(journalpostRepositorySkjermetMock).save(journalpost);
 		assertThat(response.getJournalpostId(), is(JOURNALPOST_ID));
 	}
 

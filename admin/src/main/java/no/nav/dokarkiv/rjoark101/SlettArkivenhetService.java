@@ -13,8 +13,8 @@ import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.exception.ArkivVariantkkeFunnetException;
 import no.nav.dokarkiv.exception.JournalpostKanIkkeSlettesException;
 import org.springframework.stereotype.Service;
@@ -42,20 +42,20 @@ public class SlettArkivenhetService {
 
 	private final JoarkDeleteRepository deleteRepository;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
-	private final JoarkRepository joarkRepository;
+	private final JournalpostRepository journalpostRepository;
 	private final DokumentInfoRepository dokumentInfoRepository;
 	private final EntityManager entityManager;
 
-	public SlettArkivenhetService(JoarkDeleteRepository deleteRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository, DokumentInfoRepository dokumentInfoRepository, EntityManager entityManager) {
+	public SlettArkivenhetService(JoarkDeleteRepository deleteRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JournalpostRepository journalpostRepository, DokumentInfoRepository dokumentInfoRepository, EntityManager entityManager) {
 		this.deleteRepository = deleteRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
-		this.joarkRepository = joarkRepository;
+		this.journalpostRepository = journalpostRepository;
 		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.entityManager = entityManager;
 	}
 
 	public Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> slettJournalpost(Long journalpostId) {
-		Journalpost journalpost = joarkRepository.findById(journalpostId)
+		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Fant ingen journalpost med journalpostId=%s i databasen", journalpostId)));
 
 		validerAtJournalpostIkkeErSplittet(journalpost);

@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeKnyttetTilSakException;
 import no.nav.dokarkiv.core.exceptions.SaksrelasjonAlleredeFeilregistrertException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.core.repository.SaksrelasjonRepository;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -30,14 +30,14 @@ import static no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerJournalpos
 public class FeilregistrerSakstilknytningService {
 
     private final AksjonsLoggService aksjonsLoggService;
-    private final JoarkRepository joarkRepository;
+    private final JournalpostRepository journalpostRepository;
     private final SaksrelasjonRepository saksrelasjonRepository;
 
     public FeilregistrerSakstilknytningService(final AksjonsLoggService aksjonsLoggService,
-                                               final JoarkRepository joarkRepository,
+                                               final JournalpostRepository journalpostRepository,
                                                final SaksrelasjonRepository saksrelasjonRepository) {
         this.aksjonsLoggService = aksjonsLoggService;
-        this.joarkRepository = joarkRepository;
+        this.journalpostRepository = journalpostRepository;
         this.saksrelasjonRepository = saksrelasjonRepository;
     }
 
@@ -86,7 +86,7 @@ public class FeilregistrerSakstilknytningService {
     }
 
     private void assertJournalpostExists(Long journalpostId) {
-        if (!joarkRepository.existsById(journalpostId)) {
+        if (!journalpostRepository.existsById(journalpostId)) {
             throw new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId));
         }
     }

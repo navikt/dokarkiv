@@ -41,7 +41,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	@BeforeEach
 	public void setup() {
-		finnMottatteJournalposterService = new FinnMottatteJournalposterService(joarkRepository);
+		finnMottatteJournalposterService = new FinnMottatteJournalposterService(journalpostRepository);
 	}
 
 	@Test

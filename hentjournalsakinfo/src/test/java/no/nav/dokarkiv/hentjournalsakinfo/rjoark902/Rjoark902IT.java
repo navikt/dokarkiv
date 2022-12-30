@@ -115,9 +115,9 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
 		createVedleggRelasjon(journalpost, vedlegg1);
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		createVedleggRelasjon(journalpost, vedlegg2);
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -171,7 +171,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		storedDokumentInfo.setTittel(TITTEL);
 		storedDokumentInfo.setKassert(true);
 
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

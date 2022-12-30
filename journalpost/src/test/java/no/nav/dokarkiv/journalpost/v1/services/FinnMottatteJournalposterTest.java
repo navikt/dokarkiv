@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletJournalpost;
 import org.joda.time.DateTime;
@@ -34,11 +34,11 @@ public class FinnMottatteJournalposterTest {
 	FinnMottatteJournalposterService finnMottatteJournalposterService;
 
 	@Mock
-	private JoarkRepository joarkRepository;
+	private JournalpostRepository journalpostRepository;
 
 	@Test
 	public void FinnMottateJournalposterServiceMapsEmptyListToEmptyFinnMottatteJournalposterResponse() {
-		when(joarkRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.empty());
+		when(journalpostRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.empty());
 		assertTrue(finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter().isEmpty());
 	}
 
@@ -46,7 +46,7 @@ public class FinnMottatteJournalposterTest {
 	public void FinnMottatteJournalposterServiceMapsJournalpostToFinnMottateJournalposterResponse() {
 		Date createdDate = DateTime.now().minusWeeks(2).toDate();
 
-		when(joarkRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(generateJournalpost(createdDate, "test"))));
+		when(journalpostRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(generateJournalpost(createdDate, "test"))));
 		List<UbehandletJournalpost> ubehandletJournalpostList = finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter();
 
 		assertEquals(1, ubehandletJournalpostList.size());
@@ -75,7 +75,7 @@ public class FinnMottatteJournalposterTest {
 		journalpost.addBruker(youngest);
 		journalpost.addBruker(middle);
 
-		when(joarkRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(journalpost)));
+		when(journalpostRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(journalpost)));
 		UbehandletJournalpost ubehandletJournalpost = finnMottatteJournalposterService.finnMottatteJournalposter().getJournalposter().get(0);
 
 		assertEquals("youngest", ubehandletJournalpost.getBruker().getId());
@@ -83,7 +83,7 @@ public class FinnMottatteJournalposterTest {
 
 	@Test
 	public void handlesMultipleJournalposts() {
-		when(joarkRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(
+		when(journalpostRepository.findUbehandledeJournalposts(any(Date.class))).thenReturn(Optional.of(List.of(
 				generateJournalpost(),
 				generateJournalpost(),
 				generateJournalpost(),

@@ -4,7 +4,7 @@ import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.dokarkiv.core.storage.GoogleCloudBucketStorage;
@@ -42,7 +42,7 @@ public abstract class AbstractArkiverdokumentproduksjonItest {
 	@Autowired
 	protected ArkiverDokumentproduksjonV1 arkiverDokumentproduksjonProvider;
 	@Autowired
-	protected JoarkRepositorySkjermet joarkRepository;
+	protected JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	@Autowired
 	protected DokumentInfoRepository dokumentInfoRepository;
 	@Autowired
@@ -50,7 +50,7 @@ public abstract class AbstractArkiverdokumentproduksjonItest {
 
 	@BeforeEach
 	public void setUpItest() {
-		joarkRepository.deleteAll();
+		journalpostRepositorySkjermet.deleteAll();
 		dokumentFilTestRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId(ITEST_USERID)

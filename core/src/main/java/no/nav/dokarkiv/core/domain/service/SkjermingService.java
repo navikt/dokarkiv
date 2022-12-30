@@ -4,7 +4,7 @@ import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,17 +20,17 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 @Component
 public class SkjermingService {
 
-	private final JoarkRepository joarkRepository;
+	private final JournalpostRepository journalpostRepository;
 
 	private final EntityManager entityManager;
 
-	public SkjermingService(JoarkRepository joarkRepository, EntityManager entityManager) {
-		this.joarkRepository = joarkRepository;
+	public SkjermingService(JournalpostRepository journalpostRepository, EntityManager entityManager) {
+		this.journalpostRepository = journalpostRepository;
 		this.entityManager = entityManager;
 	}
 
 	public boolean isJournalpostSkjermet(Long journalpostId) {
-		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
+		Journalpost journalpost = journalpostRepository.findById(journalpostId).orElse(null);
 		if (journalpost != null) {
 			return nonNull(journalpost.getSkjermingType());
 		}

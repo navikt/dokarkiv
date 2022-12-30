@@ -141,7 +141,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 
 	protected void assertThatJournalpostIsDeleted(Long journalpostId) {
-		assertThat(joarkRepository.findById(journalpostId).isPresent(), is(false));
+		assertThat(journalpostRepository.findById(journalpostId).isPresent(), is(false));
 		assertThat(entityManager.createQuery("select '1' from Saksrelasjon where journalpost.journalpostId= :jp")
 				.setParameter("jp", journalpostId)
 				.getResultList()
@@ -210,7 +210,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected void assertThatJournalpostIsNotDeleted(Journalpost journalpost) {
 		Long journalpostId = journalpost.getJournalpostId();
-		assertThat(joarkRepository.findById(journalpostId).isPresent(), is(true));
+		assertThat(journalpostRepository.findById(journalpostId).isPresent(), is(true));
 		assertThat(entityManager.createQuery("select '1' from Saksrelasjon where journalpost.journalpostId= :jp")
 				.setParameter("jp", journalpostId)
 				.getResultList()

@@ -13,18 +13,18 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.validator.BrukerValidator;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultArkiverUstrukturertKrav implements ArkiverUstrukturertKrav {
 
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final DokumentFilerDelegate dokumentFilerDelegate;
 	private final ArkiverUstrukturertKravJournalpostValidator behandleJournalJournalpostValidator;
 
-	public DefaultArkiverUstrukturertKrav(JoarkRepositorySkjermet joarkRepository, DokumentFilerDelegate dokumentFilerDelegate, ArkiverUstrukturertKravJournalpostValidator behandleJournalJournalpostValidator) {
-		this.joarkRepository = joarkRepository;
+	public DefaultArkiverUstrukturertKrav(JournalpostRepositorySkjermet journalpostRepositorySkjermet, DokumentFilerDelegate dokumentFilerDelegate, ArkiverUstrukturertKravJournalpostValidator behandleJournalJournalpostValidator) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.dokumentFilerDelegate = dokumentFilerDelegate;
 		this.behandleJournalJournalpostValidator = behandleJournalJournalpostValidator;
 	}
@@ -50,7 +50,7 @@ public class DefaultArkiverUstrukturertKrav implements ArkiverUstrukturertKrav {
 	private ArkiverUstrukturertKravResponse handleJoarkdokument(Journalpost journalpost) {
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 
 		return createResponse(journalpost.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo().getDokumentInfoId());

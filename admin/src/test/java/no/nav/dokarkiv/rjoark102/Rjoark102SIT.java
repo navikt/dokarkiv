@@ -35,7 +35,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 	public void skalSkjermeDokumentForKassering() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostRepository.save(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 
@@ -85,7 +85,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 	public void skalOppheveSkjermingDokumentForKassering() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostRepository.save(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 

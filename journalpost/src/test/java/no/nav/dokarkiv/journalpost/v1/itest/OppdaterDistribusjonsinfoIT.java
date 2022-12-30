@@ -50,7 +50,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		performOppdaterDistribusjonsinfo(ferdigstiltJournalpost.getJournalpostId(), true, null);
 
-		Journalpost ekspedertJournalpost = joarkRepository.findById(ferdigstiltJournalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+		Journalpost ekspedertJournalpost = journalpostRepository.findById(ferdigstiltJournalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
 		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
 		assertEquals(UtsendingsKanalCode.SDP, ekspedertJournalpost.getUtsendingskanal());
@@ -65,7 +65,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		performOppdaterDistribusjonsinfo(journalpostId, true, null);
 
-		Journalpost ekspedertJournalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost ekspedertJournalpost = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
 
@@ -76,7 +76,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		performOppdaterDistribusjonsinfo(journalpostId, false, secondReadAtTimestamp);
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost2 = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost2 = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(UtsendingsKanalCode.SDP, ferdigstiltJournalpost2.getUtsendingskanal());
 		assertTrue(Duration.between(firstReadAtTimestamp.toInstant(), ferdigstiltJournalpost2.getLestDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
@@ -94,11 +94,11 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 				.settStatusEkspedert(true).ekspedertDato(ekspedertDato)
 				.digitalpostkasse(new DigitalPost(POSTKASSEADRESSE, POSTKASSE_LEVERANDØR)));
 
-		Journalpost ekspedertJournalpost = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost ekspedertJournalpost = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost2 = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost2 = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(UtsendingsKanalCode.SDP, ferdigstiltJournalpost2.getUtsendingskanal());
 		assertTrue(Duration.between(ekspedertDato.toInstant(), ferdigstiltJournalpost2.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
@@ -155,11 +155,11 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertEquals(55, distribusjonsinfoResponse.getJournalposter().getOppdatert().size());
 		assertEquals(journalpostsM.size(), distribusjonsinfoResponse.getJournalposter().getFeilet().size());
 
-		Journalpost ekspedertJournalpost = joarkRepository.findById(jpAll.get(0)).orElseThrow(RuntimeException::new);
+		Journalpost ekspedertJournalpost = journalpostRepository.findById(jpAll.get(0)).orElseThrow(RuntimeException::new);
 		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost2 = joarkRepository.findById(jpAll.get(1)).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost2 = journalpostRepository.findById(jpAll.get(1)).orElseThrow(RuntimeException::new);
 
 		assertEquals(UtsendingsKanalCode.SDP, ferdigstiltJournalpost2.getUtsendingskanal());
 		assertTrue(Duration.between(ekspedertDato.toInstant(), ferdigstiltJournalpost2.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
@@ -200,11 +200,11 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		assertEquals(10, distribusjonsinfoResponse.getJournalposter().getOppdatert().size());
 
-		Journalpost ekspedertJournalpost = joarkRepository.findById(jpAll.get(0)).orElseThrow(RuntimeException::new);
+		Journalpost ekspedertJournalpost = journalpostRepository.findById(jpAll.get(0)).orElseThrow(RuntimeException::new);
 		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost2 = joarkRepository.findById(jpAll.get(1)).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost2 = journalpostRepository.findById(jpAll.get(1)).orElseThrow(RuntimeException::new);
 
 		assertEquals(UtsendingsKanalCode.S, ferdigstiltJournalpost2.getUtsendingskanal());
 		assertTrue(Duration.between(ekspedertDato.toInstant(), ferdigstiltJournalpost2.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
@@ -243,7 +243,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		TestTransaction.start();
 
-		Journalpost journalpostEtterOppdateringsforsok = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost journalpostEtterOppdateringsforsok = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 		assertEquals(UtsendingsKanalCode.S, journalpostEtterOppdateringsforsok.getUtsendingskanal());
 
 		TestTransaction.end();
@@ -265,7 +265,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		TestTransaction.start();
 
-		Journalpost journalpostEtterOppdateringsforsok = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost journalpostEtterOppdateringsforsok = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 		assertEquals(UtsendingsKanalCode.S, journalpostEtterOppdateringsforsok.getUtsendingskanal());
 
 		TestTransaction.end();
@@ -284,7 +284,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		TestTransaction.start();
 
-		Journalpost journalpostEtterOppdatering = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost journalpostEtterOppdatering = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		// The "new" info
 		assertEquals(journalpostEtterOppdatering.getUtsendingskanal(), UtsendingsKanalCode.S);
@@ -317,7 +317,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		TestTransaction.start();
 
-		Journalpost journalpostEtterOppdateringsforsok = joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost journalpostEtterOppdateringsforsok = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 		assertNull(journalpostEtterOppdateringsforsok.getUtsendingskanal());
 
 		TestTransaction.end();
@@ -388,14 +388,14 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		ResponseEntity<String> finalizeResponse = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, finalizeRequestEntity, String.class);
 		assertEquals(HttpStatus.OK, finalizeResponse.getStatusCode());
 
-		return joarkRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		return journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 	}
 
 	private Journalpost createJournalpost(JournalStatusCode statusCode) {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, statusCode).build();
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		return journalpost;
 	}
 

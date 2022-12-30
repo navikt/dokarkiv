@@ -2,7 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ public class DefaultAvbrytJournalpostServiceTest {
 	private Journalpost journalpost;
 
 	@Mock
-	private JoarkRepositorySkjermet repositoryMock;
+	private JournalpostRepositorySkjermet repositoryMock;
 	@Mock
 	private AvbrytJournalpostValidator avbrytJournalpostValidator;
 	@Mock

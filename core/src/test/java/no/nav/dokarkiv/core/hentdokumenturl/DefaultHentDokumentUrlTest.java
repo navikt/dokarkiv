@@ -26,7 +26,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
 import no.nav.dokarkiv.core.repository.DokumentUrlInfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -58,7 +58,7 @@ public class DefaultHentDokumentUrlTest {
 	private static final String FIL_UUID_SLADDET = "456b166e-5f9f-430f-8e35-09a732156563";
 
 	@Mock
-	private JoarkRepositorySkjermet joarkRepositoryMock;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 	@Mock
 	private DokumentFilSkjermetRepository dokumentFilRepositoryMock;
 	@Mock
@@ -74,7 +74,7 @@ public class DefaultHentDokumentUrlTest {
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		hentDokumentUrl = new DefaultHentDokumentUrl();
-		hentDokumentUrl.setJoarkRepository(joarkRepositoryMock);
+		hentDokumentUrl.setJournalpostRepositorySkjermet(journalpostRepositorySkjermetMock);
 		hentDokumentUrl.setDokumentFilRepository(dokumentFilRepositoryMock);
 		hentDokumentUrl.setServletUrl(SERVLET_URL);
 		hentDokumentUrl.setDokumentUrlInfoRepository(dokumentUrlInfoRepositoryMock);
@@ -103,7 +103,7 @@ public class DefaultHentDokumentUrlTest {
 	 */
 	@Test
 	public void shouldThrowExceptionForNonExistingJournalpost() {
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.empty());
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.empty());
 		try {
 			hentDokumentUrl.hentDokumentUrl(request);
 			fail();
@@ -118,7 +118,7 @@ public class DefaultHentDokumentUrlTest {
 	@Test
 	public void shouldGetDokumentUrlForOnDemand() {
 		Journalpost journalpost = createJournalPost("10", SYFO, FIL_UUID, FIL_UUID_SLADDET);
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		HentDokumentUrlResponse response = hentDokumentUrl.hentDokumentUrl(request);
 		String servletUrl = response.getDokumentUrl();
@@ -134,7 +134,7 @@ public class DefaultHentDokumentUrlTest {
 	@Test
 	public void shouldGetDokumentUrlForDokumentInDB() {
 		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
 
@@ -149,7 +149,7 @@ public class DefaultHentDokumentUrlTest {
 	@Test
 	public void shouldGetSkjermetDokumentUrlForDokumentInDB() {
 		Journalpost journalpost = createJournalPostArkivVariantSkjermet(null, null, FIL_UUID, FIL_UUID_SLADDET);
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID_SLADDET)).thenReturn(new DokumentFil());
 
@@ -165,7 +165,7 @@ public class DefaultHentDokumentUrlTest {
 	public void shouldThrowDokumentNotFoundForKassertDokument() {
 
 		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
 
@@ -179,7 +179,7 @@ public class DefaultHentDokumentUrlTest {
 	@Test
 	public void shouldCreateDokumentUrlInfoWithCustomTimeToLive() {
 		long timeToLive = 60;
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(
 				createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET)));
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
 
@@ -195,7 +195,7 @@ public class DefaultHentDokumentUrlTest {
 	@Test
 	public void shouldThrowExceptionForMissingFilDetaljer() {
 		Journalpost journalpost = createJournalPost(null, null, "562b166e-5f9f", FIL_UUID_SLADDET);
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		assertInvalidFilUuidExceptionThrown(FIL_UUID);
 	}
@@ -203,7 +203,7 @@ public class DefaultHentDokumentUrlTest {
 	@Test
 	public void shouldThrowExceptionForMissingDokumentFil() {
 		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(null);
 
@@ -227,7 +227,7 @@ public class DefaultHentDokumentUrlTest {
 								.build())
 						.build())
 				.build();
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
 
 		HentDokumentUrlResponse response = hentDokumentUrl.hentDokumentUrl(request);
