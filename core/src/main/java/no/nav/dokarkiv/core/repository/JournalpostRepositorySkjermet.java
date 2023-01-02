@@ -5,7 +5,6 @@ import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.projections.IdHolder;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -38,15 +37,6 @@ public class JournalpostRepositorySkjermet {
 	public boolean existsById(Long id) {
 		return isFalse(skjermingService.isJournalpostSkjermet(id)) && journalpostRepository
 				.existsById(id);
-	}
-
-	public Long findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
-		Journalpost journalpost = journalpostRepository.findJournalpostByTilleggsopplysningerNokkelAndVerdi(nokkel, verdi)
-				.orElse(null);
-		if (Objects.nonNull(journalpost) && isFalse(skjermingService.isJournalpostSkjermet(journalpost))) {
-			return journalpost.getJournalpostId();
-		}
-		return null;
 	}
 
 	public Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {

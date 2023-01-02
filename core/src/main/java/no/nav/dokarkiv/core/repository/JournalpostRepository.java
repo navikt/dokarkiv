@@ -12,9 +12,6 @@ import java.util.Set;
 
 public interface JournalpostRepository extends HibernateRepository<Journalpost>, BaseJpaRepository<Journalpost, Long> {
 
-	@Query(value = "SELECT * from t_journalpost jp where jp.journalpost_id in ( select max(jt.journalpost_id) FROM t_jp_tillegg jt WHERE jt.nokkel = :nokkel AND jt.verdi = :verdi)", nativeQuery = true)
-	Optional<Journalpost> findJournalpostByTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);
-
 	@Query(value = "SELECT JOURNALPOST_ID FROM t_jp_dok_info_rel j WHERE j.dokument_info_id = :dokumentInfoId", nativeQuery = true)
 	List<Object> findAllJournalpostIdsByDokumentInfoId(@Param("dokumentInfoId") Long dokumentInfoId);
 

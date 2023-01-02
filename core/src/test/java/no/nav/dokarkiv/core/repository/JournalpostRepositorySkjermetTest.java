@@ -81,7 +81,6 @@ public class JournalpostRepositorySkjermetTest {
 		assertThat(journalpostRepositorySkjermet.findById(123L).isPresent(), is(false));
 		assertThat(journalpostRepositorySkjermet.existsById(123L), is(false));
 		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseId("test").isPresent(), is(false));
-		assertThat(journalpostRepositorySkjermet.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi("test", "test"), nullValue());
 		assertThat(journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId("213"), nullValue());
 		assertThat(journalpostRepositorySkjermet.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi("213", "313"), nullValue());
 	}
@@ -108,10 +107,7 @@ public class JournalpostRepositorySkjermetTest {
 				.getDokumentInfo()
 				.getDokumentInfoId()).size(), is(1));
 
-		assertThat(journalpostTestRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
-		assertThat(journalpostRepositorySkjermet.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
-
-		assertThat(journalpostTestRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
+		assertThat(dokumentInfoTestRepository.findDokumentInfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
 		assertThat(journalpostRepositorySkjermet.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
 
 		assertThat(dokumentInfoTestRepository.findOriginalJournalpostIdByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
@@ -176,22 +172,6 @@ public class JournalpostRepositorySkjermetTest {
 				.getDokumentInfo()
 				.getId()
 				.toString()), nullValue());
-	}
-
-	@Test
-	public void shouldNotfindJournalpostIdByTilleggsopplysningerNokkelAndVerdiWhenJournalpostIsSkjermet() {
-
-		Journalpost journalpost = createJournalpost();
-
-		journalpostTestRepository.persist(journalpost);
-		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), SkjermingTypeCode.POL);
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		TestTransaction.start();
-		assertThat(journalpostTestRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), is(journalpost
-				.getJournalpostId()));
-		assertThat(journalpostRepositorySkjermet.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), nullValue());
 	}
 
 	@Test
