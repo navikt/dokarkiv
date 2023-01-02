@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.repository;
 
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.springframework.data.jpa.repository.Query;
@@ -8,11 +9,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface JournalpostRepository extends HibernateRepository<Journalpost>, BaseJpaRepository<Journalpost, Long> {
-
-	@Query(value = "SELECT jt.journalpost_id FROM t_jp_tillegg jt WHERE jt.nokkel = :nokkel AND jt.verdi = :verdi", nativeQuery = true)
-	Long findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);
 
 	@Query(value = "SELECT * from t_journalpost jp where jp.journalpost_id in ( select max(jt.journalpost_id) FROM t_jp_tillegg jt WHERE jt.nokkel = :nokkel AND jt.verdi = :verdi)", nativeQuery = true)
 	Optional<Journalpost> findJournalpostByTilleggsopplysningerNokkelAndVerdi(@Param("nokkel") String nokkel, @Param("verdi") String verdi);
@@ -29,11 +28,21 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 	@Query(value = "SELECT jt.ORIG_JOURNALPOST_ID FROM T_DOKUMENT_INFO jt WHERE jt.DOKUMENT_INFO_ID = :dokumentinfoId", nativeQuery = true)
 	Long findJournalpostIdByDokumentinfoId(@Param("dokumentinfoId") String dokumentinfoId);
 
-	@Query(value = "SELECT * FROM t_journalpost j WHERE j.k_journal_s IN ('M', 'MO') AND j.k_journalpost_t = 'I' AND j.dato_opprettet <= :tilOgMedDato", nativeQuery = true)
-	Optional<List<Journalpost>> findUbehandledeJournalposts(@Param("tilOgMedDato") Date tilOgMedDato);
+	@Query(value = """
+			select j from Journalpost j
+			where j.journalstatus in (no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M, no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO)
+			and j.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I
+			and j.changeStamp.createdDate <= :tilOgMedDato
+			""")
+	List<Journalpost> findUbehandledeJournalposts(@Param("tilOgMedDato") Date tilOgMedDato);
 
-	@Query(value = "SELECT * FROM t_journalpost j WHERE j.k_journal_s IN ('M', 'MO') AND j.k_journalpost_t = 'I' AND j.dato_opprettet <= :tilOgMedDato AND j.K_FAGOMRADE in :temaListe", nativeQuery = true)
-	Optional<List<Journalpost>> findUbehandledeJournalpostsWithTemaIn(@Param("tilOgMedDato") Date tilOgMedDato, @Param("temaListe") List<String> temaListe);
+	@Query(value = """
+			select j from Journalpost j
+			where j.journalstatus in (no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M, no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO)
+			and j.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I
+			and j.changeStamp.createdDate <= :tilOgMedDato AND j.fagomrade in :fagomrader
+			""")
+	List<Journalpost> findUbehandledeJournalpostsWithTemaIn(@Param("tilOgMedDato") Date tilOgMedDato, @Param("fagomrader") Set<FagomradeCode> fagomrader);
 
 	Optional<Journalpost> findTopByKanalReferanseId(String kanalReferanseId);
 
