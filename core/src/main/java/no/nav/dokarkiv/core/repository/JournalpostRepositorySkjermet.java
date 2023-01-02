@@ -15,13 +15,16 @@ public class JournalpostRepositorySkjermet {
 
 	private final JournalpostRepository journalpostRepository;
 	private final DokumentInfoRepository dokumentInfoRepository;
+	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final SkjermingService skjermingService;
 
 	public JournalpostRepositorySkjermet(JournalpostRepository journalpostRepository,
 										 DokumentInfoRepository dokumentInfoRepository,
+										 JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
 										 SkjermingService skjermingService) {
 		this.journalpostRepository = journalpostRepository;
 		this.dokumentInfoRepository = dokumentInfoRepository;
+		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.skjermingService = skjermingService;
 	}
 
@@ -57,8 +60,8 @@ public class JournalpostRepositorySkjermet {
 	}
 
 	public List<Long> findAllJournalpostIdsByDokumentInfoId(Long dokumentInfoId) {
-		List<Long> journalpostIds = journalpostRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId)
-				.stream().map(SkjermingService::convertBigToLong).collect(Collectors.toList());
+		List<Long> journalpostIds = journalpostDokumentInfoRelasjonRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId)
+				.stream().map(IdHolder::id).toList();
 		return journalpostIds.stream()
 				.filter(journalpostId -> isFalse(skjermingService.isJournalpostSkjermet(journalpostId)))
 				.collect(Collectors.toList());
