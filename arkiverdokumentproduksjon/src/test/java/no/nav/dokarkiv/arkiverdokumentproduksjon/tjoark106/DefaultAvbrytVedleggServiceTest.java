@@ -13,8 +13,8 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ public class DefaultAvbrytVedleggServiceTest {
 	private AvbrytVedleggValidator validator;
 
 	@Mock
-	private JoarkRepositorySkjermet joarkRepository;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 
 	@Mock
 	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
@@ -64,7 +64,7 @@ public class DefaultAvbrytVedleggServiceTest {
 	@BeforeEach
 	public void setUp() {
 		journalpost = createJournalpostWithDokumentInfo();
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 	}
 
 	@Test
@@ -83,12 +83,12 @@ public class DefaultAvbrytVedleggServiceTest {
 		AvbrytVedleggRequestTo request = createRequest();
 		avbrytVedleggService.avbrytVedlegg(request);
 
-		verify(joarkRepository).findById(request.getJournalpostId());
+		verify(journalpostRepositorySkjermetMock).findById(request.getJournalpostId());
 	}
 
 	@Test
 	public void shouldValidateJournalpost() {
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		avbrytVedleggService.avbrytVedlegg(createRequest());
 
 		verify(validator).validateJournalpost(journalpost, JOURNALPOST_ID);
@@ -180,7 +180,7 @@ public class DefaultAvbrytVedleggServiceTest {
 		//Create another journalpost related to dokumentInfo
 		createJournalpost(JOURNALPOST_ID + 1, dokumentInfo);
 
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(jp));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(jp));
 
 		avbrytVedleggService.avbrytVedlegg(createRequest());
 
@@ -198,7 +198,7 @@ public class DefaultAvbrytVedleggServiceTest {
 		//Create another journalpost related to dokumentInfo
 		createJournalpost(JOURNALPOST_ID + 1, dokumentInfo);
 
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(jp));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(jp));
 
 		avbrytVedleggService.avbrytVedlegg(createRequest());
 

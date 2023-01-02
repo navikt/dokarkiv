@@ -14,7 +14,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
@@ -24,13 +24,13 @@ import java.util.Set;
 public class DefaultOppdaterJournalpostArkiverDokumentService implements OppdaterJournalpostArkiverDokumentService {
 
 	private final SporingPopulator sporingPopulator;
-    private final JoarkRepositorySkjermet joarkRepository;
+    private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final OppdaterJournalpostArkiverDokumentValidator validator;
 	private final DokumentFilerDelegate dokumentFilerDelegate;
 
-	public DefaultOppdaterJournalpostArkiverDokumentService(SporingPopulator sporingPopulator, JoarkRepositorySkjermet joarkRepository, OppdaterJournalpostArkiverDokumentValidator validator, DokumentFilerDelegate dokumentFilerDelegate) {
+	public DefaultOppdaterJournalpostArkiverDokumentService(SporingPopulator sporingPopulator, JournalpostRepositorySkjermet journalpostRepositorySkjermet, OppdaterJournalpostArkiverDokumentValidator validator, DokumentFilerDelegate dokumentFilerDelegate) {
 		this.sporingPopulator = sporingPopulator;
-		this.joarkRepository = joarkRepository;
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.validator = validator;
 		this.dokumentFilerDelegate = dokumentFilerDelegate;
 	}
@@ -38,7 +38,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentService implements Oppdate
 	@Override
 	public void oppdaterJournalpostArkiverDokument(OppdaterJournalpostArkiverDokumentRequestTo request) throws UgyldigInputException, ObjektIkkeFunnetException, KanIkkeFerdigstillesException, FeilStrukturException, AlleredeFerdigstiltException {
 		validator.validateRequest(request);
-		Journalpost journalpost = joarkRepository.findById(request.getJournalpostId())
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(request.getJournalpostId())
 				.orElseThrow(() -> new ObjektIkkeFunnetException("JournalpostId eksisterer ikke i Joark", request.getJournalpostId()));
 
 		validator.validate(journalpost, request);

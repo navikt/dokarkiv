@@ -115,7 +115,7 @@ public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
 	}
 
 	private Journalpost persistJournalpost(Journalpost journalpost) {
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		return journalpost;

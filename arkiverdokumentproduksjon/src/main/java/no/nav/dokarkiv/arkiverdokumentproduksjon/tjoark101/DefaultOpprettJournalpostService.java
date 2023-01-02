@@ -9,18 +9,18 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultOpprettJournalpostService implements OpprettJournalpostService {
 
-    private final JoarkRepositorySkjermet joarkRepository;
+    private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final OpprettJournalpostValidator opprettJournalpostValidator;
 	private final DokumentFilerDelegate dokumentFilerDelegate;
 
-	public DefaultOpprettJournalpostService(JoarkRepositorySkjermet joarkRepository, OpprettJournalpostValidator opprettJournalpostValidator, DokumentFilerDelegate dokumentFilerDelegate) {
-		this.joarkRepository = joarkRepository;
+	public DefaultOpprettJournalpostService(JournalpostRepositorySkjermet journalpostRepositorySkjermet, OpprettJournalpostValidator opprettJournalpostValidator, DokumentFilerDelegate dokumentFilerDelegate) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.opprettJournalpostValidator = opprettJournalpostValidator;
 		this.dokumentFilerDelegate = dokumentFilerDelegate;
 	}
@@ -34,7 +34,7 @@ public class DefaultOpprettJournalpostService implements OpprettJournalpostServi
 		updateJournalpost(journalpost);
 		opprettJournalpostValidator.validate(journalpost);
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
-		Journalpost storedJournalpost = joarkRepository.save(journalpost);
+		Journalpost storedJournalpost = journalpostRepositorySkjermet.save(journalpost);
 		return createResponse(storedJournalpost);
 	}
 

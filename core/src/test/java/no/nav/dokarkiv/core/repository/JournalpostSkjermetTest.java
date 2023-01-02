@@ -37,16 +37,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class JournalpostSkjermetTest {
 
 	@Autowired
-	private JoarkRepositorySkjermet joarkRepositorySkjermet;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 
 	@Autowired
-	private JoarkRepository joarkRepository;
+	private JournalpostRepository journalpostRepository;
 
 	@Autowired
-	private DokumentinfoRepository dokumentinfoRepository;
+	private DokumentInfoTestRepository dokumentinfoTestRepository;
 
 	@Autowired
-	private JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
+	private JournalpostDokumentInfoRelasjonTestRepository journalpostDokumentInfoRelasjonTestRepository;
 
 	@Autowired
 	private SkjermingService skjermingService;
@@ -62,15 +62,15 @@ public class JournalpostSkjermetTest {
 	@AfterEach
 	public void cleanUp() {
 		TestTransaction.end();
-		journalpostDokumentInfoRelasjonRepository.deleteAll();
-		dokumentinfoRepository.deleteAll();
-		joarkRepository.deleteAll();
+		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
+		dokumentinfoTestRepository.deleteAll();
+		journalpostRepository.deleteAll();
 	}
 
 	@Test
 	public void shouldNotReturnSkjermetJournalpostDokumentInfoRelasjons() {
 
-		Journalpost journalpost1 = joarkRepository.save(createJournalpostWithTwoVedlegg());
+		Journalpost journalpost1 = journalpostRepository.save(createJournalpostWithTwoVedlegg());
 		JournalpostDokumentInfoRelasjon skjermetJournalpostDokumentInfoRelasjon = journalpost1.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.iterator()
 				.next();
@@ -88,7 +88,7 @@ public class JournalpostSkjermetTest {
 		TestTransaction.start();
 
 		//Test behaviour when skjermet
-		Journalpost journalpostWithBegrensning = joarkRepositorySkjermet.findById(journalpost1.getJournalpostId()).get();
+		Journalpost journalpostWithBegrensning = journalpostRepositorySkjermet.findById(journalpost1.getJournalpostId()).get();
 
 		assertThat(journalpostWithBegrensning.getJournalpostDokumentInfoRelasjoner().size(), is(2));
 		assertThat(journalpostWithBegrensning.getJournalpostDokumentInfoRelasjoner()
@@ -109,8 +109,8 @@ public class JournalpostSkjermetTest {
 		assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonById(skjermetJournalpostDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId()), nullValue());
 		assertThat(journalpostWithBegrensning.findAllDokumentInfos().size(), is(2));
 
-		Journalpost journalpost2 = joarkRepository.save(createJournalpostWithTwoVedlegg());
-		Journalpost journalpostWithoutBegrensning = joarkRepository.findById(journalpost2.getJournalpostId()).get();
+		Journalpost journalpost2 = journalpostRepository.save(createJournalpostWithTwoVedlegg());
+		Journalpost journalpostWithoutBegrensning = journalpostRepository.findById(journalpost2.getJournalpostId()).get();
 
 		assertThat(journalpostWithoutBegrensning.getJournalpostDokumentInfoRelasjoner().size(), is(3));
 		assertThat(journalpostWithoutBegrensning.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(skjermetDokumentInfoId), nullValue());

@@ -85,9 +85,9 @@ public class Rjoark920IT extends AbstractHentjournalsakinfoItest {
 										.build())
 								.build())
 				.build();
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 
-		dokumentFilRepository.save(getDokumentFilBuilder()
+		DokumentFilTestRepository.persist(getDokumentFilBuilder()
 				.filUuid(UUID)
 				.fil(TEST_FILE_CONTENT.getBytes())
 				.opprettetKildeNavn("test")

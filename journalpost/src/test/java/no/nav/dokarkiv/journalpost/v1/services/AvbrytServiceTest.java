@@ -3,7 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.services;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -19,9 +19,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class AvbrytServiceTest {
-	private final JoarkRepository joarkRepositoryMock = Mockito.mock(JoarkRepository.class);
+	private final JournalpostRepository journalpostRepositoryMock = Mockito.mock(JournalpostRepository.class);
 	private final LagreAksjonsLoggService aksjonsLoggService = Mockito.mock(LagreAksjonsLoggService.class);
-	private final AvbrytService avbrytService = new AvbrytService(joarkRepositoryMock, aksjonsLoggService);
+	private final AvbrytService avbrytService = new AvbrytService(journalpostRepositoryMock, aksjonsLoggService);
 
 
 	@Test
@@ -30,7 +30,7 @@ public class AvbrytServiceTest {
 				.journalstatus(D)
 				.build();
 
-		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
 		String response = avbrytService.avbryt("38");
 
@@ -42,7 +42,7 @@ public class AvbrytServiceTest {
 		Journalpost journalpost = Journalpost.builder()
 				.build();
 
-		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
 		assertThrows(UgyldigJournalStatusException.class, () ->
 				avbrytService.avbryt("38")
@@ -55,7 +55,7 @@ public class AvbrytServiceTest {
 				.journalstatus(OD)
 				.build();
 
-		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
 		assertThrows(UgyldigJournalStatusException.class, () ->
 				avbrytService.avbryt("38")
@@ -68,7 +68,7 @@ public class AvbrytServiceTest {
 				.journalstatus(A)
 				.build();
 
-		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
 		assertThrows(UgyldigJournalStatusException.class, () ->
 				avbrytService.avbryt("38")

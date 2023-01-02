@@ -121,6 +121,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "trygderetten-vedlegg",
+      "namespace": "isa",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "asynkron",
       "namespace": "farskapsportal",
       "cluster": "prod-gcp"

@@ -40,7 +40,7 @@ public class JournalfoerUtgaaendeHenvendelseIT extends AbstractBehandleJournalV2
 		createRequest();
 
 		response = behandleJournalProvider.journalfoerUtgaaendeHenvendelse(request);
-		persistedJournalpost = joarkRepository.findById(Long.valueOf(response.getJournalpostId())).get();
+		persistedJournalpost = journalpostRepositorySkjermet.findById(Long.valueOf(response.getJournalpostId())).get();
 	}
 
 	private void createRequest() {

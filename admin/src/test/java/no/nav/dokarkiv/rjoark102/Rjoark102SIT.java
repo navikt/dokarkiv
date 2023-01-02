@@ -35,7 +35,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 	public void skalSkjermeDokumentForKassering() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostRepository.save(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 
@@ -49,7 +49,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalSkjermesSomKassert
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findById(dokumentInfoSomSkalSkjermesSomKassert
 				.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), POL);
@@ -85,7 +85,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 	public void skalOppheveSkjermingDokumentForKassering() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostRepository.save(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 
@@ -104,7 +104,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfoSomSkalSkjermesSomKassert
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findById(dokumentInfoSomSkalSkjermesSomKassert
 				.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), null);

@@ -8,9 +8,9 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.FjernVedleggTilknyttetJournalpostValidator;
 import org.springframework.stereotype.Service;
@@ -19,15 +19,15 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class FjernVedleggTilknyttetJournalpost {
 
-	private final JoarkRepositorySkjermet joarkRepository;
-	private final DokumentinfoRepository dokumentinfoRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final FjernVedleggTilknyttetJournalpostValidator fjernVedleggTilknyttetJournalpostValidator;
 
-	public FjernVedleggTilknyttetJournalpost(JoarkRepositorySkjermet joarkRepository, DokumentinfoRepository dokumentinfoRepository,
+	public FjernVedleggTilknyttetJournalpost(JournalpostRepositorySkjermet journalpostRepositorySkjermet, DokumentInfoRepository dokumentInfoRepository,
 											 JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository) {
-		this.joarkRepository = joarkRepository;
-		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.fjernVedleggTilknyttetJournalpostValidator = new FjernVedleggTilknyttetJournalpostValidator();
 	}
@@ -35,7 +35,7 @@ public class FjernVedleggTilknyttetJournalpost {
 	public void fjernVedleggTilknyttetJournalpost(String journalpostId, FjernVedleggTilknyttetJournalpostRequest request) {
 		fjernVedleggTilknyttetJournalpostValidator.validateInput(journalpostId,request.getDokumentId());
 		Long dokumentInfoId = Long.valueOf(request.getDokumentId());
-		Journalpost journalpost = joarkRepository.findById(Long.valueOf(journalpostId))
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(Long.valueOf(journalpostId))
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Fant ikke journalpost med journalpostId=%s", journalpostId)));
 		fjernVedleggTilknyttetJournalpostValidator.validateJournalPostStatusOgType(journalpost);
 		DokumentInfo dokumentInfo = hentDokumentInfo(dokumentInfoId);
@@ -56,7 +56,7 @@ public class FjernVedleggTilknyttetJournalpost {
 	}
 
 	private DokumentInfo hentDokumentInfo(Long dokumentId) {
-		return dokumentinfoRepository.findByDokumentInfoId(dokumentId)
+		return dokumentInfoRepository.findById(dokumentId)
 				.orElseThrow(() -> new DokumentIkkeFunnetException(String.format("Fant ikke dokument med dokumentInfoId=%s", dokumentId)));
 	}
 }

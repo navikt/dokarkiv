@@ -16,7 +16,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +52,7 @@ public class DefaultFerdigstillDokumentopplastingTest {
 	@InjectMocks
 	private DefaultFerdigstillDokumentopplasting service;
 	@Mock
-	private JoarkRepositorySkjermet repositoryMock;
+	private JournalpostRepositorySkjermet repositoryMock;
 	@Mock
 	private SporingPopulator sporingPopulatorMock;
 

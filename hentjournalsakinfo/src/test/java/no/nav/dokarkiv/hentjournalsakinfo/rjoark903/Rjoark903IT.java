@@ -37,8 +37,8 @@ public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		Journalpost gjenbrukt = createJournalpostWithGjenbruktHoveddokument(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo());
-		joarkRepository.save(journalpost);
-		joarkRepository.save(gjenbrukt);
+		journalpostRepository.save(journalpost);
+		journalpostRepository.save(gjenbrukt);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		ResponseEntity<TilknyttedeJournalposterResponse> responseEntity = tilknyttedeJournalposterGjenbrukRest(journalpost.findHoveddokumentDokumentInfoRelasjon()
@@ -50,7 +50,7 @@ public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 	@Test
 	public void shouldReturnJournalpostWithNormalTilknytning() {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		ResponseEntity<TilknyttedeJournalposterResponse> responseEntity = tilknyttedeJournalposterGjenbrukRest(journalpost.findHoveddokumentDokumentInfoRelasjon()
@@ -63,15 +63,15 @@ public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 	@Test
 	public void shouldReturnVedleggOrderedByRelasjonId() {
 		DokumentInfo vedlegg2 = createDokumentInfo();
-		dokumentInfoRepository.save(vedlegg2);
+		dokumentInfoRepository.persist(vedlegg2);
 		DokumentInfo vedlegg1 = createDokumentInfo();
-		dokumentInfoRepository.save(vedlegg1);
+		dokumentInfoRepository.persist(vedlegg1);
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
 		createVedleggRelasjon(journalpost, vedlegg1);
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		createVedleggRelasjon(journalpost, vedlegg2);
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

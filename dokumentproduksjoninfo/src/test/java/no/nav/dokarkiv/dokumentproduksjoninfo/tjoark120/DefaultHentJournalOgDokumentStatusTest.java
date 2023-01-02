@@ -12,7 +12,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +43,7 @@ public class DefaultHentJournalOgDokumentStatusTest {
 	private static final DokumentStatusCode DOKUMENT_STATUS = DokumentStatusCode.UNDER_REDIGERING;
 
 	@Mock
-	private JoarkRepositorySkjermet joarkRepositoryMock;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 
 	@InjectMocks
 	private DefaultHentJournalOgDokumentStatus hentJournalOgDokumentStatus;
@@ -95,7 +95,7 @@ public class DefaultHentJournalOgDokumentStatusTest {
 		DokumentInfo dokumentInfo = new DokumentInfo(10L, 0);
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().setDokumentInfo(dokumentInfo);
 
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		assertThrows(NoDokumentInfoFoundException.class,
 				() -> hentJournalOgDokumentStatus.hentJournalOgDokumentStatus(request),
@@ -107,7 +107,7 @@ public class DefaultHentJournalOgDokumentStatusTest {
 		Journalpost journalpost = createJournalPost();
 		journalpost.findAllFilDetaljer().iterator().next().setVariantFormat(VariantFormatCode.ARKIV);
 
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		HentJournalOgDokumentStatusResponseTo response = hentJournalOgDokumentStatus.hentJournalOgDokumentStatus(request);
 
@@ -119,7 +119,7 @@ public class DefaultHentJournalOgDokumentStatusTest {
 		Journalpost journalpost = createJournalPost();
 		journalpost.findAllFilDetaljer().iterator().next().setMetaforceInstanceId(null);
 
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		HentJournalOgDokumentStatusResponseTo response = hentJournalOgDokumentStatus.hentJournalOgDokumentStatus(request);
 
@@ -128,7 +128,7 @@ public class DefaultHentJournalOgDokumentStatusTest {
 
 	@Test
 	public void shouldReturnJournalStatusDokumentStatusAndMetaforceInstanceId() throws Exception {
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
 
 		HentJournalOgDokumentStatusResponseTo response = hentJournalOgDokumentStatus.hentJournalOgDokumentStatus(request);
 
@@ -139,7 +139,7 @@ public class DefaultHentJournalOgDokumentStatusTest {
 
 	@Test
 	public void shouldCompleteWhenDokumentInfoIdIsMissing() throws Exception {
-		when(joarkRepositoryMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(createJournalPost()));
 		request.setDokumentInfoId(0L);
 
 		HentJournalOgDokumentStatusResponseTo response = hentJournalOgDokumentStatus.hentJournalOgDokumentStatus(request);

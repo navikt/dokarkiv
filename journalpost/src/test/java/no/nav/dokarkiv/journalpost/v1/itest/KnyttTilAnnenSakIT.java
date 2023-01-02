@@ -46,7 +46,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -89,7 +88,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 
 		when(tokenGrantValidator.validateOnBehalfOfAccessToken(anyString())).thenReturn(new JWTClaimsSet.Builder().subject("saks-behandler").build());
 
-		Long journalpostId = joarkRepository.save(createJournalpostWithHoveddokument()).getJournalpostId();
+		Long journalpostId = journalpostRepository.save(createJournalpostWithHoveddokument()).getJournalpostId();
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		TestTransaction.start();
@@ -101,7 +100,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		Journalpost journalpost = joarkRepository.findById(response.getBody().getNyJournalpostId()).orElseThrow(RuntimeException::new);
+		Journalpost journalpost = journalpostRepository.findById(response.getBody().getNyJournalpostId()).orElseThrow(RuntimeException::new);
 
 		assertNotNull(response);
 

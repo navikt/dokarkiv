@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -15,15 +15,15 @@ import static java.lang.Long.parseLong;
 
 @Component
 public class UkjentBrukerService {
-    private final JoarkRepository joarkRepository;
+    private final JournalpostRepository journalpostRepository;
     private static final List<JournalStatusCode> validJournalStatusList = Arrays.asList(JournalStatusCode.U, JournalStatusCode.OD, JournalStatusCode.M, JournalStatusCode.MO);
 
-    public UkjentBrukerService(final JoarkRepository joarkRepository) {
-        this.joarkRepository = joarkRepository;
+    public UkjentBrukerService(final JournalpostRepository journalpostRepository) {
+        this.journalpostRepository = journalpostRepository;
     }
 
     public List<ArkivElementEndringTO> settUkjentBruker(String journalpostId) {
-        Journalpost journalpost = joarkRepository.findById(parseLong(journalpostId))
+        Journalpost journalpost = journalpostRepository.findById(parseLong(journalpostId))
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
         JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
@@ -33,7 +33,7 @@ public class UkjentBrukerService {
             throw new UgyldigJournalStatusException("Journalpost kan ikke settes til UB (ukjent bruker)");
         }
 
-        joarkRepository.save(journalpost);
+        journalpostRepository.save(journalpost);
 
         return Arrays.asList(ArkivElementEndringTO.builder()
                 .arkivElement("Journalpost.journalStatus")

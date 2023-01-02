@@ -82,7 +82,7 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 		arkiverUstrukturertKravResponse = behandleJournalV3Provider
 				.arkiverUstrukturertKrav(arkiverUstrukturertKravRequest);
 
-		persistedJournalpost = joarkRepository.findById(Long.parseLong(arkiverUstrukturertKravResponse
+		persistedJournalpost = journalpostRepositorySkjermet.findById(Long.parseLong(arkiverUstrukturertKravResponse
 				.getJournalpostId())).get();
 	}
 
@@ -169,12 +169,12 @@ public class ArkiverUstrukturertKravV3IT extends AbstractBehandleJournalV3Itest 
 
 	private void assertDokumentSaved(no.nav.dokarkiv.core.domain.entities.Journalpost journalpost) {
 		String filUuid = journalpost.findAllFilDetaljer().get(0).getFilUuid();
-		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(filUuid);
+		DokumentFil dokumentFil = dokumentFilTestRepository.findByFilUuid(filUuid);
 		assertThat(dokumentFil.getFil(), is(DOKUMENT));
 	}
 
 	private no.nav.dokarkiv.core.domain.entities.Journalpost getPersistedJournalposterById(Long id) {
-		return joarkRepository.findById(id).get();
+		return journalpostRepositorySkjermet.findById(id).get();
 	}
 
 	private Journalpost createJournalpost(String temaId) {

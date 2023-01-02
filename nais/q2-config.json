@@ -148,6 +148,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "testdata-frontend",
+      "namespace": "isa",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "fritakagp",
       "namespace": "helsearbeidsgiver",
       "cluster": "dev-gcp"

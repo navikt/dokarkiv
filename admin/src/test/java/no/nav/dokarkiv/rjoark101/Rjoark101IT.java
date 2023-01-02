@@ -35,7 +35,6 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_DO
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_TILKNYTTET_SOM;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoVedleggRelasjon;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithSplittetHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,10 +52,10 @@ public class Rjoark101IT extends AbstractAdminIT {
 	@Test
 	public void skalSletteJournalpostMedHoveddokumentOgEnVedlegg() throws IOException {
 		abacPermit();
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		saveJournalpost(journalpost);
 
 		createDokumentInfoVedleggRelasjon(journalpost);
@@ -66,7 +65,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpost);
@@ -95,7 +94,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 			assertThatDokumentInfoIsDeleted(rel.getDokumentInfo());
 		}
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(2));
 		assertThatJournalpostIsNotDeleted(journalpost1);
 		assertThatJournalpostRelasjonerIsNotDeleted(journalpost1);
@@ -167,9 +166,9 @@ public class Rjoark101IT extends AbstractAdminIT {
 	@Test
 	public void skalSletteJournalpostMedHoveddokumentOgVedleggSomErGjenbruktFraEnAnnenJournalpost() throws IOException {
 		abacPermit();
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
-		Journalpost journalpostSomSkalSlettes = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpostSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 
 		DokumentInfo dokumentInfoVedleggGjenbrukt = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		journalpostSomSkalSlettes.addJournalpostDokumentInfoRelasjon(createVedleggRelasjon(journalpostSomSkalSlettes, dokumentInfoVedleggGjenbrukt));
@@ -189,11 +188,11 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpostSomSkalSlettes);
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoVedleggGjenbrukt.getDokumentInfoId())
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoVedleggGjenbrukt.getDokumentInfoId())
 				.size(), is(2));
 
 
@@ -220,7 +219,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 			}
 		}
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(2));
 
 		assertThatJournalpostIsNotDeleted(journalpost1);
@@ -229,7 +228,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostIsNotDeleted(journalpost2);
 		assertThatJournalpostRelasjonerIsNotDeleted(journalpost2);
 
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(journalpost2.findHoveddokumentDokumentInfoRelasjon()
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(journalpost2.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getDokumentInfoId()).size(), is(1));
 
@@ -285,9 +284,9 @@ public class Rjoark101IT extends AbstractAdminIT {
 	@Test
 	public void skalFeileVedSlettingAvJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedlegg() throws IOException {
 		abacPermit();
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 
 		DokumentInfo dokumentInfoVedlegg = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		journalpost.addJournalpostDokumentInfoRelasjon(createVedleggRelasjon(journalpost, dokumentInfoVedlegg));
@@ -298,11 +297,11 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpost);
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoVedlegg.getDokumentInfoId())
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoVedlegg.getDokumentInfoId())
 				.size(), is(2));
 
 		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
@@ -321,7 +320,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(3));
 
 		assertThatJournalpostIsNotDeleted(journalpost);
@@ -333,7 +332,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostIsNotDeleted(journalpost2);
 		assertThatJournalpostRelasjonerIsNotDeleted(journalpost2);
 
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoVedlegg.getDokumentInfoId())
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoVedlegg.getDokumentInfoId())
 				.size(), is(2));
 	}
 
@@ -344,7 +343,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalIkkeSletteJournalpostSomErSplittet() throws IOException {
 		abacPermit();
 
-		Journalpost journalpostOriginal = createJournalpostWithHoveddokument();
+		Journalpost journalpostOriginal = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpostSplit1 = createJournalpostWithSplittetHoveddokument(journalpostOriginal);
 		Journalpost journalpostSplit2 = createJournalpostWithSplittetHoveddokument(journalpostOriginal);
 
@@ -354,7 +353,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpostOriginal);
@@ -401,7 +400,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 
 		assertThat(journalpostListAfter.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpostOriginal);
@@ -419,9 +418,9 @@ public class Rjoark101IT extends AbstractAdminIT {
 	@Test
 	public void skalSletteJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedleggEtterSlettingAvRelasjonene() throws IOException {
 		abacPermit();
-		Journalpost journalpostMedDokumentSomVedlegg = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
-		Journalpost journalpostSomSkalSlettes = createJournalpostWithHoveddokument();
+		Journalpost journalpostMedDokumentSomVedlegg = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpostSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		createDokumentInfoVedleggRelasjon(journalpostSomSkalSlettes);
 
 		DokumentInfo dokumentInfoHoveddokument = journalpostSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon()
@@ -434,7 +433,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostList.size(), is(3));
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
@@ -481,7 +480,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatDokumentInfoIsDeleted(dokumentInfoHoveddokument);
 		assertThatDokumentInfoIsDeleted(journalpostSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(2));
 
 		assertThatJournalpostIsDeleted(journalpostSomSkalSlettes.getJournalpostId());
@@ -525,10 +524,10 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalSletteDokumentInfoSomErBareTilknyttetEnJournalpost() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
-		Journalpost journalpostMedDokumentSomSkalSlettes = createJournalpostWithHoveddokument();
+		Journalpost journalpostMedDokumentSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		JournalpostDokumentInfoRelasjon hoveddokumentRelasjon = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon();
 		JournalpostDokumentInfoRelasjon vedleggRelasjonSomSlettes = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
 		JournalpostDokumentInfoRelasjon vedleggRelasjon2 = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
@@ -546,10 +545,10 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostList.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes
 						.getJournalpostId())
 				.size(), is(3));
 
@@ -572,10 +571,10 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		assertThatDokumentInfoIsDeleted(vedleggRelasjonSomSlettes.getDokumentInfo());
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes
 						.getJournalpostId())
 				.size(), is(2));
 
@@ -614,10 +613,10 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalSletteHoveddokumentOgBytteVedleggRelasjonTilHoveddokumentForJournalpostMedFlereRelasjoner() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
-		Journalpost journalpostMedDokumentSomSkalSlettes = createJournalpostWithHoveddokument();
+		Journalpost journalpostMedDokumentSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSlettes = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
@@ -634,10 +633,10 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostList.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes
 						.getJournalpostId())
 				.size(), is(2));
 
@@ -658,11 +657,11 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		assertThatDokumentInfoIsDeleted(dokumentInfoSomSkalSlettes);
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(3));
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
 
-		Journalpost journalpostMedDokumentSomSkalSlettesAfter = joarkRepository.findById(journalpostMedDokumentSomSkalSlettes.getJournalpostId()).get();
+		Journalpost journalpostMedDokumentSomSkalSlettesAfter = journalpostRepository.findById(journalpostMedDokumentSomSkalSlettes.getJournalpostId()).get();
 		JournalpostDokumentInfoRelasjon relHoveddokAfter = journalpostMedDokumentSomSkalSlettesAfter.getJournalpostDokumentInfoRelasjonerAdmin().stream().filter(rel -> rel.getTilknyttetJournalpostSom() == HOVEDDOKUMENT).findAny().get();
 		assertThat(relHoveddokAfter.getDokumentInfo().getDokumentInfoId(), is(vedleggRelasjon.getDokumentInfo().getDokumentInfoId()));
 		assertThat(journalpostMedDokumentSomSkalSlettesAfter.getJournalpostDokumentInfoRelasjonerAdmin().size(), is(1));
@@ -713,7 +712,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		abacPermit();
 
 
-		Journalpost journalpostMedDokumentSomSkalSlettes = createJournalpostWithHoveddokument();
+		Journalpost journalpostMedDokumentSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSlettes = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
@@ -728,10 +727,10 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostList.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes
 						.getJournalpostId())
 				.size(), is(2));
 
@@ -752,7 +751,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		assertThatDokumentInfoIsDeleted(vedleggRelasjon.getDokumentInfo());
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
 
@@ -777,7 +776,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatDokumentInfoIsDeleted(dokumentInfoSomSkalSlettes);
 		assertThatDokumentInfoIsDeleted(dokumentInfoSomSkalSlettes);
 
-		List<Journalpost> journalpostListAfterHoveddokument = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfterHoveddokument = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostListAfterHoveddokument.size(), is(0));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
@@ -830,10 +829,10 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalSletteDokumentInfoSomErEnesteDokumentPåEnJournalpostOgVedleggPåEnAnnenJournalpost() throws IOException {
 		abacPermit();
 
-		Journalpost journalpostSomHarDokumentSomVedlegg = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpostSomHarDokumentSomVedlegg = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
-		Journalpost journalpostSomHarDokumentSomHoveddok = createJournalpostWithHoveddokument();
+		Journalpost journalpostSomHarDokumentSomHoveddok = createUniqueJournalpostWithHoveddokument();
 		JournalpostDokumentInfoRelasjon relasjonVedlegg = TestDataGenerator.createVedleggRelasjon(journalpostSomHarDokumentSomVedlegg, journalpostSomHarDokumentSomHoveddok
 				.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo());
@@ -843,12 +842,12 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(3));
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(relasjonVedlegg.getDokumentInfo()
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(relasjonVedlegg.getDokumentInfo()
 				.getDokumentInfoId()).size(), is(2));
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostSomHarDokumentSomVedlegg
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostSomHarDokumentSomVedlegg
 						.getJournalpostId())
 				.size(), is(2));
 		assertThatJournalpostIsNotDeleted(journalpostSomHarDokumentSomHoveddok);
@@ -871,12 +870,12 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostIsDeleted(journalpostSomHarDokumentSomHoveddok.getJournalpostId());
 		assertThatDokumentInfoIsDeleted(relasjonVedlegg.getDokumentInfo());
 
-		List<Journalpost> journalpostListAfter = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostListAfter = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 		assertThat(journalpostListAfter.size(), is(2));
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostSomHarDokumentSomVedlegg
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostSomHarDokumentSomVedlegg
 						.getJournalpostId())
 				.size(), is(1));
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostSomHarDokumentSomVedlegg
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostSomHarDokumentSomVedlegg
 						.getJournalpostId())
 				.get(0)
 				.getDokumentInfo()
@@ -931,18 +930,18 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalFeileVedSlettingAvDokumentInfoSomErSplittet() throws IOException {
 		abacPermit();
 
-		Journalpost origJournalpost = createJournalpostWithHoveddokument();
+		Journalpost origJournalpost = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost = createJournalpostWithSplittetHoveddokument(origJournalpost);
 		saveJournalpost(origJournalpost);
 		saveJournalpost(journalpost);
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(2));
 		assertThatJournalpostIsNotDeleted(journalpost);
-		List<DokumentInfo> dokumentInfoList = IteratorUtils.toList(dokumentinfoRepository.findAll().iterator());
+		List<DokumentInfo> dokumentInfoList = IteratorUtils.toList(dokumentInfoTestRepository.findAll().iterator());
 		assertThat(dokumentInfoList.size(), is(2));
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
@@ -1003,7 +1002,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalSletteFilOgFildetaljer() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoMedVariantSomSkalSlettes = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 		saveJournalpost(journalpost);
@@ -1011,11 +1010,11 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpost);
-		List<DokumentInfo> dokumentInfoList = IteratorUtils.toList(dokumentinfoRepository.findAll().iterator());
+		List<DokumentInfo> dokumentInfoList = IteratorUtils.toList(dokumentInfoTestRepository.findAll().iterator());
 		assertThat(dokumentInfoList.size(), is(1));
 
 		HttpHeaders httpHeaders = createHeadersWithAksjon();
@@ -1066,18 +1065,18 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalFeileHvisVariantSomSkalSlettesIkkeFinnes() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		saveJournalpost(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		TestTransaction.start();
-		List<Journalpost> journalpostList = IteratorUtils.toList(joarkRepository.findAll().iterator());
+		List<Journalpost> journalpostList = IteratorUtils.toList(journalpostRepository.findAll().iterator());
 
 		assertThat(journalpostList.size(), is(1));
 		assertThatJournalpostIsNotDeleted(journalpost);
-		List<DokumentInfo> dokumentInfoList = IteratorUtils.toList(dokumentinfoRepository.findAll().iterator());
+		List<DokumentInfo> dokumentInfoList = IteratorUtils.toList(dokumentInfoTestRepository.findAll().iterator());
 		assertThat(dokumentInfoList.size(), is(1));
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter

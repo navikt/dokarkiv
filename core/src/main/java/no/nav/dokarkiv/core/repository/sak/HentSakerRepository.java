@@ -34,13 +34,12 @@ public class HentSakerRepository {
 	}
 
 	public Sak lagre(Sak sak) {
-		sakRepository.save(sak);
+		sakRepository.persist(sak);
 		initSakerRepoCounter(meterRegistry, sak.getTema(), sak.getApplikasjon(), sak.getFagsakNr()).increment();
 		return sak;
 	}
 
 	public Optional<Sak> hentSak(Long id) {
-
 		return sakRepository.findById(id);
 	}
 

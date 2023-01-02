@@ -77,7 +77,7 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 		createRequest(journalpost.getJournalpostId().toString());
 		lagreVedleggPaaJournalpostResponse = behandleJournalProvider
 				.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-		persistedDokumentInfo = dokumentinfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
+		persistedDokumentInfo = dokumentInfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
 				.getDokumentId())).get();
 		fildetaljer = persistedDokumentInfo.getFildetaljerListe().iterator().next();
 	}
@@ -139,7 +139,7 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 		createRequest(journalpost.getJournalpostId().toString());
 		lagreVedleggPaaJournalpostResponse = behandleJournalProvider
 				.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-		persistedDokumentInfo = dokumentinfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
+		persistedDokumentInfo = dokumentInfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
 				.getDokumentId())).get();
 
 		assertNotNull(persistedDokumentInfo);
@@ -151,7 +151,7 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 	public void shouldVerifyFileContentForTheAddedVedlegg() throws Exception {
 		setUpJoark();
 
-		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(fildetaljer.getFilUuid());
+		DokumentFil dokumentFil = dokumentFilTestRepository.findByFilUuid(fildetaljer.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(FILECONTENT));
 	}
 
@@ -166,7 +166,7 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 
 	private Journalpost createAndPersistJournalpostWithHoveddokument() {
 		Journalpost journalpostWithHoveddokument = createJournalpostWithHoveddokument();
-		return joarkRepository.save(journalpostWithHoveddokument);
+		return journalpostRepositorySkjermet.save(journalpostWithHoveddokument);
 	}
 
 	private Journalpost createJournalpostWithHoveddokument() {

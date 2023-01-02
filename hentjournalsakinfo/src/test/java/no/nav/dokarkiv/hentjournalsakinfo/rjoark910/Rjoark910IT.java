@@ -24,7 +24,6 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.AKTOER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.PSAK_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createGsak;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createPsakSaksrelasjon;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,16 +41,16 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 
 	@Test
 	public void shouldFindAllJournalpostWithJournalstatusFS() {
-		Journalpost ferdigstiltJournalpost1 = createJournalpostWithHoveddokument();
+		Journalpost ferdigstiltJournalpost1 = createUniqueJournalpost();
 		ferdigstiltJournalpost1.getSaksrelasjon().setSakId("1");
 		ferdigstiltJournalpost1.setUtsendingskanal(SDP);
 		ferdigstiltJournalpost1.setUtsendingsInfo(TestDataGenerator.createDigitalPostadresse());
 		Journalpost ferdigstiltJournalpost2 = createJournalpostWithHoveddokument();
 		ferdigstiltJournalpost2.getSaksrelasjon().setSakId("2");
-		joarkRepository.save(ferdigstiltJournalpost1);
-		joarkRepository.save(ferdigstiltJournalpost2);
-		sakRepository.save(createGsak());
-		sakRepository.save(createGsak());
+		journalpostRepository.save(ferdigstiltJournalpost1);
+		journalpostRepository.save(ferdigstiltJournalpost2);
+		sakTestRepository.persist(createGsak());
+		sakTestRepository.persist(createGsak());
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -64,13 +63,13 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 
 	@Test
 	public void shouldFindAllJournalpostForGsakAndPsak() {
-		Journalpost gsakJournalpost = createJournalpostWithHoveddokument();
-		Journalpost psakJournalpost = createJournalpostWithHoveddokument();
+		Journalpost gsakJournalpost = createUniqueJournalpost();
+		Journalpost psakJournalpost = createUniqueJournalpost();
 		psakJournalpost.setSaksrelasjon(createPsakSaksrelasjon());
 		gsakJournalpost.getSaksrelasjon().setSakId("1");
-		sakRepository.save(createGsak());
-		joarkRepository.save(gsakJournalpost);
-		joarkRepository.save(psakJournalpost);
+		sakTestRepository.persist(createGsak());
+		journalpostRepository.save(gsakJournalpost);
+		journalpostRepository.save(psakJournalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		DokumentoversiktBrukerRequestTo request = createRequest(JournalStatusCode.FS);
@@ -85,17 +84,17 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 	@Test
 	public void shouldReturnVedleggOrderedByRelasjonId() {
 		DokumentInfo vedlegg2 = createDokumentInfo();
-		dokumentInfoRepository.save(vedlegg2);
+		dokumentInfoRepository.persist(vedlegg2);
 		DokumentInfo vedlegg1 = createDokumentInfo();
-		dokumentInfoRepository.save(vedlegg1);
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		dokumentInfoRepository.persist(vedlegg1);
+		Journalpost journalpost = createUniqueJournalpost();
 		journalpost.getSaksrelasjon().setSakId("1");
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
 		createVedleggRelasjon(journalpost, vedlegg1);
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		createVedleggRelasjon(journalpost, vedlegg2);
-		joarkRepository.save(journalpost);
-		sakRepository.save(createGsak());
+		journalpostRepository.save(journalpost);
+		sakTestRepository.persist(createGsak());
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

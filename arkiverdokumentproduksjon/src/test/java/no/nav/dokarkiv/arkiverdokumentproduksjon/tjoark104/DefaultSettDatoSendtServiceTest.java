@@ -3,7 +3,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +37,7 @@ public class DefaultSettDatoSendtServiceTest {
 	private static final Long JOURNALPOSTID_2 = 200L;
 
 	@Mock
-	private JoarkRepositorySkjermet joarkRepositoryMock;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 	@Mock
 	private SporingPopulator sporingPopulatorMock;
 	@InjectMocks
@@ -57,8 +57,8 @@ public class DefaultSettDatoSendtServiceTest {
 	public void shouldSettDatoSendt() {
 		Journalpost journalpost1 = new Journalpost(JOURNALPOSTID_1, 0L);
 		Journalpost journalpost2 = new Journalpost(JOURNALPOSTID_2, 0L);
-		when(joarkRepositoryMock.findById(JOURNALPOSTID_1)).thenReturn(Optional.of(journalpost1));
-		when(joarkRepositoryMock.findById(JOURNALPOSTID_2)).thenReturn(Optional.of(journalpost2));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOSTID_1)).thenReturn(Optional.of(journalpost1));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOSTID_2)).thenReturn(Optional.of(journalpost2));
 
 		defaultSettDatoSendtService.settDatoSendt(createValidDomainRequest());
 
@@ -72,7 +72,7 @@ public class DefaultSettDatoSendtServiceTest {
 	@Test
 	public void shouldThrowExceptionIfJournalpostNotFound() {
 		Journalpost journalpost1 = new Journalpost(JOURNALPOSTID_1, 0L);
-		when(joarkRepositoryMock.findById(JOURNALPOSTID_1)).thenReturn(Optional.of(journalpost1));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOSTID_1)).thenReturn(Optional.of(journalpost1));
 
 		assertThrows(ApplicationException.class,
 				() -> defaultSettDatoSendtService.settDatoSendt(createValidDomainRequest()),

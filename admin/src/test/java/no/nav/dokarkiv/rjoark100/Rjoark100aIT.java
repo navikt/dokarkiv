@@ -29,7 +29,6 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SK
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithGjenbruktHoveddokument;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.util.TestUtil.createSkjermarkivenhetRequest;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
@@ -46,7 +45,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	public void skalSkjermeJournalpost() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostRepository.save(createUniqueJournalpostWithHoveddokument());
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -66,7 +65,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<Journalpost> jpEtterKall = joarkRepository.findById(journalpost.getJournalpostId());
+		Optional<Journalpost> jpEtterKall = journalpostRepository.findById(journalpost.getJournalpostId());
 		assertTrue(jpEtterKall.isPresent());
 		assertThat(jpEtterKall.get().getSkjermingType(), is(SkjermingTypeCode.POL));
 
@@ -90,18 +89,18 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	public void skalSkjermeDokumentInfoSomErHoveddokumentPåJournalpostSomHarVedleggRelasjoner() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
-		Journalpost journalpostMedDokumentSomSkalSkjermes = createJournalpostWithHoveddokument();
+		Journalpost journalpostMedDokumentSomSkalSkjermes = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSkjermes = journalpostMedDokumentSomSkalSkjermes.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 		TestDataGenerator.createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSkjermes);
 		TestDataGenerator.createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSkjermes);
 
-		joarkRepository.save(journalpostMedDokumentSomSkalSkjermes);
-		joarkRepository.save(journalpost1);
-		joarkRepository.save(journalpost2);
+		journalpostRepository.save(journalpostMedDokumentSomSkalSkjermes);
+		journalpostRepository.save(journalpost1);
+		journalpostRepository.save(journalpost2);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -153,17 +152,17 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	@Test
 	public void skalSkjermeDokumentInfoSomErGjenbruktSomHoveddokumentPåEnJournalpostOgSomVedleggPåEnAnnen() throws IOException {
 		abacPermit();
-		Journalpost originalJournalpost = createJournalpostWithHoveddokument();
+		Journalpost originalJournalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSkjermes = originalJournalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 
 		Journalpost journalpostMedHoveddokumentSomErGjenbrukt = createJournalpostWithGjenbruktHoveddokument(dokumentInfoSomSkalSkjermes);
-		Journalpost journalpostMedHoveddokument = createJournalpostWithHoveddokument();
+		Journalpost journalpostMedHoveddokument = createUniqueJournalpostWithHoveddokument();
 		journalpostMedHoveddokument.addJournalpostDokumentInfoRelasjon(TestDataGenerator.createVedleggRelasjon(journalpostMedHoveddokument, dokumentInfoSomSkalSkjermes));
 
-		joarkRepository.save(originalJournalpost);
-		joarkRepository.save(journalpostMedHoveddokumentSomErGjenbrukt);
-		joarkRepository.save(journalpostMedHoveddokument);
+		journalpostRepository.save(originalJournalpost);
+		journalpostRepository.save(journalpostMedHoveddokumentSomErGjenbrukt);
+		journalpostRepository.save(journalpostMedHoveddokument);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -186,7 +185,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		assertDokumentInfoSkjermet(dokumentInfoSomSkalSkjermes.getDokumentInfoId());
-		assertThat(joarkRepository.findById(originalJournalpost.getJournalpostId())
+		assertThat(journalpostRepository.findById(originalJournalpost.getJournalpostId())
 				.get()
 				.getSkjermingType(), is(SkjermingTypeCode.POL));
 
@@ -241,7 +240,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	public void skalSkjermeDokumentFil() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostRepository.save(createUniqueJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
 		reinitTransaction();
@@ -261,7 +260,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThat(dokInfoEtterKall.get()
 				.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV)
@@ -288,7 +287,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	public void skalSkjermeAlleFildetaljerHvisVariantIkkeErSatt() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostRepository.save(createUniqueJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
 		reinitTransaction();
@@ -309,7 +308,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThat(dokInfoEtterKall.get()
 				.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV)
@@ -341,11 +340,11 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	public void skalSkjermeDokumentFilHvisDokumentHarSladdetFildetaljer() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.SLADDET));
 
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		assertNull(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getSkjermingType());
 
 		reinitTransaction();
@@ -365,7 +364,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		Optional<DokumentInfo> dokInfoEtterKall = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId());
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThat(dokInfoEtterKall.get()
 				.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV)
@@ -386,17 +385,17 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalLageAksjonsLoggHvisDokumentInfoErAlleredeSkjermet() throws IOException {
-		Journalpost originalJournalpost = createJournalpostWithHoveddokument();
+		Journalpost originalJournalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfo = originalJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
 		Journalpost journalpost1 = createJournalpostWithGjenbruktHoveddokument(originalJournalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo());
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 		journalpost2.addJournalpostDokumentInfoRelasjon(TestDataGenerator.createVedleggRelasjon(journalpost2, dokumentInfo));
 
-		joarkRepository.save(originalJournalpost);
-		joarkRepository.save(journalpost1);
-		joarkRepository.save(journalpost2);
+		journalpostRepository.save(originalJournalpost);
+		journalpostRepository.save(journalpost1);
+		journalpostRepository.save(journalpost2);
 
 		skjermingServiceTest.skjermAllFildetaljer(originalJournalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo(), SkjermingTypeCode.POL);
@@ -425,7 +424,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		assertDokumentInfoSkjermet(dokumentInfo.getDokumentInfoId());
-		assertThat(joarkRepository.findById(originalJournalpost.getJournalpostId())
+		assertThat(journalpostRepository.findById(originalJournalpost.getJournalpostId())
 				.get()
 				.getSkjermingType(), is(SkjermingTypeCode.POL));
 
@@ -439,9 +438,9 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalLageAksjonsLoggHvisJournalpostErAlleredeSkjermet() throws IOException {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 
 		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), SkjermingTypeCode.POL);
 		skjermingServiceTest.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon()
@@ -475,7 +474,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalLageAksjonsLoggHvisJDokumentFilErAlleredeSkjermet() throws IOException {
-		Journalpost journalpost = joarkRepository.save(createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostRepository.save(createUniqueJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		skjermingServiceTest.setVariantSkjermet(dokumentInfo.getDokumentInfoId(), VariantFormatCode.ARKIV, SkjermingTypeCode.POL);
 
@@ -519,7 +518,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	}
 
 	private void assertDokumentInfoSkjermet(Long dokumentInfoId) {
-		journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId)
+		journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId)
 				.forEach(rel -> {
 					if (rel.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT) {
 						assertThat("Alle Fildetaljer skal være skjermet", skjermingService.isAllFildetaljerSkjermet(rel.getDokumentInfo()), is(true));

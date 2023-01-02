@@ -15,8 +15,8 @@ import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
@@ -41,7 +41,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_METADATA;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
@@ -56,8 +55,8 @@ public class OppdaterJournalpostService {
 
 	private static final String APPLIKASJON_FS22 = "FS22";
 
-	private final JoarkRepositorySkjermet joarkRepository;
-	private final DokumentinfoRepository dokumentinfoRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final JournalpostUpdater journalpostUpdater;
 	private final SaksrelasjonUpdater saksrelasjonUpdater;
 	private final DokumentInfoUpdater dokumentInfoUpdater;
@@ -67,18 +66,18 @@ public class OppdaterJournalpostService {
 	private final HentSakerRepository hentSakerRepository;
 	private final MeterRegistry meterRegistry;
 
-	public OppdaterJournalpostService(JoarkRepositorySkjermet joarkRepository,
+	public OppdaterJournalpostService(JournalpostRepositorySkjermet journalpostRepositorySkjermet,
 									  JournalpostUpdater journalpostUpdater,
 									  SaksrelasjonUpdater saksrelasjonUpdater,
-									  DokumentinfoRepository dokumentinfoRepository,
+									  DokumentInfoRepository dokumentInfoRepository,
 									  DokumentInfoUpdater dokumentInfoUpdater,
 									  LagreAksjonsLoggService lagreAksjonsLoggService,
 									  AksjonsLoggService aksjonsLoggService,
 									  final IdentConsumer identConsumer,
 									  final HentSakerRepository hentSakerRepository,
 									  final MeterRegistry meterRegistry) {
-		this.joarkRepository = joarkRepository;
-		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.journalpostUpdater = journalpostUpdater;
 		this.saksrelasjonUpdater = saksrelasjonUpdater;
 		this.dokumentInfoUpdater = dokumentInfoUpdater;
@@ -96,7 +95,7 @@ public class OppdaterJournalpostService {
 	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 		String sakId = null;
 
-		Journalpost journalpost = joarkRepository.findById(journalpostId)
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus(), journalpost.getJournalposttype());
@@ -118,7 +117,7 @@ public class OppdaterJournalpostService {
 		}
 
 		changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, sakId);
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 		if (!changeTracker.getChanges().isEmpty()) {
 			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
 					SAKSTILKNYTNING, journalpostId, null,
@@ -131,7 +130,6 @@ public class OppdaterJournalpostService {
 				assertDokumentInfoNotNull(dokumentInfo, String.valueOf(journalpost.getJournalpostId()), dokument.getDokumentInfoId());
 
 				changeTracker = dokumentInfoUpdater.updateFields(dokumentInfo, dokument);
-				dokumentinfoRepository.save(dokumentInfo);
 				if (!changeTracker.getChanges().isEmpty()) {
 					lagreAksjonsLoggService.lagreAksjonsLogg(
 							ENDRE_METADATA, dokumentInfo.getDokumentInfoId(), null,
@@ -146,7 +144,7 @@ public class OppdaterJournalpostService {
 	public void knyttTilAnnenSakOppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 		String sakId = null;
 
-		Journalpost journalpost = joarkRepository.findById(journalpostId)
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus(), journalpost.getJournalposttype());
@@ -166,7 +164,7 @@ public class OppdaterJournalpostService {
 		}
 
 		changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, sakId);
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 		if (!changeTracker.getChanges().isEmpty()) {
 			populerAksjonslogg(journalpostId, SAKSTILKNYTNING, changeTracker.getChanges());
 		}

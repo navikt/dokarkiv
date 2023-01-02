@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class DefaultArkiverVedleggServiceTest {
 	public static final String GENERATED_FILUUID = UUID.randomUUID().toString();
 
 	@Mock
-    private JoarkRepositorySkjermet repositoryMock;
+    private JournalpostRepositorySkjermet repositoryMock;
 
 	@Mock
 	private ArkiverVedleggValidator arkiverVedleggValidatorMock;

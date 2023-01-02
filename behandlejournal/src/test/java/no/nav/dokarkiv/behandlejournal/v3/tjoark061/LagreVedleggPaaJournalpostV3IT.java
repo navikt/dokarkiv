@@ -77,7 +77,7 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 		createRequest(journalpost.getJournalpostId().toString());
 		lagreVedleggPaaJournalpostResponse = behandleJournalV3Provider
 				.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-		persistedDokumentInfo = dokumentinfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
+		persistedDokumentInfo = dokumentInfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
 				.getDokumentId())).get();
 		fildetaljer = persistedDokumentInfo.getFildetaljerListe().iterator().next();
 	}
@@ -139,7 +139,7 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 		createRequest(journalpost.getJournalpostId().toString());
 		lagreVedleggPaaJournalpostResponse = behandleJournalV3Provider
 				.lagreVedleggPaaJournalpost(lagreVedleggPaaJournalpostRequest);
-		persistedDokumentInfo = dokumentinfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
+		persistedDokumentInfo = dokumentInfoRepository.findById(Long.valueOf(lagreVedleggPaaJournalpostResponse
 				.getDokumentId())).get();
 
 		assertNotNull(persistedDokumentInfo);
@@ -151,7 +151,7 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 	public void shouldVerifyFileContentForTheAddedVedlegg() throws Exception {
 		setUpJoark();
 
-		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(fildetaljer.getFilUuid());
+		DokumentFil dokumentFil = dokumentFilTestRepository.findByFilUuid(fildetaljer.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(FILECONTENT));
 	}
 
@@ -195,7 +195,7 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 												.build()).build()).build();
 		persistedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo()
 				.setOriginalJournalpost(persistedJournalpost);
-		return joarkRepository.save(persistedJournalpost);
+		return journalpostRepositorySkjermet.save(persistedJournalpost);
 	}
 
 	private JournalfoertDokumentInfo createInputJournalfoertDokumentInfo() {

@@ -14,7 +14,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +50,7 @@ public class DefaultJournalfoerInngaaendeHenvendelseTest {
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
-    private JoarkRepositorySkjermet joarkRepositoryMock;
+    private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 	@InjectMocks
 	private DefaultJournalfoerInngaaendeHenvendelse service;
 	private JournalfoerInngaaendeHenvendelseRequest request;

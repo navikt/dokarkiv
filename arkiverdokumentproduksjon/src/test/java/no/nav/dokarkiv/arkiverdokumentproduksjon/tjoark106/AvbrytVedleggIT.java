@@ -55,7 +55,7 @@ public class AvbrytVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 		AvbrytVedleggRequest request = createRequest(journalpost);
 		arkiverDokumentproduksjonProvider.avbrytVedlegg(request);
 
-		Journalpost resultJournalpost = joarkRepository.findById(journalpost.getJournalpostId()).get();
+		Journalpost resultJournalpost = journalpostRepositorySkjermet.findById(journalpost.getJournalpostId()).get();
 		assertThat(resultJournalpost.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(resultJournalpost.getSaksrelasjon().getEndretAvNavn(), is(ENDRET_AV_NAVN));
 
@@ -74,12 +74,12 @@ public class AvbrytVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 
 		arkiverDokumentproduksjonProvider.avbrytVedlegg(request);
 
-		Journalpost resultJournalpost = joarkRepository.findById(processedJp.getJournalpostId()).get();
+		Journalpost resultJournalpost = journalpostRepositorySkjermet.findById(processedJp.getJournalpostId()).get();
 		assertThat(resultJournalpost.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(resultJournalpost.getSaksrelasjon().getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(resultJournalpost.getJournalpostDokumentInfoRelasjoner().isEmpty(), is(true));
 
-		DokumentInfo resultDokumentInfo = dokumentinfoRepository.findById(dokumentInfo.getDokumentInfoId()).get();
+		DokumentInfo resultDokumentInfo = dokumentInfoRepository.findById(dokumentInfo.getDokumentInfoId()).get();
 		assertThat(resultDokumentInfo.getJournalpostRelasjoner().size(), is(1));
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = getJournalpostRelasjon(resultDokumentInfo);
 		assertThat(journalpostDokumentInfoRelasjon.getJournalpost().getId(), is(nonProcessedJp.getId()));
@@ -202,7 +202,7 @@ public class AvbrytVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 								.build())
 				.build();
 
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 		return journalpost;
 	}
 

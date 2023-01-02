@@ -12,7 +12,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +57,7 @@ public class DefaultFerdigstillJournalpostServiceTest {
 	private SporingPopulator sporingPopulator;
 
 	@Mock
-	private JoarkRepositorySkjermet joarkRepository;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 
 	@InjectMocks
 	private DefaultFerdigstillJournalpostService service;
@@ -71,7 +71,7 @@ public class DefaultFerdigstillJournalpostServiceTest {
 	@Test
 	public void shouldRunOk() {
 		Journalpost journalpost = testJournalpost(VariantFormatCode.ARKIV);
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		service.ferdigstillJournalpost(request);
 
@@ -82,14 +82,14 @@ public class DefaultFerdigstillJournalpostServiceTest {
 
 		verify(validator).validateInputRequest(request);
 		verify(validator).validate(journalpost);
-		verify(joarkRepository).findById(JOURNALPOST_ID);
+		verify(journalpostRepositorySkjermetMock).findById(JOURNALPOST_ID);
 		verify(sporingPopulator).populateSporingInfo(journalpost, ENDRET_AV_NAVN);
 	}
 
 	@Test
 	public void shouldRunOkLokalPrint() {
 		Journalpost journalpost = testJournalpost(VariantFormatCode.ARKIV);
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		request.setUtsendingskanal(UtsendingsKanalCode.L);
 		service.ferdigstillJournalpost(request);
@@ -100,7 +100,7 @@ public class DefaultFerdigstillJournalpostServiceTest {
 	@Test
 	public void shouldRunOkProduksjon() {
 		Journalpost journalpost = testJournalpost(VariantFormatCode.PRODUKSJON);
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		service.ferdigstillJournalpost(request);
 
 		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfos()) {
@@ -111,13 +111,13 @@ public class DefaultFerdigstillJournalpostServiceTest {
 
 		verify(validator).validateInputRequest(request);
 		verify(validator).validate(journalpost);
-		verify(joarkRepository).findById(JOURNALPOST_ID);
+		verify(journalpostRepositorySkjermetMock).findById(JOURNALPOST_ID);
 		verify(sporingPopulator).populateSporingInfo(journalpost, ENDRET_AV_NAVN);
 	}
 
 	@Test
 	public void shouldThrowExceptionCannotFindJournalpost() {
-		when(joarkRepository.findById(JOURNALPOST_ID)).thenReturn(Optional.empty());
+		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.empty());
 
 		assertThrows(NoJournalpostFoundException.class,
 				() -> service.ferdigstillJournalpost(request));

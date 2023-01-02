@@ -7,19 +7,19 @@ import no.nav.dokarkiv.core.exceptions.InvalidFilUuidException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.logging.AuditLogger;
 import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractDocumentOperation {
 
 	@Autowired
-	protected JoarkRepositorySkjermet joarkRepository;
+	protected JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 
 	@Autowired
 	protected DokumentFilSkjermetRepository dokumentFilRepository;
 
-	public void setJoarkRepository(JoarkRepositorySkjermet joarkRepository) {
-		this.joarkRepository = joarkRepository;
+	public void setJournalpostRepositorySkjermet(JournalpostRepositorySkjermet journalpostRepositorySkjermet) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 	}
 
 	public void setDokumentFilRepository(DokumentFilSkjermetRepository dokumentFilRepository) {
@@ -66,7 +66,7 @@ public abstract class AbstractDocumentOperation {
 	 * @throws NoJournalpostFoundException if the Journalpost is not found.
 	 */
 	protected Journalpost getJournalpost(Long journalpostId) throws NoJournalpostFoundException {
-		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId).orElse(null);
 		if (journalpost == null) {
 			throw new NoJournalpostFoundException("Journalpost med id " + journalpostId + " eksisterer ikke", journalpostId);
 		}

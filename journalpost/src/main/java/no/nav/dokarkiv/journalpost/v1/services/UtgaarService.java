@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -29,20 +29,20 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
 @Component
 @Slf4j
 public class UtgaarService {
-	private final JoarkRepository joarkRepository;
+	private final JournalpostRepository journalpostRepository;
 	private final LagreAksjonsLoggService aksjonsLoggService;
 
 	static final String FIKK_UTGAAR = "Journalposten ble satt til utgår";
 	static final List<JournalStatusCode> JOURNAL_STATUS_AVBRUTT_DOKUMENT_RESERVERT = Arrays.asList(A, D, R);
 	static final List<JournalpostTypeCode> JOURNALPOSTTYPE_INNGAAENDE_NOTAT = Arrays.asList(I, N);
 
-	public UtgaarService(final JoarkRepository joarkRepository, final LagreAksjonsLoggService aksjonsLoggService) {
-		this.joarkRepository = joarkRepository;
+	public UtgaarService(final JournalpostRepository journalpostRepository, final LagreAksjonsLoggService aksjonsLoggService) {
+		this.journalpostRepository = journalpostRepository;
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
 	public String settStatusUtgaar(String journalpostId) {
-		Journalpost journalpost = joarkRepository.findById(parseLong(journalpostId))
+		Journalpost journalpost = journalpostRepository.findById(parseLong(journalpostId))
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
@@ -64,7 +64,7 @@ public class UtgaarService {
 				.tilVerdi(journalpost.getJournalstatus().name())
 				.build();
 
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 
 		aksjonsLoggService.lagreAksjonsLoggForJournalpost(
 				UTGAAR,

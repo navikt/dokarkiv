@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
 import org.springframework.stereotype.Component;
 
@@ -25,16 +25,16 @@ import static org.assertj.core.util.Strings.isNullOrEmpty;
 @Slf4j
 public class DefaultOpprettJournalpostArkiverDokumenterService implements OpprettJournalpostArkiverDokumenterService {
 
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final OpprettJournalpostArkiverDokumenterValidator opprettJournalpostArkiverDokumenterValidator;
 	private final DokumentFilerDelegate dokumentFilerDelegate;
 	private final OpprettJournalpostArkiverDokumenterRequestMapper opprettJournalpostArkiverDokumenterRequestMapper;
 
-	public DefaultOpprettJournalpostArkiverDokumenterService(JoarkRepositorySkjermet joarkRepository,
+	public DefaultOpprettJournalpostArkiverDokumenterService(JournalpostRepositorySkjermet journalpostRepositorySkjermet,
 															 OpprettJournalpostArkiverDokumenterValidator opprettJournalpostArkiverDokumenterValidator,
 															 DokumentFilerDelegate dokumentFilerDelegate,
 															 OpprettJournalpostArkiverDokumenterRequestMapper opprettJournalpostArkiverDokumenterRequestMapper) {
-		this.joarkRepository = joarkRepository;
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.opprettJournalpostArkiverDokumenterValidator = opprettJournalpostArkiverDokumenterValidator;
 		this.dokumentFilerDelegate = dokumentFilerDelegate;
 		this.opprettJournalpostArkiverDokumenterRequestMapper = opprettJournalpostArkiverDokumenterRequestMapper;
@@ -54,7 +54,7 @@ public class DefaultOpprettJournalpostArkiverDokumenterService implements Oppret
 			opprettJournalpostArkiverDokumenterValidator.validate(journalpost);
 
 			dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
-			storedJournalpost = joarkRepository.save(journalpost);
+			storedJournalpost = journalpostRepositorySkjermet.save(journalpost);
 		}
 		return createResponse(storedJournalpost);
 	}
@@ -111,16 +111,16 @@ public class DefaultOpprettJournalpostArkiverDokumenterService implements Oppret
 		if (journalpostIdPreviousJournalforing == null) {
 			return null;
 		} else {
-			return joarkRepository.findById(journalpostIdPreviousJournalforing).orElse(null);
+			return journalpostRepositorySkjermet.findById(journalpostIdPreviousJournalforing).orElse(null);
 		}
 	}
 
 	private Long findPreviousJournalpostIdByDokumentInfoTilleggsopplysningerBestillingsId(final String bestillingsId) {
-		Long dokumentinfoIdPreviousJournalforing = joarkRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(BESTILLINGS_ID_KEY, bestillingsId);
+		Long dokumentinfoIdPreviousJournalforing = journalpostRepositorySkjermet.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(BESTILLINGS_ID_KEY, bestillingsId);
 		if (dokumentinfoIdPreviousJournalforing == null) {
 			return null;
 		}
 
-		return joarkRepository.findJournalpostIdByDokumentinfoId(dokumentinfoIdPreviousJournalforing.toString());
+		return journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId(dokumentinfoIdPreviousJournalforing.toString());
 	}
 }

@@ -22,9 +22,6 @@
 		<module>dokumentproduksjoninfo</module>
 		<module>arkiverdokumentproduksjon</module>
 		<module>behandlejournal</module>
-		<module>journal</module>
-		<module>journalfoerinngaaende</module>
-		<module>hentdokument</module>
 		<module>hentjournalsakinfo</module>
 		<module>arkivervariant</module>
 		<module>admin</module>
@@ -65,10 +62,8 @@
 		<!-- Tjenestegrensesnitt -->
 		<behandlejournal-v2-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v2-tjenestespesifikasjon.version>
 		<behandlejournal-v3-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v3-tjenestespesifikasjon.version>
-		<nav-journal-v3-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</nav-journal-v3-tjenestespesifikasjon.version>
 		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.4.1</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
 		<dokumentproduksjoninfo-tjenestespesifikasjon.version>2.1.1</dokumentproduksjoninfo-tjenestespesifikasjon.version>
-		<no-nav-dok-tjenester-journalfoerinngaaende.version>0.0.21</no-nav-dok-tjenester-journalfoerinngaaende.version>
 
 		<!-- test -->
 		<spring-cloud-contract-wiremock.version>2.1.5.RELEASE</spring-cloud-contract-wiremock.version>
@@ -124,21 +119,6 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>behandlejournal</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>journalfoerinngaaende</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>journal</artifactId>
-				<version>1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>hentdokument</artifactId>
 				<version>1-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -282,11 +262,6 @@
 				<version>${behandlejournal-v3-tjenestespesifikasjon.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>no.nav.tjenestespesifikasjoner</groupId>
-				<artifactId>nav-journal-v3-tjenestespesifikasjon</artifactId>
-				<version>${nav-journal-v3-tjenestespesifikasjon.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>no.nav.tjenester.brevogarkiv</groupId>
 				<artifactId>arkiverdokumentproduksjon-tjenestespesifikasjon</artifactId>
 				<version>${arkiverdokumentproduksjon-tjenestespesifikasjon.version}</version>
@@ -297,11 +272,6 @@
 				<artifactId>dokumentproduksjoninfo-tjenestespesifikasjon</artifactId>
 				<version>${dokumentproduksjoninfo-tjenestespesifikasjon.version}</version>
 				<classifier>jaxws</classifier>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.tjenester.fim</groupId>
-				<artifactId>no-nav-dok-tjenester-journalfoerinngaaende</artifactId>
-				<version>${no-nav-dok-tjenester-journalfoerinngaaende.version}</version>
 			</dependency>
 
 			<!-- Springdoc -->

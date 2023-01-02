@@ -37,11 +37,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("itest")
 public class UtsendingsInfoRepositoryTest {
 	@Autowired
-	UtsendingsInfoRepository utsendingsInfoRepository;
+	UtsendingsInfoTestRepository utsendingsInfoTestRepository;
 	@Autowired
-	DokumentFilRepository dokumentFilRepository;
+	DokumentFilTestRepository dokumentFilTestRepository;
 	@Autowired
-	JoarkRepository joarkRepository;
+	JournalpostRepository journalpostRepository;
 
 	@BeforeEach
 	public void setUp() {
@@ -51,30 +51,30 @@ public class UtsendingsInfoRepositoryTest {
 	@AfterEach
 	public void cleanUp() {
 		TestTransaction.end();
-		dokumentFilRepository.deleteAll();
-		utsendingsInfoRepository.deleteAll();
-		joarkRepository.deleteAll();
+		dokumentFilTestRepository.deleteAll();
+		utsendingsInfoTestRepository.deleteAll();
+		journalpostRepository.deleteAll();
 	}
 
 	@Test
-	public void shouldSuccessfullySaveUtsendingsinfoForJournalPost() {
+	public void shouldSuccessfullySaveUtsendingsinfoForJournalpost() {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
-		dokumentFilRepository.save(arkivDokumentFil);
-		dokumentFilRepository.save(createDummyDokumentKassert());
-		journalpost = joarkRepository.save(journalpost);
+		dokumentFilTestRepository.persist(arkivDokumentFil);
+		dokumentFilTestRepository.persist(createDummyDokumentKassert());
+		journalpost = journalpostRepository.save(journalpost);
 
 		var utsendingsInfoPart = new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
 				"Hei Bruker! Du har fått en ny melding på nav.no. Hilsen NAV");
 		journalpost.setUtsendingskanal(UtsendingsKanalCode.NAV_NO);
 		journalpost.setUtsendingsInfo(utsendingsInfoPart);
-		journalpost = joarkRepository.save(journalpost);
+		journalpost = journalpostRepository.save(journalpost);
 		UtsendingsInfo utsendingsInfo = journalpost.getUtsendingsInfo();
 
 
 		assertThat(utsendingsInfo.getId(), equalTo(journalpost.getId()));
-		assertTrue(utsendingsInfoRepository.findById(journalpost.getJournalpostId()).isPresent(), "Det skal finnes en utsendingsinfo med journalpostId som id");
+		assertTrue(utsendingsInfoTestRepository.findById(journalpost.getJournalpostId()).isPresent(), "Det skal finnes en utsendingsinfo med journalpostId som id");
 	}
 
 	@Test
@@ -82,9 +82,9 @@ public class UtsendingsInfoRepositoryTest {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
-		dokumentFilRepository.save(arkivDokumentFil);
-		dokumentFilRepository.save(createDummyDokumentKassert());
-		joarkRepository.save(journalpost);
+		dokumentFilTestRepository.persist(arkivDokumentFil);
+		dokumentFilTestRepository.persist(createDummyDokumentKassert());
+		journalpostRepository.save(journalpost);
 
 		journalpost.setUtsendingskanal(UtsendingsKanalCode.NAV_NO);
 		assertThrows(IllegalArgumentException.class, () ->

@@ -2,45 +2,42 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
-import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
+import no.nav.dokarkiv.core.repository.SkannetInnholdTestRepository;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggResponse;
-import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
-import java.util.List;
 
+import static java.lang.Long.parseLong;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 
 	@Autowired
-	SkannetInnholdRepository skannetInnholdRepository;
+	SkannetInnholdTestRepository skannetInnholdTestRepository;
 
 	private static final String LOGISK_VEDLEGG = "/logiskVedlegg/";
 	private static final String NY_TITTEL = "Ny tittel";
 
 	@Test
-	public void happyPathEndreLogiskVedlegg() throws IOException {
+	public void shouldEndreLogiskVedlegg() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 		Long logiskVedleggId = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentInfoId).getSkannetInnholdListe().iterator().next().getSkannetInnholdId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
 		EndreLogiskVedleggRequest request = EndreLogiskVedleggRequest.builder()
 				.tittel(NY_TITTEL)
@@ -50,27 +47,23 @@ public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
-		SkannetInnhold skannetInnhold = skannetInnholdRepository.findSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(logiskVedleggId.toString(), dokumentInfoId.toString())
-				.orElseThrow(RuntimeException::new);
+		SkannetInnhold skannetInnhold = skannetInnholdTestRepository.findById(logiskVedleggId).orElse(null);
 
+		assertThat(skannetInnhold).isNotNull();
 		assertEquals(skannetInnhold.getVedleggInnhold(), NY_TITTEL);
 	}
 
 	@Test
-	public void happyPathLeggTilLogiskVedlegg() throws IOException {
+	public void shouldLeggeTilLogiskVedlegg() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
 		LeggTilLogiskVedleggRequest request = LeggTilLogiskVedleggRequest.builder()
 				.tittel(NY_TITTEL)
@@ -80,42 +73,37 @@ public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
-		SkannetInnhold skannetInnhold = skannetInnholdRepository.findSkannetInnholdBySkannetInnholdIdAndDokumentinfoId(response.getBody().getLogiskVedleggId(), dokumentInfoId.toString())
-				.orElseThrow(RuntimeException::new);
+		SkannetInnhold skannetInnhold = skannetInnholdTestRepository.findById(parseLong(response.getBody().getLogiskVedleggId()))
+				.orElse(null);
 
+		assertThat(skannetInnhold).isNotNull();
 		assertEquals(skannetInnhold.getVedleggInnhold(), NY_TITTEL);
 	}
 
 	@Test
-	public void happyPathSlettLogiskVedlegg() throws IOException {
+	public void shouldSlettLogiskVedlegg() throws IOException {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-		joarkRepository.save(journalpost);
+		journalpostRepository.save(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 		Long logiskVedleggId = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentInfoId).getSkannetInnholdListe().iterator().next().getSkannetInnholdId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
-		List<SkannetInnhold> skannetInnholdList = IteratorUtils.toList(skannetInnholdRepository.findAll().iterator());
-		assertEquals(skannetInnholdList.size(), 1);
+		assertThat(skannetInnholdTestRepository.findById(logiskVedleggId)).isNotEmpty();
 
 		HttpEntity<String> requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 		ResponseEntity<String> response = restTemplate.exchange(URL_DOKUMENTINFO + dokumentInfoId + LOGISK_VEDLEGG + logiskVedleggId, HttpMethod.DELETE, requestEntity, String.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
-		skannetInnholdList = IteratorUtils.toList(skannetInnholdRepository.findAll().iterator());
-		assertEquals(skannetInnholdList.size(), 0);
+		SkannetInnhold skannetInnholdAfterDelete = skannetInnholdTestRepository.findById(logiskVedleggId).orElse(null);
+		assertThat(skannetInnholdAfterDelete).isNull();
+		assertThat(dokumentInfoTestRepository.findById(dokumentInfoId)).isNotEmpty();
 	}
 }

@@ -128,14 +128,14 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 	}
 
 	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
-		Journalpost journalpost = joarkRepository.save(builder.build());
+		Journalpost journalpost = journalpostRepository.save(builder.build());
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		return journalpost;
 	}
 
 	protected void clearSakRepository() {
-		sakRepository.deleteAll();
+		sakTestRepository.deleteAll();
 		commitAndStartNewTransaction();
 	}
 

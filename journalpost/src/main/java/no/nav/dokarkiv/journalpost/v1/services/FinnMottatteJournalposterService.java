@@ -3,7 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.services;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.KanIkkeHenteMottatteJournalposterException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletBruker;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletJournalpost;
@@ -24,32 +24,32 @@ import static org.slf4j.MDC.get;
 @Slf4j
 public class FinnMottatteJournalposterService {
 
-	private final JoarkRepository joarkRepository;
+	private final JournalpostRepository journalpostRepository;
 
-	public FinnMottatteJournalposterService(JoarkRepository joarkRepository) {
-		this.joarkRepository = joarkRepository;
+	public FinnMottatteJournalposterService(JournalpostRepository journalpostRepository) {
+		this.journalpostRepository = journalpostRepository;
 	}
 
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter() throws KanIkkeHenteMottatteJournalposterException {
 		try {
-			List<Journalpost> ubehandledeJournalposter = joarkRepository
+			List<Journalpost> ubehandledeJournalposter = journalpostRepository
 					.findUbehandledeJournalposts(DateTime.now().minusWeeks(1).toDate())
 					.orElse(List.of());
 			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::createResponseObject).collect(Collectors.toList()));
 		} catch(DataAccessException e){
-			log.error(get(MDC_REQUEST_ID) + " finnMottatteJournalposter fikk DataAccessException ved kall mot joarkRepository", e);
+			log.error(get(MDC_REQUEST_ID) + " finnMottatteJournalposter fikk DataAccessException ved kall mot journalpostRepository", e);
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
 		}
 	}
 
 	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedTemaEldreEnn(List<String> temaer, int eldreEnn) throws KanIkkeHenteMottatteJournalposterException {
 		try {
-			List<Journalpost> ubehandledeJournalposter = joarkRepository
+			List<Journalpost> ubehandledeJournalposter = journalpostRepository
 					.findUbehandledeJournalpostsWithTemaIn(DateTime.now().minusDays(eldreEnn).toDate(), temaer)
 					.orElse(List.of());
 			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::createResponseObject).collect(Collectors.toList()));
 		} catch(DataAccessException e){
-			log.error(get(MDC_REQUEST_ID) + " finnMottatteJournalposterMedTemaer fikk DataAccessException ved kall mot joarkRepository.", e);
+			log.error(get(MDC_REQUEST_ID) + " finnMottatteJournalposterMedTemaer fikk DataAccessException ved kall mot journalpostRepository.", e);
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
 		}
 	}

@@ -10,19 +10,19 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultFerdigstillJournalpostService implements FerdigstillJournalpostService {
 
-    private final JoarkRepositorySkjermet joarkRepository;
+    private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final FerdigstillJournalpostValidator validator;
 	private final SporingPopulator sporingPopulator;
 
-	public DefaultFerdigstillJournalpostService(JoarkRepositorySkjermet joarkRepository, FerdigstillJournalpostValidator validator, SporingPopulator sporingPopulator) {
-		this.joarkRepository = joarkRepository;
+	public DefaultFerdigstillJournalpostService(JournalpostRepositorySkjermet journalpostRepositorySkjermet, FerdigstillJournalpostValidator validator, SporingPopulator sporingPopulator) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.validator = validator;
 		this.sporingPopulator = sporingPopulator;
 	}
@@ -57,7 +57,7 @@ public class DefaultFerdigstillJournalpostService implements FerdigstillJournalp
 
 
 	private Journalpost findJournalpost(Long journalpostId) throws NoJournalpostFoundException {
-		return joarkRepository.findById(journalpostId).orElseThrow(() -> new NoJournalpostFoundException("Journalpost with id: " + journalpostId + " does not exist", journalpostId));
+		return journalpostRepositorySkjermet.findById(journalpostId).orElseThrow(() -> new NoJournalpostFoundException("Journalpost with id: " + journalpostId + " does not exist", journalpostId));
 	}
 
 

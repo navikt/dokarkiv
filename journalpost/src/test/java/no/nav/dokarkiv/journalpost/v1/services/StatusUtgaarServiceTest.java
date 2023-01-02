@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -23,9 +23,9 @@ import static org.mockito.Mockito.when;
 
 public class StatusUtgaarServiceTest {
 
-	private final JoarkRepository joarkRepositoryMock = Mockito.mock(JoarkRepository.class);
+	private final JournalpostRepository journalpostRepositoryMock = Mockito.mock(JournalpostRepository.class);
 	private final LagreAksjonsLoggService aksjonsLoggService = Mockito.mock(LagreAksjonsLoggService.class);
-	private final UtgaarService utgaarService = new UtgaarService(joarkRepositoryMock, aksjonsLoggService);
+	private final UtgaarService utgaarService = new UtgaarService(journalpostRepositoryMock, aksjonsLoggService);
 
 	@Test
 	public void HappyPathTest() {
@@ -34,7 +34,7 @@ public class StatusUtgaarServiceTest {
 				.journalposttype(JournalpostTypeCode.I)
 				.build();
 
-		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 		String response = utgaarService.settStatusUtgaar("38");
 		assertEquals(FIKK_UTGAAR, response);
 	}
@@ -44,7 +44,7 @@ public class StatusUtgaarServiceTest {
 		Journalpost journalpost = Journalpost.builder()
 				.build();
 
-		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 		assertThrows(UgyldigJournalStatusException.class, () ->
 				utgaarService.settStatusUtgaar("38")
 		);
@@ -56,7 +56,7 @@ public class StatusUtgaarServiceTest {
 				.journalstatus(D)
 				.build();
 
-		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 		assertThrows(UgyldigJournalStatusException.class, () ->
 				utgaarService.settStatusUtgaar("38")
 		);
@@ -68,7 +68,7 @@ public class StatusUtgaarServiceTest {
 				.journalstatus(A)
 				.build();
 
-		when(joarkRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
+		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 		assertThrows(UgyldigJournalStatusException.class, () ->
 				utgaarService.settStatusUtgaar("38")
 		);

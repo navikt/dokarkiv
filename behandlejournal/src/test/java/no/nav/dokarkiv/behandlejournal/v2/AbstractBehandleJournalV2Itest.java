@@ -3,9 +3,9 @@ package no.nav.dokarkiv.behandlejournal.v2;
 import no.nav.dokarkiv.behandlejournal.TestBehandleConfig;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
@@ -33,16 +33,16 @@ public abstract class AbstractBehandleJournalV2Itest {
 	@Autowired
 	protected BehandleJournalV2 behandleJournalProvider;
 	@Autowired
-    protected JoarkRepositorySkjermet joarkRepository;
+    protected JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	@Autowired
-    protected DokumentinfoRepository dokumentinfoRepository;
+    protected DokumentInfoRepository dokumentInfoRepository;
 	@Autowired
-	protected DokumentFilRepository dokumentFilRepository;
+	protected DokumentFilTestRepository dokumentFilTestRepository;
 
 	@BeforeEach
 	public void setUpItest() {
-		joarkRepository.deleteAll();
-		dokumentFilRepository.deleteAll();
+		journalpostRepositorySkjermet.deleteAll();
+		dokumentFilTestRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("itestuser")
 				.componentId("itest")

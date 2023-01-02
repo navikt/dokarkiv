@@ -23,6 +23,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -30,6 +32,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
@@ -137,7 +141,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 
 	protected void assertThatJournalpostIsDeleted(Long journalpostId) {
-		assertThat(joarkRepository.findById(journalpostId).isPresent(), is(false));
+		assertThat(journalpostRepository.findById(journalpostId).isPresent(), is(false));
 		assertThat(entityManager.createQuery("select '1' from Saksrelasjon where journalpost.journalpostId= :jp")
 				.setParameter("jp", journalpostId)
 				.getResultList()
@@ -154,13 +158,13 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 				.setParameter("jp", journalpostId)
 				.getResultList()
 				.size(), is(0));
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostId).size(), is(0));
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostId).size(), is(0));
 	}
 
 	protected void assertThatDokumentInfoIsDeleted(DokumentInfo dokumentInfo) {
 		Long dokumentInfoId = dokumentInfo.getDokumentInfoId();
-		assertThat(dokumentinfoRepository.findById(dokumentInfoId).isPresent(), is(false));
-		assertThat(journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId).size(), is(0));
+		assertThat(dokumentInfoTestRepository.findById(dokumentInfoId).isPresent(), is(false));
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId).size(), is(0));
 		assertThat(entityManager.createNativeQuery("select '1' from t_dok_info_tillegg where dokument_info_id= :dok")
 				.setParameter("dok", dokumentInfoId)
 				.getResultList()
@@ -190,7 +194,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	}
 
 	protected void assertThatDokumentFilIsDeleted(String filuuid) {
-		assertThat(dokumentFilRepository.findByFilUuid(filuuid), nullValue());
+		assertThat(dokumentFilTestRepository.findByFilUuid(filuuid), nullValue());
 	}
 
 	protected void assertThatJournalpostRelasjonerIsNotDeleted(Journalpost journalpost) {
@@ -206,7 +210,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected void assertThatJournalpostIsNotDeleted(Journalpost journalpost) {
 		Long journalpostId = journalpost.getJournalpostId();
-		assertThat(joarkRepository.findById(journalpostId).isPresent(), is(true));
+		assertThat(journalpostRepository.findById(journalpostId).isPresent(), is(true));
 		assertThat(entityManager.createQuery("select '1' from Saksrelasjon where journalpost.journalpostId= :jp")
 				.setParameter("jp", journalpostId)
 				.getResultList()
@@ -227,7 +231,9 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected void assertThatDokumentInfoIsNotDeleted(DokumentInfo dokumentInfo) {
 		Long dokumentInfoId = dokumentInfo.getDokumentInfoId();
-		assertThat(dokumentinfoRepository.findById(dokumentInfoId).isPresent(), is(true));
+		Optional<DokumentInfo> byId = dokumentInfoTestRepository.findById(dokumentInfoId);
+		assertThat(byId.isPresent(), is(true));
+		byId.get().getSkannetInnholdListe();
 		assertThat(entityManager.createNativeQuery("select '1' from t_dok_info_tillegg where dokument_info_id= :dok")
 				.setParameter("dok", dokumentInfoId)
 				.getResultList()
@@ -261,6 +267,12 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	}
 
 	protected void assertThatDokumentFilIsNotDeleted(String filuuid) {
-		assertThat(dokumentFilRepository.findByFilUuid(filuuid), notNullValue());
+		assertThat(dokumentFilTestRepository.findByFilUuid(filuuid), notNullValue());
+	}
+
+	protected Journalpost createUniqueJournalpostWithHoveddokument() {
+		Journalpost journalpostWithHoveddokument = createJournalpostWithHoveddokument();
+		journalpostWithHoveddokument.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
+		return journalpostWithHoveddokument;
 	}
 }

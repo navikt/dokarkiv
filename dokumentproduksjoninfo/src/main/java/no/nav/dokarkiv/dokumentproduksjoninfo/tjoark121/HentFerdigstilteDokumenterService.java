@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.DokumentInfoNotFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.IllegalDokumentstatusException;
@@ -22,13 +22,13 @@ import java.util.List;
 @Service
 public class HentFerdigstilteDokumenterService {
 
-	private final JoarkRepositorySkjermet joarkRepository;
+	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final DokumentFilSkjermetRepository dokumentFilRepository;
 	private final HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator;
 	private final SkjermingService skjermingService;
 
-	public HentFerdigstilteDokumenterService(JoarkRepositorySkjermet joarkRepository, DokumentFilSkjermetRepository dokumentFilRepository, HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator, SkjermingService skjermingService) {
-		this.joarkRepository = joarkRepository;
+	public HentFerdigstilteDokumenterService(JournalpostRepositorySkjermet journalpostRepositorySkjermet, DokumentFilSkjermetRepository dokumentFilRepository, HentFerdigstilteDokumenterValidator hentFerdigstilteRokumenterValidator, SkjermingService skjermingService) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.hentFerdigstilteRokumenterValidator = hentFerdigstilteRokumenterValidator;
 		this.skjermingService = skjermingService;
@@ -46,7 +46,7 @@ public class HentFerdigstilteDokumenterService {
 			throws FilDetaljerNotFoundException, JournalpostNotFoundException, IllegalJournalStatusException, IllegalDokumentstatusException
 			, DokumentInfoNotFoundException, IllegalVariantFormatException {
 		List<HentFerdigstilteDokumenterResponseTo> returnValue = new LinkedList<>();
-			Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new JournalpostNotFoundException("journalpostId=" + journalpostId + " eksisterer ikke"));
+			Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId).orElseThrow(() -> new JournalpostNotFoundException("journalpostId=" + journalpostId + " eksisterer ikke"));
 			hentFerdigstilteRokumenterValidator.validateJournalpost(journalpostId, journalpost);
 
 			for (Long dokumentInfoId : dokumentInfos) {

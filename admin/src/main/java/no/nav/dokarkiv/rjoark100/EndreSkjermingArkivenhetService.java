@@ -14,9 +14,9 @@ import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -38,16 +38,16 @@ public class EndreSkjermingArkivenhetService {
 
 	private final SkjermingService skjermingService;
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
-	private final JoarkRepository joarkRepository;
-	private final DokumentinfoRepository dokumentinfoRepository;
+	private final JournalpostRepository journalpostRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final EntityManager entityManager;
 
 	public EndreSkjermingArkivenhetService(
-			SkjermingService skjermingService, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JoarkRepository joarkRepository, DokumentinfoRepository dokumentinfoRepository, EntityManager entityManager) {
+			SkjermingService skjermingService, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JournalpostRepository journalpostRepository, DokumentInfoRepository dokumentInfoRepository, EntityManager entityManager) {
 		this.skjermingService = skjermingService;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
-		this.joarkRepository = joarkRepository;
-		this.dokumentinfoRepository = dokumentinfoRepository;
+		this.journalpostRepository = journalpostRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.entityManager = entityManager;
 	}
 
@@ -191,18 +191,18 @@ public class EndreSkjermingArkivenhetService {
 	}
 
 	private Journalpost hentJournalpost(Long journalpostId) {
-		return joarkRepository.findById(journalpostId).orElseThrow(() ->
+		return journalpostRepository.findById(journalpostId).orElseThrow(() ->
 				new JournalpostIkkeFunnetException("Fant ikke journalpost med journalpostId=" + journalpostId));
 	}
 
 	private DokumentInfo hentDokumentInfo(Long dokumentInfoId) {
-		return dokumentinfoRepository.findById(dokumentInfoId).orElseThrow(() ->
+		return dokumentInfoRepository.findById(dokumentInfoId).orElseThrow(() ->
 				new JournalpostIkkeFunnetException("Fant ikke DokumentInfo med dokumentInfoId=" + dokumentInfoId));
 	}
 
 
 	private FilDetaljer hentFildetaljerByVariantFormat(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
-		return dokumentinfoRepository.findByDokumentInfoId(dokumentInfoId)
+		return dokumentInfoRepository.findById(dokumentInfoId)
 				.orElseThrow(() ->
 						new DokumentInfoIkkeFunnetException(String.format("Fant ikke dokumentInfo med dokumentInfoId=%s", dokumentInfoId)))
 				.findFilDetaljerByVariantFormatAdmin(variantFormatCode);

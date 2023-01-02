@@ -8,16 +8,16 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DefaultHentJournalOgDokumentStatus implements HentJournalOgDokumentStatus {
 
-    private final JoarkRepositorySkjermet joarkRepository;
+    private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 
-	public DefaultHentJournalOgDokumentStatus(JoarkRepositorySkjermet joarkRepository) {
-		this.joarkRepository = joarkRepository;
+	public DefaultHentJournalOgDokumentStatus(JournalpostRepositorySkjermet journalpostRepositorySkjermet) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class DefaultHentJournalOgDokumentStatus implements HentJournalOgDokument
 	}
 
 	private Journalpost findJournalpost(Long journalpostId) throws NoJournalpostFoundException {
-		Journalpost journalpost = joarkRepository.findById(journalpostId).orElse(null);
+		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId).orElse(null);
 		if (journalpost == null) {
 			throw new NoJournalpostFoundException("Journalpost with id: " + journalpostId + " does not exist", journalpostId);
 		}

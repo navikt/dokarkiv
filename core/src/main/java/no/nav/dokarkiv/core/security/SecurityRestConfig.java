@@ -30,7 +30,6 @@ public class SecurityRestConfig extends WebSecurityConfigurerAdapter {
 		// Se JwtTokenValidationFilter
 		http.authorizeRequests()
 				.antMatchers("/rest/intern/**",
-						"/rest/journalfoerinngaaende/**",
 						"/rest/journalpostapi/**",
 						"/rest/admin/**")
 				.permitAll();

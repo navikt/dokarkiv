@@ -55,7 +55,7 @@ public class FjernFerdigstiltDokumentIT extends AbstractArkiverdokumentproduksjo
 
 		arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(createRequest(ferdigstiltJournalpost));
 
-		Journalpost resultJournalpost = joarkRepository.findById(ferdigstiltJournalpost.getJournalpostId()).get();
+		Journalpost resultJournalpost = journalpostRepositorySkjermet.findById(ferdigstiltJournalpost.getJournalpostId()).get();
 		assertThat(resultJournalpost.getDokumentDato(), is(nullValue()));
 		assertThat(resultJournalpost.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 
@@ -122,7 +122,7 @@ public class FjernFerdigstiltDokumentIT extends AbstractArkiverdokumentproduksjo
 
 				.build();
 
-		joarkRepository.save(journalpost);
+		journalpostRepositorySkjermet.save(journalpost);
 		return journalpost;
 
 	}

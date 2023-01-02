@@ -52,6 +52,9 @@ public class Saksrelasjon extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "sak_nr_fk", nullable = false, length = 20)
 	private String sakId;
 
+	@Column(name = "journalpost_id", nullable = false, insertable = false, updatable = false)
+	private Long journalpostId;
+
 	@Column(name = "feilregistrert")
 	private Boolean feilregistrert;
 

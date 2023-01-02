@@ -41,7 +41,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 	public void shouldSaveFileAsSladdetVariant() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+		Journalpost journalpost = journalpostRepository.save(opprettHoveddokumentForIT());
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -66,15 +66,15 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		TestTransaction.start();
-		assertTrue(dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId()).isPresent());
-		DokumentInfo persistedDokumentInfo = dokumentinfoRepository.findByDokumentInfoId(dokumentInfo.getDokumentInfoId())
+		assertTrue(dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId()).isPresent());
+		DokumentInfo persistedDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId())
 				.get();
 		assertThat(persistedDokumentInfo.getFildetaljerListeAdmin().size(), is(2));
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV), notNullValue());
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET), notNullValue());
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)
 				.getFiltype(), is(FilTypeCode.PDF));
-		DokumentFil dokumentFil = dokumentFilRepository.findByFilUuid(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)
+		DokumentFil dokumentFil = dokumentFilTestRepository.findByFilUuid(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)
 				.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(FIL));
 		assertThat(responseEntity.getBody().getFilUuid(), is(dokumentFil.getFilUuid()));
@@ -120,7 +120,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 	public void shouldFailWithBadRequestWhenVariantAlreadyExists() throws IOException {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+		Journalpost journalpost = journalpostRepository.save(opprettHoveddokumentForIT());
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -190,7 +190,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 	public void shouldNotAllowOperationIfNotSrvJoarkadminConsumer() {
 		abacPermit();
 
-		Journalpost journalpost = joarkRepository.save(opprettHoveddokumentForIT());
+		Journalpost journalpost = journalpostRepository.save(opprettHoveddokumentForIT());
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 

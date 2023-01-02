@@ -2,8 +2,8 @@ package no.nav.dokarkiv.dokumentproduksjoninfo;
 
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -36,9 +36,9 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 	@Autowired
 	protected DokumentproduksjonInfoV1 dokumentproduksjonInfoProvider;
 	@Autowired
-	protected JoarkRepositorySkjermet joarkRepository;
+	protected JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	@Autowired
-	protected DokumentFilRepository dokumentFilRepository;
+	protected DokumentFilTestRepository dokumentFilTestRepository;
 	@Autowired
 	protected SkjermingServiceTest skjermingService;
 
@@ -56,8 +56,8 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 
 	@BeforeEach
 	public void setUpItest() {
-		joarkRepository.deleteAll();
-		dokumentFilRepository.deleteAll();
+		journalpostRepositorySkjermet.deleteAll();
+		dokumentFilTestRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("testuser")
 				.componentId("itest")

@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.DokumentinfoRepository;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import org.springframework.stereotype.Service;
 
@@ -28,20 +28,20 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 @Service
 public class KasserDokumentService {
 
-	private final DokumentinfoRepository dokumentInfoRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final JoarkDeleteRepository deleteRepository;
 	private final EntityManager entityManager;
 
 	public KasserDokumentService(
-			DokumentinfoRepository dokumentinfoRepository,
+			DokumentInfoRepository dokumentInfoRepository,
 			JoarkDeleteRepository deleteRepository, EntityManager entityManager) {
-		this.dokumentInfoRepository = dokumentinfoRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.deleteRepository = deleteRepository;
 		this.entityManager = entityManager;
 	}
 
 	public List<ArkivElementEndringTO> kasserDokument(Long dokumentInfoId, String kassertAvNavn) {
-		DokumentInfo dokumentInfoForKassering = dokumentInfoRepository.findByDokumentInfoId(dokumentInfoId)
+		DokumentInfo dokumentInfoForKassering = dokumentInfoRepository.findById(dokumentInfoId)
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format(
 						"Fant ikke dokument med dokumentInfoId=%s", dokumentInfoId)));
 
@@ -127,7 +127,7 @@ public class KasserDokumentService {
 							.build()
 			);
 		}
-		dokumentInfoRepository.save(dokumentInfo);
+		dokumentInfoRepository.merge(dokumentInfo);
 		return arkivElementEndringTOList;
 	}
 

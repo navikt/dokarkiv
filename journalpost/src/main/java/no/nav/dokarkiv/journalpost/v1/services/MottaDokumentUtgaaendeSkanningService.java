@@ -15,7 +15,7 @@ import no.nav.dokarkiv.core.exceptions.InputValideringBadMetadataException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
-import no.nav.dokarkiv.core.repository.JoarkRepository;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.MottaDokumentUtgaaendeSkanningValidator;
@@ -31,7 +31,7 @@ import static org.slf4j.MDC.get;
 @Slf4j
 public class MottaDokumentUtgaaendeSkanningService {
 
-    private final JoarkRepository joarkRepository;
+    private final JournalpostRepository journalpostRepository;
     private final DokumentFilRepository dokumentFilRepository;
     private final MottaDokumentUtgaaendeSkanningValidator validator = new MottaDokumentUtgaaendeSkanningValidator();
 
@@ -39,8 +39,8 @@ public class MottaDokumentUtgaaendeSkanningService {
     private final String JOURNALPOST = "journalpost";
     private final String REQUEST = "request";
 
-    public MottaDokumentUtgaaendeSkanningService(JoarkRepository joarkRepository, DokumentFilRepository dokumentFilRepository) {
-        this.joarkRepository = joarkRepository;
+    public MottaDokumentUtgaaendeSkanningService(JournalpostRepository journalpostRepository, DokumentFilRepository dokumentFilRepository) {
+        this.journalpostRepository = journalpostRepository;
         this.dokumentFilRepository = dokumentFilRepository;
     }
 
@@ -49,7 +49,7 @@ public class MottaDokumentUtgaaendeSkanningService {
 
             validateRequest(journalpostId, request);
 
-            Journalpost journalpost = joarkRepository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException(get(MDC_REQUEST_ID) + "\n" + "journalpost med id " + journalpostId + " ikke funnet"));
+            Journalpost journalpost = journalpostRepository.findById(journalpostId).orElseThrow(() -> new JournalpostIkkeFunnetException(get(MDC_REQUEST_ID) + "\n" + "journalpost med id " + journalpostId + " ikke funnet"));
             validateJournalpost(journalpostId, request, journalpost);
 
             journalpost.setJournalstatus(JournalStatusCode.FL);
@@ -71,7 +71,7 @@ public class MottaDokumentUtgaaendeSkanningService {
 
             filDetaljerList.forEach(filDetaljer -> {
                 DokumentFil dokumentFil = filDetaljer.createDokumentFil();
-                dokumentFilRepository.save(dokumentFil);
+                dokumentFilRepository.persist(dokumentFil);
             });
             filDetaljerList.forEach(filDetaljer -> journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().addFilDetaljer(filDetaljer));
 

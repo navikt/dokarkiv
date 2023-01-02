@@ -21,27 +21,16 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Properties;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Slf4j
 @EntityScan(basePackages = {
 		"no.nav.dokarkiv.core.domain.entities",
 		"no.nav.dokarkiv.core.domain.codes"
 })
-@EnableJpaRepositories(basePackageClasses = {
-		JoarkRepository.class,
-		DokumentFilRepository.class,
-		DokumentinfoRepository.class,
-		JournalpostDokumentInfoRelasjonRepository.class,
-		JoarkDeleteRepository.class,
-		AksjonsLoggRepository.class,
-		SakRepository.class
-})
+@EnableJpaRepositories
 @EnableTransactionManagement
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Configuration
-@Import(value = {JoarkRepositorySkjermet.class, DokumentFilSkjermetRepository.class})
+@Import(value = {JournalpostRepositorySkjermet.class, DokumentFilSkjermetRepository.class})
 public class RepositoryConfig {
 	@Bean
 	@Primary

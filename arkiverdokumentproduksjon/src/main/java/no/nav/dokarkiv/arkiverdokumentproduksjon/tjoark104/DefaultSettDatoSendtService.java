@@ -2,18 +2,18 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark104;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
-import no.nav.dokarkiv.core.repository.JoarkRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultSettDatoSendtService implements SettDatoSendtService {
 
-    private final JoarkRepositorySkjermet joarkRepository;
+    private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final SporingPopulator sporingPopulator;
 
-	public DefaultSettDatoSendtService(JoarkRepositorySkjermet joarkRepository, SporingPopulator sporingPopulator) {
-		this.joarkRepository = joarkRepository;
+	public DefaultSettDatoSendtService(JournalpostRepositorySkjermet journalpostRepositorySkjermet, SporingPopulator sporingPopulator) {
+		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.sporingPopulator = sporingPopulator;
 	}
 
@@ -33,6 +33,6 @@ public class DefaultSettDatoSendtService implements SettDatoSendtService {
 	}
 
 	private Journalpost getJournalpost(Long journalpostId) {
-		return joarkRepository.findById(journalpostId).orElseThrow(() -> new ApplicationException("Could not find Journalpost with journalpostId: " + journalpostId));
+		return journalpostRepositorySkjermet.findById(journalpostId).orElseThrow(() -> new ApplicationException("Could not find Journalpost with journalpostId: " + journalpostId));
 	}
 }
