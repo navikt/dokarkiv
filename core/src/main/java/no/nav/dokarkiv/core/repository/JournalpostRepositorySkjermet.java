@@ -50,7 +50,11 @@ public class JournalpostRepositorySkjermet {
 	}
 
 	public Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
-		return journalpostRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
+		IdHolder idHolder = dokumentInfoRepository.findDokumentInfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
+		if(idHolder == null) {
+			return null;
+		}
+		return idHolder.id();
 	}
 
 	public Long findJournalpostIdByDokumentinfoId(String dokumentinfoId) {
