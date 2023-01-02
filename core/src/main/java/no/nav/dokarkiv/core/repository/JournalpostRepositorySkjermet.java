@@ -2,21 +2,27 @@ package no.nav.dokarkiv.core.repository;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.repository.projections.IdHolder;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.lang.Long.parseLong;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 public class JournalpostRepositorySkjermet {
 
 	private final JournalpostRepository journalpostRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 	private final SkjermingService skjermingService;
 
-	public JournalpostRepositorySkjermet(JournalpostRepository journalpostRepository, SkjermingService skjermingService) {
+	public JournalpostRepositorySkjermet(JournalpostRepository journalpostRepository,
+										 DokumentInfoRepository dokumentInfoRepository,
+										 SkjermingService skjermingService) {
 		this.journalpostRepository = journalpostRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.skjermingService = skjermingService;
 	}
 
@@ -48,11 +54,12 @@ public class JournalpostRepositorySkjermet {
 	}
 
 	public Long findJournalpostIdByDokumentinfoId(String dokumentinfoId) {
-		Long jpId = journalpostRepository.findJournalpostIdByDokumentinfoId(dokumentinfoId);
-		if (jpId == null) {
+		IdHolder originalJournalpostIdHolder = dokumentInfoRepository.findOriginalJournalpostIdByDokumentInfoId(parseLong(dokumentinfoId));
+		if (originalJournalpostIdHolder == null) {
 			return null;
 		}
-		return skjermingService.isJournalpostSkjermet(jpId) ? null : jpId;
+		Long originalJournalpostId = originalJournalpostIdHolder.id();
+		return skjermingService.isJournalpostSkjermet(originalJournalpostId) ? null : originalJournalpostId;
 	}
 
 	public List<Long> findAllJournalpostIdsByDokumentInfoId(Long dokumentInfoId) {

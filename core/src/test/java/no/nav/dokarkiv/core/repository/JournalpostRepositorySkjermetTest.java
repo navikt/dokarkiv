@@ -114,10 +114,9 @@ public class JournalpostRepositorySkjermetTest {
 		assertThat(journalpostTestRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
 		assertThat(journalpostRepositorySkjermet.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
 
-		assertThat(journalpostTestRepository.findJournalpostIdByDokumentinfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+		assertThat(dokumentInfoTestRepository.findOriginalJournalpostIdByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
-				.getId()
-				.toString()), notNullValue());
+				.getId()), notNullValue());
 		assertThat(journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getId()
@@ -170,10 +169,9 @@ public class JournalpostRepositorySkjermetTest {
 		TestTransaction.end();
 
 		TestTransaction.start();
-		assertThat(journalpostTestRepository.findJournalpostIdByDokumentinfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+		assertThat(dokumentInfoTestRepository.findOriginalJournalpostIdByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
-				.getId()
-				.toString()), notNullValue());
+				.getId()), notNullValue());
 		assertThat(journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getId()
