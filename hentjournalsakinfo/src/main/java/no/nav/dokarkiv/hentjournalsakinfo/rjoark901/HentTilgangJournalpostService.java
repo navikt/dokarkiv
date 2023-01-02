@@ -8,15 +8,15 @@ import static no.nav.modig.security.tilgangskontroll.policy.pip.PicketLinkAttrib
 @Service
 public class HentTilgangJournalpostService {
 
-	private final HentTilgangjournalpostTestRepository hentTilgangjournalpostTestRepository;
+	private final HentTilgangJournalpostRepository hentTilgangJournalpostRepository;
 
-	public HentTilgangJournalpostService(HentTilgangjournalpostTestRepository hentTilgangjournalpostTestRepository) {
-		this.hentTilgangjournalpostTestRepository = hentTilgangjournalpostTestRepository;
+	public HentTilgangJournalpostService(HentTilgangJournalpostRepository hentTilgangJournalpostRepository) {
+		this.hentTilgangJournalpostRepository = hentTilgangJournalpostRepository;
 	}
 
 	public HentTilgangJournalpostResponse hentTilgangJournalpost(Long journalpostId, Long dokumentInfoId, VariantFormatCode variantFormat) {
 		try {
-			TilgangJournalpostDto tilgangJournalpostDto = hentTilgangjournalpostTestRepository.hentTilgangJournalpost(journalpostId, dokumentInfoId, variantFormat);
+			TilgangJournalpostDto tilgangJournalpostDto = hentTilgangJournalpostRepository.hentTilgangJournalpost(journalpostId, dokumentInfoId, variantFormat);
 			if (tilgangJournalpostDto == null) {
 				throw new TilgangJournalpostException("Ingen journalpost funnet for journalpostId=" + journalpostId + ", dokumentInfoId=" + dokumentInfoId + ", variantFormat=" + variantFormat.name());
 			}
