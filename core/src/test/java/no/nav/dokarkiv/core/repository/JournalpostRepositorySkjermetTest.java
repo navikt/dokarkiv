@@ -81,8 +81,6 @@ public class JournalpostRepositorySkjermetTest {
 	public void shouldReturnNullOrFalseWhenNotFound() {
 		assertThat(journalpostRepositorySkjermet.findById(123L).isPresent(), is(false));
 		assertThat(journalpostRepositorySkjermet.existsById(123L), is(false));
-		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal("test", "test")
-				.isPresent(), is(false));
 		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseId("test").isPresent(), is(false));
 		assertThat(journalpostRepositorySkjermet.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi("test", "test"), nullValue());
 		assertThat(journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId("213"), nullValue());
@@ -125,11 +123,6 @@ public class JournalpostRepositorySkjermetTest {
 				.size(), is(1));
 		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
 				.size(), is(1));
-
-		assertTrue(journalpostTestRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO.name())
-				.isPresent());
-		assertTrue(journalpostRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO
-				.name()).isPresent());
 
 		assertThat(journalpostTestRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
 		assertThat(journalpostRepositorySkjermet.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
@@ -230,11 +223,6 @@ public class JournalpostRepositorySkjermetTest {
 				.size(), is(1));
 		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
 				.size(), is(0));
-
-		assertThat(journalpostTestRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO.name())
-				.isPresent(), is(true));
-		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO
-				.name()).isPresent(), is(false));
 	}
 
 	@Test

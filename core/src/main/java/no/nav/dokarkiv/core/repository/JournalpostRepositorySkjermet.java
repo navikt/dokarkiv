@@ -44,16 +44,6 @@ public class JournalpostRepositorySkjermet {
 		return null;
 	}
 
-	public Optional<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, String mottakskanal) {
-		Optional<Journalpost> journalpost = journalpostRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottakskanal);
-
-		if (journalpost.isPresent()) {
-			return skjermingService.isJournalpostSkjermet(journalpost.get()) ? Optional.empty() : journalpost;
-		}
-
-		return Optional.empty();
-	}
-
 	public Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
 		return journalpostRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
 	}
