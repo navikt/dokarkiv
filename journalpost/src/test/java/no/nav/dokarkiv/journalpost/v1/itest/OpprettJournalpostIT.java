@@ -566,7 +566,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWithKanalAsNull, OpprettJournalpostResponse.class);
 
-		Journalpost emptyKanalJournalpost = journalpostTestRepository.findTopByKanalReferanseId(requestWithKanalAsNull.getEksternReferanseId()).get();
+		Journalpost emptyKanalJournalpost = journalpostTestRepository.findByKanalReferanseId(requestWithKanalAsNull.getEksternReferanseId()).get();
 		assertNotNull(emptyKanalJournalpost);
 	}
 
@@ -581,7 +581,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		restTemplate.exchange(URL_JOURNALPOST, HttpMethod.POST, requestEntityWithKanalAsEmpty, OpprettJournalpostResponse.class);
 
-		Journalpost emptyKanalJournalpost = journalpostTestRepository.findTopByKanalReferanseId(requestWithKanalAsEmpty.getEksternReferanseId()).get();
+		Journalpost emptyKanalJournalpost = journalpostTestRepository.findByKanalReferanseId(requestWithKanalAsEmpty.getEksternReferanseId()).get();
 		assertNotNull(emptyKanalJournalpost);
 	}
 

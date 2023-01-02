@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.repository;
 
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 
@@ -65,19 +64,12 @@ public class JournalpostRepositorySkjermet {
 	}
 
 	public Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId) {
-		Optional<Journalpost> journalpost = journalpostRepository.findTopByKanalReferanseId(kanalReferanseId);
+		Optional<Journalpost> journalpost = journalpostRepository.findByKanalReferanseId(kanalReferanseId);
 
 		if (journalpost.isPresent()) {
 			return skjermingService.isJournalpostSkjermet(journalpost.get()) ? Optional.empty() : journalpost;
 		}
 
 		return Optional.empty();
-	}
-
-	public List<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, MottaksKanalCode mottaksKanalCode) {
-		List<Journalpost> journalpostList = journalpostRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottaksKanalCode);
-		return journalpostList.stream()
-				.filter(journalpost -> isFalse(skjermingService.isJournalpostSkjermet(journalpost)))
-				.collect(Collectors.toList());
 	}
 }

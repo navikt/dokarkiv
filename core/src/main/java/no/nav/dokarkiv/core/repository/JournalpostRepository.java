@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.core.repository;
 
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -41,9 +40,7 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 			""")
 	List<Journalpost> findUbehandledeJournalpostsWithTemaIn(@Param("tilOgMedDato") Date tilOgMedDato, @Param("fagomrader") Set<FagomradeCode> fagomrader);
 
-	Optional<Journalpost> findTopByKanalReferanseId(String kanalReferanseId);
+	Optional<Journalpost> findByKanalReferanseId(String kanalReferanseId);
 
 	boolean existsByKanalReferanseId(String kanalReferanseId);
-
-	List<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, MottaksKanalCode mottaksKanalCode);
 }

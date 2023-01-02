@@ -242,6 +242,6 @@ public class OpprettJournalpostService {
 	}
 	private Optional<Journalpost> findJournalpostByEksternReferanseId(String eksternReferanseId) {
 		//eksternReferanseId == kanalReferanseId
-		return isBlank(eksternReferanseId) ? Optional.empty() : journalpostRepository.findTopByKanalReferanseId(eksternReferanseId);
+		return isBlank(eksternReferanseId) ? Optional.empty() : journalpostRepository.findByKanalReferanseId(eksternReferanseId);
 	}
 }
