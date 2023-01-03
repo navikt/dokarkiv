@@ -24,6 +24,7 @@ import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
+import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -73,6 +74,16 @@ public class TestDataGenerator {
 	public static final String KANAL_REFERANSE_ID = "KANAL REFERANSE ID";
 	public static final String AKTOER_ID = "111113333333";
 	private static final Date LESTDATO = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
+	public static final String ADRESSELINJE1 = "adresselinje1";
+	public static final String ADRESSELINJE2 = "adresselinje2";
+	public static final String ADRESSELINJE3 = "adresselinje3";
+	public static final String POSTNUMMER = "postnummer";
+	public static final String POSTSTED = "poststed";
+	public static final String LANDKODE = "landkode";
+	public static final String DIGITALKONTAKT_INFORMASJON = "{\n          \"epost\": \"epostaddress3@nav.no\",\n          \"sms\": \"11111111\"\n        }";
+	public static final String VARSELTEKST = "{\n          \"epost\": \"Du har fått brev fra NAV\",\n          \"sms\": \"Du har fått brev fra NAV\"\n        }";
+	public static final String DIGITALPOSTKASSEADRESSE = "0000487236";
+	public static final String DIGITALPOSTKASSELEVERANDOR = "123456789";
 
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
@@ -346,5 +357,17 @@ public class TestDataGenerator {
 				.opprettetAv("itest")
 				.opprettetTidspunkt(LocalDate.now().atStartOfDay())
 				.build();
+	}
+
+	public static UtsendingsInfo.FysiskPostadresse createFysiskPostadresse() {
+		return new UtsendingsInfo.FysiskPostadresse(ADRESSELINJE1, ADRESSELINJE2, ADRESSELINJE3, POSTNUMMER, POSTSTED, LANDKODE);
+	}
+
+	public static UtsendingsInfo.NavNoVarsling createNavNoVarsling() {
+		return new UtsendingsInfo.NavNoVarsling(DIGITALKONTAKT_INFORMASJON, VARSELTEKST);
+	}
+
+	public static UtsendingsInfo.DigitalPostadresse createDigitalPostadresse() {
+		return new UtsendingsInfo.DigitalPostadresse(DIGITALPOSTKASSEADRESSE, DIGITALPOSTKASSELEVERANDOR);
 	}
 }

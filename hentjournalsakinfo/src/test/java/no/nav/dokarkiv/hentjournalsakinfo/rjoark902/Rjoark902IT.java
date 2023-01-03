@@ -13,9 +13,11 @@ import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.DokumentInfoDto;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.UtsendingsInfoDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -63,6 +65,16 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	private static final String TITTEL = "test tittel";
 	private static final String ANTALL_RETUR = "3";
 	public static final String KANAL_REFERANSE_ID = "KANAL REFERANSE ID";
+	public static final String ADRESSELINJE1 = "adresselinje1";
+	public static final String ADRESSELINJE2 = "adresselinje2";
+	public static final String ADRESSELINJE3 = "adresselinje3";
+	public static final String POSTNUMMER = "postnummer";
+	public static final String POSTSTED = "poststed";
+	public static final String LANDKODE = "landkode";
+	public static final String DIGITALKONTAKT_INFORMASJON = "{\n          \"epost\": \"epostaddress3@nav.no\",\n          \"sms\": \"11111111\"\n        }";
+	public static final String VARSELTEKST = "{\n          \"epost\": \"Du har fått brev fra NAV\",\n          \"sms\": \"Du har fått brev fra NAV\"\n        }";
+	public static final String DIGITALPOSTKASSEADRESSE = "0000487236";
+	public static final String DIGITALPOSTKASSELEVERANDOR = "123456789";
 
 	// Happy path
 	@Test
@@ -104,6 +116,11 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 
 		assertNotNull(responseDokumentInfo.getVarianter().get(0).getFiluuid());
 		assertEquals(responseDokumentInfo.getVarianter().get(0).getFiltype(), FilTypeCode.PDF.name());
+
+		UtsendingsInfoDto.NavNoVarsling navNoVarsling = responseJournalpost.getUtsendingsInfo().getNavNoVarsling();
+
+		assertEquals(VARSELTEKST, navNoVarsling.getVarseltekst());
+		assertEquals(DIGITALKONTAKT_INFORMASJON, navNoVarsling.getVarselSendtTil());
 	}
 
 	@Test
@@ -158,6 +175,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		journalpost.setMottakskanal(MOTTAKSKANAL);
 		journalpost.setUtsendingskanal(UTSENDINGSKANAL);
 		journalpost.setJournalposttype(JOURNALPOST_TYPE_CODE);
+		journalpost.setUtsendingsInfo(createNavNoVarsling());
 		journalpost.setLestDato(OffsetDateTime.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault())));
 
 		journalpost.getSaksrelasjon().setSakId(SAKID);
@@ -176,6 +194,18 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		TestTransaction.end();
 
 		return journalpost;
+	}
+
+	public static UtsendingsInfo.FysiskPostadresse createFysiskPostadresse() {
+		return new UtsendingsInfo.FysiskPostadresse(ADRESSELINJE1, ADRESSELINJE2, ADRESSELINJE3, POSTNUMMER, POSTSTED, LANDKODE);
+	}
+
+	public static UtsendingsInfo.NavNoVarsling createNavNoVarsling() {
+		return new UtsendingsInfo.NavNoVarsling(DIGITALKONTAKT_INFORMASJON, VARSELTEKST);
+	}
+
+	public static UtsendingsInfo.DigitalPostadresse createDigitalPostadresse() {
+		return new UtsendingsInfo.DigitalPostadresse(DIGITALPOSTKASSEADRESSE, DIGITALPOSTKASSELEVERANDOR);
 	}
 
 	private DokumentInfo getDokumentInfoOfHoveddokument(Journalpost journalpost) {
