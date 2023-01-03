@@ -152,7 +152,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
 		assertEquals(AVSENDER_MOTTAKER_LAND, journalpost.getLand());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
@@ -185,7 +185,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertEquals(overstyrInnsynsregler, journalpost.getInnsyn());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 
@@ -213,7 +213,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertNull(journalpost.getInnsyn());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 
@@ -238,7 +238,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalpostTypeCode.U, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.D, journalpost.getJournalstatus());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
@@ -262,7 +262,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalpostTypeCode.N, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.D, journalpost.getJournalstatus());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
@@ -292,7 +292,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalStatusCode.J, journalpost.getJournalstatus());
 		assertEquals("9999", journalpost.getJournalForendeEnhetId());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertEquals(2, aksjonsLoggList.size());
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
@@ -326,7 +326,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalStatusCode.FS, journalpost.getJournalstatus());
 		assertEquals("0123", journalpost.getJournalForendeEnhetId());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
@@ -437,7 +437,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(saksrelasjon.getSakId(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 
@@ -508,7 +508,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(saksrelasjon.getSakId(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 
@@ -550,7 +550,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(bruker.getBrukerId(), FNR);
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.PERSON);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(aksjonsLoggList.get(0).getBruker(), FNR);
 	}
@@ -657,7 +657,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(journalpostTestRepository.findAll().iterator().next().getBrukere().size(), 0);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(aksjonsLoggList.get(0).getBruker(), UKJENT);
 	}
@@ -692,7 +692,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(bruker.getBrukerId(), BRUKER_ID_ORGANISASJON);
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.ORGANISASJON);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(2));
 		assertEquals(aksjonsLoggList.get(0).getBruker(), BRUKER_ID_ORGANISASJON);
 	}
@@ -775,7 +775,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
@@ -827,7 +827,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
@@ -877,7 +877,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		assertNull(journalpost.getJournalForendeEnhetId());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(1));
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());

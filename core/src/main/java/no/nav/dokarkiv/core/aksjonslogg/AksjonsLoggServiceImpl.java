@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 @Slf4j
+@Component
 public class AksjonsLoggServiceImpl implements AksjonsLoggService {
 
 	private final AksjonsLoggRepository aksjonsLoggRepository;
@@ -37,8 +37,6 @@ public class AksjonsLoggServiceImpl implements AksjonsLoggService {
 
 		AksjonsLogg aksjonsLogg = AksjonsLoggMapper.mapToAksjonsLoggAndSetDefaults(aksjonsLoggTO, arkivElementEndringTOList, journalpost);
 
-		aksjonsLoggRepository.save(aksjonsLogg);
+		aksjonsLoggRepository.persist(aksjonsLogg);
 	}
-
-
 }

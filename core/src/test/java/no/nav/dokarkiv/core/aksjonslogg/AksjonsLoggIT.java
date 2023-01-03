@@ -10,7 +10,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
-import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
+import no.nav.dokarkiv.core.repository.AksjonsLoggTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
@@ -27,6 +27,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -62,7 +63,7 @@ public class AksjonsLoggIT {
 	private AksjonsLoggService aksjonsLoggService;
 
 	@Autowired
-	private AksjonsLoggRepository aksjonsLoggRepository;
+	private AksjonsLoggTestRepository aksjonsLoggTestRepository;
 
 	@Autowired
 	private JournalpostTestRepository journalpostTestRepository;
@@ -72,16 +73,18 @@ public class AksjonsLoggIT {
 	@BeforeEach
 	public void setUp() {
 		RequestContextUtil.createAndSetUsername(USER_ID, APPLICATION);
-		aksjonsLoggRepository.deleteAll();
 		Journalpost journalpost = journalpostTestRepository.persist(TestDataGenerator.createJournalpostWithHoveddokument());
 		this.journalpostId = journalpost.getJournalpostId();
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
 	}
 
 	@Test
 	public void shouldSaveAksjonsLogg() throws UgyldigAksjonsLoggException {
 		aksjonsLoggService.validateAndSaveAksjonsLogg(createAksjonsLoggTO(journalpostId, 1L), createArkivElementEndringToList());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
 
@@ -112,7 +115,7 @@ public class AksjonsLoggIT {
 		aksjonsLoggTO.setBruker(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, createArkivElementEndringToList());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
 
@@ -136,7 +139,7 @@ public class AksjonsLoggIT {
 		aksjonsLoggTO.setBruker(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, createArkivElementEndringToList());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
 
@@ -149,7 +152,7 @@ public class AksjonsLoggIT {
 		aksjonsLoggTO.setUtfoertAv(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTO, createArkivElementEndringToList());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
 
@@ -170,7 +173,7 @@ public class AksjonsLoggIT {
 		AksjonsLoggTO aksjonsLoggTOList = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTOList.setUtfoertAv(null);
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTOList, createArkivElementEndringToList());
-		String faktiskUtfoertAv = aksjonsLoggRepository.findAll().iterator().next().getUtfoertAv();
+		String faktiskUtfoertAv = aksjonsLoggTestRepository.findAll().iterator().next().getUtfoertAv();
 		assertEquals(USER_ID, faktiskUtfoertAv);
 	}
 
