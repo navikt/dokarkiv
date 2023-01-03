@@ -150,7 +150,7 @@
     {
       "app": "testdata-frontend",
       "namespace": "isa",
-      "cluster": "dev-fss"
+      "cluster": "dev-gcp"
     },
     {
       "app": "fritakagp",
