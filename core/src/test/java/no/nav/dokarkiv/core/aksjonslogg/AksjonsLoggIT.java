@@ -27,7 +27,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -73,11 +72,9 @@ public class AksjonsLoggIT {
 	@BeforeEach
 	public void setUp() {
 		RequestContextUtil.createAndSetUsername(USER_ID, APPLICATION);
+		aksjonsLoggTestRepository.deleteAll();
 		Journalpost journalpost = journalpostTestRepository.persist(TestDataGenerator.createJournalpostWithHoveddokument());
 		this.journalpostId = journalpost.getJournalpostId();
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
 	}
 
 	@Test

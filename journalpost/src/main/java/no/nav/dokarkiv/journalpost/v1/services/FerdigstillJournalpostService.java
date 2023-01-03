@@ -55,7 +55,7 @@ public class FerdigstillJournalpostService {
 		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 		oppdatertJournalpost(journalpost, journalfoerendeEnhet);
-		log.info("Oppdatert journalfoerendeEnhet={}", journalpost.getJournalForendeEnhetId());
+		log.info("Oppdatert journalpostId={} med journalfoerendeEnhet={}", journalpostId, journalpost.getJournalForendeEnhetId());
 	}
 
 	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
