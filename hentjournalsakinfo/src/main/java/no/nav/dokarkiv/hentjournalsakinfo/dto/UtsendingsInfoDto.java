@@ -21,6 +21,7 @@ public class UtsendingsInfoDto {
 	@Value
 	public static class DigitalPostadresse {
 		String digitalpostkasseAdresse;
+		String postkasseLeverandor;
 	}
 
 	@Value

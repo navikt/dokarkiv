@@ -45,7 +45,7 @@ public class Rjoark910IT extends AbstractHentjournalsakinfoItest {
 		ferdigstiltJournalpost1.getSaksrelasjon().setSakId("1");
 		ferdigstiltJournalpost1.setUtsendingskanal(SDP);
 		ferdigstiltJournalpost1.setUtsendingsInfo(TestDataGenerator.createDigitalPostadresse());
-		Journalpost ferdigstiltJournalpost2 = createJournalpostWithHoveddokument();
+		Journalpost ferdigstiltJournalpost2 = createUniqueJournalpost();
 		ferdigstiltJournalpost2.getSaksrelasjon().setSakId("2");
 		journalpostRepository.save(ferdigstiltJournalpost1);
 		journalpostRepository.save(ferdigstiltJournalpost2);
