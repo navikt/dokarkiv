@@ -18,7 +18,7 @@ public class AvsenderMottaker {
 
 					Påkrevd dersom `avsenderMottaker.idType` er satt
 					""",
-			example = "09071844797"
+			example = "01117400200"
 	)
 	private String id;
 
@@ -41,7 +41,7 @@ public class AvsenderMottaker {
 					     
 					Det er ikke nødvendig å oppgi navn når idType=FNR. OpprettJournalpost vil da hente personens navn fra PDL.
 					""",
-			example = "Hansen, Per"
+			example = "Raus Trane"
 	)
 	private String navn;
 
