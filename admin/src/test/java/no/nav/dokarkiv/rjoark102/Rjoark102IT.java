@@ -116,7 +116,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat("Feil antall journalposter etter kall", journalpostTestRepository.count(), is(2L));
 		assertThat("Feil antall dokumenter etter kall", dokumentInfoTestRepository.count(), is(2L));
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(2));
 
 		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost1.getJournalpostId(), dokumentInfoSomSkalKasseres.getDokumentInfoId()), AksjonsTypeCode.KASSERING, journalpost1.getJournalpostId(), dokumentInfoSomSkalKasseres

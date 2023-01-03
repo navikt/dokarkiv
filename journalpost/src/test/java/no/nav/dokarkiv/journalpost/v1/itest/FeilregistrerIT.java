@@ -59,7 +59,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, saksrelasjon.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, saksrelasjon.getEndretKildeNavn());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 
 		assertEquals(1, aksjonsLoggList.size());
 
@@ -116,7 +116,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		assertEquals(oppdatertJournalpost.getSaksrelasjon().getFeilregistrert(), false);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 
 		assertEquals(1, aksjonsLoggList.size());
 
@@ -149,7 +149,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		assertEquals(oppdatertJournalpost.getJournalstatus(), UB);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 
 		assertEquals(1, aksjonsLoggList.size());
 
@@ -199,7 +199,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		assertEquals(oppdatertJournalpost.getJournalstatus(), U);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 
 		assertEquals(1, aksjonsLoggList.size());
 
@@ -231,7 +231,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 
 		assertThat(aksjonsLoggList).hasSize(2)
 				.extracting(AksjonsLogg::getAksjon, AksjonsLogg::getUtfoertAv)
