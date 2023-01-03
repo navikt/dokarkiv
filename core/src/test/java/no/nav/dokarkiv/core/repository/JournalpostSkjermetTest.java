@@ -40,7 +40,7 @@ public class JournalpostSkjermetTest {
 	private JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 
 	@Autowired
-	private JournalpostRepository journalpostRepository;
+	private JournalpostTestRepository journalpostTestRepository;
 
 	@Autowired
 	private DokumentInfoTestRepository dokumentinfoTestRepository;
@@ -64,13 +64,13 @@ public class JournalpostSkjermetTest {
 		TestTransaction.end();
 		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentinfoTestRepository.deleteAll();
-		journalpostRepository.deleteAll();
+		journalpostTestRepository.deleteAll();
 	}
 
 	@Test
 	public void shouldNotReturnSkjermetJournalpostDokumentInfoRelasjons() {
 
-		Journalpost journalpost1 = journalpostRepository.save(createJournalpostWithTwoVedlegg());
+		Journalpost journalpost1 = journalpostTestRepository.persist(createJournalpostWithTwoVedlegg());
 		JournalpostDokumentInfoRelasjon skjermetJournalpostDokumentInfoRelasjon = journalpost1.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.iterator()
 				.next();
@@ -109,8 +109,8 @@ public class JournalpostSkjermetTest {
 		assertThat(journalpostWithBegrensning.findDokumentInfoRelasjonById(skjermetJournalpostDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId()), nullValue());
 		assertThat(journalpostWithBegrensning.findAllDokumentInfos().size(), is(2));
 
-		Journalpost journalpost2 = journalpostRepository.save(createJournalpostWithTwoVedlegg());
-		Journalpost journalpostWithoutBegrensning = journalpostRepository.findById(journalpost2.getJournalpostId()).get();
+		Journalpost journalpost2 = journalpostTestRepository.persist(createJournalpostWithTwoVedlegg());
+		Journalpost journalpostWithoutBegrensning = journalpostTestRepository.findById(journalpost2.getJournalpostId()).get();
 
 		assertThat(journalpostWithoutBegrensning.getJournalpostDokumentInfoRelasjoner().size(), is(3));
 		assertThat(journalpostWithoutBegrensning.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(skjermetDokumentInfoId), nullValue());

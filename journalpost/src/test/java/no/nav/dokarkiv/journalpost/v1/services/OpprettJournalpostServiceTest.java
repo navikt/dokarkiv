@@ -40,7 +40,7 @@ public class OpprettJournalpostServiceTest {
 				.kanalReferanseId(eksternReferanseId)
 				.build();
 		when(journalpostRepository.existsByKanalReferanseId(eksternReferanseId)).thenReturn(true);
-		when(journalpostRepository.findTopByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
+		when(journalpostRepository.findByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
 		OpprettJournalpostResult result = opprettJournalpostService.opprettJournalpost(request);
 		assertTrue(result.isAlreadyOpprettet());
 		assertEquals(result.getJournalpost(), journalpostEksisterende);
@@ -59,7 +59,7 @@ public class OpprettJournalpostServiceTest {
 				.kanalReferanseId(eksternReferanseId)
 				.build();
 		when(journalpostRepository.existsByKanalReferanseId(eksternReferanseId)).thenReturn(true);
-		when(journalpostRepository.findTopByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
+		when(journalpostRepository.findByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
 		OpprettJournalpostResult result = opprettJournalpostService.opprettJournalpost(request);
 		assertTrue(result.isAlreadyOpprettet());
 		assertEquals(result.getJournalpost(), journalpostEksisterende);

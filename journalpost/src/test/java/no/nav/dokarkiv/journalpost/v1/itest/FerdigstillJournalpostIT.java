@@ -34,7 +34,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -50,7 +50,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost = journalpostRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
@@ -77,7 +77,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		Date datoSendtPrint = new Date(System.currentTimeMillis() - 20000L);
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -97,7 +97,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost = journalpostRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
 		assertEquals(datoJournal, ferdigstiltJournalpost.getJournalDato());
 		assertEquals(datoSendtPrint, ferdigstiltJournalpost.getSendtPrintDato());
@@ -125,7 +125,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -141,7 +141,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost = journalpostRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
@@ -158,7 +158,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
 		journalpost.setUtsendingskanal(L);
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -176,7 +176,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost = journalpostRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
@@ -193,7 +193,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -211,7 +211,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost = journalpostRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
@@ -229,7 +229,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.N, JournalStatusCode.M).build();
 		journalpost.setAvsenderMottaker(null);
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -245,7 +245,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost = journalpostRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
@@ -262,7 +262,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.E).build();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -286,7 +286,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -307,7 +307,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -328,7 +328,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -353,7 +353,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
 		journalpost.setAvsenderMottaker(null);
 		journalpost.setInnhold(null);
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -379,7 +379,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -395,7 +395,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost = journalpostRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
 		assertEquals(PERSON_USER_NAME, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());

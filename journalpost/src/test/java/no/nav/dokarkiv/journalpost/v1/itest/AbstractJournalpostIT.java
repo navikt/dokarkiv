@@ -128,7 +128,7 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 	}
 
 	protected Journalpost buildAndCommit(final JournalpostBuilder builder) {
-		Journalpost journalpost = journalpostRepository.save(builder.build());
+		Journalpost journalpost = journalpostTestRepository.persist(builder.build());
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		return journalpost;

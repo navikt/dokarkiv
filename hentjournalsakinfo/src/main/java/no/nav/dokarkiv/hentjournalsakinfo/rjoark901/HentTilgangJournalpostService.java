@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
-import static no.nav.modig.security.tilgangskontroll.policy.pip.PicketLinkAttributeCacheLocator.log;
-
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.springframework.stereotype.Service;
+
+import static no.nav.modig.security.tilgangskontroll.policy.pip.PicketLinkAttributeCacheLocator.log;
 
 @Service
 public class HentTilgangJournalpostService {

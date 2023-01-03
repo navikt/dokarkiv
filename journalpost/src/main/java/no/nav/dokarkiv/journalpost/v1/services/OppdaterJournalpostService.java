@@ -109,7 +109,6 @@ public class OppdaterJournalpostService {
 		}
 
 		ChangeTracker changeTracker = journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
-
 		if (!changeTracker.getChanges().isEmpty()) {
 			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
 					ENDRE_METADATA, journalpostId, null,
@@ -117,7 +116,6 @@ public class OppdaterJournalpostService {
 		}
 
 		changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, sakId);
-		journalpostRepositorySkjermet.save(journalpost);
 		if (!changeTracker.getChanges().isEmpty()) {
 			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
 					SAKSTILKNYTNING, journalpostId, null,
@@ -158,13 +156,11 @@ public class OppdaterJournalpostService {
 		}
 
 		ChangeTracker changeTracker = journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
-
 		if (!changeTracker.getChanges().isEmpty()) {
 			populerAksjonslogg(journalpostId, ENDRE_METADATA,changeTracker.getChanges());
 		}
 
 		changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, sakId);
-		journalpostRepositorySkjermet.save(journalpost);
 		if (!changeTracker.getChanges().isEmpty()) {
 			populerAksjonslogg(journalpostId, SAKSTILKNYTNING, changeTracker.getChanges());
 		}

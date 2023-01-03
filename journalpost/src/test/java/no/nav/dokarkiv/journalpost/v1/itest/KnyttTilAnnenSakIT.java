@@ -88,7 +88,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 
 		when(tokenGrantValidator.validateOnBehalfOfAccessToken(anyString())).thenReturn(new JWTClaimsSet.Builder().subject("saks-behandler").build());
 
-		Long journalpostId = journalpostRepository.save(createJournalpostWithHoveddokument()).getJournalpostId();
+		Long journalpostId = journalpostTestRepository.persist(createJournalpostWithHoveddokument()).getJournalpostId();
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		TestTransaction.start();
@@ -100,7 +100,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		Journalpost journalpost = journalpostRepository.findById(response.getBody().getNyJournalpostId()).orElseThrow(RuntimeException::new);
+		Journalpost journalpost = journalpostTestRepository.findById(response.getBody().getNyJournalpostId()).orElseThrow(RuntimeException::new);
 
 		assertNotNull(response);
 

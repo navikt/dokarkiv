@@ -153,7 +153,7 @@ public class OpprettJournalpostRequest {
 					* VISES_MASKINELT_GODKJENT brukes når en maskinell prosess har besluttet at journalposten og underliggende dokumenter kan vises til bruker på nav.no.
 					* VISES_MANUELT_GODKJENT brukes når en NAV-ansatt har sett over og godkjent at journalposten og underliggende dokumenter kan vises til bruker på nav.no.
 					""",
-			example = "BRUK_STANDARDREGLER"
+			nullable = true
 	)
 	private String overstyrInnsynsregler;
 

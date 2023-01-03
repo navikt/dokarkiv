@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.KanIkkeHenteMottatteJournalposterException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
@@ -14,9 +15,12 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.valueOf;
 import static org.slf4j.MDC.get;
 
 
@@ -33,8 +37,7 @@ public class FinnMottatteJournalposterService {
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter() throws KanIkkeHenteMottatteJournalposterException {
 		try {
 			List<Journalpost> ubehandledeJournalposter = journalpostRepository
-					.findUbehandledeJournalposts(DateTime.now().minusWeeks(1).toDate())
-					.orElse(List.of());
+					.findUbehandledeJournalposts(DateTime.now().minusWeeks(1).toDate());
 			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::createResponseObject).collect(Collectors.toList()));
 		} catch(DataAccessException e){
 			log.error(get(MDC_REQUEST_ID) + " finnMottatteJournalposter fikk DataAccessException ved kall mot journalpostRepository", e);
@@ -44,9 +47,9 @@ public class FinnMottatteJournalposterService {
 
 	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedTemaEldreEnn(List<String> temaer, int eldreEnn) throws KanIkkeHenteMottatteJournalposterException {
 		try {
+			Set<FagomradeCode> fagomrader = temaer.stream().map(this::mapEnum).filter(Objects::nonNull).collect(Collectors.toSet());
 			List<Journalpost> ubehandledeJournalposter = journalpostRepository
-					.findUbehandledeJournalpostsWithTemaIn(DateTime.now().minusDays(eldreEnn).toDate(), temaer)
-					.orElse(List.of());
+					.findUbehandledeJournalpostsWithTemaIn(DateTime.now().minusDays(eldreEnn).toDate(), fagomrader);
 			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::createResponseObject).collect(Collectors.toList()));
 		} catch(DataAccessException e){
 			log.error(get(MDC_REQUEST_ID) + " finnMottatteJournalposterMedTemaer fikk DataAccessException ved kall mot journalpostRepository.", e);
@@ -87,6 +90,15 @@ public class FinnMottatteJournalposterService {
 		} catch(Exception e) {
 			log.error(get(MDC_REQUEST_ID) + " createResponseObject, det oppstod en feil. Journalpostid: " + journalpost.getJournalpostId());
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
+		}
+	}
+
+	private FagomradeCode mapEnum(String tema) {
+		try {
+			return valueOf(tema);
+		} catch(IllegalArgumentException e) {
+			log.error(get(MDC_REQUEST_ID) + " tema={} kan ikke mappes til FagomradeCode", tema, e);
+			return null;
 		}
 	}
 }

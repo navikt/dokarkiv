@@ -3,7 +3,6 @@ package no.nav.dokarkiv.core.repository;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -24,8 +23,6 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
@@ -48,7 +45,7 @@ public class JournalpostRepositorySkjermetTest {
 	private JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 
 	@Autowired
-	private JournalpostRepository journalpostRepository;
+	private JournalpostTestRepository journalpostTestRepository;
 
 	@Autowired
 	private DokumentInfoTestRepository dokumentInfoTestRepository;
@@ -75,7 +72,7 @@ public class JournalpostRepositorySkjermetTest {
 		TestTransaction.end();
 		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentInfoTestRepository.deleteAll();
-		journalpostRepository.deleteAll();
+		journalpostTestRepository.deleteAll();
 		entityManager.createNativeQuery("Delete from t_jp_tillegg").getFirstResult();
 	}
 
@@ -83,78 +80,45 @@ public class JournalpostRepositorySkjermetTest {
 	public void shouldReturnNullOrFalseWhenNotFound() {
 		assertThat(journalpostRepositorySkjermet.findById(123L).isPresent(), is(false));
 		assertThat(journalpostRepositorySkjermet.existsById(123L), is(false));
-		assertThat(journalpostRepositorySkjermet.findAll().spliterator().estimateSize(), is(0L));
-		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal("test", "test")
-				.isPresent(), is(false));
 		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseId("test").isPresent(), is(false));
-		assertThat(journalpostRepositorySkjermet.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi("test", "test"), nullValue());
 		assertThat(journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId("213"), nullValue());
 		assertThat(journalpostRepositorySkjermet.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi("213", "313"), nullValue());
-		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal("213", MottaksKanalCode.NAV_NO)
-				.size(), is(0));
 	}
 
 	@Test
 	public void shouldReturnSameResultAsRepositoryWhenNotSkjermet() {
 
 		Journalpost journalpost = createJournalpost();
-		journalpost = journalpostRepository.save(journalpost);
+		journalpost = journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		TestTransaction.start();
 
-		assertTrue(journalpostRepository.existsById(journalpost.getId()));
+		assertTrue(journalpostTestRepository.existsById(journalpost.getId()));
 		assertTrue(journalpostRepositorySkjermet.existsById(journalpost.getId()));
 
-		List<Journalpost> journalpostList = new ArrayList<>();
-		List<Journalpost> journalpostListSkjermet = new ArrayList<>();
-		journalpostRepository.findAll().forEach(journalpostList::add);
-		journalpostRepositorySkjermet.findAll().forEach(journalpostListSkjermet::add);
-
-		assertThat(journalpostList.size(), is(1));
-		assertThat(journalpostListSkjermet.size(), is(1));
-
-		assertThat(journalpostRepository.findById(journalpost.getId()).isPresent(), is(true));
+		assertThat(journalpostTestRepository.findById(journalpost.getId()).isPresent(), is(true));
 		assertThat(journalpostRepositorySkjermet.findById(journalpost.getId()).isPresent(), is(true));
 
-		assertThat(journalpostRepository.findAllJournalpostIdsByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllJournalpostIdsByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getDokumentInfoId()).size(), is(1));
 		assertThat(journalpostRepositorySkjermet.findAllJournalpostIdsByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getDokumentInfoId()).size(), is(1));
 
-		assertThat(journalpostRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
-		assertThat(journalpostRepositorySkjermet.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
-
-		assertThat(journalpostRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-				.size(), is(1));
-		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-				.size(), is(1));
-
-		assertThat(journalpostRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-				.size(), is(1));
-		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-				.size(), is(1));
-
-		assertTrue(journalpostRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO.name())
-				.isPresent());
-		assertTrue(journalpostRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO
-				.name()).isPresent());
-
-		assertThat(journalpostRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
+		assertThat(dokumentInfoTestRepository.findDokumentInfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
 		assertThat(journalpostRepositorySkjermet.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), notNullValue());
 
-		assertThat(journalpostRepository.findJournalpostIdByDokumentinfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+		assertThat(dokumentInfoTestRepository.findOriginalJournalpostIdByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
-				.getId()
-				.toString()), notNullValue());
+				.getId()), notNullValue());
 		assertThat(journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getId()
 				.toString()), notNullValue());
 
-		assertTrue(journalpostRepository.findTopByKanalReferanseId(KANAL_REFERANSE_ID).isPresent());
+		assertTrue(journalpostTestRepository.findByKanalReferanseId(KANAL_REFERANSE_ID).isPresent());
 		assertTrue(journalpostRepositorySkjermet.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent());
 	}
 
@@ -163,7 +127,7 @@ public class JournalpostRepositorySkjermetTest {
 		Journalpost journalpost = createJournalpost();
 
 
-		journalpost = journalpostRepository.save(journalpost);
+		journalpost = journalpostTestRepository.persist(journalpost);
 
 		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
@@ -171,46 +135,23 @@ public class JournalpostRepositorySkjermetTest {
 
 		TestTransaction.start();
 
-		assertThat(journalpostRepository.findById(journalpost.getId()).isPresent(), is(true));
+		assertThat(journalpostTestRepository.findById(journalpost.getId()).isPresent(), is(true));
 		assertThat(journalpostRepositorySkjermet.findById(journalpost.getId()).isPresent(), is(false));
 
-	}
-
-	@Test
-	public void shouldNotFindSkjermetJournalpost() {
-		Journalpost journalpost = createUniqueJournalpost();
-		Journalpost journalpostSkjermet = createUniqueJournalpost();
-
-		journalpost = journalpostRepository.save(journalpost);
-		journalpostSkjermet = journalpostRepository.save(journalpostSkjermet);
-		skjermingService.setJournalpostSkjerming(journalpostSkjermet.getJournalpostId(), SkjermingTypeCode.POL);
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		TestTransaction.start();
-
-		List<Journalpost> journalpostList = new ArrayList<>();
-		List<Journalpost> journalpostListSkjermet = new ArrayList<>();
-		journalpostRepository.findAll().forEach(journalpostList::add);
-		journalpostRepositorySkjermet.findAll().forEach(journalpostListSkjermet::add);
-
-		assertThat(journalpostList.size(), is(2));
-		assertThat(journalpostListSkjermet.size(), is(1));
-		assertThat(journalpostListSkjermet.get(0).getJournalpostId(), is(journalpost.getJournalpostId()));
 	}
 
 	@Test
 	public void shouldNotExistsWhenJournalpostIsSkjermet() {
 		Journalpost journalpost = createJournalpost();
 
-		journalpost = journalpostRepository.save(journalpost);
+		journalpost = journalpostTestRepository.persist(journalpost);
 
 		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		TestTransaction.start();
-		assertTrue(journalpostRepository.existsById(journalpost.getId()));
+		assertTrue(journalpostTestRepository.existsById(journalpost.getId()));
 		assertFalse(journalpostRepositorySkjermet.existsById(journalpost.getId()));
 	}
 
@@ -218,16 +159,15 @@ public class JournalpostRepositorySkjermetTest {
 	public void shouldNotfindJournalpostIdByDokumentinfoIdWhenJournalpostIsSkjermet() {
 		Journalpost journalpost = createJournalpost();
 
-		journalpost = journalpostRepository.save(journalpost);
+		journalpost = journalpostTestRepository.persist(journalpost);
 		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		TestTransaction.start();
-		assertThat(journalpostRepository.findJournalpostIdByDokumentinfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
+		assertThat(dokumentInfoTestRepository.findOriginalJournalpostIdByDokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
-				.getId()
-				.toString()), notNullValue());
+				.getId()), notNullValue());
 		assertThat(journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getId()
@@ -235,62 +175,23 @@ public class JournalpostRepositorySkjermetTest {
 	}
 
 	@Test
-	public void shouldNotfindJournalpostIdByTilleggsopplysningerNokkelAndVerdiWhenJournalpostIsSkjermet() {
-
-		Journalpost journalpost = createJournalpost();
-
-		journalpostRepository.save(journalpost);
-		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), SkjermingTypeCode.POL);
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		TestTransaction.start();
-		assertThat(journalpostRepository.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), is(journalpost
-				.getJournalpostId()));
-		assertThat(journalpostRepositorySkjermet.findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE), nullValue());
-	}
-
-	@Test
-	public void shouldNotfindJournalpostIdByKanalReferanseIdAndMottakskanalWhenJournalpostIsSkjermet() {
-		Journalpost journalpost = createJournalpost();
-
-		journalpost = journalpostRepository.save(journalpost);
-		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), SkjermingTypeCode.POL);
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		TestTransaction.start();
-		assertThat(journalpostRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-				.size(), is(1));
-		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO)
-				.size(), is(0));
-
-		assertThat(journalpostRepository.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO.name())
-				.isPresent(), is(true));
-		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseIdAndMottakskanal(KANAL_REFERANSE_ID, MottaksKanalCode.NAV_NO
-				.name()).isPresent(), is(false));
-	}
-
-	@Test
 	public void shouldNotfindJournalpostByKanalReferanseIdWhenJournalpostIsSkjermet() {
-
 		Journalpost journalpost = createJournalpost();
 
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		TestTransaction.start();
-		assertThat(journalpostRepository.findTopByKanalReferanseId(KANAL_REFERANSE_ID).isPresent(), is(true));
+		assertThat(journalpostTestRepository.findByKanalReferanseId(KANAL_REFERANSE_ID).isPresent(), is(true));
 		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent(), is(false));
 	}
-
 
 	@Test
 	public void shouldNotReturnSkjermetJournalpostIdForFindAllJournalpostIdsByDokumentInfoId() {
 		Journalpost journalpost = createUniqueJournalpost();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		Journalpost journalpostSkjermet = createUniqueJournalpost();
 
@@ -304,14 +205,14 @@ public class JournalpostRepositorySkjermetTest {
 				.dokumentInfo(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo())
 				.build());
 
-		journalpostSkjermet = journalpostRepository.save(journalpostSkjermet);
+		journalpostSkjermet = journalpostTestRepository.persist(journalpostSkjermet);
 		skjermingService.setJournalpostSkjerming(journalpostSkjermet.getJournalpostId(), SkjermingTypeCode.POL);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		TestTransaction.start();
 
-		assertThat(journalpostRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId).size(), is(2));
+		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId).size(), is(2));
 		assertThat(journalpostRepositorySkjermet.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId).size(), is(1));
 		assertThat(journalpostRepositorySkjermet.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId)
 				.get(0), is(journalpost.getJournalpostId()));

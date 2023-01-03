@@ -3,7 +3,7 @@ package no.nav.dokarkiv.dokumentproduksjoninfo;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
-import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -36,7 +36,7 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 	@Autowired
 	protected DokumentproduksjonInfoV1 dokumentproduksjonInfoProvider;
 	@Autowired
-	protected JournalpostRepositorySkjermet journalpostRepositorySkjermet;
+	protected JournalpostTestRepository journalpostTestRepository;
 	@Autowired
 	protected DokumentFilTestRepository dokumentFilTestRepository;
 	@Autowired
@@ -56,7 +56,7 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 
 	@BeforeEach
 	public void setUpItest() {
-		journalpostRepositorySkjermet.deleteAll();
+		journalpostTestRepository.deleteAll();
 		dokumentFilTestRepository.deleteAll();
 		RequestContextSetter.setRequestContext(new SimpleRequestContext.Builder()
 				.userId("testuser")

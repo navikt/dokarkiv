@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonTestRepository;
-import no.nav.dokarkiv.core.repository.JournalpostRepository;
+import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
 import no.nav.dokarkiv.core.repository.SakTestRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -54,7 +54,7 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
 @EnableMockOAuth2Server
 public abstract class AbstractRestIT {
 	@Autowired
-	protected JournalpostRepository journalpostRepository;
+	protected JournalpostTestRepository journalpostTestRepository;
 	@Autowired
 	protected JournalpostDokumentInfoRelasjonTestRepository journalpostDokumentInfoRelasjonTestRepository;
 	@Autowired
@@ -105,7 +105,7 @@ public abstract class AbstractRestIT {
 		dokumentFilTestRepository.deleteAll();
 		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentInfoTestRepository.deleteAll();
-		journalpostRepository.deleteAll();
+		journalpostTestRepository.deleteAll();
 		sakTestRepository.deleteAll();
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -165,7 +165,7 @@ public abstract class AbstractRestIT {
 	}
 
 	protected Journalpost saveJournalpost(Journalpost journalpost) {
-		Journalpost newJp = journalpostRepository.save(journalpost);
+		Journalpost newJp = journalpostTestRepository.persist(journalpost);
 
 		newJp.getJournalpostDokumentInfoRelasjoner().forEach(rel -> {
 			rel.getDokumentInfo().getFildetaljerListe().forEach(filDetaljer -> {

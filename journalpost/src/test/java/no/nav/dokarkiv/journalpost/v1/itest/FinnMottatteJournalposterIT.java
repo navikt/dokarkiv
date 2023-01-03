@@ -9,8 +9,8 @@ import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatte
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletJournalpost;
 import no.nav.dokarkiv.journalpost.v1.services.FinnMottatteJournalposterService;
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -37,12 +37,8 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	private static final String FAGKODE_PEN = "PEN";
 	private static final int DEFAULT_DAGER_GAMLE = 5;
 
+	@Autowired
 	private FinnMottatteJournalposterService finnMottatteJournalposterService;
-
-	@BeforeEach
-	public void setup() {
-		finnMottatteJournalposterService = new FinnMottatteJournalposterService(journalpostRepository);
-	}
 
 	@Test
 	public void shouldHappyFinnMottatteJournalposter() {

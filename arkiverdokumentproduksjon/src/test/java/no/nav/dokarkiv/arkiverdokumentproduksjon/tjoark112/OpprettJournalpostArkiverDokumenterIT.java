@@ -62,7 +62,7 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 	@Test
 	public void shouldVerifyCorrectFieldsInJournalpost() {
 		OpprettJournalpostArkiverDokumenterResponse response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(createRequest());
-		persistedJournalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
+		persistedJournalpost = journalpostTestRepository.findById(response.getJournalpostId()).get();
 		OpprettJournalpostArkiverDokumenterAssertUtil.assertEqualJournalposts(persistedJournalpost);
 	}
 
@@ -128,7 +128,7 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 		OpprettJournalpostArkiverDokumenterRequest request = createRequest();
 		request.getJournalpost().setJournalpostType(JournalpostType.N);
 		OpprettJournalpostArkiverDokumenterResponse response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(request);
-		persistedJournalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
+		persistedJournalpost = journalpostTestRepository.findById(response.getJournalpostId()).get();
 		assertThat(persistedJournalpost.getJournalposttype(), is(JournalpostTypeCode.N));
 	}
 
@@ -137,7 +137,7 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 		OpprettJournalpostArkiverDokumenterRequest request = createRequest();
 		request.getJournalpost().setJournalpostType(null);
 		OpprettJournalpostArkiverDokumenterResponse response = arkiverDokumentproduksjonProvider.opprettJournalpostArkiverDokumenter(request);
-		persistedJournalpost = journalpostRepositorySkjermet.findById(response.getJournalpostId()).get();
+		persistedJournalpost = journalpostTestRepository.findById(response.getJournalpostId()).get();
 
 		assertThat(persistedJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
 	}
