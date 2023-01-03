@@ -66,7 +66,7 @@ public class JournalfoerNotatHenvendelseV3IT extends AbstractBehandleJournalV3It
 		JournalfoerNotatRequest request = createRequest();
 
 		JournalfoerNotatResponse response = behandleJournalV3Provider.journalfoerNotat(request);
-		Journalpost persistedJournalpost = journalpostRepositorySkjermet.findById(Long.valueOf(response.getJournalpostId())).get();
+		Journalpost persistedJournalpost = journalpostTestRepository.findById(Long.valueOf(response.getJournalpostId())).get();
 
 		JournalfoerNotatHenvendelseAssertUtil.assertEqualJournalposts(persistedJournalpost, request.getJournalpost());
 		assertThat(persistedJournalpost.getJournalstatus(), is(JournalStatusCode.FL));

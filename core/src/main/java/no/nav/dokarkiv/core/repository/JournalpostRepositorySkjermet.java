@@ -1,24 +1,30 @@
 package no.nav.dokarkiv.core.repository;
 
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.repository.projections.IdHolder;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
+import static java.lang.Long.parseLong;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 public class JournalpostRepositorySkjermet {
 
 	private final JournalpostRepository journalpostRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
+	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final SkjermingService skjermingService;
 
-	public JournalpostRepositorySkjermet(JournalpostRepository journalpostRepository, SkjermingService skjermingService) {
+	public JournalpostRepositorySkjermet(JournalpostRepository journalpostRepository,
+										 DokumentInfoRepository dokumentInfoRepository,
+										 JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
+										 SkjermingService skjermingService) {
 		this.journalpostRepository = journalpostRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
+		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.skjermingService = skjermingService;
 	}
 
@@ -28,7 +34,7 @@ public class JournalpostRepositorySkjermet {
 	}
 
 	public Journalpost save(Journalpost journalpost) {
-		return journalpostRepository.save(journalpost);
+		return journalpostRepository.persist(journalpost);
 	}
 
 	public boolean existsById(Long id) {
@@ -36,72 +42,38 @@ public class JournalpostRepositorySkjermet {
 				.existsById(id);
 	}
 
-	/**
-	 * Only use in test!
-	 */
-	public void deleteAll() {
-		journalpostRepository.deleteAll();
-	}
-
-	public Iterable<Journalpost> findAll() {
-		return StreamSupport.stream(journalpostRepository.findAll().spliterator(), true)
-				.filter(journalpost -> isFalse(skjermingService.isJournalpostSkjermet(journalpost)))
-				.collect(Collectors.toList());
-	}
-
-	public Long findJournalpostIdByTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
-		Journalpost journalpost = journalpostRepository.findJournalpostByTilleggsopplysningerNokkelAndVerdi(nokkel, verdi)
-				.orElse(null);
-		if (Objects.nonNull(journalpost) && isFalse(skjermingService.isJournalpostSkjermet(journalpost))) {
-			return journalpost.getJournalpostId();
-		}
-		return null;
-	}
-
-	public Optional<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, String mottakskanal) {
-		Optional<Journalpost> journalpost = journalpostRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottakskanal);
-
-		if (journalpost.isPresent()) {
-			return skjermingService.isJournalpostSkjermet(journalpost.get()) ? Optional.empty() : journalpost;
-		}
-
-		return Optional.empty();
-	}
-
 	public Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
-		return journalpostRepository.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
+		IdHolder idHolder = dokumentInfoRepository.findDokumentInfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
+		if(idHolder == null) {
+			return null;
+		}
+		return idHolder.id();
 	}
 
 	public Long findJournalpostIdByDokumentinfoId(String dokumentinfoId) {
-		Long jpId = journalpostRepository.findJournalpostIdByDokumentinfoId(dokumentinfoId);
-		if (jpId == null) {
+		IdHolder originalJournalpostIdHolder = dokumentInfoRepository.findOriginalJournalpostIdByDokumentInfoId(parseLong(dokumentinfoId));
+		if (originalJournalpostIdHolder == null) {
 			return null;
 		}
-		return skjermingService.isJournalpostSkjermet(jpId) ? null : jpId;
+		Long originalJournalpostId = originalJournalpostIdHolder.id();
+		return skjermingService.isJournalpostSkjermet(originalJournalpostId) ? null : originalJournalpostId;
 	}
 
 	public List<Long> findAllJournalpostIdsByDokumentInfoId(Long dokumentInfoId) {
-		List<Long> journalpostIds = journalpostRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId)
-				.stream().map(SkjermingService::convertBigToLong).collect(Collectors.toList());
+		List<Long> journalpostIds = journalpostDokumentInfoRelasjonRepository.findAllJournalpostIdsByDokumentInfoId(dokumentInfoId)
+				.stream().map(IdHolder::id).toList();
 		return journalpostIds.stream()
 				.filter(journalpostId -> isFalse(skjermingService.isJournalpostSkjermet(journalpostId)))
 				.collect(Collectors.toList());
 	}
 
 	public Optional<Journalpost> findJournalpostByKanalReferanseId(String kanalReferanseId) {
-		Optional<Journalpost> journalpost = journalpostRepository.findTopByKanalReferanseId(kanalReferanseId);
+		Optional<Journalpost> journalpost = journalpostRepository.findByKanalReferanseId(kanalReferanseId);
 
 		if (journalpost.isPresent()) {
 			return skjermingService.isJournalpostSkjermet(journalpost.get()) ? Optional.empty() : journalpost;
 		}
 
 		return Optional.empty();
-	}
-
-	public List<Journalpost> findJournalpostByKanalReferanseIdAndMottakskanal(String kanalReferanseId, MottaksKanalCode mottaksKanalCode) {
-		List<Journalpost> journalpostList = journalpostRepository.findJournalpostByKanalReferanseIdAndMottakskanal(kanalReferanseId, mottaksKanalCode);
-		return journalpostList.stream()
-				.filter(journalpost -> isFalse(skjermingService.isJournalpostSkjermet(journalpost)))
-				.collect(Collectors.toList());
 	}
 }

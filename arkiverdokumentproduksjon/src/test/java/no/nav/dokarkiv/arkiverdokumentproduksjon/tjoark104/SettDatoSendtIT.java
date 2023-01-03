@@ -49,9 +49,9 @@ public class SettDatoSendtIT extends AbstractArkiverdokumentproduksjonItest {
 		journalpost1 = createJournalpost();
 		journalpost2 = createJournalpost();
 		journalpost3 = createJournalpost();
-		journalpostRepositorySkjermet.save(journalpost1);
-		journalpostRepositorySkjermet.save(journalpost2);
-		journalpostRepositorySkjermet.save(journalpost3);
+		journalpostTestRepository.persist(journalpost1);
+		journalpostTestRepository.persist(journalpost2);
+		journalpostTestRepository.persist(journalpost3);
 		request = createWsRequest(journalpost1.getJournalpostId(), journalpost2.getJournalpostId());
 	}
 
@@ -59,8 +59,8 @@ public class SettDatoSendtIT extends AbstractArkiverdokumentproduksjonItest {
 	public void shouldSettDatoSendtOnJournalpostIdsInRequest() throws Exception {
 		arkiverDokumentproduksjonProvider.settDatoSendt(request);
 
-		Journalpost persistedJournalpost1 = journalpostRepositorySkjermet.findById(journalpost1.getJournalpostId()).get();
-		Journalpost persistedJournalpost2 = journalpostRepositorySkjermet.findById(journalpost2.getJournalpostId()).get();
+		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
+		Journalpost persistedJournalpost2 = journalpostTestRepository.findById(journalpost2.getJournalpostId()).get();
 
 		assertThat(persistedJournalpost1.getSendtPrintDato(), is(DateProvider.getToday()));
 		assertThat(persistedJournalpost2.getSendtPrintDato(), is(DateProvider.getToday()));
@@ -70,7 +70,7 @@ public class SettDatoSendtIT extends AbstractArkiverdokumentproduksjonItest {
 	public void shouldNotSettDatoSendtOnOtherJournalposts() {
 		arkiverDokumentproduksjonProvider.settDatoSendt(request);
 
-		Journalpost untouchedJournalpost = journalpostRepositorySkjermet.findById(journalpost3.getJournalpostId()).get();
+		Journalpost untouchedJournalpost = journalpostTestRepository.findById(journalpost3.getJournalpostId()).get();
 		assertThat(untouchedJournalpost.getSendtPrintDato(), nullValue());
 	}
 

@@ -50,8 +50,6 @@ public class OppdaterDistribusjonsinfoService {
 
 		ChangeTracker trackStatusSattTilEkspedert = journalpostUpdater.updateFields(journalpost, request);
 
-		journalpostRepositorySkjermet.save(journalpost);
-
 		if (!trackStatusSattTilEkspedert.getChanges().isEmpty()) {
 			aksjonsLoggService.lagreAksjonsLoggForJournalpost(
 					AksjonsTypeCode.EKSPEDER, journalpostId, null, "Journalposten fikk status 'ekspedert'",
@@ -72,8 +70,6 @@ public class OppdaterDistribusjonsinfoService {
 				}
 
 				ChangeTracker trackStatusSattTilEkspedert = JournalpostUpdaterFromBulk.updateFields(journalpost, journalpostWithDistribusjonsinfo);
-
-				journalpostRepositorySkjermet.save(journalpost);
 
 				if (!trackStatusSattTilEkspedert.getChanges().isEmpty()) {
 					aksjonsLoggService.lagreAksjonsLoggForJournalpost(

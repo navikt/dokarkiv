@@ -11,7 +11,7 @@ import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
-import no.nav.dokarkiv.core.repository.JournalpostRepository;
+import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
@@ -65,7 +65,7 @@ public class AksjonsLoggIT {
 	private AksjonsLoggRepository aksjonsLoggRepository;
 
 	@Autowired
-	private JournalpostRepository journalpostRepository;
+	private JournalpostTestRepository journalpostTestRepository;
 
 	private long journalpostId;
 
@@ -73,7 +73,7 @@ public class AksjonsLoggIT {
 	public void setUp() {
 		RequestContextUtil.createAndSetUsername(USER_ID, APPLICATION);
 		aksjonsLoggRepository.deleteAll();
-		Journalpost journalpost = journalpostRepository.save(TestDataGenerator.createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostTestRepository.persist(TestDataGenerator.createJournalpostWithHoveddokument());
 		this.journalpostId = journalpost.getJournalpostId();
 	}
 
@@ -121,7 +121,7 @@ public class AksjonsLoggIT {
 
 	@Test
 	public void shouldGetMostRecentBruker() throws UgyldigAksjonsLoggException {
-		Journalpost journalpost = journalpostRepository.findById(journalpostId)
+		Journalpost journalpost = journalpostTestRepository.findById(journalpostId)
 				.orElseThrow(JournalpostIkkeFunnetException::new);
 		String nyBrukerId = "12345678910";
 		Bruker nyBruker = Bruker.builder()
@@ -130,7 +130,7 @@ public class AksjonsLoggIT {
 				.build();
 		nyBruker.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		journalpost.addBruker(nyBruker);
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 
 		AksjonsLoggTO aksjonsLoggTO = createAksjonsLoggTO(journalpostId, 1L);
 		aksjonsLoggTO.setBruker(null);

@@ -53,7 +53,7 @@ public class KopierJournalpostService {
 		// låse opp den nye journalpost ved å sette den "tilbake" i status: (eks: FS -> D)
 		resetJournalpoststatus(nyJournalpost);
 
-		nyJournalpost = journalpostRepository.save(nyJournalpost);
+		nyJournalpost = journalpostRepository.persist(nyJournalpost);
 
 		Long nyJournalpostId = nyJournalpost.getJournalpostId();
 

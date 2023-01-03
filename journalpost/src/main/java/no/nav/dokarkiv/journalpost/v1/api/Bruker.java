@@ -25,7 +25,7 @@ public class Bruker {
     @Schema(
             description = "Brukerens fødselsnummer (11 siffer), aktørID (13 siffer) eller organisasjonsnummer (9 siffer)",
             required = true,
-            example = "09071844797"
+            example = "01117400200"
     )
     private String id;
 }

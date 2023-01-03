@@ -33,8 +33,6 @@ public class UkjentBrukerService {
             throw new UgyldigJournalStatusException("Journalpost kan ikke settes til UB (ukjent bruker)");
         }
 
-        journalpostRepository.save(journalpost);
-
         return Arrays.asList(ArkivElementEndringTO.builder()
                 .arkivElement("Journalpost.journalStatus")
                 .fraVerdi(oldJournalStatus.name())

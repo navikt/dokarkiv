@@ -41,7 +41,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
 
@@ -52,7 +52,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		Journalpost oppdatertJournalpost = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		Saksrelasjon saksrelasjon = oppdatertJournalpost.getSaksrelasjon();
 		assertEquals(true, saksrelasjon.getFeilregistrert());
@@ -76,7 +76,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
 
@@ -87,7 +87,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		Journalpost oppdatertJournalpost = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		Saksrelasjon saksrelasjon = oppdatertJournalpost.getSaksrelasjon();
 		assertEquals(true, saksrelasjon.getFeilregistrert());
@@ -101,7 +101,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.getSaksrelasjon().setFeilregistrert(true);
-		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
 
@@ -112,7 +112,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		Journalpost oppdatertJournalpost = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(oppdatertJournalpost.getSaksrelasjon().getFeilregistrert(), false);
 
@@ -134,7 +134,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(U);
-		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
 
@@ -145,7 +145,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		Journalpost oppdatertJournalpost = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(oppdatertJournalpost.getJournalstatus(), UB);
 
@@ -167,7 +167,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(U);
-		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
 
@@ -184,7 +184,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(OD);
 		journalpost.setJournalposttype(I);
-		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
 
@@ -195,7 +195,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		Journalpost oppdatertJournalpost = journalpostRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(oppdatertJournalpost.getJournalstatus(), U);
 
@@ -216,7 +216,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-		Long journalpostId = journalpostRepository.save(journalpost).getJournalpostId();
+		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
 

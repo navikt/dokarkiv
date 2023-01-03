@@ -37,8 +37,8 @@ public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		Journalpost gjenbrukt = createJournalpostWithGjenbruktHoveddokument(journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo());
-		journalpostRepository.save(journalpost);
-		journalpostRepository.save(gjenbrukt);
+		journalpostTestRepository.persist(journalpost);
+		journalpostTestRepository.persist(gjenbrukt);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		ResponseEntity<TilknyttedeJournalposterResponse> responseEntity = tilknyttedeJournalposterGjenbrukRest(journalpost.findHoveddokumentDokumentInfoRelasjon()
@@ -50,7 +50,7 @@ public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 	@Test
 	public void shouldReturnJournalpostWithNormalTilknytning() {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		ResponseEntity<TilknyttedeJournalposterResponse> responseEntity = tilknyttedeJournalposterGjenbrukRest(journalpost.findHoveddokumentDokumentInfoRelasjon()
@@ -69,9 +69,9 @@ public class Rjoark903IT extends AbstractHentjournalsakinfoItest {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
 		createVedleggRelasjon(journalpost, vedlegg1);
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		createVedleggRelasjon(journalpost, vedlegg2);
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

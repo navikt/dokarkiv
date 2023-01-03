@@ -63,13 +63,16 @@ public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
 
 	@Test
 	public void shouldGetTilgangJournalpostMultipleBrukereUsingLatestBruker() {
-		Journalpost baseStoredJournalpost = persistJournalpost(createJournalpostWithHoveddokument());
+		Journalpost baseStoredJournalpost = saveJournalpost(createJournalpostWithHoveddokument());
 		Bruker actualBruker = createBruker();
 		actualBruker.setBrukerId(EXPECTED_BRUKER_ID);
 		baseStoredJournalpost.addBruker(actualBruker);
 
+		Journalpost storedJournalpostTwoBrukere = journalpostTestRepository.merge(baseStoredJournalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
 		TestTransaction.start();
-		Journalpost storedJournalpostTwoBrukere = persistJournalpost(baseStoredJournalpost);
+
 		Long journalpostId = storedJournalpostTwoBrukere.getJournalpostId();
 		Long dokumentInfoId = storedJournalpostTwoBrukere.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -115,7 +118,7 @@ public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
 	}
 
 	private Journalpost persistJournalpost(Journalpost journalpost) {
-		journalpostRepository.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 		return journalpost;

@@ -64,8 +64,6 @@ public class UtgaarService {
 				.tilVerdi(journalpost.getJournalstatus().name())
 				.build();
 
-		journalpostRepository.save(journalpost);
-
 		aksjonsLoggService.lagreAksjonsLoggForJournalpost(
 				UTGAAR,
 				journalpost.getJournalpostId(),

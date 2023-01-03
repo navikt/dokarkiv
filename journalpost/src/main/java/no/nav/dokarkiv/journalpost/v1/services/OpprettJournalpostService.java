@@ -109,7 +109,7 @@ public class OpprettJournalpostService {
 
 		persistDokumentFiler(journalpost);
 
-		journalpostRepository.save(journalpost);
+		journalpostRepository.persist(journalpost);
 
 		populerAksjonsloggFromChanges(journalpost.getJournalpostId(), sakOptional);
 
@@ -242,6 +242,6 @@ public class OpprettJournalpostService {
 	}
 	private Optional<Journalpost> findJournalpostByEksternReferanseId(String eksternReferanseId) {
 		//eksternReferanseId == kanalReferanseId
-		return isBlank(eksternReferanseId) ? Optional.empty() : journalpostRepository.findTopByKanalReferanseId(eksternReferanseId);
+		return isBlank(eksternReferanseId) ? Optional.empty() : journalpostRepository.findByKanalReferanseId(eksternReferanseId);
 	}
 }

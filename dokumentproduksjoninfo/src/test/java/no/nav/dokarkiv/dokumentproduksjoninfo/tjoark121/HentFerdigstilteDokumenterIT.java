@@ -190,7 +190,7 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 										.build())
 								.build())
 				.build();
-		journalpostRepositorySkjermet.save(journalpost);
+		journalpostTestRepository.persist(journalpost);
 		return journalpost;
 	}
 

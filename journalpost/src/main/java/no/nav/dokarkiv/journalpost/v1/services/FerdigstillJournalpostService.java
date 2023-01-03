@@ -55,7 +55,6 @@ public class FerdigstillJournalpostService {
 		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 		oppdatertJournalpost(journalpost, journalfoerendeEnhet);
-		journalpostRepository.save(journalpost);
 		log.info("Oppdatert journalfoerendeEnhet={}", journalpost.getJournalForendeEnhetId());
 	}
 
@@ -72,8 +71,6 @@ public class FerdigstillJournalpostService {
 		setJournalpostStatus(journalpost);
 		this.oppdatertJournalpost(journalpost, ferdigstillJournalpostRequest);
 
-		journalpostRepository.save(journalpost);
-
 		populerAksjonslogg(journalpostId, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
 	}
 
@@ -87,9 +84,6 @@ public class FerdigstillJournalpostService {
 		validerJournalpost(journalpost);
 		setJournalpostStatus(journalpost);
 		oppdatertJournalpost(journalpost, journalfoerendeEnhet);
-
-		journalpostRepository.save(journalpost);
-
 
 		populerAksjonslogg(journalpostId, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
 	}
