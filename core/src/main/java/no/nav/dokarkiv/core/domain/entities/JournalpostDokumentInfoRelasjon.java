@@ -153,4 +153,20 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 			dokumentInfo.addJournalpostRelasjon(this);
 		}
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+
+		if (!(o instanceof JournalpostDokumentInfoRelasjon other))
+			return false;
+
+		return journalpostDokumentInfoRelasjonId != null &&
+			   journalpostDokumentInfoRelasjonId.equals(other.getJournalpostDokumentInfoRelasjonId());
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
 }

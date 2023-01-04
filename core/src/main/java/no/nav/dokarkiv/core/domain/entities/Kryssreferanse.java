@@ -14,9 +14,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -53,6 +56,10 @@ public class Kryssreferanse extends AbstractPersistentVersionedDomainObjectWithK
 	@Column(name = "k_referanse_t", nullable = false, length = 20)
 	private ReferanseTypeCode referanseType;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "journalpost_id", nullable = false)
+	private Journalpost journalpost;
+
 	/**
 	 * Default constructor.
 	 */
@@ -84,5 +91,21 @@ public class Kryssreferanse extends AbstractPersistentVersionedDomainObjectWithK
 	public void verifyMandatoryFields() {
 		verifyStringNotBlank(referanseId, "referanseId");
 		verifyFieldNotNull(referanseType, "referanseType");
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+
+		if (!(o instanceof Kryssreferanse other))
+			return false;
+
+		return kryssreferanseId != null &&
+			   kryssreferanseId.equals(other.getKryssreferanseId());
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
 	}
 }

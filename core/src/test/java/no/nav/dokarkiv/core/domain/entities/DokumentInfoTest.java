@@ -69,7 +69,7 @@ public class DokumentInfoTest {
 								.variantFormat(SLADDET)
 								.build(),
 						FilDetaljer.builder()
-								.fildetaljerId(2L)
+								.fildetaljerId(3L)
 								.filUuid("test3")
 								.variantFormat(PRODUKSJON)
 								.build())

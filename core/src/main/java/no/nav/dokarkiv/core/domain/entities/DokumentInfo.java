@@ -182,7 +182,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	public DokumentInfo(Long dokumentInfoId, long version) {
 		this.dokumentInfoId = dokumentInfoId;
 		setVersion(version);
-		this.tilleggsopplysninger = new HashMap<>();
 		this.fildetaljerListe = new HashSet<>();
 		this.journalpostRelasjoner = new HashSet<>();
 		this.tilleggsopplysninger = new HashMap<>();
@@ -513,6 +512,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	public void removeFilDetaljer(FilDetaljer filDetaljer) {
 		if (filDetaljer != null) {
 			this.fildetaljerListe.remove(filDetaljer);
+			filDetaljer.setDokumentInfo(null);
 		}
 	}
 
@@ -545,12 +545,10 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	/**
 	 * Removes a JournalpostDokumentInfoRelasjon
-	 *
-	 * @return true if JournalpostDokumentInfoRelasjon was removed, otherwise
-	 * false
 	 */
-	public boolean removeJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjonToRemove) {
-		return journalpostRelasjoner.remove(relasjonToRemove);
+	public void removeJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjonToRemove) {
+		journalpostRelasjoner.remove(relasjonToRemove);
+		relasjonToRemove.setDokumentInfo(null);
 	}
 
 	public void setKassert(boolean kassert) {

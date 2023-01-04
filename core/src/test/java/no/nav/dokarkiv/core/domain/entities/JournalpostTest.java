@@ -25,7 +25,6 @@ import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.AVBRUTT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -154,15 +153,6 @@ public class JournalpostTest {
 
 		assertThat(journalpost.findFilDetaljerByFilUuid("uuid2").getVariantFormat(), is(SLADDET));
 		assertThat(journalpost.findFilDetaljerByFilUuid("uuid1").getVariantFormat(), is(SLADDET));
-	}
-
-	@Test
-	public void testRemoveAllUsers() {
-		journalpost.addBruker(new Bruker());
-		journalpost.addBruker(new Bruker());
-
-		journalpost.removeBrukere(journalpost.getBrukere());
-		assertThat(journalpost.getBrukere().size(), is(equalTo(0)));
 	}
 
 	@Test
