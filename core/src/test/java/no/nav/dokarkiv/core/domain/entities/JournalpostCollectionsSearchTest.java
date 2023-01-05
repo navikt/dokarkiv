@@ -7,12 +7,10 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Set;
 
-import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder.getKryssreferanseBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
@@ -123,25 +121,6 @@ public class JournalpostCollectionsSearchTest {
 	}
 
 	@Test
-	public void shouldFindKryssReferanseById() {
-		long kryssReferanseId = 100L;
-		Long referanseNr = 123123L;
-		Journalpost journalpost = getJournalpostBuilder()
-				.kryssReferanser(getKryssreferanseBuilder()
-								.kryssreferanseId(kryssReferanseId)
-								.referanseNr(referanseNr)
-								.build(),
-						getKryssreferanseBuilder()
-								.kryssreferanseId(200L)
-								.referanseNr(987987L)
-								.build())
-				.build();
-
-		Kryssreferanse kryssreferanse = journalpost.findKryssreferanseById(kryssReferanseId);
-		assertThat(kryssreferanse.getReferanseNr(), is(referanseNr));
-	}
-
-	@Test
 	public void shouldFindDokumentInfoById() {
 		long dokumentInfoId = 100L;
 		DokumentKategoriCode dokumentKategori = DokumentKategoriCode.B;
@@ -186,44 +165,6 @@ public class JournalpostCollectionsSearchTest {
 						.build();
 
 		assertThat(journalpost.findDokumentInfoById(200L), is(nullValue()));
-	}
-
-	@Test
-	public void shouldFindBrukerById() {
-		long brukerInfoId = 100L;
-		String brukerId = "12122312312";
-		Journalpost journalpost = getJournalpostBuilder()
-				.brukere(getBrukerBuilder()
-								.brukerInfoId(150L)
-								.brukerId("test")
-								.build(),
-						getBrukerBuilder()
-								.brukerInfoId(brukerInfoId)
-								.brukerId(brukerId)
-								.build())
-				.build();
-
-		Bruker bruker = journalpost.findBrukerById(brukerInfoId);
-		assertThat(bruker.getBrukerId(), is(brukerId));
-	}
-
-	@Test
-	public void shouldFindBrukerByBrukerId() {
-		String brukerId = "12122312312";
-		long brukerInfoId = 100L;
-		Journalpost journalpost = getJournalpostBuilder()
-				.brukere(getBrukerBuilder()
-								.brukerInfoId(150L)
-								.brukerId("123123")
-								.build(),
-						getBrukerBuilder()
-								.brukerInfoId(brukerInfoId)
-								.brukerId(brukerId)
-								.build())
-				.build();
-
-		Bruker bruker = journalpost.findBrukerByBrukerId(brukerId);
-		assertThat(bruker.getBrukerInfoId(), is(brukerInfoId));
 	}
 
 	@Test

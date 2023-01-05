@@ -10,7 +10,6 @@ import lombok.ToString;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
@@ -318,19 +317,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	/**
-	 * Finds a SkannetInnhold by Id.
-	 *
-	 * @param skannetInnholdId The Id.
-	 * @return The SkannetInnhold.
-	 */
-	public SkannetInnhold findSkannetInnholdById(final Long skannetInnholdId) {
-		return skannetInnholdListe.stream()
-				.filter(skannetInnhold -> skannetInnholdId.equals(skannetInnhold.getId()))
-				.findAny()
-				.orElse(null);
-	}
-
-	/**
 	 * Finds a FilDetaljer by Id.
 	 *
 	 * @param filDetaljerId The Id.
@@ -436,13 +422,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public boolean isRelatedToMultipleJournalposts() {
 		return getJournalpostRelasjoner().size() > 1;
-	}
-
-	public JournalpostDokumentInfoRelasjon findHoveddokumentJournalpostRelasjon() {
-		return journalpostRelasjoner.stream()
-				.filter(rel -> rel.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-				.findAny()
-				.orElse(null);
 	}
 
 	/**

@@ -279,17 +279,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	/**
-	 * Checks if the Journalpost's status is one that indicates an inngaende
-	 * journalpost.
-	 *
-	 * @return true if status is inngaende, false otherwise.
-	 */
-	public boolean hasInngaendeStatus() {
-		List<JournalStatusCode> inngaendeStatuses = Arrays.asList(MO, M, UB, U, J);
-		return inngaendeStatuses.contains(journalstatus);
-	}
-
-	/**
 	 * Verify that all mandatory fields are set. Some fields are only required
 	 * given certain journalStatuses and journalpostTypes.
 	 */
@@ -344,12 +333,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	private void verifyJournalforendeEnhetIdForJournalfortJournalforing() {
 		if (journalstatus == J) {
-			verifyStringNotBlank(journalForendeEnhetId, "journalForendeEnhetId");
-		}
-	}
-
-	public void verifyJournalforendeEnhetIdForMidlertidigJournalforing() {
-		if (journalstatus == M) {
 			verifyStringNotBlank(journalForendeEnhetId, "journalForendeEnhetId");
 		}
 	}
@@ -520,39 +503,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			}
 		}
 		return allFilDetaljer;
-	}
-
-	/**
-	 * Finds a KryssReferanse by Id.
-	 *
-	 * @param kryssReferanseId The Id.
-	 * @return The KryssReferanse with kryssReferanseId.
-	 */
-	public Kryssreferanse findKryssreferanseById(final Long kryssReferanseId) {
-		return kryssreferanser.stream()
-				.filter(kryssreferanse -> kryssReferanseId.equals(kryssreferanse.getId()))
-				.findAny()
-				.orElse(null);
-	}
-
-	/**
-	 * Finds a Bruker by Id (primary key)
-	 *
-	 * @param brukerInfoId The Id.
-	 * @return The Bruker.
-	 */
-	public Bruker findBrukerById(final Long brukerInfoId) {
-		return brukere.stream().filter(bruker -> brukerInfoId.equals(bruker.getId())).findAny().orElse(null);
-	}
-
-	/**
-	 * Find a bruker by brukerId (e.g. fnr)
-	 *
-	 * @param brukerId The brukerId
-	 * @return The Bruker.
-	 */
-	public Bruker findBrukerByBrukerId(final String brukerId) {
-		return brukere.stream().filter(bruker -> brukerId.equals(bruker.getBrukerId())).findAny().orElse(null);
 	}
 
 	/**
