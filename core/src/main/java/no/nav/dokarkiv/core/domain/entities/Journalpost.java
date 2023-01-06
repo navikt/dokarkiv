@@ -216,10 +216,11 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Enumerated(EnumType.STRING)
 	private InnsynCode innsyn;
 
-	@OneToMany(mappedBy = "journalpost")
+	@OneToMany(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Bruker> brukere = new HashSet<>();
 
+	// Bidireksjonelle OneToOne relasjoner blir eager fetched fra Journalpost
 	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private Saksrelasjon saksrelasjon;
@@ -234,10 +235,11 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "verdi", nullable = false)
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 
-	@OneToMany(mappedBy = "journalpost")
+	@OneToMany(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Kryssreferanse> kryssreferanser = new HashSet<>();
 
+	// Bidireksjonelle OneToOne relasjoner blir eager fetched fra Journalpost
 	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private UtsendingsInfo utsendingsInfo;
