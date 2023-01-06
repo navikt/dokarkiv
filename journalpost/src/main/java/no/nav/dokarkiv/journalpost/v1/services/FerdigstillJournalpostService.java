@@ -50,7 +50,6 @@ public class FerdigstillJournalpostService {
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
-
 	public void setJournalfoerendeEnhetNull(Long journalpostId, String journalfoerendeEnhet) {
 		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
@@ -58,9 +57,9 @@ public class FerdigstillJournalpostService {
 		log.info("Oppdatert journalpostId={} med journalfoerendeEnhet={}", journalpostId, journalpost.getJournalForendeEnhetId());
 	}
 
-	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
 	public void ferdigstill(Long journalpostId, FerdigstillJournalpostRequest ferdigstillJournalpostRequest) {
-		Journalpost journalpost = journalpostRepository.findById(journalpostId)
+		// Kaller fetchById for å hente alle relevante data i en spørring. Siden validerJournalpost sjekker store deler av entitetsgrafen til Journalpost
+		Journalpost journalpost = journalpostRepository.fetchById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
@@ -75,8 +74,9 @@ public class FerdigstillJournalpostService {
 	}
 
 	public void ferdigstill(Long journalpostId, String journalfoerendeEnhet) {
-		Journalpost journalpost = journalpostRepository.findById(journalpostId)
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+		// Kaller findById i stedet for fetch siden Journalpost har vært managed i samme tråd. Da hentes den fra JPA first level cache.
+		Journalpost journalpost = journalpostRepository.findById(journalpostId).
+				orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
 		String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
 		String prevJournalfortAvNavn = journalpost.getJournalfortAvNavn();

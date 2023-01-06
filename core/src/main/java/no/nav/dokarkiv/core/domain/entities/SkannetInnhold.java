@@ -88,4 +88,20 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 	public void verifyMandatoryFields() {
 		verifyStringNotBlank(vedleggInnhold, "vedleggInnhold");
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+
+		if (!(o instanceof SkannetInnhold other))
+			return false;
+
+		return skannetInnholdId != null &&
+			   skannetInnholdId.equals(other.getSkannetInnholdId());
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
 }

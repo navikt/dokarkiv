@@ -31,4 +31,17 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 	Optional<Journalpost> findByKanalReferanseId(String kanalReferanseId);
 
 	boolean existsByKanalReferanseId(String kanalReferanseId);
+
+	@Query(value = """
+			select j
+			from Journalpost j
+			left join fetch j.saksrelasjon s
+			left join fetch j.brukere b
+			left join fetch j.utsendingsInfo u
+			join fetch j.journalpostDokumentInfoRelasjoner jdir
+			join fetch jdir.dokumentInfo d
+			join fetch d.fildetaljerListe
+			where j.journalpostId = :id
+			""")
+	Optional<Journalpost> fetchById(Long id);
 }

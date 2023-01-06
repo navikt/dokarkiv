@@ -216,11 +216,11 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Enumerated(EnumType.STRING)
 	private InnsynCode innsyn;
 
-	@OneToMany
-	@JoinColumn(name = "journalpost_id", nullable = false)
+	@OneToMany(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Bruker> brukere = new HashSet<>();
 
+	// Bidireksjonelle OneToOne relasjoner blir eager fetched fra Journalpost
 	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private Saksrelasjon saksrelasjon;
@@ -235,11 +235,11 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "verdi", nullable = false)
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 
-	@OneToMany
-	@JoinColumn(name = "journalpost_id", nullable = false)
+	@OneToMany(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Kryssreferanse> kryssreferanser = new HashSet<>();
 
+	// Bidireksjonelle OneToOne relasjoner blir eager fetched fra Journalpost
 	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private UtsendingsInfo utsendingsInfo;
@@ -278,17 +278,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	public boolean hasLenientStatus() {
 		List<JournalStatusCode> lenientStatuses = Arrays.asList(MO, M, UB, U, OD);
 		return lenientStatuses.contains(journalstatus);
-	}
-
-	/**
-	 * Checks if the Journalpost's status is one that indicates an inngaende
-	 * journalpost.
-	 *
-	 * @return true if status is inngaende, false otherwise.
-	 */
-	public boolean hasInngaendeStatus() {
-		List<JournalStatusCode> inngaendeStatuses = Arrays.asList(MO, M, UB, U, J);
-		return inngaendeStatuses.contains(journalstatus);
 	}
 
 	/**
@@ -346,12 +335,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	private void verifyJournalforendeEnhetIdForJournalfortJournalforing() {
 		if (journalstatus == J) {
-			verifyStringNotBlank(journalForendeEnhetId, "journalForendeEnhetId");
-		}
-	}
-
-	public void verifyJournalforendeEnhetIdForMidlertidigJournalforing() {
-		if (journalstatus == M) {
 			verifyStringNotBlank(journalForendeEnhetId, "journalForendeEnhetId");
 		}
 	}
@@ -422,24 +405,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public boolean hasEndeligJournalforingStatus() {
 		return ENDELIG_JOURNALFOERING_STATUS.contains(journalstatus);
-	}
-
-	/**
-	 * Checks if the Journalpost status is midlertidig journalfï¿½rt for inngï¿½ende.
-	 *
-	 * @return true if the status is midlertidig for inngï¿½ende, false otherwise.
-	 */
-	public boolean hasMidlertidigInngaaendeJournalforingStatus() {
-		return MIDLERTIDIG_INNGAAENDE_JOURNALFOERING_STATUS.contains(journalstatus);
-	}
-
-	/**
-	 * Checks if the Journalpost status is utgï¿½tt.
-	 *
-	 * @return true if the status is midlertidig for inngï¿½ende, false otherwise.
-	 */
-	public boolean hasUtgaattJournalforingStatus() {
-		return U == journalstatus;
 	}
 
 	/**
@@ -540,39 +505,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			}
 		}
 		return allFilDetaljer;
-	}
-
-	/**
-	 * Finds a KryssReferanse by Id.
-	 *
-	 * @param kryssReferanseId The Id.
-	 * @return The KryssReferanse with kryssReferanseId.
-	 */
-	public Kryssreferanse findKryssreferanseById(final Long kryssReferanseId) {
-		return kryssreferanser.stream()
-				.filter(kryssreferanse -> kryssReferanseId.equals(kryssreferanse.getId()))
-				.findAny()
-				.orElse(null);
-	}
-
-	/**
-	 * Finds a Bruker by Id (primary key)
-	 *
-	 * @param brukerInfoId The Id.
-	 * @return The Bruker.
-	 */
-	public Bruker findBrukerById(final Long brukerInfoId) {
-		return brukere.stream().filter(bruker -> brukerInfoId.equals(bruker.getId())).findAny().orElse(null);
-	}
-
-	/**
-	 * Find a bruker by brukerId (e.g. fnr)
-	 *
-	 * @param brukerId The brukerId
-	 * @return The Bruker.
-	 */
-	public Bruker findBrukerByBrukerId(final String brukerId) {
-		return brukere.stream().filter(bruker -> brukerId.equals(bruker.getBrukerId())).findAny().orElse(null);
 	}
 
 	/**
@@ -701,15 +633,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	/**
-	 * Removes a subset from brukere
-	 *
-	 * @return true if brukere was modified, otherwise false
-	 */
-	public boolean removeBrukere(Set<Bruker> brukereToRemove) {
-		return brukere.removeAll(brukereToRemove);
-	}
-
-	/**
 	 * Add a Bruker to the Bruker Set.
 	 *
 	 * @param bruker The Bruker to add,
@@ -717,6 +640,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	public void addBruker(Bruker bruker) {
 		if (bruker != null) {
 			brukere.add(bruker);
+			bruker.setJournalpost(this);
 		}
 	}
 
@@ -742,10 +666,14 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @param saksrelasjon the saksrelasjon to set
 	 */
 	public void setSaksrelasjon(Saksrelasjon saksrelasjon) {
-		this.saksrelasjon = saksrelasjon;
-		if (saksrelasjon != null) {
+		if(saksrelasjon == null) {
+			if(this.saksrelasjon != null) {
+				this.saksrelasjon.setJournalpost(null);
+			}
+		} else {
 			saksrelasjon.setJournalpost(this);
 		}
+		this.saksrelasjon = saksrelasjon;
 	}
 
 	/**
@@ -762,12 +690,10 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	/**
 	 * Removes a JournalpostDokumentInfoRelasjon
-	 *
-	 * @return true if JournalpostDokumentInfoRelasjon was removed, otherwise
-	 * false
 	 */
-	public boolean removeJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjonToRemove) {
-		return journalpostDokumentInfoRelasjoner.remove(relasjonToRemove);
+	public void removeJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjonToRemove) {
+		journalpostDokumentInfoRelasjoner.remove(relasjonToRemove);
+		relasjonToRemove.setJournalpost(this);
 	}
 
 	/**
@@ -847,6 +773,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	public void addKryssReferanse(Kryssreferanse kryssreferanse) {
 		if (kryssreferanse != null) {
 			kryssreferanser.add(kryssreferanse);
+			kryssreferanse.setJournalpost(this);
 		}
 	}
 

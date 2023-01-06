@@ -12,7 +12,6 @@ import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumen
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.builder.SkannetInnholdBuilder.getSkannetInnholdBuilder;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
@@ -69,7 +68,7 @@ public class DokumentInfoTest {
 								.variantFormat(SLADDET)
 								.build(),
 						FilDetaljer.builder()
-								.fildetaljerId(2L)
+								.fildetaljerId(3L)
 								.filUuid("test3")
 								.variantFormat(PRODUKSJON)
 								.build())
@@ -294,41 +293,6 @@ public class DokumentInfoTest {
 				.build();
 
 		assertExceptionThrownWhenVerifyingMandatoryFields(dokumentInfo, journalpost, "tittel");
-	}
-
-	@Test
-	public void shouldFindSkannetInnholdById() {
-		long skannetInnholdId = 200L;
-		String innhold = "innhold";
-		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
-				.skannetInnhold(getSkannetInnholdBuilder()
-								.skannetInnholdId(100L)
-								.vedleggInnhold("test")
-								.build(),
-						getSkannetInnholdBuilder()
-								.skannetInnholdId(skannetInnholdId)
-								.vedleggInnhold(innhold)
-								.build())
-				.build();
-		SkannetInnhold skannetInnhold = dokumentInfo.findSkannetInnholdById(skannetInnholdId);
-		assertThat(skannetInnhold.getVedleggInnhold(), is(innhold));
-	}
-
-	@Test
-	public void shouldFindSkannetInnholdByIdWithNewAndExistingSkannetInnholdsInList() {
-		long skannetInnholdId = 200L;
-		String innhold = "innhold";
-		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
-				.skannetInnhold(getSkannetInnholdBuilder()
-								.vedleggInnhold("test")
-								.build(),
-						getSkannetInnholdBuilder()
-								.skannetInnholdId(skannetInnholdId)
-								.vedleggInnhold(innhold)
-								.build())
-				.build();
-		SkannetInnhold skannetInnhold = dokumentInfo.findSkannetInnholdById(skannetInnholdId);
-		assertThat(skannetInnhold.getVedleggInnhold(), is(innhold));
 	}
 
 	@Test

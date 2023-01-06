@@ -234,4 +234,19 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 		return SLADDET.equals(variantFormat);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+
+		if (!(o instanceof FilDetaljer other))
+			return false;
+
+		return fildetaljerId != null &&
+			   fildetaljerId.equals(other.getFildetaljerId());
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
 }
