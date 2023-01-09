@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.ToString;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Blob;
 
@@ -31,6 +32,8 @@ class JoarkDokumentDto {
 	private static Long mapJournalpostId(Object[] objects) {
 		if (objects[0] instanceof BigInteger) {
 			return ((BigInteger) objects[0]).longValue();
+		} else if (objects[0] instanceof BigDecimal){
+			return ((BigDecimal) objects[0]).longValue();
 		} else {
 			return (Long) objects[0];
 		}
