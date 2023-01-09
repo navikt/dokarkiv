@@ -159,8 +159,10 @@ public class HentJournalsakinfoController {
 			RequestContextUtil.createAndSetUsername(RJOARK_920, "dokarkiv");
 			log.info("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId={} og variant={}", dokumentinfoId, variant);
 			SafHentDokumentResponse safHentDokumentResponse = safHentDokumentService.hentDokumentByDokumentinfoIdAndVariant(dokumentinfoId, variant);
+			String mimeTypeForFileExtension = mimeTypeMapper.getMimeTypeForFileExtension(safHentDokumentResponse.getFiltype());
+			log.info("rjoark920 har hentet dokument med dokumentinfoId={} og variant={}, Content-Type={}", dokumentinfoId, variant, mimeTypeForFileExtension);
 			return ResponseEntity.ok()
-					.header(HttpHeaders.CONTENT_TYPE, mimeTypeMapper.getMimeTypeForFileExtension(safHentDokumentResponse.getFiltype().toString()))
+					.header(HttpHeaders.CONTENT_TYPE, mimeTypeForFileExtension)
 					.body(Base64.getEncoder().encodeToString(safHentDokumentResponse.getDokument()));
 		} finally {
 			MDC.clear();
