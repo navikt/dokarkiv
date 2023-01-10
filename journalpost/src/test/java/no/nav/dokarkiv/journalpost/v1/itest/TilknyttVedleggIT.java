@@ -3,14 +3,12 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import com.nimbusds.jwt.JWTClaimsSet;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.ConsumerUnauthorizedDokarkivFunctionalException;
-import no.nav.dokarkiv.journalpost.v1.api.ArsakKode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
@@ -35,10 +33,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.util.stream.Collectors.joining;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
+import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.IKKE_FUNNET;
+import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.UGYLDIG_STATUS;
 import static no.nav.dokarkiv.journalpost.v1.util.FunctionalMatcher.where;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -164,7 +166,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.get()
 				.getDokumentInfo();
 		FilDetaljer sourceFilDetaljer1 = sourceDokumentInfo1.findFilDetaljerByVariantFormat(SLADDET);
-		FilDetaljer filDetaljerKopi1 = dokumentInfoKopi1.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+		FilDetaljer filDetaljerKopi1 = dokumentInfoKopi1.findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil sourceDokumentFil1 = dokumentFilTestRepository.findByFilUuid(sourceFilDetaljer1.getFilUuid());
 		DokumentFil dokumentFilKopi1 = dokumentFilTestRepository.findByFilUuid(filDetaljerKopi1.getFilUuid());
 
@@ -184,7 +186,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.get()
 				.getDokumentInfo();
 		FilDetaljer sourceFilDetaljer2 = sourceDokumentInfo2.findFilDetaljerByVariantFormat(SLADDET);
-		FilDetaljer filDetaljerKopi2 = dokumentInfoKopi2.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+		FilDetaljer filDetaljerKopi2 = dokumentInfoKopi2.findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil sourceDokumentFil2 = dokumentFilTestRepository.findByFilUuid(sourceFilDetaljer2.getFilUuid());
 		DokumentFil dokumentFilKopi2 = dokumentFilTestRepository.findByFilUuid(filDetaljerKopi2.getFilUuid());
 
@@ -251,7 +253,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		completeCurrentAndStartNewTransaction();
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
-		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(ArsakKode.UGYLDIG_STATUS));
+		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(UGYLDIG_STATUS));
 
 		//Assert 1 Sladdet
 		Journalpost journalpostTilknyttetVedlegg1 = journalpostTestRepository.findById(journalpostIdVedlegg).get();
@@ -264,7 +266,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.get()
 				.getDokumentInfo();
 		FilDetaljer sourceFilDetaljer1 = sourceDokumentInfo1.findFilDetaljerByVariantFormat(SLADDET);
-		FilDetaljer filDetaljerKopi1 = dokumentInfoKopi1.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+		FilDetaljer filDetaljerKopi1 = dokumentInfoKopi1.findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil sourceDokumentFil1 = dokumentFilTestRepository.findByFilUuid(sourceFilDetaljer1.getFilUuid());
 		DokumentFil dokumentFilKopi1 = dokumentFilTestRepository.findByFilUuid(filDetaljerKopi1.getFilUuid());
 
@@ -284,7 +286,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.get()
 				.getDokumentInfo();
 		FilDetaljer sourceFilDetaljer2 = sourceDokumentInfo2.findFilDetaljerByVariantFormat(SLADDET);
-		FilDetaljer filDetaljerKopi2 = dokumentInfoKopi2.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV);
+		FilDetaljer filDetaljerKopi2 = dokumentInfoKopi2.findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil sourceDokumentFil2 = dokumentFilTestRepository.findByFilUuid(sourceFilDetaljer2.getFilUuid());
 		DokumentFil dokumentFilKopi2 = dokumentFilTestRepository.findByFilUuid(filDetaljerKopi2.getFilUuid());
 
@@ -396,7 +398,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter(), hasItem(allOf(
 				where(dok -> Long.parseLong(((FeiledeDokumenter) dok).getDokumentInfoId()), is(dokumentInfoId)),
-				where(FeiledeDokumenter::getArsakKode, is(ArsakKode.UGYLDIG_STATUS))
+				where(FeiledeDokumenter::getArsakKode, is(UGYLDIG_STATUS))
 		)));
 		TestTransaction.end();
 	}
@@ -420,7 +422,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
-		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(ArsakKode.IKKE_FUNNET));
+		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(IKKE_FUNNET));
 		TestTransaction.end();
 	}
 
@@ -466,8 +468,8 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter(), hasSize(2));
-		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(ArsakKode.IKKE_FUNNET));
-		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(1).getArsakKode(), is(ArsakKode.IKKE_FUNNET));
+		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(IKKE_FUNNET));
+		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(1).getArsakKode(), is(IKKE_FUNNET));
 	}
 
 	private void assertRelasjon(Long journalpostIdTilknyttet, DokumentInfo dokumentInfoKopi) {
@@ -501,7 +503,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertEquals(sourceFilDetaljer.getOnDemandId(), filDetaljerKopi.getOnDemandId());
 		assertEquals(sourceFilDetaljer.getOnDemandInstans(), filDetaljerKopi.getOnDemandInstans());
 		assertEquals(sourceFilDetaljer.getMetaforceInstanceId(), filDetaljerKopi.getMetaforceInstanceId());
-		assertThat(filDetaljerKopi.getVariantFormat(), is(VariantFormatCode.ARKIV));
+		assertThat(filDetaljerKopi.getVariantFormat(), is(ARKIV));
 		assertThat(filDetaljerKopi.getOpprettetKildeNavn(), is(CONSUMER));
 		assertEquals(sourceFilDetaljer.getBatchNavn(), filDetaljerKopi.getBatchNavn());
 		assertEquals(sourceFilDetaljer.getFilnavn(), filDetaljerKopi.getFilnavn());
@@ -533,7 +535,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		journalpostSladdet.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
 
 		DokumentInfo dokumentInfo = journalpostSladdet.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		dokumentInfo.removeFilDetaljer(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON));
+		dokumentInfo.removeFilDetaljer(dokumentInfo.findFilDetaljerByVariantFormat(PRODUKSJON));
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, SLADDET));
 		return journalpostSladdet;
 	}
@@ -549,7 +551,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		journalpostArkiv.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
 
 		DokumentInfo dokumentInfo = journalpostArkiv.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		dokumentInfo.removeFilDetaljer(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON));
+		dokumentInfo.removeFilDetaljer(dokumentInfo.findFilDetaljerByVariantFormat(PRODUKSJON));
 		return journalpostArkiv;
 	}
 
