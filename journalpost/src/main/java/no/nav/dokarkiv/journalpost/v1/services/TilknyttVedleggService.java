@@ -30,6 +30,10 @@ import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.DOKUMENT_TILLATES_IKKE_GJENBRUKT;
+import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.IKKE_FUNNET;
+import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.TILKNYTNING_FEILET;
+import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.UGYLDIG_STATUS;
 
 @Service(value = "tilknyttVedleggService")
 @Slf4j
@@ -105,11 +109,19 @@ public class TilknyttVedleggService {
 			}
 
 			if (filDetaljerSladdet != null) {
-				tilknyttDokumentInfoCopySomVedleggPaaJournalpost(tilKnyttetAvNavn, targetJournalpostId, sourceDokumentInfo, filDetaljerSladdet, dokumentVedlegg, targetJournalpost, feiledeDokumenter);
+				if (dokumentFilRepository.existsByFilUuid(filDetaljerSladdet.getFilUuid())) {
+					tilknyttDokumentInfoCopySomVedleggPaaJournalpost(tilKnyttetAvNavn, targetJournalpostId, sourceDokumentInfo, filDetaljerSladdet, dokumentVedlegg, targetJournalpost, feiledeDokumenter);
+				} else {
+					addToFeiletDokumentList(feiledeDokumenter, IKKE_FUNNET, dokumentVedlegg);
+				}
 			} else if (filDetaljerArkiv != null) {
-				tilknyttDokumentInfoSomVedleggPaaJournalpost(tilKnyttetAvNavn, sourceDokumentInfo, dokumentVedlegg, targetJournalpost, feiledeDokumenter);
+				if (dokumentFilRepository.existsByFilUuid(filDetaljerArkiv.getFilUuid())) {
+					tilknyttDokumentInfoSomVedleggPaaJournalpost(tilKnyttetAvNavn, sourceDokumentInfo, dokumentVedlegg, targetJournalpost, feiledeDokumenter);
+				} else {
+					addToFeiletDokumentList(feiledeDokumenter, IKKE_FUNNET, dokumentVedlegg);
+				}
 			} else {
-				addToFeiletDokumentList(feiledeDokumenter, ArsakKode.DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
+				addToFeiletDokumentList(feiledeDokumenter, DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
 			}
 
 		}
@@ -185,7 +197,7 @@ public class TilknyttVedleggService {
 			log.info("Journalpost med journalpostId={} har fått tilknyttet dokument vedlegg fra DokumentInfoId={} ", journalpost
 					.getJournalpostId(), dokumentInfo.getDokumentInfoId());
 		} catch (Exception e) {
-			addToFeiletDokumentList(feiledeDokumenterList, ArsakKode.TILKNYTNING_FEILET, dokumentVedlegg);
+			addToFeiletDokumentList(feiledeDokumenterList, TILKNYTNING_FEILET, dokumentVedlegg);
 		}
 	}
 
@@ -241,10 +253,10 @@ public class TilknyttVedleggService {
 
 	private Boolean validateSourceJournalpost(Journalpost sourceJournalpost, List<FeiledeDokumenter> feiledeDokumenterList, DokumentVedlegg dokumentVedlegg) {
 		if (sourceJournalpost == null) {
-			addToFeiletDokumentList(feiledeDokumenterList, ArsakKode.IKKE_FUNNET, dokumentVedlegg);
+			addToFeiletDokumentList(feiledeDokumenterList, IKKE_FUNNET, dokumentVedlegg);
 			return false;
 		} else if (!tilknyttVedleggValidator.validateSourceJournalpostStatus(sourceJournalpost)) {
-			addToFeiletDokumentList(feiledeDokumenterList, ArsakKode.UGYLDIG_STATUS, dokumentVedlegg);
+			addToFeiletDokumentList(feiledeDokumenterList, UGYLDIG_STATUS, dokumentVedlegg);
 			return false;
 		}
 		return true;
@@ -253,14 +265,14 @@ public class TilknyttVedleggService {
 	private Boolean validateSourceDokumentInfo(DokumentInfo sourceDokumentInfo, Long targetJournalpostId, List<FeiledeDokumenter> feiledeDokumenterList, DokumentVedlegg dokumentVedlegg) {
 		boolean valid = true;
 		if (sourceDokumentInfo == null) {
-			addToFeiletDokumentList(feiledeDokumenterList, ArsakKode.IKKE_FUNNET, dokumentVedlegg);
+			addToFeiletDokumentList(feiledeDokumenterList, IKKE_FUNNET, dokumentVedlegg);
 			valid = false;
 		} else if (checkDuplicate(targetJournalpostId, sourceDokumentInfo)) {
 			log.info(MDC.get(MDC_REQUEST_ID) + " kan ikke knytte dokumentinfo med dokumentInfoId={} til journalpost med journalpostId={} fordi den allerede er tilknyttet journalposten", dokumentVedlegg
 					.getDokumentInfoId(), targetJournalpostId);
 			valid = false;
 		} else if (!tilknyttVedleggValidator.validateDokumentInfo(sourceDokumentInfo)) {
-			addToFeiletDokumentList(feiledeDokumenterList, ArsakKode.DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
+			addToFeiletDokumentList(feiledeDokumenterList, DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
 			valid = false;
 		}
 		return valid;
