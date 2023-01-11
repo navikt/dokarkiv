@@ -29,13 +29,16 @@ public class OppdaterDistribusjonsinfoService {
 	private static final EnumSet<JournalStatusCode> IKKE_OPPDATER_MED_JOURNALSTATUS = EnumSet.of(E, A, U);
 	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final JournalpostUpdater journalpostUpdater;
+	private final JournalpostUpdaterFromBulk journalpostUpdaterFromBulk;
 	private final LagreAksjonsLoggService aksjonsLoggService;
 
 	public OppdaterDistribusjonsinfoService(JournalpostRepositorySkjermet journalpostRepositorySkjermet,
 											JournalpostUpdater journalpostUpdater,
+											JournalpostUpdaterFromBulk journalpostUpdaterFromBulk,
 											LagreAksjonsLoggService aksjonsLoggService) {
 		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
 		this.journalpostUpdater = journalpostUpdater;
+		this.journalpostUpdaterFromBulk = journalpostUpdaterFromBulk;
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
@@ -69,7 +72,7 @@ public class OppdaterDistribusjonsinfoService {
 					validateJournalpostKanSetteStatusEkspedert(journalpost, journalpostWithDistribusjonsinfo);
 				}
 
-				ChangeTracker trackStatusSattTilEkspedert = JournalpostUpdaterFromBulk.updateFields(journalpost, journalpostWithDistribusjonsinfo);
+				ChangeTracker trackStatusSattTilEkspedert = journalpostUpdaterFromBulk.updateFields(journalpost, journalpostWithDistribusjonsinfo);
 
 				if (!trackStatusSattTilEkspedert.getChanges().isEmpty()) {
 					aksjonsLoggService.lagreAksjonsLoggForJournalpost(

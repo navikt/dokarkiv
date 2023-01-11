@@ -103,7 +103,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertEquals(UtsendingsKanalCode.SDP, ferdigstiltJournalpost2.getUtsendingskanal());
 		assertTrue(Duration.between(ekspedertDato.toInstant(), ferdigstiltJournalpost2.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
 
-		UtsendingsInfo utsendingsInfo = ferdigstiltJournalpost2.getUtsendingsInfo();
+		UtsendingsInfo utsendingsInfo = utsendingsInfoTestRepository.findById(ferdigstiltJournalpost2.getJournalpostId()).orElseThrow();
 		assertNull(utsendingsInfo.getNavNoVarsling());
 		assertNull(utsendingsInfo.getFysiskPostadresse());
 		assertEquals(POSTKASSEADRESSE, utsendingsInfo.getDigitalPostadresse().getAdresse());
@@ -164,7 +164,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertEquals(UtsendingsKanalCode.SDP, ferdigstiltJournalpost2.getUtsendingskanal());
 		assertTrue(Duration.between(ekspedertDato.toInstant(), ferdigstiltJournalpost2.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
 
-		UtsendingsInfo utsendingsInfo = ferdigstiltJournalpost2.getUtsendingsInfo();
+		UtsendingsInfo utsendingsInfo = utsendingsInfoTestRepository.findById(ferdigstiltJournalpost2.getJournalpostId()).orElseThrow();
 		assertNull(utsendingsInfo.getNavNoVarsling());
 		assertNull(utsendingsInfo.getFysiskPostadresse());
 		assertEquals(POSTKASSEADRESSE, utsendingsInfo.getDigitalPostadresse().getAdresse());
@@ -209,7 +209,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertEquals(UtsendingsKanalCode.S, ferdigstiltJournalpost2.getUtsendingskanal());
 		assertTrue(Duration.between(ekspedertDato.toInstant(), ferdigstiltJournalpost2.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
 
-		UtsendingsInfo utsendingsInfo = ferdigstiltJournalpost2.getUtsendingsInfo();
+		UtsendingsInfo utsendingsInfo = utsendingsInfoTestRepository.findById(ferdigstiltJournalpost2.getJournalpostId()).orElseThrow();
 		assertNull(utsendingsInfo.getNavNoVarsling());
 		assertNull(utsendingsInfo.getFysiskPostadresse());
 		assertNull(utsendingsInfo.getDigitalPostadresse());
@@ -285,15 +285,16 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		TestTransaction.start();
 
 		Journalpost journalpostEtterOppdatering = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		UtsendingsInfo utsendingsInfo = utsendingsInfoTestRepository.findById(journalpostEtterOppdatering.getJournalpostId()).orElseThrow();
 
 		// The "new" info
 		assertEquals(journalpostEtterOppdatering.getUtsendingskanal(), UtsendingsKanalCode.S);
-		assertNotNull(journalpostEtterOppdatering.getUtsendingsInfo().getFysiskPostadresse());
-		assertEquals("gate gate", journalpostEtterOppdatering.getUtsendingsInfo().getFysiskPostadresse().getAdresselinje1());
+		assertNotNull(utsendingsInfo.getFysiskPostadresse());
+		assertEquals("gate gate", utsendingsInfo.getFysiskPostadresse().getAdresselinje1());
 
 		// check that the "old" info is kept
-		assertNotNull(journalpostEtterOppdatering.getUtsendingsInfo().getDigitalPostadresse());
-		assertEquals("adresse", journalpostEtterOppdatering.getUtsendingsInfo().getDigitalPostadresse().getAdresse());
+		assertNotNull(utsendingsInfo.getDigitalPostadresse());
+		assertEquals("adresse", utsendingsInfo.getDigitalPostadresse().getAdresse());
 
 		TestTransaction.end();
 	}

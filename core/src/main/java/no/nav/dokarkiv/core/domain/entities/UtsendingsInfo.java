@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -11,7 +12,6 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -27,12 +27,10 @@ import javax.persistence.Table;
 public class UtsendingsInfo {
 
 	@Id
-	@Column(name = "journalpost_id", insertable = false, updatable = false)
-	private long journalpostId;
+	private Long journalpostId;
 
-	@MapsId
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "journalpost_id", referencedColumnName = "journalpost_id", nullable = false)
+	@MapsId
 	private Journalpost journalpost;
 
 	@Embedded
@@ -42,17 +40,32 @@ public class UtsendingsInfo {
 	@Embedded
 	private NavNoVarsling navNoVarsling;
 
-	UtsendingsInfo(Journalpost journalpost, FysiskPostadresse fysiskPostAdresse) {
+	public UtsendingsInfo(Journalpost journalpost, FysiskPostadresse fysiskPostAdresse) {
+		UtsendingsKanalCode utsendingskanal = journalpost.getUtsendingskanal();
+		if (utsendingskanal != UtsendingsKanalCode.S) {
+			throw new IllegalArgumentException(String.format("Kan ikke sette UtsendingsInfo av type=%s for utsendingskanal=%s",
+					UtsendingsInfo.FysiskPostadresse.class.getSimpleName(), utsendingskanal));
+		}
 		this.journalpost = journalpost;
 		this.fysiskPostadresse = fysiskPostAdresse;
 	}
 
-	UtsendingsInfo(Journalpost journalpost, DigitalPostadresse digitalPostadresse) {
+	public UtsendingsInfo(Journalpost journalpost, DigitalPostadresse digitalPostadresse) {
+		UtsendingsKanalCode utsendingskanal = journalpost.getUtsendingskanal();
+		if (utsendingskanal != UtsendingsKanalCode.SDP) {
+			throw new IllegalArgumentException(String.format("Kan ikke sette UtsendingsInfo av type=%s for utsendingskanal=%s",
+					UtsendingsInfo.DigitalPostadresse.class.getSimpleName(), utsendingskanal));
+		}
 		this.journalpost = journalpost;
 		this.digitalPostadresse = digitalPostadresse;
 	}
 
-	UtsendingsInfo(Journalpost journalpost, NavNoVarsling navNoVarsling) {
+	public UtsendingsInfo(Journalpost journalpost, NavNoVarsling navNoVarsling) {
+		UtsendingsKanalCode utsendingskanal = journalpost.getUtsendingskanal();
+		if (utsendingskanal != UtsendingsKanalCode.NAV_NO) {
+			throw new IllegalArgumentException(String.format("Kan ikke sette UtsendingsInfo av type=%s for utsendingskanal=%s",
+					UtsendingsInfo.NavNoVarsling.class.getSimpleName(), utsendingskanal));
+		}
 		this.journalpost = journalpost;
 		this.navNoVarsling = navNoVarsling;
 	}
@@ -96,9 +109,5 @@ public class UtsendingsInfo {
 		private String kontaktinformasjon;
 		@Column(name = "varslingstekst", length = 4000)
 		private String varslingstekst;
-	}
-
-	public long getId() {
-		return getJournalpostId();
 	}
 }
