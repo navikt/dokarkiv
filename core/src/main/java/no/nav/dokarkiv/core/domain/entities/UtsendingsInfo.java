@@ -12,6 +12,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -31,6 +32,7 @@ public class UtsendingsInfo {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@MapsId
+	@JoinColumn(name = "journalpost_id")
 	private Journalpost journalpost;
 
 	@Embedded
