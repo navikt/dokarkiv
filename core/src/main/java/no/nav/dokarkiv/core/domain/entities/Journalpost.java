@@ -239,11 +239,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
 	private final Set<Kryssreferanse> kryssreferanser = new HashSet<>();
 
-	// Bidireksjonelle OneToOne relasjoner blir eager fetched fra Journalpost
-	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
-	private UtsendingsInfo utsendingsInfo;
-
 	/**
 	 * Default constructor.
 	 */
@@ -838,54 +833,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			this.mottattAdressatDato = new Date(mottattAdressatDato.getTime());
 		} else {
 			this.mottattAdressatDato = null;
-		}
-	}
-
-	/**
-	 * @param navNoVarsling utsendingsinfo for Nav.no to attach to this journalpost. Journalpost must have
-	 *                      utsendingskanal = NAV_NO
-	 */
-	public void setUtsendingsInfo(UtsendingsInfo.NavNoVarsling navNoVarsling) {
-		if (this.utsendingskanal != UtsendingsKanalCode.NAV_NO) {
-			throw new IllegalArgumentException(String.format("Can not set UtsendingsInfo of type %s for utsendingskanal=%s",
-					UtsendingsInfo.NavNoVarsling.class.getSimpleName(), this.utsendingskanal));
-		}
-		if (this.utsendingsInfo != null) {
-			this.utsendingsInfo.setNavNoVarsling(navNoVarsling);
-		} else {
-			this.utsendingsInfo = new UtsendingsInfo(this, navNoVarsling);
-		}
-	}
-
-	/**
-	 * @param digitalPostadresse utsendingsinfo for Digital post to attach to this journalpost. Journalpost must have
-	 *                           utsendingskanal = SDP
-	 */
-	public void setUtsendingsInfo(UtsendingsInfo.DigitalPostadresse digitalPostadresse) {
-		if (this.utsendingskanal != UtsendingsKanalCode.SDP) {
-			throw new IllegalArgumentException(String.format("Can not set UtsendingsInfo of type %s for utsendingskanal=%s",
-					UtsendingsInfo.DigitalPostadresse.class.getSimpleName(), this.utsendingskanal));
-		}
-		if (this.utsendingsInfo != null) {
-			this.utsendingsInfo.setDigitalPostadresse(digitalPostadresse);
-		} else {
-			this.utsendingsInfo = new UtsendingsInfo(this, digitalPostadresse);
-		}
-	}
-
-	/**
-	 * @param fysiskPostadresse utsendingsinfo for Sentralprint to attach to this journalpost. Journalpost must have
-	 *                          utsendingskanal = S
-	 */
-	public void setUtsendingsInfo(UtsendingsInfo.FysiskPostadresse fysiskPostadresse) {
-		if (this.utsendingskanal != UtsendingsKanalCode.S) {
-			throw new IllegalArgumentException(String.format("Can not set UtsendingsInfo of type %s for utsendingskanal=%s",
-					UtsendingsInfo.FysiskPostadresse.class.getSimpleName(), this.utsendingskanal));
-		}
-		if (this.utsendingsInfo != null) {
-			this.utsendingsInfo.setFysiskPostadresse(fysiskPostadresse);
-		} else {
-			this.utsendingsInfo = new UtsendingsInfo(this, fysiskPostadresse);
 		}
 	}
 

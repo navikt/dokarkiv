@@ -4,33 +4,54 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
+import no.nav.dokarkiv.core.repository.UtsendingsInfoRepository;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.DigitalPost;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.JournalpostWithDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.NavNoVarsel;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.Postadresse;
 import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
 
+@Component
 public class JournalpostUpdaterFromBulk {
 
 	private static final String UNKNOWN_ALPHA3_LANDKODE = "???";
 	private static final String UNKNOWN_ALPHA2_LANDKODE = "??";
 
-	public static ChangeTracker updateFields(Journalpost journalpost, JournalpostWithDistribusjonsinfo request) {
+	private final UtsendingsInfoRepository utsendingsInfoRepository;
+
+	public JournalpostUpdaterFromBulk(UtsendingsInfoRepository utsendingsInfoRepository) {
+		this.utsendingsInfoRepository = utsendingsInfoRepository;
+	}
+
+	public ChangeTracker updateFields(Journalpost journalpost, JournalpostWithDistribusjonsinfo request) {
 		ChangeTracker tracker = new ChangeTracker();
 
 		if (request.getUtsendingsKanal() != null) {
 			UtsendingsKanalCode utsendingskanal = UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
 			journalpost.setUtsendingskanal(utsendingskanal);
 
-			switch (utsendingskanal) {
-				case S -> journalpost.setUtsendingsInfo(from(request.getPostadresse()));
-				case SDP -> journalpost.setUtsendingsInfo(from(request.getDigitalpostkasse()));
-				case NAV_NO -> journalpost.setUtsendingsInfo(from(request.getVarsel()));
-				// default: no action - eventuelle feil er håndtert i valideringssteget
+			if(utsendingsInfoRepository.existsById(journalpost.getJournalpostId())) {
+				UtsendingsInfo utsendingsInfo = utsendingsInfoRepository.findById(journalpost.getJournalpostId())
+						.orElseThrow(() -> new DokarkivFunctionalException("Fant ikke UtsendingsInfo med journalpostId=" + journalpost.getJournalpostId()));
+				switch (utsendingskanal) {
+					case S -> utsendingsInfo.setFysiskPostadresse(from(request.getPostadresse()));
+					case SDP -> utsendingsInfo.setDigitalPostadresse(from(request.getDigitalpostkasse()));
+					case NAV_NO -> utsendingsInfo.setNavNoVarsling(from(request.getVarsel()));
+					// default: no action - eventuelle feil er håndtert i valideringssteget
+				}
+			} else {
+				switch (utsendingskanal) {
+					case S -> utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getPostadresse())));
+					case SDP -> utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getDigitalpostkasse())));
+					case NAV_NO -> utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getVarsel())));
+					// default: no action - eventuelle feil er håndtert i valideringssteget
+				}
 			}
 		}
 

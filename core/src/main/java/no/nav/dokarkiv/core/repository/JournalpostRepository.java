@@ -37,7 +37,6 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 			from Journalpost j
 			left join fetch j.saksrelasjon s
 			left join fetch j.brukere b
-			left join fetch j.utsendingsInfo u
 			join fetch j.journalpostDokumentInfoRelasjoner jdir
 			join fetch jdir.dokumentInfo d
 			join fetch d.fildetaljerListe
