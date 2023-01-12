@@ -1,22 +1,6 @@
-#Maven
-target
+# Maven
+target/
 
-#IntelliJ
+# IntelliJ
+.idea/
 *.iml
-*.iws
-*.idea
-atlassian-ide-plugin.xml
-bash.exe.stackdump
-
-#Eclipse
-.classpath
-.project
-.settings
-
-*.tm*.epoch
-*.lck
-*.log
-testDb.properties
-
-**/application-t*.properties
-**/application-q*.properties
