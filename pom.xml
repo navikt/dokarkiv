@@ -60,8 +60,7 @@
 		<microsoft.graph.version>5.31.0</microsoft.graph.version>
 
 		<!-- Tjenestegrensesnitt -->
-		<behandlejournal-v2-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v2-tjenestespesifikasjon.version>
-		<behandlejournal-v3-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v3-tjenestespesifikasjon.version>
+		<nav-tjenestespesifikasjon.version>2610.9b6de22</nav-tjenestespesifikasjon.version>
 		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.4.1</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
 		<dokumentproduksjoninfo-tjenestespesifikasjon.version>2.1.1</dokumentproduksjoninfo-tjenestespesifikasjon.version>
 
@@ -254,12 +253,12 @@
 			<dependency>
 				<groupId>no.nav.tjenestespesifikasjoner</groupId>
 				<artifactId>nav-fim-behandleJournal-v2-tjenestespesifikasjon</artifactId>
-				<version>${behandlejournal-v2-tjenestespesifikasjon.version}</version>
+				<version>${nav-tjenestespesifikasjon.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.tjenestespesifikasjoner</groupId>
 				<artifactId>nav-fim-behandleJournal-v3-tjenestespesifikasjon</artifactId>
-				<version>${behandlejournal-v3-tjenestespesifikasjon.version}</version>
+				<version>${nav-tjenestespesifikasjon.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.tjenester.brevogarkiv</groupId>
@@ -349,7 +348,7 @@
 				<configuration>
 					<toolchains>
 						<jdk>
-							<version>17</version>
+							<version>${java.version}</version>
 							<vendor>openjdk</vendor>
 						</jdk>
 					</toolchains>
