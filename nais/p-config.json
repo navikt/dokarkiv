@@ -369,6 +369,11 @@
       "app": "pensjon-psak",
       "namespace": "pensjondeployer",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "hm-joark-sink",
+      "namespace": "teamdigihot",
+      "cluster": "prod-gcp"
     }
   ]
 }
