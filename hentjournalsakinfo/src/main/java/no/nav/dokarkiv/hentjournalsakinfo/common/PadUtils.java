@@ -2,6 +2,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.common;
 
 import org.apache.commons.collections4.ListUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -19,6 +20,9 @@ public final class PadUtils {
 	}
 
 	public static List<String> inPadding(List<String> values, int base) {
+		if(values.isEmpty()) {
+			return new ArrayList<>();
+		}
 		int valuesSize = values.size();
 		int padSize = (int) Math.round(Math.pow(base, Math.ceil(Math.log(valuesSize) / Math.log(base))));
 		int padNum = padSize - valuesSize;
