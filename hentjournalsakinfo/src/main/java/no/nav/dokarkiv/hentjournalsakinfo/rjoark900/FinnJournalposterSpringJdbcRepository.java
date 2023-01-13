@@ -32,7 +32,7 @@ class FinnJournalposterSpringJdbcRepository {
 	private static final String CTE_ALIAS_GSAKSAKER = "gsaksaker";
 	private static final String CTE_ALIAS_PSAKSAKER = "psaksaker";
 	private static final String CTE_ALIAS_MIDLERTIDIGE = "midlertidige";
-	private static final int ORACLE_PARALLELL = 300;
+	private static final int ORACLE_PARALLELL = 150;
 	private final GsakCteMapper gsakCteMapper;
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
