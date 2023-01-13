@@ -51,7 +51,7 @@ class FinnJournalposterSpringJdbcRepository {
 		if (cteAliases.isEmpty()) {
 			return new ArrayList<>();
 		}
-		Boolean parallell = (gsakIds.size() > ORACLE_PARALLELL);
+		boolean parallell = (gsakIds.size() > ORACLE_PARALLELL);
 		String finnJournalposterSql = finnJournalposterSql(journalpostFilter, cteAliases, gsakCte.getCteSql(), parallell);
 		return jdbcTemplate.query(finnJournalposterSql, namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
 	}

@@ -73,7 +73,8 @@ public class HentJournalsakinfoController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark900"}, percentiles = {0.5, 0.95})
 	public FinnJournalposterResponseTo finnJournalposter(@RequestBody FinnJournalposterRequestTo finnJournalposterRequestTo) {
 		try {
-			log.info("rjoark900 finner journalposter med request={}.", finnJournalposterRequestTo);
+			log.info("rjoark900 finner journalposter med antall_gsak_ids={}, antall_psak_ids={}, request={}.",
+					finnJournalposterRequestTo.getGsakSakIds().size(), finnJournalposterRequestTo.getPsakSakIds().size(), finnJournalposterRequestTo);
 			FinnJournalposterResponseTo finnJournalposterResponseTo = finnJournalposterService.finnJournalposter(finnJournalposterRequestTo);
 			log.info("rjoark900 fant og returnerer {} journalposter med request={}.", finnJournalposterResponseTo.getTilgangJournalposter().size(), finnJournalposterRequestTo);
 			return finnJournalposterResponseTo;
