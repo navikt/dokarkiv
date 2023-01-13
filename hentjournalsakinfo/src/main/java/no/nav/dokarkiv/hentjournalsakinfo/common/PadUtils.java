@@ -25,6 +25,22 @@ public final class PadUtils {
 		}
 		int valuesSize = values.size();
 		int padSize = (int) Math.round(Math.pow(base, Math.ceil(Math.log(valuesSize) / Math.log(base))));
+		return padList(values, valuesSize, padSize);
+	}
+
+	public static List<String> inPaddingFixed3(List<String> values) {
+		return inPaddingFixed(values, 3);
+	}
+
+	public static List<String> inPaddingFixed(List<String> values, int padSize) {
+		if(values.isEmpty()) {
+			return new ArrayList<>();
+		}
+		int valuesSize = values.size();
+		return padList(values, valuesSize, padSize);
+	}
+
+	private static List<String> padList(List<String> values, int valuesSize, int padSize) {
 		int padNum = padSize - valuesSize;
 		if (padNum == 0) {
 			return values;

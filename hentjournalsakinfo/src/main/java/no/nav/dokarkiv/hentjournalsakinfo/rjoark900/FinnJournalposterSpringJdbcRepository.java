@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static no.nav.dokarkiv.hentjournalsakinfo.common.PadUtils.inPaddingBase2;
+import static no.nav.dokarkiv.hentjournalsakinfo.common.PadUtils.inPaddingFixed3;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalpostSqlGenerator.finnJournalposterSql;
 
 @Slf4j
@@ -82,7 +83,7 @@ class FinnJournalposterSpringJdbcRepository {
 		if (journalpostFilter.getTilDato() != null) {
 			namedParams.addValue("tilDato", Timestamp.valueOf(journalpostFilter.getTilDato().atStartOfDay()));
 		}
-		namedParams.addValue("inkluderJournalpostType", inPaddingBase2(journalpostFilter.getInkluderJournalpostType()));
+		namedParams.addValue("inkluderJournalpostType", inPaddingFixed3(journalpostFilter.getInkluderJournalpostType()));
 		namedParams.addValue("allJournalStatus", ALL_JOURNALSTATUS);
 		namedParams.addValue("visFeilregistrert", journalpostFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST);
 		namedParams.addValue("antallRader", journalpostFilter.getAntallRader());

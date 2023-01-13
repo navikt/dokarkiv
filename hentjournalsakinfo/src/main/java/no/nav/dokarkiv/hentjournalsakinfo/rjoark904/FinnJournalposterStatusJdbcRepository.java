@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import static no.nav.dokarkiv.hentjournalsakinfo.common.PadUtils.inPaddingBase2;
+import static no.nav.dokarkiv.hentjournalsakinfo.common.PadUtils.inPaddingFixed3;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusSql.finnJournalposterStatusSql;
 
 @Repository
@@ -35,7 +36,7 @@ class FinnJournalposterStatusJdbcRepository {
 		MapSqlParameterSource namedParams = new MapSqlParameterSource();
 		namedParams.addValue("inkluderJournalStatus", inPaddingBase2(journalpostFilter.getInkluderJournalStatus()));
 		namedParams.addValue("fraDato", Timestamp.valueOf(journalpostFilter.getFraDato().atStartOfDay()));
-		namedParams.addValue("inkluderJournalpostType", inPaddingBase2(journalpostFilter.getInkluderJournalpostType()));
+		namedParams.addValue("inkluderJournalpostType", inPaddingFixed3(journalpostFilter.getInkluderJournalpostType()));
 		namedParams.addValue("antallRader", journalpostFilter.getAntallRader());
 		namedParams.addValue("journalpostIdPeker", journalpostFilter.getJournalpostIdPeker());
 		return namedParams;
