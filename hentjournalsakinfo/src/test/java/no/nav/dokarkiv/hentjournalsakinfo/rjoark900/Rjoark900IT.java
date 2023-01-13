@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.stream.IntStream;
 
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.PSAK_ID;
@@ -129,11 +130,29 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertThat(dokumentInfoDto.getInnskrTredjepart(), is(true));
 	}
 
+	@Test
+	void shouldTestPadding() {
+		finnJournalposterRest(createPaddingRequest(1, 1));
+		finnJournalposterRest(createPaddingRequest(6, 6));
+		finnJournalposterRest(createPaddingRequest(103, 103));
+	}
+
 	private FinnJournalposterRequestTo createRequest(JournalStatusCode journalStatusCode) {
 		FinnJournalposterRequestTo requestTo = new FinnJournalposterRequestTo();
 		requestTo.setFraDato("2019-01-01");
 		requestTo.setGsakSakIds(Collections.singletonList(SAK_ID));
 		requestTo.setInkluderJournalStatus(Collections.singletonList(journalStatusCode));
+		requestTo.setInkluderJournalpostType(Arrays.asList(JournalpostTypeCode.I, JournalpostTypeCode.U, JournalpostTypeCode.N));
+		requestTo.setFoerste(1);
+		return requestTo;
+	}
+
+	private FinnJournalposterRequestTo createPaddingRequest(int antallGsaker, int antallPsaker) {
+		FinnJournalposterRequestTo requestTo = new FinnJournalposterRequestTo();
+		requestTo.setFraDato("2019-01-01");
+		requestTo.setGsakSakIds(IntStream.range(0 , antallGsaker).mapToObj(i -> "gsak" + i).toList());
+		requestTo.setPsakSakIds(IntStream.range(0 , antallPsaker).mapToObj(i -> "psak" + i).toList());
+		requestTo.setInkluderJournalStatus(Collections.singletonList(JournalStatusCode.J));
 		requestTo.setInkluderJournalpostType(Arrays.asList(JournalpostTypeCode.I, JournalpostTypeCode.U, JournalpostTypeCode.N));
 		requestTo.setFoerste(1);
 		return requestTo;
