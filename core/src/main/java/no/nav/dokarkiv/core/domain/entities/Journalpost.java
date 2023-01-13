@@ -118,12 +118,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "krav_type", length = 20)
 	private String kravtype;
 
-	@Column(name = "merknad", length = 2000)
-	private String merknad;
-
-	@Column(name = "fordeling", length = 200)
-	private String fordeling;
-
 	@Column(name = "original_bestilt", length = 1)
 	private Boolean originaltBestilt;
 
@@ -191,10 +185,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_lest")
 	private Date lestDato;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "mottatt_adressat")
-	private Date mottattAdressatDato;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_journalpost_t", nullable = false, length = 20)
@@ -825,14 +815,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			this.mottattDato = new Date(mottattDato.getTime());
 		} else {
 			this.mottattDato = null;
-		}
-	}
-
-	public void setMottattAdressatDato(Date mottattAdressatDato) {
-		if (mottattAdressatDato != null) {
-			this.mottattAdressatDato = new Date(mottattAdressatDato.getTime());
-		} else {
-			this.mottattAdressatDato = null;
 		}
 	}
 

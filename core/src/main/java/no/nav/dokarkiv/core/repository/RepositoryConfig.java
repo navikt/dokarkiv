@@ -21,6 +21,8 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
+
 @Slf4j
 @EntityScan(basePackages = {
 		"no.nav.dokarkiv.core.domain.entities",
@@ -42,6 +44,10 @@ public class RepositoryConfig {
 		poolDataSource.setPassword(dataSourceProperties.getPassword());
 		poolDataSource.setConnectionFactoryClassName(OracleDataSource.class.getName());
 		poolDataSource.registerConnectionInitializationCallback(connection -> connection.setSchema("joark"));
+		poolDataSource.setMaxConnectionReuseTime(MINUTES.toSeconds(30));
+		// Behøver ikke sette setSQLForValidateConnection pga UCP gjør intern ping mot Oracle
+		poolDataSource.setValidateConnectionOnBorrow(true);
+		poolDataSource.setSecondsToTrustIdleConnection((int) MINUTES.toSeconds(3));
 
 		Properties connProperties = new Properties();
 		connProperties.setProperty(SQLnetDef.TCP_CONNTIMEOUT_STR, "3000");
@@ -52,8 +58,6 @@ public class RepositoryConfig {
 		poolDataSource.setInitialPoolSize(poolsize);
 		poolDataSource.setMinPoolSize(poolsize);
 		poolDataSource.setMaxPoolSize(poolsize);
-		poolDataSource.setMaxConnectionReuseTime(300); // 5min
-		poolDataSource.setMaxConnectionReuseCount(1000);
 		poolDataSource.setConnectionProperties(connProperties);
 		return poolDataSource;
 	}

@@ -44,8 +44,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	private Date avsendtReturDato;
 	private String innhold;
 	private String kravtype;
-	private String merknad;
-	private String fordeling;
 	private Boolean originaltBestilt;
 	private String opprettetAvNavn;
 	private String endretAvNavn;
@@ -70,7 +68,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	private Boolean signatur;
 	private OffsetDateTime ekspedertDato;
 	private OffsetDateTime lestDato;
-	private Date mottattAdressatDato;
 	private String opprettetKildeNavn;
 	private String endretKildeNavn;
 	private JournalpostTypeCode journalpostType;
@@ -85,8 +82,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	public JournalpostBuilder avsendtReturDato(Date value) { this.avsendtReturDato = value; return this; }
 	public JournalpostBuilder innhold(String value) { this.innhold = value; return this; }
 	public JournalpostBuilder kravtype(String value) { this.kravtype = value; return this; }
-	public JournalpostBuilder merknad(String value) { this.merknad = value; return this; }
-	public JournalpostBuilder fordeling(String value) { this.fordeling = value; return this; }
 	public JournalpostBuilder originaltBestilt(Boolean value) { this.originaltBestilt = value; return this; }
 	public JournalpostBuilder opprettetAvNavn(String value) { this.opprettetAvNavn = value; return this; }
 	public JournalpostBuilder endretAvNavn(String value) { this.endretAvNavn = value; return this; }
@@ -113,7 +108,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	public JournalpostBuilder elektroniskDistribusjon(Boolean value) { this.elektroniskDistribusjon = value; return this; }
 	public JournalpostBuilder ekspedertDato(OffsetDateTime value) { this.ekspedertDato = value; return this; }
 	public JournalpostBuilder lestDato(OffsetDateTime value) { this.lestDato = value; return this; }
-	public JournalpostBuilder mottattAdressatDato(Date value) { this.mottattAdressatDato = value; return this; }
 	public JournalpostBuilder opprettetKildeNavn(String value) { this.opprettetKildeNavn = value; return this; }
 	public JournalpostBuilder endretKildeNavn(String value) { this.endretKildeNavn = value; return this; }
 	public JournalpostBuilder journalpostType(JournalpostTypeCode value) { this.journalpostType = value; return this; }
@@ -135,8 +129,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 		journalpost.setAvsendtReturDato(avsendtReturDato);
 		journalpost.setInnhold(innhold);
 		journalpost.setKravtype(kravtype);
-		journalpost.setMerknad(merknad);
-		journalpost.setFordeling(fordeling);
 		journalpost.setOriginaltBestilt(originaltBestilt);
 		journalpost.setOpprettetAvNavn(opprettetAvNavn);
 		journalpost.setEndretAvNavn(endretAvNavn);
@@ -169,7 +161,6 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 		journalpost.setElektroniskDistribusjon(elektroniskDistribusjon);
 		journalpost.setEkspedertDato(ekspedertDato);
 		journalpost.setLestDato(lestDato);
-		journalpost.setMottattAdressatDato(mottattAdressatDato);
 		journalpost.setOpprettetKildeNavn(opprettetKildeNavn);
 		journalpost.setEndretKildeNavn(endretKildeNavn);
 		journalpost.setJournalposttype(journalpostType);

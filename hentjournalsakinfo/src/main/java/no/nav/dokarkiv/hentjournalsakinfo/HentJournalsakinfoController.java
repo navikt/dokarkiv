@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Base64;
+import java.util.List;
 
 @Slf4j
 @Unprotected
@@ -73,7 +74,12 @@ public class HentJournalsakinfoController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark900"}, percentiles = {0.5, 0.95})
 	public FinnJournalposterResponseTo finnJournalposter(@RequestBody FinnJournalposterRequestTo finnJournalposterRequestTo) {
 		try {
-			log.info("rjoark900 finner journalposter med request={}.", finnJournalposterRequestTo);
+			List<String> gsakSakIds = finnJournalposterRequestTo.getGsakSakIds();
+			List<String> psakSakIds = finnJournalposterRequestTo.getPsakSakIds();
+			log.info("rjoark900 finner journalposter med antall_gsak_ids={}, antall_psak_ids={}, request={}.",
+					gsakSakIds == null ? 0 : gsakSakIds.size(),
+					psakSakIds == null ? 0 : psakSakIds.size(),
+					finnJournalposterRequestTo);
 			FinnJournalposterResponseTo finnJournalposterResponseTo = finnJournalposterService.finnJournalposter(finnJournalposterRequestTo);
 			log.info("rjoark900 fant og returnerer {} journalposter med request={}.", finnJournalposterResponseTo.getTilgangJournalposter().size(), finnJournalposterRequestTo);
 			return finnJournalposterResponseTo;
