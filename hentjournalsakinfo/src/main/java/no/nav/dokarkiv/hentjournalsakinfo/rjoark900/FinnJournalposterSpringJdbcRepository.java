@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
@@ -17,8 +18,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static no.nav.dokarkiv.hentjournalsakinfo.common.PadUtils.inPaddingBase2;
+import static no.nav.dokarkiv.hentjournalsakinfo.common.PadUtils.inPaddingFixed3;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalpostSqlGenerator.finnJournalposterSql;
 
+@Slf4j
 @Repository
 class FinnJournalposterSpringJdbcRepository {
 	private static final ResultSetExtractor<List<JournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
@@ -26,7 +30,7 @@ class FinnJournalposterSpringJdbcRepository {
 			.newResultSetExtractor(JournalpostDto.class);
 	private static final List<String> NOT_USED = Collections.singletonList("notused");
 	private static final List<String> ALL_JOURNALSTATUS = Stream.of(JournalStatusCode.values()).map(Enum::name).collect(Collectors.toList());
-	private static final List<Boolean> NO_FEILREGISTRERT_JOURNALPOST = Collections.singletonList(false);
+	private static final List<Boolean> NO_FEILREGISTRERT_JOURNALPOST = Arrays.asList(false, false); // in clause padding
 	private static final List<Boolean> ALL_JOURNALPOST = Arrays.asList(true, false);
 	private static final String PSAK_IDS_PARAM = "psakIds";
 	private static final String CTE_ALIAS_GSAKSAKER = "gsaksaker";
@@ -62,24 +66,24 @@ class FinnJournalposterSpringJdbcRepository {
 		if (psakIds == null || psakIds.isEmpty()) {
 			namedParams.addValue(PSAK_IDS_PARAM, NOT_USED);
 		} else {
-			namedParams.addValue(PSAK_IDS_PARAM, psakIds);
+			namedParams.addValue(PSAK_IDS_PARAM, inPaddingBase2(psakIds));
 		}
 		if (journalpostFilter.isInkluderMidlertidigeJournalposter()) {
-			namedParams.addValue("alleIdenter", journalpostFilter.getAlleIdenter());
+			namedParams.addValue("alleIdenter", inPaddingBase2(journalpostFilter.getAlleIdenter()));
 		} else {
 			namedParams.addValue("alleIdenter", NOT_USED);
 		}
 		if (journalpostFilter.isKunFeilregistrerte()) {
 			namedParams.addValue("inkluderJournalStatus", NOT_USED);
 		} else {
-			namedParams.addValue("inkluderJournalStatus", journalpostFilter.getInkluderJournalStatus());
+			namedParams.addValue("inkluderJournalStatus", inPaddingBase2(journalpostFilter.getInkluderJournalStatus()));
 		}
 
 		namedParams.addValue("fraDato", Timestamp.valueOf(journalpostFilter.getFraDato().atStartOfDay()));
 		if (journalpostFilter.getTilDato() != null) {
 			namedParams.addValue("tilDato", Timestamp.valueOf(journalpostFilter.getTilDato().atStartOfDay()));
 		}
-		namedParams.addValue("inkluderJournalpostType", journalpostFilter.getInkluderJournalpostType());
+		namedParams.addValue("inkluderJournalpostType", inPaddingFixed3(journalpostFilter.getInkluderJournalpostType()));
 		namedParams.addValue("allJournalStatus", ALL_JOURNALSTATUS);
 		namedParams.addValue("visFeilregistrert", journalpostFilter.isVisFeilregistrerte() ? ALL_JOURNALPOST : NO_FEILREGISTRERT_JOURNALPOST);
 		namedParams.addValue("antallRader", journalpostFilter.getAntallRader());

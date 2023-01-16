@@ -49,16 +49,17 @@ public class RepositoryConfig {
 		poolDataSource.setValidateConnectionOnBorrow(true);
 		poolDataSource.setSecondsToTrustIdleConnection((int) MINUTES.toSeconds(3));
 
-		Properties connProperties = new Properties();
-		connProperties.setProperty(SQLnetDef.TCP_CONNTIMEOUT_STR, "3000");
-		connProperties.setProperty("oracle.jdbc.thinForceDNSLoadBalancing", "true");
+		Properties properties = new Properties();
+		properties.setProperty(SQLnetDef.TCP_CONNTIMEOUT_STR, "3000");
+		properties.setProperty("oracle.jdbc.thinForceDNSLoadBalancing", "true");
+		properties.setProperty("oracle.jdbc.implicitStatementCacheSize", "200");
 		// Statisk poolsize. Se DokarkivProperties.java
 		int poolsize = dokarkivProperties.getDatabase().getPoolsize();
 		log.info("Setter opp Oracle UCP med statisk poolsize={}", poolsize);
 		poolDataSource.setInitialPoolSize(poolsize);
 		poolDataSource.setMinPoolSize(poolsize);
 		poolDataSource.setMaxPoolSize(poolsize);
-		poolDataSource.setConnectionProperties(connProperties);
+		poolDataSource.setConnectionProperties(properties);
 		return poolDataSource;
 	}
 

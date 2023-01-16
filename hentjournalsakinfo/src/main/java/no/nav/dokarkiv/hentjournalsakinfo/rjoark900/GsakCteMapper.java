@@ -1,8 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
-import static no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalpostSqlGenerator.feilregistrertSelectionSql;
-
 import lombok.Value;
+import no.nav.dokarkiv.hentjournalsakinfo.common.PadUtils;
 import org.apache.commons.collections4.ListUtils;
 
 import java.util.HashMap;
@@ -11,11 +10,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static no.nav.dokarkiv.hentjournalsakinfo.common.PadUtils.inPaddingBase2;
+import static no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalpostSqlGenerator.feilregistrertSelectionSql;
+
 class GsakCteMapper {
-	private static final int ORACLE_IN_SELECTION_MAX_ELEMENTS = 1000;
 
 	@Value
-	class GsakCte {
+	static class GsakCte {
 		String cteSql;
 		Map<String, List<String>> gsakIdParams;
 
@@ -27,7 +28,7 @@ class GsakCteMapper {
 	GsakCte mapCte(List<String> gsakIds, boolean kunFeilregistrerte) {
 		if (gsakIds == null || gsakIds.isEmpty()) {
 			return noGsaker();
-		} else if (gsakIds.size() > ORACLE_IN_SELECTION_MAX_ELEMENTS) {
+		} else if (gsakIds.size() > PadUtils.ORACLE_IN_SELECTION_MAX_ELEMENTS) {
 			return moreThan1000Gsaker(gsakIds, kunFeilregistrerte);
 		} else {
 			return lessThan1000Gsaker(gsakIds, kunFeilregistrerte);
@@ -41,13 +42,13 @@ class GsakCteMapper {
 	private GsakCte moreThan1000Gsaker(List<String> gsakIds, boolean kunFeilregistrerte) {
 		List<List<String>> partitions = ListUtils.partition(gsakIds, 1000);
 		HashMap<String, List<String>> gsakIdParams = new HashMap<>();
-		IntStream.range(0, partitions.size()).forEach(num -> gsakIdParams.put("gsakIds" + num, partitions.get(num)));
+		IntStream.range(0, partitions.size()).forEach(num -> gsakIdParams.put("gsakIds" + num, inPaddingBase2(partitions.get(num))));
 		return new GsakCte(generateGsakCteSql(kunFeilregistrerte, partitions.size()), gsakIdParams);
 	}
 
 	private GsakCte lessThan1000Gsaker(List<String> gsakIds, boolean kunFeilregistrerte) {
 		HashMap<String, List<String>> gsakIdParams = new HashMap<>();
-		gsakIdParams.put("gsakIds0", gsakIds);
+		gsakIdParams.put("gsakIds0", inPaddingBase2(gsakIds));
 		return new GsakCte(generateGsakCteSql(kunFeilregistrerte, 0), gsakIdParams);
 	}
 
