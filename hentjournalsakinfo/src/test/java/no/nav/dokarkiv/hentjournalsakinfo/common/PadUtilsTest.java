@@ -25,10 +25,10 @@ class PadUtilsTest {
 	@Test
 	void shouldPadUpToFixed3() {
 		List<String> padded1 = PadUtils.inPaddingFixed3(List.of("a"));
-		assertThat(padded1).containsExactlyInAnyOrder("a", "a", "a");
+		assertThat(padded1).containsExactly("a", "a", "a");
 
 		List<String> padded2 = PadUtils.inPaddingFixed3(List.of("a", "b"));
-		assertThat(padded2).containsExactlyInAnyOrder("a", "b", "b");
+		assertThat(padded2).containsExactly("a", "b", "b");
 	}
 
 	@Test
