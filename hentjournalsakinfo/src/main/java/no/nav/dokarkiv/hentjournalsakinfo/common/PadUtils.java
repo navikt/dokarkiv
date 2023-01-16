@@ -15,16 +15,18 @@ import java.util.stream.IntStream;
  */
 public final class PadUtils {
 
+	public static final int ORACLE_IN_SELECTION_MAX_ELEMENTS = 1000;
+
 	public static List<String> inPaddingBase2(List<String> values) {
 		return inPadding(values, 2);
 	}
 
 	public static List<String> inPadding(List<String> values, int base) {
-		if(values.isEmpty()) {
+		if (values.isEmpty()) {
 			return new ArrayList<>();
 		}
 		int valuesSize = values.size();
-		int padSize = (int) Math.round(Math.pow(base, Math.ceil(Math.log(valuesSize) / Math.log(base))));
+		int padSize = Math.min(ORACLE_IN_SELECTION_MAX_ELEMENTS, (int) Math.round(Math.pow(base, Math.ceil(Math.log(valuesSize) / Math.log(base)))));
 		return padList(values, valuesSize, padSize);
 	}
 
@@ -33,7 +35,7 @@ public final class PadUtils {
 	}
 
 	public static List<String> inPaddingFixed(List<String> values, int padSize) {
-		if(values.isEmpty()) {
+		if (values.isEmpty()) {
 			return new ArrayList<>();
 		}
 		int valuesSize = values.size();

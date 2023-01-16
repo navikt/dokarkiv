@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
 import lombok.Value;
+import no.nav.dokarkiv.hentjournalsakinfo.common.PadUtils;
 import org.apache.commons.collections4.ListUtils;
 
 import java.util.HashMap;
@@ -13,7 +14,6 @@ import static no.nav.dokarkiv.hentjournalsakinfo.common.PadUtils.inPaddingBase2;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalpostSqlGenerator.feilregistrertSelectionSql;
 
 class GsakCteMapper {
-	private static final int ORACLE_IN_SELECTION_MAX_ELEMENTS = 1000;
 
 	@Value
 	static class GsakCte {
@@ -28,7 +28,7 @@ class GsakCteMapper {
 	GsakCte mapCte(List<String> gsakIds, boolean kunFeilregistrerte) {
 		if (gsakIds == null || gsakIds.isEmpty()) {
 			return noGsaker();
-		} else if (gsakIds.size() > ORACLE_IN_SELECTION_MAX_ELEMENTS) {
+		} else if (gsakIds.size() > PadUtils.ORACLE_IN_SELECTION_MAX_ELEMENTS) {
 			return moreThan1000Gsaker(gsakIds, kunFeilregistrerte);
 		} else {
 			return lessThan1000Gsaker(gsakIds, kunFeilregistrerte);
