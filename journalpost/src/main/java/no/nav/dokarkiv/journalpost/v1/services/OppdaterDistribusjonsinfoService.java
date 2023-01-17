@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
+import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.JournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.JournalpostWithDistribusjonsinfo;
@@ -27,23 +27,23 @@ import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinf
 public class OppdaterDistribusjonsinfoService {
 
 	private static final EnumSet<JournalStatusCode> IKKE_OPPDATER_MED_JOURNALSTATUS = EnumSet.of(E, A, U);
-	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
+	private final JournalpostRepository journalpostRepository;
 	private final JournalpostUpdater journalpostUpdater;
 	private final JournalpostUpdaterFromBulk journalpostUpdaterFromBulk;
 	private final LagreAksjonsLoggService aksjonsLoggService;
 
-	public OppdaterDistribusjonsinfoService(JournalpostRepositorySkjermet journalpostRepositorySkjermet,
+	public OppdaterDistribusjonsinfoService(JournalpostRepository journalpostRepository,
 											JournalpostUpdater journalpostUpdater,
 											JournalpostUpdaterFromBulk journalpostUpdaterFromBulk,
 											LagreAksjonsLoggService aksjonsLoggService) {
-		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
+		this.journalpostRepository = journalpostRepository;
 		this.journalpostUpdater = journalpostUpdater;
 		this.journalpostUpdaterFromBulk = journalpostUpdaterFromBulk;
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
 	public void oppdaterDistribusjonsinfo(Long journalpostId, OppdaterDistribusjonsinfoRequest request) {
-		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
+		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(
 						String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
@@ -61,7 +61,7 @@ public class OppdaterDistribusjonsinfoService {
 	}
 
 	public JournalpostResponse oppdaterDistribusjonsinfoFromBulk(JournalpostWithDistribusjonsinfo journalpostWithDistribusjonsinfo) {
-		Optional<Journalpost> journalpostOptional = journalpostRepositorySkjermet.findById(journalpostWithDistribusjonsinfo.getJournalpostId());
+		Optional<Journalpost> journalpostOptional = journalpostRepository.findById(journalpostWithDistribusjonsinfo.getJournalpostId());
 		return journalpostOptional.map(journalpost -> {
 			try {
 				if (isFeilregistrertOrJournalStatusEorAorU(journalpost)) {
