@@ -175,7 +175,6 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		journalpost.setMottakskanal(MOTTAKSKANAL);
 		journalpost.setUtsendingskanal(UTSENDINGSKANAL);
 		journalpost.setJournalposttype(JOURNALPOST_TYPE_CODE);
-		journalpost.setUtsendingsInfo(createNavNoVarsling());
 		journalpost.setLestDato(OffsetDateTime.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault())));
 
 		journalpost.getSaksrelasjon().setSakId(SAKID);
@@ -190,6 +189,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		storedDokumentInfo.setKassert(true);
 
 		journalpostTestRepository.persist(journalpost);
+		utsendingsInfoTestRepository.persist(new UtsendingsInfo(journalpost, createNavNoVarsling()));
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 

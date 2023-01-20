@@ -149,7 +149,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 						.getDokumentInfoId())).getBrevkode(),
 				is(request.getDokumenter().get(0).getBrevkode()));
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 
 		assertEquals(3, aksjonsLoggList.size());
 
@@ -189,7 +189,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		TestTransaction.start();
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assert (aksjonsLoggList.isEmpty());
 		TestTransaction.end();
 	}
@@ -223,7 +223,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId(), is(ARKIVSAKSNUMMER));
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(1));
 		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonsTypeCode.SAKSTILKNYTNING));
 		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(3));
@@ -251,7 +251,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		TestTransaction.start();
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assert (aksjonsLoggList.isEmpty());
 		TestTransaction.end();
 	}
@@ -638,7 +638,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(bruker.getBrukerId(), FNR);
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.PERSON);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertEquals(2, aksjonsLoggList.size());
 		assertEquals(PERSON_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
 		TestTransaction.end();
@@ -681,7 +681,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(journalpostTestRepository.findAll().iterator().next().getBrukere().size(), 0);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertEquals(2, aksjonsLoggList.size());
 		TestTransaction.end();
 	}

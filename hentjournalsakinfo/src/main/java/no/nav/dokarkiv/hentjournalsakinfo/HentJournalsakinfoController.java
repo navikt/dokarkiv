@@ -18,9 +18,6 @@ import no.nav.dokarkiv.hentjournalsakinfo.rjoark903.TilknyttedeJournalposterServ
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusService;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerRequestTo;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerResponseTo;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark910.DokumentoversiktBrukerService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark920.SafHentDokumentService;
 import no.nav.security.token.support.core.api.Unprotected;
@@ -36,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Base64;
+import java.util.List;
 
 @Slf4j
 @Unprotected
@@ -47,7 +45,6 @@ public class HentJournalsakinfoController {
 	private final SafHentJournalpostService safHentJournalpostService;
 	private final MimeTypeMapper mimeTypeMapper = new MimeTypeMapper();
 	private final FinnJournalposterService finnJournalposterService;
-	private final DokumentoversiktBrukerService dokumentoversiktBrukerService;
 	private final FinnJournalposterStatusService finnJournalposterStatusService;
 	private final HentTilgangJournalpostService hentTilgangJournalpostService;
 	private final TilknyttedeJournalposterService tilknyttedeJournalposterService;
@@ -55,14 +52,12 @@ public class HentJournalsakinfoController {
 	public HentJournalsakinfoController(SafHentDokumentService safHentDokumentService,
 										SafHentJournalpostService safHentJournalpostService,
 										FinnJournalposterService finnJournalposterService,
-										DokumentoversiktBrukerService dokumentoversiktBrukerService,
 										FinnJournalposterStatusService finnJournalposterStatusService,
 										HentTilgangJournalpostService hentTilgangJournalpostService,
 										TilknyttedeJournalposterService tilknyttedeJournalposterService) {
 		this.safHentDokumentService = safHentDokumentService;
 		this.safHentJournalpostService = safHentJournalpostService;
 		this.finnJournalposterService = finnJournalposterService;
-		this.dokumentoversiktBrukerService = dokumentoversiktBrukerService;
 		this.finnJournalposterStatusService = finnJournalposterStatusService;
 		this.hentTilgangJournalpostService = hentTilgangJournalpostService;
 		this.tilknyttedeJournalposterService = tilknyttedeJournalposterService;
@@ -73,7 +68,12 @@ public class HentJournalsakinfoController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark900"}, percentiles = {0.5, 0.95})
 	public FinnJournalposterResponseTo finnJournalposter(@RequestBody FinnJournalposterRequestTo finnJournalposterRequestTo) {
 		try {
-			log.info("rjoark900 finner journalposter med request={}.", finnJournalposterRequestTo);
+			List<String> gsakSakIds = finnJournalposterRequestTo.getGsakSakIds();
+			List<String> psakSakIds = finnJournalposterRequestTo.getPsakSakIds();
+			log.info("rjoark900 finner journalposter med antall_gsak_ids={}, antall_psak_ids={}, request={}.",
+					gsakSakIds == null ? 0 : gsakSakIds.size(),
+					psakSakIds == null ? 0 : psakSakIds.size(),
+					finnJournalposterRequestTo);
 			FinnJournalposterResponseTo finnJournalposterResponseTo = finnJournalposterService.finnJournalposter(finnJournalposterRequestTo);
 			log.info("rjoark900 fant og returnerer {} journalposter med request={}.", finnJournalposterResponseTo.getTilgangJournalposter().size(), finnJournalposterRequestTo);
 			return finnJournalposterResponseTo;
@@ -137,20 +137,6 @@ public class HentJournalsakinfoController {
 	}
 
 	@Transactional(readOnly = true)
-	@PostMapping(value = "/dokumentoversiktbruker")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark910"}, percentiles = {0.5, 0.95})
-	public DokumentoversiktBrukerResponseTo dokumentoversiktBruker(@RequestBody DokumentoversiktBrukerRequestTo dokumentoversiktBrukerRequestTo) {
-		try {
-			log.info("rjoark910 henter dokumentoversikt til bruker for request={}.", dokumentoversiktBrukerRequestTo);
-			DokumentoversiktBrukerResponseTo dokumentoversiktBrukerResponseTo = dokumentoversiktBrukerService.hentDokumentoversiktBruker(dokumentoversiktBrukerRequestTo);
-			log.info("rjoark910 fant og returnerer {} journalposter med request={}.", dokumentoversiktBrukerResponseTo.getJournalposter().size(), dokumentoversiktBrukerRequestTo);
-			return dokumentoversiktBrukerResponseTo;
-		} finally {
-			MDC.clear();
-		}
-	}
-
-	@Transactional(readOnly = true)
 	@RequestMapping(value = "/hentdokument/{dokumentinfoId}/{variant}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", RJOARK_920}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> safHentDokument(@PathVariable Long dokumentinfoId,
@@ -159,8 +145,10 @@ public class HentJournalsakinfoController {
 			RequestContextUtil.createAndSetUsername(RJOARK_920, "dokarkiv");
 			log.info("rjoark920 har mottatt forespørsel om dokument med dokumentinfoId={} og variant={}", dokumentinfoId, variant);
 			SafHentDokumentResponse safHentDokumentResponse = safHentDokumentService.hentDokumentByDokumentinfoIdAndVariant(dokumentinfoId, variant);
+			String mimeTypeForFileExtension = mimeTypeMapper.getMimeTypeForFileExtension(safHentDokumentResponse.getFiltype());
+			log.info("rjoark920 har hentet dokument med dokumentinfoId={} og variant={}, Content-Type={}", dokumentinfoId, variant, mimeTypeForFileExtension);
 			return ResponseEntity.ok()
-					.header(HttpHeaders.CONTENT_TYPE, mimeTypeMapper.getMimeTypeForFileExtension(safHentDokumentResponse.getFiltype().toString()))
+					.header(HttpHeaders.CONTENT_TYPE, mimeTypeForFileExtension)
 					.body(Base64.getEncoder().encodeToString(safHentDokumentResponse.getDokument()));
 		} finally {
 			MDC.clear();

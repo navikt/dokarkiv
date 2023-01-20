@@ -33,6 +33,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET_UGYLDIG;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
@@ -808,9 +809,11 @@ public class OpprettJournalpostRequestValidatorTest {
 						.dokumentvarianter(List.of(DokumentVariant.builder()
 										.filtype(FILTYPE_PDF)
 										.variantformat(VARIANTFORMAT_ARKIV)
+										.fysiskDokument(FYSISK_DOKUMENT)
 										.build(),
 								DokumentVariant.builder()
 										.filtype(FILTYPE_PDF)
+										.fysiskDokument(FYSISK_DOKUMENT)
 										.variantformat(VARIANTFORMAT_ORIGINAL)
 										.build()))
 						.build()))
@@ -825,14 +828,17 @@ public class OpprettJournalpostRequestValidatorTest {
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(List.of(DokumentVariant.builder()
 										.filtype(FILTYPE_PDF)
+										.fysiskDokument(FYSISK_DOKUMENT)
 										.variantformat(VARIANTFORMAT_ARKIV)
 										.build(),
 								DokumentVariant.builder()
 										.filtype(FILTYPE_XML)
+										.fysiskDokument(FYSISK_DOKUMENT)
 										.variantformat(VARIANTFORMAT_ORIGINAL)
 										.build(),
 								DokumentVariant.builder()
 										.filtype(FILTYPE_PDF)
+										.fysiskDokument(FYSISK_DOKUMENT)
 										.variantformat(VARIANTFORMAT_ORIGINAL)
 										.build()))
 						.build()))
@@ -858,7 +864,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		Exception e = assertThrows(InputValideringFeiletException.class, () ->
-						validator.validateRequest(request, FORSOEKFERDIGSTILL)
+				validator.validateRequest(request, FORSOEKFERDIGSTILL)
 		);
 		assertTrue(e.getMessage().contains("Sak.overstyrInnsynsregler kan kun ta verdiene"));
 	}
@@ -878,4 +884,43 @@ public class OpprettJournalpostRequestValidatorTest {
 		assertDoesNotThrow(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
 	}
 
+	@Test
+	public void shouldThrowExceptionWhenFysiskDokumentNull() {
+		OpprettJournalpostRequest opprettJournalpostRequest = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.dokumenter(List.of(Dokument.builder()
+						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.dokumentvarianter(List.of(
+								DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.fysiskDokument(null)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.build()))
+						.build()))
+				.build();
+
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL),
+				"Dokument.dokumentvariant.fysiskDokument må være satt med en base64 representert fil større en 0 bytes.");
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenFysiskZeroLength() {
+		OpprettJournalpostRequest opprettJournalpostRequest = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.dokumenter(List.of(Dokument.builder()
+						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.dokumentvarianter(List.of(
+								DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.fysiskDokument("".getBytes())
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.build()))
+						.build()))
+				.build();
+
+
+		assertThrows(InputValideringFeiletException.class,
+				() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL),
+				"Dokument.dokumentvariant.fysiskDokument må være satt med en base64 representert fil større en 0 bytes.");
+	}
 }

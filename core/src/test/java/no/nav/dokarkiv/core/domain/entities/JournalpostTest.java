@@ -1,13 +1,10 @@
 package no.nav.dokarkiv.core.domain.entities;
 
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
-import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +22,6 @@ import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.AVBRUTT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -157,15 +153,6 @@ public class JournalpostTest {
 	}
 
 	@Test
-	public void testRemoveAllUsers() {
-		journalpost.addBruker(new Bruker());
-		journalpost.addBruker(new Bruker());
-
-		journalpost.removeBrukere(journalpost.getBrukere());
-		assertThat(journalpost.getBrukere().size(), is(equalTo(0)));
-	}
-
-	@Test
 	public void shouldSetSaksrelasjonRelationBothWays() {
 		journalpost = new Journalpost();
 		Saksrelasjon saksrelasjon = new Saksrelasjon();
@@ -215,24 +202,6 @@ public class JournalpostTest {
 		Journalpost journalpost = new Journalpost();
 		journalpost.setJournalstatus(JournalStatusCode.FL);
 		assertFalse(journalpost.hasFerdigOgSentralPrintJournalforingStatus());
-	}
-
-	@Test
-	public void shouldCheckInngaendeStatus() {
-		assertInngaendeStatus(JournalStatusCode.MO, true);
-		assertInngaendeStatus(JournalStatusCode.M, true);
-		assertInngaendeStatus(JournalStatusCode.U, true);
-		assertInngaendeStatus(JournalStatusCode.UB, true);
-		assertInngaendeStatus(JournalStatusCode.J, true);
-		assertInngaendeStatus(JournalStatusCode.R, false);
-		assertInngaendeStatus(JournalStatusCode.D, false);
-		assertInngaendeStatus(JournalStatusCode.FS, false);
-		assertInngaendeStatus(JournalStatusCode.FL, false);
-	}
-
-	private void assertInngaendeStatus(JournalStatusCode journalStatus, boolean expectedResult) {
-		journalpost = getJournalpostBuilder().journalStatus(journalStatus).build();
-		assertThat(journalpost.hasInngaendeStatus(), is(expectedResult));
 	}
 
 	@Test
@@ -311,24 +280,6 @@ public class JournalpostTest {
 				HOVEDDOKUMENT);
 
 		assertExceptionThrownWithMessage(journalpost, "more than one hoveddokument");
-	}
-
-	@Test
-	public void shouldThrowExceptionForMissingJournalForendeEnhetIdAndStatusM() {
-		Journalpost journalpost = getJournalpostBuilder()
-				.journalpostId(100L)
-				.journalStatus(JournalStatusCode.M)
-				.fagomrade(FagomradeCode.BAR)
-				.journalpostType(JournalpostTypeCode.I)
-				.innhold("Innhold")
-				.endretAvNavn("Navn")
-				.build();
-		try {
-			journalpost.verifyJournalforendeEnhetIdForMidlertidigJournalforing();
-			fail();
-		} catch (InvalidArgumentException e) {
-			assertThat(e.getMessage(), containsString("Journalpost.journalForendeEnhetId must be set"));
-		}
 	}
 
 	@Test

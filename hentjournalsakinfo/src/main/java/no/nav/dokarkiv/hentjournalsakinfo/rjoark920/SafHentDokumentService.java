@@ -5,6 +5,11 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
+import static org.apache.commons.io.IOUtils.toByteArray;
+
 @Component
 @Slf4j
 public class SafHentDokumentService {
@@ -29,10 +34,14 @@ public class SafHentDokumentService {
 	private SafHentDokumentResponse hentDokumentFromJoark(Long dokumentinfoId, VariantFormatCode variant) {
 		JoarkDokumentDto joarkDokumentDto = safHentDokumentRepository.hentDokumentFromJoark(dokumentinfoId, variant);
 		if (joarkDokumentDto.isNormalDocument()) {
-			return SafHentDokumentResponse.builder()
-					.dokument(joarkDokumentDto.getDokument())
-					.filtype(joarkDokumentDto.getFiltype())
-					.build();
+			try {
+				return SafHentDokumentResponse.builder()
+						.dokument(toByteArray(joarkDokumentDto.getDokument().getBinaryStream()))
+						.filtype(joarkDokumentDto.getFiltype())
+						.build();
+			} catch (IOException | SQLException e) {
+				throw new RuntimeException("Klarte ikke å lese dokument fra binaryStream. dokumentInfoId=" + dokumentinfoId + ", variantFormat=" + variant, e);
+			}
 		} else if (joarkDokumentDto.isDlfDocument() || joarkDokumentDto.isOndemandDocument()) {
 			log.info("Fysisk dokument med dokumentInfoId={}, variantformat={} er et OnDemand dokument eller en DLF. Henter fra Joark.", dokumentinfoId, variant);
 			byte[] ondemandDokument = safHentDokumentJoarkRepository.hentDokument(joarkDokumentDto);

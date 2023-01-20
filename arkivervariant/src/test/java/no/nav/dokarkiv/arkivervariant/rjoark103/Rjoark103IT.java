@@ -84,7 +84,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		TestTransaction.end();
 
 		TestTransaction.start();
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList.size(), is(1));
 
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);

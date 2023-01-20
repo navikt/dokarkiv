@@ -108,7 +108,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 		assertEquals(AVSENDER_MOTTAKER_NAVN, journalpost.getAvsenderMottaker());
 		assertEquals(AVSENDER_MOTTAKER_ID, journalpost.getAvsenderMottakerId());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertEquals(4, aksjonsLoggList.size());
 		valdiateAksjonsloggELement(aksjonsLoggList.get(0), KOPIER_JOURNALPOST, journalpostId, "Z990782");
 		valdiateAksjonsloggELement(aksjonsLoggList.get(1), ENDRE_METADATA, journalpost.getJournalpostId(), "Z990782");

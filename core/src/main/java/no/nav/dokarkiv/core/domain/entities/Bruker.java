@@ -15,9 +15,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -51,6 +54,10 @@ public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_bruker_t", nullable = false, length = 20)
 	private BrukerTypeCode brukerType;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "journalpost_id", nullable = false)
+	private Journalpost journalpost;
 
 	/**
 	 * Default constructor.
@@ -88,5 +95,21 @@ public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 	@Override
 	public Long getId() {
 		return getBrukerInfoId();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+
+		if (!(o instanceof Bruker other))
+			return false;
+
+		return brukerInfoId != null &&
+			   brukerInfoId.equals(other.getBrukerInfoId());
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
 	}
 }

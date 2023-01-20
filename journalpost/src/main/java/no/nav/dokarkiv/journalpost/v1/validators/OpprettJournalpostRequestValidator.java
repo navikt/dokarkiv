@@ -296,7 +296,10 @@ public class OpprettJournalpostRequestValidator {
 		if (dokumentVariant.getVariantformat().equals(VariantFormatCode.ARKIV.name())
 				&& !Arrays.asList(FilTypeCode.PDF, FilTypeCode.PDFA)
 				.contains(FilTypeCode.valueOf(dokumentVariant.getFiltype()))) {
-			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype på være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV.");
+			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV.");
+		}
+		if(dokumentVariant.getFysiskDokument() == null || dokumentVariant.getFysiskDokument().length == 0) {
+			throw new InputValideringFeiletException("Dokument.dokumentvariant.fysiskDokument må være satt med en base64 representert fil større en 0 bytes.");
 		}
 	}
 

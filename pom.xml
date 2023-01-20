@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.6</version>
+		<version>2.7.7</version>
 	</parent>
 
 	<groupId>no.nav.dokarkiv</groupId>
@@ -33,7 +33,7 @@
 		<argLine>-Xmx2048m</argLine>
 
 		<jakarta.jws-api.version>1.1.1</jakarta.jws-api.version>
-		<oracle.version>19.16.0.0</oracle.version>
+		<oracle.version>19.17.0.0</oracle.version>
 		<cxf.version>3.5.5</cxf.version>
 		<simpleflatmapper.version>8.2.3</simpleflatmapper.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
@@ -60,8 +60,7 @@
 		<microsoft.graph.version>5.31.0</microsoft.graph.version>
 
 		<!-- Tjenestegrensesnitt -->
-		<behandlejournal-v2-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v2-tjenestespesifikasjon.version>
-		<behandlejournal-v3-tjenestespesifikasjon.version>1.2019.09.25-00.21-49b69f0625e0</behandlejournal-v3-tjenestespesifikasjon.version>
+		<nav-tjenestespesifikasjon.version>2610.9b6de22</nav-tjenestespesifikasjon.version>
 		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.4.1</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
 		<dokumentproduksjoninfo-tjenestespesifikasjon.version>2.1.1</dokumentproduksjoninfo-tjenestespesifikasjon.version>
 
@@ -254,12 +253,12 @@
 			<dependency>
 				<groupId>no.nav.tjenestespesifikasjoner</groupId>
 				<artifactId>nav-fim-behandleJournal-v2-tjenestespesifikasjon</artifactId>
-				<version>${behandlejournal-v2-tjenestespesifikasjon.version}</version>
+				<version>${nav-tjenestespesifikasjon.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.tjenestespesifikasjoner</groupId>
 				<artifactId>nav-fim-behandleJournal-v3-tjenestespesifikasjon</artifactId>
-				<version>${behandlejournal-v3-tjenestespesifikasjon.version}</version>
+				<version>${nav-tjenestespesifikasjon.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.tjenester.brevogarkiv</groupId>
@@ -349,7 +348,7 @@
 				<configuration>
 					<toolchains>
 						<jdk>
-							<version>17</version>
+							<version>${java.version}</version>
 							<vendor>openjdk</vendor>
 						</jdk>
 					</toolchains>

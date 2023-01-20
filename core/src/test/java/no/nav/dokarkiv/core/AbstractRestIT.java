@@ -4,12 +4,13 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
-import no.nav.dokarkiv.core.repository.AksjonsLoggRepository;
+import no.nav.dokarkiv.core.repository.AksjonsLoggTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
 import no.nav.dokarkiv.core.repository.SakTestRepository;
+import no.nav.dokarkiv.core.repository.UtsendingsInfoTestRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
@@ -66,13 +67,15 @@ public abstract class AbstractRestIT {
 	@Autowired
 	protected SkjermingServiceTest skjermingServiceTest;
 	@Autowired
-	protected AksjonsLoggRepository aksjonsLoggRepository;
+	protected AksjonsLoggTestRepository aksjonsLoggTestRepository;
 	@Autowired
 	protected EntityManager entityManager;
 	@Autowired
 	protected DokumentFilTestRepository dokumentFilTestRepository;
 	@Autowired
 	protected SakTestRepository sakTestRepository;
+	@Autowired
+	protected UtsendingsInfoTestRepository utsendingsInfoTestRepository;
 	@Autowired
 	private MockOAuth2Server server;
 
@@ -101,7 +104,8 @@ public abstract class AbstractRestIT {
 			TestTransaction.end();
 			TestTransaction.start();
 		}
-		aksjonsLoggRepository.deleteAll();
+		utsendingsInfoTestRepository.deleteAll();
+		aksjonsLoggTestRepository.deleteAll();
 		dokumentFilTestRepository.deleteAll();
 		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentInfoTestRepository.deleteAll();
@@ -190,6 +194,7 @@ public abstract class AbstractRestIT {
 	protected String azureToken(String subject) {
 		return token("azurev2", subject, Map.of());
 	}
+
 	protected String token(String issuer, String subject, Map<String, Object> claims) {
 		String audience = "aud-localhost";
 		return server.issueToken(

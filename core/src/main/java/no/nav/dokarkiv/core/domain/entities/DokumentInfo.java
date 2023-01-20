@@ -10,7 +10,6 @@ import lombok.ToString;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
@@ -182,7 +181,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	public DokumentInfo(Long dokumentInfoId, long version) {
 		this.dokumentInfoId = dokumentInfoId;
 		setVersion(version);
-		this.tilleggsopplysninger = new HashMap<>();
 		this.fildetaljerListe = new HashSet<>();
 		this.journalpostRelasjoner = new HashSet<>();
 		this.tilleggsopplysninger = new HashMap<>();
@@ -319,19 +317,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	/**
-	 * Finds a SkannetInnhold by Id.
-	 *
-	 * @param skannetInnholdId The Id.
-	 * @return The SkannetInnhold.
-	 */
-	public SkannetInnhold findSkannetInnholdById(final Long skannetInnholdId) {
-		return skannetInnholdListe.stream()
-				.filter(skannetInnhold -> skannetInnholdId.equals(skannetInnhold.getId()))
-				.findAny()
-				.orElse(null);
-	}
-
-	/**
 	 * Finds a FilDetaljer by Id.
 	 *
 	 * @param filDetaljerId The Id.
@@ -439,13 +424,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		return getJournalpostRelasjoner().size() > 1;
 	}
 
-	public JournalpostDokumentInfoRelasjon findHoveddokumentJournalpostRelasjon() {
-		return journalpostRelasjoner.stream()
-				.filter(rel -> rel.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-				.findAny()
-				.orElse(null);
-	}
-
 	/**
 	 * Getter for the skannetInnhold property.
 	 *
@@ -513,6 +491,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	public void removeFilDetaljer(FilDetaljer filDetaljer) {
 		if (filDetaljer != null) {
 			this.fildetaljerListe.remove(filDetaljer);
+			filDetaljer.setDokumentInfo(null);
 		}
 	}
 
@@ -545,12 +524,10 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	/**
 	 * Removes a JournalpostDokumentInfoRelasjon
-	 *
-	 * @return true if JournalpostDokumentInfoRelasjon was removed, otherwise
-	 * false
 	 */
-	public boolean removeJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjonToRemove) {
-		return journalpostRelasjoner.remove(relasjonToRemove);
+	public void removeJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjonToRemove) {
+		journalpostRelasjoner.remove(relasjonToRemove);
+		relasjonToRemove.setDokumentInfo(null);
 	}
 
 	public void setKassert(boolean kassert) {
