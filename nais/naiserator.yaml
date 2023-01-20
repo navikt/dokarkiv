@@ -38,8 +38,8 @@ spec:
       value: {{ LDAP_BASEDN }}
     - name: SECURITYTOKENSERVICE_URL
       value: {{ SECURITYTOKENSERVICE_URL }}
-    - name: PDL_URL
-      value: {{ PDL_URL }}
+    - name: DOKARKIV_ENDPOINTS_PDL_URL
+      value: {{ DOKARKIV_ENDPOINTS_PDL_URL }}
     - name: ABAC_ARKIV_URL
       value: {{ ABAC_ARKIV_URL }}
     - name: ABAC_ARKIV_V2_URL
@@ -48,10 +48,10 @@ spec:
       value: {{ JOARK_HENTDOKUMENT_BASEURL }}
     - name: DOKARKIV_HENTDOKUMENT_BASEURL
       value: {{ DOKARKIV_HENTDOKUMENT_BASEURL }}
-    - name: SAF_GRAPHQL_URL
-      value: {{ SAF_GRAPHQL_URL }}
-    - name: SAF_SCOPE
-      value: {{ SAF_SCOPE }}
+    - name: DOKARKIV_ENDPOINTS_SAF_URL
+      value: {{ DOKARKIV_ENDPOINTS_SAF_URL }}
+    - name: DOKARKIV_ENDPOINTS_SAF_SCOPE
+      value: {{ DOKARKIV_ENDPOINTS_SAF_SCOPE }}
     - name: APPD_NAME
       value: {{ APPD_NAME }}
     - name: DOKARKIV_DATABASE_POOLSIZE
@@ -68,6 +68,8 @@ spec:
       value: "{{ SPRINGDOC_ENABLED }}"
     - name: AZURE_AD_ADMIN_ROLE
       value: {{ AZURE_AD_ADMIN_ROLE }}
+    - name: DOKARKIV_ENDPOINTS_PDL_SCOPE
+      value: {{ DOKARKIV_ENDPOINTS_PDL_SCOPE }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}

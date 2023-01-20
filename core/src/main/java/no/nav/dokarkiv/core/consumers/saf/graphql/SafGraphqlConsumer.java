@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.consumer.azure.WebClientAzureAuthentication;
 import no.nav.dokarkiv.core.consumers.saf.exceptions.saf.SafJournalpostQueryTechnicalException;
 import no.nav.dokarkiv.core.consumers.saf.exceptions.saf.SafJournalpostUnauthorizedException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
+import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.util.NavHeadersFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,16 +21,16 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Component
 public class SafGraphqlConsumer {
 
-	private final WebClient safGraphQLClient;
+	private final WebClient webClient;
 
 	@Autowired
-	public SafGraphqlConsumer(SafGraphQLConfig safGraphQLConfig,
-							  AzureToken azureToken,
-							  WebClient safGraphQLClient) {
-		this.safGraphQLClient = safGraphQLClient
+	public SafGraphqlConsumer(AzureToken azureToken, DokarkivProperties dokarkivProperties,
+							  WebClient webClient) {
+		this.webClient = webClient
 				.mutate()
+				.baseUrl(dokarkivProperties.getEndpoints().getSaf().getUrl())
 				.filter(new NavHeadersFilter())
-				.filter(new WebClientAzureAuthentication(azureToken, safGraphQLConfig.getScope()))
+				.filter(new WebClientAzureAuthentication(azureToken, dokarkivProperties.getEndpoints().getSaf().getScope()))
 				.build();
 	}
 
@@ -37,7 +38,7 @@ public class SafGraphqlConsumer {
 	@Retryable(include = SafJournalpostQueryTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT))
 	public ResponseEntity<String> performQuery(GraphQLRequest graphQLRequest, String safAuthorizationHeader) {
 
-		return safGraphQLClient
+		return webClient
 				.post()
 				.header(AUTHORIZATION, safAuthorizationHeader)
 				.bodyValue(graphQLRequest)
@@ -48,7 +49,7 @@ public class SafGraphqlConsumer {
 	}
 
 	private void handleError(Throwable error) {
-		if(error instanceof WebClientResponseException response && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
+		if (error instanceof WebClientResponseException response && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
 			throw new SafJournalpostUnauthorizedException(
 					String.format("Tjenesten SAF (graphQL) feilet funksjonelt med status: %s, feilmelding: %s",
 							response.getRawStatusCode(),
