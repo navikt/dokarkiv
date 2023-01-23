@@ -8,12 +8,15 @@ import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.core.jwt.JwtTokenClaims;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static no.nav.dokarkiv.core.cache.CacheConfig.TOKEN_FROM_REQUEST;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 
@@ -51,16 +54,16 @@ public class PdlAzureTokenCache {
 	}
 
 	private String getAccessTokenFromRequest(String cacheKey, JwtToken jwtToken) {
-		String cachedToken = cacheManager.getCache(TOKEN_FROM_REQUEST).get(cacheKey, String.class);
-		if (StringUtils.isNotBlank(cachedToken)) {
-			return cachedToken;
+		Cache tokenRequestCache = cacheManager.getCache(TOKEN_FROM_REQUEST);
+		if (nonNull(tokenRequestCache)) {
+			return tokenRequestCache.get(cacheKey, String.class);
 		}
 		cacheManager.getCache(TOKEN_FROM_REQUEST).put(cacheKey, jwtToken.getTokenAsString());
 		return jwtToken.getTokenAsString();
 	}
 
 	private boolean isAccessTokenFromRequestNull(JwtToken jwtToken) {
-		return Objects.isNull(jwtToken) || StringUtils.isBlank(jwtToken.getTokenAsString());
+		return isNull(jwtToken) || StringUtils.isBlank(jwtToken.getTokenAsString());
 	}
 
 	private boolean isOnBehalfOfToken(JwtToken token) {
