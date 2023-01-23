@@ -1,8 +1,6 @@
 package no.nav.dokarkiv.core.consumer.pdl;
 
-import no.nav.dokarkiv.core.consumer.azure.AzureToken;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
-import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,9 +34,7 @@ public class PdlIdentConsumerTest {
 		webClient = WebClient.builder().baseUrl(String.format("http://localhost:%s", mockServer.getPort())).build();
 
 		pdlIdentConsumer = new PdlIdentConsumer(
-				webClient, mock(AzureToken.class),
-				dokarkivProperties(), mock(TokenValidationContextHolder.class)
-		);
+				webClient, dokarkivProperties(), mock(PdlAzureTokenCache.class));
 	}
 
 	@Test

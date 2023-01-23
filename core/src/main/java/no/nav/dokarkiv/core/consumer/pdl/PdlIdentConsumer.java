@@ -1,13 +1,8 @@
 package no.nav.dokarkiv.core.consumer.pdl;
 
-import no.nav.dokarkiv.core.consumer.azure.AzureToken;
 import no.nav.dokarkiv.core.exceptions.AzureTokenException;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.util.NavHeadersFilter;
-import no.nav.security.token.support.core.context.TokenValidationContext;
-import no.nav.security.token.support.core.context.TokenValidationContextHolder;
-import no.nav.security.token.support.core.jwt.JwtToken;
-import no.nav.security.token.support.core.jwt.JwtTokenClaims;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.retry.annotation.Backoff;
@@ -22,7 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.cache.CacheConfig.HISTORISKE_IDENTER;
-import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
 import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -33,19 +27,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Component
 public class PdlIdentConsumer implements IdentConsumer {
 	private static final String PERSON_IKKE_FUNNET_CODE = "not_found";
-	private static final String DEFAULT_CLAIM_OID = "oid";
-	private static final String DEFAULT_CLAIM_SUB = "sub";
 
 	private final WebClient webClient;
-	private final AzureToken azureToken;
-	private final DokarkivProperties dokarkivProperties;
-	private final TokenValidationContextHolder tokenValidationContextHolder;
+	private final PdlAzureTokenCache pdlAzureTokenCache;
 
-	public PdlIdentConsumer(WebClient webClient, AzureToken azureToken,
-							DokarkivProperties dokarkivProperties, TokenValidationContextHolder tokenValidationContextHolder) {
-		this.tokenValidationContextHolder = tokenValidationContextHolder;
-		this.azureToken = azureToken;
-		this.dokarkivProperties = dokarkivProperties;
+	public PdlIdentConsumer(WebClient webClient, DokarkivProperties dokarkivProperties,
+							PdlAzureTokenCache pdlAzureTokenCache) {
+		this.pdlAzureTokenCache = pdlAzureTokenCache;
 		this.webClient = webClient.mutate()
 				.baseUrl(dokarkivProperties.getEndpoints().getPdl().getUrl())
 				.defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
@@ -62,7 +50,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 
 		String ident = this.validateFolkeregisterIdent(folkeregisterIdent);
 		PdlResponse pdlResponse = webClient.post()
-				.header(HttpHeaders.AUTHORIZATION, azureToken())
+				.header(HttpHeaders.AUTHORIZATION, pdlAzureTokenCache.azureAccessToken())
 				.bodyValue(mapHentAktoerIdForFolkeregisterident(ident))
 				.retrieve()
 				.bodyToMono(PdlResponse.class)
@@ -97,7 +85,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 
 		String ident = this.validateFolkeregisterIdent(aktoerId);
 		final PdlResponse pdlResponse = webClient.post()
-				.header(HttpHeaders.AUTHORIZATION, azureToken())
+				.header(HttpHeaders.AUTHORIZATION, pdlAzureTokenCache.azureAccessToken())
 				.bodyValue(mapHentFolkeregisterIdentForAktoerId(ident))
 				.retrieve()
 				.bodyToMono(PdlResponse.class)
@@ -133,7 +121,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 		String ident = this.validateFolkeregisterIdent(folkeregisterIdent);
 
 		PdlResponse pdlResponse = webClient.post()
-				.header(HttpHeaders.AUTHORIZATION, azureToken())
+				.header(HttpHeaders.AUTHORIZATION, pdlAzureTokenCache.azureAccessToken())
 				.bodyValue(mapHentHistoriskeFolkeregisterIdentForAktoerId(ident))
 				.retrieve()
 				.bodyToMono(PdlResponse.class)
@@ -154,7 +142,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	public String hentPersonIdent(String ident, String tema) {
 
 		PdlPersonResponse pdlPersonResponse = webClient.post()
-				.header(HttpHeaders.AUTHORIZATION, azureToken())
+				.header(HttpHeaders.AUTHORIZATION, pdlAzureTokenCache.azureAccessToken())
 				.bodyValue(mapHentPersonIdentForId(this.validateFolkeregisterIdent(ident)))
 				.retrieve()
 				.bodyToMono(PdlPersonResponse.class)
@@ -197,22 +185,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: true) {identer { ident gruppe historisk } } }")
 				.variables(variables)
 				.build();
-	}
-
-	private String azureToken() {
-		TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
-		JwtToken jwtToken = tokenValidationContext.getJwtToken(ISSUER_AZUREV2);
-		if (tokenValidationContext.getJwtTokenAsOptional(ISSUER_AZUREV2).isPresent() && isOnBehalfOfToken(jwtToken)) {
-			return azureToken.onBehalfOfAccessToken(jwtToken.getTokenAsString(), dokarkivProperties.getEndpoints().getPdl().getScope());
-		}
-		return azureToken.clientCredentialAccessToken(dokarkivProperties.getEndpoints().getPdl().getScope());
-	}
-
-	private boolean isOnBehalfOfToken(JwtToken token) {
-		final JwtTokenClaims jwtTokenClaims = token.getJwtTokenClaims();
-		return jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_SUB) != null &&
-				jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_OID) != null &&
-				!jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_SUB).equals(jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_OID));
 	}
 
 	String validateFolkeregisterIdent(String ident) {
