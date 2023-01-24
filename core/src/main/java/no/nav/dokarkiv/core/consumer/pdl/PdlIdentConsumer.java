@@ -2,9 +2,7 @@ package no.nav.dokarkiv.core.consumer.pdl;
 
 import no.nav.dokarkiv.core.exceptions.AzureTokenException;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
-import no.nav.dokarkiv.core.util.NavHeadersFilter;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -26,18 +24,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
 public class PdlIdentConsumer implements IdentConsumer {
+
 	private static final String PERSON_IKKE_FUNNET_CODE = "not_found";
 
 	private final WebClient webClient;
-	private final PdlAzureTokenCache pdlAzureTokenCache;
 
 	public PdlIdentConsumer(WebClient webClient, DokarkivProperties dokarkivProperties,
-							PdlAzureTokenCache pdlAzureTokenCache) {
-		this.pdlAzureTokenCache = pdlAzureTokenCache;
+							PdlTokenCache pdlAzureTokenCache) {
 		this.webClient = webClient.mutate()
 				.baseUrl(dokarkivProperties.getEndpoints().getPdl().getUrl())
 				.defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.filter(new NavHeadersFilter())
+				.filter(new PdlWebClientAzureAuthentication(pdlAzureTokenCache))
 				.build();
 	}
 
@@ -50,7 +47,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 
 		String ident = this.validateFolkeregisterIdent(folkeregisterIdent);
 		PdlResponse pdlResponse = webClient.post()
-				.header(HttpHeaders.AUTHORIZATION, pdlAzureTokenCache.azureAccessToken())
 				.bodyValue(mapHentAktoerIdForFolkeregisterident(ident))
 				.retrieve()
 				.bodyToMono(PdlResponse.class)
@@ -85,7 +81,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 
 		String ident = this.validateFolkeregisterIdent(aktoerId);
 		final PdlResponse pdlResponse = webClient.post()
-				.header(HttpHeaders.AUTHORIZATION, pdlAzureTokenCache.azureAccessToken())
 				.bodyValue(mapHentFolkeregisterIdentForAktoerId(ident))
 				.retrieve()
 				.bodyToMono(PdlResponse.class)
@@ -121,7 +116,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 		String ident = this.validateFolkeregisterIdent(folkeregisterIdent);
 
 		PdlResponse pdlResponse = webClient.post()
-				.header(HttpHeaders.AUTHORIZATION, pdlAzureTokenCache.azureAccessToken())
 				.bodyValue(mapHentHistoriskeFolkeregisterIdentForAktoerId(ident))
 				.retrieve()
 				.bodyToMono(PdlResponse.class)
@@ -142,7 +136,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 	public String hentPersonIdent(String ident, String tema) {
 
 		PdlPersonResponse pdlPersonResponse = webClient.post()
-				.header(HttpHeaders.AUTHORIZATION, pdlAzureTokenCache.azureAccessToken())
 				.bodyValue(mapHentPersonIdentForId(this.validateFolkeregisterIdent(ident)))
 				.retrieve()
 				.bodyToMono(PdlPersonResponse.class)

@@ -21,7 +21,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
 @Component
-public class PdlAzureTokenCache {
+public class PdlTokenCache {
 
 	static final String OPTIONAL_CLAIM_SET_IDTYP = "idtyp";
 	static final String OPTIONAL_CLAIM_SET_IDTYP_VALUE = "app";
@@ -31,8 +31,8 @@ public class PdlAzureTokenCache {
 	private final TokenValidationContextHolder tokenValidationContextHolder;
 	private final DokarkivProperties dokarkivProperties;
 
-	public PdlAzureTokenCache(CacheManager cacheManager, AzureToken azureToken,
-							  TokenValidationContextHolder tokenValidationContextHolder, DokarkivProperties dokarkivProperties) {
+	public PdlTokenCache(CacheManager cacheManager, AzureToken azureToken,
+						 TokenValidationContextHolder tokenValidationContextHolder, DokarkivProperties dokarkivProperties) {
 		this.cacheManager = cacheManager;
 		this.azureToken = azureToken;
 		this.tokenValidationContextHolder = tokenValidationContextHolder;

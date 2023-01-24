@@ -34,7 +34,7 @@ public class PdlIdentConsumerTest {
 		webClient = WebClient.builder().baseUrl(String.format("http://localhost:%s", mockServer.getPort())).build();
 
 		pdlIdentConsumer = new PdlIdentConsumer(
-				webClient, dokarkivProperties(), mock(PdlAzureTokenCache.class));
+				webClient, dokarkivProperties(), mock(PdlTokenCache.class));
 	}
 
 	@Test
