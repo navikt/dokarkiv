@@ -70,7 +70,7 @@ public class OpprettJournalpostRequestMapper {
 	private void setSaksrelasjon(Journalpost domainJournalpost,
 								 no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.Journalpost journalpost) {
 		domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
-				.sakId(journalpost.getSaksrelasjon().getSaksnummer())
+				.saknrfk(journalpost.getSaksrelasjon().getSaksnummer())
 				.fagsystem(journalpost.getSaksrelasjon()
 						.getFagsystem() == null ? null : FagsystemCode.valueOf(journalpost.getSaksrelasjon()
 						.getFagsystem()))

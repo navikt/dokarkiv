@@ -92,7 +92,7 @@ public class SettDatoSendtIT extends AbstractArkiverdokumentproduksjonItest {
 				.fagomrade(FagomradeCode.PEN)
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
-								.sakId("1")
+								.saknrfk("1")
 								.fagsystem(FagsystemCode.PEN)
 								.opprettetKildeNavn("opprettetKildeNavn")
 								.build())

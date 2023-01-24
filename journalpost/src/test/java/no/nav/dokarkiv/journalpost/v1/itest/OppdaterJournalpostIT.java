@@ -135,7 +135,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getId()));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType(), is(BrukerTypeCode.PERSON));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(request.getSak().getArkivsaksnummer()));
+		assertThat(oppdatertJP.getSaksrelasjon().getSaknrfk(), is(request.getSak().getArkivsaksnummer()));
 		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
 		assertThat(oppdatertJP.getTilleggsopplysninger().size(), is(1));
 		assert (oppdatertJP.getTilleggsopplysninger().containsKey(request.getTilleggsopplysninger().get(0).getNokkel()));
@@ -220,7 +220,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		TestTransaction.start();
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId(), is(ARKIVSAKSNUMMER));
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getSaknrfk(), is(ARKIVSAKSNUMMER));
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
@@ -298,7 +298,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getId()));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType(), is(BrukerTypeCode.PERSON));
 		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(request.getSak().getArkivsaksnummer()));
+		assertThat(oppdatertJP.getSaksrelasjon().getSaknrfk(), is(request.getSak().getArkivsaksnummer()));
 		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
 		TestTransaction.end();
 	}
@@ -392,7 +392,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		TestTransaction.start();
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId(), is(ARKIVSAKSNUMMER));
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getSaknrfk(), is(ARKIVSAKSNUMMER));
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
 		TestTransaction.end();
 	}
@@ -423,7 +423,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		TestTransaction.start();
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId(), is(ARKIVSAKSNUMMER));
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getSaknrfk(), is(ARKIVSAKSNUMMER));
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
 		TestTransaction.end();
 	}
@@ -455,7 +455,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		TestTransaction.start();
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId(), is(ARKIVSAKSNUMMER));
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getSaknrfk(), is(ARKIVSAKSNUMMER));
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(PEN));
 		TestTransaction.end();
 	}
@@ -499,7 +499,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(sak.getApplikasjon(), FS22.name());
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertEquals(oppdatertJournalpost.getSaksrelasjon().getSakId(), sak.getSakId().toString());
+		assertEquals(oppdatertJournalpost.getSaksrelasjon().getSaknrfk(), sak.getSakId().toString());
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
 		TestTransaction.end();
 	}
@@ -540,7 +540,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		TestTransaction.start();
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
-		assertEquals(saksrelasjon.getSakId(), sak.getSakId().toString());
+		assertEquals(saksrelasjon.getSaknrfk(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
 		TestTransaction.end();
 	}
@@ -585,7 +585,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(sak.getApplikasjon(), Fagsaksystem.AO01.name());
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertEquals(oppdatertJournalpost.getSaksrelasjon().getSakId(), sak.getSakId().toString());
+		assertEquals(oppdatertJournalpost.getSaksrelasjon().getSaknrfk(), sak.getSakId().toString());
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
 		TestTransaction.end();
 
@@ -768,7 +768,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		TestTransaction.start();
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertEquals(oppdatertJournalpost.getSaksrelasjon().getSakId(), sak.getSakId().toString());
+		assertEquals(oppdatertJournalpost.getSaksrelasjon().getSaknrfk(), sak.getSakId().toString());
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
 
 		TestTransaction.end();

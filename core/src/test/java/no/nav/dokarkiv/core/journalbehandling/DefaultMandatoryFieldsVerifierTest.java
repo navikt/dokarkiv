@@ -89,7 +89,7 @@ public class DefaultMandatoryFieldsVerifierTest {
 				.endretAvNavn("Endret av")
 				.saksrelasjon(getSaksrelasjonBuilder()
 						.saksrelasjonId(10L)
-						.sakId("123")
+						.saknrfk("123")
 						.fagsystem(FagsystemCode.FS22)
 						.endretAvNavn("Endret av")
 						.build())

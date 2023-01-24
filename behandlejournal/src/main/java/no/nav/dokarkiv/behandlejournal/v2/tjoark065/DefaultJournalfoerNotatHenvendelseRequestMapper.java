@@ -56,7 +56,7 @@ public class DefaultJournalfoerNotatHenvendelseRequestMapper implements
 				.fagomrade(wsJournalpost.getArkivtema() == null ? null : FagomradeCode.valueOf(wsJournalpost.getArkivtema().getValue()))
 				.build();
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
-				.sakId(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
+				.saknrfk(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
 				.fagsystem(wsJournalpost.getGjelderSak() == null ? null : FagsystemCode.valueOf(wsJournalpost.getGjelderSak().getFagsystemkode()))
 				.build();
 		domainJournalpost.setSaksrelasjon(saksrelasjon);

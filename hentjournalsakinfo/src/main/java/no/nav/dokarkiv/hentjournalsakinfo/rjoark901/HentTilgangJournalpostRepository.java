@@ -33,7 +33,7 @@ class HentTilgangJournalpostRepository {
                                        jp.avsenderMottakerId,
                                        br.brukerId,
                                        br.brukerType,
-                                       sr.sakId,
+                                       sr.saknrfk,
                                        sr.fagsystem,
                                        sr.feilregistrert,
                                        sa.aktoerId,
@@ -59,7 +59,7 @@ class HentTilgangJournalpostRepository {
                                          left join jp.brukere br
                                          join jp.changeStamp cs
                                          left join jp.saksrelasjon sr on sr.journalpost.journalpostId = :journalpostId
-                                         left join Sak sa on sr.sakId = sa.sakId
+                                         left join Sak sa on sr.saknrfk = sa.sakId
                                          join jp.journalpostDokumentInfoRelasjoner jr
                                          join jr.dokumentInfo di
                                               on di.dokumentInfoId = :dokumentInfoId and jr.journalpost.journalpostId = :journalpostId

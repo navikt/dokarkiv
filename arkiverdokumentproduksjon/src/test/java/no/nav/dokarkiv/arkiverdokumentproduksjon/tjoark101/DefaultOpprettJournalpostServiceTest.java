@@ -160,7 +160,7 @@ public class DefaultOpprettJournalpostServiceTest {
 								.brukerType(BrukerTypeCode.PERSON).build())
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
-								.sakId("1")
+								.saknrfk("1")
 								.fagsystem(FagsystemCode.FS22).build())
 				.innhold("innhold")
 				.journalpostType(JournalpostTypeCode.U)

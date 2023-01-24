@@ -63,7 +63,7 @@ public class DefaultJournalfoerUtgaaendeHenvendelseRequestMapper implements
 				.avsenderMottaker(wsJournalpost.getEksternPart() == null ? null : wsJournalpost.getEksternPart().getNavn())
 				.build();
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
-				.sakId(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
+				.saknrfk(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
 				.fagsystem(wsJournalpost.getGjelderSak() == null ? null : FagsystemCode.valueOf(wsJournalpost.getGjelderSak().getFagsystemkode()))
 				.build();
 		domainJournalpost.setSaksrelasjon(saksrelasjon);

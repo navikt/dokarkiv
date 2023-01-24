@@ -126,7 +126,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		assertEquals(KANALREFERANSE_ID, jp.getKanalReferanseId());
 		assertEquals(TILLEGGSOPPLYSNING_NOKKEL, jp.getTilleggsopplysninger().keySet().iterator().next());
 		assertEquals(TILLEGGSOPPLYSNING_VERDI, jp.getTilleggsopplysninger().values().iterator().next());
-		assertEquals(SAK_ID, jp.getSaksrelasjon().getSakId());
+		assertEquals(SAK_ID, jp.getSaksrelasjon().getSaknrfk());
 		assertEquals(FagsystemCode.FS22, jp.getSaksrelasjon().getFagsystem());
 
 		JournalpostDokumentInfoRelasjon relasjon = jp.findHoveddokumentDokumentInfoRelasjon();

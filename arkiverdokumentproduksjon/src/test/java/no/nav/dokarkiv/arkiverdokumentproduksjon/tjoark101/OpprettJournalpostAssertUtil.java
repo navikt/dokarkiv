@@ -83,7 +83,7 @@ public class OpprettJournalpostAssertUtil {
 
 	private static void assertSak(Saksrelasjon saksrelasjon) {
 		assertThat(saksrelasjon, is(notNullValue()));
-		assertThat(saksrelasjon.getSakId(), is(SAKSID));
+		assertThat(saksrelasjon.getSaknrfk(), is(SAKSID));
 		assertThat(saksrelasjon.getFagsystem().name(), is(FAGSYSTEMKODE));
 	}
 

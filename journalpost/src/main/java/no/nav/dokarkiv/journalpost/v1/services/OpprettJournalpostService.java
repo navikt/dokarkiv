@@ -205,7 +205,7 @@ public class OpprettJournalpostService {
 		}
 
 		sakOptional.ifPresent(sak -> populerAksjonslogg(journalpostId, SAKSTILKNYTNING, brukerId, Stream.of(
-						arkivElementEndringNew("Saksrelasjon.sakId", journalpost.getSaksrelasjon().getSakId()),
+						arkivElementEndringNew("Saksrelasjon.sakId", journalpost.getSaksrelasjon().getSaknrfk()),
 						arkivElementEndringNew("Saksrelasjon.fagsystem",
 								journalpost.getSaksrelasjon().getFagsystem() != null ? journalpost.getSaksrelasjon().getFagsystem().name() : null),
 						arkivElementEndringNew("Sak.fagsaknr", sak.getFagsakNr()),
