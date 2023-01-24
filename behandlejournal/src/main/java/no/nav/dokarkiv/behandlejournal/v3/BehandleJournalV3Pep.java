@@ -72,11 +72,11 @@ public class BehandleJournalV3Pep {
 
 	// https://confluence.adeo.no/display/ABAC/Ingen+tilgang+til+pensjons+saker
 	private void enrichPolicyIngenTilgangTilPensjonssaker(Journalpost journalpost, XacmlRequest xacmlRequest) {
-		if (journalpost.getSaksrelasjon() != null && isNotEmpty(journalpost.getSaksrelasjon().getSakId())) {
+		if (journalpost.getSaksrelasjon() != null && isNotEmpty(journalpost.getSaksrelasjon().getSaknrfk())) {
 			if (FagsystemCode.PEN.equals(journalpost.getSaksrelasjon().getFagsystem())) {
-				xacmlRequest.resource(RESOURCE_ARKIV_PENSJON_SAKSID, journalpost.getSaksrelasjon().getSakId());
+				xacmlRequest.resource(RESOURCE_ARKIV_PENSJON_SAKSID, journalpost.getSaksrelasjon().getSaknrfk());
 			} else {
-				xacmlRequest.resource(RESOURCE_ARKIV_GSAK_SAKSID, journalpost.getSaksrelasjon().getSakId());
+				xacmlRequest.resource(RESOURCE_ARKIV_GSAK_SAKSID, journalpost.getSaksrelasjon().getSaknrfk());
 			}
 		}
 	}

@@ -191,7 +191,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 				.endretAvNavn(ORIGINAL_ENDRET_AV_NAVN)
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
-								.sakId("1")
+								.saknrfk("1")
 								.fagsystem(FagsystemCode.PEN)
 								.opprettetKildeNavn("opprettetKildeNavn")
 								.build())

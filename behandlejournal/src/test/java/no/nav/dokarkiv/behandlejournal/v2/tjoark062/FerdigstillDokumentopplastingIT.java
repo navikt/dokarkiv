@@ -129,7 +129,7 @@ public class FerdigstillDokumentopplastingIT extends AbstractBehandleJournalV2It
 				.mottakskanal(MottaksKanalCode.ALTINN)
 				.utsendingskanal(UtsendingsKanalCode.EESSI)
 				.saksrelasjon(
-						getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.PEN)
+						getSaksrelasjonBuilder().saknrfk("1").fagsystem(FagsystemCode.PEN)
 								.opprettetKildeNavn("opprettetKildeNavn").build())
 				.brukere(
 						getBrukerBuilder().brukerId("02016126007").brukerType(BrukerTypeCode.PERSON)

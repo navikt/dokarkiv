@@ -83,7 +83,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfNoSaksIDOnJournalpostIsNull() {
-		journalpost.getSaksrelasjon().setSakId(null);
+		journalpost.getSaksrelasjon().setSaknrfk(null);
 
 		assertThrows(InvalidArgumentException.class,
 				() -> validator.validate(journalpost),
@@ -515,7 +515,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	@Test
 	public void shouldThrowIfInputIsMissingSaksrelasjonSaksnummer() {
 		OpprettUtgaaendeJournalpostArkiverDokumentRequestTo requestTo = createRequestTo();
-		requestTo.getJournalpost().getSaksrelasjon().setSakId(null);
+		requestTo.getJournalpost().getSaksrelasjon().setSaknrfk(null);
 
 		assertThrows(UgyldigInputException.class,
 				() -> validator.validateRequiredFields(requestTo),
@@ -556,8 +556,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.kanalReferanseId(KANAL_REF_ID)
 				.saksrelasjon(Saksrelasjon.builder()
-						.sakId(SAKSID)
-						.sakId("1")
+						.saknrfk(SAKSID)
 						.fagsystem(FagsystemCode.FS22)
 						.build())
 				.tilleggsopplysninger(createTilleggsopplysningMap())

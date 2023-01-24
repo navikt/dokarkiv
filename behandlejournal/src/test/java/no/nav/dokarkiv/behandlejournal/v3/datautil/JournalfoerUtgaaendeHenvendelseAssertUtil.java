@@ -68,7 +68,7 @@ public class JournalfoerUtgaaendeHenvendelseAssertUtil extends BehandleJournalCo
 	}
 
 	private static void assertSak(Saksrelasjon saksrelasjon) {
-		assertThat(saksrelasjon.getSakId(), is(JournalfoerUtgaaendeHenvendelseDataUtil.SAKSID));
+		assertThat(saksrelasjon.getSaknrfk(), is(JournalfoerUtgaaendeHenvendelseDataUtil.SAKSID));
 		assertThat(saksrelasjon.getFagsystem().name(), is(JournalfoerUtgaaendeHenvendelseDataUtil.FAGSYSTEMKODE));
 	}
 }

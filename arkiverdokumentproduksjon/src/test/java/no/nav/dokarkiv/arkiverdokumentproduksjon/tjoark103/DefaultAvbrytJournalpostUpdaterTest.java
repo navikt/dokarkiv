@@ -59,7 +59,7 @@ public class DefaultAvbrytJournalpostUpdaterTest {
 				.journalpostId(JOURNALPOST_ID)
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
-								.sakId("1").saksrelasjonId(2L).build())
+								.saknrfk("1").saksrelasjonId(2L).build())
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
