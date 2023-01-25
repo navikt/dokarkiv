@@ -73,7 +73,6 @@ public class DefaultJournalfoerInngaaendeHenvendelseRequestMapper implements
 		wsJournalpost.getDokumentinfoRelasjon().forEach(dokumentinfoRelasjon -> {
 			JournalfoertDokumentInfo journalfoertDokumentInfo = dokumentinfoRelasjon.getJournalfoertDokument();
 			DokumentInfo dokumentInfo = DokumentInfo.builder()
-					.innskrenketPartsinnsyn(journalfoertDokumentInfo.isBegrensetPartsInnsyn())
 					.sensitivt(journalfoertDokumentInfo.isSensitivitet())
 					.tittel(journalfoertDokumentInfo.getTittel())
 					.kategori(journalfoertDokumentInfo.getKategorikode() == null ? null : DokumentKategoriCode.valueOf(journalfoertDokumentInfo.getKategorikode()))

@@ -319,36 +319,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowIfInputDokumentInfoOrganinterntIsTrue() {
-		assertThrows(IllegalArgumentException.class,
-				() -> validator.validateVedleggDokumentInfo(DokumentInfo.builder()
-						.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-						.organInternt(true)
-						.build()),
-				"DokumentInfo.OrganInternt kan ikke være Sann");
-	}
-
-	@Test
-	public void shouldThrowIfInputDokumentInfoInnskrenketPartsinnsynIsTrue() {
-		assertThrows(IllegalArgumentException.class,
-				() -> validator.validateVedleggDokumentInfo(DokumentInfo.builder()
-						.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-						.innskrenketPartsinnsyn(true)
-						.build()),
-				"DokumentInfo.InnskrenketPartsinnsyn kan ikke være Sann");
-	}
-
-	@Test
-	public void shouldThrowIfInputDokumentInfoInnskrenketPartsinnsynFraTredjePartIsTrue() {
-		assertThrows(IllegalArgumentException.class,
-				() -> validator.validateVedleggDokumentInfo(DokumentInfo.builder()
-						.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-						.innskrenketPartsinnsynFraTredjepart(true)
-						.build()),
-				"DokumentInfo.InnskrenketPartsinnsynFraTredjepart kan ikke være Sann");
-	}
-
-	@Test
 	public void shouldThrowIfInputDokumentInfoFildetaljerHasNoVariantFormatWithArkiv() {
 		DokumentInfo dokumentInfo = createDokumentInfoWithFildetaljer();
 		dokumentInfo.getFildetaljerListe().forEach(filDetaljer -> filDetaljer.setVariantFormat(VariantFormatCode.ORIGINAL));
@@ -623,9 +593,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
 								DokumentInfo.builder()
 										.dokumenttypeId("dokumentTypeId")
 										.tittel("tittel")
-										.innskrenketPartsinnsyn(true)
 										.brevkode("brevkode")
-										.organInternt(false)
 										.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 										.kategori(DokumentKategoriCode.ES)
 										.fildetaljerListe(new HashSet<>(Arrays.asList(

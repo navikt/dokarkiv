@@ -114,14 +114,6 @@ public class JournalfoerUtgaaendeHenvendelseValidatorTest extends
 	}
 
 	@Test
-	public void shouldThrowExceptionIfNoInnskrenketPartsinnsynOnJournalpost() {
-		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo()
-				.setInnskrenketPartsinnsyn(null);
-		validateAndAssertExceptionThrownWithMessage(validator, ApplicationException.class,
-				"InnskrenketPartsinnsyn must be set");
-	}
-
-	@Test
 	public void shouldThrowExceptionIfNoBrevkodeOnJournalpost() {
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setBrevkode(null);
 		validateAndAssertExceptionThrownWithMessage(validator, ApplicationException.class, "Brevkode must be set");

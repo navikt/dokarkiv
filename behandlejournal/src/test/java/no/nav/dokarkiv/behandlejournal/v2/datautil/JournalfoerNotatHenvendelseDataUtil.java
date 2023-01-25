@@ -31,7 +31,6 @@ public class JournalfoerNotatHenvendelseDataUtil extends BehandleJournalCommonDa
 	public static final boolean SENSITIVITET = true;
 	public static final String TITTEL = "The Sound of Music";
 	public static final String KATEGORI = DokumentKategoriCode.B.name();
-	public static final boolean ORGANINTERNT = true;
 	public static final String INNHOLD = "Sanger fra verden";
 
 	public static Journalpost createJournalpost() throws Exception {
@@ -65,7 +64,6 @@ public class JournalfoerNotatHenvendelseDataUtil extends BehandleJournalCommonDa
 		dokInfo.setTilleggsopplysninger(createTilleggsopplysninger());
 		dokInfo.setTittel(TITTEL);
 		dokInfo.setKategorikode(KATEGORI);
-		dokInfo.setErOrganinternt(ORGANINTERNT);
 		dokInfo.getBeskriverInnhold().add(createUstrukurertInnhold());
 		dokInfo.setFerdigDato(getTodayJodaTime());
 		return dokInfo;

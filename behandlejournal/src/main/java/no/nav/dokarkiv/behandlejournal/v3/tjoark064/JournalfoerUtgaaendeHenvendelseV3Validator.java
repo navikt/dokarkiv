@@ -40,7 +40,6 @@ public class JournalfoerUtgaaendeHenvendelseV3Validator extends AbstractBehandle
 		DokumentInfo dokumentInfo = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next()
 				.getDokumentInfo();
 		validateBrevkode(dokumentInfo);
-		validateInnskrenketPartsinnsyn(dokumentInfo);
 		validateSensitivt(dokumentInfo);
 	}
 }

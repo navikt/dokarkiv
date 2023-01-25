@@ -56,7 +56,6 @@ public class DefaultJournalpostMapper implements JournalpostMapper {
 		JournalfoertDokumentInfo journalfoertDokumentInfo = wsJournalpost.getJournalfoertDokument();
 		JournalpostDokumentInfoRelasjon dokumentInfoRelasjon = new JournalpostDokumentInfoRelasjon();
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
-				.innskrenketPartsinnsyn(journalfoertDokumentInfo.isBegrensetPartsInnsyn())
 				.brevkode(journalfoertDokumentInfo.getDokumentType().getValue())
 				.dokumenttypeId(journalfoertDokumentInfo.getDokumentType().getValue())
 				.tilleggsopplysninger(convertNoekkelVerdiSettToMap(journalfoertDokumentInfo.getTilleggsopplysninger()))

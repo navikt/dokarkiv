@@ -55,7 +55,6 @@ public class JournalfoerUtgaaendeHenvendelseAssertUtil extends BehandleJournalCo
 
 	private static void assertDokumentInfo(DokumentInfo domainDokumentInfo, JournalfoertDokumentInfo wsDokumentInfo) {
 		assertThat(domainDokumentInfo.getSensitivt(), is(JournalfoerUtgaaendeHenvendelseDataUtil.SENSITIVITET));
-		assertThat(domainDokumentInfo.getInnskrenketPartsinnsyn(), is(JournalfoerUtgaaendeHenvendelseDataUtil.BEGRENSET_PARTS_INNSYN));
 		assertThat(domainDokumentInfo.getTittel(), is(JournalfoerUtgaaendeHenvendelseDataUtil.TITTEL));
 		assertThat(domainDokumentInfo.getKategori(), is(JournalfoerUtgaaendeHenvendelseDataUtil.KATEGORI));
 		assertThat(domainDokumentInfo.getBrevkode(), is(JournalfoerUtgaaendeHenvendelseDataUtil.DOKUMENT_TYPE_ID));

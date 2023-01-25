@@ -62,7 +62,6 @@ public class LagreVedleggPaaJournalpostV3RequestMapperTest {
 	}
 
 	private void assertDokumentInfo(DokumentInfo dokumentInfo) throws Exception {
-		assertThat(dokumentInfo.getInnskrenketPartsinnsyn(), is(BEGRENSET_PARTS_INNSYN));
 		assertThat(dokumentInfo.getBrevkode(), is(BREVKODE));
 		assertTilleggsopplysninger(dokumentInfo.getTilleggsopplysninger());
 		assertFilDetaljer(dokumentInfo.getFildetaljerListe().iterator().next());

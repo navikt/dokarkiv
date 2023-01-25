@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoInnskrenketPartsinnsynException;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoIsOrganInterntException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoNotFoundException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoSlettetException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.FeilregistrertSaksrelasjonException;
@@ -21,10 +19,8 @@ public interface KnyttDokumentTilJournalpostSomVedleggService {
     void knyttDokumentTilJournalpostSomVedlegg(KnyttDokumentTilJournalpostSomVedleggRequestTo request) throws
             JournalpostNotFoundException,
             DokumentInfoNotFoundException,
-            DokumentInfoInnskrenketPartsinnsynException,
             IllegalDokumentstatusException,
             DokumentInfoSlettetException,
-            DokumentInfoIsOrganInterntException,
             IllegalFagomraadeException,
             FilDetaljerOnDemandException,
             IllegalVariantFormatException,

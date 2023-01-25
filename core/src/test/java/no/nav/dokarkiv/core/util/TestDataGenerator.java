@@ -34,7 +34,6 @@ import java.util.Map;
 
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_ØNSKE;
-import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_INNSKRENKET_PARTSINNSYN;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
 
@@ -147,7 +146,6 @@ public class TestDataGenerator {
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.fagomrade(FagomradeCode.RPO)
 				.mottakskanal(MottaksKanalCode.NAV_NO)
-				.innsyn(SKJULES_INNSKRENKET_PARTSINNSYN)
 				.build();
 
 		journalpost.addBruker(createBruker());
@@ -290,9 +288,6 @@ public class TestDataGenerator {
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());
 		dokumentInfo.setKategori(DokumentKategoriCode.B);
-		dokumentInfo.setOrganInternt(true);
-		dokumentInfo.setInnskrenketPartsinnsyn(true);
-		dokumentInfo.setInnskrenketPartsinnsynFraTredjepart(true);
 		dokumentInfo.setKassert(false);
 		return dokumentInfo;
 	}

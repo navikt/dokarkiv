@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoInnskrenketPartsinnsynException;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoIsOrganInterntException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoNotFoundException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoSlettetException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.FeilregistrertSaksrelasjonException;
@@ -516,42 +514,12 @@ public class ArkiverDokumentproduksjonProviderTest {
 	}
 
 	@Test
-	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsDokumentInfoInnskrenketPartsinnsynException() {
-		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
-		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
-
-		doThrow(new DokumentInfoInnskrenketPartsinnsynException("Something failed"))
-				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
-				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
-
-		assertThrows(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class,
-				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
-				"Something failed");
-	}
-
-	@Test
 	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsDokumentInfoSlettetException() {
 		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
 		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
 		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
 
 		doThrow(new DokumentInfoSlettetException("Something failed"))
-				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
-				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
-
-		assertThrows(KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt.class,
-				() -> provider.knyttDokumentTilJournalpostSomVedlegg(requestMock),
-				"Something failed");
-	}
-
-	@Test
-	public void throwsDokumentTillatesIkkeGjenbruktWhenServiceThrowsDokumentInfoIsOrganInterntException() {
-		KnyttDokumentTilJournalpostSomVedleggRequest requestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequest.class);
-		KnyttDokumentTilJournalpostSomVedleggRequestTo mappedRequestMock = mock(KnyttDokumentTilJournalpostSomVedleggRequestTo.class);
-		when(knyttDokumentTilJournalpostSomVedleggRequestMapperMock.map(any())).thenReturn(mappedRequestMock);
-
-		doThrow(new DokumentInfoIsOrganInterntException("Something failed"))
 				.when(knyttDokumentTilJournalpostSomVedleggServiceMock)
 				.knyttDokumentTilJournalpostSomVedlegg(mappedRequestMock);
 

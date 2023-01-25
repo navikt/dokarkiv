@@ -54,11 +54,9 @@ public class JournalfoerNotatHenvendelseAssertUtil extends BehandleJournalCommon
 	private static void assertDokumentInfo(DokumentInfo domainDokumentInfo, JournalfoertDokumentInfo wsDokumentInfo) {
 		assertThat(domainDokumentInfo.getDokumenttypeId(), nullValue());
 		assertThat(domainDokumentInfo.getSensitivt(), is(JournalfoerNotatHenvendelseDataUtil.SENSITIVITET));
-		assertThat(domainDokumentInfo.getInnskrenketPartsinnsyn(), is(JournalfoerNotatHenvendelseDataUtil.BEGRENSET_PARTS_INNSYN));
 		assertThat(domainDokumentInfo.getTittel(), is(JournalfoerNotatHenvendelseDataUtil.TITTEL));
 		assertThat(domainDokumentInfo.getKategori().name(), is(JournalfoerNotatHenvendelseDataUtil.KATEGORI));
 		assertThat(domainDokumentInfo.getBrevkode(), is(JournalfoerNotatHenvendelseDataUtil.DOKUMENT_TYPE_ID));
-		assertThat(domainDokumentInfo.getOrganInternt(), is(JournalfoerNotatHenvendelseDataUtil.ORGANINTERNT));
 		assertThat(domainDokumentInfo.getDokumentFerdigDato(), is(DateProvider.getToday()));
 		assertTilleggsopplysninger(domainDokumentInfo.getTilleggsopplysninger(), wsDokumentInfo.getTilleggsopplysninger());
 	}

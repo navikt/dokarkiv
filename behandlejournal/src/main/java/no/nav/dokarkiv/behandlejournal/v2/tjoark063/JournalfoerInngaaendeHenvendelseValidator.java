@@ -35,7 +35,6 @@ public class JournalfoerInngaaendeHenvendelseValidator extends AbstractBehandleJ
 				.getDokumentInfo();
 
 		validateBrevkode(dokumentInfo);
-		validateInnskrenketPartsinnsyn(dokumentInfo);
 		validateSensitivt(dokumentInfo);
 		validateTittel(dokumentInfo);
 		validateKategori(dokumentInfo);

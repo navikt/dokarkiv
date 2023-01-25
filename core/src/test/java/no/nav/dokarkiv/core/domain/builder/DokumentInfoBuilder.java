@@ -41,9 +41,6 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	private String konfidensialitet;
 	private String integritet;
 	private String tilgjengelighet;
-    private Boolean innskrenketPartsinnsyn;
-    private Boolean innskrenketPartsinnsynFraTredjepart;
-	private Boolean organInternt;
 	private String konvertertFraSystem;
 	private Boolean sensitivt;
 	private String endretAvNavn;
@@ -67,9 +64,6 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	public DokumentInfoBuilder konfidensialitet(String value) { this.konfidensialitet = value; return this; }
 	public DokumentInfoBuilder integritet(String value) { this.integritet = value; return this; }
 	public DokumentInfoBuilder tilgjengelighet(String value) { this.tilgjengelighet = value; return this; }
-    public DokumentInfoBuilder innskrenketPartsinnsyn(Boolean value) { this.innskrenketPartsinnsyn = value; return this; }
-    public DokumentInfoBuilder innskrenketPartsinnsynFraTredjepart(Boolean value) { this.innskrenketPartsinnsynFraTredjepart = value; return this; }
-	public DokumentInfoBuilder organInternt(Boolean value) { this.organInternt = value; return this; }
 	public DokumentInfoBuilder konvertertFraSystem(String value) { this.konvertertFraSystem = value; return this; }
 	public DokumentInfoBuilder sensitivt(Boolean value) { this.sensitivt = value; return this; }
 	public DokumentInfoBuilder endretAvNavn(String value) { this.endretAvNavn = value; return this; }
@@ -95,9 +89,6 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 		dokumentInfo.setBrevkode(brevkode);
 		dokumentInfo.setBrevgruppe(brevgruppe);
 		dokumentInfo.setOriginalJournalpost(originalJournalpost);
-        dokumentInfo.setInnskrenketPartsinnsyn(innskrenketPartsinnsyn);
-        dokumentInfo.setInnskrenketPartsinnsynFraTredjepart(innskrenketPartsinnsynFraTredjepart);
-		dokumentInfo.setOrganInternt(organInternt);
 		dokumentInfo.setKonvertertFraSystem(konvertertFraSystem);
 		dokumentInfo.setSensitivt(sensitivt);
 		dokumentInfo.setEndretAvNavn(endretAvNavn);

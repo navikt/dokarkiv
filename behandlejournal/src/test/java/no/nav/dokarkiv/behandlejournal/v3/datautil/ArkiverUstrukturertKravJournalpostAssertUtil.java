@@ -43,8 +43,6 @@ public class ArkiverUstrukturertKravJournalpostAssertUtil extends BehandleJourna
 	}
 
 	protected static void assertDokumentInfo(DokumentInfo domainDokumentInfo, JournalfoertDokumentInfo wsDokumentInfo) {
-		assertThat(domainDokumentInfo.getInnskrenketPartsinnsyn(),
-				is(ArkiverUstrukturertKravJournalpostDataUtil.BEGRENSET_PARTS_INNSYN));
 		assertTilleggsopplysninger(domainDokumentInfo.getTilleggsopplysninger(),
 				wsDokumentInfo.getTilleggsopplysninger());
 	}

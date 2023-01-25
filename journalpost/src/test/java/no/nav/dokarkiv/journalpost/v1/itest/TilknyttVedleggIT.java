@@ -487,9 +487,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertEquals(sourceDokumentInfo.getBrevgruppe(), dokumentInfoKopi.getBrevgruppe());
 		assertNull(dokumentInfoKopi.getOriginalJournalpost());
 		assertEquals(sourceDokumentInfo.getSensitivt(), dokumentInfoKopi.getSensitivt());
-		assertEquals(sourceDokumentInfo.getInnskrenketPartsinnsyn(), dokumentInfoKopi.getInnskrenketPartsinnsyn());
-		assertEquals(sourceDokumentInfo.getInnskrenketPartsinnsynFraTredjepart(), dokumentInfoKopi.getInnskrenketPartsinnsynFraTredjepart());
-		assertEquals(sourceDokumentInfo.getOrganInternt(), dokumentInfoKopi.getOrganInternt());
 		assertEquals(sourceDokumentInfo.getKonvertertFraSystem(), dokumentInfoKopi.getKonvertertFraSystem());
 		assertNull(dokumentInfoKopi.getEndretAvNavn());
 		assertEquals(sourceDokumentInfo.getKassertAvNavn(), dokumentInfoKopi.getKassertAvNavn());

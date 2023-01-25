@@ -54,7 +54,6 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 	private static final String SPORING_ETTERNAVN = "etternavn";
 	private static final String NONEXISTING_JOURNALPOST_ID = "12345";
 
-	private static final Boolean INNSKRENKET_PARTSINNSYN = false;
 	private static final String DOKUMENTTYPE_ID = "123123";
 	private static final String DOKUMENTTYPE_ID_VEDLEGG = "458212";
 	private static final String FILNAVN = "Attest";
@@ -114,7 +113,6 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 
 		assertThat(persistedDokumentInfo.getDokumentstatus(), is(DokumentStatusCode.FERDIGSTILT));
 		assertThat(persistedDokumentInfo.getDokumentFerdigDato(), notNullValue());
-		assertThat(persistedDokumentInfo.getInnskrenketPartsinnsyn(), is(INNSKRENKET_PARTSINNSYN));
 		assertThat(persistedDokumentInfo.getOriginalJournalpost().getJournalpostId(),
 				is(journalpost.getJournalpostId()));
 		assertThat(persistedDokumentInfo.getTilleggsopplysninger().get(TILLEGGSOPPLYSNINGER_KEY),
@@ -182,7 +180,6 @@ public class LagreVedleggPaaJournalpostV3IT extends AbstractBehandleJournalV3Ite
 								.dokumentInfo(
 										DokumentInfoBuilder
 												.getDokumentInfoBuilder()
-												.innskrenketPartsinnsyn(INNSKRENKET_PARTSINNSYN)
 												.tittel("tittel")
 												.brukeroppgittTittel("brukerOppgittTittel")
 												.opprettetKildeNavn("test")

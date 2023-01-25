@@ -35,7 +35,6 @@ public class DefaultLagreVedleggPaaJournalpostRequestMapper implements LagreVedl
 			no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.LagreVedleggPaaJournalpostRequest wsRequest) {
 		JournalfoertDokumentInfo journalfortDokumentInfo = wsRequest.getJournalfortDokumentInfo();
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
-				.innskrenketPartsinnsyn(journalfortDokumentInfo.isBegrensetPartsInnsyn())
 				.brevkode(journalfortDokumentInfo.getDokumentType().getValue())
 				.dokumenttypeId(journalfortDokumentInfo.getDokumentType().getValue())
 				.tittel(isEmpty(journalfortDokumentInfo.getBrukerOppgittTittel()) ? null : journalfortDokumentInfo.getBrukerOppgittTittel())

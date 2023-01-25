@@ -1,11 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -14,9 +8,14 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.KanIkkeTilknytteVedleggException;
 
-
 import java.util.Arrays;
 import java.util.List;
+
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
@@ -44,7 +43,7 @@ public class TilknyttVedleggValidator {
 	public boolean validateDokumentInfo(DokumentInfo dokumentInfo) {
 		if (dokumentInfo.getDokumentstatus() != null && dokumentInfo.getDokumentstatus() != DokumentStatusCode.FERDIGSTILT) {
 			return false;
-		} else if ((dokumentInfo.getOrganInternt() != null && dokumentInfo.getOrganInternt()) || dokumentInfo.isKassert()) {
+		} else if (dokumentInfo.isKassert()) {
 			return false;
 		} else {
 			return true;

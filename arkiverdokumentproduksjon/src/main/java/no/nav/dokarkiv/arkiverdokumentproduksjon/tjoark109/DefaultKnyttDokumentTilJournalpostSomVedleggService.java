@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark109;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoInnskrenketPartsinnsynException;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoIsOrganInterntException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoNotFoundException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoSlettetException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.FeilregistrertSaksrelasjonException;
@@ -55,9 +53,6 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 	private static final String JOURNAL_STATUS_FORMAT = "Journalpost with journalpostId=%d must have journalStatus '%s'";
 	private static final String TILLEGGSOPPLYSNING_FORMAT = "Journalpost with journalpostId=%d needs hoveddokument with tilleggsopplysning '%s'='%s'";
 	private static final String REQUIRED_DOKUMENTSTATUS_FORMAT = "DokumentInfo with dokumentInfoId=%d must have dokumentstatus '%s' or undefined";
-	private static final String ORGAN_INTERN_DOKUMENT_INFO_FORMAT = "DokumentInfo with dokumentInfoId=%d cannot be organ intern";
-	private static final String PARTSINNSYN_DOKUMENT_INFO_FORMAT = "DokumentInfo with dokumentInfoId=%d cannot have innskrenket partsinnsyn";
-	private static final String PARTSINNSYN_TREDJEPART_DOKUMENT_INFO_FORMAT = PARTSINNSYN_DOKUMENT_INFO_FORMAT + " fra tredjepart";
 	private static final String ON_DEMAND_FIL_DETALJER_FORMAT = "DokumentInfo with dokumentInfoId=%d cannot have fildetaljer with onDemandId defined";
 	private static final String VARIANT_FORMAT_FORMAT = "DokumentInfo with dokumentInfoId=%d requires at least one fildetalj with variantFormat '%s'";
 	private static final String FAGOMRAADE_MESSAGE = "Journalpost source with journalpostId=%d must have fagomrade 'OPP','GEN' or 'FEI', or it must be equal"
@@ -78,10 +73,8 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 	public void knyttDokumentTilJournalpostSomVedlegg(KnyttDokumentTilJournalpostSomVedleggRequestTo request) throws
 			JournalpostNotFoundException,
 			DokumentInfoNotFoundException,
-			DokumentInfoInnskrenketPartsinnsynException,
 			IllegalDokumentstatusException,
 			DokumentInfoSlettetException,
-			DokumentInfoIsOrganInterntException,
 			IllegalFagomraadeException,
 			FilDetaljerOnDemandException,
 			IllegalVariantFormatException,
@@ -105,9 +98,6 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 
 		DokumentInfo dokumentInfo = findRelevantDokumentInfo(request.getDokumentInfoId(), journalpostSource);
 		checkIfDokumentInfoHasLegalDokumentStatus(dokumentInfo);
-		checkIfDokumentInfoIsOrganIntern(dokumentInfo);
-		checkIfDokumentInfoHasInnskrenketPartsinnsyn(dokumentInfo);
-		checkIfDokumentInfoHasInnskrenketPartsinnsynFraTredjepart(dokumentInfo);
 		checkIfDokumentInfoDoesNotHaveFildetaljerWithOnDemandId(dokumentInfo);
 		checkIfDokumentInfoHasFildetaljerWithArkivVariantFormat(dokumentInfo);
 
@@ -176,27 +166,6 @@ public class DefaultKnyttDokumentTilJournalpostSomVedleggService implements Knyt
 		if (dokumentInfo.getDokumentstatus() != null && dokumentInfo.getDokumentstatus() != FERDIGSTILT) {
 			String message = String.format(REQUIRED_DOKUMENTSTATUS_FORMAT, dokumentInfo.getDokumentInfoId(), FERDIGSTILT.name());
 			throw new IllegalDokumentstatusException(message);
-		}
-	}
-
-	private void checkIfDokumentInfoIsOrganIntern(DokumentInfo dokumentInfo) throws DokumentInfoIsOrganInterntException {
-		if (isTrue(dokumentInfo.getOrganInternt())) {
-			String message = String.format(ORGAN_INTERN_DOKUMENT_INFO_FORMAT, dokumentInfo.getDokumentInfoId());
-			throw new DokumentInfoIsOrganInterntException(message);
-		}
-	}
-
-	private void checkIfDokumentInfoHasInnskrenketPartsinnsyn(DokumentInfo dokumentInfo) throws DokumentInfoInnskrenketPartsinnsynException {
-		if (isTrue(dokumentInfo.getInnskrenketPartsinnsyn())) {
-			String message = String.format(PARTSINNSYN_DOKUMENT_INFO_FORMAT, dokumentInfo.getDokumentInfoId());
-			throw new DokumentInfoInnskrenketPartsinnsynException(message);
-		}
-	}
-
-	private void checkIfDokumentInfoHasInnskrenketPartsinnsynFraTredjepart(DokumentInfo dokumentInfo) throws DokumentInfoInnskrenketPartsinnsynException {
-		if (isTrue(dokumentInfo.getInnskrenketPartsinnsynFraTredjepart())) {
-			String message = String.format(PARTSINNSYN_TREDJEPART_DOKUMENT_INFO_FORMAT, dokumentInfo.getDokumentInfoId());
-			throw new DokumentInfoInnskrenketPartsinnsynException(message);
 		}
 	}
 

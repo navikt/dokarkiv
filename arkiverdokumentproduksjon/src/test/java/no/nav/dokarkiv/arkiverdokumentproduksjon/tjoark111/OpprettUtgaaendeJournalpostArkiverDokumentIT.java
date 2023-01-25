@@ -278,56 +278,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentIT extends AbstractArkive
 	}
 
 	/**
-	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG det er registrert at dokumentet er slettet, organInternt eller har innskrenketPartsinnsyn SÅ skal det returneres en feil
-	 */
-	@Test
-	public void shouldThrowIfVedleggDokumentInfoOrganInterntIsTrue() {
-		persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
-				.iterator()
-				.next()
-				.getDokumentInfo()
-				.setOrganInternt(Boolean.TRUE);
-		persistedJournalpost = journalpostTestRepository.persist(persistedJournalpost);
-
-		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
-		request.getVedlegg()
-				.add(createVedlegg(persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
-						.iterator()
-						.next()
-						.getDokumentInfo()
-						.getId(), persistedJournalpost.getJournalpostId()));
-
-		assertThrows(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class,
-				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
-				"DokumentInfo.OrganInternt kan ikke være Sann");
-	}
-
-	/**
-	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG det er registrert at dokumentet er slettet, organInternt eller har innskrenketPartsinnsyn SÅ skal det returneres en feil
-	 */
-	@Test
-	public void shouldThrowIfVedleggDokumentInfoInnskrenketPartInnsynIsTrue() {
-		persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
-				.iterator()
-				.next()
-				.getDokumentInfo()
-				.setInnskrenketPartsinnsyn(Boolean.TRUE);
-		persistedJournalpost = journalpostTestRepository.persist(persistedJournalpost);
-
-		OpprettUtgaaendeJournalpostArkiverDokumentRequest request = createRequest();
-		request.getVedlegg()
-				.add(createVedlegg(persistedJournalpost.getJournalpostDokumentInfoRelasjoner()
-						.iterator()
-						.next()
-						.getDokumentInfo()
-						.getId(), persistedJournalpost.getJournalpostId()));
-
-		assertThrows(OpprettUtgaaendeJournalpostValideringAvVedleggFeilet.class,
-				() -> arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(request),
-				"DokumentInfo.InnskrenketPartsinnsyn kan ikke være Sann");
-	}
-
-	/**
 	 * HVIS operasjonen kalles med en peker til et vedlegg som allerede ligger i JOARK OG dokumentet har et tilhørende filDetaljer-objekt som har satt ondemandId SÅ skal det returneres en feil
 	 */
 	@Test

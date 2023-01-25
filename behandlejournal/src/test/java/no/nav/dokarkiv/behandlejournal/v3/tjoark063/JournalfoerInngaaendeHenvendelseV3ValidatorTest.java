@@ -126,15 +126,6 @@ public class JournalfoerInngaaendeHenvendelseV3ValidatorTest extends
 	}
 
 	@Test
-	public void shouldThrowExceptionIfNoInnskrenketPartsinnsynOnDokumentInfo() {
-		DokumentInfo dokumentInfo = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next()
-				.getDokumentInfo();
-		dokumentInfo.setInnskrenketPartsinnsyn(null);
-		validateAndAssertExceptionThrownWithMessage(validator, ApplicationException.class,
-				"InnskrenketPartsinnsyn must be set");
-	}
-
-	@Test
 	public void shouldThrowExceptionIfNoSensitivtOnDokumentInfo() {
 		DokumentInfo dokumentInfo = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next()
 				.getDokumentInfo();

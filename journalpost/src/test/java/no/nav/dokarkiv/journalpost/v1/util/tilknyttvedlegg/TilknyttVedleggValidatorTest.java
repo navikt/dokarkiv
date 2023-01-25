@@ -22,7 +22,7 @@ public class TilknyttVedleggValidatorTest {
 	private final TilknyttVedleggValidator validator = new TilknyttVedleggValidator();
 
 	@Test
-	public void happyPath(){
+	public void happyPath() {
 		Journalpost targetJournalpost = createJournalpost();
 		targetJournalpost.setJournalstatus(JournalStatusCode.D);
 		targetJournalpost.setJournalposttype(JournalpostTypeCode.U);
@@ -32,7 +32,6 @@ public class TilknyttVedleggValidatorTest {
 
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-				.organInternt(false)
 				.kassert(false)
 				.build();
 
@@ -80,24 +79,6 @@ public class TilknyttVedleggValidatorTest {
 	public void shouldReturnFalseIfDokumentStatusCodeIsNotFerdigstilt() {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.dokumentstatus(DokumentStatusCode.UNDER_REDIGERING)
-				.build();
-
-		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));
-	}
-
-	@Test
-	public void shouldReturnFalseIfOrganInterntIsTrue() {
-		DokumentInfo dokumentInfo = DokumentInfo.builder()
-				.organInternt(true)
-				.build();
-
-		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));
-	}
-
-	@Test
-	public void shouldReturnFalseIfOrganInterntIsNull() {
-		DokumentInfo dokumentInfo = DokumentInfo.builder()
-				.organInternt(true)
 				.build();
 
 		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));

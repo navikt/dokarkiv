@@ -92,12 +92,6 @@ public abstract class AbstractBehandleJournalJournalpostValidator implements Beh
 		}
 	}
 
-	protected void validateInnskrenketPartsinnsyn(DokumentInfo dokumentInfo) {
-		if (dokumentInfo.getInnskrenketPartsinnsyn() == null) {
-			throw new ApplicationException("InnskrenketPartsinnsyn must be set");
-		}
-	}
-
 	protected void validateSensitivt(DokumentInfo dokumentInfo) {
 		if (dokumentInfo.getSensitivt() == null) {
 			throw new ApplicationException("Sensitivt must be set");
@@ -133,14 +127,6 @@ public abstract class AbstractBehandleJournalJournalpostValidator implements Beh
 
 	protected void validateCommonNotatDokumentInfo(DokumentInfo dokumentInfo) {
 		validateSensitivt(dokumentInfo);
-
-		if (dokumentInfo.getInnskrenketPartsinnsyn() == null) {
-			throw new ApplicationException("innskrenketPartsinnsyn must be set");
-		}
-
-		if (dokumentInfo.getOrganInternt() == null) {
-			throw new ApplicationException("organInternt must be set");
-		}
 	}
 
 	protected void validateSak(Journalpost journalpost) {

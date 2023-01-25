@@ -114,7 +114,6 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 
 		assertThat(persistedDokumentInfo.getDokumentstatus(), is(DokumentStatusCode.FERDIGSTILT));
 		assertThat(persistedDokumentInfo.getDokumentFerdigDato(), notNullValue());
-		assertThat(persistedDokumentInfo.getInnskrenketPartsinnsyn(), is(INNSKRENKET_PARTSINNSYN));
 		assertThat(persistedDokumentInfo.getOriginalJournalpost().getJournalpostId(),
 				is(journalpost.getJournalpostId()));
 		assertThat(persistedDokumentInfo.getTilleggsopplysninger().get(TILLEGGSOPPLYSNINGER_KEY),
@@ -187,7 +186,6 @@ public class LagreVedleggPaaJournalpostIT extends AbstractBehandleJournalV2Itest
 								.dokumentInfo(
 										DokumentInfoBuilder
 												.getDokumentInfoBuilder()
-												.innskrenketPartsinnsyn(INNSKRENKET_PARTSINNSYN)
 												.tittel("tittel")
 												.brukeroppgittTittel("brukerOppgittTittel")
 												.opprettetKildeNavn("test")

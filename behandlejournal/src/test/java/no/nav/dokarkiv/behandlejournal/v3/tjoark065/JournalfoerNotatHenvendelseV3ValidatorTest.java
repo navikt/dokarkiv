@@ -90,18 +90,6 @@ public class JournalfoerNotatHenvendelseV3ValidatorTest extends AbstractBehandle
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setSensitivt(null);
 		validateAndAssertExceptionThrownWithMessage(validator, ApplicationException.class, "Sensitivt must be set");
 	}
-
-	@Test
-	public void shouldThrowExceptionIfNoOrganInterntOnJournalpost() {
-		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setOrganInternt(null);
-		validateAndAssertExceptionThrownWithMessage(validator, ApplicationException.class, "organInternt must be set");
-	}
-
-	@Test
-	public void shouldThrowExceptionIfNoInnskrentPartsInnsynOnJournalpost() {
-		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setInnskrenketPartsinnsyn(null);
-		validateAndAssertExceptionThrownWithMessage(validator, ApplicationException.class, "innskrenketPartsinnsyn must be set");
-	}
 	
 	@Test
 	public void shouldThrowExceptionIfNoBrevkodeOnJournalpost() {

@@ -25,7 +25,6 @@ public class LagreVedleggPaaJournalpostV3RequestMapper {
 			no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.LagreVedleggPaaJournalpostRequest wsRequest) {
 		JournalfoertDokumentInfo journalfortDokumentInfo = wsRequest.getJournalfortDokumentInfo();
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
-				.innskrenketPartsinnsyn(journalfortDokumentInfo.isBegrensetPartsInnsyn())
 				.brevkode(journalfortDokumentInfo.getDokumentType().getValue())
 				.dokumenttypeId(journalfortDokumentInfo.getDokumentType().getValue())
 				.tittel(isEmpty(journalfortDokumentInfo.getBrukerOppgittTittel()) ? null : journalfortDokumentInfo.getBrukerOppgittTittel())

@@ -2,8 +2,6 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoInnskrenketPartsinnsynException;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoIsOrganInterntException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoNotFoundException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.DokumentInfoSlettetException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.FeilregistrertSaksrelasjonException;
@@ -440,9 +438,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 			knyttDokumentTilJournalpostSomVedleggService.knyttDokumentTilJournalpostSomVedlegg(domainRequest);
 			log.info("tjoark109 har knyttet dokument med dokumentinfoId={} på journalpost med journalpostId={} til journalpost med journalpostId={}",
 					domainRequest.getDokumentInfoId(), domainRequest.getKnyttesFraJournalpostId(), domainRequest.getKnyttesTilJournalpostId());
-		} catch (DokumentInfoInnskrenketPartsinnsynException
-				| DokumentInfoSlettetException
-				| DokumentInfoIsOrganInterntException
+		} catch (DokumentInfoSlettetException
 				| IllegalDokumentstatusException
 				| FilDetaljerOnDemandException
 				| IllegalVariantFormatException exception) {

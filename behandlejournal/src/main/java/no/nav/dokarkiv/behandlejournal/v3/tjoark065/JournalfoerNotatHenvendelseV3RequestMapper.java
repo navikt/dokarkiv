@@ -64,13 +64,11 @@ public class JournalfoerNotatHenvendelseV3RequestMapper {
 		wsJournalpost.getDokumentinfoRelasjon().forEach(dokumentinfoRelasjon -> {
 			JournalfoertDokumentInfo journalfoertDokumentInfo = dokumentinfoRelasjon.getJournalfoertDokument();
 			DokumentInfo dokumentInfo = DokumentInfo.builder()
-					.innskrenketPartsinnsyn(journalfoertDokumentInfo.isBegrensetPartsInnsyn())
 					.sensitivt(journalfoertDokumentInfo.isSensitivitet())
 					.tittel(journalfoertDokumentInfo.getTittel())
 					.kategori(journalfoertDokumentInfo.getKategorikode() == null ? null : DokumentKategoriCode.valueOf(journalfoertDokumentInfo.getKategorikode()))
 					.brevkode(journalfoertDokumentInfo.getDokumentType() == null ? null : journalfoertDokumentInfo.getDokumentType().getValue())
 					.dokumenttypeId(null)
-					.organInternt(journalfoertDokumentInfo.isErOrganinternt())
 					.dokumentFerdigDato(journalfoertDokumentInfo.getFerdigDato() == null ? null : journalfoertDokumentInfo.getFerdigDato().toGregorianCalendar().getTime())
 					.tilleggsopplysninger(convertNoekkelVerdiSettToMap(journalfoertDokumentInfo.getTilleggsopplysninger()))
 					.build();

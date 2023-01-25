@@ -114,18 +114,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "tittel", length = 500)
 	private String tittel;
 
-	@Column(name = "innskr_partsinnsyn", length = 1)
-	@Type(type = "org.hibernate.type.TrueFalseType")
-	private Boolean innskrenketPartsinnsyn;
-
-	@Column(name = "innskr_partsinnsyn_tredjepart", length = 1)
-	@Type(type = "org.hibernate.type.TrueFalseType")
-	private Boolean innskrenketPartsinnsynFraTredjepart;
-
-	@Column(name = "organ_internt", length = 1)
-	@Type(type = "org.hibernate.type.TrueFalseType")
-	private Boolean organInternt;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "orig_journalpost_id")
 	private Journalpost originalJournalpost;
