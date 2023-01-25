@@ -43,9 +43,9 @@ public class SaksrelasjonUpdaterTest {
 
 		Journalpost journalpost = TestUtils.createJournalpost();
 
-		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, journalpost.getSaksrelasjon().getSakId());
+		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, journalpost.getSaksrelasjon().getSaknrfk());
 
-		assertThat(journalpost.getSaksrelasjon().getSakId(), is(oppdaterJournalpostRequest.getSak().getArkivsaksnummer()));
+		assertThat(journalpost.getSaksrelasjon().getSaknrfk(), is(oppdaterJournalpostRequest.getSak().getArkivsaksnummer()));
 		assertThat(journalpost.getSaksrelasjon().getFagsystem(), is(updater.mapArkivSakSystemToFagsystemCode(oppdaterJournalpostRequest.getSak().getArkivsaksystem())));
 		assertThat(changeTracker.getChanges(), hasSize(1));
 		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAK_APPLIKASJON).fraVerdi(null).tilVerdi(FagsystemCode.FS22.name()).build()));
@@ -60,7 +60,7 @@ public class SaksrelasjonUpdaterTest {
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
 
-		assertThat(journalpost.getSaksrelasjon().getSakId(), is(oppdaterJournalpostRequest.getSak().getArkivsaksnummer()));
+		assertThat(journalpost.getSaksrelasjon().getSaknrfk(), is(oppdaterJournalpostRequest.getSak().getArkivsaksnummer()));
 		assertThat(journalpost.getSaksrelasjon().getFagsystem(), is(updater.mapArkivSakSystemToFagsystemCode(oppdaterJournalpostRequest.getSak().getArkivsaksystem())));
 		assertThat(changeTracker.getChanges(), hasSize(3));
 		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAKSRELASJON_SAKID).fraVerdi(null).tilVerdi(SAK_ID).build()));
@@ -111,7 +111,7 @@ public class SaksrelasjonUpdaterTest {
 		Journalpost journalpost = TestUtils.createJournalpost();
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, createSak.getFagsakId());
-		assertEquals(journalpost.getSaksrelasjon().getSakId(), createSak.getFagsakId());
+		assertEquals(journalpost.getSaksrelasjon().getSaknrfk(), createSak.getFagsakId());
 	}
 
 	@Test
@@ -119,11 +119,11 @@ public class SaksrelasjonUpdaterTest {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
 		Journalpost journalpost = TestUtils.createJournalpost();
-		journalpost.getSaksrelasjon().setSakId(null);
+		journalpost.getSaksrelasjon().setSaknrfk(null);
 
-		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, journalpost.getSaksrelasjon().getSakId());
+		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, journalpost.getSaksrelasjon().getSaknrfk());
 
-		assertThat(journalpost.getSaksrelasjon().getSakId(), is(oppdaterJournalpostRequest.getSak().getArkivsaksnummer()));
+		assertThat(journalpost.getSaksrelasjon().getSaknrfk(), is(oppdaterJournalpostRequest.getSak().getArkivsaksnummer()));
 		assertThat(journalpost.getSaksrelasjon().getFagsystem(), is(updater.mapArkivSakSystemToFagsystemCode(oppdaterJournalpostRequest.getSak().getArkivsaksystem())));
 		assertThat(changeTracker.getChanges(), hasSize(2));
 		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAKSRELASJON_SAKID).fraVerdi(null).tilVerdi(SAK_ID).build()));
@@ -139,7 +139,7 @@ public class SaksrelasjonUpdaterTest {
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
 
-		assertThat(journalpost.getSaksrelasjon().getSakId(), is(oppdaterJournalpostRequest.getSak().getArkivsaksnummer()));
+		assertThat(journalpost.getSaksrelasjon().getSaknrfk(), is(oppdaterJournalpostRequest.getSak().getArkivsaksnummer()));
 		assertThat(journalpost.getSaksrelasjon().getFagsystem(), is(updater.mapArkivSakSystemToFagsystemCode(oppdaterJournalpostRequest.getSak().getArkivsaksystem())));
 		assertThat(changeTracker.getChanges(), hasSize(2));
 		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAKSRELASJON_FAGSYSTEM).fraVerdi(null).tilVerdi(FagsystemCode.FS22.name()).build()));

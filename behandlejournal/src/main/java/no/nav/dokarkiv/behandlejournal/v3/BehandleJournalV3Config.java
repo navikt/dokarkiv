@@ -13,9 +13,6 @@ import org.springframework.context.annotation.Profile;
 
 import javax.xml.ws.Endpoint;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Import(BehandleJournalSporingMapper.class)
 @Configuration
 @ComponentScan

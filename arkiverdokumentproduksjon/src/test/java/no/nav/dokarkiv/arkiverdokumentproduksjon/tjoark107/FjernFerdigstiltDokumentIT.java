@@ -108,7 +108,7 @@ public class FjernFerdigstiltDokumentIT extends AbstractArkiverdokumentproduksjo
 				.fagomrade(FagomradeCode.PEN)
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
-								.sakId("1")
+								.saknrfk("1")
 								.fagsystem(FagsystemCode.PEN)
 								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.build())

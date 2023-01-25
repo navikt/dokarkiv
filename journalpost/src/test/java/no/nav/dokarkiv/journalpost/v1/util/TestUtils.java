@@ -139,7 +139,7 @@ public class TestUtils {
 				.mottattDato(Date.from(LOCAL_DATE_TIME.toInstant(ZoneOffset.UTC)))
 				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
 				.saksrelasjon(Saksrelasjon.builder()
-						.sakId(SAK_ID)
+						.saknrfk(SAK_ID)
 						.fagsystem(FS22)
 						.build())
 				.build();
@@ -166,7 +166,7 @@ public class TestUtils {
 				.mottattDato(MOTTAT_DATO)
 				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
 				.saksrelasjon(Saksrelasjon.builder()
-						.sakId(SAK_ID)
+						.saknrfk(SAK_ID)
 						.fagsystem(FS22)
 						.build())
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)

@@ -6,9 +6,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Implementation of BehandleJournalFaultInfoPopulator
- * 
- * @author Joakim Bjørnstad, Visma Consulting
- * 
  */
 @Component
 public class BehandleJournalV3FaultInfoPopulator extends AbstractJournalFaultInfoPopulator {

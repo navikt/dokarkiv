@@ -203,7 +203,7 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 				.avsenderMottaker("avsender")
 				.brukere(getBrukerBuilder().brukerId("01054512313").build())
 				.saksrelasjon(
-						getSaksrelasjonBuilder().sakId("1").fagsystem(FagsystemCode.FS22).build())
+						getSaksrelasjonBuilder().saknrfk("1").fagsystem(FagsystemCode.FS22).build())
 				.innhold("innhold")
 				.journalpostType(JournalpostTypeCode.U)
 				.utsendingskanal(UtsendingsKanalCode.EESSI)

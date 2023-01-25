@@ -118,7 +118,7 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 				.opprettetKildeNavn("test")
 				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
 						.fagsystem(FAGSYSTEM_CODE)
-						.sakId(SAKID)
+						.saknrfk(SAKID)
 						.opprettetKildeNavn("test")
 						.build())
 				.brukere(BrukerBuilder.getBrukerBuilder()

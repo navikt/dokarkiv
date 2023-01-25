@@ -2,8 +2,6 @@ package no.nav.dokarkiv.behandlejournal.v3;
 
 import no.nav.dokarkiv.behandlejournal.TestBehandleConfig;
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
-import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
@@ -24,11 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.transaction.Transactional;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.IOException;
-import java.util.GregorianCalendar;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -65,22 +59,6 @@ public abstract class AbstractBehandleJournalV3Itest {
 				.userId("itestuser")
 				.componentId("itest")
 				.build());
-	}
-
-	/**
-	 * A testable XMLGregorianCalendar. Uses DateProvider to configure dates.
-	 *
-	 * @return
-	 */
-	protected XMLGregorianCalendar getXmlTimestamp() {
-		GregorianCalendar calendar = new GregorianCalendar();
-		// Setting the date explicitly to make it testable
-		calendar.setTime(DateProvider.getToday());
-		try {
-			return DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
-		} catch (DatatypeConfigurationException e) {
-			throw new ApplicationException("Unable to create XMLGregorianCalendar", e);
-		}
 	}
 
 	protected void abacDeny() {

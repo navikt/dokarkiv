@@ -106,7 +106,7 @@ public class TestDataUtils {
 				.journalDato(journalDato.toDate())
 				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
 						.opprettetKildeNavn("test")
-						.sakId(saksnr)
+						.saknrfk(saksnr)
 						.fagsystem(fagsystem == null ? TestDataUtils.fagsystem : fagsystem)
 						.feilregistrert(isFeilregistrert)
 						.build())
@@ -139,7 +139,7 @@ public class TestDataUtils {
 				.tilleggsopplysninger(tilleggsopplysninger)
 				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
 						.opprettetKildeNavn("test")
-						.sakId(saksNr)
+						.saknrfk(saksNr)
 						.fagsystem(fagsystem)
 						.feilregistrert(isFeilregistrert)
 						.build())
@@ -212,7 +212,7 @@ public class TestDataUtils {
 
 		Saksrelasjon saksrelasjon = Saksrelasjon
 				.builder()
-				.sakId("test")
+				.saknrfk("test")
 				.fagsystem(FagsystemCode.PEN)
 				.feilregistrert(false)
 				.journalpost(journalpost)

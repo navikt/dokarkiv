@@ -187,7 +187,7 @@ public class JdbcAbacSecurityRepositoryTest {
 
 	private Saksrelasjon createSaksrelasjon(String saksNummer) {
 		return getSaksrelasjonBuilder()
-				.sakId(saksNummer)
+				.saknrfk(saksNummer)
 				.fagsystem(FagsystemCode.PEN)
 				.feilregistrert(false)
 				.opprettetKildeNavn("NAV")

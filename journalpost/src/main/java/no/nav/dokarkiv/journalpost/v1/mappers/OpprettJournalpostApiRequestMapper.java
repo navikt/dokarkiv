@@ -194,7 +194,7 @@ public class OpprettJournalpostApiRequestMapper {
 	private void addSaksrelasjon(Journalpost journalpost, OpprettJournalpostRequest request, String sakId) {
 		if (request.getSak() != null) {
 			journalpost.setSaksrelasjon(Saksrelasjon.builder()
-					.sakId(mapSakId(request, sakId))
+					.saknrfk(mapSakId(request, sakId))
 					.fagsystem(mapFagsystem(request))
 					.journalpost(journalpost)
 					.build());

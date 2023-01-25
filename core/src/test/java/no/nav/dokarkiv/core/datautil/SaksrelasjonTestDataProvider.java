@@ -1,10 +1,10 @@
 package no.nav.dokarkiv.core.datautil;
 
-import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
-
 import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+
+import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
 
 /**
  * Provides helpers for building SaksRelasjon-instances
@@ -25,7 +25,7 @@ public final class SaksrelasjonTestDataProvider {
 	public static SaksrelasjonBuilder createSaksrelasjon() {
 		return SaksrelasjonBuilder
 				.getSaksrelasjonBuilder()
-				.sakId(SAK_ID)
+				.saknrfk(SAK_ID)
 				.fagsystem(SAK_FAGSYSTEM)
 				.feilregistrert(false)
 				.opprettetKildeNavn(SAK_KILDE_NAVN);
@@ -34,7 +34,7 @@ public final class SaksrelasjonTestDataProvider {
 	public static SaksrelasjonBuilder createSaksrelasjon(boolean feilregistrert) {
 		return SaksrelasjonBuilder
 				.getSaksrelasjonBuilder()
-				.sakId(SAK_ID)
+				.saknrfk(SAK_ID)
 				.fagsystem(SAK_FAGSYSTEM)
 				.feilregistrert(feilregistrert)
 				.opprettetKildeNavn(SAK_KILDE_NAVN);
@@ -42,7 +42,7 @@ public final class SaksrelasjonTestDataProvider {
 
 	public static Saksrelasjon createPENSaksrelasjon() {
 		return getSaksrelasjonBuilder()
-				.sakId(PEN_SAK_ID)
+				.saknrfk(PEN_SAK_ID)
 				.fagsystem(FagsystemCode.PEN)
 				.opprettetKildeNavn("itest")
 				.build();
