@@ -17,10 +17,12 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 
+import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_FAGSYSTEM;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_SAKID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_APPLIKASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.PENSJON_FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestSak;
@@ -43,9 +45,10 @@ public class SaksrelasjonUpdaterTest {
 
 		Journalpost journalpost = TestUtils.createJournalpost();
 
-		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, journalpost.getSaksrelasjon().getSaknrfk());
+		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, SAK_ID);
 
-		assertThat(journalpost.getSaksrelasjon().getSaknrfk(), is(oppdaterJournalpostRequest.getSak().getArkivsaksnummer()));
+		assertThat(journalpost.getSaksrelasjon().getSakId(), is(SAK_ID));
+		assertThat(journalpost.getSaksrelasjon().getSaknrfk(), is(SAK_ID.toString()));
 		assertThat(journalpost.getSaksrelasjon().getFagsystem(), is(updater.mapArkivSakSystemToFagsystemCode(oppdaterJournalpostRequest.getSak().getArkivsaksystem())));
 		assertThat(changeTracker.getChanges(), hasSize(1));
 		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAK_APPLIKASJON).fraVerdi(null).tilVerdi(FagsystemCode.FS22.name()).build()));
@@ -60,10 +63,11 @@ public class SaksrelasjonUpdaterTest {
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
 
-		assertThat(journalpost.getSaksrelasjon().getSaknrfk(), is(oppdaterJournalpostRequest.getSak().getArkivsaksnummer()));
+		assertThat(journalpost.getSaksrelasjon().getSakId(), is(SAK_ID));
+		assertThat(journalpost.getSaksrelasjon().getSaknrfk(), is(SAK_ID.toString()));
 		assertThat(journalpost.getSaksrelasjon().getFagsystem(), is(updater.mapArkivSakSystemToFagsystemCode(oppdaterJournalpostRequest.getSak().getArkivsaksystem())));
 		assertThat(changeTracker.getChanges(), hasSize(3));
-		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAKSRELASJON_SAKID).fraVerdi(null).tilVerdi(SAK_ID).build()));
+		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAKSRELASJON_SAKID).fraVerdi(null).tilVerdi(SAK_ID.toString()).build()));
 		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAKSRELASJON_FAGSYSTEM).fraVerdi(null).tilVerdi(FagsystemCode.FS22.name()).build()));
 		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAK_APPLIKASJON).fraVerdi(null).tilVerdi(FagsystemCode.FS22.name()).build()));
 	}
@@ -71,7 +75,7 @@ public class SaksrelasjonUpdaterTest {
 	@Test
 	public void shouldUpdateSaksrelasjonIfFagSakAndFagsaksystemIsPP01() {
 		Sak createSak = Sak.builder()
-				.fagsakId(FAGSAK_ID)
+				.fagsakId(PENSJON_FAGSAK_ID)
 				.sakstype(Sakstype.FAGSAK)
 				.fagsaksystem(Fagsaksystem.PP01)
 				.build();
@@ -80,6 +84,8 @@ public class SaksrelasjonUpdaterTest {
 		Journalpost journalpost = TestUtils.createJournalpost();
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
+		assertEquals(parseLong(PENSJON_FAGSAK_ID), journalpost.getSaksrelasjon().getSakId());
+		assertEquals(PENSJON_FAGSAK_ID, journalpost.getSaksrelasjon().getSaknrfk());
 		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.PEN);
 	}
 
@@ -110,8 +116,9 @@ public class SaksrelasjonUpdaterTest {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
 		Journalpost journalpost = TestUtils.createJournalpost();
 
-		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, createSak.getFagsakId());
-		assertEquals(journalpost.getSaksrelasjon().getSaknrfk(), createSak.getFagsakId());
+		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, SAK_ID);
+		assertEquals(SAK_ID, journalpost.getSaksrelasjon().getSakId());
+		assertEquals(SAK_ID.toString(), journalpost.getSaksrelasjon().getSaknrfk());
 	}
 
 	@Test
@@ -119,14 +126,16 @@ public class SaksrelasjonUpdaterTest {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
 		Journalpost journalpost = TestUtils.createJournalpost();
+		journalpost.getSaksrelasjon().setSakId(null);
 		journalpost.getSaksrelasjon().setSaknrfk(null);
 
-		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, journalpost.getSaksrelasjon().getSaknrfk());
+		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
 
-		assertThat(journalpost.getSaksrelasjon().getSaknrfk(), is(oppdaterJournalpostRequest.getSak().getArkivsaksnummer()));
+		assertThat(journalpost.getSaksrelasjon().getSakId(), is(SAK_ID));
+		assertThat(journalpost.getSaksrelasjon().getSaknrfk(), is(SAK_ID.toString()));
 		assertThat(journalpost.getSaksrelasjon().getFagsystem(), is(updater.mapArkivSakSystemToFagsystemCode(oppdaterJournalpostRequest.getSak().getArkivsaksystem())));
 		assertThat(changeTracker.getChanges(), hasSize(2));
-		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAKSRELASJON_SAKID).fraVerdi(null).tilVerdi(SAK_ID).build()));
+		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAKSRELASJON_SAKID).fraVerdi(null).tilVerdi(SAK_ID.toString()).build()));
 		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAK_APPLIKASJON).fraVerdi(null).tilVerdi(FagsystemCode.FS22.name()).build()));
 	}
 
@@ -139,7 +148,8 @@ public class SaksrelasjonUpdaterTest {
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
 
-		assertThat(journalpost.getSaksrelasjon().getSaknrfk(), is(oppdaterJournalpostRequest.getSak().getArkivsaksnummer()));
+		assertThat(journalpost.getSaksrelasjon().getSakId(), is(SAK_ID));
+		assertThat(journalpost.getSaksrelasjon().getSaknrfk(), is(SAK_ID.toString()));
 		assertThat(journalpost.getSaksrelasjon().getFagsystem(), is(updater.mapArkivSakSystemToFagsystemCode(oppdaterJournalpostRequest.getSak().getArkivsaksystem())));
 		assertThat(changeTracker.getChanges(), hasSize(2));
 		assertThat(changeTracker.getChanges(), hasItem(ArkivElementEndringTO.builder().arkivElement(SAKSRELASJON_FAGSYSTEM).fraVerdi(null).tilVerdi(FagsystemCode.FS22.name()).build()));
@@ -158,7 +168,7 @@ public class SaksrelasjonUpdaterTest {
 
 		Journalpost journalpost = TestUtils.createJournalpost();
 
-		updater.updateFields(journalpost, oppdaterJournalpostRequest, createSak.getFagsakId());
+		updater.updateFields(journalpost, oppdaterJournalpostRequest, SAK_ID);
 
 		assertThat(journalpost.getSaksrelasjon().getEndretAvNavn(), is("Test Testesen"));
 	}

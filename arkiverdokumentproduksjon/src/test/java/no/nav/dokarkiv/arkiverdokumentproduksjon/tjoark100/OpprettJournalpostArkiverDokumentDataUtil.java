@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
-import static java.util.Arrays.asList;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -23,6 +21,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import static java.util.Arrays.asList;
 
 /**
  * Util for creating Journalpost for the OpprettJournalpostArkiverDokument
@@ -50,7 +50,7 @@ public class OpprettJournalpostArkiverDokumentDataUtil {
 	protected static final String PERSONIDENT = "22027838743";
 	protected static final String EKSTERNPART_NAVN = "Jippi Hurra";
 	protected static final String FAGSYSTEMKODE = FagsystemCode.FS22.name();
-	protected static final String SAKSID = "312";
+	protected static final Long SAKSID = 312L;
 	protected static final String BRUKERID = "312273912";
 	protected static final BrukerTypeCode BRUKERTYPE = BrukerTypeCode.PERSON;
 	protected static final Date DATO_DOKUMENT = new Date(1234567890);
@@ -81,7 +81,7 @@ public class OpprettJournalpostArkiverDokumentDataUtil {
 	protected static Saksrelasjon createSaksrelasjon() {
 		Saksrelasjon saksrelasjon = new Saksrelasjon();
 		saksrelasjon.setFagsystem(FAGSYSTEMKODE);
-		saksrelasjon.setSaksnummer(SAKSID);
+		saksrelasjon.setSaksnummer(SAKSID.toString());
 		return saksrelasjon;
 	}
 

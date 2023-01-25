@@ -26,9 +26,6 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 public class Rjoark920IT extends AbstractHentjournalsakinfoItest {
 	private static final String HENTJOURNALSAKINFO_HENTDOKUMENT = "/hentjournalsakinfo/hentdokument/";
 	private static final String UUID = FilDetaljer.generateUuid();

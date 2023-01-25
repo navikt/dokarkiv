@@ -23,6 +23,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
@@ -162,6 +163,11 @@ public final class OppdaterJournalpostValidator {
 		}
 		if (sak.getArkivsaksystem() != null) {
 			throw new InputValideringFeiletException("Sak.arkivsaksystem skal ikke være satt dersom sakstype=FAGSAK");
+		}
+		if(FAGSAK == sak.getSakstype() && PP01 == sak.getFagsaksystem()) {
+			if(!isNumeric(sak.getFagsakId())) {
+				throw new InputValideringFeiletException("Sak.fagsakId skal være opprettet i PSAK og må være et numerisk heltall.");
+			}
 		}
 	}
 

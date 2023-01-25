@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
@@ -88,7 +89,7 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.innhold(journalpost.getInnhold())
 				.dokumentDato(journalpost.getDatoDokument() == null || journalpost.getDatoDokument()
-						.toGregorianCalendar() == null ? null : journalpost.getDatoDokument()
+																			   .toGregorianCalendar() == null ? null : journalpost.getDatoDokument()
 						.toGregorianCalendar().getTime())
 				.avsenderMottaker(journalpost.getAvsenderMottakerNavn())
 				.avsenderMottakerId(journalpost.getAvsenderMottakerId())
@@ -101,7 +102,7 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 		domainJournalpost.addBruker(Bruker.builder()
 				.brukerId(journalpost.getBruker() == null ? null : trim(journalpost.getBruker().getBrukerId()))
 				.brukerType(journalpost.getBruker() == null || journalpost.getBruker()
-						.getBrukerType() == null ? null : BrukerTypeCode.valueOf(journalpost.getBruker()
+																	   .getBrukerType() == null ? null : BrukerTypeCode.valueOf(journalpost.getBruker()
 						.getBrukerType()))
 				.build());
 	}
@@ -110,9 +111,9 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 	private void setSaksrelasjon(Journalpost domainJournalpost,
 								 no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.Journalpost journalpost) {
 		domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
+				.sakId(parseLong(journalpost.getSaksrelasjon().getSaksnummer()))
 				.saknrfk(journalpost.getSaksrelasjon().getSaksnummer())
-				.fagsystem(journalpost.getSaksrelasjon()
-						.getFagsystem() == null ? null : FagsystemCode.valueOf(journalpost.getSaksrelasjon()
+				.fagsystem(journalpost.getSaksrelasjon().getFagsystem() == null ? null : FagsystemCode.valueOf(journalpost.getSaksrelasjon()
 						.getFagsystem()))
 				.journalpost(domainJournalpost)
 				.build());

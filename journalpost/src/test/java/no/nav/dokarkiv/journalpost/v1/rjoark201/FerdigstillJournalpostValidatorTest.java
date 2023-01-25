@@ -136,6 +136,7 @@ public class FerdigstillJournalpostValidatorTest {
 	public void shouldThrowExceptionIfSaksrelasjonIsMissingSaksnummer() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.getSaksrelasjon().setSakId(null);
 		journalpost.getSaksrelasjon().setSaknrfk(null);
 
 		assertThrows(KanIkkeFerdigstilleException.class,

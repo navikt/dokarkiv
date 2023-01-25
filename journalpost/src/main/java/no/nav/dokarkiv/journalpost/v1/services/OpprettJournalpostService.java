@@ -101,7 +101,7 @@ public class OpprettJournalpostService {
 		}
 
 		Optional<Sak> sakOptional = hentSak(request);
-		String sakId = sakOptional.map(Sak::getSakId).map(String::valueOf).orElse(null);
+		Long sakId = sakOptional.map(Sak::getSakId).orElse(null);
 
 		Journalpost journalpost = opprettJournalpostApiRequestMapper.map(request, sakId);
 		defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_USER_NAME));

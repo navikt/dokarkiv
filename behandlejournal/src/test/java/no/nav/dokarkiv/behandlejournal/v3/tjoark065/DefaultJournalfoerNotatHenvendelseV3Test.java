@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.behandlejournal.v3.tjoark065;
 
-import no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -11,6 +10,7 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
@@ -51,12 +51,12 @@ public class DefaultJournalfoerNotatHenvendelseV3Test {
 	@Mock
 	private DokumentFilerDelegate dokumentFilerDelegateMock;
 	@Mock
-    private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermetMock;
 	@InjectMocks
 	private DefaultJournalfoerNotatHenvendelseV3 service;
 	private JournalfoerNotatHenvendelseRequest request;
 	private JournalfoerNotatHenvendelseResponse response;
-	private Journalpost journalpost,journalpostFerdigDato;
+	private Journalpost journalpost, journalpostFerdigDato;
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -161,7 +161,11 @@ public class DefaultJournalfoerNotatHenvendelseV3Test {
 				.avsenderMottaker("avsender")
 				.brukere(getBrukerBuilder().brukerId("01054512313").build())
 				.saksrelasjon(
-						SaksrelasjonBuilder.getSaksrelasjonBuilder().saknrfk("1").fagsystem(FagsystemCode.FS22).build())
+						Saksrelasjon.builder()
+								.sakId(1L)
+								.saknrfk("1")
+								.fagsystem(FagsystemCode.FS22)
+								.build())
 				.signatur(true)
 				.innhold("innhold")
 				.mottattDato(new Date())

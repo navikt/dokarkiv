@@ -62,6 +62,7 @@ public class DefaultOpprettJournalpostValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfNoSaksIDOnJournalpostIsNull() {
+		journalpost.getSaksrelasjon().setSakId(null);
 		journalpost.getSaksrelasjon().setSaknrfk(null);
 
 		assertThrows(InvalidArgumentException.class,
@@ -300,6 +301,7 @@ public class DefaultOpprettJournalpostValidatorTest {
 		return getJournalpostBuilder()
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
+								.sakId(1L)
 								.saknrfk("1")
 								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.fagsystem(FagsystemCode.FS22).build())
