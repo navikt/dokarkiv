@@ -28,7 +28,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,11 +38,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureDataJpa
@@ -117,10 +118,10 @@ public abstract class AbstractRestIT {
 
 	protected HttpHeaders createHeadersWithUserAndServiceUserToken() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + openAmToken(PERSON_USER_ID));
+		headers.setContentType(APPLICATION_JSON);
+		headers.setBearerAuth(openAmToken(PERSON_USER_ID));
 		headers.add(NAV_CONSUMER_TOKEN, BEARER + restStsToken(SERVICE_USER_ID));
-		headers.add(NavHeaders.NAV_CALL_ID, "itest");
+		headers.add(NAV_CALL_ID, "itest");
 		return headers;
 	}
 
@@ -130,10 +131,10 @@ public abstract class AbstractRestIT {
 
 	protected HttpHeaders createHeadersWithUserAndServiceUserTokenAndConsumerId(String consumerId) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(openAmToken(PERSON_USER_ID));
 		headers.add(NAV_CONSUMER_TOKEN, BEARER + restStsToken(SERVICE_USER_ID));
-		headers.add(NavHeaders.NAV_CALL_ID, "Nav-CallId");
+		headers.add(NAV_CALL_ID, "Nav-CallId");
 		headers.add(NavHeaders.NAV_CONSUMER_ID, consumerId);
 		return headers;
 	}
@@ -144,22 +145,22 @@ public abstract class AbstractRestIT {
 
 	protected HttpHeaders createHeadersWithServiceUserToken(String serviceUserId) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + restStsToken(serviceUserId));
-		headers.add(NavHeaders.NAV_CALL_ID, "itest");
+		headers.setContentType(APPLICATION_JSON);
+		headers.setBearerAuth(restStsToken(serviceUserId));
+		headers.add(NAV_CALL_ID, "itest");
 		return headers;
 	}
 
 	protected HttpHeaders createHeadersWithServiceUserTokenAndUserIdHeader(String serviceUserId, String userId) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + restStsToken(serviceUserId));
-		headers.add(NavHeaders.NAV_CALL_ID, "itest");
+		headers.setContentType(APPLICATION_JSON);
+		headers.setBearerAuth(restStsToken(serviceUserId));
+		headers.add(NAV_CALL_ID, "itest");
 		headers.add(NavHeaders.NAV_USER_ID, userId);
 		return headers;
 	}
 
-	protected HttpHeaders createHeadersWithAksjon() throws IOException {
+	protected HttpHeaders createHeadersWithAksjon() {
 		HttpHeaders httpHeaders = createHeadersWithUserAndServiceUserToken();
 		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER, AKSJON_BRUKER);
 		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER, AKSJON_HJEMMEL);
@@ -171,15 +172,13 @@ public abstract class AbstractRestIT {
 	protected Journalpost saveJournalpost(Journalpost journalpost) {
 		Journalpost newJp = journalpostTestRepository.persist(journalpost);
 
-		newJp.getJournalpostDokumentInfoRelasjoner().forEach(rel -> {
-			rel.getDokumentInfo().getFildetaljerListe().forEach(filDetaljer -> {
-				if (Objects.isNull(dokumentFilTestRepository.findByFilUuid(filDetaljer.getFilUuid()))) {
-					DokumentFil dokumentFil = filDetaljer.createDokumentFil();
-					dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-					dokumentFilTestRepository.persist(dokumentFil);
-				}
-			});
-		});
+		newJp.getJournalpostDokumentInfoRelasjoner().forEach(rel -> rel.getDokumentInfo().getFildetaljerListe().forEach(filDetaljer -> {
+			if (Objects.isNull(dokumentFilTestRepository.findByFilUuid(filDetaljer.getFilUuid()))) {
+				DokumentFil dokumentFil = filDetaljer.createDokumentFil();
+				dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+				dokumentFilTestRepository.persist(dokumentFil);
+			}
+		}));
 		return newJp;
 	}
 

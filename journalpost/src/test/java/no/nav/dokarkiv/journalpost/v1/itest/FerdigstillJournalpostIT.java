@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
-	public void happyPathInngaaende() throws IOException {
+	public void happyPathInngaaende() {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
@@ -71,7 +70,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
-	public void happyPathInngaaendeForOndemand() throws IOException {
+	public void happyPathInngaaendeForOndemand() {
 		abacPermit();
 		Date datoJournal = new Date(System.currentTimeMillis() - 50000L);
 		Date datoSendtPrint = new Date(System.currentTimeMillis() - 20000L);
@@ -121,7 +120,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathUtgaaende() throws IOException {
+	public void happyPathUtgaaende() {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
@@ -153,7 +152,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 	}
 	@Test
-	public void happyPathUtgaaendeUtsendingsKanalL() throws IOException {
+	public void happyPathUtgaaendeUtsendingsKanalL() {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
@@ -189,7 +188,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathJournalstatusFSKanFerdigstilles() throws IOException {
+	public void happyPathJournalstatusFSKanFerdigstilles() {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
@@ -224,7 +223,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathNotat() throws IOException {
+	public void happyPathNotat() {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.N, JournalStatusCode.M).build();
@@ -258,7 +257,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldFailIfJournalpostIsNotMidlertidig() throws IOException {
+	public void shouldFailIfJournalpostIsNotMidlertidig() {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.E).build();
@@ -282,7 +281,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldFailIfRequestJournalfoerendeEnhetIsInvalid() throws IOException {
+	public void shouldFailIfRequestJournalfoerendeEnhetIsInvalid() {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
@@ -303,7 +302,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldFailIfJournalfEnhetInRequestIsInvalid() throws IOException {
+	public void shouldFailIfJournalfEnhetInRequestIsInvalid() {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
@@ -324,7 +323,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldFailIfRequestJournalpostIdIsInvalid() throws IOException {
+	public void shouldFailIfRequestJournalpostIdIsInvalid() {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
@@ -347,7 +346,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldFailIfMissingPaakrevdFelter() throws IOException {
+	public void shouldFailIfMissingPaakrevdFelter() {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
@@ -375,7 +374,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldSetNavUserIdHeaderSporingWhenServiceUserTokenAndNavUserIdHeaderIsSet() throws IOException {
+	public void shouldSetNavUserIdHeaderSporingWhenServiceUserTokenAndNavUserIdHeaderIsSet() {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();

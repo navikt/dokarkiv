@@ -14,8 +14,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
-
 import static java.lang.Long.parseLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,7 +27,7 @@ public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 	private static final String NY_TITTEL = "Ny tittel";
 
 	@Test
-	public void shouldEndreLogiskVedlegg() throws IOException {
+	public void shouldEndreLogiskVedlegg() {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
@@ -56,7 +54,7 @@ public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldLeggeTilLogiskVedlegg() throws IOException {
+	public void shouldLeggeTilLogiskVedlegg() {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
@@ -83,7 +81,7 @@ public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldSlettLogiskVedlegg() throws IOException {
+	public void shouldSlettLogiskVedlegg() {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
