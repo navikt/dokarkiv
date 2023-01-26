@@ -1,7 +1,9 @@
 package no.nav.dokarkiv.core.consumer.pdl;
 
-import no.nav.dokarkiv.core.exceptions.AzureTokenException;
+import no.nav.dokarkiv.core.consumer.azure.CacheAzureTokenClient;
+import no.nav.dokarkiv.core.exceptions.PdlTechnicalException;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
+import no.nav.dokarkiv.core.util.NavHeadersFilter;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -12,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.cache.CacheConfig.HISTORISKE_IDENTER;
@@ -29,12 +32,14 @@ public class PdlIdentConsumer implements IdentConsumer {
 
 	private final WebClient webClient;
 
-	public PdlIdentConsumer(WebClient webClient, DokarkivProperties dokarkivProperties,
-							PdlTokenCache pdlAzureTokenCache) {
+	public PdlIdentConsumer(WebClient webClient,
+							DokarkivProperties dokarkivProperties,
+							CacheAzureTokenClient pdlAzureTokenCache) {
 		this.webClient = webClient.mutate()
 				.baseUrl(dokarkivProperties.getEndpoints().getPdl().getUrl())
 				.defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.filter(new PdlWebClientAzureAuthentication(pdlAzureTokenCache))
+				.filter(new NavHeadersFilter())
+				.filter(new PdlWebClientAzureAuthentication(pdlAzureTokenCache, dokarkivProperties))
 				.build();
 	}
 
@@ -54,7 +59,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.block();
 
 		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-			return pdlResponse.getData().getHentIdenter().getIdenter().get(0).getIdent();
+			return isPdlResponseOrIdenterNull(pdlResponse) ? null : pdlResponse.getData().getHentIdenter().getIdenter().get(0).getIdent();
 		} else {
 			if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
 				throw new PersonIkkeFunnetException("Fant ikke aktørid for person i pdl.");
@@ -180,6 +185,12 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.build();
 	}
 
+	boolean isPdlResponseOrIdenterNull(PdlResponse pdlResponse) {
+		return Objects.isNull(pdlResponse.getData().getHentIdenter()) ||
+				Objects.isNull(pdlResponse.getData().getHentIdenter().getIdenter()) ||
+				pdlResponse.getData().getHentIdenter().getIdenter().isEmpty();
+	}
+
 	String validateFolkeregisterIdent(String ident) {
 		if (isBlank(ident)) {
 			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien er null eller blank.");
@@ -200,13 +211,13 @@ public class PdlIdentConsumer implements IdentConsumer {
 
 	private void handleError(Throwable error) {
 		if (error instanceof WebClientResponseException response && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
-			throw new AzureTokenException(
+			throw new PdlFunctionalException(
 					String.format("Kall mot pdl feilet funksjonelt med statuskode=%s Feilmelding=%s",
 							response.getRawStatusCode(),
 							response.getMessage()),
 					error);
 		} else {
-			throw new AzureTokenException(
+			throw new PdlTechnicalException(
 					String.format("Kall mot pdl feilet teknisk med feilmelding=%s", error.getMessage()),
 					error);
 		}

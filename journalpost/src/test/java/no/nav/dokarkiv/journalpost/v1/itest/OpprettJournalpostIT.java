@@ -590,7 +590,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldJournalfoereWhenTemUFOAndGenerellSak() throws IOException {
+	public void shouldJournalfoereWhenTemUFOAndGenerellSak() {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();

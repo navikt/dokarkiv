@@ -19,7 +19,7 @@
   "ABAC_ARKIV_V2_URL": "https://abac-arkiv-v2.dev.intern.nav.no/application/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp-q1.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-q1.dev.intern.nav.no/hentdokument",
-  "DOKARKIV_ENDPOINTS_SAF_URL": "https://saf-q1.dev.adeo.no/graphql",
+  "DOKARKIV_ENDPOINTS_SAF_URL": "https://saf-q1.dev.intern.nav.no/graphql",
   "DOKARKIV_ENDPOINTS_SAF_SCOPE": "api://dev-fss.teamdokumenthandtering.saf-q1/.default",
   "DOKARKIV_ENDPOINTS_PDL_SCOPE": "api://dev-fss.pdl.pdl-api-q1/.default",
   "DOKPRODMELLOMLAGER_PROJECTID": "teamdokumenthandteri-dev-2c5a",

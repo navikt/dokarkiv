@@ -27,7 +27,6 @@ public class CacheConfig {
 	public static final String REST_STS_CACHE = "RESTSTS";
 	public static final String HISTORISKE_IDENTER = "historiskeIdenterCache";
 	public static final String AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE = "azureClientCredentialGraphTokeCache";
-	public static final String TOKEN_FROM_REQUEST = "tokenFromRequest";
 	public static final String AZURE_HENT_AD_GRUPPER = "hentAdGrupperCache";
 
 	@Bean
@@ -55,10 +54,6 @@ public class CacheConfig {
 						.maximumSize(25000)
 						.build()),
 				new CaffeineCache(AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE, Caffeine.newBuilder()
-						.expireAfterWrite(50, MINUTES)
-						.maximumSize(10)
-						.build()),
-				new CaffeineCache(TOKEN_FROM_REQUEST, Caffeine.newBuilder()
 						.expireAfterWrite(50, MINUTES)
 						.maximumSize(10)
 						.build()),

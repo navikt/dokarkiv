@@ -1,22 +1,35 @@
 package no.nav.dokarkiv.core.consumer.pdl;
 
-import org.slf4j.MDC;
+import no.nav.dokarkiv.core.consumer.azure.CacheAzureTokenClient;
+import no.nav.dokarkiv.core.properties.DokarkivProperties;
+import org.apache.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import reactor.core.publisher.Mono;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
+import java.util.Optional;
 
-public record PdlWebClientAzureAuthentication(PdlTokenCache pdlTokenCache) implements ExchangeFilterFunction {
+import static no.nav.dokarkiv.core.NavHeaders.BEARER_TOKEN_PREFIX;
+
+public record PdlWebClientAzureAuthentication(CacheAzureTokenClient cacheAzureTokenClient,
+											  DokarkivProperties dokarkivProperties) implements ExchangeFilterFunction {
+
 	@Override
 	public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
-			return next.exchange(ClientRequest.from(request)
-					.headers(httpHeaders -> {
-						httpHeaders.setBearerAuth(pdlTokenCache.azureAccessToken());
-						httpHeaders.set(MDC_CALL_ID, MDC.get(MDC_CALL_ID));
-					})
-					.build());
-		}
+		String accessToken = accessTokenFromRequest(request);
+		return next.exchange(ClientRequest.from(request)
+				.headers(httpHeaders -> {
+					httpHeaders.setBearerAuth(cacheAzureTokenClient.getAndCacheAzureOnBehalfOfAndClientCredentialToken(accessToken, dokarkivProperties.getEndpoints().getPdl().getScope()));
+				})
+				.build());
+	}
+
+	private String accessTokenFromRequest(ClientRequest request) {
+		return Optional.ofNullable(request.headers().getFirst(HttpHeaders.AUTHORIZATION))
+				.filter(e -> e.startsWith(BEARER_TOKEN_PREFIX))
+				.map(e -> e.replaceFirst(BEARER_TOKEN_PREFIX, ""))
+				.orElse(null);
+	}
 }
