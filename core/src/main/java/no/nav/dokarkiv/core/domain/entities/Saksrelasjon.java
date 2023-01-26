@@ -52,6 +52,9 @@ public class Saksrelasjon extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "sak_nr_fk", nullable = false, length = 20)
 	private String saknrfk;
 
+	@Column(name = "sak_id", nullable = false)
+	private Long sakId;
+
 	@Column(name = "journalpost_id", nullable = false, insertable = false, updatable = false)
 	private Long journalpostId;
 
@@ -71,7 +74,7 @@ public class Saksrelasjon extends AbstractPersistentVersionedDomainObjectWithKil
 	private Journalpost journalpost;
 
 	/**
-	 * Defualt constructor.
+	 * Default constructor.
 	 */
 	public Saksrelasjon() {
 	}
@@ -107,6 +110,7 @@ public class Saksrelasjon extends AbstractPersistentVersionedDomainObjectWithKil
 
 	public void verifyMandatoryFieldsNotEndretAvNavn() {
 		verifyStringNotBlank(saknrfk, "sakId");
+		verifyFieldNotNull(sakId, "sakId");
 		verifyFieldNotNull(fagsystem, "fagsystem");
 	}
 }

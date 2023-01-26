@@ -19,6 +19,7 @@ public class SaksrelasjonBuilder extends Builder<Saksrelasjon> {
 	}
 	
 	private Long saksrelasjonId;
+	private Long sakId;
 	private String saknrfk;
 	private Boolean feilregistrert;
 	private String endretAvNavn;
@@ -27,6 +28,7 @@ public class SaksrelasjonBuilder extends Builder<Saksrelasjon> {
 	private String endretKildeNavn;
 	
 	public SaksrelasjonBuilder saksrelasjonId(Long value) { this.saksrelasjonId = value; return this; }
+	public SaksrelasjonBuilder sakId(Long value) { this.sakId = value; return this; }
 	public SaksrelasjonBuilder saknrfk(String value) { this.saknrfk = value; return this; }
 	public SaksrelasjonBuilder feilregistrert(Boolean value) { this.feilregistrert = value; return this; }
 	public SaksrelasjonBuilder endretAvNavn(String value) { this.endretAvNavn = value; return this; }
@@ -37,6 +39,7 @@ public class SaksrelasjonBuilder extends Builder<Saksrelasjon> {
 	@Override
 	public Saksrelasjon build() {
 		Saksrelasjon saksrelasjon = new Saksrelasjon(saksrelasjonId, 1);
+		saksrelasjon.setSakId(sakId);
 		saksrelasjon.setSaknrfk(saknrfk);
 		saksrelasjon.setFeilregistrert(feilregistrert);
 		saksrelasjon.setEndretAvNavn(endretAvNavn);

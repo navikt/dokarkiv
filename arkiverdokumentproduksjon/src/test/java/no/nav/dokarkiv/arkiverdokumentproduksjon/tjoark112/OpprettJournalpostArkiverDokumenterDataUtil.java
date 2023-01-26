@@ -50,7 +50,7 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 	protected static final String PERSONIDENT = "22027838743";
 	protected static final String EKSTERNPART_NAVN = "Jippi Hurra";
 	protected static final String FAGSYSTEMKODE = FagsystemCode.FS22.name();
-	protected static final String SAKSID = "312";
+	protected static final Long SAKSID = 312L;
 	protected static final String BRUKERID = "312273912";
 	protected static final BrukerTypeCode BRUKERTYPE = BrukerTypeCode.PERSON;
 	protected static final Date DATO_DOKUMENT = new Date(1234567890);
@@ -79,7 +79,7 @@ public class OpprettJournalpostArkiverDokumenterDataUtil {
 	protected static Saksrelasjon createSaksrelasjon() {
 		return new Saksrelasjon()
 				.withFagsystem(FAGSYSTEMKODE)
-				.withSaksnummer(SAKSID);
+				.withSaksnummer(SAKSID.toString());
 	}
 
 	private static no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.DokumentInfo createHovedDokumentInfo() {

@@ -47,7 +47,7 @@ public class BehandleJournalCommonDataUtil {
 	protected static final String REFERANSEID = "123";
 	protected static final String REFERANSEKODE = ReferanseTypeCode.SPOERSMAAL.name();
 	protected static final String FAGSYSTEMKODE = FagsystemCode.FS22.name();
-	protected static final String SAKSID = "312";
+	protected static final Long SAKSID = 312L;
 
 	public static NoekkelVerdiSett createTilleggsopplysninger() {
 		NoekkelVerdiSett noekkelVerdiSett = new NoekkelVerdiSett();
@@ -110,7 +110,7 @@ public class BehandleJournalCommonDataUtil {
 	protected static Sak createSak() {
 		Sak sak = new Sak();
 		sak.setFagsystemkode(FAGSYSTEMKODE);
-		sak.setSaksId(SAKSID);
+		sak.setSaksId(SAKSID.toString());
 		return sak;
 	}
 

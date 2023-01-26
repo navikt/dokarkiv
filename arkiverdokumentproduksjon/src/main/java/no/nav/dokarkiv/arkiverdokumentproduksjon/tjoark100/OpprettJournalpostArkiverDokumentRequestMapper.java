@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
 import static org.apache.commons.lang3.StringUtils.trim;
 
@@ -64,7 +65,7 @@ public class OpprettJournalpostArkiverDokumentRequestMapper {
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.innhold(journalpost.getInnhold())
 				.dokumentDato(journalpost.getDatoDokument() == null || journalpost.getDatoDokument()
-						.toGregorianCalendar() == null ? null : journalpost.getDatoDokument()
+																			   .toGregorianCalendar() == null ? null : journalpost.getDatoDokument()
 						.toGregorianCalendar()
 						.getTime())
 				.avsenderMottaker(journalpost.getAvsenderMottakerNavn())
@@ -80,7 +81,7 @@ public class OpprettJournalpostArkiverDokumentRequestMapper {
 		domainJournalpost.addBruker(Bruker.builder()
 				.brukerId(journalpost.getBruker() == null ? null : trim(journalpost.getBruker().getBrukerId()))
 				.brukerType(journalpost.getBruker() == null || journalpost.getBruker()
-						.getBrukerType() == null ? null : BrukerTypeCode.valueOf(journalpost.getBruker()
+																	   .getBrukerType() == null ? null : BrukerTypeCode.valueOf(journalpost.getBruker()
 						.getBrukerType()))
 				.build());
 	}
@@ -90,8 +91,8 @@ public class OpprettJournalpostArkiverDokumentRequestMapper {
 								 no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost journalpost) {
 		domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
 				.saknrfk(journalpost.getSaksrelasjon().getSaksnummer())
-				.fagsystem(journalpost.getSaksrelasjon()
-						.getFagsystem() == null ? null : FagsystemCode.valueOf(journalpost.getSaksrelasjon()
+				.sakId(parseLong(journalpost.getSaksrelasjon().getSaksnummer()))
+				.fagsystem(journalpost.getSaksrelasjon().getFagsystem() == null ? null : FagsystemCode.valueOf(journalpost.getSaksrelasjon()
 						.getFagsystem()))
 				.journalpost(domainJournalpost)
 				.build());

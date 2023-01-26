@@ -93,7 +93,7 @@ public class OppdaterJournalpostService {
 			backoff = @Backoff(delay = RETRY_DELAY, multiplier = RETRY_MULTIPLIER)
 	)
 	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
-		String sakId = null;
+		Long sakId = null;
 
 		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
@@ -140,7 +140,7 @@ public class OppdaterJournalpostService {
 
 
 	public void knyttTilAnnenSakOppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
-		String sakId = null;
+		Long sakId = null;
 
 		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
@@ -194,7 +194,7 @@ public class OppdaterJournalpostService {
 		}
 	}
 
-	private String identifiserEllerOpprettArkivsak(OppdaterJournalpostRequest request) {
+	private Long identifiserEllerOpprettArkivsak(OppdaterJournalpostRequest request) {
 		Sak sak = createSak(request);
 		List<Sak> saker = hentSakerRepository.finnSaker(SakSearchCriteria.builder()
 				.aktoerId(sak.getAktoerId())
@@ -204,9 +204,9 @@ public class OppdaterJournalpostService {
 				.fagsakNr(sak.getFagsakNr())
 				.build());
 		if (saker.isEmpty()) {
-			return hentSakerRepository.lagre(sak).getSakId().toString();
+			return hentSakerRepository.lagre(sak).getSakId();
 		} else {
-			return saker.stream().map(Sak::getSakId).max(Comparator.naturalOrder()).orElseThrow(UgyldigInputException::new).toString();
+			return saker.stream().map(Sak::getSakId).max(Comparator.naturalOrder()).orElseThrow(UgyldigInputException::new);
 		}
 	}
 

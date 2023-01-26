@@ -46,6 +46,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static java.lang.Long.parseLong;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OVERSTYR_INNSYN;
@@ -82,6 +83,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.PENSJON_FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
@@ -359,7 +361,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
-		assertEquals(saksrelasjon.getSaknrfk(), request.getSak().getArkivsaksnummer());
+		assertEquals(saksrelasjon.getSakId(), parseLong(ARKIVSAKSNUMMER));
+		assertEquals(saksrelasjon.getSaknrfk(), ARKIVSAKSNUMMER);
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
 	}
 
@@ -379,7 +382,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
-		assertEquals(saksrelasjon.getSaknrfk(), request.getSak().getArkivsaksnummer());
+		assertEquals(saksrelasjon.getSakId(), parseLong(ARKIVSAKSNUMMER));
+		assertEquals(saksrelasjon.getSaknrfk(), ARKIVSAKSNUMMER);
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
 	}
 
@@ -403,7 +407,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
-		assertEquals(saksrelasjon.getSaknrfk(), request.getSak().getArkivsaksnummer());
+		assertEquals(saksrelasjon.getSakId(), parseLong(ARKIVSAKSNUMMER));
+		assertEquals(saksrelasjon.getSaknrfk(), ARKIVSAKSNUMMER);
 		assertEquals(saksrelasjon.getFagsystem(), FagsystemCode.PEN);
 	}
 
@@ -434,6 +439,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(sak.getApplikasjon(), FS22.name());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
+		assertEquals(saksrelasjon.getSakId(), sak.getSakId());
 		assertEquals(saksrelasjon.getSaknrfk(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
 
@@ -474,6 +480,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(sakTestRepository.count(), 1);
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
+		assertEquals(saksrelasjon.getSakId(), sak.getSakId());
 		assertEquals(saksrelasjon.getSaknrfk(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
 	}
@@ -505,6 +512,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(sak.getApplikasjon(), Fagsaksystem.AO01.name());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
+		assertEquals(saksrelasjon.getSakId(), sak.getSakId());
 		assertEquals(saksrelasjon.getSaknrfk(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
 
@@ -723,9 +731,9 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(sakTestRepository.count(), 1);
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
+		assertEquals(saksrelasjon.getSakId(), sak.getSakId());
 		assertEquals(saksrelasjon.getSaknrfk(), sak.getSakId().toString());
 		assertEquals(saksrelasjon.getFagsystem(), FS22);
-
 	}
 
 	@Test
@@ -739,7 +747,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_TIL)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
-				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(PP01).build())
+				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(PENSJON_FAGSAK_ID).fagsaksystem(PP01).build())
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
@@ -748,12 +756,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
-		assertEquals(saksrelasjon.getSaknrfk(), request.getSak().getFagsakId());
+		assertEquals(saksrelasjon.getSakId(), parseLong(PENSJON_FAGSAK_ID));
+		assertEquals(saksrelasjon.getSaknrfk(), PENSJON_FAGSAK_ID);
 		assertEquals(saksrelasjon.getFagsystem(), FagsystemCode.PEN);
 
 		assertEquals(sakTestRepository.count(), sakRepositoryCount);
 	}
-
 
 	@Test
 	public void shouldFailOnFerdigstillingWhenMissingJournalfoerendeEnhet() throws IOException {
@@ -797,7 +805,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 						.idType(BrukerIdType.FNR)
 						.build())
 				.sak(Sak.builder()
-						.arkivsaksnummer(SAK_ID)
+						.arkivsaksnummer(SAK_ID.toString())
 						.arkivsaksystem(Arkivsaksystem.GSAK)
 						.build())
 				.dokumenter(singletonList(
@@ -990,7 +998,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.sak(Sak.builder()
 						.sakstype(Sakstype.FAGSAK)
 						.fagsaksystem(PP01)
-						.fagsakId(FAGSAK_ID)
+						.fagsakId(PENSJON_FAGSAK_ID)
 						.build())
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.FNR)

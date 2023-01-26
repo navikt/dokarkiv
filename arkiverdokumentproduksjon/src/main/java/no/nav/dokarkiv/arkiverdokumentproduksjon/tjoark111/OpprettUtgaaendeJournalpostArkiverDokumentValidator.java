@@ -65,6 +65,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentValidator {
 			return;
 		}
 
+		addMessageIfTrue(saksrelasjon.getSakId() == null, message, "Saksrelasjon.Saksnummer");
 		addMessageIfTrue(saksrelasjon.getSaknrfk() == null, message, "Saksrelasjon.Saksnummer");
 		addMessageIfTrue(saksrelasjon.getFagsystem() == null, message, "Saksrelasjon.Fagsystem");
 	}

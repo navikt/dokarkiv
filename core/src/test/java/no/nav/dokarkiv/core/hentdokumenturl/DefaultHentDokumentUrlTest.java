@@ -117,7 +117,7 @@ public class DefaultHentDokumentUrlTest {
 	 */
 	@Test
 	public void shouldGetDokumentUrlForOnDemand() {
-		Journalpost journalpost = createJournalPost("10", SYFO, FIL_UUID, FIL_UUID_SLADDET);
+		Journalpost journalpost = createJournalpost("10", SYFO, FIL_UUID, FIL_UUID_SLADDET);
 		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		HentDokumentUrlResponse response = hentDokumentUrl.hentDokumentUrl(request);
@@ -133,7 +133,7 @@ public class DefaultHentDokumentUrlTest {
 	 */
 	@Test
 	public void shouldGetDokumentUrlForDokumentInDB() {
-		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
+		Journalpost journalpost = createJournalpost(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
@@ -148,7 +148,7 @@ public class DefaultHentDokumentUrlTest {
 
 	@Test
 	public void shouldGetSkjermetDokumentUrlForDokumentInDB() {
-		Journalpost journalpost = createJournalPostArkivVariantSkjermet(null, null, FIL_UUID, FIL_UUID_SLADDET);
+		Journalpost journalpost = createJournalpostArkivVariantSkjermet(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID_SLADDET)).thenReturn(new DokumentFil());
@@ -164,7 +164,7 @@ public class DefaultHentDokumentUrlTest {
 	@Test
 	public void shouldThrowDokumentNotFoundForKassertDokument() {
 
-		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
+		Journalpost journalpost = createJournalpost(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
@@ -180,7 +180,7 @@ public class DefaultHentDokumentUrlTest {
 	public void shouldCreateDokumentUrlInfoWithCustomTimeToLive() {
 		long timeToLive = 60;
 		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(
-				createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET)));
+				createJournalpost(null, null, FIL_UUID, FIL_UUID_SLADDET)));
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
 
 		request = new HentDokumentUrlRequest(JOURNALPOST_ID, FIL_UUID, timeToLive);
@@ -194,7 +194,7 @@ public class DefaultHentDokumentUrlTest {
 
 	@Test
 	public void shouldThrowExceptionForMissingFilDetaljer() {
-		Journalpost journalpost = createJournalPost(null, null, "562b166e-5f9f", FIL_UUID_SLADDET);
+		Journalpost journalpost = createJournalpost(null, null, "562b166e-5f9f", FIL_UUID_SLADDET);
 		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		assertInvalidFilUuidExceptionThrown(FIL_UUID);
@@ -202,7 +202,7 @@ public class DefaultHentDokumentUrlTest {
 
 	@Test
 	public void shouldThrowExceptionForMissingDokumentFil() {
-		Journalpost journalpost = createJournalPost(null, null, FIL_UUID, FIL_UUID_SLADDET);
+		Journalpost journalpost = createJournalpost(null, null, FIL_UUID, FIL_UUID_SLADDET);
 		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(null);
@@ -250,7 +250,7 @@ public class DefaultHentDokumentUrlTest {
 		assertThat(servletUrl, containsString("&mimetype="));
 	}
 
-	private Journalpost createJournalPost(String onDemandId, OnDemandInstansCode onDemandInstans, String filUuid, String filUuidSladdet) {
+	private Journalpost createJournalpost(String onDemandId, OnDemandInstansCode onDemandInstans, String filUuid, String filUuidSladdet) {
 		return JournalpostBuilder.getJournalpostBuilder()
 				.journalpostId(1L)
 				.journalStatus(JournalStatusCode.J)
@@ -279,7 +279,7 @@ public class DefaultHentDokumentUrlTest {
 				.build();
 	}
 
-	private Journalpost createJournalPostArkivVariantSkjermet(String onDemandId, OnDemandInstansCode onDemandInstans, String filUuid, String filUuidSladdet) {
+	private Journalpost createJournalpostArkivVariantSkjermet(String onDemandId, OnDemandInstansCode onDemandInstans, String filUuid, String filUuidSladdet) {
 		return JournalpostBuilder.getJournalpostBuilder()
 				.journalpostId(1L)
 				.journalStatus(JournalStatusCode.J)

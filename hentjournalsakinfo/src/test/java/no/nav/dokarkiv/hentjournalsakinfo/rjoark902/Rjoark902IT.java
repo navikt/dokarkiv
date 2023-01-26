@@ -55,7 +55,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	private static final MottaksKanalCode MOTTAKSKANAL = MottaksKanalCode.NAV_NO;
 	private static final UtsendingsKanalCode UTSENDINGSKANAL = UtsendingsKanalCode.NAV_NO;
 	private static final SkjermingTypeCode SKJERMINGTYPE = SkjermingTypeCode.POL;
-	private static final String SAKID = "6293";
+	private static final Long SAKID = 6293L;
 	private static final FagsystemCode SAKRELASJONFAGSYSTEM = FagsystemCode.FS22;
 	private static final Boolean SAKFEILREGISTRERT = true;
 	private static final Date LESTDATO = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -99,7 +99,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		assertEquals(UTSENDINGSKANAL, responseJournalpost.getUtsendingskanal());
 		assertEquals(JOURNALPOST_TYPE_CODE, responseJournalpost.getJournalposttype());
 
-		assertEquals(SAKID, responseJournalpost.getSaksrelasjon().getSakId());
+		assertEquals(SAKID.toString(), responseJournalpost.getSaksrelasjon().getSakId());
 		assertEquals(SAKRELASJONFAGSYSTEM, responseJournalpost.getSaksrelasjon().getFagsystem());
 		assertEquals(SAKFEILREGISTRERT, responseJournalpost.getSaksrelasjon().getFeilregistrert());
 		assertEquals(ANTALL_RETUR, responseJournalpost.getAntallRetur());
@@ -177,7 +177,8 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		journalpost.setJournalposttype(JOURNALPOST_TYPE_CODE);
 		journalpost.setLestDato(OffsetDateTime.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault())));
 
-		journalpost.getSaksrelasjon().setSaknrfk(SAKID);
+		journalpost.getSaksrelasjon().setSakId(SAKID);
+		journalpost.getSaksrelasjon().setSaknrfk(SAKID.toString());
 		journalpost.getSaksrelasjon().setFeilregistrert(SAKFEILREGISTRERT);
 		journalpost.getSaksrelasjon().setFagsystem(SAKRELASJONFAGSYSTEM);
 

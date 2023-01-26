@@ -26,6 +26,7 @@ public class SaksrelasjonTest {
 	@Test
 	public void shouldThrowExceptionForMissingFagsystem() {
 		Saksrelasjon saksrelasjon = getSaksrelasjonBuilder()
+				.sakId(123L)
 				.saknrfk("123")
 				.build();
 
@@ -36,6 +37,7 @@ public class SaksrelasjonTest {
 	public void shouldThrowExceptionForMissingEndretAvNavn() {
 		Saksrelasjon saksrelasjon = getSaksrelasjonBuilder()
 				.saksrelasjonId(10L)
+				.sakId(123L)
 				.saknrfk("123")
 				.fagsystem(FagsystemCode.FS22)
 				.build();

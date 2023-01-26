@@ -143,6 +143,7 @@ public class FerdigstillJournalpostValidator {
 
 	private void verifyPaakrevdeFelterSaksrelasjon(Saksrelasjon saksrelasjon, List<String> manglendePaakrevdeFelter) {
 		if (saksrelasjon != null) {
+			verifyFieldNotNull(saksrelasjon.getSakId(), "Saksrelasjon.sakId", manglendePaakrevdeFelter);
 			verifyStringNotBlank(saksrelasjon.getSaknrfk(), "Saksrelasjon.sakId", manglendePaakrevdeFelter);
 			verifyFieldNotNull(saksrelasjon.getFagsystem(), "Saksrelasjon.fagsystem", manglendePaakrevdeFelter);
 		}

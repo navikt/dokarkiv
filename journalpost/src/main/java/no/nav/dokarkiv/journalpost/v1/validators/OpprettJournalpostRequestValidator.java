@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -176,7 +178,7 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateSak(Sak sak, Bruker bruker, String tema) {
-		if (Sakstype.FAGSAK.equals(sak.getSakstype())) {
+		if (FAGSAK.equals(sak.getSakstype())) {
 			validateFagsak(sak, bruker, tema);
 		}
 
@@ -207,6 +209,11 @@ public class OpprettJournalpostRequestValidator {
 		}
 		if (sak.getArkivsaksystem() != null) {
 			throw new InputValideringFeiletException("Sak.arkivsaksystem skal ikke være satt dersom sakstype=FAGSAK");
+		}
+		if(FAGSAK == sak.getSakstype() && PP01 == sak.getFagsaksystem()) {
+			if(!isNumeric(sak.getFagsakId())) {
+				throw new InputValideringFeiletException("Sak.fagsakId skal være opprettet i PSAK og må være et numerisk heltall.");
+			}
 		}
 	}
 
@@ -239,10 +246,10 @@ public class OpprettJournalpostRequestValidator {
 			throw new InputValideringFeiletException("Sak.fagsaksystem skal ikke være satt dersom sakstype=ARKIVSAK");
 		}
 		if (isBlank(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer må være satt dersom sakstype=GENERELL_SAK");
+			throw new InputValideringFeiletException("Sak.arkivsaksnummer må være satt dersom sakstype=ARKIVSAK");
 		}
 		if (sak.getArkivsaksystem() == null) {
-			throw new InputValideringFeiletException("Sak.arkivsaksystem må være satt dersom sakstype=GENERELL_SAK");
+			throw new InputValideringFeiletException("Sak.arkivsaksystem må være satt dersom sakstype=ARKIVSAK");
 		}
 		if (!isNumeric(sak.getArkivsaksnummer())) {
 			throw new InputValideringFeiletException("Sak.arkivsaksnummer skal være opprettet i GSAK/PSAK og må være et numerisk heltall.");

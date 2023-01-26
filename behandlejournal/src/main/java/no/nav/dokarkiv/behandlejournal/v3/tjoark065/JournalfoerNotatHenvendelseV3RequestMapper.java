@@ -31,6 +31,8 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Long.parseLong;
+
 @Component
 public class JournalfoerNotatHenvendelseV3RequestMapper {
 
@@ -52,6 +54,7 @@ public class JournalfoerNotatHenvendelseV3RequestMapper {
 				.fagomrade(wsJournalpost.getArkivtema() == null ? null : FagomradeCode.valueOf(wsJournalpost.getArkivtema().getValue()))
 				.build();
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
+				.sakId(wsJournalpost.getGjelderSak() == null ? null : parseLong(wsJournalpost.getGjelderSak().getSaksId()))
 				.saknrfk(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
 				.fagsystem(wsJournalpost.getGjelderSak() == null ? null : FagsystemCode.valueOf(wsJournalpost.getGjelderSak().getFagsystemkode()))
 				.build();

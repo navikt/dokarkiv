@@ -30,6 +30,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
@@ -524,5 +525,16 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		);
 	}
 
+	@Test
+	void shouldThrowExceptionWhenFagsakAndFagsystemPP01AndFagsakIdNotNumeric() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_PEN)
+				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(PP01).build())
+				.build();
 
+		assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I),
+				"Sak.fagsakId skal være opprettet i PSAK og må være et numerisk heltall.");
+	}
 }
