@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.validation.constraints.NotEmpty;
 
-import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ConfigurationProperties("saf")

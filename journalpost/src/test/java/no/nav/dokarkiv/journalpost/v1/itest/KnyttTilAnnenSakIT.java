@@ -89,9 +89,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 		when(tokenGrantValidator.validateOnBehalfOfAccessToken(anyString())).thenReturn(new JWTClaimsSet.Builder().subject("saks-behandler").build());
 
 		Long journalpostId = journalpostTestRepository.persist(createJournalpostWithHoveddokument()).getJournalpostId();
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
 		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserTokenAndConsumerId());
 		ResponseEntity<KnyttTilAnnenSakResponse> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, KnyttTilAnnenSakResponse.class);
@@ -145,7 +143,6 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 
 	@Test
 	public void knyttTilAnnenSakJournalpostNotFound() {
-
 		stubAzure();
 		abacPermit();
 		restStsToken();

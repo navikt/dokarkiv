@@ -11,7 +11,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +28,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 	private static final String FJERNVEDLEGG = "/fjernVedlegg";
 
 	@Test
-	public void shouldHappyFjernVedleggTilknyttJournalpost() throws IOException {
+	public void shouldHappyFjernVedleggTilknyttJournalpost() {
 		abacPermit();
 
 		Journalpost journalpost1 = createJournalpostUnderArbeid();
@@ -78,7 +77,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldFailToFjernVedleggJournalpostEqualsWithDokumentInfoOriginalJournalpostWithStatus4XX() throws IOException {
+	public void shouldFailToFjernVedleggJournalpostEqualsWithDokumentInfoOriginalJournalpostWithStatus4XX() {
 		abacPermit();
 
 		Journalpost journalpost1 = createJournalpostUnderArbeid();
@@ -110,7 +109,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldReturnNotFoundWhenJournalpostNotFound() throws IOException {
+	public void shouldReturnNotFoundWhenJournalpostNotFound() {
 		abacPermit();
 
 		commitAndStartNewTransaction();
@@ -127,7 +126,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldReturnBadRequestWhenDokumentInfoIdNull() throws IOException {
+	public void shouldReturnBadRequestWhenDokumentInfoIdNull() {
 		abacPermit();
 
 		commitAndStartNewTransaction();

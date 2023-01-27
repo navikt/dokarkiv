@@ -102,14 +102,14 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 
 
 	@Test
-	public void shouldThrowException_inputRequestIsNull() throws Exception {
+	public void shouldThrowException_inputRequestIsNull() {
 		assertThrows(HentFerdigstilteDokumenterUgyldingInput.class,
 				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(null),
 				"request is null");
 	}
 
 	@Test
-	public void shouldThrowException_dokumentIsMissing() throws Exception {
+	public void shouldThrowException_dokumentIsMissing() {
 		Journalpost journalpost = buildAndPersistJournalpost("dokument_eksisterer_ikke", "dummy", FS, FERDIGSTILT);
 		journalpostId = journalpost.getId();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
@@ -121,7 +121,7 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 	}
 
 	@Test
-	public void shouldThrowException_dokumentNotBelongingToJournalpost() throws Exception {
+	public void shouldThrowException_dokumentNotBelongingToJournalpost() {
 		createRequest(journalpostId, dokumentInfoId, 56L);
 
 		assertThrows(HentFerdigstilteDokumenterDokumenterIkkeFunnet.class,
@@ -130,7 +130,7 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 	}
 
 	@Test
-	public void shouldThrowException_invalidJournalStatus() throws Exception {
+	public void shouldThrowException_invalidJournalStatus() {
 		Journalpost journalpost = buildAndPersistJournalpost("dokument_eksisterer_ikke", "dummy", JournalStatusCode.J, FERDIGSTILT);
 		journalpostId = journalpost.getId();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
@@ -142,7 +142,7 @@ public class HentFerdigstilteDokumenterIT extends AbstractDokumentproduksjoninfo
 	}
 
 	@Test
-	public void shouldThrowException_dokumentIsNotFerdigstilt() throws Exception {
+	public void shouldThrowException_dokumentIsNotFerdigstilt() {
 		Journalpost journalpost = buildAndPersistJournalpost("dokument_eksisterer_ikke", "dummy", FS, UNDER_REDIGERING);
 		journalpostId = journalpost.getId();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
