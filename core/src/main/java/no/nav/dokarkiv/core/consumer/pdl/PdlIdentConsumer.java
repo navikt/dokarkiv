@@ -24,6 +24,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class PdlIdentConsumer implements IdentConsumer {
 
 	private static final String PERSON_IKKE_FUNNET_CODE = "not_found";
+	private static final String TEMA = "Tema";
 
 	private final WebClient webClient;
 
@@ -124,6 +125,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	public String hentPersonIdent(String ident, String tema) {
 
 		PdlPersonResponse pdlPersonResponse = webClient.post()
+				.header(TEMA, tema)
 				.bodyValue(mapHentPersonIdentForId(this.validateFolkeregisterIdent(ident)))
 				.retrieve()
 				.bodyToMono(PdlPersonResponse.class)
