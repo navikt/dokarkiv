@@ -37,6 +37,7 @@ public class PdlResponse {
     }
 
     @Data
+    @JsonIgnoreProperties("id")
     public static class PdlErrorExtension {
         private String code;
         private String classification;
