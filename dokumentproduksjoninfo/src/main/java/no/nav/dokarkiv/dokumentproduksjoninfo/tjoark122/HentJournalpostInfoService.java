@@ -48,7 +48,7 @@ public class HentJournalpostInfoService {
 				.brukerType(bruker == null ? null : bruker.getBrukerType())
 				.fagomrade(journalpost.getFagomrade())
 				.journalfEnhet(journalpost.getJournalForendeEnhetId())
-				.saksNummer(saksrelasjon == null ? null : saksrelasjon.getSakId())
+				.saksNummer(saksrelasjon == null ? null : saksrelasjon.getSaknrfk())
 				.fagsystem(saksrelasjon == null ? null : saksrelasjon.getFagsystem())
 				.dokumentStatus(dokumentstatus)
 				.metaforceInstanceId(metaforceInstanceId)

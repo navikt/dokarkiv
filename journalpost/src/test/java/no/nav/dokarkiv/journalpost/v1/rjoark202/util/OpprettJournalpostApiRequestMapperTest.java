@@ -70,6 +70,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.PENSJON_FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
@@ -127,6 +128,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		assertEquals(TILLEGGSOPPLYSNING_NOKKEL, jp.getTilleggsopplysninger().keySet().iterator().next());
 		assertEquals(TILLEGGSOPPLYSNING_VERDI, jp.getTilleggsopplysninger().values().iterator().next());
 		assertEquals(SAK_ID, jp.getSaksrelasjon().getSakId());
+		assertEquals(SAK_ID.toString(), jp.getSaksrelasjon().getSaknrfk());
 		assertEquals(FagsystemCode.FS22, jp.getSaksrelasjon().getFagsystem());
 
 		JournalpostDokumentInfoRelasjon relasjon = jp.findHoveddokumentDokumentInfoRelasjon();
@@ -187,7 +189,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
 						.sakstype(Sakstype.FAGSAK)
-						.fagsakId(FAGSAK_ID)
+						.fagsakId(PENSJON_FAGSAK_ID)
 						.fagsaksystem(Fagsaksystem.PP01)
 						.build())
 				.overstyrInnsynsregler(overstyrInnsynsregler)
@@ -254,7 +256,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		Journalpost journalpost = mapper.map(request, FAGSAK_ID);
+		Journalpost journalpost = mapper.map(request, SAK_ID);
 		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
 
 	}
@@ -273,7 +275,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.build();
 
 		assertThrows(UgyldigInputException.class, () ->
-						mapper.map(request, FAGSAK_ID),
+						mapper.map(request, SAK_ID),
 				"Kan ikke mappe fagsystem basert på input");
 	}
 
@@ -290,7 +292,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		Journalpost journalpost = mapper.map(request, FAGSAK_ID);
+		Journalpost journalpost = mapper.map(request, SAK_ID);
 		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.PEN);
 
 	}
@@ -309,7 +311,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		Journalpost journalpost = mapper.map(request, FAGSAK_ID);
+		Journalpost journalpost = mapper.map(request, SAK_ID);
 		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
 
 	}

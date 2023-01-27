@@ -7,7 +7,6 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerInngaa
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerNotatRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.JournalfoerUtgaaendeHenvendelseRequest;
 import no.nav.tjeneste.virksomhet.behandlejournal.v3.meldinger.LagreVedleggPaaJournalpostRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import javax.xml.ws.WebServiceContext;
 import java.security.Principal;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,45 +38,41 @@ public class BehandleJournalV3EndpointTest {
 	@InjectMocks
 	private BehandleJournalV3Endpoint behandleJournalEndpoint;
 
-	@BeforeEach
-	public void setUp() {
-		when(webServiceContextMock.getUserPrincipal()).thenReturn(principalMock);
-	}
-
 	@Test
 	public void shouldCallArkiverUstrukturertKravWithCorrectRequest() throws Exception {
 		ArkiverUstrukturertKravRequest request = new ArkiverUstrukturertKravRequest();
 		request.setApplikasjonsID("test");
-		behandleJournalEndpoint.arkiverUstrukturertKrav(request);
-		verify(behandleJournalProviderMock).arkiverUstrukturertKrav(request);
+		assertThrows(UnsupportedOperationException.class, () ->
+				behandleJournalEndpoint.arkiverUstrukturertKrav(request));
 	}
 
 	@Test
 	public void shouldCallLagreVedleggPaaJournalpostWithCorrectRequest() throws Exception {
 		LagreVedleggPaaJournalpostRequest request = new LagreVedleggPaaJournalpostRequest();
 		request.setApplikasjonsID("test");
-		behandleJournalEndpoint.lagreVedleggPaaJournalpost(request);
-		verify(behandleJournalProviderMock).lagreVedleggPaaJournalpost(request);
+		assertThrows(UnsupportedOperationException.class, () ->
+				behandleJournalEndpoint.lagreVedleggPaaJournalpost(request));
 	}
 
 	@Test
 	public void shouldCallFerdigstillDokumentopplastingWithCorrectRequest() throws Exception {
 		FerdigstillDokumentopplastingRequest request = new FerdigstillDokumentopplastingRequest();
 		request.setApplikasjonsID("test");
-		behandleJournalEndpoint.ferdigstillDokumentopplasting(request);
-		verify(behandleJournalProviderMock).ferdigstillDokumentopplasting(request);
+		assertThrows(UnsupportedOperationException.class, () ->
+				behandleJournalEndpoint.ferdigstillDokumentopplasting(request));
 	}
 
 	@Test
 	public void shouldCalljournalfoerUtgaaendeHenvendelseMedHoveddokumentWithCorrectRequest() throws Exception {
 		JournalfoerUtgaaendeHenvendelseRequest request = new JournalfoerUtgaaendeHenvendelseRequest();
 		request.setApplikasjonsID("test");
-		behandleJournalEndpoint.journalfoerUtgaaendeHenvendelse(request);
-		verify(behandleJournalProviderMock).journalfoerUtgaaendeHenvendelse(request);
+		assertThrows(UnsupportedOperationException.class, () ->
+				behandleJournalEndpoint.journalfoerUtgaaendeHenvendelse(request));
 	}
 
 	@Test
 	public void shouldCallJournalfoerNotatWithCorrectRequest() throws Exception {
+		when(webServiceContextMock.getUserPrincipal()).thenReturn(principalMock);
 		JournalfoerNotatRequest request = new JournalfoerNotatRequest();
 		request.setApplikasjonsID("test");
 		behandleJournalEndpoint.journalfoerNotat(request);
@@ -88,7 +84,7 @@ public class BehandleJournalV3EndpointTest {
 		JournalfoerInngaaendeHenvendelseRequest request =
 				new JournalfoerInngaaendeHenvendelseRequest();
 		request.setApplikasjonsID("test");
-		behandleJournalEndpoint.journalfoerInngaaendeHenvendelse(request);
-		verify(behandleJournalProviderMock).journalfoerInngaaendeHenvendelse(request);
+		assertThrows(UnsupportedOperationException.class, () ->
+				behandleJournalEndpoint.journalfoerInngaaendeHenvendelse(request));
 	}
 }

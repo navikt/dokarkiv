@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
@@ -73,7 +74,9 @@ public class JournalpostCopier {
 	private Saksrelasjon copySaksrelasjon(Journalpost kopiertJournalpost, Saksrelasjon saksrelasjon) {
 		Saksrelasjon kopiertSaksrelasjon = Saksrelasjon.builder()
 				.fagsystem(saksrelasjon.getFagsystem())
-				.sakId(saksrelasjon.getSakId())
+				// FIXME etter at sak_nr_fk er faset ut
+				.sakId(parseLong(saksrelasjon.getSaknrfk()))
+				.saknrfk(saksrelasjon.getSaknrfk())
 				.journalpost(kopiertJournalpost)
 				.endretAvNavn(MDC.get(MDC_USER_ID))
 				.feilregistrert(saksrelasjon.getFeilregistrert())

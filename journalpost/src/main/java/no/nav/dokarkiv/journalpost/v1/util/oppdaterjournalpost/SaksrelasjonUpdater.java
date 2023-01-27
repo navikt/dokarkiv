@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
+import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_FAGSYSTEM;
@@ -27,7 +28,7 @@ public class SaksrelasjonUpdater {
 
 	private static final String APPLIKASJON_FS22 = "FS22";
 
-	public ChangeTracker updateFields(Journalpost journalpost, OppdaterJournalpostRequest request, String sakId) {
+	public ChangeTracker updateFields(Journalpost journalpost, OppdaterJournalpostRequest request, Long sakId) {
 		ChangeTracker endret = new ChangeTracker();
 		boolean newSak = false;
 
@@ -60,20 +61,23 @@ public class SaksrelasjonUpdater {
 		return endret;
 	}
 
-	private void updateSaksnummer(String sakId, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
-		String oldSaksnummer = saksrelasjon.getSakId();
+	private void updateSaksnummer(Long sakId, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
+		String oldSaksnummer = saksrelasjon.getSaknrfk();
 		if (sakId != null) { // arkivsak
 			saksrelasjon.setSakId(sakId);
+			saksrelasjon.setSaknrfk(sakId.toString());
 		} else if (Sakstype.ARKIVSAK.equals(request.getSak().getSakstype()) || request.getSak()
 				.getSakstype() == null) {// Antas å være ARKIVSAK dersom feltet ikke er satt
-			saksrelasjon.setSakId(request.getSak().getArkivsaksnummer());
+			saksrelasjon.setSakId(parseLong(request.getSak().getArkivsaksnummer()));
+			saksrelasjon.setSaknrfk(request.getSak().getArkivsaksnummer());
 		} else if (Sakstype.FAGSAK.equals(request.getSak()
 				.getSakstype()) && Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
-			saksrelasjon.setSakId(request.getSak().getFagsakId());
+			saksrelasjon.setSakId(parseLong(request.getSak().getFagsakId()));
+			saksrelasjon.setSaknrfk(request.getSak().getFagsakId());
 		} else {
 			throw new UgyldigInputException("Kan ikke oppdatere sakId basert på input");
 		}
-		endret.add(SAKSRELASJON_SAKID, oldSaksnummer, saksrelasjon.getSakId());
+		endret.add(SAKSRELASJON_SAKID, oldSaksnummer, saksrelasjon.getSaknrfk());
 	}
 
 	private void updateArkivsaksystem(OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {

@@ -47,61 +47,53 @@ import javax.xml.ws.soap.Addressing;
 @Service
 public class BehandleJournalV3Endpoint implements BehandleJournalV3 {
 
+	public static final String OPERASJONEN_ER_SANERT = "Denne operasjonen på BehandleJournal_v3 er permanent sanert. Ta kontakt med oss i #team_dokumentløsninger for avklaring.";
 	@Resource
 	private WebServiceContext webServiceContext;
 
 	@Autowired
 	private BehandleJournalV3 behandleJournalProvider;
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark060_v3"}, percentiles = {0.5, 0.95})
 	@Override
 	public ArkiverUstrukturertKravResponse arkiverUstrukturertKrav(ArkiverUstrukturertKravRequest request)
 			throws ArkiverUstrukturertKravSikkerhetsbegrensning {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, request.getApplikasjonsID());
-		return behandleJournalProvider.arkiverUstrukturertKrav(request);
+		throw new UnsupportedOperationException(OPERASJONEN_ER_SANERT);
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark061_v3"}, percentiles = {0.5, 0.95})
 	@Override
 	public LagreVedleggPaaJournalpostResponse lagreVedleggPaaJournalpost(LagreVedleggPaaJournalpostRequest request)
 			throws LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet, LagreVedleggPaaJournalpostSikkerhetsbegrensning {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, request.getApplikasjonsID());
-		return behandleJournalProvider.lagreVedleggPaaJournalpost(request);
+		throw new UnsupportedOperationException(OPERASJONEN_ER_SANERT);
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark062_v3"}, percentiles = {0.5, 0.95})
 	@Override
 	public void ferdigstillDokumentopplasting(FerdigstillDokumentopplastingRequest request)
 			throws FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet, FerdigstillDokumentopplastingSikkerhetsbegrensning {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, request.getApplikasjonsID());
-		behandleJournalProvider.ferdigstillDokumentopplasting(request);
+		throw new UnsupportedOperationException(OPERASJONEN_ER_SANERT);
 	}
 
 	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark063_v3"}, percentiles = {0.5, 0.95})
 	@Override
 	public JournalfoerNotatResponse journalfoerNotat(JournalfoerNotatRequest request) throws JournalfoerNotatSikkerhetsbegrensning {
+		// Denne operasjonen er fremdeles i bruk av spberegning
 		RequestContextUtil.createAndSetRequestContext(webServiceContext, request.getApplikasjonsID());
 		return behandleJournalProvider.journalfoerNotat(request);
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark064_v3"}, percentiles = {0.5, 0.95})
 	@Override
 	public JournalfoerUtgaaendeHenvendelseResponse journalfoerUtgaaendeHenvendelse(JournalfoerUtgaaendeHenvendelseRequest request)
 			throws JournalfoerUtgaaendeHenvendelseSikkerhetsbegrensning {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, request.getApplikasjonsID());
-		return behandleJournalProvider.journalfoerUtgaaendeHenvendelse(request);
+		throw new UnsupportedOperationException(OPERASJONEN_ER_SANERT);
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark065_v3"}, percentiles = {0.5, 0.95})
 	@Override
 	public JournalfoerInngaaendeHenvendelseResponse journalfoerInngaaendeHenvendelse(JournalfoerInngaaendeHenvendelseRequest request)
 			throws JournalfoerInngaaendeHenvendelseSikkerhetsbegrensning {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, request.getApplikasjonsID());
-		return behandleJournalProvider.journalfoerInngaaendeHenvendelse(request);
+		throw new UnsupportedOperationException(OPERASJONEN_ER_SANERT);
 	}
 
 	@Override
 	public void ping() {
-		behandleJournalProvider.ping();
+		// noop
 	}
 }

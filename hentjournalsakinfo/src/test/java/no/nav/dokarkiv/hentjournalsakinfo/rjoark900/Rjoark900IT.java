@@ -24,8 +24,8 @@ import java.util.Date;
 import java.util.stream.IntStream;
 
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.PSAK_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.SAK_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.API_GSAK_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.API_PSAK_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoWithMoreData;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createPsakSaksrelasjon;
@@ -73,7 +73,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		TestTransaction.end();
 		FinnJournalposterRequestTo request = createRequest(JournalStatusCode.FS);
 		request.setFoerste(2);
-		request.setPsakSakIds(Collections.singletonList(PSAK_ID));
+		request.setPsakSakIds(Collections.singletonList(API_PSAK_ID));
 
 		FinnJournalposterResponseTo responseTo = finnJournalposterRest(request);
 
@@ -140,7 +140,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 	private FinnJournalposterRequestTo createRequest(JournalStatusCode journalStatusCode) {
 		FinnJournalposterRequestTo requestTo = new FinnJournalposterRequestTo();
 		requestTo.setFraDato("2019-01-01");
-		requestTo.setGsakSakIds(Collections.singletonList(SAK_ID));
+		requestTo.setGsakSakIds(Collections.singletonList(API_GSAK_ID));
 		requestTo.setInkluderJournalStatus(Collections.singletonList(journalStatusCode));
 		requestTo.setInkluderJournalpostType(Arrays.asList(JournalpostTypeCode.I, JournalpostTypeCode.U, JournalpostTypeCode.N));
 		requestTo.setFoerste(1);

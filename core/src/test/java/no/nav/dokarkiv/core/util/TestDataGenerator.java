@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_ØNSKE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_INNSKRENKET_PARTSINNSYN;
@@ -58,8 +59,8 @@ public class TestDataGenerator {
 	public static final String KRYSSREFERANSE_ID = "123213";
 	public static final String DOKUMENT_INFO_TITTEL = "TITTEL";
 	public static final String DOKUMENT_TYPE_ID = "0000001";
-	public static final String SAK_ID = "1232131233";
-	public static final String PSAK_ID = "090909090";
+	public static final String API_GSAK_ID = "1232131233";
+	public static final String API_PSAK_ID = "90909090";
 	public static final String FIL_NAVN = "navn";
 	public static final String TILLEGGOPPLYSNINGER_KEY = "tillegg";
 	public static final String TILLEGGOPPLYSNINGER_VAL = "tillegg_verdi";
@@ -228,7 +229,8 @@ public class TestDataGenerator {
 	public static Saksrelasjon createSaksrelasjon(Journalpost journalpost) {
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
 				.fagsystem(FagsystemCode.FS22)
-				.sakId(SAK_ID)
+				.sakId(parseLong(API_GSAK_ID))
+				.saknrfk(API_GSAK_ID.toString())
 				.journalpost(journalpost)
 				.feilregistrert(false)
 				.build();
@@ -239,7 +241,8 @@ public class TestDataGenerator {
 	public static Saksrelasjon createPsakSaksrelasjon() {
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
 				.fagsystem(FagsystemCode.PEN)
-				.sakId(PSAK_ID)
+				.sakId(parseLong(API_PSAK_ID))
+				.saknrfk(API_PSAK_ID.toString())
 				.build();
 		saksrelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return saksrelasjon;

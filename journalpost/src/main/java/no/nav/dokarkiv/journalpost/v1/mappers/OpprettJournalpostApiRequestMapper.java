@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -59,7 +60,7 @@ public class OpprettJournalpostApiRequestMapper {
 		this.identConsumer = identConsumer;
 	}
 
-	public Journalpost map(OpprettJournalpostRequest request, String sakId) {
+	public Journalpost map(OpprettJournalpostRequest request, Long sakId) {
 		Journalpost journalpost = Journalpost.builder()
 				.journalposttype(mapJournalposttype(request.getJournalposttype()))
 				.journalstatus(mapJournalstatus(request))
@@ -97,7 +98,7 @@ public class OpprettJournalpostApiRequestMapper {
 		if (avsenderMottaker != null && isNotBlank(avsenderMottaker.getNavn())) {
 			return avsenderMottaker.getNavn();
 		} else if (avsenderMottaker != null && isNotBlank(avsenderMottaker.getId()) &&
-				(avsenderMottaker.getIdType() == null || avsenderMottaker.getIdType() == AvsenderMottakerIdType.FNR)) {
+				   (avsenderMottaker.getIdType() == null || avsenderMottaker.getIdType() == AvsenderMottakerIdType.FNR)) {
 			return identConsumer.hentPersonIdent(avsenderMottaker.getId(), request.getTema());
 		}
 		return null;
@@ -191,23 +192,24 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 
-	private void addSaksrelasjon(Journalpost journalpost, OpprettJournalpostRequest request, String sakId) {
+	private void addSaksrelasjon(Journalpost journalpost, OpprettJournalpostRequest request, Long sakId) {
 		if (request.getSak() != null) {
 			journalpost.setSaksrelasjon(Saksrelasjon.builder()
 					.sakId(mapSakId(request, sakId))
+					.saknrfk(mapSakId(request, sakId).toString())
 					.fagsystem(mapFagsystem(request))
 					.journalpost(journalpost)
 					.build());
 		}
 	}
 
-	private String mapSakId(OpprettJournalpostRequest request, String sakId) {
+	private Long mapSakId(OpprettJournalpostRequest request, Long sakId) {
 		if (sakId != null) {
 			return sakId;
 		} else if (Sakstype.ARKIVSAK.equals(request.getSak().getSakstype()) || request.getSak().getSakstype() == null) {// Antas å være ARKIVSAK dersom feltet ikke er satt
-			return request.getSak().getArkivsaksnummer();
+			return parseLong(request.getSak().getArkivsaksnummer());
 		} else if (Sakstype.FAGSAK.equals(request.getSak().getSakstype()) && Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
-			return request.getSak().getFagsakId();
+			return parseLong(request.getSak().getFagsakId());
 		} else {
 			throw new UgyldigInputException("Kan ikke mappe sakId basert på input");
 		}
@@ -239,7 +241,7 @@ public class OpprettJournalpostApiRequestMapper {
 		if (isValidFagsaksystem(sakstype, fagsaksystem) && Fagsaksystem.PP01.equals(fagsaksystem)) {
 			return FagsystemCode.PEN;
 		} else if ((isValidFagsaksystem(sakstype, fagsaksystem) || Sakstype.GENERELL_SAK.equals(sakstype))
-				&& !Fagsaksystem.PP01.equals(fagsaksystem)) {
+				   && !Fagsaksystem.PP01.equals(fagsaksystem)) {
 			return FagsystemCode.FS22;
 		} else {
 			throw new UgyldigInputException("Kan ikke mappe fagsystem basert på input");
@@ -288,6 +290,7 @@ public class OpprettJournalpostApiRequestMapper {
 
 	//hack for sykepengeberegningsmodulen. ref MMA-6005
 	private static final String BREVKODE_4936 = "4936";
+
 	private void createJournalpostDokumentInfoRelasjon(Journalpost jp, Dokument dokument, TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.kategori(dokument.getDokumentKategori() != null ? DokumentKategoriCode.valueOf(dokument.getDokumentKategori()) : DokumentKategoriCode.IS)

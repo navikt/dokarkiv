@@ -101,7 +101,7 @@ public class OpprettJournalpostService {
 		}
 
 		Optional<Sak> sakOptional = hentSak(request);
-		String sakId = sakOptional.map(Sak::getSakId).map(String::valueOf).orElse(null);
+		Long sakId = sakOptional.map(Sak::getSakId).orElse(null);
 
 		Journalpost journalpost = opprettJournalpostApiRequestMapper.map(request, sakId);
 		defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_USER_NAME));
@@ -205,7 +205,7 @@ public class OpprettJournalpostService {
 		}
 
 		sakOptional.ifPresent(sak -> populerAksjonslogg(journalpostId, SAKSTILKNYTNING, brukerId, Stream.of(
-						arkivElementEndringNew("Saksrelasjon.sakId", journalpost.getSaksrelasjon().getSakId()),
+						arkivElementEndringNew("Saksrelasjon.sakId", journalpost.getSaksrelasjon().getSaknrfk()),
 						arkivElementEndringNew("Saksrelasjon.fagsystem",
 								journalpost.getSaksrelasjon().getFagsystem() != null ? journalpost.getSaksrelasjon().getFagsystem().name() : null),
 						arkivElementEndringNew("Sak.fagsaknr", sak.getFagsakNr()),

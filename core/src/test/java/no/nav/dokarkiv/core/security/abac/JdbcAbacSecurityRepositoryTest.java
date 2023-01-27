@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
+import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
@@ -187,7 +188,8 @@ public class JdbcAbacSecurityRepositoryTest {
 
 	private Saksrelasjon createSaksrelasjon(String saksNummer) {
 		return getSaksrelasjonBuilder()
-				.sakId(saksNummer)
+				.sakId(parseLong(saksNummer))
+				.saknrfk(saksNummer)
 				.fagsystem(FagsystemCode.PEN)
 				.feilregistrert(false)
 				.opprettetKildeNavn("NAV")

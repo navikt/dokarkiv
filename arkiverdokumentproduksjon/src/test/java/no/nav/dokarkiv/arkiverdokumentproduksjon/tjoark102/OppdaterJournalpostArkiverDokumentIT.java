@@ -150,7 +150,8 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 				.fagomrade(FagomradeCode.PEN)
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
-								.sakId("1")
+								.sakId(1L)
+								.saknrfk("1")
 								.fagsystem(FagsystemCode.PEN)
 								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.build())

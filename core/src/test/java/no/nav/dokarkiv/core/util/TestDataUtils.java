@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.lang.Long.parseLong;
+
 /**
  * Class for generating test data for Joark repository tests
  *
@@ -97,37 +99,6 @@ public class TestDataUtils {
 		);
 	}
 
-	public static JournalpostBuilder createJournalpostWithSaksrelasjon(String saksnr, boolean isFeilregistrert, FagomradeCode fagomrade,
-																	   FagsystemCode fagsystem, JournalpostTypeCode journalpostType) {
-		return JournalpostBuilder.getJournalpostBuilder()
-				.fagomrade(fagomrade == null ? TestDataUtils.fagomrade : fagomrade)
-				.journalStatus(journalStatus)
-				.journalpostType(journalpostType)
-				.journalDato(journalDato.toDate())
-				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
-						.opprettetKildeNavn("test")
-						.sakId(saksnr)
-						.fagsystem(fagsystem == null ? TestDataUtils.fagsystem : fagsystem)
-						.feilregistrert(isFeilregistrert)
-						.build())
-				.brukere(BrukerBuilder.getBrukerBuilder()
-						.brukerId("1")
-						.brukerType(brukerType)
-						.opprettetKildeNavn("test")
-						.build())
-				.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
-						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-						.opprettetKildeNavn("test")
-						.tilknyttetAvNavn("test")
-						.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
-								.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-								.opprettetKildeNavn("test")
-								.build())
-						.build())
-				.opprettetKildeNavn("test")
-				.journalForendeEnhetId(journalfEnhet);
-	}
-
 	public static JournalpostBuilder createJournalpost(String saksNr, Date journalDato, JournalStatusCode journalStatusCode, FagomradeCode fagomrade) {
 		Map<String, String> tilleggsopplysninger = new HashMap<>();
 		tilleggsopplysninger.put(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE);
@@ -139,7 +110,8 @@ public class TestDataUtils {
 				.tilleggsopplysninger(tilleggsopplysninger)
 				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
 						.opprettetKildeNavn("test")
-						.sakId(saksNr)
+						.sakId(parseLong(saksNr))
+						.saknrfk(saksNr)
 						.fagsystem(fagsystem)
 						.feilregistrert(isFeilregistrert)
 						.build())
@@ -212,7 +184,8 @@ public class TestDataUtils {
 
 		Saksrelasjon saksrelasjon = Saksrelasjon
 				.builder()
-				.sakId("test")
+				.sakId(1L)
+				.saknrfk("1")
 				.fagsystem(FagsystemCode.PEN)
 				.feilregistrert(false)
 				.journalpost(journalpost)

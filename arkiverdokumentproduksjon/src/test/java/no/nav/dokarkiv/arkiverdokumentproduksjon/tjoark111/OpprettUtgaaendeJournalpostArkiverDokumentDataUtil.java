@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 
-import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -23,6 +21,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
 
 /**
  * Util for creating Journalpost for the OpprettJournalpostArkiverDokument
@@ -48,7 +48,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentDataUtil {
 	protected static final String PERSONIDENT = "22027838743";
 	protected static final String EKSTERNPART_NAVN = "Jippi Hurra";
 	protected static final String FAGSYSTEMKODE = FagsystemCode.FS22.name();
-	protected static final String SAKSID = "312";
+	protected static final Long SAKSID = 312L;
 	protected static final String KANAL_REF_ID = "Kanal_ref_id_AAA";
 	protected static final String TILLEGGSOPPLYSNING_NOKKEL = "bucId";
 	protected static final String TILLEGGSOPPLYSNING_VERDI = "bucId-verdi";
@@ -96,7 +96,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentDataUtil {
 	protected static Saksrelasjon createSaksrelasjon() {
 		Saksrelasjon saksrelasjon = new Saksrelasjon();
 		saksrelasjon.setFagsystem(FAGSYSTEMKODE);
-		saksrelasjon.setSaksnummer(SAKSID);
+		saksrelasjon.setSaksnummer(SAKSID.toString());
 		return saksrelasjon;
 	}
 

@@ -42,7 +42,7 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 	private static final String JOURNALFOERENDE_ENHET = "9999";
 	private static final FagomradeCode FAGOMRADE_CODE = FagomradeCode.AAP;
 	private static final FagsystemCode FAGSYSTEM_CODE = FagsystemCode.FS22;
-	private static final String SAKID = "12";
+	private static final Long SAKID = 12L;
 	private static final String BRUKERID = "999999999";
 	private static final BrukerTypeCode BRUKER_TYPE_CODE = BrukerTypeCode.PERSON;
 	private static final int ANTALL_RETUR = 1;
@@ -102,7 +102,7 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 		assertThat(response.getFagomrade(), is(FAGOMRADE_CODE.name()));
 		assertThat(response.getBrukerId(), is(BRUKERID));
 		assertThat(response.getBrukerType(), is(BRUKER_TYPE_CODE.name()));
-		assertThat(response.getSaksNummer(), is(SAKID));
+		assertThat(response.getSaksNummer(), is(SAKID.toString()));
 		assertThat(response.getFagsystem(), is(FAGSYSTEM_CODE.name()));
 		assertThat(response.getAntallRetur(), is(ANTALL_RETUR));
 	}
@@ -119,6 +119,7 @@ public class HentJournalpostInfoIT extends AbstractDokumentproduksjoninfoItest {
 				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
 						.fagsystem(FAGSYSTEM_CODE)
 						.sakId(SAKID)
+						.saknrfk(SAKID.toString())
 						.opprettetKildeNavn("test")
 						.build())
 				.brukere(BrukerBuilder.getBrukerBuilder()

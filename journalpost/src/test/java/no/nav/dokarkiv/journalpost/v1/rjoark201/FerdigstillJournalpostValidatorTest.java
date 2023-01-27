@@ -137,6 +137,7 @@ public class FerdigstillJournalpostValidatorTest {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.getSaksrelasjon().setSakId(null);
+		journalpost.getSaksrelasjon().setSaknrfk(null);
 
 		assertThrows(KanIkkeFerdigstilleException.class,
 				() -> validator.validatePaakrevdeFelter(journalpost),

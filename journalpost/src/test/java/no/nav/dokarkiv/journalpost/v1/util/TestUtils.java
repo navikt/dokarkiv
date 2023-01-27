@@ -66,8 +66,9 @@ public class TestUtils {
 	public static final Date MOTTAT_DATO = Date.from(LocalDateTime.of(2017, 2, 3, 10, 37, 30).toInstant(ZoneOffset.UTC));
 	public static final String BRUKER_ID_PERSON = "10987654321";
 	public static final String BRUKER_ID_ORGANISASJON = "987654321";
-	public static final String SAK_ID = "12345";
-	public static final String FAGSAK_ID = "fagsakId";
+	public static final Long SAK_ID = 12345L;
+	public static final String FAGSAK_ID = "123abc";
+	public static final String PENSJON_FAGSAK_ID = "54321";
 	public static final String ARKIVSAKSNUMMER = "1234567890";
 	public static final String INNHOLD = "innhold";
 	public static final String KANALREFERANSE_ID = "kanalreferansId";
@@ -140,6 +141,7 @@ public class TestUtils {
 				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
 				.saksrelasjon(Saksrelasjon.builder()
 						.sakId(SAK_ID)
+						.saknrfk(SAK_ID.toString())
 						.fagsystem(FS22)
 						.build())
 				.build();
@@ -167,6 +169,7 @@ public class TestUtils {
 				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
 				.saksrelasjon(Saksrelasjon.builder()
 						.sakId(SAK_ID)
+						.saknrfk(SAK_ID.toString())
 						.fagsystem(FS22)
 						.build())
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
@@ -448,7 +451,7 @@ public class TestUtils {
 
 	public static Sak createSak() {
 		return Sak.builder()
-				.arkivsaksnummer(SAK_ID)
+				.arkivsaksnummer(SAK_ID.toString())
 				.arkivsaksystem(Arkivsaksystem.GSAK)
 				.build();
 	}
@@ -551,7 +554,7 @@ public class TestUtils {
 						.verdi(TILLEGGSOPPLYSNING_VERDI)
 						.build()))
 				.sak(Sak.builder()
-						.arkivsaksnummer(SAK_ID)
+						.arkivsaksnummer(SAK_ID.toString())
 						.arkivsaksystem(Arkivsaksystem.GSAK)
 						.build());
 	}

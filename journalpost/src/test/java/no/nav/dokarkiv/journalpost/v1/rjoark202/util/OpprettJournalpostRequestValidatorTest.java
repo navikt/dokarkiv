@@ -923,4 +923,17 @@ public class OpprettJournalpostRequestValidatorTest {
 				() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL),
 				"Dokument.dokumentvariant.fysiskDokument må være satt med en base64 representert fil større en 0 bytes.");
 	}
+
+	@Test
+	void shouldThrowExceptionWhenFagsakAndFagsystemPP01AndFagsakIdNotNumeric() {
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_PEN)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.PP01).build())
+				.build();
+
+		assertThrows(InputValideringFeiletException.class, () -> {
+			validator.validateRequest(request, FORSOEKFERDIGSTILL);
+		}, "Sak.fagsakId skal være opprettet i PSAK og må være et numerisk heltall.");
+	}
 }

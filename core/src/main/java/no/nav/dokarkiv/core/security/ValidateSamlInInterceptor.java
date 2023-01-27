@@ -30,7 +30,6 @@ import org.opensaml.saml.saml2.core.Attribute;
 import org.slf4j.MDC;
 
 import javax.security.auth.Subject;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -42,9 +41,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ValidateSamlInInterceptor extends WSS4JInInterceptor {
 
-	private static final List<String> PING_ACTIONS = Arrays.asList(
-			"http://nav.no/tjeneste/virksomhet/behandleJournal/v2/behandleJournal_v2/pingRequest",
-			"http://nav.no/tjeneste/virksomhet/inngaaendeJournal/v1/InngaaendeJournal_v1/pingRequest");
+	private static final List<String> PING_ACTIONS = List.of("http://nav.no/tjeneste/virksomhet/behandleJournal/v3/behandleJournal_v3/pingRequest");
 
 	public ValidateSamlInInterceptor() {
 		super();

@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 
 @Slf4j
 class AksjonsLoggMapper {
@@ -48,7 +47,7 @@ class AksjonsLoggMapper {
 	}
 
 	private static String mapArkivsaksnummer(Journalpost journalpost) {
-		return journalpost != null && journalpost.getSaksrelasjon() != null ? journalpost.getSaksrelasjon().getSakId() : null;
+		return journalpost != null && journalpost.getSaksrelasjon() != null ? journalpost.getSaksrelasjon().getSaknrfk() : null;
 	}
 
 	private static FagsystemCode mapArkivsaksystem(Journalpost journalpost) {

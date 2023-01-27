@@ -92,7 +92,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.innhold(journalpost.getInnhold())
 				.dokumentDato(journalpost.getDatoDokument() == null || journalpost.getDatoDokument()
-						.toGregorianCalendar() == null ? null : journalpost.getDatoDokument()
+																			   .toGregorianCalendar() == null ? null : journalpost.getDatoDokument()
 						.toGregorianCalendar()
 						.getTime())
 				.avsenderMottaker(journalpost.getAvsenderMottakerNavn())
@@ -126,7 +126,8 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 		}
 
 		domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
-				.sakId(sakrelasjon.getSaksnummer())
+				.sakId(Long.parseLong(sakrelasjon.getSaksnummer()))
+				.saknrfk(sakrelasjon.getSaksnummer())
 				.fagsystem(stringToEnum(FagsystemCode.class, sakrelasjon.getFagsystem()))
 				.build());
 	}

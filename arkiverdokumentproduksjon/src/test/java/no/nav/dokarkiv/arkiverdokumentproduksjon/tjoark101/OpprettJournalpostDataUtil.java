@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark101;
 
-import static java.util.Arrays.asList;
-
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -15,6 +13,8 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasj
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.DokumentInfo;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.Fildetaljer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.Journalpost;
+
+import static java.util.Arrays.asList;
 
 /**
  * Creates a Journalpost used for testing OpprettJournalpost request in
@@ -42,7 +42,7 @@ public class OpprettJournalpostDataUtil {
 	protected static final String PERSONIDENT = "22027838743";
 	protected static final String EKSTERNPART_NAVN = "Jippi Hurra";
 	protected static final String FAGSYSTEMKODE = FagsystemCode.FS22.name();
-	protected static final String SAKSID = "312";
+	protected static final Long SAKSID = 312L;
 	protected static final String BRUKERID = "312273912";
 	protected static final BrukerTypeCode BRUKERTYPE = BrukerTypeCode.PERSON;
 	protected static final String TILLEGGSOPPLYSNING_KEY_1 = "tilleggsopplysning-1";
@@ -68,7 +68,7 @@ public class OpprettJournalpostDataUtil {
 	protected static Saksrelasjon createSaksrelasjon() {
 		Saksrelasjon saksrelasjon = new Saksrelasjon();
 		saksrelasjon.setFagsystem(FAGSYSTEMKODE);
-		saksrelasjon.setSaksnummer(SAKSID);
+		saksrelasjon.setSaksnummer(SAKSID.toString());
 		return saksrelasjon;
 	}
 
