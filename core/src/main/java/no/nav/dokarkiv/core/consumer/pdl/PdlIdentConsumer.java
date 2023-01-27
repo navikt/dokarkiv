@@ -5,10 +5,7 @@ import no.nav.dokarkiv.core.exceptions.PdlTechnicalException;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.util.NavHeadersFilter;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -18,8 +15,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.cache.CacheConfig.HISTORISKE_IDENTER;
-import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
-import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -43,10 +38,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.build();
 	}
 
-	@Retryable(
-			include = HttpServerErrorException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
-	)
 	@Override
 	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
 
@@ -77,10 +68,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.build();
 	}
 
-	@Retryable(
-			include = HttpServerErrorException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
-	)
 	@Override
 	public String hentFolkeregisterIdent(String aktoerId) throws PersonIkkeFunnetException {
 
@@ -112,10 +99,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 	}
 
 	@Cacheable(HISTORISKE_IDENTER)
-	@Retryable(
-			include = HttpServerErrorException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
-	)
 	@Override
 	public List<String> hentHistoriskeFolkeregisterIdenter(String folkeregisterIdent) throws PersonIkkeFunnetException {
 		String ident = this.validateFolkeregisterIdent(folkeregisterIdent);
