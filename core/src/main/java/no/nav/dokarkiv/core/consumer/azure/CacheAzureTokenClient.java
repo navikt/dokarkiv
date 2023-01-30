@@ -1,51 +1,33 @@
 package no.nav.dokarkiv.core.consumer.azure;
 
-import com.google.common.hash.Hashing;
-import no.nav.dokarkiv.core.cache.CacheToken;
 import no.nav.security.token.support.core.jwt.JwtToken;
-import org.springframework.lang.NonNull;
+import no.nav.security.token.support.core.jwt.JwtTokenClaims;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
-import java.nio.charset.StandardCharsets;
-
-import static java.util.Optional.ofNullable;
-import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
-import static org.springframework.util.StringUtils.hasText;
 
 @Component
 public class CacheAzureTokenClient {
 
-	static final String OPTIONAL_CLAIM_SET_IDTYP = "idtyp";
-	static final String OPTIONAL_CLAIM_SET_IDTYP_VALUE = "app";
+	static final String DEFAULT_CLAIM_OID = "oid";
+	static final String DEFAULT_CLAIM_SUB = "sub";
 
-	private final CacheToken tokenCache;
 	private final AzureToken azureToken;
 
-	public CacheAzureTokenClient(CacheToken tokenCache, AzureToken azureToken) {
-		this.tokenCache = tokenCache;
+	public CacheAzureTokenClient(AzureToken azureToken) {
 		this.azureToken = azureToken;
 	}
 
-	public String getAndCacheAzureOnBehalfOfAndClientCredentialToken(@NonNull String accessToken, String scope) {
-
-		if (hasText(accessToken)) {
-			JwtToken jwtToken = new JwtToken(accessToken);
-			String cacheKey = Hashing.sha256().hashString(scope + "-" + jwtToken.getSubject(), StandardCharsets.UTF_8).toString();
-
-			if (ISSUER_AZUREV2.equals(jwtToken.getIssuer()) && !isAzureTokenContainsClaimIdtyp(jwtToken)) {
-				return ofNullable(tokenCache)
-						.map(cache -> cache.getTokenFromCacheOrProvider(cacheKey, () -> azureToken.onBehalfOfAccessToken(accessToken, scope)))
-						.orElseGet(() -> azureToken.onBehalfOfAccessToken(accessToken, scope));
+	public String getAndCacheAzureOnBehalfOfAndClientCredentialToken(String accessToken, String scope, String sub) {
+			if (StringUtils.isNotBlank(accessToken) && isOnBehalfOfAzureToken(accessToken)) {
+				return azureToken.onBehalfOfAccessToken(accessToken, scope, sub);
 			}
-		}
-		return ofNullable(tokenCache)
-				.map(cache -> cache.getTokenFromCacheOrProvider(scope, () -> azureToken.clientCredentialAccessToken(scope)))
-				.orElseGet(() -> azureToken.clientCredentialAccessToken(scope));
+		return azureToken.clientCredentialAccessToken(scope);
 	}
 
-	//https://learn.microsoft.com/en-us/azure/active-directory/develop/access-tokens#user-and-application-tokens
-	private boolean isAzureTokenContainsClaimIdtyp(JwtToken jwtToken) {
-		return jwtToken.containsClaim(OPTIONAL_CLAIM_SET_IDTYP, OPTIONAL_CLAIM_SET_IDTYP_VALUE) ||
-				jwtToken.getJwtTokenClaims().getAllClaims().containsKey(OPTIONAL_CLAIM_SET_IDTYP);
+	private boolean isOnBehalfOfAzureToken(String accessToken) {
+		JwtToken jwtToken = new JwtToken(accessToken);
+		JwtTokenClaims jwtTokenClaims = jwtToken.getJwtTokenClaims();
+		return jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_SUB) != null && jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_OID) != null
+				&& !jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_SUB).equals(jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_OID));
 	}
 }
