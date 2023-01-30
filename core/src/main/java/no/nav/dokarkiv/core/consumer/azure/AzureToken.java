@@ -17,6 +17,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE;
+import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_ON_BEHALF_OF_TOKEN_CACHE;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
@@ -44,12 +45,13 @@ public class AzureToken {
 	}
 
 	@Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
-	public String onBehalfOfAccessToken(String token, String scope) {
+	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN_CACHE, key = "#tokenClaimSub")
+	public String onBehalfOfAccessToken(String token, String scope, String tokenClaimSub) {
 		return fetchAccessToken(token, scope);
 	}
 
 	@Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
-	@Cacheable(AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE)
+	@Cacheable(value = AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE, key = "#scope")
 	public String clientCredentialAccessToken(String scope) {
 		return fetchAccessToken(null, scope);
 	}

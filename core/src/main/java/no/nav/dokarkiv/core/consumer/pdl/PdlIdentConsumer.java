@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.exceptions.PdlTechnicalException;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.util.NavHeadersFilter;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -124,25 +125,24 @@ public class PdlIdentConsumer implements IdentConsumer {
 	@Override
 	public String hentPersonIdent(String ident, String tema) {
 
-		PdlPersonResponse pdlPersonResponse = webClient.post()
+		ResponseEntity<PdlPersonResponse> pdlPersonResponse = webClient.post()
 				.header(TEMA, tema)
 				.bodyValue(mapHentPersonIdentForId(this.validateFolkeregisterIdent(ident)))
 				.retrieve()
-				.bodyToMono(PdlPersonResponse.class)
-				.doOnError(this::handleError)
-				.block();
+				.toEntity(PdlPersonResponse.class)
+				.doOnError(this::handleError).block();
 
-		if (pdlPersonResponse.getData().getHentPerson() != null && !pdlPersonResponse.getData().getHentPerson().getNavn().isEmpty()) {
-			return pdlPersonResponse.getData().getHentPerson().getNavn().get(0).getNavn();
+		if (pdlPersonResponse.getBody().getData().getHentPerson() != null && !pdlPersonResponse.getBody().getData().getHentPerson().getNavn().isEmpty()) {
+			return pdlPersonResponse.getBody().getData().getHentPerson().getNavn().get(0).getNavn();
 		} else {
-			if (pdlPersonResponse.getErrors() == null || pdlPersonResponse.getErrors().isEmpty()) {
+			if (pdlPersonResponse.getBody().getErrors() == null || pdlPersonResponse.getBody().getErrors().isEmpty()) {
 				throw new PdlFunctionalException("Person har ikke navn i pdl.");
 			} else {
-				if (PERSON_IKKE_FUNNET_CODE.equals(pdlPersonResponse.getErrors().get(0).getExtensions().getCode())) {
+				if (PERSON_IKKE_FUNNET_CODE.equals(pdlPersonResponse.getBody().getErrors().get(0).getExtensions().getCode())) {
 					throw new PersonIkkeFunnetException("Fant ikke navn for person i pdl.");
 				}
 			}
-			throw new PdlFunctionalException("Kunne ikke hente navn for aktørid i pdl. " + pdlPersonResponse.getErrors());
+			throw new PdlFunctionalException("Kunne ikke hente navn for aktørid i pdl. " + pdlPersonResponse.getBody().getErrors());
 		}
 	}
 
