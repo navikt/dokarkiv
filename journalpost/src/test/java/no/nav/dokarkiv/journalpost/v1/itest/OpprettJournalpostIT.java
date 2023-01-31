@@ -830,7 +830,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertTrue(response.getBody().getMelding().contains("følgende felt(er) mangler"));
 		assertThat(response.getBody().getJournalpostferdigstilt(), is(false));
 
-		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
+		Journalpost journalpost = journalpostTestRepository.findById(parseLong(response.getBody().getJournalpostId())).orElseThrow();
 		assertNotNull(journalpost.getJournalpostId());
 		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
@@ -887,7 +887,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertTrue(response.getBody().getMelding().contains("følgende felt(er) mangler"));
 		assertThat(response.getBody().getJournalpostferdigstilt(), is(false));
 
-		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
+		Journalpost journalpost = journalpostTestRepository.findById(parseLong(response.getBody().getJournalpostId())).orElseThrow();
 		assertNotNull(journalpost.getJournalpostId());
 		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
