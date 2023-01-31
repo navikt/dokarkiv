@@ -378,7 +378,7 @@
     {
       "app": "pensjon-pen",
       "namespace": "pensjonsdeployer",
-      "cluser": "prod-fss"
+      "cluster": "prod-fss"
     }
   ]
 }
