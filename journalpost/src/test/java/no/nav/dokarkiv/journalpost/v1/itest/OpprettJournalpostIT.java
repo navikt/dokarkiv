@@ -799,6 +799,63 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
 				.tema(TEMA_FOR)
 				.tittel(INNHOLD)
+				.journalfoerendeEnhet("2340")
+				.bruker(Bruker.builder()
+						.id(BRUKER_ID_PERSON)
+						.idType(BrukerIdType.FNR)
+						.build())
+				.sak(Sak.builder()
+						.arkivsaksnummer(SAK_ID.toString())
+						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.build())
+				.dokumenter(singletonList(
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL1)
+								.brevkode(BREVKODE1)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.build()))
+								.build()))
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertNotNull(response.getBody().getMelding());
+		assertTrue(response.getBody().getMelding().contains("følgende felt(er) mangler"));
+		assertThat(response.getBody().getJournalpostferdigstilt(), is(false));
+
+		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
+		assertNotNull(journalpost.getJournalpostId());
+		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
+		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
+		assertEquals("2340", journalpost.getJournalForendeEnhetId());
+		assertNull(journalpost.getJournalDato());
+		assertNull(journalpost.getJournalfortAvNavn());
+		assertNull(journalpost.getEndretAvNavn());
+		assertNull(journalpost.getEndretKildeNavn());
+
+		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		assertThat(aksjonsLoggList, hasSize(1));
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
+		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(6));
+	}
+
+	@Test
+	public void shouldFailOnFerdigstillingAndSetJournalfoerendeEnhetWhenMissingPaakrevdeFelterAndInputJournalfoerendeEnhetIsMaskinell9999() {
+		abacPermit();
+		restStsToken();
+
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
+				.tema(TEMA_FOR)
+				.tittel(INNHOLD)
 				.journalfoerendeEnhet("9999")
 				.bruker(Bruker.builder()
 						.id(BRUKER_ID_PERSON)
@@ -834,13 +891,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(journalpost.getJournalpostId());
 		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
-
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
-		assertThat(aksjonsLoggList, hasSize(1));
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(6));
+		assertNull(journalpost.getJournalForendeEnhetId());
+		assertNull(journalpost.getJournalDato());
+		assertNull(journalpost.getJournalfortAvNavn());
+		assertNull(journalpost.getEndretAvNavn());
+		assertNull(journalpost.getEndretKildeNavn());
 	}
 
 	@Test

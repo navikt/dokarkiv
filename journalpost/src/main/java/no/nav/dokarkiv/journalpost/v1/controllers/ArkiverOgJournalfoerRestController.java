@@ -229,7 +229,7 @@ public class ArkiverOgJournalfoerRestController {
 			String httpResponse = ferdigstillResponse.map(Pair::getKey).orElse(null);
 
 			if (TRUE.equalsIgnoreCase(forsoekFerdigstill) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalForendeEnhetId) && MIDLERTIDIG.equals(httpResponse)) {
-				ferdigstillJournalpostService.setJournalfoerendeEnhetNull(journalpostId, null);
+				ferdigstillJournalpostService.setJournalfoerendeEnhetNull(journalpostId);
 			}
 
 			return ResponseEntity
