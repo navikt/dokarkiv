@@ -2,9 +2,9 @@ package no.nav.dokarkiv.dokumentproduksjoninfo;
 
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.DokumentproduksjonInfoV1;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentFerdigstilteDokumenterRequest;
-import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentFerdigstilteDokumenterResponse;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalOgDokumentStatusRequest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalOgDokumentStatusResponse;
+import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,13 +13,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for DokumentproduksjonInfoEndpoint.
- *
- * @author Thomas Eugen Bjørge, Visma Consulting
  */
 @ExtendWith(MockitoExtension.class)
 public class DokumentproduksjonInfoEndpointTest {
@@ -39,15 +38,17 @@ public class DokumentproduksjonInfoEndpointTest {
 		HentJournalOgDokumentStatusResponse wsReponse = endpoint.hentJournalOgDokumentStatus(request);
 		assertThat(wsReponse, is(response));
 	}
-	
+
 	@Test
-	public void shouldDelegateToProviderFor_HentFerdigstilteDokumenter() throws Exception {
-		HentFerdigstilteDokumenterRequest request = new HentFerdigstilteDokumenterRequest();
-		HentFerdigstilteDokumenterResponse response = new HentFerdigstilteDokumenterResponse();
-		when(dokumentproduksjonInfoProviderMock.hentFerdigstilteDokumenter(request)).thenReturn(response);
-		
-		HentFerdigstilteDokumenterResponse wsReponse = endpoint.hentFerdigstilteDokumenter(request);
-		assertThat(wsReponse, is(response));
+	public void shouldThrowUnsupportedExceptionForHentFerdigstilteDokumenter() throws Exception {
+		assertThrows(UnsupportedOperationException.class,
+				() -> endpoint.hentFerdigstilteDokumenter(new HentFerdigstilteDokumenterRequest()), "sanert");
+	}
+
+	@Test
+	public void shouldThrowUnsupportedExceptionForHentJournalpostInfo() throws Exception {
+		assertThrows(UnsupportedOperationException.class,
+				() -> endpoint.hentJournalpostInfo(new HentJournalpostInfoRequest()), "sanert");
 	}
 
 	@Test

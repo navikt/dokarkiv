@@ -1,21 +1,14 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo;
 
-import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
-import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatus;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatusRequestMapper;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatusRequestTo;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatusResponseMapper;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatusResponseTo;
-import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121.HentFerdigstilteDokumenterResponseMapper;
-import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121.HentFerdigstilteDokumenterService;
-import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark122.HentJournalpostInfoService;
-import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentFerdigstilteDokumenterUgyldingInput;
-import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentJournalOgDokumentStatusDokumentInfoIkkeFunnet;
-import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentJournalOgDokumentStatusJournalpostIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentFerdigstilteDokumenterRequest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalOgDokumentStatusRequest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalOgDokumentStatusResponse;
+import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,14 +18,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for DokumentproduksjonInfoProvider
- *
- * @author Thomas Eugen Bjørge, Visma Consulting
  */
 @ExtendWith(MockitoExtension.class)
 public class DokumentproduksjonInfoProviderTest {
@@ -40,15 +29,9 @@ public class DokumentproduksjonInfoProviderTest {
 	@Mock
 	private HentJournalOgDokumentStatus hentJournalOgDokumentStatusMock;
 	@Mock
-	private HentFerdigstilteDokumenterService hentFerdigstilteDokumenterService;
-	@Mock
-	private HentJournalpostInfoService hentJournalpostInfoService;
-	@Mock
 	private HentJournalOgDokumentStatusRequestMapper hentJournalOgDokumentStatusRequestMapperMock;
 	@Mock
 	private HentJournalOgDokumentStatusResponseMapper hentJournalOgDokumentStatusResponseMapperMock;
-	@Mock
-	private HentFerdigstilteDokumenterResponseMapper hentFerdigstilteDokumenterServiceResponeMapper;
 
 	@InjectMocks
 	private DokumentproduksjonInfoProvider dokumentproduksjonInfoProvider;
@@ -69,69 +52,16 @@ public class DokumentproduksjonInfoProviderTest {
 	}
 
 	@Test
-	public void shouldThrowJournalpostIkkeFunnetWhenJournalpostNotFound() throws Exception {
-		String exceptionMessage = "Test exception";
-		HentJournalOgDokumentStatusRequest wsRequest = new HentJournalOgDokumentStatusRequest();
-		HentJournalOgDokumentStatusRequestTo domainRequest = new HentJournalOgDokumentStatusRequestTo();
-		when(hentJournalOgDokumentStatusRequestMapperMock.map(wsRequest)).thenReturn(domainRequest);
-		NoJournalpostFoundException domainException = new NoJournalpostFoundException(exceptionMessage, 1L);
-		when(hentJournalOgDokumentStatusMock.hentJournalOgDokumentStatus(domainRequest)).thenThrow(
-				domainException);
-
-		assertThrows(HentJournalOgDokumentStatusJournalpostIkkeFunnet.class,
-				() -> dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(wsRequest),
-				exceptionMessage);
+	public void shouldThrowUnsupportedOperationExceptionForHentFerdigstilteDokumenter() throws Exception {
+		assertThrows(UnsupportedOperationException.class,
+				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(new HentFerdigstilteDokumenterRequest()),
+				"sanert");
 	}
 
 	@Test
-	public void shouldThrowDokumentInfoIkkeFunnetWhenDokumentInfoNotFound() throws Exception {
-		String exceptionMessage = "Test exception";
-		HentJournalOgDokumentStatusRequest wsRequest = new HentJournalOgDokumentStatusRequest();
-		HentJournalOgDokumentStatusRequestTo domainRequest = new HentJournalOgDokumentStatusRequestTo();
-		when(hentJournalOgDokumentStatusRequestMapperMock.map(wsRequest)).thenReturn(domainRequest);
-		NoDokumentInfoFoundException domainException = new NoDokumentInfoFoundException(exceptionMessage, 1L);
-		when(hentJournalOgDokumentStatusMock.hentJournalOgDokumentStatus(domainRequest)).thenThrow(
-				domainException);
-
-		assertThrows(HentJournalOgDokumentStatusDokumentInfoIkkeFunnet.class,
-				() -> dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(wsRequest),
-				exceptionMessage);
-	}
-
-	@Test
-	public void shouldDelegateToHentFerdigstilteDokumenter() throws Exception {
-		HentFerdigstilteDokumenterRequest wsRequest = new HentFerdigstilteDokumenterRequest();
-		wsRequest.setJournalpostId(1L);
-		wsRequest.getDokumentInfoListe().add(2L);
-
-		dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(wsRequest);
-		verify(hentFerdigstilteDokumenterServiceResponeMapper).map(anyList());
-	}
-
-	@Test
-	public void shouldThrowException_HentFerdigstilteDokumenter_requestIsNull() throws Exception {
-		assertThrows(HentFerdigstilteDokumenterUgyldingInput.class,
-				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(null),
-				"request is null");
-	}
-
-	@Test
-	public void shouldThrowException_HentFerdigstilteDokumenter_journalpostIsNull() throws Exception {
-		HentFerdigstilteDokumenterRequest wsRequest = new HentFerdigstilteDokumenterRequest();
-		wsRequest.setJournalpostId(0);
-
-		assertThrows(HentFerdigstilteDokumenterUgyldingInput.class,
-				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(wsRequest),
-				"journalpostId is null");
-	}
-
-	@Test
-	public void shouldThrowException_HentFerdigstilteDokumenter_dokumentInfosIsNull() throws Exception {
-		HentFerdigstilteDokumenterRequest wsRequest = new HentFerdigstilteDokumenterRequest();
-		wsRequest.setJournalpostId(1L);
-
-		assertThrows(HentFerdigstilteDokumenterUgyldingInput.class,
-				() -> dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(wsRequest),
-				"List with dokumentInfo is null or empty");
+	public void shouldThrowUnsupportedOperationExceptionForHentJournalpostInfo() throws Exception {
+		assertThrows(UnsupportedOperationException.class,
+				() -> dokumentproduksjonInfoProvider.hentJournalpostInfo(new HentJournalpostInfoRequest()),
+				"sanert");
 	}
 }

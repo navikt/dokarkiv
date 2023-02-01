@@ -302,6 +302,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 		}
 	}
 
+	@Deprecated
 	@Override
 	@Transactional
 	public void settDatoSendt(SettDatoSendtRequest settDatoSendtRequest) {
@@ -309,7 +310,6 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 		SettDatoSendtRequestTo domainRequest = settDatoSendtRequestMapper.map(settDatoSendtRequest);
 		settDatoSendtService.settDatoSendt(domainRequest);
 		log.info("tjoark104 har oppdatert datoSendt for journalpost(er) med journalpostId(er)={}", domainRequest.getJournalpostIds());
-
 	}
 
 	@Override
@@ -334,6 +334,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 		return arkiverVedleggResponseMapper.map(response);
 	}
 
+	@Deprecated
 	@Override
 	@Transactional
 	public void avbrytVedlegg(AvbrytVedleggRequest wsRequest) throws AvbrytVedleggDokumentIkkeFunnet,
@@ -364,6 +365,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 		}
 	}
 
+	@Deprecated
 	@Override
 	@Transactional
 	public void fjernFerdigstiltDokument(FjernFerdigstiltDokumentRequest wsRequest)
@@ -423,6 +425,7 @@ public class ArkiverDokumentproduksjonProvider implements ArkiverDokumentproduks
 		}
 	}
 
+	@Deprecated
 	@Override
 	@Transactional
 	public void knyttDokumentTilJournalpostSomVedlegg(KnyttDokumentTilJournalpostSomVedleggRequest request) throws
