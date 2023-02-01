@@ -37,18 +37,22 @@ public class CacheConfig {
 				new CaffeineCache(NAVUSER_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(8, HOURS)
 						.maximumSize(10000)
+						.recordStats()
 						.build()),
 				new CaffeineCache(NAVSERVICEUSER_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(2, DAYS)
 						.maximumSize(10000)
+						.recordStats()
 						.build()),
 				new CaffeineCache(USERNAME_TOKEN_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(10, MINUTES)
 						.maximumSize(10)
+						.recordStats()
 						.build()),
 				new CaffeineCache(REST_STS_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(50, MINUTES)
 						.maximumSize(1)
+						.recordStats()
 						.build()),
 				new CaffeineCache(HISTORISKE_IDENTER, Caffeine.newBuilder()
 						.expireAfterWrite(10, MINUTES)
@@ -58,14 +62,17 @@ public class CacheConfig {
 						Caffeine.newBuilder()
 								.expireAfterWrite(50, MINUTES)
 								.maximumSize(10)
+								.recordStats()
 								.build()),
 				new CaffeineCache(AZURE_ON_BEHALF_OF_TOKEN_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(50, MINUTES)
 						.maximumSize(10000)
+						.recordStats()
 						.build()),
 				new CaffeineCache(AZURE_HENT_AD_GRUPPER, Caffeine.newBuilder()
 						.expireAfterWrite(50, MINUTES)
 						.maximumSize(10000)
+						.recordStats()
 						.build())));
 		return manager;
 	}
