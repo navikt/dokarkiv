@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPHEV_FEILREGISTRERING;
@@ -37,7 +36,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	private static final String HJEMMEL = "ARKL";
 
 	@Test
-	public void happyPathFeilregistrer() throws IOException {
+	public void happyPathFeilregistrer() {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
@@ -96,7 +95,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathOpphevFeilregistrering() throws IOException {
+	public void happyPathOpphevFeilregistrering() {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
@@ -129,7 +128,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathUkjentBruker() throws IOException {
+	public void happyPathUkjentBruker() {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
@@ -162,7 +161,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldGet405WhenJournalPostHaveStatusUtgaaende() throws IOException {
+	public void shouldGet405WhenJournalPostHaveStatusUtgaaende() {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
@@ -178,7 +177,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldSetUtgaarJournalstatusWhenValidatedOk() throws IOException {
+	public void shouldSetUtgaarJournalstatusWhenValidatedOk() {
 		abacPermit();
 
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();

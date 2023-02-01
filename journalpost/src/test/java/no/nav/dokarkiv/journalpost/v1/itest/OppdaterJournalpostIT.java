@@ -38,7 +38,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -98,7 +97,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	 * HVIS forsoekEndeligJF == TRUE, og ingen felter mangler for å endelig journalføre => returner 200 OK og journalpostId.
 	 */
 	@Test
-	public void shouldFerdigstillJournalpostVedOppdateringUserTokenAndServiceUserToken() throws IOException {
+	public void shouldFerdigstillJournalpostVedOppdateringUserTokenAndServiceUserToken() {
 		abacPermit();
 
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
@@ -1029,7 +1028,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 
 	@Test
-	public void shouldUsePdlNameForAvsenderMottakerNameNull() throws IOException {
+	public void shouldUsePdlNameForAvsenderMottakerNameNull() {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();

@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.util.Base64Utils;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,13 +47,11 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 	private static final String SRV_DOKARKIVPROXY = "srvdokarkivproxy";
 
 	@Test
-	public void happyPathInngaaende() throws IOException {
+	public void happyPathInngaaende() {
 		Journalpost journalpost = createJournalpost();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
 		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 		var requestEntity = new HttpEntity<>(headers);
@@ -62,9 +59,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
 		Journalpost kopiertJournalpost = journalpostTestRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
 		journalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
@@ -152,18 +147,14 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = createJournalpost();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 		journalpost.setKanalReferanseId(null);
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
 		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 		var requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN + KOPIER_QUERY + journalpostId, HttpMethod.POST, requestEntity, String.class);
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
 		Journalpost kopiertJournalpost = journalpostTestRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
 		assertNull(kopiertJournalpost.getKanalReferanseId());
@@ -175,18 +166,14 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
 		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 		var requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN + KOPIER_QUERY + journalpostId, HttpMethod.POST, requestEntity, String.class);
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
 		Journalpost kopiertJournalpost = journalpostTestRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
 		journalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
@@ -202,18 +189,14 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
 		HttpHeaders headers = createHeaders(GYLDIG_CONSUMER);
 		var requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST_INTERN + KOPIER_QUERY + journalpostId, HttpMethod.POST, requestEntity, String.class);
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
 		Journalpost kopiertJournalpost = journalpostTestRepository.findById(Long.parseLong(response.getBody())).orElseThrow(RuntimeException::new);
 		journalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);

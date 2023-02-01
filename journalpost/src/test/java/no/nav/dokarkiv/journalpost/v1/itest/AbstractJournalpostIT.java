@@ -13,7 +13,6 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -30,8 +29,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(
+		webEnvironment = RANDOM_PORT,
 		classes = {CoreConfig.class, JournalpostConfig.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles({"itest", "wiremock"})
@@ -66,52 +70,52 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	void abacPermit() {
 		stubFor(post(urlEqualTo("/abac"))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("abac/abac-permit.json")));
 
 	}
 
 	void restStsToken() {
 		stubFor(post(urlEqualTo("/reststs"))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("reststs/reststs-happy.json")));
 	}
 
 	void happyPersonIdentStub() {
 		stubFor(post(urlEqualTo("/pdl"))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-hentperson-happy.json")));
 	}
 
 	void happyFnrIdentStub() {
 		stubFor(post(urlEqualTo("/pdl"))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-folkeregisterident-happy.json")));
 	}
 
 	void identNotFoundStub() {
 		stubFor(post(urlEqualTo("/pdl"))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-ident-notfound.json")));
 	}
 
 	void happyAktoerIdStub() {
 		stubFor(post(urlEqualTo("/pdl"))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-aktoerid-happy.json")));
 	}
 
 	void stubAzure() {
 		stubFor(post("/azure_token")
 				.willReturn(aResponse()
-						.withStatus(HttpStatus.OK.value())
-						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("azure/token_response.json")));
 	}
 

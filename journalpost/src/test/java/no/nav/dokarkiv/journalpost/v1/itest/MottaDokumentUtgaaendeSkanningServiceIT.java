@@ -229,7 +229,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 	}
 
 	@Test
-	public void shouldReturnConflictWithInvalidJournalpostTypeCode() throws InterruptedException {
+	public void shouldReturnConflictWithInvalidJournalpostTypeCode() {
 		String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av journalpost " +
 				"journalpostId=%s " +
 				"mottakskanal=SKAN_NETS " +
