@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo;
 
-import static org.apache.cxf.ws.security.SecurityConstants.USERNAME_TOKEN_VALIDATOR;
-import static org.apache.cxf.ws.security.SecurityConstants.VALIDATE_TOKEN;
-
 import no.nav.dokarkiv.core.security.NavLdapUsernameTokenValidator;
 import org.apache.cxf.Bus;
 import org.apache.cxf.jaxws.EndpointImpl;
@@ -18,9 +15,9 @@ import javax.xml.ws.Endpoint;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
+import static org.apache.cxf.ws.security.SecurityConstants.USERNAME_TOKEN_VALIDATOR;
+import static org.apache.cxf.ws.security.SecurityConstants.VALIDATE_TOKEN;
+
 @Configuration
 @ComponentScan
 public class DokumentproduksjonInfoConfig {
