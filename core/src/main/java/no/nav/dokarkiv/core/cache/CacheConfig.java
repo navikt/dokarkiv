@@ -64,7 +64,7 @@ public class CacheConfig {
 						.maximumSize(10000)
 						.build()),
 				new CaffeineCache(AZURE_HENT_AD_GRUPPER, Caffeine.newBuilder()
-						.expireAfterWrite(10, MINUTES)
+						.expireAfterWrite(50, MINUTES)
 						.maximumSize(10000)
 						.build())));
 		return manager;

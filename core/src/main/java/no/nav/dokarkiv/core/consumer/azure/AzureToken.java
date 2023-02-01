@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.AzureTokenException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.security.azure.AzureConfig;
+import no.nav.security.token.support.core.jwt.JwtToken;
+import no.nav.security.token.support.core.jwt.JwtTokenClaims;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -18,6 +20,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE;
 import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_ON_BEHALF_OF_TOKEN_CACHE;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
@@ -28,6 +31,8 @@ public class AzureToken {
 	private static final String ON_BEHALF_OF_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
 	private static final String ON_BEHALF_OF = "on_behalf_of";
 	private static final String CLIENT_CREDENTIALS = "client_credentials";
+	static final String DEFAULT_CLAIM_OID = "oid";
+	static final String DEFAULT_CLAIM_SUB = "sub";
 
 	private final AzureConfig azureConfig;
 	private final ObjectMapper objectMapper;
@@ -42,6 +47,13 @@ public class AzureToken {
 				.baseUrl(azureConfig.getOpenidConfigTokenEndpoint())
 				.defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
+	}
+
+	public String getAndCacheAzureOnBehalfOfAndClientCredentialToken(String accessToken, String scope, String tokenClaimSub) {
+		if (isNotBlank(accessToken) && isOnBehalfOfAzureToken(accessToken)) {
+			return onBehalfOfAccessToken(accessToken, scope, tokenClaimSub);
+		}
+		return clientCredentialAccessToken(scope);
 	}
 
 	@Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
@@ -98,5 +110,12 @@ public class AzureToken {
 					String.format("Kall mot Azure feilet med feilmelding=%s", error.getMessage()),
 					error);
 		}
+	}
+
+	private boolean isOnBehalfOfAzureToken(String accessToken) {
+		JwtToken jwtToken = new JwtToken(accessToken);
+		JwtTokenClaims jwtTokenClaims = jwtToken.getJwtTokenClaims();
+		return jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_SUB) != null && jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_OID) != null
+				&& !jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_SUB).equals(jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_OID));
 	}
 }
