@@ -62,7 +62,7 @@ public class SaksrelasjonUpdater {
 	}
 
 	private void updateSaksnummer(Long sakId, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
-		String oldSaksnummer = saksrelasjon.getSaknrfk();
+		Long oldSakId = saksrelasjon.getSakId();
 		if (sakId != null) { // arkivsak
 			saksrelasjon.setSakId(sakId);
 			saksrelasjon.setSaknrfk(sakId.toString());
@@ -77,7 +77,11 @@ public class SaksrelasjonUpdater {
 		} else {
 			throw new UgyldigInputException("Kan ikke oppdatere sakId basert på input");
 		}
-		endret.add(SAKSRELASJON_SAKID, oldSaksnummer, saksrelasjon.getSaknrfk());
+		if(oldSakId == null) {
+			endret.add(SAKSRELASJON_SAKID, null, saksrelasjon.getSakId().toString());
+		} else {
+			endret.add(SAKSRELASJON_SAKID, oldSakId.toString(), saksrelasjon.getSakId().toString());
+		}
 	}
 
 	private void updateArkivsaksystem(OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {

@@ -23,7 +23,6 @@ import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_GSAK_SAKSID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_PENSJON_SAKSID;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_PERSON_TILKNYTTET_FNR;
 import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_TEMA;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Component
 public class BehandleJournalV3Pep {
@@ -72,11 +71,11 @@ public class BehandleJournalV3Pep {
 
 	// https://confluence.adeo.no/display/ABAC/Ingen+tilgang+til+pensjons+saker
 	private void enrichPolicyIngenTilgangTilPensjonssaker(Journalpost journalpost, XacmlRequest xacmlRequest) {
-		if (journalpost.getSaksrelasjon() != null && isNotEmpty(journalpost.getSaksrelasjon().getSaknrfk())) {
+		if (journalpost.getSaksrelasjon() != null && journalpost.getSaksrelasjon().getSakId() != null) {
 			if (FagsystemCode.PEN.equals(journalpost.getSaksrelasjon().getFagsystem())) {
-				xacmlRequest.resource(RESOURCE_ARKIV_PENSJON_SAKSID, journalpost.getSaksrelasjon().getSaknrfk());
+				xacmlRequest.resource(RESOURCE_ARKIV_PENSJON_SAKSID, journalpost.getSaksrelasjon().getSakId().toString());
 			} else {
-				xacmlRequest.resource(RESOURCE_ARKIV_GSAK_SAKSID, journalpost.getSaksrelasjon().getSaknrfk());
+				xacmlRequest.resource(RESOURCE_ARKIV_GSAK_SAKSID, journalpost.getSaksrelasjon().getSakId().toString());
 			}
 		}
 	}

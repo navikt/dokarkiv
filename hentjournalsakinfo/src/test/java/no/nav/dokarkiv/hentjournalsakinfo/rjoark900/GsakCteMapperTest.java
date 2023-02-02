@@ -36,7 +36,7 @@ public class GsakCteMapperTest {
 						     gsaksaker AS
 						       (SELECT s.journalpost_id
 						        FROM t_saksrelasjon s
-						        WHERE (s.k_fagsystem = 'FS22' AND s.sak_nr_fk IN (:gsakIds0))
+						        WHERE (s.k_fagsystem = 'FS22' AND s.sak_id IN (:gsakIds0))
 						          AND (s.feilregistrert IS NULL OR (s.feilregistrert IN (:visFeilregistrert)))
 						       ),
 						"""));
@@ -52,7 +52,7 @@ public class GsakCteMapperTest {
 						     gsaksaker AS
 						       (SELECT s.journalpost_id
 						        FROM t_saksrelasjon s
-						        WHERE (s.k_fagsystem = 'FS22' AND s.sak_nr_fk IN (:gsakIds0))
+						        WHERE (s.k_fagsystem = 'FS22' AND s.sak_id IN (:gsakIds0))
 						          AND (s.feilregistrert = 1)
 						       ),
 						"""));
@@ -70,7 +70,7 @@ public class GsakCteMapperTest {
 						     gsaksaker AS
 						       (SELECT s.journalpost_id
 						        FROM t_saksrelasjon s
-						        WHERE (s.k_fagsystem = 'FS22' AND (s.sak_nr_fk IN (:gsakIds0) OR s.sak_nr_fk IN (:gsakIds1)))
+						        WHERE (s.k_fagsystem = 'FS22' AND (s.sak_id IN (:gsakIds0) OR s.sak_id IN (:gsakIds1)))
 						          AND (s.feilregistrert IS NULL OR (s.feilregistrert IN (:visFeilregistrert)))
 						       ),
 						"""));

@@ -62,14 +62,14 @@ class GsakCteMapper {
 	}
 
 	// GSAK saker risikerer å ha flere enn 1000 saker for en bruker. 1000 i en IN seleksjon er max i Oracle.
-	// Derfor deler man det opp i flere deler med (s.sak_nr_fk IN(0, 1, ...) OR s.sak_nr_fk IN(1001, 1002, ...))
+	// Derfor deler man det opp i flere deler med (s.sak_id IN(0, 1, ...) OR s.sak_id IN(1001, 1002, ...))
 	// Listen over sakene blir satt til named parameters med navn: gsakIds0, gsakIds1, ..., gsakIdsN
 	private String generateGsakSelectionSql(int partitions) {
 		if (partitions == 0) {
-			return "s.sak_nr_fk IN (:gsakIds0)";
+			return "s.sak_id IN (:gsakIds0)";
 		} else {
 			return "(" + IntStream.range(0, partitions)
-					.mapToObj(num -> "s.sak_nr_fk IN (:gsakIds" + num + ")")
+					.mapToObj(num -> "s.sak_id IN (:gsakIds" + num + ")")
 					.collect(Collectors.joining(" OR ")) + ")";
 		}
 	}

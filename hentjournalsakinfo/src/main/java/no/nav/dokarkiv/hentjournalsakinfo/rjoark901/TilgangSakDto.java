@@ -26,6 +26,23 @@ public class TilgangSakDto {
 	String opprettetAv;
 	LocalDateTime opprettetTidspunkt;
 
+	public TilgangSakDto(Long sakId, FagsystemCode fagsystem, Boolean feilregistrert, String aktoerId, String tema, String fagsakNr, String orgnr, String applikasjon, String opprettetAv, LocalDateTime opprettetTidspunkt) {
+		if(sakId == null) {
+			this.sakId = null;
+		} else {
+			this.sakId = sakId.toString();
+		}
+		this.fagsystem = fagsystem;
+		this.feilregistrert = feilregistrert;
+		this.aktoerId = aktoerId;
+		this.tema = tema;
+		this.fagsakNr = fagsakNr;
+		this.orgnr = orgnr;
+		this.applikasjon = applikasjon;
+		this.opprettetAv = opprettetAv;
+		this.opprettetTidspunkt = opprettetTidspunkt;
+	}
+
 	// "Opprettet tidspunkt iht. ISO-8601"
 	public String getOpprettetTidspunkt() {
 		if (this.opprettetTidspunkt == null) {
