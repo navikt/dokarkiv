@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Value;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -26,9 +27,11 @@ public class TilgangSakDto {
 	String opprettetAv;
 	LocalDateTime opprettetTidspunkt;
 
-	public TilgangSakDto(Long sakId, FagsystemCode fagsystem, Boolean feilregistrert, String aktoerId, String tema, String fagsakNr, String orgnr, String applikasjon, String opprettetAv, LocalDateTime opprettetTidspunkt) {
+	public TilgangSakDto(Object sakId, FagsystemCode fagsystem, Boolean feilregistrert, String aktoerId, String tema, String fagsakNr, String orgnr, String applikasjon, String opprettetAv, LocalDateTime opprettetTidspunkt) {
 		if(sakId == null) {
 			this.sakId = null;
+		} else if(sakId instanceof Long || sakId instanceof BigInteger) {
+			this.sakId = sakId.toString();
 		} else {
 			this.sakId = sakId.toString();
 		}

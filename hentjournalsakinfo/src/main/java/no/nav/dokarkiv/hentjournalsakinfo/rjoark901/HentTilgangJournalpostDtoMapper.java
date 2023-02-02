@@ -34,7 +34,7 @@ class HentTilgangJournalpostDtoMapper {
 				(String) tuple[8],
 				new TilgangBrukerDto((String) tuple[9],
 						(BrukerTypeCode) tuple[10]),
-				new TilgangSakDto((Long) tuple[11],
+				new TilgangSakDto(tuple[11],
 						(FagsystemCode) tuple[12],
 						isNull(tuple[13]) ? null : (boolean) tuple[13],
 						(String) tuple[14],
