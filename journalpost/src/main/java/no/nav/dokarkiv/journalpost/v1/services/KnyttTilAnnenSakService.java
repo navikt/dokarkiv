@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.consumers.saf.SafJournalpostQueryService;
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo;
@@ -37,9 +36,9 @@ public class KnyttTilAnnenSakService {
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 	}
 
-	public KnyttTilAnnenSakResponse knyttTilAnnenSak(KnyttTilAnnenSakRequest knyttTilAnnenSakRequest, long kildeJournalpostId, String safAuthorizationHeader) {
+	public KnyttTilAnnenSakResponse knyttTilAnnenSak(KnyttTilAnnenSakRequest knyttTilAnnenSakRequest, long kildeJournalpostId) {
 		// 3. Sjekk tilgang til å knytte dokumenter på journalpost til ny sak.
-		SafJournalpostTo safJournalpostFra = safJournalpostQueryService.hentJournalpost(kildeJournalpostId, safAuthorizationHeader);
+		SafJournalpostTo safJournalpostFra = safJournalpostQueryService.hentJournalpost(kildeJournalpostId);
 		sjekkOmAlleDokumentvarianterErGyldige(safJournalpostFra, kildeJournalpostId);
 
 		// 4. Kopier kildejournalpost, ny journalpost vil få midlertidlig journalpostStatus = "OD"/"R"

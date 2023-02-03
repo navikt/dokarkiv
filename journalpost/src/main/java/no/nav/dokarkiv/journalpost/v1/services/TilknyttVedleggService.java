@@ -71,7 +71,7 @@ public class TilknyttVedleggService {
 		JWTClaimsSet tokenClaims = tokenGrantValidator.validateOnBehalfOfAccessToken(auth);
 		String tilknyttetAvNavn = tokenClaims.getSubject();
 
-		var accessControlledDocuments = accessLookupJournalpost.checkDocumentsCanBeAccessedByActor(targetJournalpostId, tilknyttVedleggRequest, auth);
+		var accessControlledDocuments = accessLookupJournalpost.checkDocumentsCanBeAccessedByActor(tilknyttVedleggRequest);
 
 		List<FeiledeDokumenter> failedDocuments = accessControlledDocuments.failedDocuments();
 
