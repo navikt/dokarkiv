@@ -1,14 +1,17 @@
 package no.nav.dokarkiv.core.cache;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
-import org.springframework.cache.support.SimpleCacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.HOURS;
@@ -30,10 +33,25 @@ public class CacheConfig {
 	public static final String AZURE_HENT_AD_GRUPPER = "hentAdGrupperCache";
 	public static final String AZURE_ON_BEHALF_OF_TOKEN_CACHE = "hentOnBehalfOfCache";
 
+	private final MeterRegistry meterRegistry;
+
+	public CacheConfig(MeterRegistry meterRegistry) {
+		this.meterRegistry = meterRegistry;
+	}
+
 	@Bean
 	CacheManager cacheManager() {
-		SimpleCacheManager manager = new SimpleCacheManager();
-		manager.setCaches(Arrays.asList(
+		CaffeineCacheManager manager = new CaffeineCacheManager();
+		caffeineCaches().forEach(caffeineCache -> {
+					manager.registerCustomCache(caffeineCache.getName(), caffeineCache.getNativeCache());
+					CaffeineCacheMetrics.monitor(meterRegistry, caffeineCache.getNativeCache(), caffeineCache.getName());
+				}
+		);
+		return manager;
+	}
+
+	private List<CaffeineCache> caffeineCaches() {
+		return Arrays.asList(
 				new CaffeineCache(NAVUSER_CACHE, Caffeine.newBuilder()
 						.expireAfterWrite(8, HOURS)
 						.maximumSize(10000)
@@ -73,7 +91,6 @@ public class CacheConfig {
 						.expireAfterWrite(50, MINUTES)
 						.maximumSize(10000)
 						.recordStats()
-						.build())));
-		return manager;
+						.build()));
 	}
 }
