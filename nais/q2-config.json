@@ -224,7 +224,7 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "etterlatte-brev-distribusjon",
+      "app": "etterlatte-brev-api",
       "namespace": "etterlatte",
       "cluster": "dev-gcp"
     },
@@ -392,6 +392,11 @@
       "app": "hm-joark-sink",
       "namespace": "teamdigihot",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "pensjon-pen-q2",
+      "namespace": "teampensjon",
+      "cluster": "dev-fss"
     }
   ]
 }

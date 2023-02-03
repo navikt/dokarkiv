@@ -203,7 +203,7 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "etterlatte-brev-distribusjon",
+      "app": "etterlatte-brev-api",
       "namespace": "etterlatte",
       "cluster": "dev-gcp"
     },

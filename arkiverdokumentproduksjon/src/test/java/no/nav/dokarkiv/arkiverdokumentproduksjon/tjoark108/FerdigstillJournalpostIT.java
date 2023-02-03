@@ -16,7 +16,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FerdigstillJournalpostInneholderDokumenterUnderRedigering;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FerdigstillJournalpostRequest;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FjernFerdigstiltDokumentRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -101,7 +100,7 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 	@Test
 	public void shouldThrowException_missingInput() {
 		assertThrows(IllegalArgumentException.class,
-				() -> arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest()));
+				() -> arkiverDokumentproduksjonProvider.ferdigstillJournalpost(new FerdigstillJournalpostRequest()));
 	}
 
 	@Test

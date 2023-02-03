@@ -22,8 +22,6 @@ import javax.xml.ws.soap.MTOM;
 /**
  * Implementation of JAX-WS-generated service interface DokumentproduksjonInfoV1. Bootstraps the
  * Spring context and delegates to Spring-managed DokumentProduksjonInfoProvider.
- *
- * @author Thomas Eugen Bjørge, Visma Consulting
  */
 @WebService(endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.DokumentproduksjonInfoV1",
 		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/dokumentproduksjoninfo/v1/dokumentproduksjoninfo.wsdl",
@@ -49,16 +47,14 @@ public class DokumentproduksjonInfoEndpoint implements DokumentproduksjonInfoV1 
 		return dokumentproduksjonInfoProvider.hentJournalOgDokumentStatus(request);
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark122"}, percentiles = {0.5, 0.95})
 	@Override
 	public HentJournalpostInfoResponse hentJournalpostInfo(HentJournalpostInfoRequest hentJournalpostInfoRequest) throws HentJournalpostInfoJournalpostIkkeFunnet, HentJournalpostInfoDokumentInfoIkkeFunnet {
-		return dokumentproduksjonInfoProvider.hentJournalpostInfo(hentJournalpostInfoRequest);
+		throw new UnsupportedOperationException("hentFerdigstilteDokumenter er sanert 2023-02");
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark121"}, percentiles = {0.5, 0.95})
 	@Override
 	public HentFerdigstilteDokumenterResponse hentFerdigstilteDokumenter(HentFerdigstilteDokumenterRequest request) {
-		return dokumentproduksjonInfoProvider.hentFerdigstilteDokumenter(request);
+		throw new UnsupportedOperationException("hentFerdigstilteDokumenter er sanert 2023-02");
 	}
 
 	@Override

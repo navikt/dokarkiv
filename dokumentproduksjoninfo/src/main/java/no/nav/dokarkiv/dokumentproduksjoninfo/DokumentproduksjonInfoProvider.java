@@ -3,23 +3,9 @@ package no.nav.dokarkiv.dokumentproduksjoninfo;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.NoDokumentInfoFoundException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
-import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.DokumentInfoNotFoundException;
-import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.FilDetaljerNotFoundException;
-import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.IllegalDokumentstatusException;
-import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.IllegalJournalStatusException;
-import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.IllegalVariantFormatException;
-import no.nav.dokarkiv.dokumentproduksjoninfo.exceptions.JournalpostNotFoundException;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatus;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatusRequestMapper;
 import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark120.HentJournalOgDokumentStatusResponseMapper;
-import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121.HentFerdigstilteDokumenterResponseMapper;
-import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121.HentFerdigstilteDokumenterResponseTo;
-import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark121.HentFerdigstilteDokumenterService;
-import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark122.HentJournalpostInfoRequestMapper;
-import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark122.HentJournalpostInfoRequestTo;
-import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark122.HentJournalpostInfoResponseMapper;
-import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark122.HentJournalpostInfoResponseTo;
-import no.nav.dokarkiv.dokumentproduksjoninfo.tjoark122.HentJournalpostInfoService;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.DokumentproduksjonInfoV1;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentFerdigstilteDokumenterDokumenterIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentFerdigstilteDokumenterDokumenterKanIkkeHentes;
@@ -37,32 +23,21 @@ import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.He
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-
-import java.util.List;
 
 @Slf4j
 @Component
 public class DokumentproduksjonInfoProvider implements DokumentproduksjonInfoV1 {
 
 	private final HentJournalOgDokumentStatus hentJournalOgDokumentStatus;
-	private final HentJournalpostInfoService hentJournalpostInfoService;
-	private final HentFerdigstilteDokumenterService hentFerdigstilteDokumenterService;
 	private final HentJournalOgDokumentStatusRequestMapper hentJournalOgDokumentStatusRequestMapper;
 	private final HentJournalOgDokumentStatusResponseMapper hentJournalOgDokumentStatusResponseMapper;
-	private final HentJournalpostInfoRequestMapper hentJournalpostInfoRequestMapper;
-	private final HentJournalpostInfoResponseMapper hentJournalpostInfoResponseMapper;
-	private final HentFerdigstilteDokumenterResponseMapper hentFerdigstilteDokumenterResponseMapper;
 
-	public DokumentproduksjonInfoProvider(HentJournalOgDokumentStatus hentJournalOgDokumentStatus, HentJournalpostInfoService hentJournalpostInfoService, HentFerdigstilteDokumenterService hentFerdigstilteDokumenterService, HentJournalOgDokumentStatusRequestMapper hentJournalOgDokumentStatusRequestMapper, HentJournalOgDokumentStatusResponseMapper hentJournalOgDokumentStatusResponseMapper, HentJournalpostInfoRequestMapper hentJournalpostInfoRequestMapper, HentJournalpostInfoResponseMapper hentJournalpostInfoResponseMapper, HentFerdigstilteDokumenterResponseMapper hentFerdigstilteDokumenterResponseMapper) {
+	public DokumentproduksjonInfoProvider(HentJournalOgDokumentStatus hentJournalOgDokumentStatus,
+										  HentJournalOgDokumentStatusRequestMapper hentJournalOgDokumentStatusRequestMapper,
+										  HentJournalOgDokumentStatusResponseMapper hentJournalOgDokumentStatusResponseMapper) {
 		this.hentJournalOgDokumentStatus = hentJournalOgDokumentStatus;
-		this.hentJournalpostInfoService = hentJournalpostInfoService;
-		this.hentFerdigstilteDokumenterService = hentFerdigstilteDokumenterService;
 		this.hentJournalOgDokumentStatusRequestMapper = hentJournalOgDokumentStatusRequestMapper;
 		this.hentJournalOgDokumentStatusResponseMapper = hentJournalOgDokumentStatusResponseMapper;
-		this.hentJournalpostInfoRequestMapper = hentJournalpostInfoRequestMapper;
-		this.hentJournalpostInfoResponseMapper = hentJournalpostInfoResponseMapper;
-		this.hentFerdigstilteDokumenterResponseMapper = hentFerdigstilteDokumenterResponseMapper;
 	}
 
 	@Transactional(readOnly = true)
@@ -80,46 +55,17 @@ public class DokumentproduksjonInfoProvider implements DokumentproduksjonInfoV1 
 		}
 	}
 
-	@Transactional(readOnly = true)
+	@Deprecated
 	@Override
 	public HentJournalpostInfoResponse hentJournalpostInfo(HentJournalpostInfoRequest hentJournalpostInfoRequest) throws HentJournalpostInfoJournalpostIkkeFunnet, HentJournalpostInfoDokumentInfoIkkeFunnet {
-		try {
-			log.info("tjoark122 henter journalpostinfo for journalpostId={}, dokumentInfoId={}", hentJournalpostInfoRequest.getJournalpostId(), hentJournalpostInfoRequest.getDokumentInfoId());
-			HentJournalpostInfoRequestTo request = hentJournalpostInfoRequestMapper.map(hentJournalpostInfoRequest);
-			HentJournalpostInfoResponseTo responseTo = hentJournalpostInfoService.hentJournalOgDokumentStatus(request);
-			return hentJournalpostInfoResponseMapper.map(responseTo);
-		} catch (NoJournalpostFoundException e) {
-			throw new HentJournalpostInfoJournalpostIkkeFunnet(e.getMessage(), new FunctionalFault());
-		} catch (NoDokumentInfoFoundException e) {
-			throw new HentJournalpostInfoDokumentInfoIkkeFunnet(e.getMessage(), new FunctionalFault());
-		}
+		throw new UnsupportedOperationException("hentJournalpostInfo er sanert 2023-02");
 	}
 
-	@Transactional(readOnly = true)
+	@Deprecated
 	@Override
 	public HentFerdigstilteDokumenterResponse hentFerdigstilteDokumenter(HentFerdigstilteDokumenterRequest request)
 			throws HentFerdigstilteDokumenterUgyldingInput, HentFerdigstilteDokumenterDokumenterKanIkkeHentes, HentFerdigstilteDokumenterDokumenterIkkeFunnet {
-		if (request == null) {
-			throw new HentFerdigstilteDokumenterUgyldingInput("request is null", new FunctionalFault());
-		}
-		log.info("tjoark121 henter ferdigstilte dokumenter for journalpostId={}", request.getJournalpostId());
-		if (request.getJournalpostId() == 0) {
-			throw new HentFerdigstilteDokumenterUgyldingInput("journalpostId is null or 0", new FunctionalFault());
-		}
-		if (CollectionUtils.isEmpty(request.getDokumentInfoListe())) {
-			throw new HentFerdigstilteDokumenterUgyldingInput("List with dokumentInfo is null or empty. journalpostId=" + request.getJournalpostId(), new FunctionalFault());
-		}
-		List<HentFerdigstilteDokumenterResponseTo> domainResponse;
-		try {
-			domainResponse = hentFerdigstilteDokumenterService
-					.hentFerdigstilteDokumenter(request.getJournalpostId(), request.getDokumentInfoListe());
-		} catch (IllegalJournalStatusException | IllegalVariantFormatException | IllegalDokumentstatusException e) {
-			throw  new HentFerdigstilteDokumenterDokumenterKanIkkeHentes(e.getMessage(), new FunctionalFault());
-		} catch (FilDetaljerNotFoundException | DokumentInfoNotFoundException | JournalpostNotFoundException e) {
-			throw  new HentFerdigstilteDokumenterDokumenterIkkeFunnet(e.getMessage(), new FunctionalFault());
-		}
-
-		return hentFerdigstilteDokumenterResponseMapper.map(domainResponse);
+		throw new UnsupportedOperationException("hentFerdigstilteDokumenter er sanert 2023-02");
 	}
 
 	@Override

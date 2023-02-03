@@ -50,10 +50,10 @@ public class FerdigstillJournalpostService {
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
-	public void setJournalfoerendeEnhetNull(Long journalpostId, String journalfoerendeEnhet) {
+	public void setJournalfoerendeEnhetNull(Long journalpostId) {
 		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
-		oppdatertJournalpost(journalpost, journalfoerendeEnhet);
+		journalpost.setJournalForendeEnhetId(null);
 		log.info("Oppdatert journalpostId={} med journalfoerendeEnhet={}", journalpostId, journalpost.getJournalForendeEnhetId());
 	}
 

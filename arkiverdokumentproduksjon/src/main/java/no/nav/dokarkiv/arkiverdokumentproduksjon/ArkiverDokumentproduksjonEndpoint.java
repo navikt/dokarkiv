@@ -69,8 +69,6 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
 /**
  * Implementation of JAX-WS-generated service interface ArkiverDokumentproduksjonV1. Bootstraps the
  * Spring context and delegates to Spring-managed ArkiverDokumentProduksjonProvider.
- *
- * @author Joakim Bjørnstad, Visma Consulting
  */
 @WebService(targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/",
 		serviceName = "ArkiverDokumentproduksjonService_v1",
@@ -126,8 +124,7 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 
 	@Override
 	public void settDatoSendt(SettDatoSendtRequest settDatoSendtRequest) {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-		arkiverDokumentproduksjonProvider.settDatoSendt(settDatoSendtRequest);
+		throw new UnsupportedOperationException("settDatoSendt er sanert 2023-02");
 	}
 
 	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark105"}, percentiles = {0.5, 0.95})
@@ -138,23 +135,19 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 		return arkiverDokumentproduksjonProvider.arkiverVedlegg(arkiverVedleggRequest);
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark106"}, percentiles = {0.5, 0.95})
 	@Override
 	public void avbrytVedlegg(AvbrytVedleggRequest request) throws AvbrytVedleggDokumentIkkeFunnet,
 			AvbrytVedleggDokumentIkkeVedlegg, AvbrytVedleggJournalpostIkkeUnderArbeid, AvbrytVedleggDokumentAlleredeAvbrutt,
 			AvbrytVedleggJournalpostIkkeFunnet {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-		arkiverDokumentproduksjonProvider.avbrytVedlegg(request);
+		throw new UnsupportedOperationException("avbrytVedlegg er sanert 2023-02");
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark107"}, percentiles = {0.5, 0.95})
 	@Override
 	public void fjernFerdigstiltDokument(FjernFerdigstiltDokumentRequest request)
 			throws FjernFerdigstiltDokumentDokumentIkkeFunnet, FjernFerdigstiltDokumentDokumentAlleredeAvbrutt,
 			FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid, FjernFerdigstiltDokumentJournalpostIkkeFunnet,
 			FjernFerdigstiltDokumentDokumentAlleredeRedigerbart {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-		arkiverDokumentproduksjonProvider.fjernFerdigstiltDokument(request);
+		throw new UnsupportedOperationException("fjernFerdigstiltDokument er sanert 2023-02");
 	}
 
 	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark108"}, percentiles = {0.5, 0.95})
@@ -166,7 +159,6 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 		arkiverDokumentproduksjonProvider.ferdigstillJournalpost(request);
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark109"}, percentiles = {0.5, 0.95})
 	@Override
 	public void knyttDokumentTilJournalpostSomVedlegg(KnyttDokumentTilJournalpostSomVedleggRequest request) throws
 			KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt,
@@ -176,8 +168,7 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 			KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader,
 			KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid,
 			KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-		arkiverDokumentproduksjonProvider.knyttDokumentTilJournalpostSomVedlegg(request);
+		throw new UnsupportedOperationException("knyttDokumentTilJournalpostSomVedlegg er sanert 2023-02");
 	}
 
 	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark110"}, percentiles = {0.5, 0.95})
@@ -187,8 +178,8 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 		arkiverDokumentproduksjonProvider.settJournalpostAttributter(settJournalpostAttributterRequest);
 	}
 
-	@Override
 	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark111"}, percentiles = {0.5, 0.95})
+	@Override
 	public OpprettUtgaaendeJournalpostArkiverDokumentResponse opprettUtgaaendeJournalpostArkiverDokument(OpprettUtgaaendeJournalpostArkiverDokumentRequest opprettUtgaaendeJournalpostArkiverDokumentRequest) throws OpprettUtgaaendeJournalpostUgyldigInput, OpprettUtgaaendeJournalpostValideringAvVedleggFeilet {
 		RequestContextUtil.createAndSetRequestContext(webServiceContext, findAppId());
 		return arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(opprettUtgaaendeJournalpostArkiverDokumentRequest);

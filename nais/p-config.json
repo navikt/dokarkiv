@@ -177,6 +177,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "etterlatte-brev-api",
+      "namespace": "etterlatte",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "spinnsyn-arkivering",
       "namespace": "flex",
       "cluster": "prod-gcp"
@@ -375,6 +380,11 @@
       "app": "hm-joark-sink",
       "namespace": "teamdigihot",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "pensjon-pen",
+      "namespace": "pensjonsdeployer",
+      "cluster": "prod-fss"
     }
   ]
 }
