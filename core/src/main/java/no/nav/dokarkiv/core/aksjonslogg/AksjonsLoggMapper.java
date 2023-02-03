@@ -47,7 +47,7 @@ class AksjonsLoggMapper {
 	}
 
 	private static String mapArkivsaksnummer(Journalpost journalpost) {
-		return journalpost != null && journalpost.getSaksrelasjon() != null ? journalpost.getSaksrelasjon().getSaknrfk() : null;
+		return journalpost != null && journalpost.getSaksrelasjon() != null ? journalpost.getSaksrelasjon().getSakId().toString() : null;
 	}
 
 	private static FagsystemCode mapArkivsaksystem(Journalpost journalpost) {

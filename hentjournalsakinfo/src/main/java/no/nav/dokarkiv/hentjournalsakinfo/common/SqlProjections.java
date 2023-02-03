@@ -34,7 +34,7 @@ public final class SqlProjections {
 					j.antall_retur                  AS antallretur,
 					j.kanal_referanse_id            AS kanalreferanseid,
 					j.k_innsyn                      AS innsyn,
-					s.sak_nr_fk                     AS saksrelasjon_sakid,
+					s.sak_id                        AS saksrelasjon_sakid,
 					s.feilregistrert                AS saksrelasjon_feilregistrert,
 					s.k_fagsystem                   AS saksrelasjon_fagsystem,
 					sa.aktoerid                     AS saksrelasjon_aktoerid,
