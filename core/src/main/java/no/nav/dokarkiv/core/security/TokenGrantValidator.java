@@ -17,7 +17,7 @@ public class TokenGrantValidator {
 
 	private static final String OID_CLAIM_NAME = "oid";
 
-	public JWTClaimsSet validateOnBehalfOfAccessToken(String authHeader) {
+	public JWTClaimsSet validateAccessToken(String authHeader) {
 		try {
 			var token = StringUtils.split(authHeader, " ")[1];
 			var jwtToken = JWTParser.parse(token);
@@ -36,13 +36,6 @@ public class TokenGrantValidator {
 				throw new ConsumerUnauthorizedDokarkivFunctionalException(
 						"Access token på Authorization header mangler subject claim. " +
 								"Dette betyr at vi ikke kan se hvem token er utstedt til av NAV sin Azure tenant. " +
-								"Vennligst forsøk på nytt med On-Behalf-Of flow access token fra NAV sin Azure tenant. " +
-								"Hvis ikke dette fungerer, kontakt oss på #team_dokumentløsninger");
-			}
-			if (StringUtils.equals(oid, sub)) {
-				throw new ConsumerUnauthorizedDokarkivFunctionalException(
-						"Access token på Authorization header er ikke er On-Behalf-Of-token" +
-								"Dette betyr at vi ikke gjenkjenner tokenet som riktig type token utstedt av NAV sin Azure tenant. " +
 								"Vennligst forsøk på nytt med On-Behalf-Of flow access token fra NAV sin Azure tenant. " +
 								"Hvis ikke dette fungerer, kontakt oss på #team_dokumentløsninger");
 			}

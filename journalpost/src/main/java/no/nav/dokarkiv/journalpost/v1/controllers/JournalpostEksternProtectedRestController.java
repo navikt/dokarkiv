@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
-import no.nav.dokarkiv.core.security.TokenGrantValidator;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
@@ -51,16 +50,13 @@ public class JournalpostEksternProtectedRestController {
 	private final KnyttTilAnnenSakService knyttTilAnnenSakService;
 
 	private final TilknyttVedleggService tilknyttVedleggService;
-	private final TokenGrantValidator tokenGrantValidator;
 
 	public JournalpostEksternProtectedRestController(KnyttTilAnnenSakValidator knyttTilAnnenSakValidator,
 													 KnyttTilAnnenSakService knyttTilAnnenSakService,
-													 TilknyttVedleggService tilknyttVedleggService,
-													 TokenGrantValidator tokenGrantValidator) {
+													 TilknyttVedleggService tilknyttVedleggService) {
 		this.knyttTilAnnenSakValidator = knyttTilAnnenSakValidator;
 		this.knyttTilAnnenSakService = knyttTilAnnenSakService;
 		this.tilknyttVedleggService = tilknyttVedleggService;
-		this.tokenGrantValidator = tokenGrantValidator;
 	}
 
 
@@ -80,7 +76,6 @@ public class JournalpostEksternProtectedRestController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		try {
 			log.warn("knyttTilAnnenSak har fått har fått kall for å knytte dokumenter til annen sak");
-			tokenGrantValidator.validateOnBehalfOfAccessToken(authorizationHeader);
 			knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, kildeJournalpostId, navConsumerId);
 			KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, Long.parseLong(kildeJournalpostId));
 

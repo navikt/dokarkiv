@@ -66,7 +66,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	void setup() {
 		stubAzure();
 
-		when(tokenGrantValidator.validateOnBehalfOfAccessToken(any())).thenReturn(new JWTClaimsSet.Builder().subject(BRUKER).build());
+		when(tokenGrantValidator.validateAccessToken(any())).thenReturn(new JWTClaimsSet.Builder().subject(BRUKER).build());
 	}
 
 	@Test
@@ -312,7 +312,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId = journalpostTestRepository.persist(sourceJournalpost).getJournalpostId();
 
 		generateAndStubSafResponse(sourceJournalpost);
-		when(tokenGrantValidator.validateOnBehalfOfAccessToken(any())).thenThrow(new ConsumerUnauthorizedDokarkivFunctionalException("Access Token is invalid"));
+		when(tokenGrantValidator.validateAccessToken(any())).thenThrow(new ConsumerUnauthorizedDokarkivFunctionalException("Access Token is invalid"));
 		completeCurrentAndStartNewTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
@@ -586,15 +586,15 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 						.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
 						.map(DokumentInfo::getDokumentInfoId)
 						.map(id -> String.format("""
-										  {
-										  "dokumentInfoId": "%d",
-										  "dokumentvarianter": [
-											{
-											  "saksbehandlerHarTilgang": true,
-											  "variantformat": "ARKIV"
-											}
-										  ]
-										}""", id))
+								  {
+								  "dokumentInfoId": "%d",
+								  "dokumentvarianter": [
+									{
+									  "saksbehandlerHarTilgang": true,
+									  "variantformat": "ARKIV"
+									}
+								  ]
+								}""", id))
 						.collect(joining(","))
 				+ "] }}}";
 

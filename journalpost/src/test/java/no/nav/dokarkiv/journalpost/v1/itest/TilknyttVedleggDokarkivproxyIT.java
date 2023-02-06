@@ -277,7 +277,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 		Journalpost sourceJournalpost = createJournalpostSladdet();
 		Long journalpostIdVedlegg = journalpostTestRepository.persist(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = journalpostTestRepository.persist(sourceJournalpost).getJournalpostId();
-		when(tokenGrantValidator.validateOnBehalfOfAccessToken(any())).thenThrow(new ConsumerUnauthorizedDokarkivFunctionalException("Access Token is invalid"));
+		when(tokenGrantValidator.validateAccessToken(any())).thenThrow(new ConsumerUnauthorizedDokarkivFunctionalException("Access Token is invalid"));
 
 		completeCurrentAndStartNewTransaction();
 
