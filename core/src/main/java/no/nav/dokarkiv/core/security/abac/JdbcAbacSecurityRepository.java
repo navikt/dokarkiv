@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.math.BigInteger;
 import java.util.List;
 
 @Repository
@@ -18,7 +19,7 @@ public class JdbcAbacSecurityRepository implements AbacSecurityRepository {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JdbcAbacSecurityRepository.class);
 
-	private static final String FINN_SAKSRELASJON_PAA_JOURNALPOST = "select sak_nr_fk, k_fagsystem from T_SAKSRELASJON where journalpost_id = :journalpostId";
+	private static final String FINN_SAKSRELASJON_PAA_JOURNALPOST = "select sak_id, k_fagsystem from T_SAKSRELASJON where journalpost_id = :journalpostId";
 	private static final String FINN_BRUKERE_PAA_JOURNALPOST = "select cast(bruker_id as varchar(11)) from T_BRUKER where journalpost_id = :journalpostId";
 	private static final String FINN_FAGOMRADE_PAA_JOURNALPOST = "select K_FAGOMRADE from T_JOURNALPOST where journalpost_id = :journalpostId";
 
@@ -40,6 +41,10 @@ public class JdbcAbacSecurityRepository implements AbacSecurityRepository {
 			if (saksrelasjon != null) {
 				if (saksrelasjon.length > 0 && saksrelasjon[0] instanceof String) {
 					result.setSakId((String) saksrelasjon[0]);
+				} else if (saksrelasjon.length > 0 && saksrelasjon[0] instanceof Long) {
+					result.setSakId(String.valueOf(saksrelasjon[0]));
+				} else if (saksrelasjon.length > 0 && saksrelasjon[0] instanceof BigInteger) {
+					result.setSakId(String.valueOf(saksrelasjon[0]));
 				}
 				if (saksrelasjon.length > 1 && saksrelasjon[1] instanceof String) {
 					result.setFagsystem(FagsystemCode.valueOf((String) saksrelasjon[1]));

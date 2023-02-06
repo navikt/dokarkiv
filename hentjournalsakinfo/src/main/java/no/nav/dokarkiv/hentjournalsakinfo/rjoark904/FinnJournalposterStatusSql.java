@@ -4,9 +4,6 @@ import lombok.experimental.UtilityClass;
 
 import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.UTSENDINGSINFO_DATA;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @UtilityClass
 class FinnJournalposterStatusSql {
 	static String finnJournalposterStatusSql() {
@@ -41,7 +38,7 @@ class FinnJournalposterStatusSql {
 				"                              j.dato_sendt_print     AS sendtprintdato,\n" +
 				"                              j.dato_lest            AS lestdato,\n" +
 				"                              j.k_skjerming_type     AS skjerming,\n" +
-				"                              s.sak_nr_fk            AS saksrelasjon_sakid,\n" +
+				"                              s.sak_id               AS saksrelasjon_sakid,\n" +
 				"                              s.feilregistrert       AS saksrelasjon_feilregistrert,\n" +
 				"                              s.k_fagsystem          AS saksrelasjon_fagsystem,\n" +
 				"                              b.bruker_id            AS bruker_brukerid,\n" +

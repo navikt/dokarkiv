@@ -46,7 +46,7 @@ public class HentTilgangJournalpostDtoMapperTest {
 		String brukerId = "brukerId";
 		BrukerTypeCode brukerType = BrukerTypeCode.PERSON;
 
-		String sakrelasjonSakId = "12345";
+		Long sakrelasjonSakId = 12345L;
 		FagsystemCode sakrelasjonFagsystem = FagsystemCode.FS22;
 		boolean feilregistrert = false;
 		String sakrelasjonAktoerId = "aktoerId";
@@ -97,7 +97,7 @@ public class HentTilgangJournalpostDtoMapperTest {
 		assertEquals(brukerId, journalpostDto.getBruker().getBrukerId());
 		assertEquals(brukerType, journalpostDto.getBruker().getBrukerType());
 
-		assertEquals(sakrelasjonSakId, journalpostDto.getSak().getSakId());
+		assertEquals(sakrelasjonSakId.toString(), journalpostDto.getSak().getSakId());
 		assertEquals(sakrelasjonFagsystem, journalpostDto.getSak().getFagsystem());
 		assertEquals(sakrelasjonAktoerId, journalpostDto.getSak().getAktoerId());
 		assertEquals(sakrelasjonTema, journalpostDto.getSak().getTema());

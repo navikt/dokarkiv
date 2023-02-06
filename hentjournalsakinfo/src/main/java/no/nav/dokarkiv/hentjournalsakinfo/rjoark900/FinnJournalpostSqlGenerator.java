@@ -28,7 +28,7 @@ final class FinnJournalpostSqlGenerator {
 		return "WITH psaksaker AS\n" +
 				"       (SELECT s.journalpost_id\n" +
 				"        FROM t_saksrelasjon s\n" +
-				"        WHERE (s.k_fagsystem = 'PEN' AND s.sak_nr_fk IN (:psakIds))\n" +
+				"        WHERE (s.k_fagsystem = 'PEN' AND s.sak_id IN (:psakIds))\n" +
 				"          AND " + feilregistrertSelectionSql(journalpostFilter.isKunFeilregistrerte()) + "\n" +
 				"       ),\n" +
 				gsakCte +
@@ -44,7 +44,7 @@ final class FinnJournalpostSqlGenerator {
 				"                       FROM t_journalpost j\n" +
 				"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
 				"               			   LEFT JOIN t_utsendings_info ut ON ut.journalpost_id = j.journalpost_id\n" +
-				"                              LEFT JOIN sak sa ON sa.id = to_number(s.sak_nr_fk)\n" +
+				"                              LEFT JOIN sak sa ON sa.id = s.sak_id\n" +
 				"                              LEFT JOIN t_jp_tillegg t ON j.journalpost_id = t.journalpost_id\n" +
 				"                              LEFT JOIN t_k_behandlingstema bt ON j.k_behandlingstema = bt.k_behandlingstema\n" +
 				"                              LEFT JOIN t_bruker b ON j.journalpost_id = b.journalpost_id\n" +

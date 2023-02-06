@@ -28,7 +28,8 @@ class FinnJournalposterSpringJdbcRepository {
 	private static final ResultSetExtractor<List<JournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
 			.addKeys("journalpostid", "saksrelasjon_sakid", "tilleggsopplysninger_nokkel", "dokumenter_dokumentinfoid", "dokumenter_logiske_vedleggid", "dokumenter_varianter_variantf")
 			.newResultSetExtractor(JournalpostDto.class);
-	private static final List<String> NOT_USED = Collections.singletonList("notused");
+	private static final List<Long> NOT_USED_NUMBER = Collections.singletonList(-999L);
+	private static final List<String> NOT_USED_TEXT = Collections.singletonList("notused");
 	private static final List<String> ALL_JOURNALSTATUS = Stream.of(JournalStatusCode.values()).map(Enum::name).collect(Collectors.toList());
 	private static final List<Boolean> NO_FEILREGISTRERT_JOURNALPOST = Arrays.asList(false, false); // in clause padding
 	private static final List<Boolean> ALL_JOURNALPOST = Arrays.asList(true, false);
@@ -64,17 +65,17 @@ class FinnJournalposterSpringJdbcRepository {
 		MapSqlParameterSource namedParams = new MapSqlParameterSource();
 		namedParams.addValues(gsakCte.getGsakIdParams());
 		if (psakIds == null || psakIds.isEmpty()) {
-			namedParams.addValue(PSAK_IDS_PARAM, NOT_USED);
+			namedParams.addValue(PSAK_IDS_PARAM, NOT_USED_NUMBER);
 		} else {
 			namedParams.addValue(PSAK_IDS_PARAM, inPaddingBase2(psakIds));
 		}
 		if (journalpostFilter.isInkluderMidlertidigeJournalposter()) {
 			namedParams.addValue("alleIdenter", inPaddingBase2(journalpostFilter.getAlleIdenter()));
 		} else {
-			namedParams.addValue("alleIdenter", NOT_USED);
+			namedParams.addValue("alleIdenter", NOT_USED_TEXT);
 		}
 		if (journalpostFilter.isKunFeilregistrerte()) {
-			namedParams.addValue("inkluderJournalStatus", NOT_USED);
+			namedParams.addValue("inkluderJournalStatus", NOT_USED_TEXT);
 		} else {
 			namedParams.addValue("inkluderJournalStatus", inPaddingBase2(journalpostFilter.getInkluderJournalStatus()));
 		}
