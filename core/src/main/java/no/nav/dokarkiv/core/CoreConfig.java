@@ -13,9 +13,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
 
 import static java.lang.System.setProperty;
 import static no.nav.modig.core.context.SubjectHandler.SUBJECTHANDLER_KEY;
@@ -39,5 +43,14 @@ public class CoreConfig {
 	@PostConstruct
 	public void postConstruct() {
 		setProperty(SUBJECTHANDLER_KEY, ThreadLocalSubjectHandler.class.getName());
+	}
+
+	@Bean
+	WebClient webClient(WebClient.Builder webClientBuilder) {
+		HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofSeconds(60))
+				.proxyWithSystemProperties();
+		return webClientBuilder.clone()
+				.clientConnector(new ReactorClientHttpConnector(httpClient))
+				.build();
 	}
 }

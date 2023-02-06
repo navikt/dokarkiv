@@ -417,6 +417,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
@@ -459,6 +460,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = createGenerellSak();
@@ -490,6 +492,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
@@ -532,6 +535,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyFnrIdentStub();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
@@ -598,6 +602,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
@@ -622,6 +627,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
@@ -646,6 +652,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		identNotFoundStub();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
@@ -710,6 +717,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = createFagsak();
@@ -997,6 +1005,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void shouldCallAktoerService() {
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
@@ -1022,6 +1031,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void shouldNotCallAktoerServiceWithoutBrukerIdTypeFNR() {
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyFnrIdentStub();
 
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
@@ -1263,6 +1273,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldNotCreateDuplicateJournalpostWithSameEksternReferanseId() {
 		abacPermit();
+		stubAzure();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequestWithKanal(ALTINN.toString());
@@ -1277,6 +1288,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldUsePdlNameForAvsenderMottakerNameNull() {
 		restStsToken();
+		stubAzure();
 		happyPersonIdentStub();
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
 		ReflectionTestUtils.setField(request.getAvsenderMottaker(), "navn", "");

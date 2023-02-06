@@ -38,6 +38,7 @@ public class PdlResponse {
 
     @Data
     public static class PdlErrorExtension {
+        private String id;
         private String code;
         private String classification;
         private Details details;

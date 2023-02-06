@@ -1,26 +1,42 @@
 package no.nav.dokarkiv.core.consumer.pdl;
 
-import no.nav.dokarkiv.core.consumer.sts.StsRestConsumer;
+import no.nav.dokarkiv.core.consumer.azure.AzureToken;
+import no.nav.dokarkiv.core.properties.DokarkivProperties;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class PdlIdentConsumerTest {
 
-	@InjectMocks
-	protected PdlIdentConsumer pdlIdentConsumer = new PdlIdentConsumer(
-			"http://pdl-dummy",
-			new RestTemplateBuilder(),
-			Mockito.mock(StsRestConsumer.class)
-	);
+	protected PdlIdentConsumer pdlIdentConsumer;
+	private static MockWebServer mockServer;
+	private WebClient webClient;
 
+	@BeforeAll
+	static void setupServer() throws IOException {
+		mockServer = new MockWebServer();
+		mockServer.start();
+	}
+
+	@BeforeEach
+	public void intialize() {
+
+		webClient = WebClient.builder().baseUrl(String.format("http://localhost:%s", mockServer.getPort())).build();
+
+		pdlIdentConsumer = new PdlIdentConsumer(
+				webClient, dokarkivProperties(), mock(AzureToken.class));
+	}
 
 	@Test
 	public void shouldValidateFnrWith11Numbers() {
@@ -63,5 +79,16 @@ public class PdlIdentConsumerTest {
 	@Test
 	public void shouldThrowExceptionWhenFolkeregisterIdentIsNotValidLength() {
 		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent("123"));
+	}
+
+	private DokarkivProperties dokarkivProperties() {
+		DokarkivProperties dokarkivProperties = new DokarkivProperties();
+		DokarkivProperties.AzureEndpoint pdl = new DokarkivProperties.AzureEndpoint();
+		DokarkivProperties.Endpoints endpoints = new DokarkivProperties.Endpoints();
+
+		dokarkivProperties.getEndpoints().setPdl(pdl);
+
+		endpoints.setPdl(pdl);
+		return dokarkivProperties;
 	}
 }

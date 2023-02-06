@@ -472,6 +472,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
@@ -517,6 +518,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = createGenerellSak();
@@ -559,6 +561,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
@@ -606,6 +609,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyFnrIdentStub();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
@@ -656,6 +660,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		identNotFoundStub();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
@@ -743,6 +748,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = createFagsak();
@@ -831,6 +837,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
@@ -863,6 +870,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
@@ -895,6 +903,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyAktoerIdStub();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
@@ -923,6 +932,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyFnrIdentStub();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
@@ -1021,6 +1031,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		abacPermit();
 		restStsToken();
+		stubAzure();
 		happyPersonIdentStub();
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen");
