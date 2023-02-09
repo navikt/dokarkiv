@@ -196,7 +196,6 @@ public class OpprettJournalpostApiRequestMapper {
 		if (request.getSak() != null) {
 			journalpost.setSaksrelasjon(Saksrelasjon.builder()
 					.sakId(mapSakId(request, sakId))
-					.saknrfk(mapSakId(request, sakId).toString())
 					.fagsystem(mapFagsystem(request))
 					.journalpost(journalpost)
 					.build());

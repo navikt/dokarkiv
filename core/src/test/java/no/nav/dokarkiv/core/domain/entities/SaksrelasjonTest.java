@@ -27,7 +27,6 @@ public class SaksrelasjonTest {
 	public void shouldThrowExceptionForMissingFagsystem() {
 		Saksrelasjon saksrelasjon = getSaksrelasjonBuilder()
 				.sakId(123L)
-				.saknrfk("123")
 				.build();
 
 		assertExceptionThrownWhenVerifyingMandatoryFields(saksrelasjon, "fagsystem");
@@ -38,7 +37,6 @@ public class SaksrelasjonTest {
 		Saksrelasjon saksrelasjon = getSaksrelasjonBuilder()
 				.saksrelasjonId(10L)
 				.sakId(123L)
-				.saknrfk("123")
 				.fagsystem(FagsystemCode.FS22)
 				.build();
 

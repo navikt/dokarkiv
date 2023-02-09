@@ -66,7 +66,6 @@ public class DefaultOpprettJournalpostArkiverDokumenterValidatorTest {
 	@Test
 	public void shouldThrowExceptionIfNoSaksIDOnJournalpostIsNull() {
 		journalpost.getSaksrelasjon().setSakId(null);
-		journalpost.getSaksrelasjon().setSaknrfk(null);
 
 		assertThrows(InvalidArgumentException.class,
 				() -> validator.validate(journalpost),
@@ -311,7 +310,7 @@ public class DefaultOpprettJournalpostArkiverDokumenterValidatorTest {
 				.brukere(getBrukerBuilder().brukerId("01054512313").brukerType(BrukerTypeCode.PERSON).build())
 				.journalStatus(JournalStatusCode.FS)
 				.saksrelasjon(
-						getSaksrelasjonBuilder().sakId(1L).saknrfk("1").fagsystem(FagsystemCode.FS22).build())
+						getSaksrelasjonBuilder().sakId(1L).fagsystem(FagsystemCode.FS22).build())
 				.innhold("innhold")
 				.journalpostType(JournalpostTypeCode.U)
 				.utsendingskanal(UtsendingsKanalCode.EESSI)
@@ -365,7 +364,7 @@ public class DefaultOpprettJournalpostArkiverDokumenterValidatorTest {
 				.brukere(getBrukerBuilder().brukerId("01054512313").brukerType(BrukerTypeCode.PERSON).build())
 				.journalStatus(JournalStatusCode.FS)
 				.saksrelasjon(
-						getSaksrelasjonBuilder().sakId(1L).saknrfk("1").fagsystem(FagsystemCode.FS22).build())
+						getSaksrelasjonBuilder().sakId(1L).fagsystem(FagsystemCode.FS22).build())
 				.innhold("innhold")
 				.journalpostType(JournalpostTypeCode.U)
 				.utsendingskanal(UtsendingsKanalCode.EESSI)

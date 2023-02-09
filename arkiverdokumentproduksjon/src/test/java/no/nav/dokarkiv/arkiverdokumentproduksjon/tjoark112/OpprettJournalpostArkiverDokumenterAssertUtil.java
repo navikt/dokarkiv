@@ -82,7 +82,6 @@ public class OpprettJournalpostArkiverDokumenterAssertUtil {
 	private static void assertSak(Saksrelasjon saksrelasjon) {
 		assertThat(saksrelasjon, is(notNullValue()));
 		assertThat(saksrelasjon.getSakId(), is(OpprettJournalpostArkiverDokumenterDataUtil.SAKSID));
-		assertThat(saksrelasjon.getSaknrfk(), is(OpprettJournalpostArkiverDokumenterDataUtil.SAKSID.toString()));
 		assertThat(saksrelasjon.getFagsystem().name(), is(OpprettJournalpostArkiverDokumenterDataUtil.FAGSYSTEMKODE));
 	}
 

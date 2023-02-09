@@ -163,7 +163,6 @@ public class DefaultJournalfoerNotatHenvendelseV3Test {
 				.saksrelasjon(
 						Saksrelasjon.builder()
 								.sakId(1L)
-								.saknrfk("1")
 								.fagsystem(FagsystemCode.FS22)
 								.build())
 				.signatur(true)

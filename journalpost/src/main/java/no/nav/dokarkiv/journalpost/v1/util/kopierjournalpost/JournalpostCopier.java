@@ -74,7 +74,6 @@ public class JournalpostCopier {
 		Saksrelasjon kopiertSaksrelasjon = Saksrelasjon.builder()
 				.fagsystem(saksrelasjon.getFagsystem())
 				.sakId(saksrelasjon.getSakId())
-				.saknrfk(saksrelasjon.getSaknrfk())
 				.journalpost(kopiertJournalpost)
 				.endretAvNavn(MDC.get(MDC_USER_ID))
 				.feilregistrert(saksrelasjon.getFeilregistrert())

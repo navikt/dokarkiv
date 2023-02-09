@@ -121,7 +121,6 @@ public class TestDataUtils {
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
 				.fagsystem(FagsystemCode.FS22)
 				.sakId(SAK_ID)
-				.saknrfk(SAK_ID.toString())
 				.journalpost(journalpost)
 				.build();
 		saksrelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
