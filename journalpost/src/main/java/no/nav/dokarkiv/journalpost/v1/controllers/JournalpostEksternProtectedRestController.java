@@ -115,7 +115,7 @@ public class JournalpostEksternProtectedRestController {
 
 			log.info("tilknyttVedlegg har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
 
-			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(journalpostIdLong, request, auth);
+			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(journalpostIdLong, request);
 
 			if (feiledeDokumenterList.isEmpty()) {
 				return ResponseEntity

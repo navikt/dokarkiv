@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import com.nimbusds.jwt.JWTClaimsSet;
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
@@ -8,11 +8,11 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.exceptions.ConsumerUnauthorizedDokarkivFunctionalException;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
+import org.jboss.logging.MDC;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -33,6 +33,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.util.stream.Collectors.joining;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
@@ -50,8 +51,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -65,8 +64,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	@BeforeEach
 	void setup() {
 		stubAzure();
-
-		when(tokenGrantValidator.validateAccessToken(any())).thenReturn(new JWTClaimsSet.Builder().subject(BRUKER).build());
 	}
 
 	@Test
@@ -312,7 +309,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId = journalpostTestRepository.persist(sourceJournalpost).getJournalpostId();
 
 		generateAndStubSafResponse(sourceJournalpost);
-		when(tokenGrantValidator.validateAccessToken(any())).thenThrow(new ConsumerUnauthorizedDokarkivFunctionalException("Access Token is invalid"));
 		completeCurrentAndStartNewTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
@@ -325,7 +321,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
 		TestTransaction.end();
 	}
 
@@ -474,7 +470,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private void assertRelasjon(Long journalpostIdTilknyttet, DokumentInfo dokumentInfoKopi) {
 		JournalpostDokumentInfoRelasjon tilknyttetRelasjon = dokumentInfoKopi.findJournalpostRelasjonByJournalpostId(journalpostIdTilknyttet);
-		assertThat(tilknyttetRelasjon.getTilknyttetAvNavn(), is(BRUKER));
+		assertThat(tilknyttetRelasjon.getTilknyttetAvNavn(), is(CONSUMER));
 		assertThat(tilknyttetRelasjon.getOpprettetKildeNavn(), is(CONSUMER));
 	}
 
