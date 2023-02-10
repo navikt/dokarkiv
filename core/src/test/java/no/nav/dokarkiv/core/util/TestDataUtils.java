@@ -111,7 +111,6 @@ public class TestDataUtils {
 				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
 						.opprettetKildeNavn("test")
 						.sakId(parseLong(saksNr))
-						.saknrfk(saksNr)
 						.fagsystem(fagsystem)
 						.feilregistrert(isFeilregistrert)
 						.build())
@@ -185,7 +184,6 @@ public class TestDataUtils {
 		Saksrelasjon saksrelasjon = Saksrelasjon
 				.builder()
 				.sakId(1L)
-				.saknrfk("1")
 				.fagsystem(FagsystemCode.PEN)
 				.feilregistrert(false)
 				.journalpost(journalpost)

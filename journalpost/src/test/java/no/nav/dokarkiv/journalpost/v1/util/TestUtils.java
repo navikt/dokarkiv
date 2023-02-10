@@ -141,7 +141,6 @@ public class TestUtils {
 				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
 				.saksrelasjon(Saksrelasjon.builder()
 						.sakId(SAK_ID)
-						.saknrfk(SAK_ID.toString())
 						.fagsystem(FS22)
 						.build())
 				.build();
@@ -169,7 +168,6 @@ public class TestUtils {
 				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
 				.saksrelasjon(Saksrelasjon.builder()
 						.sakId(SAK_ID)
-						.saknrfk(SAK_ID.toString())
 						.fagsystem(FS22)
 						.build())
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)

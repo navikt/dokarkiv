@@ -233,7 +233,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 								.brukerType(BrukerTypeCode.PERSON).build())
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
-								.saknrfk("1")
+								.sakId(1L)
 								.fagsystem(FagsystemCode.FS22).build())
 				.innhold("innhold")
 				.journalpostType(JournalpostTypeCode.U)

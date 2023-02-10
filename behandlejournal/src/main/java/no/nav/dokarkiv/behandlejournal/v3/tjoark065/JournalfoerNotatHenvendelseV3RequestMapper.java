@@ -55,7 +55,6 @@ public class JournalfoerNotatHenvendelseV3RequestMapper {
 				.build();
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
 				.sakId(wsJournalpost.getGjelderSak() == null ? null : parseLong(wsJournalpost.getGjelderSak().getSaksId()))
-				.saknrfk(wsJournalpost.getGjelderSak() == null ? null : wsJournalpost.getGjelderSak().getSaksId())
 				.fagsystem(wsJournalpost.getGjelderSak() == null ? null : FagsystemCode.valueOf(wsJournalpost.getGjelderSak().getFagsystemkode()))
 				.build();
 		domainJournalpost.setSaksrelasjon(saksrelasjon);

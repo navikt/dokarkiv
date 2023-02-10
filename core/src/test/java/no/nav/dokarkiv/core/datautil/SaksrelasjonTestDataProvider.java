@@ -26,7 +26,6 @@ public final class SaksrelasjonTestDataProvider {
 		return SaksrelasjonBuilder
 				.getSaksrelasjonBuilder()
 				.sakId(SAK_ID)
-				.saknrfk(SAK_ID.toString())
 				.fagsystem(SAK_FAGSYSTEM)
 				.feilregistrert(false)
 				.opprettetKildeNavn(SAK_KILDE_NAVN);
@@ -36,7 +35,6 @@ public final class SaksrelasjonTestDataProvider {
 		return SaksrelasjonBuilder
 				.getSaksrelasjonBuilder()
 				.sakId(SAK_ID)
-				.saknrfk(SAK_ID.toString())
 				.fagsystem(SAK_FAGSYSTEM)
 				.feilregistrert(feilregistrert)
 				.opprettetKildeNavn(SAK_KILDE_NAVN);
@@ -45,7 +43,6 @@ public final class SaksrelasjonTestDataProvider {
 	public static Saksrelasjon createPENSaksrelasjon() {
 		return getSaksrelasjonBuilder()
 				.sakId(PEN_SAK_ID)
-				.saknrfk(PEN_SAK_ID.toString())
 				.fagsystem(FagsystemCode.PEN)
 				.opprettetKildeNavn("itest")
 				.build();

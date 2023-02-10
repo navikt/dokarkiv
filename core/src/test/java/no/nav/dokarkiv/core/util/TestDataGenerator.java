@@ -230,7 +230,6 @@ public class TestDataGenerator {
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
 				.fagsystem(FagsystemCode.FS22)
 				.sakId(parseLong(API_GSAK_ID))
-				.saknrfk(API_GSAK_ID.toString())
 				.journalpost(journalpost)
 				.feilregistrert(false)
 				.build();
@@ -242,7 +241,6 @@ public class TestDataGenerator {
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
 				.fagsystem(FagsystemCode.PEN)
 				.sakId(parseLong(API_PSAK_ID))
-				.saknrfk(API_PSAK_ID.toString())
 				.build();
 		saksrelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return saksrelasjon;

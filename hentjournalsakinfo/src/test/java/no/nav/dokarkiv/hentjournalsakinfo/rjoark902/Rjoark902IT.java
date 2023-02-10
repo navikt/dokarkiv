@@ -178,7 +178,6 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		journalpost.setLestDato(OffsetDateTime.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault())));
 
 		journalpost.getSaksrelasjon().setSakId(SAKID);
-		journalpost.getSaksrelasjon().setSaknrfk(SAKID.toString());
 		journalpost.getSaksrelasjon().setFeilregistrert(SAKFEILREGISTRERT);
 		journalpost.getSaksrelasjon().setFagsystem(SAKRELASJONFAGSYSTEM);
 

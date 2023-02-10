@@ -127,7 +127,6 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 
 		domainJournalpost.setSaksrelasjon(Saksrelasjon.builder()
 				.sakId(Long.parseLong(sakrelasjon.getSaksnummer()))
-				.saknrfk(sakrelasjon.getSaksnummer())
 				.fagsystem(stringToEnum(FagsystemCode.class, sakrelasjon.getFagsystem()))
 				.build());
 	}

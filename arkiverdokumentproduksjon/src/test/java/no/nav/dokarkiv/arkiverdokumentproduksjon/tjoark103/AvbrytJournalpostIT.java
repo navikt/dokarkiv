@@ -125,7 +125,7 @@ public class AvbrytJournalpostIT extends AbstractArkiverdokumentproduksjonItest 
 				.fagomrade(FagomradeCode.PEN)
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
-								.saknrfk("1")
+								.sakId(1L)
 								.fagsystem(FagsystemCode.PEN)
 								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.build())

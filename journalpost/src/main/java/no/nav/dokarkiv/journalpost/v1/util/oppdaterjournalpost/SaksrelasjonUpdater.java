@@ -65,15 +65,12 @@ public class SaksrelasjonUpdater {
 		Long oldSakId = saksrelasjon.getSakId();
 		if (sakId != null) { // arkivsak
 			saksrelasjon.setSakId(sakId);
-			saksrelasjon.setSaknrfk(sakId.toString());
 		} else if (Sakstype.ARKIVSAK.equals(request.getSak().getSakstype()) || request.getSak()
 				.getSakstype() == null) {// Antas å være ARKIVSAK dersom feltet ikke er satt
 			saksrelasjon.setSakId(parseLong(request.getSak().getArkivsaksnummer()));
-			saksrelasjon.setSaknrfk(request.getSak().getArkivsaksnummer());
 		} else if (Sakstype.FAGSAK.equals(request.getSak()
 				.getSakstype()) && Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
 			saksrelasjon.setSakId(parseLong(request.getSak().getFagsakId()));
-			saksrelasjon.setSaknrfk(request.getSak().getFagsakId());
 		} else {
 			throw new UgyldigInputException("Kan ikke oppdatere sakId basert på input");
 		}
