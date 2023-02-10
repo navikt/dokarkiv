@@ -60,8 +60,10 @@
 
 		<!-- Tjenestegrensesnitt -->
 		<nav-tjenestespesifikasjon.version>2610.9b6de22</nav-tjenestespesifikasjon.version>
-		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>3.4.1</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
-		<dokumentproduksjoninfo-tjenestespesifikasjon.version>2.1.1</dokumentproduksjoninfo-tjenestespesifikasjon.version>
+		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>2-b9013e7
+		</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
+		<dokumentproduksjoninfo-tjenestespesifikasjon.version>2.1.1
+		</dokumentproduksjoninfo-tjenestespesifikasjon.version>
 
 		<!-- test -->
 		<datasource-proxy-spring-boot-starter.version>1.8.1</datasource-proxy-spring-boot-starter.version>
@@ -132,7 +134,6 @@
 				<groupId>no.nav.tjenester.brevogarkiv</groupId>
 				<artifactId>arkiverdokumentproduksjon-tjenestespesifikasjon</artifactId>
 				<version>${arkiverdokumentproduksjon-tjenestespesifikasjon.version}</version>
-				<classifier>jaxws</classifier>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.tjenester.brevogarkiv</groupId>
