@@ -24,7 +24,6 @@
 		<dependency>
 			<groupId>no.nav.tjenester.brevogarkiv</groupId>
 			<artifactId>arkiverdokumentproduksjon-tjenestespesifikasjon</artifactId>
-			<classifier>jaxws</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.jvnet.jaxb2_commons</groupId>
