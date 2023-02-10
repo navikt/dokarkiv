@@ -28,6 +28,7 @@ import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.DOKUMENT_TILLATES_IKKE_GJENBRUKT;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.IKKE_FUNNET;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.TILKNYTNING_FEILET;
@@ -65,17 +66,12 @@ public class TilknyttVedleggService {
 	}
 
 	public List<FeiledeDokumenter> tilknyttVedlegg(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
-		String tilknyttetAvNavn = MDC.get(MDC_CONSUMER_ID);
-
+		String tilknyttetAvNavn = MDC.get(MDC_USER_NAME);
 		var accessControlledDocuments = accessLookupJournalpost.checkDocumentsCanBeAccessedByActor(tilknyttVedleggRequest);
-
 		List<FeiledeDokumenter> failedDocuments = accessControlledDocuments.failedDocuments();
-
 		failedDocuments.addAll(validateAndTilknyttVedlegg(targetJournalpostId, new TilknyttVedleggRequest(tilknyttetAvNavn, accessControlledDocuments.okDocuments())));
-
 		return failedDocuments;
 	}
-
 
 	private List<FeiledeDokumenter> validateAndTilknyttVedlegg(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
 
@@ -87,7 +83,6 @@ public class TilknyttVedleggService {
 		Journalpost targetJournalpost = journalpostRepositorySkjermet.findById(targetJournalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", targetJournalpostId)));
 		tilknyttVedleggValidator.validateJournalpostStatus(targetJournalpost);
-
 
 		for (DokumentVedlegg dokumentVedlegg : tilknyttVedleggRequest.getDokument()) {
 			Journalpost sourceJournalpost = journalpostRepositorySkjermet.findById(dokumentVedlegg.getKildeJournalpostId()).orElse(null);
@@ -166,7 +161,6 @@ public class TilknyttVedleggService {
 				.filnavn(filDetaljer.getFilnavn())
 				.filstorrelse(filDetaljer.getFilstorrelse())
 				.build();
-
 
 		filDetaljerCopy.setOpprettetKildeNavn(consumerId);
 		byte[] fil = dokumentFilRepository.findByFilUuid(filDetaljer.getFilUuid()).getFil();
