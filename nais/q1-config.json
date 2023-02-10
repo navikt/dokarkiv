@@ -93,6 +93,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "kabin-api",
+      "namespace": "klage",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "kabal-document",
       "namespace": "klage",
       "cluster": "dev-gcp"
