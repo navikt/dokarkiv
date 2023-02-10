@@ -77,6 +77,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "kabin-api",
+      "namespace": "klage",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "kabal-document",
       "namespace": "klage",
       "cluster": "prod-gcp"
