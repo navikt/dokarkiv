@@ -186,7 +186,7 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateSak(Sak sak, Bruker bruker, String tema) {
 		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("tema må være satt dersom sak oppgis");
+			throw new InputValideringFeiletException("Tema må være satt dersom sak oppgis");
 		}
 		if (FAGSAK.equals(sak.getSakstype())) {
 			validateFagsak(sak, bruker);
