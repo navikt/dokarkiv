@@ -178,23 +178,21 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateSak(Sak sak, Bruker bruker, String tema) {
-		if (FAGSAK.equals(sak.getSakstype())) {
-			validateFagsak(sak, bruker, tema);
+			if (isBlank(tema)) {
+				throw new InputValideringFeiletException("tema må være satt dersom sak oppgis");
+			}
+			if (Sakstype.FAGSAK.equals(sak.getSakstype())) {
+				validateFagsak(sak, bruker);
+			}
+			if (Sakstype.GENERELL_SAK.equals(sak.getSakstype())) {
+				validateGenerellSak(sak, bruker);
+			}
+			if (Sakstype.ARKIVSAK.equals(sak.getSakstype()) || sak.getSakstype() == null) {
+				validateArkivsak(sak);
+			}
 		}
 
-		if (Sakstype.GENERELL_SAK.equals(sak.getSakstype())) {
-			validateGenerellSak(sak, bruker, tema);
-		}
-
-		if (Sakstype.ARKIVSAK.equals(sak.getSakstype()) || sak.getSakstype() == null) {
-			validateArkivsak(sak);
-		}
-	}
-
-	private void validateFagsak(Sak sak, Bruker bruker, String tema) {
-		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("tema må være satt dersom sakstype=FAGSAK");
-		}
+	private void validateFagsak(Sak sak, Bruker bruker) {
 		if (bruker == null) {
 			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=FAGSAK");
 		}
@@ -217,10 +215,7 @@ public class OpprettJournalpostRequestValidator {
 		}
 	}
 
-	private void validateGenerellSak(Sak sak, Bruker bruker, String tema) {
-		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("tema må være satt dersom sakstype=GENERELL_SAK");
-		}
+	private void validateGenerellSak(Sak sak, Bruker bruker) {
 		if (bruker == null) {
 			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=GENERELL_SAK");
 		}

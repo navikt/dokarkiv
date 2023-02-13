@@ -175,12 +175,13 @@ public class OpprettJournalpostRequestValidatorTest {
 		validator.validateRequest(request, FORSOEKFERDIGSTILL);
 	}
 
-	@Test
-	public void shouldThrowExceptionWhenTemaNotSetForFagsak() {
+	@ParameterizedTest
+	@EnumSource(Sakstype.class)
+	public void shouldThrowExceptionWhenTemaNotSetForSak(Sakstype sakstype) {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(null)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
-				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
+				.sak(Sak.builder().sakstype(sakstype).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
 				.build();
 
 		assertThrows(InputValideringFeiletException.class,
@@ -251,19 +252,6 @@ public class OpprettJournalpostRequestValidatorTest {
 		assertThrows(InputValideringFeiletException.class,
 				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
 				"Sak.arkivsaksystem");
-	}
-
-	@Test
-	public void shouldThrowExceptionWhenTemaNotSetForGenerellSak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
-				.tema(null)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
-				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
-				.build();
-
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"tema");
 	}
 
 	@Test
