@@ -178,19 +178,19 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateSak(Sak sak, Bruker bruker, String tema) {
-			if (isBlank(tema)) {
-				throw new InputValideringFeiletException("tema må være satt dersom sak oppgis");
-			}
-			if (Sakstype.FAGSAK.equals(sak.getSakstype())) {
-				validateFagsak(sak, bruker);
-			}
-			if (Sakstype.GENERELL_SAK.equals(sak.getSakstype())) {
-				validateGenerellSak(sak, bruker);
-			}
-			if (Sakstype.ARKIVSAK.equals(sak.getSakstype()) || sak.getSakstype() == null) {
-				validateArkivsak(sak);
-			}
+		if (isBlank(tema)) {
+			throw new InputValideringFeiletException("tema må være satt dersom sak oppgis");
 		}
+		if (Sakstype.FAGSAK.equals(sak.getSakstype())) {
+			validateFagsak(sak, bruker);
+		}
+		if (Sakstype.GENERELL_SAK.equals(sak.getSakstype())) {
+			validateGenerellSak(sak, bruker);
+		}
+		if (Sakstype.ARKIVSAK.equals(sak.getSakstype()) || sak.getSakstype() == null) {
+			validateArkivsak(sak);
+		}
+	}
 
 	private void validateFagsak(Sak sak, Bruker bruker) {
 		if (bruker == null) {
@@ -208,8 +208,8 @@ public class OpprettJournalpostRequestValidator {
 		if (sak.getArkivsaksystem() != null) {
 			throw new InputValideringFeiletException("Sak.arkivsaksystem skal ikke være satt dersom sakstype=FAGSAK");
 		}
-		if(FAGSAK == sak.getSakstype() && PP01 == sak.getFagsaksystem()) {
-			if(!isNumeric(sak.getFagsakId())) {
+		if (FAGSAK == sak.getSakstype() && PP01 == sak.getFagsaksystem()) {
+			if (!isNumeric(sak.getFagsakId())) {
 				throw new InputValideringFeiletException("Sak.fagsakId skal være opprettet i PSAK og må være et numerisk heltall.");
 			}
 		}
@@ -300,7 +300,7 @@ public class OpprettJournalpostRequestValidator {
 				.contains(FilTypeCode.valueOf(dokumentVariant.getFiltype()))) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV.");
 		}
-		if(dokumentVariant.getFysiskDokument() == null || dokumentVariant.getFysiskDokument().length == 0) {
+		if (dokumentVariant.getFysiskDokument() == null || dokumentVariant.getFysiskDokument().length == 0) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.fysiskDokument må være satt med en base64 representert fil større en 0 bytes.");
 		}
 	}
