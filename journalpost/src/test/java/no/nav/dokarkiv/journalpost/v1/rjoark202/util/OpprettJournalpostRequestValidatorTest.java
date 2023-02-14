@@ -175,13 +175,11 @@ public class OpprettJournalpostRequestValidatorTest {
 		validator.validateRequest(request, FORSOEKFERDIGSTILL);
 	}
 
-	@ParameterizedTest
-	@EnumSource(Sakstype.class)
-	public void shouldThrowExceptionWhenTemaNotSetForSak(Sakstype sakstype) {
+	@Test
+	public void shouldThrowExceptionWhenTemaNotSet() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(null)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
-				.sak(Sak.builder().sakstype(sakstype).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
 				.build();
 
 		assertThrows(InputValideringFeiletException.class,

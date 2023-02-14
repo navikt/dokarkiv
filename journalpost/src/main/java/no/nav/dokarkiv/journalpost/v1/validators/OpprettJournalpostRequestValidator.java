@@ -15,6 +15,7 @@ import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,14 +54,14 @@ public class OpprettJournalpostRequestValidator {
 	private static final Pattern JOURNALFOERENDE_ENHET_PATTERN = Pattern.compile("^\\d{4}$");
 
 	public void validateRequest(OpprettJournalpostRequest request, String journalpostFerdigstilt) {
+
+		validateTema(request.getTema());
+
 		if (request.getAvsenderMottaker() != null) {
 			validateAvsenderMottaker(request.getAvsenderMottaker());
 		}
 		if (request.getBruker() != null) {
 			validateBruker(request.getBruker());
-		}
-		if (request.getTema() != null) {
-			validateTema(request.getTema());
 		}
 		if (isNotBlank(request.getBehandlingstema())) {
 			validateBehandlingstema(request.getBehandlingstema());
@@ -137,6 +138,9 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateTema(String tema) {
+		if(StringUtils.isEmpty(tema)){
+			throw new InputValideringFeiletException(format("Kan ikke opprette journalpost uten tema. Mottok tema=%s", tema));
+		}
 		try {
 			FagomradeCode.valueOf(tema);
 		} catch (IllegalArgumentException e) {
@@ -185,9 +189,6 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateSak(Sak sak, Bruker bruker, String tema) {
-		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("Tema må være satt dersom sak oppgis");
-		}
 		if (FAGSAK.equals(sak.getSakstype())) {
 			validateFagsak(sak, bruker);
 		}
