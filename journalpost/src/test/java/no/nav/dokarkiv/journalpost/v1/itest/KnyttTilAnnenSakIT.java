@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.nimbusds.jwt.JWTClaimsSet;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -45,14 +44,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
+public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 
 	public static final String URL_JOURNALPOST = "/rest/journalpostapi/v1/journalpost/";
 	public static final String KNYTT_TIL_ANNEN_SAK = "/knyttTilAnnenSak";
@@ -85,8 +82,6 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("saf/safGraphQlResponseKildeJournalpostId1-happy.json")));
-
-		when(tokenGrantValidator.validateOnBehalfOfAccessToken(anyString())).thenReturn(new JWTClaimsSet.Builder().subject("saks-behandler").build());
 
 		Long journalpostId = journalpostTestRepository.persist(createJournalpostWithHoveddokument()).getJournalpostId();
 		commitAndStartNewTransaction();
@@ -131,12 +126,12 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 			GENERELL_SAK + ",, " + FAGSAKSYSTEM + ", FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK",
 			GENERELL_SAK + ", " + FAGSAK_ID + ",, FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK",
 			FAGSAK + ",,,FagsakId kan ikke være null eller tom for sakstype FAGSAK",
-			FAGSAK + "," + FAGSAK_ID +",,Fagsaksystem kan ikke være null eller tom sakstype FAGSAK",
-			FAGSAK + ",," + FAGSAKSYSTEM +",FagsakId kan ikke være null eller tom for sakstype FAGSAK"
+			FAGSAK + "," + FAGSAK_ID + ",,Fagsaksystem kan ikke være null eller tom sakstype FAGSAK",
+			FAGSAK + ",," + FAGSAKSYSTEM + ",FagsakId kan ikke være null eller tom for sakstype FAGSAK"
 	})
 	public void knyttTilAnnenSakShouldFailWithBadInput(String sakstype, String fagsakId, String fagsaksystem, String feilmelding) {
 		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserTokenAndConsumerId());
-		ResponseEntity<String> response =  restTemplate.exchange(URL_JOURNALPOST + "12345678910" + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "12345678910" + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, String.class);
 		assertTrue(response.getBody().contains(feilmelding));
 		assertThat(response.getStatusCode(), is(BAD_REQUEST));
 	}
@@ -160,7 +155,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT{
 		verify(exactly(1), postRequestedFor(urlEqualTo("/safgraphql")));
 	}
 
-	private void valdiateAksjonsloggELement(AksjonsLogg aksjonsloggElement, AksjonsTypeCode aksjonsType, long journalpostId, String utfoertAv){
+	private void valdiateAksjonsloggELement(AksjonsLogg aksjonsloggElement, AksjonsTypeCode aksjonsType, long journalpostId, String utfoertAv) {
 		assertEquals(utfoertAv, aksjonsloggElement.getUtfoertAv());
 		assertEquals(aksjonsType, aksjonsloggElement.getAksjon());
 		assertEquals(journalpostId, aksjonsloggElement.getJournalpostId());

@@ -16,7 +16,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
 public class SafGraphqlConsumer {
@@ -36,11 +35,10 @@ public class SafGraphqlConsumer {
 
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "safJournalpostQuery"}, percentiles = {0.5, 0.95})
 	@Retryable(include = SafJournalpostQueryTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT))
-	public ResponseEntity<String> performQuery(GraphQLRequest graphQLRequest, String safAuthorizationHeader) {
+	public ResponseEntity<String> performQuery(GraphQLRequest graphQLRequest) {
 
 		return webClient
 				.post()
-				.header(AUTHORIZATION, safAuthorizationHeader)
 				.bodyValue(graphQLRequest)
 				.retrieve()
 				.toEntity(String.class)

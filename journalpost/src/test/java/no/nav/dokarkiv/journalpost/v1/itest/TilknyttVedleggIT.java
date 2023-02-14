@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import com.nimbusds.jwt.JWTClaimsSet;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
@@ -8,7 +7,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.exceptions.ConsumerUnauthorizedDokarkivFunctionalException;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
@@ -50,8 +48,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -59,14 +55,11 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private static final String UGYLDIG_JOURNALPOST = "12312312312";
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
-	private static final String BRUKER = "saks-behandler";
 	private static final String CONSUMER = "ikkesrvdokarkivproxy";
 
 	@BeforeEach
 	void setup() {
 		stubAzure();
-
-		when(tokenGrantValidator.validateOnBehalfOfAccessToken(any())).thenReturn(new JWTClaimsSet.Builder().subject(BRUKER).build());
 	}
 
 	@Test
@@ -312,7 +305,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Long sourceJournalpostId = journalpostTestRepository.persist(sourceJournalpost).getJournalpostId();
 
 		generateAndStubSafResponse(sourceJournalpost);
-		when(tokenGrantValidator.validateOnBehalfOfAccessToken(any())).thenThrow(new ConsumerUnauthorizedDokarkivFunctionalException("Access Token is invalid"));
 		completeCurrentAndStartNewTransaction();
 
 		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
@@ -325,7 +317,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
 		TestTransaction.end();
 	}
 
@@ -474,7 +466,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private void assertRelasjon(Long journalpostIdTilknyttet, DokumentInfo dokumentInfoKopi) {
 		JournalpostDokumentInfoRelasjon tilknyttetRelasjon = dokumentInfoKopi.findJournalpostRelasjonByJournalpostId(journalpostIdTilknyttet);
-		assertThat(tilknyttetRelasjon.getTilknyttetAvNavn(), is(BRUKER));
+		assertThat(tilknyttetRelasjon.getTilknyttetAvNavn(), is(PERSON_USER_NAME));
 		assertThat(tilknyttetRelasjon.getOpprettetKildeNavn(), is(CONSUMER));
 	}
 
@@ -586,15 +578,15 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 						.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
 						.map(DokumentInfo::getDokumentInfoId)
 						.map(id -> String.format("""
-										  {
-										  "dokumentInfoId": "%d",
-										  "dokumentvarianter": [
-											{
-											  "saksbehandlerHarTilgang": true,
-											  "variantformat": "ARKIV"
-											}
-										  ]
-										}""", id))
+								  {
+								  "dokumentInfoId": "%d",
+								  "dokumentvarianter": [
+									{
+									  "saksbehandlerHarTilgang": true,
+									  "variantformat": "ARKIV"
+									}
+								  ]
+								}""", id))
 						.collect(joining(","))
 				+ "] }}}";
 

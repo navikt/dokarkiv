@@ -7,7 +7,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.exceptions.ConsumerUnauthorizedDokarkivFunctionalException;
 import no.nav.dokarkiv.journalpost.v1.api.ArsakKode;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
@@ -34,8 +33,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 
@@ -70,7 +67,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-		var responseEntity= restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		completeCurrentAndStartNewTransaction();
@@ -277,7 +274,6 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 		Journalpost sourceJournalpost = createJournalpostSladdet();
 		Long journalpostIdVedlegg = journalpostTestRepository.persist(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = journalpostTestRepository.persist(sourceJournalpost).getJournalpostId();
-		when(tokenGrantValidator.validateOnBehalfOfAccessToken(any())).thenThrow(new ConsumerUnauthorizedDokarkivFunctionalException("Access Token is invalid"));
 
 		completeCurrentAndStartNewTransaction();
 
@@ -289,7 +285,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 				.toString()));
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-		var responseEntity= restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.FORBIDDEN));
 		TestTransaction.end();
@@ -313,7 +309,7 @@ public class TilknyttVedleggDokarkivproxyIT extends AbstractJournalpostIT {
 		);
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-		var responseEntity= restTemplate.exchange(
+		var responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST_INTERN + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		TestTransaction.end();

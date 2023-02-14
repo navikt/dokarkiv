@@ -21,14 +21,12 @@ public class AccessLookupJournalpost {
 		this.safJournalpostQueryService = safJournalpostQueryService;
 	}
 
-	public AccessControlledDocuments checkDocumentsCanBeAccessedByActor(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest, String authorizationHeader) {
-		safJournalpostQueryService.hentJournalpost(targetJournalpostId, authorizationHeader);
-
+	public AccessControlledDocuments checkDocumentsCanBeAccessedByActor(TilknyttVedleggRequest tilknyttVedleggRequest) {
 		List<FeiledeDokumenter> feiledeDokumentListe = new ArrayList<>();
 		List<DokumentVedlegg> dokumenterTilTilknytning = new ArrayList<>();
 
 		for (DokumentVedlegg dokument : tilknyttVedleggRequest.getDokument()) {
-			SafJournalpostTo safJournalpostTo = safJournalpostQueryService.hentJournalpost(dokument.getKildeJournalpostId(), authorizationHeader);
+			SafJournalpostTo safJournalpostTo = safJournalpostQueryService.hentJournalpost(dokument.getKildeJournalpostId());
 
 			SafJournalpostTo.DokumentInfo dokumentInfo = getDokumentInfo(safJournalpostTo, dokument.getDokumentInfoId());
 
@@ -62,5 +60,8 @@ public class AccessLookupJournalpost {
 				.findAny()
 				.orElse(null);
 	}
-	public record AccessControlledDocuments(List<DokumentVedlegg> okDocuments, List<FeiledeDokumenter> failedDocuments) {};
+
+	public record AccessControlledDocuments(List<DokumentVedlegg> okDocuments,
+											List<FeiledeDokumenter> failedDocuments) {
+	}
 }

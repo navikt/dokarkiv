@@ -5,10 +5,8 @@ import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.security.TokenGrantValidator;
 import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,9 +52,6 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	protected String OIDC_TOKEN_PERSON_USER_TEST;
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;
-
-	@MockBean
-	protected TokenGrantValidator tokenGrantValidator;
 
 	@Configuration
 	public static class Config {
