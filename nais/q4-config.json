@@ -45,6 +45,11 @@
       "app": "saf-q4",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "testnav-dokarkiv-proxy-trygdeetaten",
+      "namespace": "dolly",
+      "cluster": "dev-fss"
     }
   ]
 }

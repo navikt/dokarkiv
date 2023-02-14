@@ -1,0 +1,1 @@
+alter table t_saksrelasjon set unused (sak_nr_fk);

@@ -1,0 +1,3 @@
+drop index XIE1SAKSRELASJON;
+drop index XIF3SAKRELASJON;
+drop index XIF4SAKRELASJON;
