@@ -15,6 +15,7 @@ import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,10 +25,17 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.SER;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO_UINNLOGGET;
+import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
+import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
+import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -46,14 +54,14 @@ public class OpprettJournalpostRequestValidator {
 	private static final Pattern JOURNALFOERENDE_ENHET_PATTERN = Pattern.compile("^\\d{4}$");
 
 	public void validateRequest(OpprettJournalpostRequest request, String journalpostFerdigstilt) {
+
+		validateTema(request.getTema());
+
 		if (request.getAvsenderMottaker() != null) {
 			validateAvsenderMottaker(request.getAvsenderMottaker());
 		}
 		if (request.getBruker() != null) {
 			validateBruker(request.getBruker());
-		}
-		if (request.getTema() != null) {
-			validateTema(request.getTema());
 		}
 		if (isNotBlank(request.getBehandlingstema())) {
 			validateBehandlingstema(request.getBehandlingstema());
@@ -120,16 +128,19 @@ public class OpprettJournalpostRequestValidator {
 		if (!isNumeric(bruker.getId())) {
 			throw new InputValideringFeiletException("Bruker.id må bestå av tall.");
 		}
-		if (BrukerIdType.FNR.equals(bruker.getIdType()) && bruker.getId().length() != FNR_LENGTH) {
+		if (FNR.equals(bruker.getIdType()) && bruker.getId().length() != FNR_LENGTH) {
 			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for FNR.");
-		} else if (BrukerIdType.ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != ORGNR_LENGTH) {
+		} else if (ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != ORGNR_LENGTH) {
 			throw new InputValideringFeiletException("Bruker.id må være 9 siffer for ORGNR.");
-		} else if (BrukerIdType.AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
+		} else if (AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
 			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for AKTOERID.");
 		}
 	}
 
 	private void validateTema(String tema) {
+		if(StringUtils.isEmpty(tema)){
+			throw new InputValideringFeiletException(format("Kan ikke opprette journalpost uten tema. Mottok tema=%s", tema));
+		}
 		try {
 			FagomradeCode.valueOf(tema);
 		} catch (IllegalArgumentException e) {
@@ -163,8 +174,8 @@ public class OpprettJournalpostRequestValidator {
 				throw new InputValideringFeiletException(format("Oppgitt kanal=%s %s", request.getKanal(), VALIDERER_IKKE_MOT_KODEVERK));
 			}
 
-			if (MottaksKanalCode.valueOf(request.getKanal()) == MottaksKanalCode.NAV_NO_UINNLOGGET && !request.getTema()
-					.equalsIgnoreCase(FagomradeCode.SER.name())) {
+			if (MottaksKanalCode.valueOf(request.getKanal()) == NAV_NO_UINNLOGGET && !request.getTema()
+					.equalsIgnoreCase(SER.name())) {
 				throw new InputValideringFeiletException("Det er kun mulig å arkivere med mottakskanal NAV_NO_UINNLOGGET dersom tema=SER.");
 			}
 
@@ -179,22 +190,17 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateSak(Sak sak, Bruker bruker, String tema) {
 		if (FAGSAK.equals(sak.getSakstype())) {
-			validateFagsak(sak, bruker, tema);
+			validateFagsak(sak, bruker);
 		}
-
-		if (Sakstype.GENERELL_SAK.equals(sak.getSakstype())) {
-			validateGenerellSak(sak, bruker, tema);
+		if (GENERELL_SAK.equals(sak.getSakstype())) {
+			validateGenerellSak(sak, bruker);
 		}
-
-		if (Sakstype.ARKIVSAK.equals(sak.getSakstype()) || sak.getSakstype() == null) {
+		if (ARKIVSAK.equals(sak.getSakstype()) || sak.getSakstype() == null) {
 			validateArkivsak(sak);
 		}
 	}
 
-	private void validateFagsak(Sak sak, Bruker bruker, String tema) {
-		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("tema må være satt dersom sakstype=FAGSAK");
-		}
+	private void validateFagsak(Sak sak, Bruker bruker) {
 		if (bruker == null) {
 			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=FAGSAK");
 		}
@@ -210,17 +216,14 @@ public class OpprettJournalpostRequestValidator {
 		if (sak.getArkivsaksystem() != null) {
 			throw new InputValideringFeiletException("Sak.arkivsaksystem skal ikke være satt dersom sakstype=FAGSAK");
 		}
-		if(FAGSAK == sak.getSakstype() && PP01 == sak.getFagsaksystem()) {
-			if(!isNumeric(sak.getFagsakId())) {
+		if (FAGSAK == sak.getSakstype() && PP01 == sak.getFagsaksystem()) {
+			if (!isNumeric(sak.getFagsakId())) {
 				throw new InputValideringFeiletException("Sak.fagsakId skal være opprettet i PSAK og må være et numerisk heltall.");
 			}
 		}
 	}
 
-	private void validateGenerellSak(Sak sak, Bruker bruker, String tema) {
-		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("tema må være satt dersom sakstype=GENERELL_SAK");
-		}
+	private void validateGenerellSak(Sak sak, Bruker bruker) {
 		if (bruker == null) {
 			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=GENERELL_SAK");
 		}
@@ -305,7 +308,7 @@ public class OpprettJournalpostRequestValidator {
 				.contains(FilTypeCode.valueOf(dokumentVariant.getFiltype()))) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV.");
 		}
-		if(dokumentVariant.getFysiskDokument() == null || dokumentVariant.getFysiskDokument().length == 0) {
+		if (dokumentVariant.getFysiskDokument() == null || dokumentVariant.getFysiskDokument().length == 0) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.fysiskDokument må være satt med en base64 representert fil større en 0 bytes.");
 		}
 	}

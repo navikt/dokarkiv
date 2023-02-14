@@ -176,11 +176,10 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenTemaNotSetForFagsak() {
+	public void shouldThrowExceptionWhenTemaNotSet() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(null)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
-				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
 				.build();
 
 		assertThrows(InputValideringFeiletException.class,
@@ -251,19 +250,6 @@ public class OpprettJournalpostRequestValidatorTest {
 		assertThrows(InputValideringFeiletException.class,
 				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
 				"Sak.arkivsaksystem");
-	}
-
-	@Test
-	public void shouldThrowExceptionWhenTemaNotSetForGenerellSak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
-				.tema(null)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
-				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
-				.build();
-
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"tema");
 	}
 
 	@Test

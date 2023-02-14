@@ -190,7 +190,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathJournalstatusFSKanFerdigstilles() {
 		abacPermit();
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
 		journalpostTestRepository.persist(journalpost);
 
