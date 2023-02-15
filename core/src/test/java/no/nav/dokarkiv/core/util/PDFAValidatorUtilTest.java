@@ -46,8 +46,10 @@ public class PDFAValidatorUtilTest {
 
 	@Test
 	public void shouldValidateBadPDFA() throws IOException {
-		InputStream pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf");
-		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes()));
+		PDFAValidatorResponse response;
+		try (InputStream pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf")) {
+			response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes()));
+		}
 
 		assertThat(response.getPdfVersion(), is(PDFA_1_B));
 		assertThat(response.validPdfToString(), is("ugyldig"));
@@ -59,17 +61,31 @@ public class PDFAValidatorUtilTest {
 		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(createFilDetaljer(null)));
 	}
 
+	@Test
+	public void shouldThrowExceptionWhenNullFilDetaljer() {
+		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(null));
+	}
+
+	@Test
+	void shouldThrowExceptionWhenFilDetaljerEmptyByteArray() {
+		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[0])));
+	}
+
 	private void validatePDFA(PDFAFlavour flavour) throws IOException {
-		InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF);
-		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes()));
+		PDFAValidatorResponse response;
+		try (InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF)) {
+			response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes()));
+		}
 		assertThat(response.getAssertionResults(), is(Collections.emptySet()));
 		assertThat(response.getPdfVersion(), is(flavour));
 		assertThat(response.validPdfToString(), is("gyldig"));
 	}
 
 	private void validateBadPDFA(PDFAFlavour flavour) throws IOException {
-		InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF);
-		PDFAValidatorResponse response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes()));
+		PDFAValidatorResponse response;
+		try (InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF)) {
+			response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes()));
+		}
 
 		assertThat(response.getPdfVersion(), is(flavour));
 		assertThat(response.validPdfToString(), is("ugyldig"));
