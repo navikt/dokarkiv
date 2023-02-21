@@ -78,7 +78,7 @@ public class OpprettJournalpostApiRequestMapper {
 				.utsendingskanal(mapUtsendingskanal(request))
 				.kanalReferanseId(request.getEksternReferanseId())
 				.mottattDato(mapMottattDato(request))
-				.dokumentDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
+				.dokumentDato(mapDokumentDato(request))
 				.innsyn(mapOverstyrInnsynsregler(request))
 				.build();
 
@@ -98,7 +98,7 @@ public class OpprettJournalpostApiRequestMapper {
 		if (avsenderMottaker != null && isNotBlank(avsenderMottaker.getNavn())) {
 			return avsenderMottaker.getNavn();
 		} else if (avsenderMottaker != null && isNotBlank(avsenderMottaker.getId()) &&
-				   (avsenderMottaker.getIdType() == null || avsenderMottaker.getIdType() == AvsenderMottakerIdType.FNR)) {
+				(avsenderMottaker.getIdType() == null || avsenderMottaker.getIdType() == AvsenderMottakerIdType.FNR)) {
 			return identConsumer.hentPersonIdent(avsenderMottaker.getId(), request.getTema());
 		}
 		return null;
@@ -187,6 +187,11 @@ public class OpprettJournalpostApiRequestMapper {
 		return null;
 	}
 
+	private java.util.Date mapDokumentDato(OpprettJournalpostRequest request) {
+		return request.getDatoDokument() == null ?
+				Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()) :	request.getDatoDokument();
+	}
+
 	private FagomradeCode mapTema(OpprettJournalpostRequest request) {
 		return isBlank(request.getTema()) ? null : FagomradeCode.valueOf(request.getTema());
 	}
@@ -240,7 +245,7 @@ public class OpprettJournalpostApiRequestMapper {
 		if (isValidFagsaksystem(sakstype, fagsaksystem) && Fagsaksystem.PP01.equals(fagsaksystem)) {
 			return FagsystemCode.PEN;
 		} else if ((isValidFagsaksystem(sakstype, fagsaksystem) || Sakstype.GENERELL_SAK.equals(sakstype))
-				   && !Fagsaksystem.PP01.equals(fagsaksystem)) {
+				&& !Fagsaksystem.PP01.equals(fagsaksystem)) {
 			return FagsystemCode.FS22;
 		} else {
 			throw new UgyldigInputException("Kan ikke mappe fagsystem basert på input");

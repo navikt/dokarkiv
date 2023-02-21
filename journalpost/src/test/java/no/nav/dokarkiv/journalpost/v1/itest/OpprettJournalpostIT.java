@@ -153,6 +153,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(AVSENDER_NAVN, journalpost.getAvsenderMottaker());
 		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
 		assertEquals(AVSENDER_MOTTAKER_LAND, journalpost.getLand());
+		assertNotNull(journalpost.getDokumentDato());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 		assertThat(aksjonsLoggList, hasSize(1));

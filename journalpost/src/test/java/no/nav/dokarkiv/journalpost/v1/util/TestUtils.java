@@ -72,6 +72,7 @@ public class TestUtils {
 	public static final String ARKIVSAKSNUMMER = "1234567890";
 	public static final String INNHOLD = "innhold";
 	public static final String KANALREFERANSE_ID = "kanalreferansId";
+	public static final Date DATO_DOKUMENT = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	public static final Date DATO_MOTTATT = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	public static final Date DATO_MOTTATT_1 = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	public static final String JOURNALFOERENDE_ENHET = "4000";
@@ -546,6 +547,7 @@ public class TestUtils {
 				.tittel(INNHOLD)
 				.kanal(KANAL_NAVNO)
 				.eksternReferanseId(KANALREFERANSE_ID)
+				.datoDokument(DATO_DOKUMENT)
 				.datoMottatt(DATO_MOTTATT)
 				.tilleggsopplysninger(Collections.singletonList(Tilleggsopplysning.builder()
 						.nokkel(TILLEGGSOPPLYSNING_NOKKEL)

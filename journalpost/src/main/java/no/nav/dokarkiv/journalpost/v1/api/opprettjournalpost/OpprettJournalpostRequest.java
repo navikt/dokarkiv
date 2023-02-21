@@ -112,6 +112,16 @@ public class OpprettJournalpostRequest {
 
 	@Schema(
 			description = """
+					Brukes for å datere innholdet i hoveddokumentet.
+					     
+					Skal kun brukes dersom innholdet i dokumentet har en annen datering enn tidspunktet for opprettelse av journalposten.
+					""",
+			example = "2023-02-21"
+	)
+	private Date datoDokument;
+
+	@Schema(
+			description = """
 					Dato forsendelsen ble mottatt fra avsender. Dersom datoMottatt er tom, settes verdien til dagens dato.
 					Feltet kan kun settes for inngående journalposter.
 					""",

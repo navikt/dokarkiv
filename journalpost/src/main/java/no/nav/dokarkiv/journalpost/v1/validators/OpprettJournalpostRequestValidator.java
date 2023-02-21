@@ -9,15 +9,16 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
-import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
-import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,6 +76,12 @@ public class OpprettJournalpostRequestValidator {
 		if (isNotBlank(request.getJournalfoerendeEnhet())) {
 			validateJournalpost(journalpostFerdigstilt, request.getJournalfoerendeEnhet());
 		}
+		if(request.getDatoDokument() != null){
+			validateDato(request.getDatoDokument(), "DatoDokument");
+		}
+		if(request.getDatoMottatt() != null) {
+			validateDato(request.getDatoMottatt(), "DatoMottatt");
+		}
 		if (!request.getDokumenter().isEmpty()) {
 			request.getDokumenter().forEach(this::validateDokument);
 		} else {
@@ -121,6 +128,11 @@ public class OpprettJournalpostRequestValidator {
 		}
 	}
 
+	private void validateDato(Date dato, String datoFeltNavn) {
+		if (dato.compareTo(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())) > 0){
+			throw new InputValideringFeiletException(format("Feilet for %s. Dato kan ikke være frem i tid.", datoFeltNavn));
+		}
+	}
 	private void validateBruker(Bruker bruker) {
 		if (isBlank(bruker.getId())) {
 			throw new InputValideringFeiletException("Bruker.id må være satt.");

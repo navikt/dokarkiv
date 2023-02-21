@@ -18,13 +18,21 @@ import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
@@ -44,6 +52,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGIN
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
@@ -834,6 +843,28 @@ public class OpprettJournalpostRequestValidatorTest {
 				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
 				"Dokument.dokumentvariant.variantformat");
 	}
+	@ParameterizedTest
+	@MethodSource
+	void shouldThrowExceptionWhenDatoIsInTheFuture(String datoFeltNavn, Date datoDokument, Date datoMottatt){
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.behandlingstema("ab0001")
+				.avsenderMottaker(null)
+				.datoDokument(datoDokument)
+				.datoMottatt(datoMottatt)
+				.build();
+
+		var exception = assertThrows(InputValideringFeiletException.class,
+				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertEquals(format("Feilet for %s. Dato kan ikke være frem i tid.", datoFeltNavn), exception.getMessage());
+	}
+	private static Stream<Arguments> shouldThrowExceptionWhenDatoIsInTheFuture() {
+		return Stream.of(
+				Arguments.of("DatoDokument", Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().plus(1L, ChronoUnit.DAYS)), null),
+				Arguments.of("DatoMottatt", null, Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().plus(1L, ChronoUnit.DAYS)))
+
+		);
+	}
+
 
 	@ParameterizedTest
 	@EnumSource(
