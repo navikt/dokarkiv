@@ -19,7 +19,6 @@
 		<dependency>
 			<groupId>no.nav.tjenester.brevogarkiv</groupId>
 			<artifactId>dokumentproduksjoninfo-tjenestespesifikasjon</artifactId>
-			<classifier>jaxws</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
