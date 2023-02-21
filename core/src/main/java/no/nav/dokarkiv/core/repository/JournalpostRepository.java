@@ -22,9 +22,11 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 
 	@Query(value = """
 			select j from Journalpost j
-			where j.journalstatus in (no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M, no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO)
-			and j.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I
-			and j.changeStamp.createdDate <= :tilOgMedDato AND j.fagomrade in :fagomrader
+			where j.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I
+			and j.journalstatus in (no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M, no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO)
+			and j.changeStamp.createdDate > '2020-01-01'
+			and j.changeStamp.createdDate <= :tilOgMedDato
+			AND j.fagomrade in :fagomrader
 			""")
 	List<Journalpost> findUbehandledeJournalpostsWithTemaIn(@Param("tilOgMedDato") Date tilOgMedDato, @Param("fagomrader") Set<FagomradeCode> fagomrader);
 
