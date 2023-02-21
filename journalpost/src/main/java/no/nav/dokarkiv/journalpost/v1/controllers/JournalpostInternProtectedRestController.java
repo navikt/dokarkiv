@@ -60,9 +60,9 @@ public class JournalpostInternProtectedRestController {
 			@PathVariable("eldreEnn") int eldreEnn) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
 		try {
-			log.info("finnMottatteJournalposterMedTemaEldreEnn har mottatt kall om å hente ubehandlede journalposter med tema blandt={}", Arrays.toString(temaer.toArray()));
+			log.info("finnMottatteJournalposterMedTemaEldreEnn har mottatt kall om å hente ubehandlede journalposter med tema blandt={}", temaer);
 			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(temaer, eldreEnn);
-			log.info("finnMottatteJournalposterMedTemaEldreEnn returnerer {} journalposter for tema={}", ubehandledeJournalposter.getJournalposter().size(), Arrays.toString(temaer.toArray()));
+			log.info("finnMottatteJournalposterMedTemaEldreEnn returnerer {} journalposter for tema={}", ubehandledeJournalposter.getJournalposter().size(), temaer);
 
 			return ResponseEntity
 					.ok()
