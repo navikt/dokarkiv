@@ -189,7 +189,8 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private java.util.Date mapDokumentDato(OpprettJournalpostRequest request) {
 		return request.getDatoDokument() == null ?
-				Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()) :	request.getDatoDokument();
+				Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()) :
+				Date.from(request.getDatoDokument().atZone(ZoneId.systemDefault()).toInstant());
 	}
 
 	private FagomradeCode mapTema(OpprettJournalpostRequest request) {
