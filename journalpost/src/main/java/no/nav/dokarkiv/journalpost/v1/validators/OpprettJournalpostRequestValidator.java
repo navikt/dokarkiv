@@ -79,7 +79,7 @@ public class OpprettJournalpostRequestValidator {
 			validateJournalpost(journalpostFerdigstilt, request.getJournalfoerendeEnhet());
 		}
 		if(request.getDatoDokument() != null){
-			validateDato(Date.from(request.getDatoDokument().atZone(ZoneId.systemDefault()).toInstant()), "DatoDokument");
+			validateDato(request.getDatoDokument(), "DatoDokument");
 		}
 		if(request.getDatoMottatt() != null) {
 			softValidateDato(request.getDatoMottatt(), "DatoMottatt");
@@ -130,16 +130,25 @@ public class OpprettJournalpostRequestValidator {
 		}
 	}
 
-	private void validateDato(Date dato, String datoFeltNavn) {
-		Date systemdato = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).plusSeconds(3).toInstant());
-		if (dato.compareTo(systemdato) > 0){
-			throw new InputValideringFeiletException(format("Validering av %s feilet. Dato kan ikke være frem i tid. %s er %s og nå tid er %s", datoFeltNavn, datoFeltNavn, dato, systemdato));
+	private void validateDato(LocalDateTime dato, String datoFeltNavn) {
+		if (dato.isAfter(LocalDateTime.now().plusSeconds(3))) {
+			throw new InputValideringFeiletException(format("Validering av %s feilet. Dato kan ikke være frem i tid. %s er %s og nå tid er %s",
+					datoFeltNavn,
+					datoFeltNavn,
+					dato,
+					LocalDateTime.now().plusSeconds(3)
+			));
 		}
 	}
+
 	private void softValidateDato(Date dato, String datoFeltNavn) {
-		Date systemdato = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).plusSeconds(3).toInstant());
+		Date systemdato = Date.from(LocalDateTime.now().plusSeconds(3).atZone(ZoneId.systemDefault()).toInstant());
 		if (dato.compareTo(systemdato) > 0) {
-			log.warn(format("Validering av %s feilet. Dato kan ikke være frem i tid. %s er %s og nå tid er %s", datoFeltNavn, datoFeltNavn, dato, systemdato));
+			log.warn(format("Validering av %s feilet. Dato kan ikke være frem i tid. %s er %s og nå tid er %s",
+					datoFeltNavn,
+					datoFeltNavn,
+					dato,
+					systemdato));
 		}
 	}
 	private void validateBruker(Bruker bruker) {
