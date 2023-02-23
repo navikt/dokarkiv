@@ -139,7 +139,7 @@ public class OpprettJournalpostRequestValidator {
 	private void softValidateDato(Date dato, String datoFeltNavn) {
 		Date systemdato = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).plusSeconds(3).toInstant());
 		if (dato.compareTo(systemdato) > 0){
-			log.error(format("Validering av %s feilet. Dato kan ikke være frem i tid. %s er %s og nå tid er %s", datoFeltNavn, datoFeltNavn, dato, systemdato));
+			log.warn(format("Validering av %s feilet. Dato kan ikke være frem i tid. %s er %s og nå tid er %s", datoFeltNavn, datoFeltNavn, dato, systemdato));
 		}
 	}
 	private void validateBruker(Bruker bruker) {
