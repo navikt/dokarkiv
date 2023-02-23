@@ -32,7 +32,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
-@Tag(name="journalpostapi - internt", description = "Interne tjenester mot journalpost")
+@Tag(name = "journalpostapi - internt", description = "Interne tjenester mot journalpost")
 @Slf4j
 @Protected
 @RestController
@@ -43,7 +43,7 @@ public class JournalpostInternProtectedRestController {
 	private final MottaDokumentUtgaaendeSkanningService mottaDokumentUtgaaendeSkanningService;
 
 	public JournalpostInternProtectedRestController(FinnMottatteJournalposterService finnMottatteJournalposterService,
-													MottaDokumentUtgaaendeSkanningService mottaDokumentUtgaaendeSkanningService){
+													MottaDokumentUtgaaendeSkanningService mottaDokumentUtgaaendeSkanningService) {
 		this.finnMottatteJournalposterService = finnMottatteJournalposterService;
 		this.mottaDokumentUtgaaendeSkanningService = mottaDokumentUtgaaendeSkanningService;
 	}
@@ -60,9 +60,9 @@ public class JournalpostInternProtectedRestController {
 			@PathVariable("eldreEnn") int eldreEnn) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
 		try {
-			log.info("finnMottatteJournalposter_eldreEnn har mottatt kall om å hente ubehandlede journalposter med tema blandt " + Arrays.toString(temaer.toArray()));
-
+			log.info("finnMottatteJournalposterMedTemaEldreEnn har mottatt kall om å hente ubehandlede journalposter med tema blandt={}", temaer);
 			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(temaer, eldreEnn);
+			log.info("finnMottatteJournalposterMedTemaEldreEnn returnerer {} journalposter for tema={}", ubehandledeJournalposter.getJournalposter().size(), temaer);
 
 			return ResponseEntity
 					.ok()
@@ -75,6 +75,8 @@ public class JournalpostInternProtectedRestController {
 			log.error("finnMottatteJournalposter - feilet teknisk ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", Arrays.toString(temaer.toArray()), e
 					.getMessage());
 			throw e;
+		} finally {
+			MDC.clear();
 		}
 	}
 
@@ -104,6 +106,8 @@ public class JournalpostInternProtectedRestController {
 			log.error("mottaDokumentUtgaaendeSkanning - feilet teknisk ved mottak av utgaaende skanning for journalpostId={}. Feilmelding={}", journalpostId, e
 					.getMessage());
 			throw e;
+		} finally {
+			MDC.clear();
 		}
 	}
 
