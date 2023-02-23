@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -32,7 +31,7 @@ class JoarkDokumentDto {
 	private static Long mapJournalpostId(Object[] objects) {
 		if (objects[0] instanceof BigInteger) {
 			return ((BigInteger) objects[0]).longValue();
-		} else if (objects[0] instanceof BigDecimal){
+		} else if (objects[0] instanceof BigDecimal) {
 			return ((BigDecimal) objects[0]).longValue();
 		} else {
 			return (Long) objects[0];
@@ -40,11 +39,7 @@ class JoarkDokumentDto {
 	}
 
 	boolean isNormalDocument() {
-		return dokument != null && !isDlfDocument();
-	}
-
-	boolean isDlfDocument() {
-		return dokument != null && FilTypeCode.DLF.name().equals(filtype);
+		return dokument != null;
 	}
 
 	boolean isOndemandDocument() {

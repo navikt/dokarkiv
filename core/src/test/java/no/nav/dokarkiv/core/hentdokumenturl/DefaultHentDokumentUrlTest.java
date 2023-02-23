@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlRequest;
 import no.nav.dokarkiv.core.dokumenturl.HentDokumentUrlResponse;
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
-import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.builder.KryssreferanseBuilder;
@@ -34,8 +33,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Optional;
 
 import static no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode.SYFO;
@@ -208,32 +205,6 @@ public class DefaultHentDokumentUrlTest {
 		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(null);
 
 		assertInvalidFilUuidExceptionThrown(FIL_UUID);
-	}
-
-	@Test
-	public void shouldSetCorrectMimeTypeForDlf() throws UnsupportedEncodingException {
-		Journalpost journalpost = JournalpostBuilder.getJournalpostBuilder()
-				.journalpostId(JOURNALPOST_ID)
-				.journalStatus(JournalStatusCode.D)
-				.fagomrade(FagomradeCode.DAG)
-				.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder
-						.getJournalpostDokumentInfoRelasjonBuilder()
-						.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
-								.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
-										.filUuid(FIL_UUID)
-										.variantFormat(VariantFormatCode.PRODUKSJON_DLF)
-										.filtype(FilTypeCode.DLF)
-										.build())
-								.build())
-						.build())
-				.build();
-		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
-		when(dokumentFilRepositoryMock.findByFilUuid(FIL_UUID)).thenReturn(new DokumentFil());
-
-		HentDokumentUrlResponse response = hentDokumentUrl.hentDokumentUrl(request);
-		String servletUrl = response.getDokumentUrl();
-
-		assertThat(URLDecoder.decode(servletUrl, "UTF-8"), containsString("application/dlf"));
 	}
 
 	private void assertInvalidFilUuidExceptionThrown(String filUuid) throws NoJournalpostFoundException {

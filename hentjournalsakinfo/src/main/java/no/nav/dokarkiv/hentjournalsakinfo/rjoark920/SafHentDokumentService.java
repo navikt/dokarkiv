@@ -42,9 +42,10 @@ public class SafHentDokumentService {
 			} catch (IOException | SQLException e) {
 				throw new RuntimeException("Klarte ikke å lese dokument fra binaryStream. dokumentInfoId=" + dokumentinfoId + ", variantFormat=" + variant, e);
 			}
-		} else if (joarkDokumentDto.isDlfDocument() || joarkDokumentDto.isOndemandDocument()) {
-			log.info("Fysisk dokument med dokumentInfoId={}, variantformat={} er et OnDemand dokument eller en DLF. Henter fra Joark.", dokumentinfoId, variant);
+		} else if (joarkDokumentDto.isOndemandDocument()) {
+			log.warn("Dokument med dokumentInfoId={}, variantformat={} er et OnDemand dokument. Henter fra Joark.", dokumentinfoId, variant);
 			byte[] ondemandDokument = safHentDokumentJoarkRepository.hentDokument(joarkDokumentDto);
+			log.warn("Dokument med dokumentInfoId={}, variantformat={} hentet fra ondemand via joark. size={}", dokumentinfoId, variant, ondemandDokument.length);
 			return SafHentDokumentResponse.builder()
 					.dokument(ondemandDokument)
 					.filtype(joarkDokumentDto.getFiltype())
