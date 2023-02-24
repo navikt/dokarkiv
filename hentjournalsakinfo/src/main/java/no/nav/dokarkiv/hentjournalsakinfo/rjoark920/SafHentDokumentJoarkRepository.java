@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * Henter dokumenter fra joark (special case)
  * <p>
- * Kun for DLF og Ondemand dokumenter.
+ * Kun for Ondemand dokumenter.
  *
  * @see HentOndemandDokument
  */

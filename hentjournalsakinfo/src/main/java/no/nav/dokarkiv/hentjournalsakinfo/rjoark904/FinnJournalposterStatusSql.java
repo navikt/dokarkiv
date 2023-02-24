@@ -74,7 +74,7 @@ class FinnJournalposterStatusSql {
 				"                                JOIN t_dokument_info d ON rel.dokument_info_id = d.dokument_info_id\n" +
 				"                                LEFT JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id AND\n" +
 				"                                                               fd.k_variant_format IN\n" +
-				"                                                               ('ARKIV', 'SLADDET', 'PRODUKSJON', 'PRODUKSJON_DLF',\n" +
+				"                                                               ('ARKIV', 'SLADDET', 'PRODUKSJON',\n" +
 				"                                                                'FULLVERSJON', 'ORIGINAL')\n" +
 				"                                LEFT JOIN t_skannet_innhold tsi ON d.dokument_info_id = tsi.dokument_info_id\n" +
 				"     )\n" +
