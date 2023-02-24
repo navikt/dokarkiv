@@ -842,7 +842,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.behandlingstema("ab0001")
 				.avsenderMottaker(null)
-				.datoDokument(LocalDateTime.now().plus(3,ChronoUnit.DAYS))
+				.datoDokument(LocalDateTime.now().plus(3, ChronoUnit.DAYS))
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class,
