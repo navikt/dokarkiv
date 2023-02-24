@@ -72,6 +72,7 @@ public class TestUtils {
 	public static final String ARKIVSAKSNUMMER = "1234567890";
 	public static final String INNHOLD = "innhold";
 	public static final String KANALREFERANSE_ID = "kanalreferansId";
+	public static final LocalDateTime DATO_DOKUMENT = LocalDateTime.now().minusDays(3);
 	public static final Date DATO_MOTTATT = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	public static final Date DATO_MOTTATT_1 = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	public static final String JOURNALFOERENDE_ENHET = "4000";
@@ -82,7 +83,6 @@ public class TestUtils {
 	public static final String BREVKODE1 = "brevkode1";
 	public static final String BREVKODE_4936 = "4936";
 	public static final String DOKUMENT_TITTEL1 = "dokumentTittel1";
-	public static final String DOKUMENT_TITTEL_UPDATE = "dokumentTittel_UPDATE";
 	public static final String SKANNETINNHOLD_ID1 = "78547541";
 	public static final String VEDLEGGINNHOLD1 = "vedlegginnhold1";
 	public static final String DOKUMENTINFO_ID2 = "74545455";
@@ -546,6 +546,7 @@ public class TestUtils {
 				.tittel(INNHOLD)
 				.kanal(KANAL_NAVNO)
 				.eksternReferanseId(KANALREFERANSE_ID)
+				.datoDokument(DATO_DOKUMENT)
 				.datoMottatt(DATO_MOTTATT)
 				.tilleggsopplysninger(Collections.singletonList(Tilleggsopplysning.builder()
 						.nokkel(TILLEGGSOPPLYSNING_NOKKEL)

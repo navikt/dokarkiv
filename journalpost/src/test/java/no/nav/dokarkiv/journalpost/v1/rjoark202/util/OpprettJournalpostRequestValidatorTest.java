@@ -22,9 +22,12 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
@@ -834,6 +837,19 @@ public class OpprettJournalpostRequestValidatorTest {
 				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
 				"Dokument.dokumentvariant.variantformat");
 	}
+	@Test
+	void shouldThrowExceptionWhenDatoIsInTheFuture(){
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.behandlingstema("ab0001")
+				.avsenderMottaker(null)
+				.datoDokument(LocalDateTime.now().plus(3, ChronoUnit.DAYS))
+				.build();
+
+		var exception = assertThrows(InputValideringFeiletException.class,
+				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertTrue(exception.getMessage().contains(format("Validering av %s feilet. Dato kan ikke være frem i tid.","DatoDokument")));
+	}
+
 
 	@ParameterizedTest
 	@EnumSource(

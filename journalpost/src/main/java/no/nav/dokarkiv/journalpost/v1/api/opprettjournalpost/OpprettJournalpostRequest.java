@@ -15,6 +15,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -109,6 +110,16 @@ public class OpprettJournalpostRequest {
 			example = "a0f480a3-8ab2-4c56-8c93-e53bb35bec2b"
 	)
 	private String eksternReferanseId;
+
+	@Schema(
+			description = """
+					Brukes for å datere innholdet i hoveddokumentet.
+					     
+					Skal kun brukes dersom innholdet i dokumentet har en annen datering enn tidspunktet for opprettelse av journalposten.
+					""",
+			example = "2023-02-22T10:58:53.470892300"
+	)
+	private LocalDateTime datoDokument;
 
 	@Schema(
 			description = """

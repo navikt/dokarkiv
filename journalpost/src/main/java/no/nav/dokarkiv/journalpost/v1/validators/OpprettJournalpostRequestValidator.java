@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
@@ -9,15 +10,16 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
-import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
-import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +43,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
 
+@Slf4j
 public class OpprettJournalpostRequestValidator {
 
 	private static final int FNR_LENGTH = 11;
@@ -74,6 +77,12 @@ public class OpprettJournalpostRequestValidator {
 		}
 		if (isNotBlank(request.getJournalfoerendeEnhet())) {
 			validateJournalpost(journalpostFerdigstilt, request.getJournalfoerendeEnhet());
+		}
+		if(request.getDatoDokument() != null){
+			validateDato(request.getDatoDokument(), "DatoDokument");
+		}
+		if(request.getDatoMottatt() != null) {
+			softValidateDato(request.getDatoMottatt(), "DatoMottatt");
 		}
 		if (!request.getDokumenter().isEmpty()) {
 			request.getDokumenter().forEach(this::validateDokument);
@@ -121,6 +130,28 @@ public class OpprettJournalpostRequestValidator {
 		}
 	}
 
+	private void validateDato(LocalDateTime dato, String datoFeltNavn) {
+		LocalDateTime naaTid = LocalDateTime.now().plusSeconds(3);
+		if (dato.isAfter(naaTid)) {
+			throw new InputValideringFeiletException(format("Validering av %s feilet. Dato kan ikke være frem i tid. %s er %s og nå tid er %s",
+					datoFeltNavn,
+					datoFeltNavn,
+					dato,
+					naaTid
+			));
+		}
+	}
+
+	private void softValidateDato(Date dato, String datoFeltNavn) {
+		Date systemdato = Date.from(LocalDateTime.now().plusSeconds(3).atZone(ZoneId.systemDefault()).toInstant());
+		if (dato.compareTo(systemdato) > 0) {
+			log.warn(format("Validering av %s feilet. Dato kan ikke være frem i tid. %s er %s og nå tid er %s",
+					datoFeltNavn,
+					datoFeltNavn,
+					dato,
+					systemdato));
+		}
+	}
 	private void validateBruker(Bruker bruker) {
 		if (isBlank(bruker.getId())) {
 			throw new InputValideringFeiletException("Bruker.id må være satt.");
