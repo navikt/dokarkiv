@@ -131,12 +131,13 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateDato(LocalDateTime dato, String datoFeltNavn) {
-		if (dato.isAfter(LocalDateTime.now().plusSeconds(3))) {
+		LocalDateTime naaTid = LocalDateTime.now().plusSeconds(3);
+		if (dato.isAfter(naaTid)) {
 			throw new InputValideringFeiletException(format("Validering av %s feilet. Dato kan ikke være frem i tid. %s er %s og nå tid er %s",
 					datoFeltNavn,
 					datoFeltNavn,
 					dato,
-					LocalDateTime.now().plusSeconds(3)
+					naaTid
 			));
 		}
 	}
