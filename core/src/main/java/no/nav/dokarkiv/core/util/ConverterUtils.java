@@ -5,14 +5,13 @@ import no.nav.security.token.support.core.jwt.JwtToken;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 public class ConverterUtils {
 
+	private static final ObjectMapper mapper = new ObjectMapper();
 	static final String DEFAULT_CLAIM_SUB = "sub";
 
 	public static <T extends Enum<T>> T stringToEnum(Class<T> clazz, String value) {
@@ -28,26 +27,21 @@ public class ConverterUtils {
 	}
 
 	public static <T> T jsonStringToObject(String jsonString, Class<T> tClass) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-
 		return mapper.readValue(jsonString, tClass);
-
 	}
 
 
 	public static <T> List<T> jsonStringToObjectList(String jsonString, Class<T> tClass) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-
 		return mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, tClass));
+	}
 
+	public static <T> Map<String, T> jsonStringToKeyValueMap(String jsonString, Class<T> tClass) throws IOException {
+		return mapper.readValue(jsonString, mapper.getTypeFactory().constructMapType(Map.class, String.class, tClass));
 	}
 
 
 	public static String objectToJsonString(Object object) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-
 		return mapper.writeValueAsString(object);
-
 	}
 
 	public static String getSubJwtTokenClaim(String accessToken) {

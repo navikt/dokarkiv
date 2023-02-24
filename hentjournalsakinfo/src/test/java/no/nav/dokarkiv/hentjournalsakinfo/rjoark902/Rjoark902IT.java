@@ -72,7 +72,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	public static final String POSTSTED = "poststed";
 	public static final String LANDKODE = "landkode";
 	public static final String DIGITALKONTAKT_INFORMASJON = "{\n          \"epost\": \"epostaddress3@nav.no\",\n          \"sms\": \"11111111\"\n        }";
-	public static final String VARSELTEKST = "{\n          \"epost\": \"Du har fått brev fra NAV\",\n          \"sms\": \"Du har fått brev fra NAV\"\n        }";
+	public static final String VARSELTEKST = "Du har fått brev fra NAV";
 	public static final String DIGITALPOSTKASSEADRESSE = "0000487236";
 	public static final String DIGITALPOSTKASSELEVERANDOR = "123456789";
 
@@ -189,7 +189,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		storedDokumentInfo.setKassert(true);
 
 		journalpostTestRepository.persist(journalpost);
-		utsendingsInfoTestRepository.persist(new UtsendingsInfo(journalpost, createNavNoVarsling()));
+		utsendingsInfoTestRepository.persist(new UtsendingsInfo(journalpost, createNavNoVarsling(), new UtsendingsInfo.EpostVarsel("", VARSELTEKST), new UtsendingsInfo.SmsVarsel(VARSELTEKST)));
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
@@ -201,7 +201,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	}
 
 	public static UtsendingsInfo.NavNoVarsling createNavNoVarsling() {
-		return new UtsendingsInfo.NavNoVarsling(DIGITALKONTAKT_INFORMASJON, VARSELTEKST);
+		return new UtsendingsInfo.NavNoVarsling(DIGITALKONTAKT_INFORMASJON, null);
 	}
 
 	public static UtsendingsInfo.DigitalPostadresse createDigitalPostadresse() {

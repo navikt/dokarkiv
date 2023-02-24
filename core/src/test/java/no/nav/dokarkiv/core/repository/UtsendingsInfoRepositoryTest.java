@@ -63,9 +63,11 @@ public class UtsendingsInfoRepositoryTest {
 		dokumentFilTestRepository.persist(createDummyDokumentKassert());
 		journalpost = journalpostTestRepository.persist(journalpost);
 
-		var utsendingsInfoPart = new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
+		var utsendingsInfoPart = new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker", null);
+		var epostvarsel = new UtsendingsInfo.EpostVarsel("Melding på nav.no",
 				"Hei Bruker! Du har fått en ny melding på nav.no. Hilsen NAV");
-		UtsendingsInfo utsendingsInfo = utsendingsInfoTestRepository.persistAndFlush(new UtsendingsInfo(journalpost, utsendingsInfoPart));
+		var smsvarsel = new UtsendingsInfo.SmsVarsel("Hei Bruker! Du har fått en ny melding på nav.no. Hilsen NAV");
+		UtsendingsInfo utsendingsInfo = utsendingsInfoTestRepository.persistAndFlush(new UtsendingsInfo(journalpost, utsendingsInfoPart, epostvarsel, smsvarsel));
 
 		assertThat(utsendingsInfo.getJournalpostId(), equalTo(journalpost.getId()));
 		assertTrue(utsendingsInfoTestRepository.findById(journalpost.getJournalpostId()).isPresent(), "Det skal finnes en Utsendingsinfo med journalpostId som id");

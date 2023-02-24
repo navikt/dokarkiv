@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UtsendingsInfoTest {
 
+	private static UtsendingsInfo.EpostVarsel epostVarsel = new UtsendingsInfo.EpostVarsel("tittel", "tekst");
+	private static UtsendingsInfo.SmsVarsel smsVarsel = new UtsendingsInfo.SmsVarsel("tekst");
+
 	@Test
 	void shouldThrowExceptionWhenFysiskPostadresseConstructedWithWrongUtsendingskanal() {
 		Journalpost journalpost = new Journalpost();
@@ -22,7 +25,7 @@ class UtsendingsInfoTest {
 		journalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		assertThrows(IllegalArgumentException.class, () ->
 				new UtsendingsInfo(journalpost, new UtsendingsInfo.DigitalPostadresse("postmottaker#1323",
-						"postkasseleverandør")));
+						"postkasseleverandør"), epostVarsel, smsVarsel));
 	}
 
 	@Test
@@ -31,6 +34,6 @@ class UtsendingsInfoTest {
 		journalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		assertThrows(IllegalArgumentException.class, () ->
 				new UtsendingsInfo(journalpost, new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
-						"Hei Bruker! Du har fått en ny melding på nav.no. Hilsen NAV")));
+						null), epostVarsel, smsVarsel));
 	}
 }
