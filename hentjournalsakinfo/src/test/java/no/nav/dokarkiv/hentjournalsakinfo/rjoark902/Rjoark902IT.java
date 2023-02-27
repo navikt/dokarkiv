@@ -30,6 +30,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Set;
 
+import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID_TYPE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.DOKUMENT_TYPE_ID;
@@ -189,23 +190,16 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		storedDokumentInfo.setKassert(true);
 
 		journalpostTestRepository.persist(journalpost);
-		utsendingsInfoTestRepository.persist(new UtsendingsInfo(journalpost, createNavNoVarsling(), new UtsendingsInfo.EpostVarsel("", VARSELTEKST), new UtsendingsInfo.SmsVarsel(VARSELTEKST)));
+		utsendingsInfoTestRepository.persist(new UtsendingsInfo(journalpost, createNavNoVarsling(), new UtsendingsInfo.EpostVarsler(emptyList()), new UtsendingsInfo.SmsVarsler(emptyList())));
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		return journalpost;
 	}
 
-	public static UtsendingsInfo.FysiskPostadresse createFysiskPostadresse() {
-		return new UtsendingsInfo.FysiskPostadresse(ADRESSELINJE1, ADRESSELINJE2, ADRESSELINJE3, POSTNUMMER, POSTSTED, LANDKODE);
-	}
 
 	public static UtsendingsInfo.NavNoVarsling createNavNoVarsling() {
 		return new UtsendingsInfo.NavNoVarsling(DIGITALKONTAKT_INFORMASJON, null);
-	}
-
-	public static UtsendingsInfo.DigitalPostadresse createDigitalPostadresse() {
-		return new UtsendingsInfo.DigitalPostadresse(DIGITALPOSTKASSEADRESSE, DIGITALPOSTKASSELEVERANDOR);
 	}
 
 	private DokumentInfo getDokumentInfoOfHoveddokument(Journalpost journalpost) {

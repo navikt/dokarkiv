@@ -1,9 +1,11 @@
 package no.nav.dokarkiv.core.util;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.security.token.support.core.jwt.JwtToken;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +37,9 @@ public class ConverterUtils {
 		return mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, tClass));
 	}
 
-	public static <T> Map<String, T> jsonStringToKeyValueMap(String jsonString, Class<T> tClass) throws IOException {
-		return mapper.readValue(jsonString, mapper.getTypeFactory().constructMapType(Map.class, String.class, tClass));
+	public static <T> List<Map<String, T>> jsonStringToListOfKeyValueMap(String jsonString, Class<T> tClass) throws IOException {
+		JavaType mapType = mapper.getTypeFactory().constructMapType(Map.class, String.class, tClass);
+		return mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionLikeType(ArrayList.class, mapType));
 	}
 
 

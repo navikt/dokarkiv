@@ -3,12 +3,14 @@ package no.nav.dokarkiv.core.domain.entities;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UtsendingsInfoTest {
 
-	private static UtsendingsInfo.EpostVarsel epostVarsel = new UtsendingsInfo.EpostVarsel("tittel", "tekst");
-	private static UtsendingsInfo.SmsVarsel smsVarsel = new UtsendingsInfo.SmsVarsel("tekst");
+	private static final UtsendingsInfo.EpostVarsler epostVarsler = new UtsendingsInfo.EpostVarsler(List.of(new UtsendingsInfo.EpostVarsel("tittel", "tekst", "homer@epos.gr", "2023-02-27T12:30:00.000")));
+	private static final UtsendingsInfo.SmsVarsler smsVarsler = new UtsendingsInfo.SmsVarsler(List.of(new UtsendingsInfo.SmsVarsel("tekst", "+4700000000", "2023-02-27T12:30:00.000")));
 
 	@Test
 	void shouldThrowExceptionWhenFysiskPostadresseConstructedWithWrongUtsendingskanal() {
@@ -25,7 +27,7 @@ class UtsendingsInfoTest {
 		journalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		assertThrows(IllegalArgumentException.class, () ->
 				new UtsendingsInfo(journalpost, new UtsendingsInfo.DigitalPostadresse("postmottaker#1323",
-						"postkasseleverandør"), epostVarsel, smsVarsel));
+						"postkasseleverandør"), epostVarsler, smsVarsler));
 	}
 
 	@Test
@@ -34,6 +36,6 @@ class UtsendingsInfoTest {
 		journalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		assertThrows(IllegalArgumentException.class, () ->
 				new UtsendingsInfo(journalpost, new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
-						null), epostVarsel, smsVarsel));
+						null), epostVarsler, smsVarsler));
 	}
 }

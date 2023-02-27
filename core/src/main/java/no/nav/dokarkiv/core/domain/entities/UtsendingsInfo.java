@@ -17,8 +17,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Inneholder metadata om utsending av {@link Journalpost}
@@ -55,7 +56,7 @@ public class UtsendingsInfo {
 		this.fysiskPostadresse = fysiskPostAdresse;
 	}
 
-	public UtsendingsInfo(Journalpost journalpost, DigitalPostadresse digitalPostadresse, EpostVarsel epostVarsel, SmsVarsel smsVarsel) {
+	public UtsendingsInfo(Journalpost journalpost, DigitalPostadresse digitalPostadresse, EpostVarsler epostVarsler, SmsVarsler smsVarsler) {
 		UtsendingsKanalCode utsendingskanal = journalpost.getUtsendingskanal();
 		if (utsendingskanal != UtsendingsKanalCode.SDP) {
 			throw new IllegalArgumentException(String.format("Kan ikke sette UtsendingsInfo av type=%s for utsendingskanal=%s",
@@ -65,7 +66,7 @@ public class UtsendingsInfo {
 		this.digitalPostadresse = digitalPostadresse;
 	}
 
-	public UtsendingsInfo(Journalpost journalpost, NavNoVarsling navNoVarsling, EpostVarsel epostVarsel, SmsVarsel smsVarsel) {
+	public UtsendingsInfo(Journalpost journalpost, NavNoVarsling navNoVarsling, EpostVarsler epostVarsler, SmsVarsler smsVarsler) {
 		UtsendingsKanalCode utsendingskanal = journalpost.getUtsendingskanal();
 		if (utsendingskanal != UtsendingsKanalCode.NAV_NO) {
 			throw new IllegalArgumentException(String.format("Kan ikke sette UtsendingsInfo av type=%s for utsendingskanal=%s",
@@ -123,71 +124,46 @@ public class UtsendingsInfo {
 
 	@Embeddable
 	@NoArgsConstructor
-	public static class SmsVarsel extends Varsling {
-		public SmsVarsel(String varseltekst) {
-			smsvarsel = marshallAndPrepareData(Map.of("tekst", varseltekst));
-		}
+	public static class SmsVarsler {
+		@Transient
+		List<SmsVarsel> smsvarselList;
 
-		@Column(name = "smsvarsel", length = 4000)
-		private String smsvarsel;
-
-		@Override
-		protected String getMarshalledData() {
-			return smsvarsel;
-		}
-
-		public String getTekst() {
-			return getData("tekst");
-		}
-	}
-
-	@Embeddable
-	@NoArgsConstructor
-	public static class EpostVarsel extends Varsling {
-		public EpostVarsel(String tittel, String varseltekst) {
-			epostvarsel = marshallAndPrepareData(Map.of("tittel", tittel, "tekst", varseltekst));
-		}
-
-		@Column(name = "epostvarsel", length = 4000)
-		private String epostvarsel;
-
-		@Override
-		protected String getMarshalledData() {
-			return epostvarsel;
-		}
-
-		public String getTittel() {
-			return getData("tittel");
-		}
-
-		public String getTekst() {
-			return getData("tekst");
-		}
-	}
-
-	private static abstract class Varsling {
-		private Map<String, String> unmarshalledData;
-
-		protected String marshallAndPrepareData(Map<String, String> unmarshalledData) {
-			this.unmarshalledData = unmarshalledData;
+		public SmsVarsler(List<SmsVarsel> smsvarselList) {
+			this.smsvarselList = smsvarselList;
 			try {
-				return ConverterUtils.objectToJsonString(unmarshalledData);
+				smsvarsel = ConverterUtils.objectToJsonString(smsvarselList);
 			} catch (IOException e) {
 				throw new IllegalArgumentException(e);
 			}
 		}
 
-		protected String getData(String key) {
-			if (unmarshalledData == null) {
-				try {
-					unmarshalledData = ConverterUtils.jsonStringToKeyValueMap(getMarshalledData(), String.class);
-				} catch (IOException e) {
-					return null;
-				}
-			}
-			return unmarshalledData.get(key);
-		}
+		@Column(name = "smsvarsel", length = 4000)
+		private String smsvarsel;
 
-		protected abstract String getMarshalledData();
+	}
+
+	@Embeddable
+	@NoArgsConstructor
+	public static class EpostVarsler {
+		@Transient
+		List<EpostVarsel> epostvarselList;
+
+		@Column(name = "epostvarsel", length = 4000)
+		private String epostvarsel;
+
+		public EpostVarsler(List<EpostVarsel> epostvarselList) {
+			this.epostvarselList = epostvarselList;
+			try {
+				this.epostvarsel = ConverterUtils.objectToJsonString(epostvarselList);
+			} catch (IOException e) {
+				throw new IllegalArgumentException(e);
+			}
+		}
+	}
+
+	public record EpostVarsel(String tittel, String tekst, String epostadresse, String varslingstidspunkt) {
+	}
+
+	public record SmsVarsel(String tekst, String mobilnummer, String varslingstidspunkt) {
 	}
 }
