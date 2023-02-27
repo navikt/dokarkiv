@@ -116,11 +116,19 @@ public class UtsendingsInfo {
 		private String postkasseLeverandor;
 	}
 
+	/**
+	 * @deprecated Bruk SmsVarsel og EpostVarsel for lik logikk som for SDP
+	 */
+	@Deprecated
 	@Embeddable
 	@Getter
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class NavNoVarsling {
+		/**
+		 * @deprecated Bruk SmsVarsel og EpostVarsel for lik logikk som for SDP
+		 */
+		@Deprecated
 		@Column(name = "digital_kontaktinformasjon", length = 200)
 		private String kontaktinformasjon;
 
@@ -138,6 +146,9 @@ public class UtsendingsInfo {
 		@Transient
 		List<SmsVarsel> smsvarselList;
 
+		@Column(name = "smsvarsel", length = 4000)
+		private String smsvarsel;
+
 		public SmsVarsler(List<SmsVarsel> smsvarselList) {
 			this.smsvarselList = smsvarselList;
 			try {
@@ -147,9 +158,9 @@ public class UtsendingsInfo {
 			}
 		}
 
-		@Column(name = "smsvarsel", length = 4000)
-		private String smsvarsel;
-
+		public boolean isEmpty() {
+			return smsvarselList.isEmpty();
+		}
 	}
 
 	@Embeddable
@@ -168,6 +179,10 @@ public class UtsendingsInfo {
 			} catch (IOException e) {
 				throw new IllegalArgumentException(e);
 			}
+		}
+
+		public boolean isEmpty() {
+			return epostvarselList.isEmpty();
 		}
 	}
 

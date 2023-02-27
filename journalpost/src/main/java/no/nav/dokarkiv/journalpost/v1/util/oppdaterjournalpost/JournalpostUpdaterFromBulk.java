@@ -7,12 +7,15 @@ import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.repository.UtsendingsInfoRepository;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.DigitalPost;
+import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.EpostVarsel;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.JournalpostWithDistribusjonsinfo;
-import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.NavNoVarsel;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.Postadresse;
+import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.SmsVarsel;
+import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.Varsel;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
+import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
@@ -41,8 +44,21 @@ public class JournalpostUpdaterFromBulk {
 						.orElseThrow(() -> new DokarkivFunctionalException("Fant ikke UtsendingsInfo med journalpostId=" + journalpost.getJournalpostId()));
 				switch (utsendingskanal) {
 					case S -> utsendingsInfo.setFysiskPostadresse(from(request.getPostadresse()));
-					case SDP -> utsendingsInfo.setDigitalPostadresse(from(request.getDigitalpostkasse()));
-					case NAV_NO -> utsendingsInfo.setNavNoVarsling(from(request.getVarsel()));
+					case SDP -> {
+						utsendingsInfo.setDigitalPostadresse(from(request.getDigitalpostkasse()));
+						utsendingsInfo.setEpostVarsler(epostVarsel(request.getVarsel()));
+						utsendingsInfo.setSmsVarsler(smsVarsel(request.getVarsel()));
+					}
+					case NAV_NO -> {
+						var epostVarsler = epostVarsel(request.getVarsel());
+						var smsVarsler = smsVarsel(request.getVarsel());
+						utsendingsInfo.setEpostVarsler(epostVarsler);
+						utsendingsInfo.setSmsVarsler(smsVarsler);
+
+						if (epostVarsler.isEmpty() && smsVarsler.isEmpty()) {
+							utsendingsInfo.setNavNoVarsling(from(request.getVarsel()));
+						}
+					}
 					// default: no action - eventuelle feil er håndtert i valideringssteget
 				}
 			} else {
@@ -50,9 +66,9 @@ public class JournalpostUpdaterFromBulk {
 					case S ->
 							utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getPostadresse())));
 					case SDP ->
-							utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getDigitalpostkasse()), null, null));
+							utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getDigitalpostkasse()), epostVarsel(request.getVarsel()), smsVarsel(request.getVarsel())));
 					case NAV_NO ->
-							utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getVarsel()), null, null));
+							utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getVarsel()), epostVarsel(request.getVarsel()), smsVarsel(request.getVarsel())));
 					// default: no action - eventuelle feil er håndtert i valideringssteget
 				}
 			}
@@ -85,7 +101,21 @@ public class JournalpostUpdaterFromBulk {
 		return new UtsendingsInfo.DigitalPostadresse(digitalpost.getDigitalpostkasseadresse(), digitalpost.getDigitalpostkasseleverandor());
 	}
 
-	private static UtsendingsInfo.NavNoVarsling from(NavNoVarsel navNoVarsel) {
-		return new UtsendingsInfo.NavNoVarsling(navNoVarsel.getDigitalkontaktinformasjon(), navNoVarsel.getVarseltekst());
+	private static UtsendingsInfo.NavNoVarsling from(Varsel varsel) {
+		return new UtsendingsInfo.NavNoVarsling(varsel.getDigitalkontaktinformasjon(), varsel.getVarseltekst());
+	}
+
+	private static UtsendingsInfo.EpostVarsler epostVarsel(Varsel varsel) {
+		if (varsel == null || varsel.getEpostvarsel() == null) {
+			return new UtsendingsInfo.EpostVarsler(emptyList());
+		}
+		return new UtsendingsInfo.EpostVarsler(varsel.getEpostvarsel().stream().map(EpostVarsel::toInternal).toList());
+	}
+
+	private static UtsendingsInfo.SmsVarsler smsVarsel(Varsel varsel) {
+		if (varsel == null || varsel.getSmsvarsel() == null) {
+			return new UtsendingsInfo.SmsVarsler(emptyList());
+		}
+		return new UtsendingsInfo.SmsVarsler(varsel.getSmsvarsel().stream().map(SmsVarsel::toInternal).toList());
 	}
 }

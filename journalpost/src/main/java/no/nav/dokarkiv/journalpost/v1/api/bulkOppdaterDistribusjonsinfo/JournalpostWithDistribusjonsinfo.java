@@ -34,6 +34,6 @@ public class JournalpostWithDistribusjonsinfo implements WithUtsendingsKanal {
 	@Schema(description = "Påkrevd hvis utsendingsKanal = \"SDP\" (digital postkasse), settes ellers ikke")
 	private DigitalPost digitalpostkasse;
 
-	@Schema(description = "Påkrevd hvis utsendingsKanal = \"NAV_NO\"")
-	private NavNoVarsel varsel;
+	@Schema(description = "Påkrevd hvis utsendingsKanal = \"NAV_NO\" eller \"SDP\"")
+	private Varsel varsel;
 }
