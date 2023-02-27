@@ -22,6 +22,8 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,6 +63,7 @@ public class JournalpostUpdater {
 		updateReturInfo(journalpost, oppdaterJournalpostRequest, tracker);
 		updateBruker(journalpost, oppdaterJournalpostRequest, tracker);
 		updateDatoMottatt(journalpost, oppdaterJournalpostRequest, tracker);
+		updateDatoDokument(journalpost, oppdaterJournalpostRequest, tracker);
 
 		if (tracker.isEndretFlagg()) {
 			journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
@@ -122,6 +125,16 @@ public class JournalpostUpdater {
 			}
 			endret.setEndretFlagg(true);
 		}
+
+	}
+
+	private void updateDatoDokument(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
+		if (oppdaterJournalpostRequest.getDatoDokument() == null) {
+			return;
+		} else {
+			journalpost.setDokumentDato(Date.from(oppdaterJournalpostRequest.getDatoDokument().atZone(ZoneId.systemDefault()).toInstant()));
+		}
+		endret.setEndretFlagg(true);
 
 	}
 
