@@ -41,12 +41,8 @@
 		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
 		<java-jwt.version>4.2.1</java-jwt.version>
 		<jaxb2-basics-runtime.version>0.13.1</jaxb2-basics-runtime.version>
-
-		<!-- Versjon større enn 2.10.0 gir trøbbel med 'You are currently running with version 2.0.0 of google-api-client.
-		You need at least version 1.15 of google-api-client to run version 1.25.0 of the
-		Cloud Key Management Service (KMS) API library -->
-		<google-cloud-storage.version>2.10.0</google-cloud-storage.version>
-		<tink.version>1.7.0</tink.version>
+		<google-cloud-storage.version>2.19.0</google-cloud-storage.version>
+		<tink.version>1.8.0</tink.version>
 
 		<commons-io.version>2.11.0</commons-io.version>
 		<springdoc-openapi-ui.version>1.6.14</springdoc-openapi-ui.version>
