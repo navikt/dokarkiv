@@ -151,6 +151,11 @@
       "namespace": "isa",
       "cluster": "dev-fss"
     },
+     {
+      "app": "journalforing-frontend-q2",
+      "namespace": "isa",
+      "cluster": "dev-gcp"
+    },
     {
       "app": "testdata-frontend",
       "namespace": "isa",
