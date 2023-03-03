@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.stream.Stream;
 
@@ -52,6 +53,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJou
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createSak;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OppdaterFerdigstillJournalpostValidatorTest {
 
@@ -69,6 +71,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.tema(TEMA_FOR)
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(AO01).build())
+				.datoDokument(LocalDateTime.now().minusDays(2))
 				.build();
 
 		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
@@ -321,6 +324,17 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 		assertThrows(InputValideringFeiletException.class,
 				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS, N));
+	}
+	@Test
+	public void shouldFailIfDatoDokumenIsFremtid(){
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.datoDokument(LocalDateTime.now().plusDays(2))
+				.build();
+
+		var exception = assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS,N));
+
+		assertTrue(exception.getMessage().contains("Feltet kan ikke settes frem i tid."));
 	}
 
 	@Test

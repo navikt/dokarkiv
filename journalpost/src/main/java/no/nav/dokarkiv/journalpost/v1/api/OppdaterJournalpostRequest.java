@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -83,6 +84,16 @@ public class OppdaterJournalpostRequest {
 	)
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date datoRetur;
+
+	@Schema(
+			description = """
+					Brukes for å datere innholdet i hoveddokumentet.
+					     
+					Skal kun brukes dersom innholdet i dokumentet har en annen datering enn tidspunktet for opprettelse av journalposten.
+					""",
+			example = "2023-02-22T10:58:53.470892300"
+	)
+	private LocalDateTime datoDokument;
 
 	@Hidden
 	@Schema(

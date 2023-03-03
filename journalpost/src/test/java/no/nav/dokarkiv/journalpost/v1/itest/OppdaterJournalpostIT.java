@@ -37,6 +37,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -138,6 +141,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn(), is(SERVICE_USER_ID));
 		assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(parseLong(ARKIVSAKSNUMMER)));
 		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
+		assertTrue(oppdatertJP.getDokumentDato().before(Date.from(LocalDateTime.now().minusDays(2).atZone(ZoneId.systemDefault()).toInstant())));
 		assertThat(oppdatertJP.getTilleggsopplysninger().size(), is(1));
 		assert (oppdatertJP.getTilleggsopplysninger().containsKey(request.getTilleggsopplysninger().get(0).getNokkel()));
 		assert (oppdatertJP.getTilleggsopplysninger().containsValue(request.getTilleggsopplysninger().get(0).getVerdi()));
@@ -1062,6 +1066,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.behandlingstema(BEHANDLINGSTEMA)
 				.tittel(TITTEL)
 				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
+				.datoDokument(LocalDateTime.now().minusDays(3))
 				.tilleggsopplysninger(List.of(Tilleggsopplysning.builder()
 						.nokkel(NOKKEL)
 						.verdi(VERDI)

@@ -8,6 +8,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +57,9 @@ public final class OppdaterJournalpostValidator {
 		}
 		if (isNotBlank(request.getBehandlingstema())) {
 			validateBehandlingstema(request.getBehandlingstema());
+		}
+		if (request.getDatoDokument() != null) {
+			validateDatoKanIkkeVaereIFremtid(request.getDatoDokument(), "datoDokument");
 		}
 	}
 
@@ -164,8 +168,8 @@ public final class OppdaterJournalpostValidator {
 		if (sak.getArkivsaksystem() != null) {
 			throw new InputValideringFeiletException("Sak.arkivsaksystem skal ikke være satt dersom sakstype=FAGSAK");
 		}
-		if(FAGSAK == sak.getSakstype() && PP01 == sak.getFagsaksystem()) {
-			if(!isNumeric(sak.getFagsakId())) {
+		if (FAGSAK == sak.getSakstype() && PP01 == sak.getFagsaksystem()) {
+			if (!isNumeric(sak.getFagsakId())) {
 				throw new InputValideringFeiletException("Sak.fagsakId skal være opprettet i PSAK og må være et numerisk heltall.");
 			}
 		}
@@ -235,6 +239,13 @@ public final class OppdaterJournalpostValidator {
 			throw new InputValideringFeiletException("Bruker.id må være 9 siffer for ORGNR.");
 		} else if (AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
 			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for AKTOERID.");
+		}
+	}
+
+	private static void validateDatoKanIkkeVaereIFremtid(LocalDateTime dato, String feltNavn) {
+		LocalDateTime naaTid = LocalDateTime.now().plusSeconds(3);
+		if (naaTid.isBefore(dato)) {
+			throw new InputValideringFeiletException(String.format("%s er ugyldig verdi for %s. Feltet kan ikke settes frem i tid. nåtid er %s", dato, feltNavn, naaTid));
 		}
 	}
 }
