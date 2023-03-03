@@ -45,6 +45,10 @@ public class UtsendingsInfo {
 	private DigitalPostadresse digitalPostadresse;
 	@Embedded
 	private NavNoVarsling navNoVarsling;
+	@Embedded
+	private EpostVarsler epostVarsler;
+	@Embedded
+	private SmsVarsler smsVarsler;
 
 	public UtsendingsInfo(Journalpost journalpost, FysiskPostadresse fysiskPostAdresse) {
 		UtsendingsKanalCode utsendingskanal = journalpost.getUtsendingskanal();
@@ -57,23 +61,29 @@ public class UtsendingsInfo {
 	}
 
 	public UtsendingsInfo(Journalpost journalpost, DigitalPostadresse digitalPostadresse, EpostVarsler epostVarsler, SmsVarsler smsVarsler) {
+		this(journalpost, epostVarsler, smsVarsler);
 		UtsendingsKanalCode utsendingskanal = journalpost.getUtsendingskanal();
 		if (utsendingskanal != UtsendingsKanalCode.SDP) {
 			throw new IllegalArgumentException(String.format("Kan ikke sette UtsendingsInfo av type=%s for utsendingskanal=%s",
 					UtsendingsInfo.DigitalPostadresse.class.getSimpleName(), utsendingskanal));
 		}
-		this.journalpost = journalpost;
 		this.digitalPostadresse = digitalPostadresse;
 	}
 
 	public UtsendingsInfo(Journalpost journalpost, NavNoVarsling navNoVarsling, EpostVarsler epostVarsler, SmsVarsler smsVarsler) {
+		this(journalpost, epostVarsler, smsVarsler);
 		UtsendingsKanalCode utsendingskanal = journalpost.getUtsendingskanal();
 		if (utsendingskanal != UtsendingsKanalCode.NAV_NO) {
 			throw new IllegalArgumentException(String.format("Kan ikke sette UtsendingsInfo av type=%s for utsendingskanal=%s",
 					UtsendingsInfo.NavNoVarsling.class.getSimpleName(), utsendingskanal));
 		}
-		this.journalpost = journalpost;
 		this.navNoVarsling = navNoVarsling;
+	}
+
+	private UtsendingsInfo(Journalpost journalpost, EpostVarsler epostVarsler, SmsVarsler smsVarsler) {
+		this.journalpost = journalpost;
+		this.epostVarsler = epostVarsler;
+		this.smsVarsler = smsVarsler;
 	}
 
 	@Embeddable
