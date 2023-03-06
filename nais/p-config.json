@@ -355,6 +355,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "routing",
+      "namespace": "aap",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "gosys",
       "namespace": "isa",
       "cluster": "prod-fss"
