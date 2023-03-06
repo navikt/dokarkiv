@@ -89,7 +89,7 @@ public class OppdaterDistribusjonsinfoValidator {
 			return "%s er ugyldig: %s".formatted(
 					feltnavn,
 					validationErrors.stream()
-							.map(ConstraintViolation::getMessage)
+							.map(violation -> violation.getPropertyPath().toString() + " " + violation.getMessage())
 							.collect(Collectors.joining(",")));
 		}
 		return null;
