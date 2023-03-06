@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID;
@@ -41,6 +42,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 
@@ -71,10 +73,16 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	public static final String POSTNUMMER = "postnummer";
 	public static final String POSTSTED = "poststed";
 	public static final String LANDKODE = "landkode";
+	public static final String EPOSTADRESSE = "example@example.org";
+	public static final String TELEFONNUMMER = "+4711111111";
 	public static final String DIGITALKONTAKT_INFORMASJON = "{\n          \"epost\": \"epostaddress3@nav.no\",\n          \"sms\": \"11111111\"\n        }";
-	public static final String VARSELTEKST = "{\n          \"epost\": \"Du har fått brev fra NAV\",\n          \"sms\": \"Du har fått brev fra NAV\"\n        }";
+	public static final String VARSELTEKST = "Du har fått brev fra NAV";
+	public static final String VARSELTIDSPUNKT = "2023-03-01T11:00:00.000";
 	public static final String DIGITALPOSTKASSEADRESSE = "0000487236";
 	public static final String DIGITALPOSTKASSELEVERANDOR = "123456789";
+
+	public static final String EPOSTVARSLER = "[{\"tittel\":\"" + TITTEL + "\",\"tekst\":\"" + VARSELTEKST + "\",\"epostadresse\":\"" + EPOSTADRESSE + "\",\"varslingstidspunkt\":\"" + VARSELTIDSPUNKT + "\"}]";
+	public static final String SMSVARSLER = "[{\"tekst\":\"" + VARSELTEKST + "\",\"mobilnummer\":\"" + TELEFONNUMMER + "\",\"varslingstidspunkt\":\"" + VARSELTIDSPUNKT + "\"}]";
 
 	// Happy path
 	@Test
@@ -119,7 +127,14 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 
 		UtsendingsInfoDto.NavNoVarsling navNoVarsling = responseJournalpost.getUtsendingsInfo().getNavNoVarsling();
 
-		assertEquals(VARSELTEKST, navNoVarsling.getVarseltekst());
+		assertNull(navNoVarsling.getVarseltekst());
+		assertEquals(DIGITALKONTAKT_INFORMASJON, navNoVarsling.getVarselSendtTil());
+
+		String epostVarsel = responseJournalpost.getUtsendingsInfo().getEpostVarsel();
+		assertEquals(EPOSTVARSLER, epostVarsel);
+		String smsVarsel = responseJournalpost.getUtsendingsInfo().getSmsVarsel();
+		assertEquals(SMSVARSLER, smsVarsel);
+
 		assertEquals(DIGITALKONTAKT_INFORMASJON, navNoVarsling.getVarselSendtTil());
 	}
 
@@ -189,23 +204,24 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		storedDokumentInfo.setKassert(true);
 
 		journalpostTestRepository.persist(journalpost);
-		utsendingsInfoTestRepository.persist(new UtsendingsInfo(journalpost, createNavNoVarsling()));
+		utsendingsInfoTestRepository.persist(new UtsendingsInfo(journalpost, createNavNoVarsling(), createEpostVarsel(), createSmsVarsler()));
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
 		return journalpost;
 	}
 
-	public static UtsendingsInfo.FysiskPostadresse createFysiskPostadresse() {
-		return new UtsendingsInfo.FysiskPostadresse(ADRESSELINJE1, ADRESSELINJE2, ADRESSELINJE3, POSTNUMMER, POSTSTED, LANDKODE);
+	private static UtsendingsInfo.SmsVarsler createSmsVarsler() {
+		return new UtsendingsInfo.SmsVarsler(List.of(new UtsendingsInfo.SmsVarsel(VARSELTEKST, TELEFONNUMMER, "2023-03-01T11:00:00.000")));
 	}
+
+	private static UtsendingsInfo.EpostVarsler createEpostVarsel() {
+		return new UtsendingsInfo.EpostVarsler(List.of(new UtsendingsInfo.EpostVarsel(TITTEL, VARSELTEKST, EPOSTADRESSE, "2023-03-01T11:00:00.000")));
+	}
+
 
 	public static UtsendingsInfo.NavNoVarsling createNavNoVarsling() {
-		return new UtsendingsInfo.NavNoVarsling(DIGITALKONTAKT_INFORMASJON, VARSELTEKST);
-	}
-
-	public static UtsendingsInfo.DigitalPostadresse createDigitalPostadresse() {
-		return new UtsendingsInfo.DigitalPostadresse(DIGITALPOSTKASSEADRESSE, DIGITALPOSTKASSELEVERANDOR);
+		return new UtsendingsInfo.NavNoVarsling(DIGITALKONTAKT_INFORMASJON, null);
 	}
 
 	private DokumentInfo getDokumentInfoOfHoveddokument(Journalpost journalpost) {

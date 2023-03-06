@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.util.ConverterUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -16,6 +17,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Inneholder metadata om utsending av {@link Journalpost}
@@ -41,6 +45,10 @@ public class UtsendingsInfo {
 	private DigitalPostadresse digitalPostadresse;
 	@Embedded
 	private NavNoVarsling navNoVarsling;
+	@Embedded
+	private EpostVarsler epostVarsler;
+	@Embedded
+	private SmsVarsler smsVarsler;
 
 	public UtsendingsInfo(Journalpost journalpost, FysiskPostadresse fysiskPostAdresse) {
 		UtsendingsKanalCode utsendingskanal = journalpost.getUtsendingskanal();
@@ -52,24 +60,30 @@ public class UtsendingsInfo {
 		this.fysiskPostadresse = fysiskPostAdresse;
 	}
 
-	public UtsendingsInfo(Journalpost journalpost, DigitalPostadresse digitalPostadresse) {
+	public UtsendingsInfo(Journalpost journalpost, DigitalPostadresse digitalPostadresse, EpostVarsler epostVarsler, SmsVarsler smsVarsler) {
+		this(journalpost, epostVarsler, smsVarsler);
 		UtsendingsKanalCode utsendingskanal = journalpost.getUtsendingskanal();
 		if (utsendingskanal != UtsendingsKanalCode.SDP) {
 			throw new IllegalArgumentException(String.format("Kan ikke sette UtsendingsInfo av type=%s for utsendingskanal=%s",
 					UtsendingsInfo.DigitalPostadresse.class.getSimpleName(), utsendingskanal));
 		}
-		this.journalpost = journalpost;
 		this.digitalPostadresse = digitalPostadresse;
 	}
 
-	public UtsendingsInfo(Journalpost journalpost, NavNoVarsling navNoVarsling) {
+	public UtsendingsInfo(Journalpost journalpost, NavNoVarsling navNoVarsling, EpostVarsler epostVarsler, SmsVarsler smsVarsler) {
+		this(journalpost, epostVarsler, smsVarsler);
 		UtsendingsKanalCode utsendingskanal = journalpost.getUtsendingskanal();
 		if (utsendingskanal != UtsendingsKanalCode.NAV_NO) {
 			throw new IllegalArgumentException(String.format("Kan ikke sette UtsendingsInfo av type=%s for utsendingskanal=%s",
 					UtsendingsInfo.NavNoVarsling.class.getSimpleName(), utsendingskanal));
 		}
-		this.journalpost = journalpost;
 		this.navNoVarsling = navNoVarsling;
+	}
+
+	private UtsendingsInfo(Journalpost journalpost, EpostVarsler epostVarsler, SmsVarsler smsVarsler) {
+		this.journalpost = journalpost;
+		this.epostVarsler = epostVarsler;
+		this.smsVarsler = smsVarsler;
 	}
 
 	@Embeddable
@@ -109,7 +123,57 @@ public class UtsendingsInfo {
 	public static class NavNoVarsling {
 		@Column(name = "digital_kontaktinformasjon", length = 200)
 		private String kontaktinformasjon;
+
+		/**
+		 * @deprecated Bruk SmsVarsel og EpostVarsel for lik logikk som for SDP
+		 */
+		@Deprecated
 		@Column(name = "varslingstekst", length = 4000)
 		private String varslingstekst;
+	}
+
+	@Embeddable
+	@NoArgsConstructor
+	public static class SmsVarsler {
+		@Transient
+		List<SmsVarsel> smsvarselList;
+
+		public SmsVarsler(List<SmsVarsel> smsvarselList) {
+			this.smsvarselList = smsvarselList;
+			try {
+				smsvarsel = ConverterUtils.objectToJsonString(smsvarselList);
+			} catch (IOException e) {
+				throw new IllegalArgumentException(e);
+			}
+		}
+
+		@Column(name = "smsvarsel", length = 4000)
+		private String smsvarsel;
+
+	}
+
+	@Embeddable
+	@NoArgsConstructor
+	public static class EpostVarsler {
+		@Transient
+		List<EpostVarsel> epostvarselList;
+
+		@Column(name = "epostvarsel", length = 4000)
+		private String epostvarsel;
+
+		public EpostVarsler(List<EpostVarsel> epostvarselList) {
+			this.epostvarselList = epostvarselList;
+			try {
+				this.epostvarsel = ConverterUtils.objectToJsonString(epostvarselList);
+			} catch (IOException e) {
+				throw new IllegalArgumentException(e);
+			}
+		}
+	}
+
+	public record EpostVarsel(String tittel, String tekst, String epostadresse, String varslingstidspunkt) {
+	}
+
+	public record SmsVarsel(String tekst, String mobilnummer, String varslingstidspunkt) {
 	}
 }

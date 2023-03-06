@@ -20,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDummyDokumentKassert;
@@ -63,9 +64,10 @@ public class UtsendingsInfoRepositoryTest {
 		dokumentFilTestRepository.persist(createDummyDokumentKassert());
 		journalpost = journalpostTestRepository.persist(journalpost);
 
-		var utsendingsInfoPart = new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker",
-				"Hei Bruker! Du har fått en ny melding på nav.no. Hilsen NAV");
-		UtsendingsInfo utsendingsInfo = utsendingsInfoTestRepository.persistAndFlush(new UtsendingsInfo(journalpost, utsendingsInfoPart));
+		var utsendingsInfoPart = new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker", null);
+		var epostvarsel = new UtsendingsInfo.EpostVarsler(List.of(new UtsendingsInfo.EpostVarsel("tittel", "tekst", "homer@epos.gr", "2023-02-27T12:30:00.000")));
+		var smsvarsel = new UtsendingsInfo.SmsVarsler(List.of(new UtsendingsInfo.SmsVarsel("tekst", "+4700000000", "2023-02-27T12:30:00.000")));
+		UtsendingsInfo utsendingsInfo = utsendingsInfoTestRepository.persistAndFlush(new UtsendingsInfo(journalpost, utsendingsInfoPart, epostvarsel, smsvarsel));
 
 		assertThat(utsendingsInfo.getJournalpostId(), equalTo(journalpost.getId()));
 		assertTrue(utsendingsInfoTestRepository.findById(journalpost.getJournalpostId()).isPresent(), "Det skal finnes en Utsendingsinfo med journalpostId som id");

@@ -7,6 +7,8 @@ public class UtsendingsInfoDto {
 	FysiskPostadresse fysiskPostadresse;
 	DigitalPostadresse digitalPostadresse;
 	NavNoVarsling navNoVarsling;
+	String epostVarsel;
+	String smsVarsel;
 
 	@Value
 	public static class FysiskPostadresse {

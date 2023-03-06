@@ -36,7 +36,7 @@ public class JournalpostUpdaterFromBulk {
 			UtsendingsKanalCode utsendingskanal = UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
 			journalpost.setUtsendingskanal(utsendingskanal);
 
-			if(utsendingsInfoRepository.existsById(journalpost.getJournalpostId())) {
+			if (utsendingsInfoRepository.existsById(journalpost.getJournalpostId())) {
 				UtsendingsInfo utsendingsInfo = utsendingsInfoRepository.findById(journalpost.getJournalpostId())
 						.orElseThrow(() -> new DokarkivFunctionalException("Fant ikke UtsendingsInfo med journalpostId=" + journalpost.getJournalpostId()));
 				switch (utsendingskanal) {
@@ -47,9 +47,12 @@ public class JournalpostUpdaterFromBulk {
 				}
 			} else {
 				switch (utsendingskanal) {
-					case S -> utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getPostadresse())));
-					case SDP -> utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getDigitalpostkasse())));
-					case NAV_NO -> utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getVarsel())));
+					case S ->
+							utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getPostadresse())));
+					case SDP ->
+							utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getDigitalpostkasse()), null, null));
+					case NAV_NO ->
+							utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getVarsel()), null, null));
 					// default: no action - eventuelle feil er håndtert i valideringssteget
 				}
 			}
