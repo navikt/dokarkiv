@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -21,6 +22,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
 
 @Component
+@Slf4j
 public class JournalpostUpdaterFromBulk {
 
 	private static final String UNKNOWN_ALPHA3_LANDKODE = "???";
@@ -38,10 +40,11 @@ public class JournalpostUpdaterFromBulk {
 		if (request.getUtsendingsKanal() != null) {
 			UtsendingsKanalCode utsendingskanal = UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
 			journalpost.setUtsendingskanal(utsendingskanal);
+			final Long journalpostId = journalpost.getJournalpostId();
 
-			if (utsendingsInfoRepository.existsById(journalpost.getJournalpostId())) {
-				UtsendingsInfo utsendingsInfo = utsendingsInfoRepository.findById(journalpost.getJournalpostId())
-						.orElseThrow(() -> new DokarkivFunctionalException("Fant ikke UtsendingsInfo med journalpostId=" + journalpost.getJournalpostId()));
+			if (utsendingsInfoRepository.existsById(journalpostId)) {
+				UtsendingsInfo utsendingsInfo = utsendingsInfoRepository.findById(journalpostId)
+						.orElseThrow(() -> new DokarkivFunctionalException("Fant ikke UtsendingsInfo med journalpostId=" + journalpostId));
 				switch (utsendingskanal) {
 					case S -> utsendingsInfo.setFysiskPostadresse(from(request.getPostadresse()));
 					case SDP -> {
@@ -54,9 +57,10 @@ public class JournalpostUpdaterFromBulk {
 						var smsVarsler = smsVarsel(request.getVarsel());
 						utsendingsInfo.setEpostVarsler(epostVarsler);
 						utsendingsInfo.setSmsVarsler(smsVarsler);
+						boolean kunNavNoVarsel = epostVarsler.isEmpty() && smsVarsler.isEmpty();
 
-						if (epostVarsler.isEmpty() && smsVarsler.isEmpty()) {
-							utsendingsInfo.setNavNoVarsling(from(request.getVarsel()));
+						if (kunNavNoVarsel) {
+							utsendingsInfo.setNavNoVarsling(lagNavNoVarselOgLogg(request.getVarsel(), kunNavNoVarsel, journalpostId));
 						}
 					}
 					// default: no action - eventuelle feil er håndtert i valideringssteget
@@ -67,8 +71,12 @@ public class JournalpostUpdaterFromBulk {
 							utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getPostadresse())));
 					case SDP ->
 							utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getDigitalpostkasse()), epostVarsel(request.getVarsel()), smsVarsel(request.getVarsel())));
-					case NAV_NO ->
-							utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, from(request.getVarsel()), epostVarsel(request.getVarsel()), smsVarsel(request.getVarsel())));
+					case NAV_NO -> {
+						var epostVarsler = epostVarsel(request.getVarsel());
+						var smsVarsler = smsVarsel(request.getVarsel());
+						boolean kunNavNoVarsel = epostVarsler.isEmpty() && smsVarsler.isEmpty();
+						utsendingsInfoRepository.persist(new UtsendingsInfo(journalpost, lagNavNoVarselOgLogg(request.getVarsel(), kunNavNoVarsel, journalpostId), epostVarsler, smsVarsler));
+					}
 					// default: no action - eventuelle feil er håndtert i valideringssteget
 				}
 			}
@@ -101,7 +109,13 @@ public class JournalpostUpdaterFromBulk {
 		return new UtsendingsInfo.DigitalPostadresse(digitalpost.getDigitalpostkasseadresse(), digitalpost.getDigitalpostkasseleverandor());
 	}
 
-	private static UtsendingsInfo.NavNoVarsling from(Varsel varsel) {
+	private static UtsendingsInfo.NavNoVarsling lagNavNoVarselOgLogg(Varsel varsel, boolean kunNavNoVarsel, long journalpostId) {
+		if (varsel.getDigitalkontaktinformasjon() == null && varsel.getVarseltekst() == null) {
+			return null;
+		}
+		if (kunNavNoVarsel) {
+			log.info("bulkOppdaterDistribusjonsinfo har mottatt NavNoVarsling for journalpostId={} i gammelt format men ikke epost- eller sms-varsel", journalpostId);
+		}
 		return new UtsendingsInfo.NavNoVarsling(varsel.getDigitalkontaktinformasjon(), varsel.getVarseltekst());
 	}
 
