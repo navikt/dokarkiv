@@ -12,7 +12,7 @@ import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.BulkOppd
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.BulkOppdaterDistribusjonsinfoResponse;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.DigitalPost;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.JournalpostWithDistribusjonsinfo;
-import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.NavNoVarsel;
+import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.Varsel;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.Postadresse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -230,7 +230,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 				.digitalpostkasse(new DigitalPost("enadresse#1234", "leverandør")));
 
 		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.SDP)
-				.varsel(new NavNoVarsel("en indentifikator", "Hei hei, her er en melding.")));
+				.varsel(new Varsel("en indentifikator", "Hei hei, her er en melding.", null, null)));
 
 		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.S)
 				.postadresse(null));
@@ -261,7 +261,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 				.postadresse(new Postadresse("gate gate", null, null, "1234", "agurk", LANDKODE)));
 
 		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.NAV_NO)
-				.varsel(new NavNoVarsel(null, "Hei hei, her er en melding.")));
+				.varsel(new Varsel(null, "Hei hei, her er en melding.", null, null)));
 
 		TestTransaction.start();
 
@@ -314,7 +314,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, UtsendingsKanalCode.NAV_NO)
 				.forsendelseId(null)
-				.varsel(new NavNoVarsel(null, "Hei hei, her er en melding.")));
+				.varsel(new Varsel(null, "Hei hei, her er en melding.", null, null)));
 
 		TestTransaction.start();
 
