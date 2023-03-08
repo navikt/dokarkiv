@@ -50,6 +50,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "pensjon-pen-q5",
+      "namespace": "teampensjon",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "testnav-dokarkiv-proxy-trygdeetaten",
       "namespace": "dolly",
       "cluster": "dev-fss"
