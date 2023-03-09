@@ -15,6 +15,7 @@ import org.verapdf.pdfa.results.TestAssertion;
 import org.verapdf.pdfa.results.ValidationResult;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -59,14 +60,13 @@ public class PDFAValidatorUtil {
 		}
 
 		try (VeraPDFFoundry foundry = Foundries.defaultInstance()) {
-			PDFAParser parser = foundry.createParser(new ByteArrayInputStream(filDetaljer.getFileContent()));
-
-			// Hvis PDF ikke er på et av de lovlige formatene hopp over valideringen
-			if (!VALID_PDFA_FLAVOURS.contains(parser.getFlavour())) {
-				return returnIncorrectFlavourReponse(filDetaljer, parser.getFlavour());
+			try (PDFAParser parser = foundry.createParser(new ByteArrayInputStream(filDetaljer.getFileContent()))) {
+				// Hvis PDF ikke er på et av de lovlige formatene hopp over valideringen
+				if (!VALID_PDFA_FLAVOURS.contains(parser.getFlavour())) {
+					return returnIncorrectFlavourReponse(filDetaljer, parser.getFlavour());
+				}
+				return doValidatePDFA(filDetaljer, foundry, parser);
 			}
-			return doValidatePDFA(filDetaljer, foundry, parser);
-
 		} catch (ModelParsingException e) {
 			return returnNotAPdfValidatorResponse(filDetaljer);
 		} catch (Exception e) {
@@ -74,14 +74,15 @@ public class PDFAValidatorUtil {
 		}
 	}
 
-	private static PDFAValidatorResponse doValidatePDFA(FilDetaljer filDetaljer, VeraPDFFoundry foundry, PDFAParser parser) throws ValidationException {
-		PDFAValidator validator = foundry.createValidator(parser.getFlavour(), false);
-		ValidationResult result = validator.validate(parser);
+	private static PDFAValidatorResponse doValidatePDFA(FilDetaljer filDetaljer, VeraPDFFoundry foundry, PDFAParser parser) throws ValidationException, IOException {
+		try (PDFAValidator validator = foundry.createValidator(parser.getFlavour(), false)) {
+			ValidationResult result = validator.validate(parser);
 
-		if (result.isCompliant()) {
-			return returnCompliantValidatorResponse(result, filDetaljer);
+			if (result.isCompliant()) {
+				return returnCompliantValidatorResponse(result, filDetaljer);
+			}
+			return returnNonCompliantValidatorResponse(result, result.getTestAssertions(), filDetaljer);
 		}
-		return returnNonCompliantValidatorResponse(result, result.getTestAssertions(), filDetaljer);
 	}
 
 	private static PDFAValidatorResponse returnCompliantValidatorResponse(ValidationResult result, FilDetaljer filDetaljer) {
