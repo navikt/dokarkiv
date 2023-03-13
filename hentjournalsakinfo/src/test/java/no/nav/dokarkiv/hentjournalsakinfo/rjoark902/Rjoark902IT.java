@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -77,12 +78,12 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	public static final String TELEFONNUMMER = "+4711111111";
 	public static final String DIGITALKONTAKT_INFORMASJON = "{\n          \"epost\": \"epostaddress3@nav.no\",\n          \"sms\": \"11111111\"\n        }";
 	public static final String VARSELTEKST = "Du har fått brev fra NAV";
-	public static final String VARSELTIDSPUNKT = "2023-03-01T11:00:00.000";
+	public static final LocalDateTime VARSELTIDSPUNKT = LocalDateTime.of(2023, 3, 1, 11, 0, 0, 0);
 	public static final String DIGITALPOSTKASSEADRESSE = "0000487236";
 	public static final String DIGITALPOSTKASSELEVERANDOR = "123456789";
 
-	public static final String EPOSTVARSLER = "[{\"tittel\":\"" + TITTEL + "\",\"tekst\":\"" + VARSELTEKST + "\",\"epostadresse\":\"" + EPOSTADRESSE + "\",\"varslingstidspunkt\":\"" + VARSELTIDSPUNKT + "\"}]";
-	public static final String SMSVARSLER = "[{\"tekst\":\"" + VARSELTEKST + "\",\"mobilnummer\":\"" + TELEFONNUMMER + "\",\"varslingstidspunkt\":\"" + VARSELTIDSPUNKT + "\"}]";
+	public static final SafHentJournalpostResponseForTest.Varsel EPOSTVARSLER = new SafHentJournalpostResponseForTest.Varsel(TITTEL,  VARSELTEKST,  EPOSTADRESSE, null, VARSELTIDSPUNKT);
+	public static final SafHentJournalpostResponseForTest.Varsel SMSVARSLER = new SafHentJournalpostResponseForTest.Varsel(null,  VARSELTEKST,  null, TELEFONNUMMER, VARSELTIDSPUNKT);
 
 	// Happy path
 	@Test
@@ -91,30 +92,30 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		Long journalpostId = storedJournalpost.getJournalpostId();
 
 		String uri = HENTJOURNALSAKINFO_HENTJOURNALPOST + journalpostId;
-		ResponseEntity<SafHentJournalpostResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponse.class);
+		ResponseEntity<SafHentJournalpostResponseForTest> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponseForTest.class);
 
-		HentJournalpostDto responseJournalpost = responseEntity.getBody().getHentJournalpostDto();
+		SafHentJournalpostResponseForTest.HentJournalpostDtoForTest responseJournalpost = responseEntity.getBody().hentJournalpostDto();
 
-		assertEquals(journalpostId, responseJournalpost.getJournalpostId());
-		assertEquals(INNHOLD, responseJournalpost.getInnhold());
-		assertEquals(FAGOMRADE, responseJournalpost.getFagomrade());
-		assertEquals(JOURNALSTATUS, responseJournalpost.getJournalstatus());
-		assertEquals(AVSENDER_MOTTAKER_ID, responseJournalpost.getAvsenderMottakerId());
-		assertEquals(AVSENDER_MOTTAKER_ID_TYPE, responseJournalpost.getAvsenderMottakerIdType());
-		assertEquals(AVSENDER, responseJournalpost.getAvsenderMottakerNavn());
-		assertEquals(JOURNALFOERT_AV, responseJournalpost.getJournalfortAvNavn());
-		assertEquals(MOTTAKSKANAL, responseJournalpost.getMottakskanal());
-		assertEquals(UTSENDINGSKANAL, responseJournalpost.getUtsendingskanal());
-		assertEquals(JOURNALPOST_TYPE_CODE, responseJournalpost.getJournalposttype());
+		assertEquals(journalpostId, responseJournalpost.journalpostId());
+		assertEquals(INNHOLD, responseJournalpost.innhold());
+		assertEquals(FAGOMRADE, responseJournalpost.fagomrade());
+		assertEquals(JOURNALSTATUS, responseJournalpost.journalstatus());
+		assertEquals(AVSENDER_MOTTAKER_ID, responseJournalpost.avsenderMottakerId());
+		assertEquals(AVSENDER_MOTTAKER_ID_TYPE, responseJournalpost.avsenderMottakerIdType());
+		assertEquals(AVSENDER, responseJournalpost.avsenderMottakerNavn());
+		assertEquals(JOURNALFOERT_AV, responseJournalpost.journalfortAvNavn());
+		assertEquals(MOTTAKSKANAL, responseJournalpost.mottakskanal());
+		assertEquals(UTSENDINGSKANAL, responseJournalpost.utsendingskanal());
+		assertEquals(JOURNALPOST_TYPE_CODE, responseJournalpost.journalposttype());
 
-		assertEquals(SAKID.toString(), responseJournalpost.getSaksrelasjon().getSakId());
-		assertEquals(SAKRELASJONFAGSYSTEM, responseJournalpost.getSaksrelasjon().getFagsystem());
-		assertEquals(SAKFEILREGISTRERT, responseJournalpost.getSaksrelasjon().getFeilregistrert());
-		assertEquals(ANTALL_RETUR, responseJournalpost.getAntallRetur());
-		assertEquals(KANAL_REFERANSE_ID, responseJournalpost.getKanalReferanseId());
-		assertEquals(LESTDATO, responseJournalpost.getLestDato());
+		assertEquals(SAKID.toString(), responseJournalpost.saksrelasjon().getSakId());
+		assertEquals(SAKRELASJONFAGSYSTEM, responseJournalpost.saksrelasjon().getFagsystem());
+		assertEquals(SAKFEILREGISTRERT, responseJournalpost.saksrelasjon().getFeilregistrert());
+		assertEquals(ANTALL_RETUR, responseJournalpost.antallRetur());
+		assertEquals(KANAL_REFERANSE_ID, responseJournalpost.kanalReferanseId());
+		assertEquals(LESTDATO, responseJournalpost.lestDato());
 
-		DokumentInfoDto responseDokumentInfo = responseJournalpost.getDokumenter().get(0);
+		DokumentInfoDto responseDokumentInfo = responseJournalpost.dokumenter().get(0);
 
 		assertEquals(DOKUMENTSTATUS, responseDokumentInfo.getDokumentstatus());
 		assertEquals(BREVKODE, responseDokumentInfo.getBrevkode());
@@ -125,15 +126,20 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		assertNotNull(responseDokumentInfo.getVarianter().get(0).getFiluuid());
 		assertEquals(responseDokumentInfo.getVarianter().get(0).getFiltype(), FilTypeCode.PDF.name());
 
-		UtsendingsInfoDto.NavNoVarsling navNoVarsling = responseJournalpost.getUtsendingsInfo().getNavNoVarsling();
+		UtsendingsInfoDto.NavNoVarsling navNoVarsling = responseJournalpost.utsendingsInfo().navNoVarsling();
 
 		assertNull(navNoVarsling.getVarseltekst());
 		assertEquals(DIGITALKONTAKT_INFORMASJON, navNoVarsling.getVarselSendtTil());
 
-		String epostVarsel = responseJournalpost.getUtsendingsInfo().getEpostVarsel();
-		assertEquals(EPOSTVARSLER, epostVarsel);
-		String smsVarsel = responseJournalpost.getUtsendingsInfo().getSmsVarsel();
-		assertEquals(SMSVARSLER, smsVarsel);
+		List<SafHentJournalpostResponseForTest.Varsel> epostVarsel = responseJournalpost.utsendingsInfo().epostVarsel();
+		assertThat(epostVarsel, hasSize(1));
+		assertNull(epostVarsel.get(0).mobilnummer());
+		assertEquals(epostVarsel.get(0).tittel(), EPOSTVARSLER.tittel());
+		List<SafHentJournalpostResponseForTest.Varsel> smsVarsel = responseJournalpost.utsendingsInfo().smsVarsel();
+		assertThat(smsVarsel, hasSize(1));
+		assertEquals(smsVarsel.get(0).mobilnummer(), SMSVARSLER.mobilnummer());
+		assertNull(smsVarsel.get(0).epostadresse());
+		assertNull(smsVarsel.get(0).tittel());
 
 		assertEquals(DIGITALKONTAKT_INFORMASJON, navNoVarsling.getVarselSendtTil());
 	}

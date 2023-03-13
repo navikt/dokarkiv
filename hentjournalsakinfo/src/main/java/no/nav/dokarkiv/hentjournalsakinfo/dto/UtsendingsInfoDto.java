@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.hentjournalsakinfo.dto;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.Value;
 
 @Value
@@ -7,7 +8,9 @@ public class UtsendingsInfoDto {
 	FysiskPostadresse fysiskPostadresse;
 	DigitalPostadresse digitalPostadresse;
 	NavNoVarsling navNoVarsling;
+	@JsonRawValue
 	String epostVarsel;
+	@JsonRawValue
 	String smsVarsel;
 
 	@Value
