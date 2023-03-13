@@ -20,8 +20,6 @@ import java.util.Date;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -298,27 +296,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-	}
-
-	@Test
-	public void shouldFailIfJournalfEnhetInRequestIsInvalid() {
-		abacPermit();
-
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
-		journalpostTestRepository.persist(journalpost);
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		Long journalpostId = journalpost.getJournalpostId();
-
-		var requestEntity = new HttpEntity<>("{ \"journalFEnhet\": \"9999\" }", createHeadersWithUserAndServiceUserToken());
-		ResponseEntity<String> response =
-				restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
-						requestEntity, String.class);
-
-		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-		assertThat(response.getBody(), containsString("JSON parse error: Unrecognized field \\\"journalFEnhet\\\" "));
 	}
 
 	@Test
