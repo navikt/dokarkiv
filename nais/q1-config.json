@@ -414,6 +414,11 @@
       "app": "tilbakemeldingsmottak-api",
       "namespace": "teamserviceklage",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "tiltakspenger-soknad-api",
+      "namespace": "tpts",
+      "cluster": "dev-gcp"
     }
   ]
 }

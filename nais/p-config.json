@@ -393,6 +393,11 @@
       "app": "pensjon-pen",
       "namespace": "pensjonsdeployer",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "tiltakspenger-soknad-api",
+      "namespace": "tpts",
+      "cluster": "prod-gcp"
     }
   ]
 }
