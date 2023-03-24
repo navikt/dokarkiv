@@ -53,6 +53,11 @@
       "app": "pensjon-psak-q0",
       "namespace": "teampensjon",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "pensjon-selvbetjening-soknad-alder-backend",
+      "namespace": "pensjonselvbetjening",
+      "cluster": "dev-gcp"
     }
   ]
 }
