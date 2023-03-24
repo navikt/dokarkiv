@@ -182,7 +182,7 @@
     {
       "app": "etterlatte-brev-api",
       "namespace": "etterlatte",
-      "cluster": "dev-gcp"
+      "cluster": "prod-gcp"
     },
     {
       "app": "spinnsyn-arkivering",
