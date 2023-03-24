@@ -55,7 +55,7 @@
       "cluster": "dev-fss"
     },
     {
-      "app": "pensjon-selvbetjening-soknad-alder-backend",
+      "app": "pensjon-selvbetjening-soknad-alder-backend-q0",
       "namespace": "pensjonselvbetjening",
       "cluster": "dev-gcp"
     }
