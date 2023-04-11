@@ -63,12 +63,6 @@ public class SakStatus extends AbstractPersistentVersionedDomainObjectWithKilde 
 	@Column(name = "applikasjon", length = 40)
 	private String applikasjon;
 
-	@Column(name = "dato_opprettet", nullable = false)
-	private LocalDateTime datoOpprettet;
-
-	@Column(name = "opprettet_av", nullable = false, length = 40)
-	private String opprettetAv;
-
 	@Column(name = "dato_avsluttet")
 	private LocalDateTime datoAvsluttet;
 
@@ -89,7 +83,6 @@ public class SakStatus extends AbstractPersistentVersionedDomainObjectWithKilde 
 
 	@Column(name = "sak_ansvarlig", length = 40)
 	private String sakAnsvarlig;
-
 
 	@Override
 	public Long getId() {
