@@ -11,7 +11,6 @@ import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,6 +20,7 @@ import javax.persistence.Table;
 import java.io.Serial;
 import java.time.LocalDateTime;
 
+import static javax.persistence.EnumType.STRING;
 import static lombok.AccessLevel.NONE;
 
 @Entity
@@ -33,23 +33,24 @@ import static lombok.AccessLevel.NONE;
 public class SakStatus extends AbstractPersistentVersionedDomainObjectWithKilde {
 
 	@Serial
-	private static final long serialVersionUID = 8744278542606158366L;
+	private static final long serialVersionUID = 9045863543269746293L;
 	private static final String SAK_STATUS_SEQ = "T_SAK_STATUS_SEQ";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SAK_STATUS_SEQ)
-	@SequenceGenerator(name = SAK_STATUS_SEQ, sequenceName = SAK_STATUS_SEQ, allocationSize = 1)
+	@SequenceGenerator(name = SAK_STATUS_SEQ, sequenceName = SAK_STATUS_SEQ)
 	@Column(name = "sak_status_id", nullable = false)
 	@Setter(NONE)
 	private Long sakStatusId;
 
-	@Enumerated(EnumType.STRING)
+	@Enumerated(STRING)
 	@Column(name = "k_sak_status", nullable = false, length = 40)
 	private SakStatusCode status;
 
 	@Column(name = "bruker_id", nullable = false, length = 11)
 	private String brukerId;
 
+	@Enumerated(STRING)
 	@Column(name = "bruker_id_type", nullable = false, length = 40)
 	private BrukerTypeCode brukerIdType;
 

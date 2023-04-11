@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.core.domain.codes;
 
 /**
- * Enum for codes in K_SAK_STATUS.
+ * Enum for codes in T_K_SAK_STATUS.
  */
 public enum SakStatusCode {
 
