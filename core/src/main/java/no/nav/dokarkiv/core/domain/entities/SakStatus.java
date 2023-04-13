@@ -39,7 +39,7 @@ public class SakStatus extends AbstractPersistentVersionedDomainObjectWithKilde 
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SAK_STATUS_SEQ)
-	@SequenceGenerator(name = SAK_STATUS_SEQ, sequenceName = SAK_STATUS_SEQ)
+	@SequenceGenerator(name = SAK_STATUS_SEQ, sequenceName = SAK_STATUS_SEQ, allocationSize = 1)
 	@Column(name = "sak_status_id", nullable = false)
 	@Setter(NONE)
 	private Long sakStatusId;
