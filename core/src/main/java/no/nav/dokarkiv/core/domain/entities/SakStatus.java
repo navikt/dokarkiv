@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 
 import javax.persistence.Column;
@@ -54,8 +55,8 @@ public class SakStatus extends AbstractPersistentVersionedDomainObjectWithKilde 
 	@Column(name = "bruker_id_type", nullable = false, length = 40)
 	private BrukerTypeCode brukerIdType;
 
-	@Column(name = "tema", nullable = false, length = 3)
-	private String tema;
+	@Column(name = "k_fagomrade", nullable = false, length = 3)
+	private FagomradeCode tema;
 
 	@Column(name = "fagsaknr", length = 40)
 	private String fagSakNr;
