@@ -445,6 +445,10 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		}
 	}
 
+	public void clearSkannetInnhold() {
+		skannetInnholdListe.clear();
+	}
+
 	public void setDokumentFerdigDato(Date dokumentFerdigDato) {
 		if (dokumentFerdigDato != null) {
 			this.dokumentFerdigDato = new Date(dokumentFerdigDato.getTime());

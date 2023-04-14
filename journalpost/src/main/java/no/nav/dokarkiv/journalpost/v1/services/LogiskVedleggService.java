@@ -13,12 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.Optional;
 
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
-@Service("journalfoerSkannetDokumentService")
+@Service
 public class LogiskVedleggService {
 	private final SkannetInnholdRepository skannetInnholdRepository;
 	private final DokumentInfoRepository dokumentInfoRepository;
@@ -57,5 +59,23 @@ public class LogiskVedleggService {
 	@Transactional
 	public void slettLogiskVedlegg(String logiskVedleggId) {
 		skannetInnholdRepository.deleteBySkannetInnholdId(parseLong(logiskVedleggId));
+	}
+
+	@Transactional
+	public void bulkOppdaterLogiskVedlegg(String dokumentInfoId, List<String> titler) {
+		if(titler.isEmpty()) {
+			return;
+		}
+
+		Optional<DokumentInfo> byId = dokumentInfoRepository.findById(parseLong(dokumentInfoId));
+		DokumentInfo dokumentInfo = byId.orElseThrow(() -> new DokumentInfoIkkeFunnetException("Kan ikke bulkOppdaterLogiskVedlegg. Finner ikke dokumentInfoId=" + dokumentInfoId));
+		dokumentInfo.clearSkannetInnhold();
+		titler.forEach(t -> {
+			SkannetInnhold skannetInnhold = SkannetInnhold.builder()
+					.vedleggInnhold(t)
+					.build();
+			skannetInnhold.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
+			dokumentInfo.addSkannetInnhold(skannetInnhold);
+		});
 	}
 }

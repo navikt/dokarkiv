@@ -85,6 +85,7 @@ public class TestDataGenerator {
 	public static final String VARSELTEKST = "{\n          \"epost\": \"Du har fått brev fra NAV\",\n          \"sms\": \"Du har fått brev fra NAV\"\n        }";
 	public static final String DIGITALPOSTKASSEADRESSE = "0000487236";
 	public static final String DIGITALPOSTKASSELEVERANDOR = "123456789";
+	public static final String SKANNET_INNHOLD_TITTEL = "Henvendelse fra lege";
 
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
@@ -300,6 +301,7 @@ public class TestDataGenerator {
 
 	public static SkannetInnhold createSkannetInnhold() {
 		SkannetInnhold skannetInnhold = SkannetInnhold.builder()
+				.vedleggInnhold(SKANNET_INNHOLD_TITTEL)
 				.dokumenttypeid(DOKUMENT_TYPE_ID)
 				.build();
 		skannetInnhold.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
