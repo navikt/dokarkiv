@@ -32,6 +32,7 @@ public class CacheConfig {
 	public static final String AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE = "azureClientCredentialGraphTokeCache";
 	public static final String AZURE_HENT_AD_GRUPPER = "hentAdGrupperCache";
 	public static final String AZURE_ON_BEHALF_OF_TOKEN_CACHE = "hentOnBehalfOfCache";
+	public static final String SAF_JOURNALPOST_QUERY_CACHE = "safJournalpostQueryCache";
 
 	private final MeterRegistry meterRegistry;
 
@@ -90,6 +91,11 @@ public class CacheConfig {
 				new CaffeineCache(AZURE_HENT_AD_GRUPPER, Caffeine.newBuilder()
 						.expireAfterWrite(50, MINUTES)
 						.maximumSize(10000)
+						.recordStats()
+						.build()),
+				new CaffeineCache(SAF_JOURNALPOST_QUERY_CACHE, Caffeine.newBuilder()
+						.expireAfterWrite(10, MINUTES)
+						.maximumSize(1000)
 						.recordStats()
 						.build()));
 	}

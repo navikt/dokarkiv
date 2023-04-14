@@ -8,8 +8,11 @@ import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo;
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJsonJournalpost;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.cache.annotation.Cacheable;
+
 
 import static java.util.Collections.singletonMap;
+import static no.nav.dokarkiv.core.cache.CacheConfig.SAF_JOURNALPOST_QUERY_CACHE;
 
 @Component
 public class SafJournalpostQueryService {
@@ -33,6 +36,7 @@ public class SafJournalpostQueryService {
 		this.safGraphqlConsumer = safGraphqlConsumer;
 	}
 
+	@Cacheable(value = SAF_JOURNALPOST_QUERY_CACHE)
 	public SafJournalpostTo hentJournalpost(long journalpostId) {
 
 		ResponseEntity<String> response = safGraphqlConsumer.performQuery(GraphQLRequest.builder()
