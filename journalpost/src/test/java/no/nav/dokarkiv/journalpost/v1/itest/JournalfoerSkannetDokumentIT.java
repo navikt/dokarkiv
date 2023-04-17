@@ -4,6 +4,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.SkannetInnholdTestRepository;
+import no.nav.dokarkiv.journalpost.v1.api.BulkOppdaterLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggResponse;
@@ -111,13 +112,20 @@ public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(List.of("Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege"), createHeadersWithServiceUserToken());
-		ResponseEntity<Void> response = restTemplate.exchange(URL_DOKUMENTINFO + dokumentInfoId + LOGISK_VEDLEGG, HttpMethod.PUT, requestEntity, Void.class);
-		assertEquals(HttpStatus.OK, response.getStatusCode());
+		var oppdatertLogiskeVedleggRequest = new HttpEntity<>(new BulkOppdaterLogiskVedleggRequest(List.of("Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege")), createHeadersWithServiceUserToken());
+		ResponseEntity<Void> oppdatertLogiskeVedleggResponse = restTemplate.exchange(URL_DOKUMENTINFO + dokumentInfoId + LOGISK_VEDLEGG, HttpMethod.PUT, oppdatertLogiskeVedleggRequest, Void.class);
+		assertEquals(HttpStatus.NO_CONTENT, oppdatertLogiskeVedleggResponse.getStatusCode());
 
-		List<SkannetInnhold> byDokumentInfo = skannetInnholdTestRepository.findAllByDokumentInfo(dokumentInfoTestRepository.getReferenceById(dokumentInfoId));
-		assertThat(byDokumentInfo)
+		List<SkannetInnhold> oppdatertLogiskeVedlegg = skannetInnholdTestRepository.findAllByDokumentInfo(dokumentInfoTestRepository.getReferenceById(dokumentInfoId));
+		assertThat(oppdatertLogiskeVedlegg)
 				.extracting(SkannetInnhold::getVedleggInnhold)
 				.containsExactly("Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege");
+
+		var tomLogiskVedleggRequest = new HttpEntity<>(new BulkOppdaterLogiskVedleggRequest(List.of()), createHeadersWithServiceUserToken());
+		ResponseEntity<Void> tomLogiskVedleggResponse = restTemplate.exchange(URL_DOKUMENTINFO + dokumentInfoId + LOGISK_VEDLEGG, HttpMethod.PUT, tomLogiskVedleggRequest, Void.class);
+		assertEquals(HttpStatus.NO_CONTENT, tomLogiskVedleggResponse.getStatusCode());
+
+		List<SkannetInnhold> tomLogiskVedlegg = skannetInnholdTestRepository.findAllByDokumentInfo(dokumentInfoTestRepository.getReferenceById(dokumentInfoId));
+		assertThat(tomLogiskVedlegg).hasSize(0);
 	}
 }

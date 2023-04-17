@@ -1,11 +1,13 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.LogiskVedleggIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
+import no.nav.dokarkiv.journalpost.v1.api.BulkOppdaterLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
 import org.slf4j.MDC;
@@ -13,13 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.Optional;
 
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
+@Slf4j
 @Service
 public class LogiskVedleggService {
 	private final SkannetInnholdRepository skannetInnholdRepository;
@@ -62,20 +64,27 @@ public class LogiskVedleggService {
 	}
 
 	@Transactional
-	public void bulkOppdaterLogiskVedlegg(String dokumentInfoId, List<String> titler) {
-		if(titler.isEmpty()) {
-			return;
+	public void bulkOppdaterLogiskVedlegg(String dokumentInfoId, BulkOppdaterLogiskVedleggRequest request) {
+		var titler = request.getTitler();
+		if (titler.isEmpty()) {
+			DokumentInfo dokumentInfo = findDokumentInfo(dokumentInfoId);
+			dokumentInfo.clearSkannetInnhold();
+		} else {
+			DokumentInfo dokumentInfo = findDokumentInfo(dokumentInfoId);
+			dokumentInfo.clearSkannetInnhold();
+			titler.forEach(t -> {
+				SkannetInnhold skannetInnhold = SkannetInnhold.builder()
+						.vedleggInnhold(t)
+						.build();
+				skannetInnhold.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
+				dokumentInfo.addSkannetInnhold(skannetInnhold);
+			});
 		}
+	}
 
+	private DokumentInfo findDokumentInfo(String dokumentInfoId) {
 		Optional<DokumentInfo> byId = dokumentInfoRepository.findById(parseLong(dokumentInfoId));
 		DokumentInfo dokumentInfo = byId.orElseThrow(() -> new DokumentInfoIkkeFunnetException("Kan ikke bulkOppdaterLogiskVedlegg. Finner ikke dokumentInfoId=" + dokumentInfoId));
-		dokumentInfo.clearSkannetInnhold();
-		titler.forEach(t -> {
-			SkannetInnhold skannetInnhold = SkannetInnhold.builder()
-					.vedleggInnhold(t)
-					.build();
-			skannetInnhold.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
-			dokumentInfo.addSkannetInnhold(skannetInnhold);
-		});
+		return dokumentInfo;
 	}
 }
