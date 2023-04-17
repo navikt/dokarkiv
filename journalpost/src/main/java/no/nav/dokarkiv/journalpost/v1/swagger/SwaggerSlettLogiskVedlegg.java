@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -16,8 +15,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Operation(
-		summary = "Sletter logisk vedlegg",
-		security = { @SecurityRequirement(name = "bearer-key"), @SecurityRequirement(name = "nav-consumer-token") }
+		summary = "Sletter logisk vedlegg"
 )
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "OK"),

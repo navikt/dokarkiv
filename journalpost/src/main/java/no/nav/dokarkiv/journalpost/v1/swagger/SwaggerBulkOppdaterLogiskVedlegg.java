@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 
 import java.lang.annotation.Documented;
@@ -17,8 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Operation(
-		summary = "Bulk oppdaterer logisk vedlegg for dokumentInfoId. Oppdaterer titler til input. Tom liste fjerner alle logiske vedlegg.",
-		security = {@SecurityRequirement(name = "bearer-key"), @SecurityRequirement(name = "nav-consumer-token")}
+		summary = "Bulk oppdaterer logisk vedlegg for dokumentInfoId. Oppdaterer titler til input. Tom liste fjerner alle logiske vedlegg."
 )
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "204", description = "No Content - Ressursen oppdateres. Ingen respons i body."),
