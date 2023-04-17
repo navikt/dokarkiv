@@ -1,7 +1,7 @@
 CREATE TABLE T_K_SAK_STATUS
 (
     K_SAK_STATUS    VARCHAR2(40)  NOT NULL
-        CONSTRAINT IKSAKSTATUSU
+        CONSTRAINT PK_K_SAK_STATUS
         PRIMARY KEY,
     DEKODE         VARCHAR2(200) NOT NULL,
     DATO_FOM       DATE          NOT NULL,
@@ -40,46 +40,46 @@ CREATE TABLE T_SAK_STATUS
 );
 
 CREATE SEQUENCE T_SAK_STATUS_SEQ
-    CACHE 50;
+    CACHE 30;
 
 
 insert into T_K_SAK_STATUS (k_sak_status, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av,
                            dato_endret, endret_av)
-VALUES ('AAPEN', 'Åpen', date '1900-01-01', null, '1', timestamp '2023-03-28 12:00:00',
+VALUES ('AAPEN', 'Åpen', date '2023-01-01', null, '1', timestamp '2023-03-28 12:00:00',
         'MMA-6626', null, null);
 
 insert into T_K_SAK_STATUS (k_sak_status, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av,
                             dato_endret, endret_av)
-VALUES ('AVSLUTTET', 'Avsluttet', date '1900-01-01', null, '1', timestamp '2023-03-28 12:00:00',
+VALUES ('AVSLUTTET', 'Avsluttet', date '2023-01-01', null, '1', timestamp '2023-03-28 12:00:00',
         'MMA-6626', null, null);
 
 insert into T_K_SAK_STATUS (k_sak_status, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av,
                             dato_endret, endret_av)
-VALUES ('KAN_KASSERES', 'Kan kasseres', date '1900-01-01', null, '1', timestamp '2023-03-28 12:00:00',
+VALUES ('KAN_KASSERES', 'Kan kasseres', date '2023-01-01', null, '1', timestamp '2023-03-28 12:00:00',
         'MMA-6626', null, null);
 
 insert into T_K_SAK_STATUS (k_sak_status, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av,
                             dato_endret, endret_av)
-VALUES ('KASSERT', 'Kassert', date '1900-01-01', null, '1', timestamp '2023-03-28 12:00:00',
+VALUES ('KASSERT', 'Kassert', date '2023-01-01', null, '1', timestamp '2023-03-28 12:00:00',
         'MMA-6626', null, null);
 
 insert into T_K_SAK_STATUS (k_sak_status, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av,
                             dato_endret, endret_av)
-VALUES ('KAN_AVLEVERES', 'Kan avleveres', date '1900-01-01', null, '1', timestamp '2023-03-28 12:00:00',
+VALUES ('KAN_AVLEVERES', 'Kan avleveres', date '2023-01-01', null, '1', timestamp '2023-03-28 12:00:00',
         'MMA-6626', null, null);
 
 insert into T_K_SAK_STATUS (k_sak_status, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av,
                             dato_endret, endret_av)
-VALUES ('AVLEVERT_GODKJENNING', 'Avlevert og venter på godkjenning', date '1900-01-01', NULL, '1', timestamp '2023-03-28 12:00:00',
+VALUES ('AVLEVERT_GODKJENNING', 'Avlevert og venter på godkjenning', date '2023-01-01', NULL, '1', timestamp '2023-03-28 12:00:00',
         'MMA-6626', null, null);
 
 insert into T_K_SAK_STATUS (k_sak_status, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av,
                             dato_endret, endret_av)
-VALUES ('AVLEVERT', 'Avlevert', date '1900-01-01', null, '1', timestamp '2023-03-28 12:00:00',
+VALUES ('AVLEVERT', 'Avlevert', date '2023-01-01', null, '1', timestamp '2023-03-28 12:00:00',
         'MMA-6626', null, null);
 
 insert into T_K_SAK_STATUS (k_sak_status, dekode, dato_fom, dato_tom, er_gyldig, dato_opprettet, opprettet_av,
                             dato_endret, endret_av)
-VALUES ('KAN_SLETTES', 'Kan slettes', date '1900-01-01', null, '1', timestamp '2023-03-28 12:00:00',
+VALUES ('KAN_SLETTES', 'Kan slettes', date '2023-01-01', null, '1', timestamp '2023-03-28 12:00:00',
         'MMA-6626', null, null);
 
