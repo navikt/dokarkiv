@@ -2,8 +2,9 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
+import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.SkannetInnholdTestRepository;
-import no.nav.dokarkiv.core.util.TestDataGenerator;
+import no.nav.dokarkiv.journalpost.v1.api.BulkOppdaterLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggResponse;
@@ -14,23 +15,26 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 import static java.lang.Long.parseLong;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
+public class LogiskVedleggIT extends AbstractJournalpostIT {
 
 	@Autowired
 	SkannetInnholdTestRepository skannetInnholdTestRepository;
+	@Autowired
+	DokumentInfoTestRepository dokumentInfoTestRepository;
 
 	private static final String LOGISK_VEDLEGG = "/logiskVedlegg/";
 	private static final String NY_TITTEL = "Ny tittel";
 
 	@Test
 	public void shouldEndreLogiskVedlegg() {
-		abacPermit();
-
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Journalpost journalpost = createJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 		Long logiskVedleggId = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentInfoId).getSkannetInnholdListe().iterator().next().getSkannetInnholdId();
@@ -55,9 +59,7 @@ public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldLeggeTilLogiskVedlegg() {
-		abacPermit();
-
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Journalpost journalpost = createJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 
@@ -82,9 +84,7 @@ public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSlettLogiskVedlegg() {
-		abacPermit();
-
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Journalpost journalpost = createJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 		Long logiskVedleggId = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentInfoId).getSkannetInnholdListe().iterator().next().getSkannetInnholdId();
@@ -103,5 +103,29 @@ public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
 		SkannetInnhold skannetInnholdAfterDelete = skannetInnholdTestRepository.findById(logiskVedleggId).orElse(null);
 		assertThat(skannetInnholdAfterDelete).isNull();
 		assertThat(dokumentInfoTestRepository.findById(dokumentInfoId)).isNotEmpty();
+	}
+
+	@Test
+	public void shouldBulkOppdatereLogiskVedlegg() {
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+		journalpostTestRepository.persist(journalpost);
+		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
+		commitAndStartNewTransaction();
+
+		var oppdatertLogiskeVedleggRequest = new HttpEntity<>(new BulkOppdaterLogiskVedleggRequest(List.of("Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege")), createHeadersWithServiceUserToken());
+		ResponseEntity<Void> oppdatertLogiskeVedleggResponse = restTemplate.exchange(URL_DOKUMENTINFO + dokumentInfoId + LOGISK_VEDLEGG, HttpMethod.PUT, oppdatertLogiskeVedleggRequest, Void.class);
+		assertEquals(HttpStatus.NO_CONTENT, oppdatertLogiskeVedleggResponse.getStatusCode());
+
+		List<SkannetInnhold> oppdatertLogiskeVedlegg = skannetInnholdTestRepository.findAllByDokumentInfo(dokumentInfoTestRepository.getReferenceById(dokumentInfoId));
+		assertThat(oppdatertLogiskeVedlegg)
+				.extracting(SkannetInnhold::getVedleggInnhold)
+				.containsExactly("Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege");
+
+		var tomLogiskVedleggRequest = new HttpEntity<>(new BulkOppdaterLogiskVedleggRequest(List.of()), createHeadersWithServiceUserToken());
+		ResponseEntity<Void> tomLogiskVedleggResponse = restTemplate.exchange(URL_DOKUMENTINFO + dokumentInfoId + LOGISK_VEDLEGG, HttpMethod.PUT, tomLogiskVedleggRequest, Void.class);
+		assertEquals(HttpStatus.NO_CONTENT, tomLogiskVedleggResponse.getStatusCode());
+
+		List<SkannetInnhold> tomLogiskVedlegg = skannetInnholdTestRepository.findAllByDokumentInfo(dokumentInfoTestRepository.getReferenceById(dokumentInfoId));
+		assertThat(tomLogiskVedlegg).hasSize(0);
 	}
 }
