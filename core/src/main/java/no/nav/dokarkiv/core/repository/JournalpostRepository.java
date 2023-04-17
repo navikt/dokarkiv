@@ -2,6 +2,7 @@ package no.nav.dokarkiv.core.repository;
 
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.projections.IdAndFagomradeHolder;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -45,4 +46,14 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 			where j.journalpostId = :id
 			""")
 	Optional<Journalpost> fetchById(Long id);
+
+	@Query(value = """
+			select new no.nav.dokarkiv.core.repository.projections.IdAndFagomradeHolder(
+			j.journalpostId, j.fagomrade
+			)
+			from Journalpost j
+			where j.journalpostId in :ids
+			""")
+	List<IdAndFagomradeHolder> findIdAndFagomradeByJournalpostIdIn(@Param("ids") List<Long> ids);
+
 }
