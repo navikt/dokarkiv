@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
 )
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "204", description = "No Content - Ressursen oppdateres. Ingen respons i body."),
-		@ApiResponse(responseCode = "400", description = "Bad Request - Input feilet validering. Eksempler: dokumentInfoId er ikke et tall eller tittel er lenger enn " + SkannetInnhold.VEDLEGG_INNHOLD_LENGTH + " tegn.", content = @Content),
+		@ApiResponse(responseCode = "400", description = "Bad Request - Input feilet validering. Eksempler: dokumentInfoId er ikke et tall eller tittel er lengre enn " + SkannetInnhold.VEDLEGG_INNHOLD_LENGTH + " tegn.", content = @Content),
 		@ApiResponse(responseCode = "401", description = "Unauthorized - Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått.", content = @Content),
 		@ApiResponse(responseCode = "404", description = "Not Found - DokumentInfo for dokumentInfoId ikke funnet.", content = @Content),
 		@ApiResponse(responseCode = "409", description = "Conflict - Ressursen er oppdatert av en annen prosess som ble ferdig først. Klienten må forsøke på nytt.", content = @Content),
