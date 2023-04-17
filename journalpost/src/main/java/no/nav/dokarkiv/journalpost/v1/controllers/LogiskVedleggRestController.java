@@ -37,12 +37,12 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateNotNull;
 
-@Tag(name = "journalpostapi - logiske vedlegg", description = "Tjenester for å slette, endre og legge til logiske vedlegg")
+@Tag(name = "journalpostapi - logiske vedlegg", description = "Tjenester for å oppdatere, slette, endre og legge til logiske vedlegg")
 @Slf4j
 @Protected
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/dokumentInfo")
-public class JournalfoerSkannetDokumentRestController {
+public class LogiskVedleggRestController {
 
 	private final LogiskVedleggService logiskVedleggService;
 
@@ -50,7 +50,7 @@ public class JournalfoerSkannetDokumentRestController {
 	private static final String LOGISK_VEDLEGG_ID_STRING = "logiskVedleggId";
 	private static final String TITTEL_STRING = "tittel";
 
-	public JournalfoerSkannetDokumentRestController(final LogiskVedleggService logiskVedleggService) {
+	public LogiskVedleggRestController(final LogiskVedleggService logiskVedleggService) {
 		this.logiskVedleggService = logiskVedleggService;
 	}
 

@@ -22,7 +22,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithH
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JournalfoerSkannetDokumentIT extends AbstractJournalpostIT {
+public class LogiskVedleggIT extends AbstractJournalpostIT {
 
 	@Autowired
 	SkannetInnholdTestRepository skannetInnholdTestRepository;
