@@ -68,6 +68,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -145,14 +146,12 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJP.getTilleggsopplysninger().size(), is(1));
 		assert (oppdatertJP.getTilleggsopplysninger().containsKey(request.getTilleggsopplysninger().get(0).getNokkel()));
 		assert (oppdatertJP.getTilleggsopplysninger().containsValue(request.getTilleggsopplysninger().get(0).getVerdi()));
-		assertThat(oppdatertJP.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(parseLong(request.getDokumenter()
-						.get(0)
-						.getDokumentInfoId())).getTittel(),
-				is(request.getDokumenter().get(0).getTittel()));
-		assertThat(oppdatertJP.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(parseLong(request.getDokumenter()
-						.get(0)
-						.getDokumentInfoId())).getBrevkode(),
-				is(request.getDokumenter().get(0).getBrevkode()));
+		no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = oppdatertJP.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(parseLong(request.getDokumenter()
+				.get(0)
+				.getDokumentInfoId()));
+		assertThat(dokumentInfo.getTittel(), is(request.getDokumenter().get(0).getTittel()));
+		assertThat(dokumentInfo.getBrevkode(), is(request.getDokumenter().get(0).getBrevkode()));
+		assertThat(dokumentInfo.getSensitivt(), nullValue());
 
 		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
 
@@ -1018,7 +1017,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertEquals("", journalpostOppdatert.getAvsenderMottakerId());
 	}
-
 
 	@Test
 	public void shouldUsePdlNameForAvsenderMottakerNameNull() {

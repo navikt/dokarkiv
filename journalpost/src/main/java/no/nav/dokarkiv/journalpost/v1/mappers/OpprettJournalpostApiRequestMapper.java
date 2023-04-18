@@ -299,6 +299,7 @@ public class OpprettJournalpostApiRequestMapper {
 	private void createJournalpostDokumentInfoRelasjon(Journalpost jp, Dokument dokument, TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.kategori(dokument.getDokumentKategori() != null ? DokumentKategoriCode.valueOf(dokument.getDokumentKategori()) : DokumentKategoriCode.IS)
+				.sensitivt(dokument.getSensitivtPselv() != null ? dokument.getSensitivtPselv() : null)
 				.tittel(dokument.getTittel())
 				.dokumentstatus(Arrays.asList(JournalpostTypeCode.U, JournalpostTypeCode.N).contains(jp.getJournalposttype()) ?
 						DokumentStatusCode.FERDIGSTILT : null)
