@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -157,6 +158,7 @@ public class OpprettJournalpostRequest {
 	)
 	private List<Dokument> dokumenter = new ArrayList<>();
 
+	@Hidden
 	@Schema(
 			description = """
 					Gjør at journalposten med dokumenter vises til pålogget bruker på nav.no til tross for at standardregelsettet sier at journalposten og/eller dokumentene skal skjules.
