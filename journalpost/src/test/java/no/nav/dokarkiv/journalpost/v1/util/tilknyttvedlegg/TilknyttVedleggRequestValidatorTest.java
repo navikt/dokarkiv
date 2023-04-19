@@ -22,14 +22,14 @@ public class TilknyttVedleggRequestValidatorTest {
 
 	@Test
 	public void happyPath() {
-		MDC.put(MDC_CONSUMER_ID, "srvdokarkivproxy");
+		MDC.put(MDC_CONSUMER_ID, "consumerId");
 		tilknyttVedleggRequest = createTilknyttVedleggRequest();
 		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
 	}
 
 	@Test
 	public void shouldThrowExceptionIfTilknyttetNavnIsMissing() {
-		MDC.put(MDC_CONSUMER_ID, "srvdokarkivproxy");
+		MDC.put(MDC_CONSUMER_ID, "consumerId");
 		tilknyttVedleggRequest = createTilknyttVedleggRequest("", createDokumentVedleggList());
 
 		assertThrows(InputValideringFeiletException.class,
@@ -39,7 +39,7 @@ public class TilknyttVedleggRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfkildeJournalpostIdIsMissing() {
-		MDC.put(MDC_CONSUMER_ID, "srvdokarkivproxy");
+		MDC.put(MDC_CONSUMER_ID, "consumerId");
 		tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", createDokumentVedleggList(null, "20000000"));
 
 		assertThrows(InputValideringFeiletException.class,
@@ -49,7 +49,7 @@ public class TilknyttVedleggRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfkildeDokumentInfoIdIsMissing() {
-		MDC.put(MDC_CONSUMER_ID, "srvdokarkivproxy");
+		MDC.put(MDC_CONSUMER_ID, "consumerId");
 		tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", createDokumentVedleggList(318883708L, ""));
 
 		assertThrows(InputValideringFeiletException.class,

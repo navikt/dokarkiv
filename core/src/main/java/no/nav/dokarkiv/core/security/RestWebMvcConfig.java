@@ -47,7 +47,6 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/hentjournalsakinfo/**");
 
         registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, meterRegistry, azureAdGraphService))
-                .excludePathPatterns("/rest/intern/**")
                 .addPathPatterns("/rest/**");
 
         registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(azureAdGraphService, azureAdAdminRole))
