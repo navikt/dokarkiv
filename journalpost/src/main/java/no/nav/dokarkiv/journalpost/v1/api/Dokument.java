@@ -48,6 +48,16 @@ public class Dokument {
 	)
 	private String dokumentKategori;
 
+	@Hidden
+	@Schema(
+			description = """
+					Skjuler dokumentet for brukeren i Pselv (pensjon selvbetjening) ved påloggingsnivå 3 (MinId).
+					Feltet skal kun brukes av pensjonsområdet.
+					""",
+			example = "false"
+	)
+	private Boolean sensitivtPselv;
+
 	@Schema(
 			description = "Alle variantene av et enkeltdokument som skal arkiveres."
 	)

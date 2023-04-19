@@ -60,11 +60,6 @@ public class TilknyttVedleggService {
 		this.tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
 	}
 
-	@Deprecated  // Fjernes når vi har skrudd av dokarkivproxy
-	public List<FeiledeDokumenter> tilknyttVedleggWithoutQueryingSaf(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
-		return validateAndTilknyttVedlegg(targetJournalpostId, tilknyttVedleggRequest);
-	}
-
 	public List<FeiledeDokumenter> tilknyttVedlegg(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
 		String tilknyttetAvNavn = MDC.get(MDC_USER_NAME);
 		var accessControlledDocuments = accessLookupJournalpost.checkDocumentsCanBeAccessedByActor(tilknyttVedleggRequest);
