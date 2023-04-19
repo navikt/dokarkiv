@@ -60,17 +60,6 @@ displayName: srvengangsstonad
 userPassword: hemmelig
 
 # service user
-dn: cn=srvdokarkivproxy,ou=ServiceAccounts,dc=test,dc=local
-objectclass: top
-objectclass: person
-objectclass: organizationalPerson
-cn: srvdokarkivproxy
-sn: srvdokarkivproxy
-description: Service account for srvdokarkivproxy
-displayName: srvdokarkivproxy
-userPassword: hemmelig
-
-# service user
 dn: cn=srvtestersen,ou=ServiceAccounts,dc=test,dc=local
 objectclass: top
 objectclass: person

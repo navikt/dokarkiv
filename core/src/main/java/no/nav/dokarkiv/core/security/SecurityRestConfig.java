@@ -29,8 +29,7 @@ public class SecurityRestConfig extends WebSecurityConfigurerAdapter {
 		// Disse endepunktene er beskyttet av token-support @Protected
 		// Se JwtTokenValidationFilter
 		http.authorizeRequests()
-				.antMatchers("/rest/intern/**",
-						"/rest/journalpostapi/**",
+				.antMatchers("/rest/journalpostapi/**",
 						"/rest/admin/**")
 				.permitAll();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
