@@ -13,9 +13,17 @@ import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.FAR;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.KTA;
 
@@ -23,6 +31,7 @@ import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.KTA;
 public class AccessLookupJournalpost {
 
 	private static final EnumSet<FagomradeCode> TEMA_SOM_TRENGER_TILGANGSKONTROLL = EnumSet.of(FAR, KTA);
+	private static final int MAX_ANTALL_JOURNALPOSTER_PR_KALL = 1000;
 	private final SafJournalpostQueryService safJournalpostQueryService;
 	private final JournalpostRepository journalpostRepository;
 
@@ -36,13 +45,10 @@ public class AccessLookupJournalpost {
 		List<FeiledeDokumenter> feiledeDokumentListe = new ArrayList<>();
 		List<DokumentVedlegg> dokumenterTilTilknytning = new ArrayList<>();
 
-		List<IdAndFagomradeHolder> journalposter = journalpostRepository.findIdAndFagomradeByJournalpostIdIn(tilknyttVedleggRequest.getDokument()
-				.stream()
-				.map(DokumentVedlegg::getKildeJournalpostId)
-				.toList());
+		Map<Long, FagomradeCode> journalposter = getFagomradeForJournalposter(tilknyttVedleggRequest.getDokument());
 
 		for (DokumentVedlegg dokument : tilknyttVedleggRequest.getDokument()) {
-			FagomradeCode fagomradeCode = getFagomrade(dokument.getKildeJournalpostId(), journalposter);
+			FagomradeCode fagomradeCode = journalposter.get(dokument.getKildeJournalpostId());
 
 			if (TEMA_SOM_TRENGER_TILGANGSKONTROLL.contains(fagomradeCode)) {
 				SafJournalpostTo safJournalpostTo = safJournalpostQueryService.hentJournalpost(dokument.getKildeJournalpostId());
@@ -64,12 +70,26 @@ public class AccessLookupJournalpost {
 		return new AccessControlledDocuments(dokumenterTilTilknytning, feiledeDokumentListe);
 	}
 
-	private FagomradeCode getFagomrade(Long journalpostId, List<IdAndFagomradeHolder> journalposter) {
-		return journalposter.stream()
-				.filter(journalpost -> journalpostId.equals(journalpost.id()))
-				.map(IdAndFagomradeHolder::fagomrade)
-				.findAny()
-				.orElse(null);
+	private Map<Long, FagomradeCode> getFagomradeForJournalposter(List<DokumentVedlegg> dokumenter) {
+		Map<Long, FagomradeCode> journalposter = new HashMap<>();
+
+		Collection<List<Long>> partisjoner = partisjonerListe(dokumenter
+				.stream()
+				.map(DokumentVedlegg::getKildeJournalpostId)
+				.toList());
+
+		partisjoner.forEach(partisjon ->
+				journalposter.putAll(journalpostRepository.findIdAndFagomradeByJournalpostIdIn(partisjon)
+						.stream()
+						.collect(toMap(IdAndFagomradeHolder::id, IdAndFagomradeHolder::fagomrade))));
+
+		return journalposter;
+	}
+
+	private Collection<List<Long>> partisjonerListe(final List<Long> list) {
+		return IntStream.range(0, list.size()).boxed()
+				.collect(groupingBy(partition -> (partition / MAX_ANTALL_JOURNALPOSTER_PR_KALL), mapping(list::get, toList())))
+				.values();
 	}
 
 	private boolean saksbehandlerHarIkkeTilgang(SafJournalpostTo.DokumentInfo dokumentInfo) {
