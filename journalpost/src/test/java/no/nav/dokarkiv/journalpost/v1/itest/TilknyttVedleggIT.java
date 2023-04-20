@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
@@ -28,8 +29,11 @@ import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.util.stream.Collectors.joining;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
@@ -293,6 +297,55 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertThat(journalpostTilknyttetVedlegg.getJournalpostDokumentInfoRelasjoner()
 				.stream()
 				.anyMatch(j -> j.getDokumentInfo().getDokumentInfoId().equals(sourceDokumentInfoId3)), is(false));
+
+		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldOnlyPerformAccessLookupForFagomraadeFARAndKTA() {
+		Journalpost journalpostVedlegg = createJournalpostArkiv();
+		Journalpost sourceJournalpost1 = createJournalpostArkiv();
+		Journalpost sourceJournalpost2 = createJournalpostArkiv();
+		Journalpost sourceJournalpost3 = createJournalpostArkiv();
+
+		sourceJournalpost1.setFagomrade(FagomradeCode.PEN);
+		sourceJournalpost2.setFagomrade(FagomradeCode.FAR);
+		sourceJournalpost3.setFagomrade(FagomradeCode.KTA);
+
+		Long journalpostIdVedlegg = saveJournalpost(journalpostVedlegg).getJournalpostId();
+		Long sourceJournalpostId1 = saveJournalpost(sourceJournalpost1).getJournalpostId();
+		Long sourceJournalpostId2 = saveJournalpost(sourceJournalpost2).getJournalpostId();
+		Long sourceJournalpostId3 = saveJournalpost(sourceJournalpost3).getJournalpostId();
+
+		generateAndStubSafResponse(sourceJournalpost1, sourceJournalpost2, sourceJournalpost3);
+		completeCurrentAndStartNewTransaction();
+
+		Long sourceDokumentInfoId1 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+		Long sourceDokumentInfoId2 = sourceJournalpost2.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+		Long sourceDokumentInfoId3 = sourceJournalpost3.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+
+		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
+
+		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId1, sourceDokumentInfoId1.toString()));
+		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId2, sourceDokumentInfoId2.toString()));
+		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId3, sourceDokumentInfoId3.toString()));
+
+		HttpHeaders headers = createHeadersWithUserAndServiceUserTokenAndConsumerId(CONSUMER);
+
+		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
+
+		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
+		restTemplate.exchange(URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+
+		completeCurrentAndStartNewTransaction();
+
+		verify(2, postRequestedFor(urlEqualTo("/safgraphql")));
 
 		TestTransaction.end();
 	}
