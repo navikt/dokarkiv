@@ -125,6 +125,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "journalforing-frontend",
+      "namespace": "isa",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "trygderetten-vedlegg",
       "namespace": "isa",
       "cluster": "prod-gcp"
