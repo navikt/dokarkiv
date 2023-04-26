@@ -403,6 +403,11 @@
       "app": "tiltakspenger-soknad-api",
       "namespace": "tpts",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "tilbakemeldingsmottak-api",
+      "namespace": "teamserviceklage",
+      "cluster": "prod-gcp"
     }
   ]
 }
