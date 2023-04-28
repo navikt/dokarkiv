@@ -413,6 +413,11 @@
       "app": "tilbakemeldingsmottak-api",
       "namespace": "teamserviceklage",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "spberegning",
+      "namespace": "helsearbeidsgiver",
+      "cluster": "prod-fss"
     }
   ]
 }
