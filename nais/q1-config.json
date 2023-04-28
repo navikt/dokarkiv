@@ -424,6 +424,11 @@
       "app": "tiltakspenger-soknad-api",
       "namespace": "tpts",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "spberegning",
+      "namespace": "helsearbeidsgiver",
+      "cluster": "dev-fss"
     }
   ]
 }
