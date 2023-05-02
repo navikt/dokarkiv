@@ -405,6 +405,11 @@
       "app": "pensjon-pen-q2",
       "namespace": "teampensjon",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "tiltakspenger-soknad-api",
+      "namespace": "tpts",
+      "cluster": "dev-gcp"
     }
   ]
 }
