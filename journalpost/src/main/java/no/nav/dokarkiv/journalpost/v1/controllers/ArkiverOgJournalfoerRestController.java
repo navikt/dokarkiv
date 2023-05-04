@@ -60,6 +60,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -122,7 +123,7 @@ public class ArkiverOgJournalfoerRestController {
 			return ResponseEntity.ok().body("Journalpost ferdigstilt");
 		} catch (KanIkkeFerdigstilleException | JournalpostIkkeMidlertidigException | DokumentUnderRedigeringException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					String.format("Kunne ikke ferdigstille journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
+					format("Kunne ikke ferdigstille journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
 					e);
 		} finally {
 			MDC.clear();
@@ -150,7 +151,7 @@ public class ArkiverOgJournalfoerRestController {
 			return ResponseEntity.ok().body("Journalpost oppdatert");
 		} catch (InputValideringFeiletException | KanIkkeOppdatereDistribusjonsinfoException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					String.format("Kunne ikke oppdatere distribusjonsinfo for journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
+					format("Kunne ikke oppdatere distribusjonsinfo for journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
 					e);
 		} finally {
 			MDC.clear();
@@ -183,7 +184,7 @@ public class ArkiverOgJournalfoerRestController {
 			return OppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
 		} catch (InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					String.format("Kunne ikke oppdatere journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
+					format("Kunne ikke oppdatere journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
 					e);
 		} finally {
 			MDC.clear();
@@ -269,7 +270,7 @@ public class ArkiverOgJournalfoerRestController {
 							.build());
 		} catch (InputValideringFeiletException | UgyldigInputException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					String.format("Kunne ikke opprette journalpost. %s",  e.getMessage()), e);
+					format("Kunne ikke opprette journalpost. %s",  e.getMessage()), e);
 		} finally {
 			MDC.clear();
 		}
@@ -290,23 +291,15 @@ public class ArkiverOgJournalfoerRestController {
 			log.info("Vedlegg med dokumentinfoId={} som er knyttet til journalpost med journalpostId={} er fjernet", request.getDokumentId(), journalpostId);
 			return ResponseEntity.ok("Vedlegg som knyttet til journalposten fjernet");
 
-		} catch (InputValideringFeiletException | KanIkkeSlettetVedleggKnyttetTilJournalpostException |
-				 JournalpostIkkeFunnetException | DokumentIkkeFunnetException |
+		} catch (InputValideringFeiletException | KanIkkeSlettetVedleggKnyttetTilJournalpostException e) {
+			String message = format("Kunne ikke fjerne vedlegg med dokumentinfoId=%s fra journalpost med journalpostId=%s. %s",
+					request.getDokumentId(), journalpostId, e.getMessage());
+			throw new ResponseStatusException(BAD_REQUEST, message, e);
+		} catch (JournalpostIkkeFunnetException | DokumentIkkeFunnetException |
 				 JournalpostDokumentInfoRelasjonIkkeFunnetException e) {
-
-			HttpStatus status;
-			if (e instanceof InputValideringFeiletException || e instanceof KanIkkeSlettetVedleggKnyttetTilJournalpostException) {
-				status = BAD_REQUEST;
-			} else {
-				status = NOT_FOUND;
-			}
-
-			String message = String.format("Kunne ikke fjerne vedlegg med dokumentinfoId=%s fra journalpost med journalpostId=%s. %s",
-					request.getDokumentId(),
-					journalpostId,
-					e.getMessage());
-
-			throw new ResponseStatusException(status, message, e);
+			String message = format("Kunne ikke fjerne vedlegg med dokumentinfoId=%s fra journalpost med journalpostId=%s. %s",
+					request.getDokumentId(), journalpostId, e.getMessage());
+			throw new ResponseStatusException(NOT_FOUND, message, e);
 		} finally {
 			MDC.clear();
 		}
