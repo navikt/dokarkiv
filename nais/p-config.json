@@ -120,9 +120,19 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "isbehandlerdialog",
+      "namespace": "teamsykefravr",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "journalforing-frontend",
       "namespace": "isa",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "journalforing-frontend",
+      "namespace": "isa",
+      "cluster": "prod-gcp"
     },
     {
       "app": "trygderetten-vedlegg",
@@ -398,6 +408,16 @@
       "app": "tiltakspenger-soknad-api",
       "namespace": "tpts",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "tilbakemeldingsmottak-api",
+      "namespace": "teamserviceklage",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "spberegning",
+      "namespace": "helsearbeidsgiver",
+      "cluster": "prod-fss"
     }
   ]
 }

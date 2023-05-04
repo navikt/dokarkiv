@@ -141,6 +141,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "isbehandlerdialog",
+      "namespace": "teamsykefravr",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "journalforing-frontend",
       "namespace": "isa",
       "cluster": "dev-fss"
@@ -419,6 +424,11 @@
       "app": "tiltakspenger-soknad-api",
       "namespace": "tpts",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "spberegning",
+      "namespace": "helsearbeidsgiver",
+      "cluster": "dev-fss"
     }
   ]
 }
