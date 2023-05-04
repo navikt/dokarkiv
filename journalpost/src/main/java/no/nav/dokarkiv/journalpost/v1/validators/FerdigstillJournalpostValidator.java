@@ -10,12 +10,12 @@ import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
@@ -60,16 +60,29 @@ public class FerdigstillJournalpostValidator {
 		verifyPaakrevdeFelterBruker(journalpost, manglendePaakrevdeFelter);
 		verifyPaakrevdeFelterDokumentInfo(journalpost, manglendePaakrevdeFelter);
 		if (!manglendePaakrevdeFelter.isEmpty()) {
-			String manglendeFelter = StringUtils.join(manglendePaakrevdeFelter, ", ");
-			throw new KanIkkeFerdigstilleException("Kan ikke ferdigstille journalpost, følgende felt(er) mangler: " + manglendeFelter);
+			throw new KanIkkeFerdigstilleException(format(
+					"Journalposten mangler følgende felter: %s", String.join(", ", manglendePaakrevdeFelter)));
 		}
 	}
 
 	private void verifyMidlertidigJournalfoert(Journalpost jp) {
-		if (!MIDLERTIDIG_JOURNALSTATUS.contains(jp.getJournalstatus()) || Boolean.TRUE.equals(jp.getSaksrelasjon() == null ? Boolean.FALSE : jp.getSaksrelasjon()
-				.getFeilregistrert())) {
-			throw new JournalpostIkkeMidlertidigException(String.format("Journalpost med journalpostId=%s er ikke midlertidig journalført", jp
-					.getJournalpostId()));
+
+		List<String> feilmeldinger = new ArrayList<>();
+
+		if (!MIDLERTIDIG_JOURNALSTATUS.contains(jp.getJournalstatus())) {
+			feilmeldinger.add(format(
+					"Den har journalstatus=%s (midlertidig journalførte journalposter har en av følgende journalstatuser=%s)",
+					jp.getJournalstatus(), MIDLERTIDIG_JOURNALSTATUS));
+		}
+
+		if (Boolean.TRUE.equals(jp.getSaksrelasjon() == null ? Boolean.FALSE : jp.getSaksrelasjon().getFeilregistrert())) {
+			feilmeldinger.add("Den er feilregistrert");
+		}
+
+		if (!feilmeldinger.isEmpty()) {
+			throw new JournalpostIkkeMidlertidigException(format(
+					"Journalposten er ikke ansett som midlertidig journalført av følgende grunn(er): %s",
+					String.join(", ", feilmeldinger)));
 		}
 	}
 
@@ -77,7 +90,7 @@ public class FerdigstillJournalpostValidator {
 		try {
 			jp.verifyNoDokumentInfosUnderRedigering();
 		} catch (InvalidJournalpostStructureException e) {
-			throw new DokumentUnderRedigeringException(String.format("Ett eller flere av dokumentene som forsøkes oppdatert på journalpost med journalpostId=%s er under redigering", jp.getJournalpostId()));
+			throw new DokumentUnderRedigeringException("Ett eller flere av dokumentene på journalposten er under redigering");
 		}
 	}
 
@@ -85,7 +98,7 @@ public class FerdigstillJournalpostValidator {
 		try {
 			jp.verifyOnlyOneHoveddokument();
 		} catch (InvalidJournalpostStructureException e) {
-			throw new KanIkkeFerdigstilleException(String.format("Kan ikke ferdigstille: Journalpost med journalpostId=%s inneholder null eller flere enn ett hoveddokument", jp.getJournalpostId()));
+			throw new KanIkkeFerdigstilleException("Journalposten inneholder null eller flere enn ett hoveddokument");
 		}
 	}
 
@@ -93,22 +106,21 @@ public class FerdigstillJournalpostValidator {
 		try {
 			jp.verifyArkivVariantOfAllDocuments();
 		} catch (InvalidJournalpostStructureException e) {
-			throw new KanIkkeFerdigstilleException(String.format("Kan ikke ferdigstille: Journalpost med journalpostId=%s mangler arkivvariant",
-					jp.getJournalpostId()));
+			throw new KanIkkeFerdigstilleException("Journalposten mangler arkivvariant");
 		}
 		jp.getJournalpostDokumentInfoRelasjoner().forEach(dr -> {
 			try {
 				dr.getDokumentInfo().verifyNoVariantDuplicates();
 			} catch (InvalidJournalpostStructureException e) {
-				throw new KanIkkeFerdigstilleException(String.format("Kan ikke ferdigstille: Journalpost med journalpostId=%s inneholder flere fildetaljer med samme variantformat",
-						jp.getJournalpostId()));
+				throw new KanIkkeFerdigstilleException("Journalposten inneholder flere fildetaljer med samme variantformat");
 			}
 		});
 	}
 
 	private void verifyAtLeastOneBrukerExists(Journalpost jp) {
 		if (jp.getBrukere().isEmpty()) {
-			throw new KanIkkeFerdigstilleException(String.format("Kan ikke ferdigstille: Journalpost med journalpostId=%s må knyttes til en bruker.", jp.getJournalpostId()));
+			throw new KanIkkeFerdigstilleException("Journalposten er ikke knyttet til en bruker");
+
 		}
 	}
 

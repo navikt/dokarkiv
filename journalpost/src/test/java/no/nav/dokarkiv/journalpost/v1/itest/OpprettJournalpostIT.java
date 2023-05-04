@@ -26,6 +26,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import org.apache.commons.collections15.IteratorUtils;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -828,7 +829,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
-		assertTrue(response.getBody().getMelding().contains("følgende felt(er) mangler"));
+		Assertions.assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: Journalpost.mottakskanal");
 		assertThat(response.getBody().getJournalpostferdigstilt(), is(false));
 
 		Journalpost journalpost = journalpostTestRepository.findById(parseLong(response.getBody().getJournalpostId())).orElseThrow();
@@ -885,7 +886,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
-		assertTrue(response.getBody().getMelding().contains("følgende felt(er) mangler"));
+		Assertions.assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: Journalpost.mottakskanal");
 		assertThat(response.getBody().getJournalpostferdigstilt(), is(false));
 
 		Journalpost journalpost = journalpostTestRepository.findById(parseLong(response.getBody().getJournalpostId())).orElseThrow();
@@ -931,7 +932,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
-		assertTrue(response.getBody().getMelding().contains("Kunne ikke ferdigstille: Journalpost"));
+		Assertions.assertThat(response.getBody().getMelding()).contains(String.format("Kunne ikke ferdigstille: Journalpost med journalpostId=%s må ha en saksrelasjon", response.getBody().getJournalpostId()));;
 		assertThat(response.getBody().getJournalpostferdigstilt(), is(false));
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();

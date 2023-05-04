@@ -5,7 +5,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeOppdatereDistribusjonsinfoException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeSlettetVedleggKnyttetTilJournalpostException;
+import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
@@ -45,6 +54,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +65,10 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.MASKINELL_JOURNALFOERENDE_ENHET;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Tag(name = "journalpostapi", description = "Tjenester for å arkivere og journalføre i fagarkiv")
 @Slf4j
@@ -108,6 +120,10 @@ public class ArkiverOgJournalfoerRestController {
 			log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
 
 			return ResponseEntity.ok().body("Journalpost ferdigstilt");
+		} catch (KanIkkeFerdigstilleException | JournalpostIkkeMidlertidigException | DokumentUnderRedigeringException e) {
+			throw new ResponseStatusException(BAD_REQUEST,
+					String.format("Kunne ikke ferdigstille journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
+					e);
 		} finally {
 			MDC.clear();
 		}
@@ -132,6 +148,10 @@ public class ArkiverOgJournalfoerRestController {
 			log.info(MDC.get(MDC_REQUEST_ID) + " har oppdatert distribusjonsinfo på journalpost med journalpostId={}", journalpostId);
 
 			return ResponseEntity.ok().body("Journalpost oppdatert");
+		} catch (InputValideringFeiletException | KanIkkeOppdatereDistribusjonsinfoException e) {
+			throw new ResponseStatusException(BAD_REQUEST,
+					String.format("Kunne ikke oppdatere distribusjonsinfo for journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
+					e);
 		} finally {
 			MDC.clear();
 		}
@@ -161,6 +181,10 @@ public class ArkiverOgJournalfoerRestController {
 
 			log.info("oppdaterjournalpost har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
 			return OppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
+		} catch (InputValideringFeiletException e) {
+			throw new ResponseStatusException(BAD_REQUEST,
+					String.format("Kunne ikke oppdatere journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
+					e);
 		} finally {
 			MDC.clear();
 		}
@@ -243,6 +267,9 @@ public class ArkiverOgJournalfoerRestController {
 									.isPresent())
 							.dokumenter(dokumenter)
 							.build());
+		} catch (InputValideringFeiletException | UgyldigInputException e) {
+			throw new ResponseStatusException(BAD_REQUEST,
+					String.format("Kunne ikke opprette journalpost. %s",  e.getMessage()), e);
 		} finally {
 			MDC.clear();
 		}
@@ -262,6 +289,24 @@ public class ArkiverOgJournalfoerRestController {
 			fjernVedleggTilknyttJournalpost.fjernVedleggTilknyttetJournalpost(journalpostId, request);
 			log.info("Vedlegg med dokumentinfoId={} som er knyttet til journalpost med journalpostId={} er fjernet", request.getDokumentId(), journalpostId);
 			return ResponseEntity.ok("Vedlegg som knyttet til journalposten fjernet");
+
+		} catch (InputValideringFeiletException | KanIkkeSlettetVedleggKnyttetTilJournalpostException |
+				 JournalpostIkkeFunnetException | DokumentIkkeFunnetException |
+				 JournalpostDokumentInfoRelasjonIkkeFunnetException e) {
+
+			HttpStatus status;
+			if (e instanceof InputValideringFeiletException || e instanceof KanIkkeSlettetVedleggKnyttetTilJournalpostException) {
+				status = BAD_REQUEST;
+			} else {
+				status = NOT_FOUND;
+			}
+
+			String message = String.format("Kunne ikke fjerne vedlegg med dokumentinfoId=%s fra journalpost med journalpostId=%s. %s",
+					request.getDokumentId(),
+					journalpostId,
+					e.getMessage());
+
+			throw new ResponseStatusException(status, message, e);
 		} finally {
 			MDC.clear();
 		}

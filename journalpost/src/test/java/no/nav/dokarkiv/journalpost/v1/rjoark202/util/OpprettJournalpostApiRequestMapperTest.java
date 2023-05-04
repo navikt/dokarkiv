@@ -19,7 +19,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
@@ -276,7 +276,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		assertThrows(UgyldigInputException.class, () ->
+		assertThrows(InputValideringFeiletException.class, () ->
 						mapper.map(request, SAK_ID),
 				"Kan ikke mappe fagsystem basert på input");
 	}

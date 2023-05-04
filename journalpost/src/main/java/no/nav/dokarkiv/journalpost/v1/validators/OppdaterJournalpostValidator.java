@@ -114,9 +114,9 @@ public final class OppdaterJournalpostValidator {
 
 	private static void validateAvsenderMottakerInngaaende(AvsenderMottaker avsenderMottaker) {
 		if (isEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() != null) {
-			throw new InputValideringFeiletException("Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt");
+			throw new InputValideringFeiletException("Oppdatering av avsenderMottaker.idType for journalpost med journalpostStatus=INNGAAENDE krever at feltet avsenderMottaker.id er satt");
 		} else if (isNotEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() == null) {
-			throw new InputValideringFeiletException("Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt");
+			throw new InputValideringFeiletException("Oppdatering av avsenderMottaker.id for journalpost med journalpostStatus=INNGAAENDE krever at feltet avsenderMottaker.idType er satt");
 		}
 	}
 
@@ -128,8 +128,10 @@ public final class OppdaterJournalpostValidator {
 
 	private static void checkIfIllegalFieldIsSet(Object field, String fieldName, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
 		if (field != null) {
-			throw new InputValideringFeiletException(String.format("%s kan ikke oppdateres for journalpost med journalpostStatus=%s og journalpostType=%s.", fieldName, journalpoststatus
-					.name(), journalpostType.name()));
+			throw new InputValideringFeiletException(String.format("%s kan ikke oppdateres for journalpost med journalpostStatus=%s og journalpostType=%s.",
+					fieldName,
+					journalpoststatus.name(),
+					journalpostType.name()));
 		}
 	}
 
@@ -149,7 +151,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static void validateFagsak(Sak sak, Bruker bruker, String tema) {
 		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("tema må være satt dersom sakstype=FAGSAK");
+			throw new InputValideringFeiletException("Tema må være satt dersom sakstype=FAGSAK");
 		}
 		if (isBrukerNull(bruker)) {
 			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=FAGSAK");
@@ -163,21 +165,21 @@ public final class OppdaterJournalpostValidator {
 			throw new InputValideringFeiletException("Sak.fagsaksystem må være satt dersom sakstype=FAGSAK");
 		}
 		if (isNotBlank(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer skal ikke være satt dersom sakstype=FAGSAK");
+			throw new InputValideringFeiletException("Sak.arkivsaksnummer kan ikke være satt dersom sakstype=FAGSAK");
 		}
 		if (sak.getArkivsaksystem() != null) {
-			throw new InputValideringFeiletException("Sak.arkivsaksystem skal ikke være satt dersom sakstype=FAGSAK");
+			throw new InputValideringFeiletException("Sak.arkivsaksystem kan ikke være satt dersom sakstype=FAGSAK");
 		}
 		if (FAGSAK == sak.getSakstype() && PP01 == sak.getFagsaksystem()) {
 			if (!isNumeric(sak.getFagsakId())) {
-				throw new InputValideringFeiletException("Sak.fagsakId skal være opprettet i PSAK og må være et numerisk heltall.");
+				throw new InputValideringFeiletException("Sak.fagsakId må være et heltall for saker opprettet i PSAK");
 			}
 		}
 	}
 
 	private static void validateGenerellSak(Sak sak, Bruker bruker, String tema) {
 		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("tema må være satt dersom sakstype=GENERELL_SAK");
+			throw new InputValideringFeiletException("Tema må være satt dersom sakstype=GENERELL_SAK");
 		}
 		if (isBrukerNull(bruker)) {
 			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=GENERELL_SAK");
@@ -185,25 +187,25 @@ public final class OppdaterJournalpostValidator {
 		validateBruker(bruker);
 
 		if (isNotBlank(sak.getFagsakId())) {
-			throw new InputValideringFeiletException("Sak.fagsakId skal ikke være satt dersom sakstype=GENERELL_SAK");
+			throw new InputValideringFeiletException("Sak.fagsakId kan ikke være satt dersom sakstype=GENERELL_SAK");
 		}
 		if (sak.getFagsaksystem() != null) {
-			throw new InputValideringFeiletException("Sak.fagsaksystem skal ikke være satt dersom sakstype=GENERELL_SAK");
+			throw new InputValideringFeiletException("Sak.fagsaksystem kan ikke være satt dersom sakstype=GENERELL_SAK");
 		}
 		if (isNotBlank(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer skal ikke være satt dersom sakstype=GENERELL_SAK");
+			throw new InputValideringFeiletException("Sak.arkivsaksnummer kan ikke være satt dersom sakstype=GENERELL_SAK");
 		}
 		if (sak.getArkivsaksystem() != null) {
-			throw new InputValideringFeiletException("Sak.arkivsaksystem skal ikke være satt dersom sakstype=GENERELL_SAK");
+			throw new InputValideringFeiletException("Sak.arkivsaksystem kan ikke være satt dersom sakstype=GENERELL_SAK");
 		}
 	}
 
 	private static void validateArkivsak(Sak sak) {
 		if (isNotBlank(sak.getFagsakId())) {
-			throw new InputValideringFeiletException("Sak.fagsakId skal ikke være satt dersom sakstype=ARKIVSAK");
+			throw new InputValideringFeiletException("Sak.fagsakId kan ikke være satt dersom sakstype=ARKIVSAK");
 		}
 		if (sak.getFagsaksystem() != null) {
-			throw new InputValideringFeiletException("Sak.fagsaksystem skal ikke være satt dersom sakstype=ARKIVSAK");
+			throw new InputValideringFeiletException("Sak.fagsaksystem kan ikke være satt dersom sakstype=ARKIVSAK");
 		}
 		if (isBlank(sak.getArkivsaksnummer())) {
 			throw new InputValideringFeiletException("Sak.arkivsaksnummer må være satt dersom sakstype=GENERELL_SAK");
@@ -212,7 +214,7 @@ public final class OppdaterJournalpostValidator {
 			throw new InputValideringFeiletException("Sak.arkivsaksystem må være satt dersom sakstype=GENERELL_SAK");
 		}
 		if (!isNumeric(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer skal være opprettet i GSAK/PSAK og må være et numerisk heltall.");
+			throw new InputValideringFeiletException("Sak.arkivsaksnummer må være et heltall, og saken må være opprettet i GSAK/PSAK");
 		}
 	}
 
@@ -222,7 +224,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static void validateBehandlingstema(String behandlingstema) {
 		if (behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")) {
-			throw new InputValideringFeiletException(String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=%s", behandlingstema));
+			throw new InputValideringFeiletException(String.format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema));
 		}
 	}
 
@@ -231,21 +233,21 @@ public final class OppdaterJournalpostValidator {
 			throw new InputValideringFeiletException("Bruker.id må være satt.");
 		}
 		if (!isNumeric(bruker.getId())) {
-			throw new InputValideringFeiletException("Bruker.id må bestå av tall.");
+			throw new InputValideringFeiletException(String.format("Bruker.id kan kun bestå av tall. Mottatt id=%s", bruker.getId()));
 		}
 		if (FNR.equals(bruker.getIdType()) && bruker.getId().length() != FNR_LENGTH) {
-			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for FNR.");
+			throw new InputValideringFeiletException(String.format("Bruker.id må være 11 siffer for Bruker.idType=FNR. Mottatt id=%s", bruker.getId()));
 		} else if (ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != ORGNR_LENGTH) {
-			throw new InputValideringFeiletException("Bruker.id må være 9 siffer for ORGNR.");
+			throw new InputValideringFeiletException(String.format("Bruker.id må være 9 siffer for Bruker.idType=ORGNR. Mottatt id=%s", bruker.getId()));
 		} else if (AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
-			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for AKTOERID.");
+			throw new InputValideringFeiletException(String.format("Bruker.id må være 11 siffer for Bruker.idType=AKTOERID. Mottatt id=%s", bruker.getId()));
 		}
 	}
 
 	private static void validateDatoKanIkkeVaereIFremtid(LocalDateTime dato, String feltNavn) {
 		LocalDateTime naaTid = LocalDateTime.now().plusSeconds(3);
 		if (naaTid.isBefore(dato)) {
-			throw new InputValideringFeiletException(String.format("%s er ugyldig verdi for %s. Feltet kan ikke settes frem i tid. nåtid er %s", dato, feltNavn, naaTid));
+			throw new InputValideringFeiletException(String.format("%s er ugyldig verdi for %s. Feltet kan ikke settes frem i tid. Nåtid er %s", dato, feltNavn, naaTid));
 		}
 	}
 }

@@ -3,6 +3,8 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import org.apache.commons.lang3.StringUtils;
 
+import static java.lang.String.format;
+
 public final class CommonValidator {
 
 	private CommonValidator() {
@@ -14,13 +16,13 @@ public final class CommonValidator {
 			hasText(id, feltnavn);
 			convertStringToLong(id, feltnavn);
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(String.format("%s. %s=%s", e.getMessage(), feltnavn, id));
+			throw new InputValideringFeiletException(format("%s. %s=%s", e.getMessage(), feltnavn, id));
 		}
 	}
 
 	public static void validateBoolean(Boolean value, String feltnavn) {
 		if (value == null) {
-			throw new InputValideringFeiletException(String.format("%s kan ikke være null eller tom.", feltnavn));
+			throw new InputValideringFeiletException(format("Feltet %s kan ikke være null eller tomt", feltnavn));
 		}
 	}
 
@@ -30,13 +32,13 @@ public final class CommonValidator {
 			hasLength(journalfoerendeEnhet, feltnavn, 4);
 			isNumeric(journalfoerendeEnhet, feltnavn);
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(String.format("%s. journalfoerendeEnhet=%s", e.getMessage(), journalfoerendeEnhet));
+			throw new InputValideringFeiletException(format("%s. journalfoerendeEnhet=%s", e.getMessage(), journalfoerendeEnhet));
 		}
 	}
 
     public static void hasText(String input, String feltnavn) {
         if (StringUtils.isBlank(input)) {
-            throw new IllegalArgumentException(String.format("%s kan ikke være null eller tom", feltnavn));
+            throw new IllegalArgumentException(format("Feltet %s kan ikke være null eller tomt", feltnavn));
         }
     }
 
@@ -44,25 +46,28 @@ public final class CommonValidator {
 		try {
 			Long.parseLong(input);
 		} catch (Exception e) {
-			throw new IllegalArgumentException(String.format("%s er ikke et tall", feltnavn));
+			throw new IllegalArgumentException(format("Feltet %s er ikke et tall. Det kan kun innholde siffer og '-'. Mottatt verdi=%s",
+					feltnavn,
+					input));
 		}
 	}
 
 	private static void hasLength(String input, String feltnavn, int length) {
 		if (input.length() != length) {
-			throw new IllegalArgumentException(String.format("%s skal være av %d", feltnavn, length));
+			throw new IllegalArgumentException(format("Feltet %s må ha lengde=%d, men har lengde=%s", feltnavn, length, input.length()));
 		}
 	}
 
 	private static void isNumeric(String input, String feltnavn) {
 		if (!StringUtils.isNumeric(input)) {
-			throw new IllegalArgumentException(String.format("%s skal være numerisk", feltnavn));
+			throw new IllegalArgumentException(format("Feltet %s må være et heltall. Mottatt verdi=%s", feltnavn, input));
 		}
 	}
 
 	public static void validateNotNull(Object o, String feltnavn) {
 		validateNotNull(o, feltnavn, null);
 	}
+
 	public static void validateNotNull(Object o, String feltnavn, String ekstraInformasjon) {
 		if (o == null) {
 			throw new InputValideringFeiletException(feltnavn + " kan ikke være null" + (ekstraInformasjon != null ? ", " + ekstraInformasjon : "" ) + "!" );

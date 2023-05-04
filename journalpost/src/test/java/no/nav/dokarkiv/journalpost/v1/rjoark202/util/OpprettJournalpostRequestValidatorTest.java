@@ -46,6 +46,8 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
+import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.LOVLIGE_INNSYNSKODER;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -868,7 +870,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		Exception e = assertThrows(InputValideringFeiletException.class, () ->
 				validator.validateRequest(request, FORSOEKFERDIGSTILL)
 		);
-		assertTrue(e.getMessage().contains("Sak.overstyrInnsynsregler kan kun ta verdiene"));
+		assertThat(e.getMessage()).contains(String.format("Sak.overstyrInnsynsregler må være en av følgende verdier %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler));
 	}
 
 	@ParameterizedTest

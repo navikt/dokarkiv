@@ -23,7 +23,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
@@ -44,8 +43,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.lang.Long.parseLong;
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.trim;
@@ -131,8 +134,9 @@ public class OpprettJournalpostApiRequestMapper {
 					avsenderMottakerIdTypeCode = AvsenderMottakerIdTypeCode.UTL_ORG;
 					break;
 				default:
-					throw new InputValideringFeiletException(String.format("AvsenderMottakerIdTypeCode validerer ikke mot kodeverk: %s.", request));
-
+					throw new InputValideringFeiletException(format("AvsenderMottakerIdTypeCode validerer ikke mot kodeverk: %s. Gyldiger verdier er: %s",
+							request,
+							Arrays.asList(AvsenderMottakerIdType.values())));
 			}
 		}
 		return avsenderMottakerIdTypeCode;
@@ -211,12 +215,22 @@ public class OpprettJournalpostApiRequestMapper {
 	private Long mapSakId(OpprettJournalpostRequest request, Long sakId) {
 		if (sakId != null) {
 			return sakId;
-		} else if (Sakstype.ARKIVSAK.equals(request.getSak().getSakstype()) || request.getSak().getSakstype() == null) {// Antas å være ARKIVSAK dersom feltet ikke er satt
+		} else if (ARKIVSAK.equals(request.getSak().getSakstype()) || request.getSak().getSakstype() == null) {// Antas å være ARKIVSAK dersom feltet ikke er satt
 			return parseLong(request.getSak().getArkivsaksnummer());
-		} else if (Sakstype.FAGSAK.equals(request.getSak().getSakstype()) && Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
+		} else if (FAGSAK.equals(request.getSak().getSakstype()) && PP01.equals(request.getSak().getFagsaksystem())) {
 			return parseLong(request.getSak().getFagsakId());
 		} else {
-			throw new UgyldigInputException("Kan ikke mappe sakId basert på input");
+			throw new InputValideringFeiletException(format(
+					"""
+					Kan ikke legge saksrelasjon til journalpost. En av følgende regler må være oppfylt:
+					1) sakstype er FAGSAK eller GENERELL_SAK, og fagsaksystem er ikke PP01
+					2) sakstype er ARKIVSAK eller ikke satt
+					3) sakstype er FAGSAK og fagsaksystem er PP01.
+					Mottatt: sakstype=%s, fagsaksystem=%s, fagsakId=%s
+					""",
+					request.getSak().getSakstype(),
+					request.getSak().getFagsaksystem(),
+					request.getSak().getFagsakId()));
 		}
 	}
 
@@ -224,7 +238,7 @@ public class OpprettJournalpostApiRequestMapper {
 		Sakstype sakstype = request.getSak().getSakstype();
 		Fagsaksystem fagsaksystem = request.getSak().getFagsaksystem();
 		Arkivsaksystem arkivsaksystem = request.getSak().getArkivsaksystem();
-		if (Sakstype.ARKIVSAK.equals(sakstype) || request.getSak().getSakstype() == null) { // Antas å være ARKIVSAK dersom feltet ikke er satt
+		if (ARKIVSAK.equals(sakstype) || request.getSak().getSakstype() == null) { // Antas å være ARKIVSAK dersom feltet ikke er satt
 			return mapArkivsak(arkivsaksystem);
 		} else {
 			return mapFagsakEllerGenerellSak(sakstype, fagsaksystem);
@@ -237,25 +251,35 @@ public class OpprettJournalpostApiRequestMapper {
 		} else if (Arkivsaksystem.GSAK.equals(arkivsaksystem)) {
 			return FagsystemCode.FS22;
 		} else {
-			throw new UgyldigInputException("Kan ikke mappe fagsystem basert på input");
+			throw new InputValideringFeiletException(format(
+					"Kan ikke legge saksrelasjon til journalpost. For arkivsaker må arkivsaksystem være PSAK eller GSAK. Mottatt arkivsaksystem=%s",
+					arkivsaksystem));
 		}
 	}
 
 	private FagsystemCode mapFagsakEllerGenerellSak(Sakstype sakstype, Fagsaksystem fagsaksystem) {
 
-		if (isValidFagsaksystem(sakstype, fagsaksystem) && Fagsaksystem.PP01.equals(fagsaksystem)) {
+		if (isValidFagsaksystem(sakstype, fagsaksystem) && PP01.equals(fagsaksystem)) {
 			return FagsystemCode.PEN;
 		} else if ((isValidFagsaksystem(sakstype, fagsaksystem) || Sakstype.GENERELL_SAK.equals(sakstype))
-				&& !Fagsaksystem.PP01.equals(fagsaksystem)) {
+				   && !PP01.equals(fagsaksystem)) {
 			return FagsystemCode.FS22;
 		} else {
-			throw new UgyldigInputException("Kan ikke mappe fagsystem basert på input");
+			throw new InputValideringFeiletException(format(
+					"""
+					Kan ikke legge saksrelasjon til journalpost. For fagsaker og generalle saker må en av følgende regler være oppfylt:
+					1) sakstype er FAGSAK og fagsaksystem er PP01
+					2) sakstype er FAGSAK eller GENERELL_SAK, og fagsaksystem er ikke PP01
+					Mottatt: sakstype=%s, fagsaksystem=%s
+					""",
+					sakstype,
+					fagsaksystem));
 		}
 	}
 
 	private boolean isValidFagsaksystem(Sakstype sakstype, Fagsaksystem fagsaksystem) {
 		return Arrays.stream(Fagsaksystem.values())
-				.anyMatch(fagsak -> fagsak.equals(fagsaksystem) && Sakstype.FAGSAK.equals(sakstype));
+				.anyMatch(fagsak -> fagsak.equals(fagsaksystem) && FAGSAK.equals(sakstype));
 	}
 
 	private void addBruker(Journalpost jp, OpprettJournalpostRequest request) {
