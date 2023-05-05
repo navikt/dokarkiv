@@ -1,5 +1,5 @@
 update T_K_FAGOMRADE
-set dato_tom = date '2023-05-05'
+set dato_tom = date '2023-05-05',
     dato_endret = current_timestamp,
     endret_av = 'MMA-6824',
     er_gyldig = '0'
