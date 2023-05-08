@@ -61,6 +61,7 @@ public final class SqlProjections {
 					d.innskr_partsinnsyn            AS dokumenter_innskrpartsinnsyn,
 					d.innskr_partsinnsyn_tredjepart AS dokumenter_innskrtredjepart,
 					d.organ_internt                 AS dokumenter_organinternt,
+					d.sensitivt                     AS dokumenter_sensitivt,
 					rel.k_skjerming_type            AS dokumenter_skjerming,
 					d.orig_journalpost_id           AS dokumenter_origjournalpostid,
 					fd.k_skjerming_type             AS dokumenter_varianter_skjerming,

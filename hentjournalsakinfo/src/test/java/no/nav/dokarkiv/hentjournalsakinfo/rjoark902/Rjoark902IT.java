@@ -122,6 +122,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		assertEquals(DOKUMENT_TYPE_ID, responseDokumentInfo.getDokumenttypeId());
 		assertEquals(TITTEL, responseDokumentInfo.getTittel());
 		assertEquals(true, responseDokumentInfo.getKassert());
+		assertEquals(true, responseDokumentInfo.getSensitivt());
 
 		assertNotNull(responseDokumentInfo.getVarianter().get(0).getFiluuid());
 		assertEquals(responseDokumentInfo.getVarianter().get(0).getFiltype(), FilTypeCode.PDF.name());
@@ -208,6 +209,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		storedDokumentInfo.setBrevkode(BREVKODE);
 		storedDokumentInfo.setTittel(TITTEL);
 		storedDokumentInfo.setKassert(true);
+		storedDokumentInfo.setSensitivt(true);
 
 		journalpostTestRepository.persist(journalpost);
 		utsendingsInfoTestRepository.persist(new UtsendingsInfo(journalpost, createNavNoVarsling(), createEpostVarsel(), createSmsVarsler()));
