@@ -61,6 +61,7 @@ public final class SqlProjections {
 					d.innskr_partsinnsyn            AS dokumenter_innskrpartsinnsyn,
 					d.innskr_partsinnsyn_tredjepart AS dokumenter_innskrtredjepart,
 					d.organ_internt                 AS dokumenter_organinternt,
+					d.sensitivt                     AS dokumenter_sensitivt,
 					rel.k_skjerming_type            AS dokumenter_skjerming,
 					d.orig_journalpost_id           AS dokumenter_origjournalpostid,
 					fd.k_skjerming_type             AS dokumenter_varianter_skjerming,
@@ -70,22 +71,17 @@ public final class SqlProjections {
 					fd.k_fil_t                      AS dokumenter_varianter_filtype,
 					fd.fil_storrelse                AS dokumenter_varianter_filstorrelse,
 					tsi.skannet_innhold_id          AS dokumenter_logiske_vedleggid,
-					tsi.vedlegg_innhold             AS dokumenter_logiske_tittel""";
-
-
-	public static final String UTSENDINGSINFO_DATA = """
-			   			,
-						ut.adresselinje1                AS utsendingsInfo_fysiskpostadresse_adresselinje1,
-			ut.adresselinje2                AS utsendingsInfo_fysiskpostadresse_adresselinje2,
-			ut.adresselinje3                AS utsendingsInfo_fysiskpostadresse_adresselinje3,
-			ut.postnummer					AS utsendingsInfo_fysiskpostadresse_postnummer,
-			ut.poststed						AS utsendingsInfo_fysiskpostadresse_poststed,
-			ut.landkode						AS utsendingsInfo_fysiskpostadresse_landkode,
-			ut.digitalpostkasseadresse      AS utsendingsInfo_digitalpostadresse_digitalpostkasseadresse,
-			ut.digitalpostkasseleverandor   AS utsendingsInfo_digitalpostadresse_postkasseLeverandor,
-			ut.epostvarsel                  AS utsendingsInfo_epostVarsel,
-			ut.smsvarsel                    AS utsendingsInfo_smsVarsel,
-			ut.digital_kontaktinformasjon	AS utsendingsInfo_navnovarsling_varselsendttil,
-			ut.varslingstekst				AS utsendingsInfo_navnovarsling_varseltekst""";
-
+					tsi.vedlegg_innhold             AS dokumenter_logiske_tittel,
+					ut.adresselinje1                AS utsendingsInfo_fysiskpostadresse_adresselinje1,
+					ut.adresselinje2                AS utsendingsInfo_fysiskpostadresse_adresselinje2,
+					ut.adresselinje3                AS utsendingsInfo_fysiskpostadresse_adresselinje3,
+					ut.postnummer                   AS utsendingsInfo_fysiskpostadresse_postnummer,
+					ut.poststed                     AS utsendingsInfo_fysiskpostadresse_poststed,
+					ut.landkode                     AS utsendingsInfo_fysiskpostadresse_landkode,
+					ut.digitalpostkasseadresse      AS utsendingsInfo_digitalpostadresse_digitalpostkasseadresse,
+					ut.digitalpostkasseleverandor   AS utsendingsInfo_digitalpostadresse_postkasseLeverandor,
+					ut.epostvarsel                  AS utsendingsInfo_epostVarsel,
+					ut.smsvarsel                    AS utsendingsInfo_smsVarsel,
+					ut.digital_kontaktinformasjon   AS utsendingsInfo_navnovarsling_varselsendttil,
+					ut.varslingstekst               AS utsendingsInfo_navnovarsling_varseltekst""";
 }

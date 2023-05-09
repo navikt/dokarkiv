@@ -296,6 +296,7 @@ public class TestDataGenerator {
 		dokumentInfo.setInnskrenketPartsinnsyn(true);
 		dokumentInfo.setInnskrenketPartsinnsynFraTredjepart(true);
 		dokumentInfo.setKassert(false);
+		dokumentInfo.setSensitivt(true);
 		return dokumentInfo;
 	}
 

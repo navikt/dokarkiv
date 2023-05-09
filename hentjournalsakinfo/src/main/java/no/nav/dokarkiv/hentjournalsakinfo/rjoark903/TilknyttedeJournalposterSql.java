@@ -1,11 +1,7 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark903;
 
 import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
-import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.UTSENDINGSINFO_DATA;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 final class TilknyttedeJournalposterSql {
 	private TilknyttedeJournalposterSql() {
 		// ingen instansiering
@@ -18,7 +14,7 @@ final class TilknyttedeJournalposterSql {
 					"  WHERE dokument_info_id = :dokumentInfoId\n" +
 					"),\n" +
 					"     saf_visning_tilgang AS (\n" +
-					"       SELECT " + RELEVANTE_DATA + UTSENDINGSINFO_DATA +
+					"       SELECT " + RELEVANTE_DATA +
 					"       FROM t_journalpost j\n" +
 					"              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
 					"              LEFT JOIN t_utsendings_info ut ON ut.journalpost_id = j.journalpost_id\n" +

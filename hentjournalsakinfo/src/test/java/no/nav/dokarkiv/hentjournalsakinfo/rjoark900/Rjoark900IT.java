@@ -128,6 +128,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertThat(dokumentInfoDto.getOrganInternt(), is(true));
 		assertThat(dokumentInfoDto.getInnskrPartsinnsyn(), is(true));
 		assertThat(dokumentInfoDto.getInnskrTredjepart(), is(true));
+		assertThat(dokumentInfoDto.getSensitivt(), is(true));
 	}
 
 	@Test
