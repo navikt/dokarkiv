@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
-import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.UTSENDINGSINFO_DATA;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
@@ -63,7 +62,7 @@ public class FinnJournalpostSqlGeneratorTest {
 						"                        AND tj.k_journal_s IN ('M', 'MO', 'D')\n" +
 						"                        AND (s.feilregistrert IS NULL OR (s.feilregistrert IN (:visFeilregistrert)))\n" +
 						"     ),\n" +
-						"     relevantedata AS (SELECT " + RELEVANTE_DATA + UTSENDINGSINFO_DATA +
+						"     relevantedata AS (SELECT " + RELEVANTE_DATA +
 						"                       FROM t_journalpost j\n" +
 						"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
 						"               			   LEFT JOIN t_utsendings_info ut ON ut.journalpost_id = j.journalpost_id\n" +

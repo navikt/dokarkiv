@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.RELEVANTE_DATA;
-import static no.nav.dokarkiv.hentjournalsakinfo.common.SqlProjections.UTSENDINGSINFO_DATA;
 
 final class FinnJournalpostSqlGenerator {
 	private FinnJournalpostSqlGenerator() {
@@ -40,7 +39,7 @@ final class FinnJournalpostSqlGenerator {
 				"                        AND tj.k_journal_s IN ('M', 'MO', 'D')\n" +
 				"                        AND " + feilregistrertSelectionSql(journalpostFilter.isKunFeilregistrerte()) + "\n" +
 				"     ),\n" +
-				"     relevantedata AS (SELECT " + RELEVANTE_DATA + UTSENDINGSINFO_DATA +
+				"     relevantedata AS (SELECT " + RELEVANTE_DATA +
 				"                       FROM t_journalpost j\n" +
 				"                              LEFT JOIN t_saksrelasjon s ON s.journalpost_id = j.journalpost_id\n" +
 				"               			   LEFT JOIN t_utsendings_info ut ON ut.journalpost_id = j.journalpost_id\n" +
