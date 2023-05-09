@@ -38,7 +38,7 @@ public class FjernVedleggTilknyttetJournalpost {
 		fjernVedleggTilknyttetJournalpostValidator.validateInput(journalpostId, request.getDokumentId());
 		Long dokumentInfoId = Long.valueOf(request.getDokumentId());
 		Journalpost journalpost = journalpostRepositorySkjermet.findById(Long.valueOf(journalpostId))
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Fant ikke journalpost med journalpostId=%s", journalpostId)));
+				.orElseThrow(() -> new JournalpostIkkeFunnetException("Fant ikke journalpost"));
 		fjernVedleggTilknyttetJournalpostValidator.validateJournalPostStatusOgType(journalpost);
 		DokumentInfo dokumentInfo = hentDokumentInfo(dokumentInfoId, journalpostId);
 		fjernVedleggTilknyttetJournalpostValidator.validateDokumentInfoOriginalJpNotEqualsInputJournalpost(dokumentInfo, journalpost.getJournalpostId());

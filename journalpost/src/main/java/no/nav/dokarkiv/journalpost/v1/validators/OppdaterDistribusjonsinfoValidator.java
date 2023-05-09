@@ -46,8 +46,7 @@ public class OppdaterDistribusjonsinfoValidator {
 				UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
 			} catch (IllegalArgumentException e) {
 				throw new KanIkkeOppdatereDistribusjonsinfoException(
-						String.format("Mottatt verdi for feltet utsendingsKanal=%s er ugyldig. Gyldige verdier er: %s",
-								journalpostId,
+						String.format("Mottatt verdi for feltet utsendingskanal=%s er ugyldig. Gyldige verdier er: %s",
 								request.getUtsendingsKanal(),
 								Arrays.toString(UtsendingsKanalCode.values())));
 			}
@@ -114,11 +113,10 @@ public class OppdaterDistribusjonsinfoValidator {
 							ALLOWED_STATES_FOR_DISTRIBUTION));
 		}
 		if (journalpost.isFeilregistrert()) {
-			throw new KanIkkeOppdatereDistribusjonsinfoException(String.format("Journalposten mangler eller har feilregistrert saksrelasjon"));
+			throw new KanIkkeOppdatereDistribusjonsinfoException("Journalposten mangler saksrelasjon eller har feilregistrert saksrelasjon");
 		}
 		if (journalpost.getUtsendingskanal() == null && request.getUtsendingsKanal() == null) {
-			throw new KanIkkeOppdatereDistribusjonsinfoException(
-					String.format("Utsendingskanal er ikke satt, hverken på input eller på selve journalposten"));
+			throw new KanIkkeOppdatereDistribusjonsinfoException("Utsendingskanal er ikke satt, hverken på input eller på selve journalposten");
 		}
 	}
 }

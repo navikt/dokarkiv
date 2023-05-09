@@ -27,7 +27,7 @@ public class FjernVedleggTilknyttetJournalpostValidator {
 		if (!U.equals(utgaaendeJournalpost.getJournalposttype()) &&
 				!D.equals(utgaaendeJournalpost.getJournalstatus())) {
 			throw new KanIkkeSlettetVedleggKnyttetTilJournalpostException(format(
-					"Kan ikke slette vedlegg fra journalpost. Journalposten må være utgående (journalstatusType=U) og under arbeid (journalStatus=D). Den har journalposttype=%s og journalstatus=%s.",
+					"Kan ikke slette vedlegg fra journalpost. Journalposten må være utgående (journalposttype=U) og under arbeid (journalstatus=D). Den har journalposttype=%s og journalstatus=%s.",
 					utgaaendeJournalpost.getJournalpostId(),
 					utgaaendeJournalpost.getJournalposttype(),
 					utgaaendeJournalpost.getJournalstatus()));

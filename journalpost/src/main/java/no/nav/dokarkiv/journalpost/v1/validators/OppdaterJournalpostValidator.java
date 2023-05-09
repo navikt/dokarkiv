@@ -9,11 +9,13 @@ import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
@@ -39,215 +41,258 @@ public final class OppdaterJournalpostValidator {
 	private static final int AKTOERID_LENGTH = 13;
 	private static final int ORGNR_LENGTH = 9;
 
-	private static final List<JournalStatusCode> INNGAAENDE_RESTRICTED_JOURNALSTATUS = Collections.singletonList(J);
-	private static final List<JournalStatusCode> UTGAAENDE_RESTRICTED_JOURNALSTATUS = Arrays.asList(FS, FL, E);
-	private static final List<JournalStatusCode> NOTAT_RESTRICTED_JOURNALSTATUS = Arrays.asList(FS, FL, E);
+	private static final EnumSet<JournalStatusCode> INNGAAENDE_RESTRICTED_JOURNALSTATUS = EnumSet.of(J);
+	private static final EnumSet<JournalStatusCode> UTGAAENDE_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
+	private static final EnumSet<JournalStatusCode> NOTAT_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
 
 
 	private OppdaterJournalpostValidator() {
 	}
 
 	public static void validateOppdaterteFelt(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
+		List<String> feilmeldinger = new ArrayList<>();
+
 		if (I.equals(journalpostType)) {
-			validateInngaaende(request, journalpostStatus, journalpostType);
+			feilmeldinger.addAll(validateInngaaende(request, journalpostStatus, journalpostType));
 		} else if (U.equals(journalpostType)) {
-			validateUtgaaende(request, journalpostStatus, journalpostType);
+			feilmeldinger.addAll(validateUtgaaende(request, journalpostStatus, journalpostType));
 		} else if (N.equals(journalpostType)) {
-			validateNotat(request, journalpostStatus, journalpostType);
+			feilmeldinger.addAll(validateNotat(request, journalpostStatus, journalpostType));
 		}
 		if (isNotBlank(request.getBehandlingstema())) {
-			validateBehandlingstema(request.getBehandlingstema());
+			feilmeldinger.add(validateBehandlingstema(request.getBehandlingstema()));
 		}
 		if (request.getDatoDokument() != null) {
-			validateDatoKanIkkeVaereIFremtid(request.getDatoDokument(), "datoDokument");
+			feilmeldinger.add(validateDatoKanIkkeVaereIFremtid(request.getDatoDokument(), "datoDokument"));
+		}
+
+		String feilmelding = feilmeldinger.stream()
+				.filter(Objects::nonNull)
+				.collect(Collectors.joining(", "));
+
+		if (isNotEmpty(feilmelding)) {
+			throw new InputValideringFeiletException(feilmelding);
 		}
 	}
 
-	private static void validateInngaaende(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
-		checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType);
+	private static List<String> validateInngaaende(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
+		List<String> feilmeldinger = new ArrayList<>();
+
+		feilmeldinger.add(checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType));
+
 		if (INNGAAENDE_RESTRICTED_JOURNALSTATUS.contains(journalpostStatus)) {
-			checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType);
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType));
 			if (request.getAvsenderMottaker() != null) {
-				validateAvsenderMottakerInngaaende(request.getAvsenderMottaker());
+				feilmeldinger.add(validateAvsenderMottakerInngaaende(request.getAvsenderMottaker()));
 			}
 		} else if (request.getSak() != null) {
-			validateSak(request.getSak(), request.getBruker(), request.getTema());
+			feilmeldinger.addAll(validateSak(request.getSak(), request.getBruker(), request.getTema()));
 		}
+
+		return feilmeldinger;
 	}
 
-	private static void validateUtgaaende(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
+	private static List<String> validateUtgaaende(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
+		List<String> feilmeldinger = new ArrayList<>();
+
 		if (UTGAAENDE_RESTRICTED_JOURNALSTATUS.contains(journalpostStatus)) {
-			checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getTittel(), "Tittel", journalpostStatus, journalpostType);
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTittel(), "Tittel", journalpostStatus, journalpostType));
 			if (request.getAvsenderMottaker() != null) {
-				validateAvsenderMottaker(request.getAvsenderMottaker(), journalpostStatus, journalpostType);
+				feilmeldinger.addAll(validateAvsenderMottaker(request.getAvsenderMottaker(), journalpostStatus, journalpostType));
 			}
 		} else {
 			if (request.getSak() != null) {
-				validateSak(request.getSak(), request.getBruker(), request.getTema());
+				feilmeldinger.addAll(validateSak(request.getSak(), request.getBruker(), request.getTema()));
 			}
-			checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType);
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType));
 		}
+
+		return feilmeldinger;
 	}
 
-	private static void validateNotat(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
-		checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType);
+	private static List<String> validateNotat(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
+		List<String> feilmeldinger = new ArrayList<>();
+
+		feilmeldinger.add(checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType));
+
 		if (request.getAvsenderMottaker() != null) {
-			validateAvsenderMottaker(request.getAvsenderMottaker(), journalpostStatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getLand(), "AvsendeMottakerLand", journalpostStatus, journalpostType);
+			feilmeldinger.addAll(validateAvsenderMottaker(request.getAvsenderMottaker(), journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getLand(), "AvsendeMottakerLand", journalpostStatus, journalpostType));
 		}
+
 		if (NOTAT_RESTRICTED_JOURNALSTATUS.contains(journalpostStatus)) {
-			checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType);
-			checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType);
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType));
 		} else if (request.getSak() != null) {
-			validateSak(request.getSak(), request.getBruker(), request.getTema());
+			feilmeldinger.addAll(validateSak(request.getSak(), request.getBruker(), request.getTema()));
 		}
+
+		return feilmeldinger;
 	}
 
-	private static void validateAvsenderMottakerInngaaende(AvsenderMottaker avsenderMottaker) {
+	private static String validateAvsenderMottakerInngaaende(AvsenderMottaker avsenderMottaker) {
 		if (isEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() != null) {
-			throw new InputValideringFeiletException("Oppdatering av avsenderMottaker.idType for journalpost med journalpostStatus=INNGAAENDE krever at feltet avsenderMottaker.id er satt");
+			return format("Oppdatering av avsenderMottaker.idType for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.id er satt. Mottatt id=%s idType=%s",
+					avsenderMottaker.getId(),
+					avsenderMottaker.getIdType());
 		} else if (isNotEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() == null) {
-			throw new InputValideringFeiletException("Oppdatering av avsenderMottaker.id for journalpost med journalpostStatus=INNGAAENDE krever at feltet avsenderMottaker.idType er satt");
+			return format("Oppdatering av avsenderMottaker.id for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.idType er satt. Mottatt id=%s idType=null",
+					masker(avsenderMottaker.getId()));
 		}
+		return null;
 	}
 
-	private static void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
-		checkIfIllegalFieldIsSet(avsenderMottaker.getId(), "AvsendeMottakerId", journalpoststatus, journalpostType);
-		checkIfIllegalFieldIsSet(avsenderMottaker.getIdType(), "AvsendeMottakerIdType", journalpoststatus, journalpostType);
-		checkIfIllegalFieldIsSet(avsenderMottaker.getNavn(), "AvsendeMottakerNavn", journalpoststatus, journalpostType);
+	private static List<String> validateAvsenderMottaker(AvsenderMottaker avsenderMottaker, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
+		List<String> feilmeldinger = new ArrayList<>();
+		feilmeldinger.add(checkIfIllegalFieldIsSet(avsenderMottaker.getId(), "AvsendeMottakerId", journalpoststatus, journalpostType));
+		feilmeldinger.add(checkIfIllegalFieldIsSet(avsenderMottaker.getIdType(), "AvsendeMottakerIdType", journalpoststatus, journalpostType));
+		feilmeldinger.add(checkIfIllegalFieldIsSet(avsenderMottaker.getNavn(), "AvsendeMottakerNavn", journalpoststatus, journalpostType));
+		return feilmeldinger;
 	}
 
-	private static void checkIfIllegalFieldIsSet(Object field, String fieldName, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
+	private static String checkIfIllegalFieldIsSet(Object field, String fieldName, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
 		if (field != null) {
-			throw new InputValideringFeiletException(String.format("%s kan ikke oppdateres for journalpost med journalpostStatus=%s og journalpostType=%s.",
+			return format("%s kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=%s",
 					fieldName,
 					journalpoststatus.name(),
-					journalpostType.name()));
+					journalpostType.name());
 		}
+		return null;
 	}
 
-	private static void validateSak(Sak sak, Bruker bruker, String tema) {
+	private static List<String> validateSak(Sak sak, Bruker bruker, String tema) {
+		List<String> feilmeldinger = new ArrayList<>();
+
 		if (FAGSAK.equals(sak.getSakstype())) {
-			validateFagsak(sak, bruker, tema);
+			feilmeldinger.addAll(validateFagsak(sak, bruker, tema));
+		} else if (GENERELL_SAK.equals(sak.getSakstype())) {
+			feilmeldinger.addAll(validateGenerellSak(sak, bruker, tema));
+		} else if (ARKIVSAK.equals(sak.getSakstype()) || sak.getSakstype() == null) {
+			feilmeldinger.addAll(validateArkivsak(sak));
 		}
 
-		if (GENERELL_SAK.equals(sak.getSakstype())) {
-			validateGenerellSak(sak, bruker, tema);
-		}
-
-		if (ARKIVSAK.equals(sak.getSakstype()) || sak.getSakstype() == null) {
-			validateArkivsak(sak);
-		}
+		return feilmeldinger;
 	}
 
-	private static void validateFagsak(Sak sak, Bruker bruker, String tema) {
+	private static List<String> validateFagsak(Sak sak, Bruker bruker, String tema) {
+		List<String> feilmeldinger = new ArrayList<>();
+
 		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("Tema må være satt dersom sakstype=FAGSAK");
+			feilmeldinger.add("Tema må være satt dersom sakstype=FAGSAK");
 		}
-		if (isBrukerNull(bruker)) {
-			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=FAGSAK");
-		}
-		validateBruker(bruker);
+
+		feilmeldinger.add(validateBruker(bruker, "FAKSAK"));
 
 		if (isBlank(sak.getFagsakId())) {
-			throw new InputValideringFeiletException("Sak.fagsakId må være satt dersom sakstype=FAGSAK");
+			feilmeldinger.add("Sak.fagsakId må være satt dersom sakstype=FAGSAK");
 		}
 		if (sak.getFagsaksystem() == null) {
-			throw new InputValideringFeiletException("Sak.fagsaksystem må være satt dersom sakstype=FAGSAK");
+			feilmeldinger.add("Sak.fagsaksystem må være satt dersom sakstype=FAGSAK");
 		}
 		if (isNotBlank(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer kan ikke være satt dersom sakstype=FAGSAK");
+			feilmeldinger.add("Sak.arkivsaksnummer kan ikke være satt dersom sakstype=FAGSAK");
 		}
 		if (sak.getArkivsaksystem() != null) {
-			throw new InputValideringFeiletException("Sak.arkivsaksystem kan ikke være satt dersom sakstype=FAGSAK");
+			feilmeldinger.add("Sak.arkivsaksystem kan ikke være satt dersom sakstype=FAGSAK");
 		}
 		if (FAGSAK == sak.getSakstype() && PP01 == sak.getFagsaksystem()) {
 			if (!isNumeric(sak.getFagsakId())) {
-				throw new InputValideringFeiletException("Sak.fagsakId må være et heltall for saker opprettet i PSAK");
+				feilmeldinger.add("Sak.fagsakId må være et heltall for saker opprettet i PSAK");
 			}
 		}
+		return feilmeldinger;
 	}
 
-	private static void validateGenerellSak(Sak sak, Bruker bruker, String tema) {
+	private static List<String> validateGenerellSak(Sak sak, Bruker bruker, String tema) {
+		List<String> feilmeldinger = new ArrayList<>();
+
 		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("Tema må være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("Tema må være satt dersom sakstype=GENERELL_SAK");
 		}
-		if (isBrukerNull(bruker)) {
-			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=GENERELL_SAK");
-		}
-		validateBruker(bruker);
+
+		feilmeldinger.add(validateBruker(bruker, "GENERELL_SAK"));
 
 		if (isNotBlank(sak.getFagsakId())) {
-			throw new InputValideringFeiletException("Sak.fagsakId kan ikke være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("Sak.fagsakId kan ikke være satt dersom sakstype=GENERELL_SAK");
 		}
 		if (sak.getFagsaksystem() != null) {
-			throw new InputValideringFeiletException("Sak.fagsaksystem kan ikke være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("Sak.fagsaksystem kan ikke være satt dersom sakstype=GENERELL_SAK");
 		}
 		if (isNotBlank(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer kan ikke være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("Sak.arkivsaksnummer kan ikke være satt dersom sakstype=GENERELL_SAK");
 		}
 		if (sak.getArkivsaksystem() != null) {
-			throw new InputValideringFeiletException("Sak.arkivsaksystem kan ikke være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("Sak.arkivsaksystem kan ikke være satt dersom sakstype=GENERELL_SAK");
 		}
+		return feilmeldinger;
 	}
 
-	private static void validateArkivsak(Sak sak) {
+	private static List<String> validateArkivsak(Sak sak) {
+		List<String> feilmeldinger = new ArrayList<>();
+
 		if (isNotBlank(sak.getFagsakId())) {
-			throw new InputValideringFeiletException("Sak.fagsakId kan ikke være satt dersom sakstype=ARKIVSAK");
+			feilmeldinger.add("Sak.fagsakId kan ikke være satt dersom sakstype=ARKIVSAK");
 		}
 		if (sak.getFagsaksystem() != null) {
-			throw new InputValideringFeiletException("Sak.fagsaksystem kan ikke være satt dersom sakstype=ARKIVSAK");
+			feilmeldinger.add("Sak.fagsaksystem kan ikke være satt dersom sakstype=ARKIVSAK");
 		}
 		if (isBlank(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer må være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("Sak.arkivsaksnummer må være satt dersom sakstype=GENERELL_SAK");
 		}
 		if (sak.getArkivsaksystem() == null) {
-			throw new InputValideringFeiletException("Sak.arkivsaksystem må være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("Sak.arkivsaksystem må være satt dersom sakstype=GENERELL_SAK");
 		}
 		if (!isNumeric(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer må være et heltall, og saken må være opprettet i GSAK/PSAK");
+			feilmeldinger.add("Sak.arkivsaksnummer må være et heltall, og saken må være opprettet i GSAK/PSAK");
 		}
+		return feilmeldinger;
 	}
 
-	private static boolean isBrukerNull(Bruker bruker) {
-		return isBlank(bruker.getId()) || Objects.isNull(bruker.getIdType());
-	}
-
-	private static void validateBehandlingstema(String behandlingstema) {
+	private static String validateBehandlingstema(String behandlingstema) {
 		if (behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")) {
-			throw new InputValideringFeiletException(String.format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema));
+			return format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema);
 		}
+		return null;
 	}
 
-	private static void validateBruker(Bruker bruker) {
-		if (isBlank(bruker.getId())) {
-			throw new InputValideringFeiletException("Bruker.id må være satt.");
-		}
-		if (!isNumeric(bruker.getId())) {
-			throw new InputValideringFeiletException(String.format("Bruker.id kan kun bestå av tall. Mottatt id=%s", bruker.getId()));
-		}
-		if (FNR.equals(bruker.getIdType()) && bruker.getId().length() != FNR_LENGTH) {
-			throw new InputValideringFeiletException(String.format("Bruker.id må være 11 siffer for Bruker.idType=FNR. Mottatt id=%s", bruker.getId()));
+	private static String validateBruker(Bruker bruker, String sakstype) {
+		if (bruker == null) {
+			return format("Bruker må være satt dersom sakstype=%s", sakstype);
+		} else if (isBlank(bruker.getId()) || bruker.getIdType() == null) {
+			return format("Bruker.id og Bruker.idType må være satt dersom sakstype=%s. Mottatt id=%s idType=%s", sakstype, masker(bruker.getId()), bruker.getIdType());
+		} else if (!isNumeric(bruker.getId())) {
+			return format("Bruker.id kan kun bestå av tall. Mottatt id=%s", bruker.getId());
+		} else if (FNR.equals(bruker.getIdType()) && bruker.getId().length() != FNR_LENGTH) {
+			return format("Bruker.id må være 11 siffer for Bruker.idType=FNR. Mottatt id=%s har lengde=%s", masker(bruker.getId()), bruker.getId().length());
 		} else if (ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != ORGNR_LENGTH) {
-			throw new InputValideringFeiletException(String.format("Bruker.id må være 9 siffer for Bruker.idType=ORGNR. Mottatt id=%s", bruker.getId()));
+			return format("Bruker.id må være 9 siffer for Bruker.idType=ORGNR. Mottatt id=%s har lengde=%s", masker(bruker.getId()), bruker.getId().length());
 		} else if (AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
-			throw new InputValideringFeiletException(String.format("Bruker.id må være 11 siffer for Bruker.idType=AKTOERID. Mottatt id=%s", bruker.getId()));
+			return format("Bruker.id må være 11 siffer for Bruker.idType=AKTOERID. Mottatt id=%s har lengde=%s", masker(bruker.getId()), bruker.getId().length());
 		}
+		return null;
 	}
 
-	private static void validateDatoKanIkkeVaereIFremtid(LocalDateTime dato, String feltNavn) {
+	private static String validateDatoKanIkkeVaereIFremtid(LocalDateTime dato, String feltNavn) {
 		LocalDateTime naaTid = LocalDateTime.now().plusSeconds(3);
 		if (naaTid.isBefore(dato)) {
-			throw new InputValideringFeiletException(String.format("%s er ugyldig verdi for %s. Feltet kan ikke settes frem i tid. Nåtid er %s", dato, feltNavn, naaTid));
+			return format("%s er ugyldig verdi for %s. Feltet kan ikke settes frem i tid. Nåtid er %s", dato, feltNavn, naaTid);
 		}
+		return null;
+	}
+
+	private static String masker(String s) {
+		if (s == null) {
+			return null;
+		}
+		return s.substring(0, s.length() / 2) + "*".repeat(s.length() / 2);
 	}
 }

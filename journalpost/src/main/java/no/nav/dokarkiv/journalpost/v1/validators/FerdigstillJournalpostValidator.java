@@ -98,7 +98,7 @@ public class FerdigstillJournalpostValidator {
 		try {
 			jp.verifyOnlyOneHoveddokument();
 		} catch (InvalidJournalpostStructureException e) {
-			throw new KanIkkeFerdigstilleException("Journalposten inneholder null eller flere enn ett hoveddokument");
+			throw new KanIkkeFerdigstilleException("Journalposten inneholder ingen eller flere enn ett hoveddokument");
 		}
 	}
 
@@ -112,7 +112,7 @@ public class FerdigstillJournalpostValidator {
 			try {
 				dr.getDokumentInfo().verifyNoVariantDuplicates();
 			} catch (InvalidJournalpostStructureException e) {
-				throw new KanIkkeFerdigstilleException("Journalposten inneholder flere fildetaljer med samme variantformat");
+				throw new KanIkkeFerdigstilleException("Journalposten inneholder flere dokumentvarianter med samme variantformat. Følgende duplikate varianter ble funnet: " + e.getMessage());
 			}
 		});
 	}
@@ -120,7 +120,6 @@ public class FerdigstillJournalpostValidator {
 	private void verifyAtLeastOneBrukerExists(Journalpost jp) {
 		if (jp.getBrukere().isEmpty()) {
 			throw new KanIkkeFerdigstilleException("Journalposten er ikke knyttet til en bruker");
-
 		}
 	}
 

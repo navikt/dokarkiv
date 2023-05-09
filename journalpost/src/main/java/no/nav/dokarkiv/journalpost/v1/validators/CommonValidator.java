@@ -14,7 +14,7 @@ public final class CommonValidator {
 	public static void validateId(String id, String feltnavn) {
 		try {
 			hasText(id, feltnavn);
-			convertStringToLong(id, feltnavn);
+			isNumeric(id, feltnavn);
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException(format("%s. %s=%s", e.getMessage(), feltnavn, id));
 		}
@@ -41,16 +41,6 @@ public final class CommonValidator {
             throw new IllegalArgumentException(format("Feltet %s kan ikke være null eller tomt", feltnavn));
         }
     }
-
-	private static void convertStringToLong(String input, String feltnavn) {
-		try {
-			Long.parseLong(input);
-		} catch (Exception e) {
-			throw new IllegalArgumentException(format("Feltet %s er ikke et tall. Det kan kun innholde siffer og '-'. Mottatt verdi=%s",
-					feltnavn,
-					input));
-		}
-	}
 
 	private static void hasLength(String input, String feltnavn, int length) {
 		if (input.length() != length) {

@@ -49,7 +49,6 @@ public class OpprettJournalpostRequestValidator {
 	private static final int AKTOERID_LENGTH = 13;
 	private static final int ORGNR_LENGTH = 9;
 	public static final String MASKINELL_JOURNALFOERENDE_ENHET = "9999";
-	public static final String FALSE = "false";
 	public static final Set<String> LOVLIGE_INNSYNSKODER = Set.of(VISES_MASKINELT_GODKJENT.toString(), VISES_MANUELT_GODKJENT.toString());
 
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
@@ -188,15 +187,15 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateJournalpost(String journalpostFerdigstilt, String journalfoerendeEnhet) {
-		if (FALSE.equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet)) {
-			throw new InputValideringFeiletException(format("Ikke mulig å opprette journalpost på journalfoerendeEnhet=%s så lenge journalposten ikke er ferdigstilt",
+		if (Boolean.FALSE.toString().equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet)) {
+			throw new InputValideringFeiletException(format("Ikke mulig å opprette journalpost på journalfoerendeEnhet=%s (maskinell) så lenge journalposten ikke forsøkes å ferdigstilles",
 					MASKINELL_JOURNALFOERENDE_ENHET));
 		}
 	}
 
 	private void validateBehandlingstema(String behandlingstema) {
 		if (behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")) {
-			throw new InputValideringFeiletException(String.format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema));
+			throw new InputValideringFeiletException(format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema));
 		}
 	}
 
@@ -365,7 +364,7 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateOverstyrInnsynsregler(String overstyrInnsynsregler) {
 		if (!LOVLIGE_INNSYNSKODER.contains(overstyrInnsynsregler)) {
-			throw new InputValideringFeiletException(String.format("Sak.overstyrInnsynsregler må være en av følgende verdier %s. Mottatt: %s",
+			throw new InputValideringFeiletException(format("Sak.overstyrInnsynsregler må være en av følgende verdier %s. Mottatt: %s",
 					LOVLIGE_INNSYNSKODER,
 					overstyrInnsynsregler));
 		}

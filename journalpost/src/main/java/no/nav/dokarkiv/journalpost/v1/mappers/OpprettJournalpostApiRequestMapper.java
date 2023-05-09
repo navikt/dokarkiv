@@ -267,7 +267,7 @@ public class OpprettJournalpostApiRequestMapper {
 		} else {
 			throw new InputValideringFeiletException(format(
 					"""
-					Kan ikke legge saksrelasjon til journalpost. For fagsaker og generalle saker må en av følgende regler være oppfylt:
+					Kan ikke legge saksrelasjon til journalpost. For fagsaker og generelle saker må en av følgende regler være oppfylt:
 					1) sakstype er FAGSAK og fagsaksystem er PP01
 					2) sakstype er FAGSAK eller GENERELL_SAK, og fagsaksystem er ikke PP01
 					Mottatt: sakstype=%s, fagsaksystem=%s
