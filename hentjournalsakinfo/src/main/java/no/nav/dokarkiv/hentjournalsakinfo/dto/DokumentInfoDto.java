@@ -30,4 +30,5 @@ public class DokumentInfoDto {
 	Boolean organInternt;
 	Boolean innskrPartsinnsyn;
 	Boolean innskrTredjepart;
+	Boolean sensitivt;
 }

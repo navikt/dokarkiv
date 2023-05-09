@@ -13,6 +13,7 @@ public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 	/** Pensjon */
 	PEN,
 	/** Okonomi */
+	@Deprecated
 	OKO,
 	/** Bil */
 	BIL,
@@ -56,7 +57,7 @@ public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 	VEN,
 	/** Yrkesrettet attføring */
 	YRA,
-	/** Rehabilitering */
+	/** Rehabiliteringspenger */
 	REH,
 	/** Uføreytelser */
 	UFO,
@@ -75,10 +76,12 @@ public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 	/** Helsetjenester og ort. Hjelpemidler */
 	HEL,
 	/** Condictio indebiti */
+	@Deprecated
 	CON,
 	/** Medlemskap */
 	MED,
 	/** Ukjent */
+	@Deprecated
 	UKJ,
 	/** Tiltak */
 	TIL,
@@ -99,6 +102,7 @@ public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 	/** Trygdeavgift */
 	TRY,
 	/** Sanksjon - Arbeidsgiver */
+	@Deprecated
 	SAA,
 	/** Sanksjon - Person */
 	SAP,
@@ -107,6 +111,7 @@ public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 	/** Serviceklager */
 	SER,
 	/** Sikkerhetstiltak */
+	@Deprecated
 	SIK,
 	/** Unntak fra medlemskap */
 	UFM,
@@ -126,15 +131,15 @@ public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 	EYB,
 	/** Omstillingsstønad */
 	EYO,
-	/** Kontroll anmeldelse */
+	/** Kontroll – anmeldelse */
 	KTA,
 	/** Fiskerpensjon */
 	FIP,
-	/** Arbeidsrådgivning skjermet */
+	/** Arbeidsrådgivning – skjermet */
 	ARS,
-	/** Arbeidsrådgivning psykologtester */
+	/** Arbeidsrådgivning – psykologtester */
 	ARP,
-	/** Klage lønnsgaranti */
+	/** Klage – lønnsgaranti */
 	KLL;
 
 	/** {@inheritDoc} */
