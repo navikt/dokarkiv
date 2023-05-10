@@ -480,18 +480,19 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I));
 	}
 
-	@Test
-	public void shouldThrowExceptionWhenInvalidBehandlingstema() {
+	@ParameterizedTest
+	@ValueSource(strings = {"bb3333", "abc123", "ab12345", "ab123", "1234ab", "1ab1234", "bab1234"})
+	public void shouldThrowExceptionWhenInvalidBehandlingstema(String behandlingstema) {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_FOR)
-				.behandlingstema("bb3333")
+				.behandlingstema(behandlingstema)
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(GENERELL_SAK).build())
 				.build();
 
 		assertThrows(InputValideringFeiletException.class,
 				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I),
-				"Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=bb3333");
+				String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=%s", behandlingstema));
 	}
 
 	@ParameterizedTest

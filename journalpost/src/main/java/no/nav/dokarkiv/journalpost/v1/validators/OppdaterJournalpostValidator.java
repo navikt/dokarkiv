@@ -221,7 +221,7 @@ public final class OppdaterJournalpostValidator {
 	}
 
 	private static void validateBehandlingstema(String behandlingstema) {
-		if (behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")) {
+		if (!behandlingstema.matches("ab\\d{4}"))  {
 			throw new InputValideringFeiletException(String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=%s", behandlingstema));
 		}
 	}
