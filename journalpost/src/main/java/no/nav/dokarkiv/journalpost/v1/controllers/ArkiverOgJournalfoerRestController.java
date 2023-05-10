@@ -43,6 +43,7 @@ import no.nav.security.token.support.core.api.Protected;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -105,7 +106,7 @@ public class ArkiverOgJournalfoerRestController {
 
 	@Transactional
 	@SwaggerFerdigstillJournalpost
-	@PatchMapping("/{journalpostId}/ferdigstill")
+	@PatchMapping(value = "/{journalpostId}/ferdigstill")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> ferdigstillJournalpost(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
@@ -120,7 +121,10 @@ public class ArkiverOgJournalfoerRestController {
 			ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request);
 			log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
 
-			return ResponseEntity.ok().body("Journalpost ferdigstilt");
+			return ResponseEntity.ok()
+					.contentType(MediaType.APPLICATION_JSON)
+					.body("\"Journalpost ferdigstilt\"");
+
 		} catch (KanIkkeFerdigstilleException | JournalpostIkkeMidlertidigException | DokumentUnderRedigeringException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
 					format("Kunne ikke ferdigstille journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
@@ -146,7 +150,10 @@ public class ArkiverOgJournalfoerRestController {
 
 			log.info(MDC.get(MDC_REQUEST_ID) + " har oppdatert distribusjonsinfo på journalpost med journalpostId={}", journalpostId);
 
-			return ResponseEntity.ok().body("Journalpost oppdatert");
+			return ResponseEntity.ok()
+					.contentType(MediaType.APPLICATION_JSON)
+					.body("\"Journalpost oppdatert\"");
+
 		} catch (InputValideringFeiletException | KanIkkeOppdatereDistribusjonsinfoException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
 					format("Kunne ikke oppdatere distribusjonsinfo for journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
@@ -281,7 +288,10 @@ public class ArkiverOgJournalfoerRestController {
 			log.info("Fjerne vedlegg med dokumentinfoId={} som er knyttet til journalpost med journalpostId={}", request.getDokumentId(), journalpostId);
 			fjernVedleggTilknyttJournalpost.fjernVedleggTilknyttetJournalpost(journalpostId, request);
 			log.info("Vedlegg med dokumentinfoId={} som er knyttet til journalpost med journalpostId={} er fjernet", request.getDokumentId(), journalpostId);
-			return ResponseEntity.ok("Vedlegg som knyttet til journalposten fjernet");
+
+			return ResponseEntity.ok()
+					.contentType(MediaType.APPLICATION_JSON)
+					.body("\"Vedlegg som knyttet til journalposten fjernet\"");
 
 		} catch (InputValideringFeiletException | KanIkkeSlettetVedleggKnyttetTilJournalpostException e) {
 			String message = format("Kunne ikke fjerne vedlegg med dokumentinfoId=%s fra journalpost med journalpostId=%s. %s",
