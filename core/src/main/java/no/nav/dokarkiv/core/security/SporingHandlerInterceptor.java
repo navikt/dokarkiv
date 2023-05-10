@@ -93,11 +93,6 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 		}
 	}
 
-	@Override
-	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-		MDC.clear();
-	}
-
 	private boolean handleAuthorizedAccess(HttpServletResponse response,
 										   Object handler,
 										   String authorizationToken,
