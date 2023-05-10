@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -150,6 +151,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
 		TestTransaction.end();
 	}
+
 	@Test
 	public void happyPathUtgaaendeUtsendingsKanalL() {
 		abacPermit();
@@ -354,6 +356,34 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(response.getBody());
 		assertTrue(response.getBody().getMessage().contains("Journalpost.avsendMottaker"));
 		assertTrue(response.getBody().getMessage().contains("Journalpost.innhold"));
+	}
+
+	@Test
+	public void shouldFailIfFagomradeErInaktivt() {
+		abacPermit();
+
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
+		String inaktivtFagomrade = "OKO";
+		journalpost.setFagomrade(FagomradeCode.valueOf(inaktivtFagomrade));
+		journalpostTestRepository.persist(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long journalpostId = journalpost.getJournalpostId();
+		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
+				.journalfoerendeEnhet("9999")
+				.build();
+
+		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<RestConsumerExceptionResponse> response =
+				restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
+						requestEntity, RestConsumerExceptionResponse.class);
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertEquals(String.format("Tema=%s på journalposten er ikke gyldig for ferdigstilling. " +
+				"For å unngå dette i fremtiden bør du fjerne muligheten til å ferdigstille på ugyldige tema", inaktivtFagomrade), response.getBody().getMessage());
 	}
 
 	@Test

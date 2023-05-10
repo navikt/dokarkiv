@@ -10,7 +10,9 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
+import no.nav.dokarkiv.core.fagomrade.FagomradeService;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
@@ -42,10 +44,13 @@ public class FerdigstillJournalpostService {
 	private final JournalpostRepository journalpostRepository;
 	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
 	private final AksjonsLoggService aksjonsLoggService;
+	private final FagomradeService fagomradeService;
 
 	public FerdigstillJournalpostService(final JournalpostRepository journalpostRepository,
-										 final AksjonsLoggService aksjonsLoggService) {
+										 final AksjonsLoggService aksjonsLoggService,
+										 final FagomradeService fagomradeService) {
 		this.journalpostRepository = journalpostRepository;
+		this.fagomradeService = fagomradeService;
 		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
@@ -62,27 +67,40 @@ public class FerdigstillJournalpostService {
 		Journalpost journalpost = journalpostRepository.fetchById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
+		validerJournalpost(journalpost);
+
 		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
 		String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
 		String prevJournalfortAvNavn = journalpost.getJournalfortAvNavn();
-
-		validerJournalpost(journalpost);
 		setJournalpostStatus(journalpost);
-		this.oppdatertJournalpost(journalpost, ferdigstillJournalpostRequest);
+
+		oppdatertJournalpost(journalpost, ferdigstillJournalpostRequest);
 
 		populerAksjonslogg(journalpostId, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
+	}
+
+	private void validerFagomradeErAktivt(Journalpost journalpost) {
+		String fagomradekode = journalpost.getFagomrade().name();
+		boolean fagomradeErInaktivt = fagomradeService.erFagomradetInaktivt(fagomradekode);
+
+		if (fagomradeErInaktivt) {
+			throw new KanIkkeFerdigstilleException(String.format("Tema=%s på journalposten er ikke gyldig for ferdigstilling. " +
+					"For å unngå dette i fremtiden bør du fjerne muligheten til å ferdigstille på ugyldige tema", fagomradekode));
+		}
 	}
 
 	public void ferdigstill(Long journalpostId, String journalfoerendeEnhet) {
 		// Kaller findById i stedet for fetch siden Journalpost har vært managed i samme tråd. Da hentes den fra JPA first level cache.
 		Journalpost journalpost = journalpostRepository.findById(journalpostId).
 				orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+
+		validerJournalpost(journalpost);
+
 		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
 		String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
 		String prevJournalfortAvNavn = journalpost.getJournalfortAvNavn();
-
-		validerJournalpost(journalpost);
 		setJournalpostStatus(journalpost);
+
 		oppdatertJournalpost(journalpost, journalfoerendeEnhet);
 
 		populerAksjonslogg(journalpostId, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
@@ -110,6 +128,7 @@ public class FerdigstillJournalpostService {
 		ferdigstillJournalpostValidator.validateJournalpostTilstand(journalpost);
 		ferdigstillJournalpostValidator.validateJournalpostStruktur(journalpost);
 		ferdigstillJournalpostValidator.validatePaakrevdeFelter(journalpost);
+		validerFagomradeErAktivt(journalpost);
 	}
 
 	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.

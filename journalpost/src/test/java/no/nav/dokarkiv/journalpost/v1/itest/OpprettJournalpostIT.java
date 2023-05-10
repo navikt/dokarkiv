@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
@@ -26,7 +25,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import org.apache.commons.collections15.IteratorUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -110,11 +108,6 @@ import static org.springframework.http.HttpMethod.POST;
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	private final ObjectMapper mapper = new ObjectMapper();
-
-	@BeforeEach
-	public void setUp() {
-		WireMock.reset();
-	}
 
 	@Test
 	public void happyPathOpprettInngaaende() {

@@ -1,12 +1,9 @@
 package no.nav.dokarkiv.core.domain.codes;
 
-import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
-
 /**
  * Enum for codes in T_K_FAGOMRADE.
- *
  */
-public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
+public enum FagomradeCode {
 
 	/** Bidrag */
 	BID,
@@ -140,12 +137,5 @@ public enum FagomradeCode implements CtiRelationship<FagomradeCode, String> {
 	/** Arbeidsrådgivning – psykologtester */
 	ARP,
 	/** Klage – lønnsgaranti */
-	KLL;
-
-	/** {@inheritDoc} */
-	@Override
-	public Class<? extends CodesTablePeriodicItem<FagomradeCode, String>> getCtiClass() {
-		return FagomradeCti.class;
-	}
-
+	KLL
 }

@@ -46,14 +46,14 @@ public class FerdigstillJournalpostValidator {
 		verifyDokumenttilstand(journalpost);
 	}
 
-    public void validateJournalpostStruktur(Journalpost journalpost) {
+	public void validateJournalpostStruktur(Journalpost journalpost) {
 		verifyExactlyOneHoveddokument(journalpost);
 		verifyFildetaljerVariantFormat(journalpost);
 		verifyAtLeastOneBrukerExists(journalpost);
 		verifySaksrelasjonIsPresent(journalpost);
 	}
 
-    public void validatePaakrevdeFelter(Journalpost journalpost) {
+	public void validatePaakrevdeFelter(Journalpost journalpost) {
 		List<String> manglendePaakrevdeFelter = new ArrayList<>();
 		verifyPaakrevdeFelterJournalpost(journalpost, manglendePaakrevdeFelter);
 		verifyPaakrevdeFelterSaksrelasjon(journalpost.getSaksrelasjon(), manglendePaakrevdeFelter);
