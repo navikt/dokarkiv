@@ -19,7 +19,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
@@ -91,6 +91,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanal;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -276,9 +277,14 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		assertThrows(UgyldigInputException.class, () ->
-						mapper.map(request, SAK_ID),
-				"Kan ikke mappe fagsystem basert på input");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> mapper.map(request, SAK_ID));
+		assertThat(exception.getMessage()).contains(
+				"""
+				Kan ikke legge saksrelasjon til journalpost. For fagsaker og generelle saker må en av følgende regler være oppfylt:
+				1) sakstype er FAGSAK og fagsaksystem er PP01
+				2) sakstype er FAGSAK eller GENERELL_SAK, og fagsaksystem er ikke PP01
+				Mottatt: sakstype=FAGSAK, fagsaksystem=null
+				""");
 	}
 
 	@Test

@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -258,6 +259,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		abacPermit();
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.E).build();
+		journalpost.getSaksrelasjon().setFeilregistrert(true);
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -274,7 +276,12 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 						requestEntity, RestConsumerExceptionResponse.class);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody().getMessage());
-		assertEquals(String.format("Journalpost med journalpostId=%s er ikke midlertidig journalført", journalpostId), response.getBody().getMessage());
+
+		assertThat(response.getBody().getMessage()).contains(
+				String.format("Kunne ikke ferdigstille journalpost med journalpostId=%s. Journalposten er ikke ansett som midlertidig journalført av følgende grunn(er):", journalpostId),
+				String.format("Den har journalstatus=%s", journalpost.getJournalstatus()),
+				"Den er feilregistrert"
+		);
 	}
 
 	@Test
