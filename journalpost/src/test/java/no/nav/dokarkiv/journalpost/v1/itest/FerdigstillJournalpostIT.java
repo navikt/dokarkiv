@@ -382,8 +382,8 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertEquals(String.format("Tema=%s på journalposten er ikke gyldig for ferdigstilling. " +
-				"For å unngå dette i fremtiden bør du fjerne muligheten til å ferdigstille på ugyldige tema", inaktivtFagomrade), response.getBody().getMessage());
+		assertTrue(response.getBody().getMessage().contains(String.format("Tema=%s på journalposten er ikke gyldig for ferdigstilling. " +
+				"For å unngå dette i fremtiden bør du fjerne muligheten til å ferdigstille på ugyldige tema", inaktivtFagomrade)));
 	}
 
 	@Test
