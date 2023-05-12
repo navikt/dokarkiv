@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
@@ -221,7 +223,7 @@ public final class OppdaterJournalpostValidator {
 	}
 
 	private static void validateBehandlingstema(String behandlingstema) {
-		if (!behandlingstema.matches("ab\\d{4}"))  {
+		if (!Pattern.compile("ab\\d{4}").matcher(behandlingstema).matches())  {
 			throw new InputValideringFeiletException(String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=%s", behandlingstema));
 		}
 	}

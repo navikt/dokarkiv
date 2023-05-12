@@ -52,6 +52,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createSak;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -490,9 +491,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.sak(Sak.builder().sakstype(GENERELL_SAK).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I),
-				String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=%s", behandlingstema));
+		InputValideringFeiletException e = assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I));
+		assertEquals(String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=%s", behandlingstema),
+				e.getMessage());
 	}
 
 	@ParameterizedTest
