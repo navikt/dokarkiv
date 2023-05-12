@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,7 +46,9 @@ public class OppdaterDistribusjonsinfoValidator {
 				UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
 			} catch (IllegalArgumentException e) {
 				throw new KanIkkeOppdatereDistribusjonsinfoException(
-						String.format("Utsendingskanalkode '%s' er ugyldig", request.getUtsendingsKanal()));
+						String.format("Mottatt verdi for feltet utsendingskanal=%s er ugyldig. Gyldige verdier er: %s",
+								request.getUtsendingsKanal(),
+								Arrays.toString(UtsendingsKanalCode.values())));
 			}
 		}
 	}
@@ -98,19 +101,22 @@ public class OppdaterDistribusjonsinfoValidator {
 	public static void validateJournalpostKanSetteStatusEkspedert(Journalpost journalpost, WithUtsendingsKanal request) {
 		if (!JournalpostTypeCode.U.equals(journalpost.getJournalposttype())) {
 			throw new KanIkkeOppdatereDistribusjonsinfoException(
-					String.format("Kan ikke ekspedere journalpost med journalposttype=%s", journalpost.getJournalposttype()));
+					String.format("Journalposten har journalposttype=%s, men må ha journalposttype=%s for å kunne ekspederes",
+							journalpost.getJournalposttype(),
+							JournalpostTypeCode.U
+							));
 		}
 		if (!ALLOWED_STATES_FOR_DISTRIBUTION.contains(journalpost.getJournalstatus())) {
 			throw new KanIkkeOppdatereDistribusjonsinfoException(
-					String.format("Kan ikke ekspedere journalpost med status %s", journalpost.getJournalstatus()));
+					String.format("Journalposten har journalpoststatus=%s, men må ha en av følgende statuser %s for å kunne ekspederes",
+							journalpost.getJournalstatus(),
+							ALLOWED_STATES_FOR_DISTRIBUTION));
 		}
 		if (journalpost.isFeilregistrert()) {
-			throw new KanIkkeOppdatereDistribusjonsinfoException(
-					"Kan ikke ekspedere journalpost med tom/feilregistrert saksrelasjon");
+			throw new KanIkkeOppdatereDistribusjonsinfoException("Journalposten mangler saksrelasjon eller har feilregistrert saksrelasjon");
 		}
 		if (journalpost.getUtsendingskanal() == null && request.getUtsendingsKanal() == null) {
-			throw new KanIkkeOppdatereDistribusjonsinfoException(
-					String.format("Utsendingskanal er ikke satt, hverken på input eller på journalpost med journalposttype=%s", journalpost.getJournalposttype()));
+			throw new KanIkkeOppdatereDistribusjonsinfoException("Utsendingskanal er ikke satt, hverken på input eller på selve journalposten");
 		}
 	}
 }

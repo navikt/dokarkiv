@@ -46,9 +46,10 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
+import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.LOVLIGE_INNSYNSKODER;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 
 public class OpprettJournalpostRequestValidatorTest {
@@ -149,9 +150,9 @@ public class OpprettJournalpostRequestValidatorTest {
 				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET_UGYLDIG)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Journalpost.journalfoerendeEnhet må være null eller fire siffer. journalfoerendeEnhet=" + JOURNALFOERENDE_ENHET_UGYLDIG);
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains(
+				"Journalpost.journalfoerendeEnhet må være null eller fire siffer. Mottatt journalfoerendeEnhet=" + JOURNALFOERENDE_ENHET_UGYLDIG);
 	}
 
 
@@ -162,9 +163,9 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Journalpost.journalfoerendeEnhet må være null eller fire siffer. journalfoerendeEnhet=" + TestUtils.JOURNALFOERENDE_ENHET_UGYLDIG_WHITESPACES);
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains(
+				"Journalpost.journalfoerendeEnhet må være null eller fire siffer. Mottatt journalfoerendeEnhet=" + TestUtils.JOURNALFOERENDE_ENHET_UGYLDIG_WHITESPACES);
 	}
 
 	@Test
@@ -185,9 +186,9 @@ public class OpprettJournalpostRequestValidatorTest {
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"tema");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("tema");
+
 	}
 
 	@Test
@@ -198,9 +199,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Bruker");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Bruker");
 	}
 
 	@Test
@@ -211,9 +211,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(null).fagsaksystem(Fagsaksystem.AO01).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.fagsakId");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.fagsakId");
 	}
 
 	@Test
@@ -224,9 +223,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(null).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.fagsaksystem");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.fagsaksystem");
 	}
 
 	@Test
@@ -237,9 +235,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).arkivsaksnummer(ARKIVSAKSNUMMER).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.arkivsaksnummer");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.arkivsaksnummer");
 	}
 
 	@Test
@@ -250,9 +247,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).arkivsaksystem(Arkivsaksystem.GSAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.arkivsaksystem");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.arkivsaksystem");
 	}
 
 	@Test
@@ -263,9 +259,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Bruker");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Bruker");
 	}
 
 	@Test
@@ -276,9 +271,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).fagsakId(FAGSAK_ID).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.fagsakId");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.fagsakId");
 	}
 
 	@Test
@@ -289,9 +283,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).fagsaksystem(Fagsaksystem.AO01).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.fagsaksystem");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.fagsaksystem");
 	}
 
 	@Test
@@ -302,9 +295,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.arkivsaksnummer");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.arkivsaksnummer");
 	}
 
 	@Test
@@ -315,9 +307,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).arkivsaksystem(Arkivsaksystem.GSAK).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.arkivsaksystem");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.arkivsaksystem");
 	}
 
 	@Test
@@ -326,9 +317,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).fagsakId(FAGSAK_ID).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.fagsakId");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.fagsakId");
 	}
 
 	@Test
@@ -337,9 +327,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).fagsaksystem(Fagsaksystem.AO01).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.fagsaksystem");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.fagsaksystem");
 	}
 
 	@Test
@@ -348,9 +337,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.arkivsaksnummer");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.arkivsaksnummer");
 	}
 
 	@Test
@@ -360,9 +348,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Ikke mulig å opprette journalpost på journalfoerendeEnhet=9999");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Ikke mulig å opprette journalpost på journalfoerendeEnhet=9999");
 	}
 
 	@Test
@@ -371,9 +358,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.arkivsaksystem");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.arkivsaksystem");
 	}
 
 	@Test
@@ -386,9 +372,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"AvsenderMottaker.idType");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("AvsenderMottaker.idType");
 	}
 
 	@Test
@@ -401,9 +386,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"AvsenderMottaker.id");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("AvsenderMottaker.id");
 	}
 
 	@Test
@@ -416,9 +400,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"AvsenderMottaker.id");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("AvsenderMottaker.id");
 	}
 
 	@Test
@@ -431,9 +414,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"AvsenderMottaker.id");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("AvsenderMottaker.id");
 	}
 
 	@Test
@@ -446,9 +428,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"AvsenderMottaker.id");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("AvsenderMottaker.id");
 	}
 
 	@ParameterizedTest
@@ -462,9 +443,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"AvsenderMottaker.id");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("AvsenderMottaker.id");
 	}
 
 	@ParameterizedTest
@@ -491,9 +471,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"AvsenderMottaker.id");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("AvsenderMottaker.id");
 	}
 
 	@ParameterizedTest
@@ -507,9 +486,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"AvsenderMottaker.id");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("AvsenderMottaker.id");
 	}
 
 	@Test
@@ -520,9 +498,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Bruker.id");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Bruker.id");
 	}
 
 	@Test
@@ -534,9 +511,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Bruker.id");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Bruker.id");
 	}
 
 	@Test
@@ -548,9 +524,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Bruker.id");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Bruker.id");
 	}
 
 	@Test
@@ -562,9 +537,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Bruker.id");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Bruker.id");
 	}
 
 	@Test
@@ -576,9 +550,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Bruker.id");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Bruker.id");
 	}
 
 	@Test
@@ -587,9 +560,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.tema("tema")
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"tema");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("tema");
 	}
 
 	@Test
@@ -598,9 +570,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.behandlingstema("behandlingstema")
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"behandlingstema");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("behandlingstema");
 	}
 
 	@Test
@@ -609,9 +580,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.kanal("kanal")
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"kanal");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("kanal");
 	}
 
 	@Test
@@ -621,9 +591,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.kanal("NAV_NO_UINNLOGGET")
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Det er kun mulig å arkivere med mottakskanal NAV_NO_UINNLOGGET dersom tema=SER.");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Det er kun mulig å arkivere med mottakskanal=NAV_NO_UINNLOGGET dersom tema=SER");
 	}
 
 	@Test
@@ -632,9 +601,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.kanal("kanal")
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"kanal");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("kanal");
 	}
 
 	@Test
@@ -646,9 +614,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.arkivsaksnummer");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.arkivsaksnummer");
 	}
 
 	@Test
@@ -660,9 +627,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Sak.arkivsaksnummer");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.arkivsaksnummer");
 	}
 
 	@Test
@@ -677,9 +643,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build()))
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Dokument.dokumentkategori");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Dokument.dokumentkategori");
 	}
 
 	@Test
@@ -694,9 +659,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build()))
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Dokument.dokumentvariant.filtype");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.filtype");
 	}
 
 	@Test
@@ -711,9 +675,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build()))
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Dokument.dokumentvariant.filtype");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.filtype");
 	}
 
 	@Test
@@ -728,9 +691,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build()))
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Dokument.dokumentvariant.filtype");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.filtype");
 	}
 
 	@Test
@@ -745,9 +707,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build()))
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Dokument.dokumentvariant.variantformat");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.variantformat");
 	}
 
 	@Test
@@ -762,9 +723,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build()))
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Dokument.dokumentvariant.variantformat");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.variantformat");
 	}
 
 	@Test
@@ -773,9 +733,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.dokumenter(new ArrayList<>())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"dokumenter");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("dokumenter");
 	}
 
 	@Test
@@ -785,9 +744,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.avsenderMottaker(null)
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Oppgitt behandlingstema=ab333 er ikke på formatet ´ab + fire siffer´.");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=ab333");
 	}
 
 	@Test
@@ -833,9 +791,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build()))
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				"Dokument.dokumentvariant.variantformat");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.variantformat");
 	}
 	@Test
 	void shouldThrowExceptionWhenDatoIsInTheFuture(){
@@ -845,9 +802,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.datoDokument(LocalDateTime.now().plus(3, ChronoUnit.DAYS))
 				.build();
 
-		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertTrue(exception.getMessage().contains(format("Validering av %s feilet. Dato kan ikke være frem i tid.","DatoDokument")));
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains(format("Validering av %s feilet. Dato kan ikke være frem i tid.","DatoDokument"));
 	}
 
 
@@ -868,7 +824,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		Exception e = assertThrows(InputValideringFeiletException.class, () ->
 				validator.validateRequest(request, FORSOEKFERDIGSTILL)
 		);
-		assertTrue(e.getMessage().contains("Sak.overstyrInnsynsregler kan kun ta verdiene"));
+		assertThat(e.getMessage()).contains(String.format("Sak.overstyrInnsynsregler må være en av følgende verdier %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler));
 	}
 
 	@ParameterizedTest
@@ -901,9 +857,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL),
-				"Dokument.dokumentvariant.fysiskDokument må være satt med en base64 representert fil større en 0 bytes.");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.fysiskDokument må være en base64 representert fil større en 0 bytes.");
 	}
 
 	@Test
@@ -921,9 +876,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL),
-				"Dokument.dokumentvariant.fysiskDokument må være satt med en base64 representert fil større en 0 bytes.");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.fysiskDokument må være en base64 representert fil større en 0 bytes.");
 	}
 
 	@Test
@@ -934,8 +888,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.PP01).build())
 				.build();
 
-		assertThrows(InputValideringFeiletException.class, () -> {
-			validator.validateRequest(request, FORSOEKFERDIGSTILL);
-		}, "Sak.fagsakId skal være opprettet i PSAK og må være et numerisk heltall.");
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Sak.fagsakId må være et heltall dersom saken er opprett i PSAK");
 	}
 }

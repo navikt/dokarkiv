@@ -15,6 +15,8 @@ import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostReque
 import no.nav.dokarkiv.journalpost.v1.validators.FjernVedleggTilknyttetJournalpostValidator;
 import org.springframework.stereotype.Service;
 
+import static java.lang.String.format;
+
 @Service(value = "fjernVedleggService")
 @Slf4j
 public class FjernVedleggTilknyttetJournalpost {
@@ -33,12 +35,12 @@ public class FjernVedleggTilknyttetJournalpost {
 	}
 
 	public void fjernVedleggTilknyttetJournalpost(String journalpostId, FjernVedleggTilknyttetJournalpostRequest request) {
-		fjernVedleggTilknyttetJournalpostValidator.validateInput(journalpostId,request.getDokumentId());
+		fjernVedleggTilknyttetJournalpostValidator.validateInput(journalpostId, request.getDokumentId());
 		Long dokumentInfoId = Long.valueOf(request.getDokumentId());
 		Journalpost journalpost = journalpostRepositorySkjermet.findById(Long.valueOf(journalpostId))
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Fant ikke journalpost med journalpostId=%s", journalpostId)));
+				.orElseThrow(() -> new JournalpostIkkeFunnetException("Fant ikke journalpost"));
 		fjernVedleggTilknyttetJournalpostValidator.validateJournalPostStatusOgType(journalpost);
-		DokumentInfo dokumentInfo = hentDokumentInfo(dokumentInfoId);
+		DokumentInfo dokumentInfo = hentDokumentInfo(dokumentInfoId, journalpostId);
 		fjernVedleggTilknyttetJournalpostValidator.validateDokumentInfoOriginalJpNotEqualsInputJournalpost(dokumentInfo, journalpost.getJournalpostId());
 		JournalpostDokumentInfoRelasjon jpDokRelasjon = hentJournalpostDokumentRelasjon(journalpost.getJournalpostId(), dokumentInfoId);
 
@@ -49,14 +51,17 @@ public class FjernVedleggTilknyttetJournalpost {
 		JournalpostDokumentInfoRelasjon jpDokRelasjon = journalpostDokumentInfoRelasjonRepository
 				.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(journalpostId, dokumentId)
 				.orElseThrow(() ->
-						new JournalpostDokumentInfoRelasjonIkkeFunnetException(String.
-								format("Fant ikke JournalpostDokumentInfoRelasjon med journalpostId=%s dokumentInfoId=%s", journalpostId, dokumentId)));
+						new JournalpostDokumentInfoRelasjonIkkeFunnetException(format("Fant ikke JournalpostDokumentInfoRelasjon med journalpostId=%s og dokumentInfoId=%s",
+								journalpostId,
+								dokumentId)));
+
 		fjernVedleggTilknyttetJournalpostValidator.validateJournalpostDokumentInfoRelasjon(jpDokRelasjon);
 		return jpDokRelasjon;
 	}
 
-	private DokumentInfo hentDokumentInfo(Long dokumentId) {
+	private DokumentInfo hentDokumentInfo(Long dokumentId, String journalpostId) {
 		return dokumentInfoRepository.findById(dokumentId)
-				.orElseThrow(() -> new DokumentIkkeFunnetException(String.format("Fant ikke dokument med dokumentInfoId=%s", dokumentId)));
+				.orElseThrow(() -> new DokumentIkkeFunnetException(format(
+						"Fant ikke dokument med dokumentInfoId=%s, og kan ikke fjerne dette som vedlegg fra journalpost med journalpostId=%s", dokumentId, journalpostId)));
 	}
 }
