@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
@@ -32,13 +33,16 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
 @Protected
@@ -82,7 +86,10 @@ public class JournalpostEksternProtectedRestController {
 			log.info("knyttTilAnnenSak har knyttet til dokumenter til ny journalpost med journalpostId={}", knyttTilAnnenSakResponse.getNyJournalpostId());
 
 			return ResponseEntity.ok().body(knyttTilAnnenSakResponse);
-
+		} catch (KanIkkeFerdigstilleException e) {
+			throw new ResponseStatusException(BAD_REQUEST,
+					format("knyttTilAnnenSak kunne ikke knytte dokumenter til annen sak for journalpostId=%s. %s", kildeJournalpostId, e.getMessage()),
+					e);
 		} catch (DokarkivFunctionalException e) {
 			log.warn("knyttTilAnnenSak - feilet funksjonelt ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", kildeJournalpostId,
 					e.getMessage());
