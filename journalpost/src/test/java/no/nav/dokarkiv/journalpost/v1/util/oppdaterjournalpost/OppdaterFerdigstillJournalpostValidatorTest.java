@@ -493,7 +493,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 		InputValideringFeiletException e = assertThrows(InputValideringFeiletException.class,
 				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I));
-		assertEquals(String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=%s", behandlingstema),
+		assertEquals(String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema=%s", behandlingstema),
 				e.getMessage());
 	}
 

@@ -224,7 +224,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static void validateBehandlingstema(String behandlingstema) {
 		if (!Pattern.compile("ab\\d{4}").matcher(behandlingstema).matches())  {
-			throw new InputValideringFeiletException(String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema er=%s", behandlingstema));
+			throw new InputValideringFeiletException(String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema=%s", behandlingstema));
 		}
 	}
 
