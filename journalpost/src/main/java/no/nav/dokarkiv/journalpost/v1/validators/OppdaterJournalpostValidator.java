@@ -14,7 +14,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
@@ -47,7 +46,7 @@ public final class OppdaterJournalpostValidator {
 	private static final EnumSet<JournalStatusCode> UTGAAENDE_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
 	private static final EnumSet<JournalStatusCode> NOTAT_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
 
-	private static final Pattern behandlingstemaPattern = Pattern.compile("ab\\d{4}");
+	private static final Pattern BEHANDLINGSTEMA_PATTERN = Pattern.compile("ab\\d{4}");
 
 
 	private OppdaterJournalpostValidator() {
@@ -262,7 +261,7 @@ public final class OppdaterJournalpostValidator {
 	}
 
 	private static String validateBehandlingstema(String behandlingstema) {
-		if (!behandlingstemaPattern.matcher(behandlingstema).matches())  {
+		if (!BEHANDLINGSTEMA_PATTERN.matcher(behandlingstema).matches())  {
 			return format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema);
 		}
 		return null;
