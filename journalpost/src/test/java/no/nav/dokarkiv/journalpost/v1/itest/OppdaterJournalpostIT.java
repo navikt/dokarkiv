@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
@@ -91,9 +90,10 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@BeforeEach
 	public void setUp() {
+		super.setUp();
+
 		OIDC_TOKEN_PERSON_USER_TEST = openAmToken(PERSON_USER_ID);
 		OIDC_TOKEN_SERVICE_USER_TEST = restStsToken(SERVICE_USER_ID);
-		WireMock.reset();
 	}
 
 	/**

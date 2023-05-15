@@ -1,12 +1,14 @@
 package no.nav.dokarkiv.core;
 
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
+import no.nav.dokarkiv.core.domain.codes.Fagomrade;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.AksjonsLoggTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
+import no.nav.dokarkiv.core.repository.FagomradeTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
 import no.nav.dokarkiv.core.repository.SakTestRepository;
@@ -19,6 +21,7 @@ import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
@@ -33,6 +36,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -77,6 +81,8 @@ public abstract class AbstractRestIT {
 	@Autowired
 	protected UtsendingsInfoTestRepository utsendingsInfoTestRepository;
 	@Autowired
+	protected FagomradeTestRepository fagomradeTestRepository;
+	@Autowired
 	private MockOAuth2Server server;
 
 	protected static final String BEARER = "Bearer ";
@@ -96,6 +102,54 @@ public abstract class AbstractRestIT {
 				.build());
 	}
 
+	@BeforeEach
+	public void setUp() {
+		lagreFagomraader();
+	}
+
+	private void lagreFagomraader() {
+		fagomradeTestRepository.persist(
+				Fagomrade.builder()
+						.kode("OKO")
+						.erGyldig(false)
+						.datoTilOgMed(LocalDate.of(2023, 5, 1))
+						.build());
+		fagomradeTestRepository.persist(
+				Fagomrade.builder()
+						.kode("PEN")
+						.erGyldig(true)
+						.build());
+		fagomradeTestRepository.persist(
+				Fagomrade.builder()
+						.kode("SYK")
+						.erGyldig(true)
+						.build());
+		fagomradeTestRepository.persist(
+				Fagomrade.builder()
+						.kode("SYM")
+						.erGyldig(true)
+						.build());
+		fagomradeTestRepository.persist(
+				Fagomrade.builder()
+						.kode("TIL")
+						.erGyldig(true)
+						.build());
+		fagomradeTestRepository.persist(
+				Fagomrade.builder()
+						.kode("UFO")
+						.erGyldig(true)
+						.build());
+		fagomradeTestRepository.persist(
+				Fagomrade.builder()
+						.kode("FOR")
+						.erGyldig(true)
+						.build());
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+	}
+
 	@AfterEach
 	public void cleanup() {
 		if (!TestTransaction.isActive()) {
@@ -104,6 +158,8 @@ public abstract class AbstractRestIT {
 			TestTransaction.end();
 			TestTransaction.start();
 		}
+
+		fagomradeTestRepository.deleteAll();
 		utsendingsInfoTestRepository.deleteAll();
 		aksjonsLoggTestRepository.deleteAll();
 		dokumentFilTestRepository.deleteAll();
@@ -111,6 +167,7 @@ public abstract class AbstractRestIT {
 		dokumentInfoTestRepository.deleteAll();
 		journalpostTestRepository.deleteAll();
 		sakTestRepository.deleteAll();
+
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 	}

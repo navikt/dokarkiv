@@ -62,7 +62,9 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	private static final String CONSUMER = "ikkesrvdokarkivproxy";
 
 	@BeforeEach
-	void setup() {
+	public void setUp() {
+		super.setUp();
+
 		stubAzure();
 	}
 
@@ -106,8 +108,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.filter(j -> j.getDokumentInfoId().equals(dokumentInfoId)).findAny();
 		assertTrue(dokumentInfoKopi.isPresent());
 		assertEquals(sourceDokumentInfo.getDokumentInfoId(), dokumentInfoKopi.get().getDokumentInfoId());
-
-		TestTransaction.end();
 	}
 
 	@Test
@@ -205,8 +205,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode(), is(OK));
 		assertEquals(sourceDokumentInfo3.getDokumentInfoId(), dokumentInfoKopi3.getDokumentInfoId());
-
-		TestTransaction.end();
 	}
 
 	@Test
@@ -297,8 +295,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertThat(journalpostTilknyttetVedlegg.getJournalpostDokumentInfoRelasjoner()
 				.stream()
 				.anyMatch(j -> j.getDokumentInfo().getDokumentInfoId().equals(sourceDokumentInfoId3)), is(false));
-
-		TestTransaction.end();
 	}
 
 	@Test
@@ -346,8 +342,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		completeCurrentAndStartNewTransaction();
 
 		verify(2, postRequestedFor(urlEqualTo("/safgraphql")));
-
-		TestTransaction.end();
 	}
 
 	@Test
@@ -371,7 +365,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		var responseEntity = restTemplate.exchange(
 				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
-		TestTransaction.end();
 	}
 
 	@Test
@@ -389,7 +382,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				URL_JOURNALPOST + UGYLDIG_JOURNALPOST + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
-		TestTransaction.end();
 	}
 
 	@Test
@@ -414,7 +406,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.CONFLICT));
-		TestTransaction.end();
 	}
 
 	@Test
@@ -445,7 +436,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				where(dok -> Long.parseLong(((FeiledeDokumenter) dok).getDokumentInfoId()), is(dokumentInfoId)),
 				where(FeiledeDokumenter::getArsakKode, is(UGYLDIG_STATUS))
 		)));
-		TestTransaction.end();
 	}
 
 	@Test
@@ -468,7 +458,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(IKKE_FUNNET));
-		TestTransaction.end();
 	}
 
 	@Test
