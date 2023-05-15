@@ -75,8 +75,6 @@ public class JournalpostInternProtectedRestController {
 			log.error("finnMottatteJournalposter - feilet teknisk ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", Arrays.toString(temaer.toArray()), e
 					.getMessage());
 			throw e;
-		} finally {
-			MDC.clear();
 		}
 	}
 
@@ -106,8 +104,6 @@ public class JournalpostInternProtectedRestController {
 			log.error("mottaDokumentUtgaaendeSkanning - feilet teknisk ved mottak av utgaaende skanning for journalpostId={}. Feilmelding={}", journalpostId, e
 					.getMessage());
 			throw e;
-		} finally {
-			MDC.clear();
 		}
 	}
 

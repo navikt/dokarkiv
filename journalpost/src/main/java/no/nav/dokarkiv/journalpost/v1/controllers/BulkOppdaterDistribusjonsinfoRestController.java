@@ -52,31 +52,28 @@ public class BulkOppdaterDistribusjonsinfoRestController {
 	@PostMapping
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "bulkOppdaterDistribusjonsinfo"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<BulkOppdaterDistribusjonsinfoResponse> oppdaterDistribusjonsinfo(@RequestBody BulkOppdaterDistribusjonsinfoRequest request) {
-		try {
-			MDC.put(MDC_REQUEST_ID, "bulkOppdaterDistribusjonsinfo");
-			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for bulk oppdatering av distribusjonsinfo for {} journalposter", request.getJournalposter().size());
 
-			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+		MDC.put(MDC_REQUEST_ID, "bulkOppdaterDistribusjonsinfo");
+		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for bulk oppdatering av distribusjonsinfo for {} journalposter", request.getJournalposter().size());
 
-			Map<Result, List<JournalpostResponse>> results =  request.getJournalposter().stream()
-					.map(journalpostWithDistribusjonsinfo -> {
-						JournalpostResponse valideringsresultat = oppdaterDistribusjonsinfoValidator.validateRequest(journalpostWithDistribusjonsinfo);
-						if (valideringsresultat.getErrormessage() != null ) {
-							return valideringsresultat;
-						}
-						return oppdaterDistribusjonsinfoService.oppdaterDistribusjonsinfoFromBulk(journalpostWithDistribusjonsinfo);
-					})
-					.collect(Collectors.groupingBy(BulkOppdaterDistribusjonsinfoRestController::categoriseJournalpostProcessingResult, Collectors.toList()));
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-			results.getOrDefault(FAILED, emptyList()).stream()
-					.map(result -> "Journalpost Feilet: journalpostId=%s, feilmelding=%s".formatted(result.getJournalpostId(), result.getErrormessage()))
-					.forEach(log::warn);
-			log.info(MDC.get(MDC_REQUEST_ID) + " har oppdatert distribusjonsinfo for {} journalposter (suksess: {}, feilet: {})",
-					request.getJournalposter().size(), results.getOrDefault(SUCCESS, emptyList()).size(), results.getOrDefault(FAILED, emptyList()).size());
-			return ResponseEntity.ok().body( new BulkOppdaterDistribusjonsinfoResponse(new JournalpostResultResponse(results.get(SUCCESS), results.get(FAILED))) );
-		} finally {
-			MDC.clear();
-		}
+		Map<Result, List<JournalpostResponse>> results = request.getJournalposter().stream()
+				.map(journalpostWithDistribusjonsinfo -> {
+					JournalpostResponse valideringsresultat = oppdaterDistribusjonsinfoValidator.validateRequest(journalpostWithDistribusjonsinfo);
+					if (valideringsresultat.getErrormessage() != null) {
+						return valideringsresultat;
+					}
+					return oppdaterDistribusjonsinfoService.oppdaterDistribusjonsinfoFromBulk(journalpostWithDistribusjonsinfo);
+				})
+				.collect(Collectors.groupingBy(BulkOppdaterDistribusjonsinfoRestController::categoriseJournalpostProcessingResult, Collectors.toList()));
+
+		results.getOrDefault(FAILED, emptyList()).stream()
+				.map(result -> "Journalpost Feilet: journalpostId=%s, feilmelding=%s".formatted(result.getJournalpostId(), result.getErrormessage()))
+				.forEach(log::warn);
+		log.info(MDC.get(MDC_REQUEST_ID) + " har oppdatert distribusjonsinfo for {} journalposter (suksess: {}, feilet: {})",
+				request.getJournalposter().size(), results.getOrDefault(SUCCESS, emptyList()).size(), results.getOrDefault(FAILED, emptyList()).size());
+		return ResponseEntity.ok().body(new BulkOppdaterDistribusjonsinfoResponse(new JournalpostResultResponse(results.get(SUCCESS), results.get(FAILED))));
 	}
 
 	private static Result categoriseJournalpostProcessingResult(JournalpostResponse journalpostResponse) {

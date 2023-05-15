@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -8,7 +7,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakResponse;
 import org.apache.commons.collections15.IteratorUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -61,12 +59,6 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 	public static final String FAGSAK_ID = "0123A21";
 	public static final String FAGSAKSYSTEM = "IT01";
 	public static final String TEMA = "SYK";
-
-
-	@BeforeEach
-	public void tearDown() {
-		WireMock.resetAllRequests();
-	}
 
 	@ParameterizedTest
 	@CsvSource(value = {

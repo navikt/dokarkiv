@@ -45,7 +45,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 
         registry.addInterceptor(new ClearMDCHandler())
-                .addPathPatterns("/rest/**");
+                .addPathPatterns("/rest/**", "/hentjournalsakinfo/**");
 
         registry.addInterceptor(basicAuthReadAccessRestInterceptor)
                 .addPathPatterns("/hentjournalsakinfo/**");
