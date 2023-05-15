@@ -54,7 +54,8 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createSak;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OppdaterFerdigstillJournalpostValidatorTest {
@@ -505,18 +506,20 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		assertThat(exception.getMessage()).contains("Bruker.id og Bruker.idType må være satt dersom sakstype=FAKSAK. Mottatt id=null idType=null");
 	}
 
-	@Test
-	public void shouldThrowExceptionWhenInvalidBehandlingstema() {
+	@ParameterizedTest
+	@ValueSource(strings = {"bb3333", "abc123", "ab12345", "ab123", "1234ab", "1ab1234", "bab1234"})
+	public void shouldThrowExceptionWhenInvalidBehandlingstema(String behandlingstema) {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_FOR)
-				.behandlingstema("bb3333")
+				.behandlingstema(behandlingstema)
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(GENERELL_SAK).build())
 				.build();
 
-		var exception = assertThrows(InputValideringFeiletException.class,
+		InputValideringFeiletException e = assertThrows(InputValideringFeiletException.class,
 				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I));
-		assertThat(exception.getMessage()).contains("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=bb3333");
+		assertEquals(String.format("Behandlingstema er ikke på formatet ´ab + 4 siffer´. Behandlingstema=%s", behandlingstema),
+				e.getMessage());
 	}
 
 	@ParameterizedTest

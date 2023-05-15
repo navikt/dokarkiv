@@ -14,6 +14,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
@@ -44,6 +45,8 @@ public final class OppdaterJournalpostValidator {
 	private static final EnumSet<JournalStatusCode> INNGAAENDE_RESTRICTED_JOURNALSTATUS = EnumSet.of(J);
 	private static final EnumSet<JournalStatusCode> UTGAAENDE_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
 	private static final EnumSet<JournalStatusCode> NOTAT_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
+
+	private static final Pattern BEHANDLINGSTEMA_PATTERN = Pattern.compile("ab\\d{4}");
 
 
 	private OppdaterJournalpostValidator() {
@@ -258,7 +261,7 @@ public final class OppdaterJournalpostValidator {
 	}
 
 	private static String validateBehandlingstema(String behandlingstema) {
-		if (behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")) {
+		if (!BEHANDLINGSTEMA_PATTERN.matcher(behandlingstema).matches())  {
 			return format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema);
 		}
 		return null;
