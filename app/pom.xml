@@ -29,10 +29,6 @@
 		<!-- virksomhetstjenester -->
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>behandlejournal</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>hentjournalsakinfo</artifactId>
 		</dependency>
 		<dependency>

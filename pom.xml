@@ -21,7 +21,6 @@
 		<module>core</module>
 		<module>dokumentproduksjoninfo</module>
 		<module>arkiverdokumentproduksjon</module>
-		<module>behandlejournal</module>
 		<module>hentjournalsakinfo</module>
 		<module>arkivervariant</module>
 		<module>admin</module>
@@ -55,7 +54,6 @@
 		<verapdf.version>1.22.2</verapdf.version>
 
 		<!-- Tjenestegrensesnitt -->
-		<nav-tjenestespesifikasjon.version>2610.9b6de22</nav-tjenestespesifikasjon.version>
 		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>2-b9013e7
 		</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
 		<dokumentproduksjoninfo-tjenestespesifikasjon.version>3-9eba8ba</dokumentproduksjoninfo-tjenestespesifikasjon.version>
@@ -94,11 +92,6 @@
 			</dependency>
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>behandlejournal</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>hentjournalsakinfo</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -119,11 +112,6 @@
 			</dependency>
 
 			<!-- Tjenestegrensesnitt -->
-			<dependency>
-				<groupId>no.nav.tjenestespesifikasjoner</groupId>
-				<artifactId>nav-fim-behandleJournal-v3-tjenestespesifikasjon</artifactId>
-				<version>${nav-tjenestespesifikasjon.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>no.nav.tjenester.brevogarkiv</groupId>
 				<artifactId>arkiverdokumentproduksjon-tjenestespesifikasjon</artifactId>
