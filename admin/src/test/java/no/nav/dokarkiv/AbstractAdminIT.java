@@ -13,7 +13,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
-import org.apache.commons.collections15.IteratorUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -119,8 +119,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 		assertThat("arkivElementEndring.size()", aksjonsLogg.getArkivElementEndringer()
 				.size(), is(expectedArkivElementEndringList.size()));
 
-		List<ArkivElementEndring> arkivElementEndringList = IteratorUtils.toList(aksjonsLogg.getArkivElementEndringer()
-				.iterator());
+		List<ArkivElementEndring> arkivElementEndringList = new ArrayList<>(aksjonsLogg.getArkivElementEndringer());
 
 		assertThat(arkivElementEndringList.stream()
 						.map(ArkivElementEndring::toStringElementFraTil)

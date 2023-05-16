@@ -5,7 +5,6 @@ import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
-import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +57,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, saksrelasjon.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, saksrelasjon.getEndretKildeNavn());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 
 		assertEquals(1, aksjonsLoggList.size());
 
@@ -115,7 +114,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		assertEquals(oppdatertJournalpost.getSaksrelasjon().getFeilregistrert(), false);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 
 		assertEquals(1, aksjonsLoggList.size());
 
@@ -148,7 +147,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		assertEquals(oppdatertJournalpost.getJournalstatus(), UB);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 
 		assertEquals(1, aksjonsLoggList.size());
 
@@ -198,7 +197,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		assertEquals(oppdatertJournalpost.getJournalstatus(), U);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 
 		assertEquals(1, aksjonsLoggList.size());
 
@@ -230,7 +229,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 
 		assertThat(aksjonsLoggList).hasSize(2)
 				.extracting(AksjonsLogg::getAksjon, AksjonsLogg::getUtfoertAv)

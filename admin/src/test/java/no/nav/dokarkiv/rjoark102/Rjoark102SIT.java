@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -55,7 +54,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), POL);
 		assertThat(dokInfoEtterKall.get().isKassert(), is(true));
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size(), is(1));
 		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(),
 				Arrays.asList(
@@ -110,7 +109,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), null);
 		assertThat(dokInfoEtterKall.get().isKassert(), is(false));
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size(), is(1));
 		assertAksjonsLogg(aksjonsLoggList.get(0), AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(),
 				Arrays.asList(

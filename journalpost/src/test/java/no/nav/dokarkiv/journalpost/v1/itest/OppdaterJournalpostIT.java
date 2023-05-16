@@ -25,7 +25,6 @@ import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
-import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -153,7 +152,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(dokumentInfo.getBrevkode(), is(request.getDokumenter().get(0).getBrevkode()));
 		assertThat(dokumentInfo.getSensitivt(), nullValue());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 
 		assertEquals(3, aksjonsLoggList.size());
 
@@ -193,7 +192,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		TestTransaction.start();
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assert (aksjonsLoggList.isEmpty());
 		TestTransaction.end();
 	}
@@ -227,7 +226,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId(), is(parseLong(ARKIVSAKSNUMMER)));
 		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList, hasSize(1));
 		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonsTypeCode.SAKSTILKNYTNING));
 		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(3));
@@ -255,7 +254,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 
 		TestTransaction.start();
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assert (aksjonsLoggList.isEmpty());
 		TestTransaction.end();
 	}
@@ -642,7 +641,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(bruker.getBrukerId(), FNR);
 		assertEquals(bruker.getBrukerType(), BrukerTypeCode.PERSON);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertEquals(2, aksjonsLoggList.size());
 		assertEquals(PERSON_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
 		TestTransaction.end();
@@ -685,7 +684,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(journalpostTestRepository.findAll().iterator().next().getBrukere().size(), 0);
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertEquals(2, aksjonsLoggList.size());
 		TestTransaction.end();
 	}

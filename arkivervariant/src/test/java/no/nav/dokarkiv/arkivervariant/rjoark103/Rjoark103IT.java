@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -21,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,7 +84,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		TestTransaction.end();
 
 		TestTransaction.start();
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size(), is(1));
 
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
@@ -97,8 +97,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		assertThat(aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
 		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(2));
 
-		List<ArkivElementEndring> arkivElementEndringList = IteratorUtils.toList(aksjonsLogg.getArkivElementEndringer()
-				.iterator());
+		List<ArkivElementEndring> arkivElementEndringList = new ArrayList<>(aksjonsLogg.getArkivElementEndringer());
 		assertThat(arkivElementEndringList.stream()
 				.map(ArkivElementEndring::toStringElementFraTil)
 				.collect(Collectors.toList()), hasItems(ArkivElementEndring.builder()

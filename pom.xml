@@ -48,7 +48,6 @@
 		<microsoft-graph.version>5.53.0</microsoft-graph.version>
 
 		<!-- NAV -->
-		<modig-security.version>3.0.6</modig-security.version>
 		<abac-spring.version>1.6.0</abac-spring.version>
 		<token-support.version>2.1.4</token-support.version>
 		<verapdf.version>1.22.2</verapdf.version>
@@ -122,12 +121,6 @@
 				<artifactId>dokumentproduksjoninfo-tjenestespesifikasjon</artifactId>
 				<version>${dokumentproduksjoninfo-tjenestespesifikasjon.version}</version>
 			</dependency>
-
-			<dependency>
-				<groupId>no.nav.modig</groupId>
-				<artifactId>modig-security-authorization</artifactId>
-				<version>${modig-security.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>no.nav.freg</groupId>
 				<artifactId>abac-spring</artifactId>
@@ -138,7 +131,6 @@
 				<artifactId>token-validation-spring</artifactId>
 				<version>${token-support.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>org.verapdf</groupId>
 				<artifactId>validation-model</artifactId>

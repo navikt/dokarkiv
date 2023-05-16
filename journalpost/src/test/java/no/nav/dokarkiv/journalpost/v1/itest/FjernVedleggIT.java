@@ -4,7 +4,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostRequest;
-import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -44,14 +43,14 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		Long journalpostId = saveJournalpost(journalpostSomSkalFjernes).getJournalpostId();
 		commitAndStartNewTransaction();
 
-		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonPersist = IteratorUtils.toList(journalpostDokumentInfoRelasjonTestRepository.findAll().iterator());
-		JournalpostDokumentInfoRelasjon vedllegJpDokumentInfoRelasjon = IteratorUtils.toList(journalpostDokumentInfoRelasjonTestRepository.findAll().iterator()).stream()
+		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonPersist = journalpostDokumentInfoRelasjonTestRepository.findAll();
+		JournalpostDokumentInfoRelasjon vedllegJpDokumentInfoRelasjon = journalpostDokumentInfoRelasjonTestRepository.findAll().stream()
 				.filter(jpdok -> VEDLEGG.equals(jpdok.getTilknyttetJournalpostSom()))
 				.findAny()
 				.get();
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonByJpBeforeDelete = journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId());
 
-		List<Journalpost> persitJournalpost = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
+		List<Journalpost> persitJournalpost = journalpostTestRepository.findAll();
 		assertThat(persitJournalpost.size(), is(3));
 		assertThat(jpDokInfoRelasjonPersist.size(), is(4));
 		assertThat(jpDokInfoRelasjonByJpBeforeDelete.size(), is(2));
@@ -68,7 +67,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 		Optional<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjon = journalpostDokumentInfoRelasjonTestRepository.findById(vedllegJpDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId());
 		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonByJp = journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId());
-		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonAfterDelete = IteratorUtils.toList(journalpostDokumentInfoRelasjonTestRepository.findAll().iterator());
+		List<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjonAfterDelete = journalpostDokumentInfoRelasjonTestRepository.findAll();
 		assertThat(response.getStatusCode(), is(HttpStatus.OK));
 		assertThat(jpDokInfoRelasjon.isPresent(), is(false));
 		assertThat(jpDokInfoRelasjonByJp, notNullValue());
@@ -89,9 +88,8 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 		saveJournalpost(journalpostSomSkalFjernes);
 		commitAndStartNewTransaction();
 
-		JournalpostDokumentInfoRelasjon vedllegJpDokumentInfoRelasjon = IteratorUtils
-				.toList(journalpostDokumentInfoRelasjonTestRepository.findAll().iterator()).get(2);
-		List<Journalpost> persitJournalpost = IteratorUtils.toList(journalpostTestRepository.findAll().iterator());
+		JournalpostDokumentInfoRelasjon vedllegJpDokumentInfoRelasjon = journalpostDokumentInfoRelasjonTestRepository.findAll().get(2);
+		List<Journalpost> persitJournalpost = journalpostTestRepository.findAll();
 		Long journalpostId = vedllegJpDokumentInfoRelasjon.getJournalpost().getJournalpostId();
 		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
 				.dokumentId(vedllegJpDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId().toString())
