@@ -36,8 +36,6 @@ spec:
       value: {{ SECURITYTOKENSERVICE_URL }}
     - name: DOKARKIV_ENDPOINTS_PDL_URL
       value: {{ DOKARKIV_ENDPOINTS_PDL_URL }}
-    - name: ABAC_ARKIV_URL
-      value: {{ ABAC_ARKIV_URL }}
     - name: ABAC_ARKIV_V2_URL
       value: {{ ABAC_ARKIV_V2_URL }}
     - name: JOARK_HENTDOKUMENT_BASEURL

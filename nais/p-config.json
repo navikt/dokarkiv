@@ -13,7 +13,6 @@
   "LDAP_BASEDN": "dc=adeo,dc=no",
   "SECURITYTOKENSERVICE_URL": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",
   "DOKARKIV_ENDPOINTS_PDL_URL": "https://pdl-api.intern.nav.no/graphql",
-  "ABAC_ARKIV_URL": "https://abac-arkiv.intern.nav.no/application/asm-pdp/authorize",
   "ABAC_ARKIV_V2_URL": "https://abac-arkiv-v2.intern.nav.no/application/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv.intern.nav.no/hentdokument",
