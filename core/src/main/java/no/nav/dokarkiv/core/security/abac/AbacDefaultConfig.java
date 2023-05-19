@@ -27,7 +27,6 @@ public class AbacDefaultConfig {
 	Set<String> abacDefaultEnvironment() {
 		Set<String> values = new HashSet<>();
 		values.add(NavAttributter.ENVIRONMENT_FELLES_PEP_ID);
-		values.add(NavAttributter.ENVIRONMENT_FELLES_SAML_TOKEN);
 		values.add(NavAttributter.ENVIRONMENT_FELLES_OIDC_TOKEN_BODY);
 		values.add(NavAttributter.ENVIRONMENT_FELLES_CONSUMER_OIDC_TOKEN_BODY);
 		values.add(StandardAttributter.SUBJECT_ID);
