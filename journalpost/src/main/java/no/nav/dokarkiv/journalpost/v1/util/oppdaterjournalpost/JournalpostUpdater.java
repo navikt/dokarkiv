@@ -79,10 +79,10 @@ public class JournalpostUpdater {
 			journalpost.setUtsendingskanal(UtsendingsKanalCode.valueOf(request.getUtsendingsKanal()));
 		}
 		if (request.getSettStatusEkspedert()) {
-			journalpost.setJournalstatus(JournalStatusCode.E);
-			journalpost.setEkspedertDato(OffsetDateTime.now());
 			tracker.setEndretFlagg(true);
 			tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), JournalStatusCode.E.name());
+			journalpost.setJournalstatus(JournalStatusCode.E);
+			journalpost.setEkspedertDato(OffsetDateTime.now());
 			journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		}
