@@ -14,7 +14,6 @@
   "LDAP_BASEDN": "dc=test,dc=local",
   "SECURITYTOKENSERVICE_URL": "https://security-token-service-t4.nais.preprod.local/rest/v1/sts/token",
   "PDL_URL": "https://pdl-api-q1.dev.intern.nav.no/graphql",
-  "ABAC_ARKIV_URL": "https://abac-arkiv-q1.dev.intern.nav.no/application/asm-pdp/authorize",
   "ABAC_ARKIV_V2_URL": "https://abac-arkiv-v2.dev.intern.nav.no/application/asm-pdp/authorize",
   "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp-t0.adeo.no/joarkweb/HentDokument",
   "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-t0.nais.preprod.local/hentdokument",

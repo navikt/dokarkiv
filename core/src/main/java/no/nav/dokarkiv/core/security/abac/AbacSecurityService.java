@@ -25,7 +25,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 public class AbacSecurityService {
 
 	private static final String ACCESS_DENIED_TO_JOURNALPOST = "Bruker har ikke tilgang til journalpost";
-	public static final String ACCESS_DENIED = "Access Denied";
 
 	private final AbacLogger abaclog;
 	private final AbacService abacService;
@@ -58,19 +57,6 @@ public class AbacSecurityService {
 		decorateJoarkResources(abacContext.getRequest(), abacResources, journalpostId);
 		XacmlResponse accessResponse = abacService.evaluate(abacContext.getRequest());
 		handleResponseForJournalpostId(abacContext.getRequest(), accessResponse, journalpostId);
-	}
-
-	Decision assertAccessToSak(String sakId, FagsystemCode fagsystemCode) {
-		return assertAccessToSak(abacContext.getRequest(), sakId, fagsystemCode);
-	}
-
-	public Decision assertAccessToSak(XacmlRequest abacRequest, String sakId, FagsystemCode fagsystemCode) {
-		AbacResources abacResources = new AbacResources();
-		abacResources.setFagsystem(fagsystemCode);
-		abacResources.setSakId(sakId);
-		decorateJoarkResources(abacRequest, abacResources, null);
-		XacmlResponse accessResponse = abacService.evaluate(abacRequest);
-		return handleResponseForSakId(abacRequest, accessResponse, abacResources);
 	}
 
 	XacmlRequest decorateJoarkResources(XacmlRequest request,
@@ -108,21 +94,6 @@ public class AbacSecurityService {
 			if (!isEmpty(response.getAdvices())) {
 				abaclog.logAbacPermit(request, response, resources);
 			}
-		}
-	}
-
-	private Decision handleResponseForSakId(XacmlRequest abacRequest, XacmlResponse response, AbacResources abacResources) {
-		final Map<String, String> resources = new HashMap<>();
-		resources.put("sakId", abacResources.getSakId());
-		resources.put("fagsystem", abacResources.getFagsystem().name());
-		if (response.getDecision() == Decision.DENY) {
-			abaclog.logAbacDeny(abacRequest, response, resources);
-			return response.getDecision();
-		} else {
-			if (!isEmpty(response.getAdvices())) {
-				abaclog.logAbacPermit(abacRequest, response, resources);
-			}
-			return response.getDecision();
 		}
 	}
 }

@@ -39,29 +39,6 @@ public class MainAbacConfig {
 	 * end
 	 */
 
-
-	@Bean
-	@Primary
-	AbacConsumer abacConsumer(RestTemplate restTemplate, @Value("${abac.arkiv.url}") String abacUrl) {
-		return new AbacRestTemplateConsumer(restTemplate, abacUrl, new AbacRequestMapper(), new AbacResponseMapper());
-	}
-
-	@Bean
-	@Primary
-	AbacService abacArkivService(AbacConsumer abacConsumer) {
-		return new AbacServiceImpl(this.obligationStrategies, this.adviceStrategies, abacConsumer);
-	}
-
-	@Bean
-	@Primary
-	AbacSecurityService abacArkivSecurityService(AbacService abacArkivService, AbacLogger abaclog,
-												 AbacContext abacContext, JdbcAbacSecurityRepository jdbcAbacSecurityRepository,
-												 JournalpostRepositorySkjermet journalpostRepositorySkjermet) {
-		return new AbacSecurityService(abaclog, abacArkivService,
-				abacContext, jdbcAbacSecurityRepository,
-				journalpostRepositorySkjermet);
-	}
-
 	@Bean
 	AbacConsumer abacArkivV2Consumer(RestTemplate restTemplate, @Value("${abac.arkiv.v2.url}") String abacUrl) {
 		return new AbacRestTemplateConsumer(restTemplate, abacUrl, new AbacRequestMapper(), new AbacResponseMapper());
