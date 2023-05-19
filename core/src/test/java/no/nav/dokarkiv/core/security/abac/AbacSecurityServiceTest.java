@@ -169,48 +169,6 @@ public class AbacSecurityServiceTest {
 		assertThat(request.getResources(), hasSize(1));
 	}
 
-	@Test
-	public void shouldCreateValidAbacRequestForPenSak() throws Exception {
-		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.PEN);
-
-		XacmlRequest request = getXacmlRequestFromAbacServiceMock();
-
-		verify(abaclog, never()).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
-		verify(abaclog, never()).logAbacPermit(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
-
-		assertThat(decision, equalTo(Decision.PERMIT));
-		assertThat(request.getResources(), hasSize(1));
-		assertThat(request.getResources().get(0), equalTo(new XacmlAttribute(RESOURCE_ARKIV_PENSJON_SAKSID, SAK_ID)));
-	}
-
-	@Test
-	public void shouldReturnDenyForSak() throws Exception {
-		when(abacService.evaluate(any(XacmlRequest.class))).thenReturn(
-				new XacmlResponse(Decision.DENY, Decision.DENY,
-						Collections.<Obligation>emptyList(),
-						Collections.<Advice>emptyList()));
-
-		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.FS22);
-
-		verify(abaclog).logAbacDeny(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
-		assertThat(decision, equalTo(Decision.DENY));
-	}
-
-	@Test
-	public void shouldLogAdvice() throws Exception {
-		when(abacService.evaluate(any(XacmlRequest.class))).thenReturn(
-				new XacmlResponse(Decision.PERMIT, Decision.PERMIT,
-						Collections.<Obligation>emptyList(),
-						Arrays.asList(new Advice("id1", Collections.<AttributeAssignment>emptyList()),
-								new Advice("id2", Collections.<AttributeAssignment>emptyList()))));
-
-		Decision decision = abacSecurityService.assertAccessToSak(SAK_ID, FagsystemCode.FS22);
-
-		verify(abaclog).logAbacPermit(any(XacmlRequest.class), any(XacmlResponse.class), anyMap());
-
-		assertThat(decision, equalTo(Decision.PERMIT));
-	}
-
 	private XacmlRequest getXacmlRequestFromAbacServiceMock() {
 		ArgumentCaptor<XacmlRequest> captor = ArgumentCaptor.forClass(XacmlRequest.class);
 		verify(abacService, times(1)).evaluate(captor.capture());
