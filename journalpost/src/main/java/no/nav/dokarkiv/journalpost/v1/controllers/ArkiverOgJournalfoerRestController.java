@@ -127,8 +127,7 @@ public class ArkiverOgJournalfoerRestController {
 
 		} catch (KanIkkeFerdigstilleException | JournalpostIkkeMidlertidigException | DokumentUnderRedigeringException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					format("Kunne ikke ferdigstille journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
-					e);
+					format("Kunne ikke ferdigstille journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()));
 		}
 	}
 
@@ -156,8 +155,7 @@ public class ArkiverOgJournalfoerRestController {
 
 		} catch (InputValideringFeiletException | KanIkkeOppdatereDistribusjonsinfoException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					format("Kunne ikke oppdatere distribusjonsinfo for journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
-					e);
+					format("Kunne ikke oppdatere distribusjonsinfo for journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()));
 		}
 	}
 
@@ -187,8 +185,7 @@ public class ArkiverOgJournalfoerRestController {
 			return OppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
 		} catch (InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					format("Kunne ikke oppdatere journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()),
-					e);
+					format("Kunne ikke oppdatere journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()));
 		}
 	}
 
@@ -270,8 +267,7 @@ public class ArkiverOgJournalfoerRestController {
 							.dokumenter(dokumenter)
 							.build());
 		} catch (InputValideringFeiletException | UgyldigInputException e) {
-			throw new ResponseStatusException(BAD_REQUEST,
-					format("Kunne ikke opprette journalpost. %s",  e.getMessage()), e);
+			throw new ResponseStatusException(BAD_REQUEST, format("Kunne ikke opprette journalpost. %s",  e.getMessage()));
 		}
 	}
 
@@ -296,12 +292,12 @@ public class ArkiverOgJournalfoerRestController {
 		} catch (InputValideringFeiletException | KanIkkeSlettetVedleggKnyttetTilJournalpostException e) {
 			String message = format("Kunne ikke fjerne vedlegg med dokumentinfoId=%s fra journalpost med journalpostId=%s. %s",
 					request.getDokumentId(), journalpostId, e.getMessage());
-			throw new ResponseStatusException(BAD_REQUEST, message, e);
+			throw new ResponseStatusException(BAD_REQUEST, message);
 		} catch (JournalpostIkkeFunnetException | DokumentIkkeFunnetException |
 				 JournalpostDokumentInfoRelasjonIkkeFunnetException e) {
 			String message = format("Kunne ikke fjerne vedlegg med dokumentinfoId=%s fra journalpost med journalpostId=%s. %s",
 					request.getDokumentId(), journalpostId, e.getMessage());
-			throw new ResponseStatusException(NOT_FOUND, message, e);
+			throw new ResponseStatusException(NOT_FOUND, message);
 		}
 	}
 
