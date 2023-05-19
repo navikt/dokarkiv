@@ -5,13 +5,11 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.security.mock.oauth2.MockOAuth2Server;
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback;
 import no.nav.security.token.support.filter.JwtTokenValidationFilter;
 import no.nav.security.token.support.spring.EnableJwtTokenValidationConfiguration;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.MDC;
@@ -94,11 +92,6 @@ public class SporingHandlerInterceptorTest {
 		}
 	};
 
-	@BeforeEach
-	public void setUp() {
-		System.setProperty("no.nav.modig.core.context.subjectHandlerImplementationClass", ThreadLocalSubjectHandler.class.getName());
-	}
-
 	@Test
 	public void shouldSetSporingWhenOnlyServiceUserInAuthorizationHeader() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -162,8 +155,8 @@ public class SporingHandlerInterceptorTest {
 		validationFilter.doFilter(request, response, filterChain);
 
 		assertThat(response.getErrorMessage(), containsString("Nav-Consumer-Token headeren må ha JWT som er utstedt av issuer REST-STS og tilhøre servicebruker hvis både Authorization og Nav-Consumer-Token headerene er satt. " +
-				"Grunnen til dette er at Nav-Consumer header propagerer systemkontekst og Authorization header propagerer brukerkontekst. " +
-				"Vi anbefaler bruk av Azure OAuth 2.0 On-Behalf-Of flow for å støtte brukerkontekst i system-til-system kall."));
+															  "Grunnen til dette er at Nav-Consumer header propagerer systemkontekst og Authorization header propagerer brukerkontekst. " +
+															  "Vi anbefaler bruk av Azure OAuth 2.0 On-Behalf-Of flow for å støtte brukerkontekst i system-til-system kall."));
 	}
 
 	@Test
@@ -177,8 +170,8 @@ public class SporingHandlerInterceptorTest {
 		validationFilter.doFilter(request, response, filterChain);
 
 		assertThat(response.getErrorMessage(), containsString("Authorization headeren må ha JWT som er utstedt av issuer OpenAM og tilhøre saksbehandler hvis både Authorization og Nav-Consumer-Token headerene er satt. " +
-				"Grunnen til dette er at Authorization headeren propagerer brukerkontekst og Nav-Consumer-Token header systemkontekst. " +
-				"Vi anbefaler bruk av Azure OAuth 2.0 On-Behalf-Of flow for å støtte brukerkontekst i system-til-system kall."));
+															  "Grunnen til dette er at Authorization headeren propagerer brukerkontekst og Nav-Consumer-Token header systemkontekst. " +
+															  "Vi anbefaler bruk av Azure OAuth 2.0 On-Behalf-Of flow for å støtte brukerkontekst i system-til-system kall."));
 	}
 
 	private String getServiceUserToken() {
@@ -188,6 +181,7 @@ public class SporingHandlerInterceptorTest {
 	private String getUserToken() {
 		return "Bearer " + openAmToken(USER_ID);
 	}
+
 	private String restStsToken(String subject) {
 		return token("reststs", subject, Map.of());
 	}
@@ -195,6 +189,7 @@ public class SporingHandlerInterceptorTest {
 	protected String openAmToken(String subject) {
 		return token("openam", subject, Map.of());
 	}
+
 	protected String token(String issuer, String subject, Map<String, Object> claims) {
 		String audience = "aud-localhost";
 		return server.issueToken(

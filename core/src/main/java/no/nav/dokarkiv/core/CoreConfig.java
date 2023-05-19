@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.core;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.metrics.DokTimedAspect;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.properties.ServiceuserAlias;
@@ -18,11 +17,7 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
-import javax.annotation.PostConstruct;
 import java.time.Duration;
-
-import static java.lang.System.setProperty;
-import static no.nav.modig.core.context.SubjectHandler.SUBJECTHANDLER_KEY;
 
 /**
  * @author Joakim Bjørnstad, Jbit AS
@@ -38,11 +33,6 @@ public class CoreConfig {
 	@Bean
 	public DokTimedAspect timedAspect(MeterRegistry meterRegistry) {
 		return new DokTimedAspect(meterRegistry);
-	}
-
-	@PostConstruct
-	public void postConstruct() {
-		setProperty(SUBJECTHANDLER_KEY, ThreadLocalSubjectHandler.class.getName());
 	}
 
 	@Bean

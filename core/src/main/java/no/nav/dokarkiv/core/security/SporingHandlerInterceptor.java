@@ -8,11 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
-import no.nav.dokarkiv.core.jaxws.ThreadLocalSubjectHandler;
 import no.nav.dokarkiv.core.security.handler.AzureAdFlowSporingHandler;
 import no.nav.dokarkiv.core.security.handler.NavCombinedBrukerSystemkontekstHandler;
 import no.nav.dokarkiv.core.security.handler.NavSystemkontekstHandler;
-import no.nav.modig.core.context.SubjectHandler;
 import no.nav.security.token.support.core.configuration.MultiIssuerConfiguration;
 import no.nav.security.token.support.core.context.TokenValidationContext;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
@@ -79,8 +77,6 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		((ThreadLocalSubjectHandler) SubjectHandler.getSubjectHandler()).reset();
-
 		putAbacMdcValues(request);
 		String authorizationToken = headerTokenExtractor.getIdToken(request);
 		String navConsumerToken = headerTokenExtractor.getConsumerToken(request);

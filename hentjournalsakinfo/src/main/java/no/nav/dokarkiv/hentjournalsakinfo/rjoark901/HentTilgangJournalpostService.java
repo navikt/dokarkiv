@@ -1,10 +1,10 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark901;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.springframework.stereotype.Service;
 
-import static no.nav.modig.security.tilgangskontroll.policy.pip.PicketLinkAttributeCacheLocator.log;
-
+@Slf4j
 @Service
 public class HentTilgangJournalpostService {
 

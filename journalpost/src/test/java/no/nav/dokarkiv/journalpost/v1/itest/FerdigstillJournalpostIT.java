@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
-import org.apache.commons.collections15.IteratorUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -60,7 +59,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
 		assertEquals("Leonora Dorothea Dahl", ferdigstiltJournalpost.getOpprettetAvNavn());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertEquals(1, aksjonsLoggList.size());
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(AksjonsTypeCode.FERDIGSTILL, aksjonsLoggList.get(0).getAksjon());
@@ -110,7 +109,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
 		assertEquals("opprettetAvNavn", ferdigstiltJournalpost.getOpprettetAvNavn());
 
-		List<AksjonsLogg> aksjonsLoggList = IteratorUtils.toList(aksjonsLoggTestRepository.findAll().iterator());
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertEquals(1, aksjonsLoggList.size());
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(AksjonsTypeCode.FERDIGSTILL, aksjonsLoggList.get(0).getAksjon());
@@ -162,8 +161,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
-
-		journalpost.getUtsendingskanal();
 
 		Long journalpostId = journalpost.getJournalpostId();
 		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
