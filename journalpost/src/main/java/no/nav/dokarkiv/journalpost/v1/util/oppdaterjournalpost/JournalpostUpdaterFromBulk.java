@@ -83,10 +83,10 @@ public class JournalpostUpdaterFromBulk {
 		}
 
 		if (request.getSettStatusEkspedert()) {
-			journalpost.setJournalstatus(JournalStatusCode.E);
-			journalpost.setEkspedertDato(request.getEkspedertDato());
 			tracker.setEndretFlagg(true);
 			tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), JournalStatusCode.E.name());
+			journalpost.setJournalstatus(JournalStatusCode.E);
+			journalpost.setEkspedertDato(request.getEkspedertDato());
 			journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		}

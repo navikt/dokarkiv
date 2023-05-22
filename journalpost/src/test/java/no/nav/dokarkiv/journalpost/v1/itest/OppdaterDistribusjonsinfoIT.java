@@ -85,6 +85,20 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shouldUpdateStatusAndAksjonsLoggStatusovergang() {
+		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
+		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();
+
+		assertEquals(JournalStatusCode.FS ,ferdigstiltJournalpost.getJournalstatus());
+
+		performOppdaterDistribusjonsinfo(journalpostId, true, null);
+
+		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+
+		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
+	}
+
+	@Test
 	public void happyPathBulkUpdateDistribusjonsinfo() {
 		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
 		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();
