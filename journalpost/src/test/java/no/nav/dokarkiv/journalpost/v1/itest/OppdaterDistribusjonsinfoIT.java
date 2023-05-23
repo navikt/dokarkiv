@@ -1,9 +1,11 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
+import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
+import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
@@ -89,13 +91,16 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
 		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();
 
-		assertEquals(JournalStatusCode.FS ,ferdigstiltJournalpost.getJournalstatus());
-
 		performOppdaterDistribusjonsinfo(journalpostId, true, null);
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.getAksjonsLoggByJournalpostId(journalpostId);
+		AksjonsLogg aksjonsLoggFS = aksjonsLoggList.get(0);
 
-		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		assertEquals("Journalpost ferdigstilt", aksjonsLoggFS.getMelding());
+		assertEquals(AksjonsTypeCode.FERDIGSTILL, aksjonsLoggFS.getAksjon());
 
-		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
+		AksjonsLogg aksjonsLoggEkspedert = aksjonsLoggList.get(1);
+		assertEquals("Journalposten fikk status 'ekspedert'", aksjonsLoggEkspedert.getMelding());
+		assertEquals(AksjonsTypeCode.EKSPEDER, aksjonsLoggEkspedert.getAksjon());
 	}
 
 	@Test
