@@ -412,8 +412,6 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 	}
 
 	private Journalpost createJournalpost(JournalStatusCode statusCode) {
-		abacPermit();
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, statusCode).build();
 		journalpostTestRepository.persist(journalpost);
 		return journalpost;

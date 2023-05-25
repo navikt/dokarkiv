@@ -32,8 +32,6 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentForKassering() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
@@ -82,8 +80,6 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalOppheveSkjermingDokumentForKassering() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
@@ -137,8 +133,6 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalFeileHvisDokumentIkkeFinnes() throws IOException {
-		abacPermit();
-
 		var responseEntity = restTemplate.exchange(
 				URL_KASSERDOKUMENT_SKJERM + "/" + 1,
 				HttpMethod.POST,

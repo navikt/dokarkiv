@@ -50,8 +50,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalIkkeKassereDokumentNårDokmentInfoIkkeFinnes() throws IOException {
-		abacPermit();
-
 		Long dokumentInfoId = 13L;
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -66,8 +64,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentSomErKnyttetTilFlereJournalposter() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -181,8 +177,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentMedSomErKnyttetTilEnJournalpost() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
@@ -231,8 +225,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalIkkeFåTilgangHvisServiceBrukerIkkeErSrvJoarkadmin() {
-		abacPermit();
-
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_KASSERDOKUMENT,
 				HttpMethod.DELETE,

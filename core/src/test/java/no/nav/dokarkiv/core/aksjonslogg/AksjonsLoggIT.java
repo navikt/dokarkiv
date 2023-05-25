@@ -13,7 +13,6 @@ import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.AksjonsLoggTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
-import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.core.util.TestDataUtils;
@@ -51,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-@ContextConfiguration(classes = {RepositoryConfig.class, AksjonsLoggServiceImpl.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
+@ContextConfiguration(classes = {RepositoryConfig.class, AksjonsLoggServiceImpl.class, SkjermingService.class})
 @EnableConfigurationProperties
 @Transactional
 @ActiveProfiles("itest")

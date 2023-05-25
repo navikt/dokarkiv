@@ -42,8 +42,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeJournalpost() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 
 		TestTransaction.flagForCommit();
@@ -86,8 +84,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentInfoSomErHoveddokumentPåJournalpostSomHarVedleggRelasjoner() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
@@ -149,9 +145,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	 * -> dokument(hoveddok)
 	 */
 	@Test
-	public void skalSkjermeDokumentInfoSomErGjenbruktSomHoveddokumentPåEnJournalpostOgSomVedleggPåEnAnnen() throws IOException {
-		abacPermit();
-		Journalpost originalJournalpost = createUniqueJournalpostWithHoveddokument();
+	public void skalSkjermeDokumentInfoSomErGjenbruktSomHoveddokumentPåEnJournalpostOgSomVedleggPåEnAnnen() throws IOException {		Journalpost originalJournalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSkjermes = originalJournalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 
@@ -237,8 +231,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentFil() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -284,8 +276,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeAlleFildetaljerHvisVariantIkkeErSatt() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -337,8 +327,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentFilHvisDokumentHarSladdetFildetaljer() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.SLADDET));

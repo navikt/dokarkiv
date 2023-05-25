@@ -115,10 +115,6 @@
 			<artifactId>httpclient</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>no.nav.freg</groupId>
-			<artifactId>abac-spring</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>no.nav.security</groupId>
 			<artifactId>token-validation-spring</artifactId>
 		</dependency>

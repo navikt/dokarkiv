@@ -7,22 +7,10 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
-import wiremock.com.google.common.io.Resources;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = {CoreConfig.class, ArkiverVariantConfig.class, AbstractArkiverVariantIT.Config.class},
@@ -49,22 +37,4 @@ public abstract class AbstractArkiverVariantIT extends AbstractRestIT {
 
 	}
 
-	public static String classpathToString(String path) {
-		return resourceUrlToString(Resources.getResource(path));
-	}
-
-	public static String resourceUrlToString(URL url) {
-		try {
-			return Resources.toString(url, StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			throw new RuntimeException("Could not convert url to String" + url);
-		}
-	}
-
-	protected void abacPermit() {
-		stubFor(post(urlEqualTo("/abac"))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile("abac/abac-permit.json")));
-	}
 }

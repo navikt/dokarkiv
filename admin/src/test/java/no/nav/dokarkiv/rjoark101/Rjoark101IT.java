@@ -49,9 +49,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 * Test med arkivEnhet=JOURNALPOST
 	 */
 	@Test
-	public void skalSletteJournalpostMedHoveddokumentOgEnVedlegg() throws IOException {
-		abacPermit();
-		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+	public void skalSletteJournalpostMedHoveddokumentOgEnVedlegg() throws IOException {		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
@@ -163,9 +161,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 * Test med arkivEnhet=JOURNALPOST
 	 */
 	@Test
-	public void skalSletteJournalpostMedHoveddokumentOgVedleggSomErGjenbruktFraEnAnnenJournalpost() throws IOException {
-		abacPermit();
-		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+	public void skalSletteJournalpostMedHoveddokumentOgVedleggSomErGjenbruktFraEnAnnenJournalpost() throws IOException {		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpostSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 
@@ -281,9 +277,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 * I slike tilfeller må relasjonene hvor hoveddokument er vedlegg slettes før journalposten kan slettes.
 	 */
 	@Test
-	public void skalFeileVedSlettingAvJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedlegg() throws IOException {
-		abacPermit();
-		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+	public void skalFeileVedSlettingAvJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedlegg() throws IOException {		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 
@@ -340,8 +334,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalIkkeSletteJournalpostSomErSplittet() throws IOException {
-		abacPermit();
-
 		Journalpost journalpostOriginal = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpostSplit1 = createJournalpostWithSplittetHoveddokument(journalpostOriginal);
 		Journalpost journalpostSplit2 = createJournalpostWithSplittetHoveddokument(journalpostOriginal);
@@ -415,9 +407,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 * Denne testen skal verifisere at Journalposten kan slettes etter at vedlegg relasjonene til hoveddokumentet er slettet.
 	 */
 	@Test
-	public void skalSletteJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedleggEtterSlettingAvRelasjonene() throws IOException {
-		abacPermit();
-		Journalpost journalpostMedDokumentSomVedlegg = createUniqueJournalpostWithHoveddokument();
+	public void skalSletteJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedleggEtterSlettingAvRelasjonene() throws IOException {		Journalpost journalpostMedDokumentSomVedlegg = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpostSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		createDokumentInfoVedleggRelasjon(journalpostSomSkalSlettes);
@@ -496,8 +486,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileHvisJournalpostIkkeFinnes() throws IOException {
-		abacPermit();
-
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
 		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
 				URL_SLETTARKIVENHET,
@@ -521,8 +509,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteDokumentInfoSomErBareTilknyttetEnJournalpost() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
@@ -610,8 +596,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteHoveddokumentOgBytteVedleggRelasjonTilHoveddokumentForJournalpostMedFlereRelasjoner() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
@@ -708,8 +692,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteVedleggOgDeretterHoveddokumentForJournalpostMedEnHoveddokumentOgEnVedlegg() throws IOException {
-		abacPermit();
-
 
 		Journalpost journalpostMedDokumentSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSlettes = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon()
@@ -826,8 +808,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteDokumentInfoSomErEnesteDokumentPåEnJournalpostOgVedleggPåEnAnnenJournalpost() throws IOException {
-		abacPermit();
-
 		Journalpost journalpostSomHarDokumentSomVedlegg = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
@@ -927,8 +907,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileVedSlettingAvDokumentInfoSomErSplittet() throws IOException {
-		abacPermit();
-
 		Journalpost origJournalpost = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost = createJournalpostWithSplittetHoveddokument(origJournalpost);
 		saveJournalpost(origJournalpost);
@@ -976,9 +954,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 * arkivEnhet=DOKUMENT_INFO
 	 */
 	@Test
-	public void skalFeileHvisDokumentInfoIkkeFinnes() throws IOException {
-		abacPermit();
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
+	public void skalFeileHvisDokumentInfoIkkeFinnes() throws IOException {		ResponseEntity<String> responseEntity = restTemplate.exchange(
 				URL_SLETTARKIVENHET,
 				HttpMethod.DELETE,
 				new HttpEntity<>(
@@ -999,8 +975,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteFilOgFildetaljer() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoMedVariantSomSkalSlettes = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
@@ -1062,8 +1036,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileHvisVariantSomSkalSlettesIkkeFinnes() throws IOException {
-		abacPermit();
-
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		saveJournalpost(journalpost);
 

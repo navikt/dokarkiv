@@ -65,9 +65,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 			GENERELL_SAK + ",," // ved generell_sak skal hverken fagsak eller fagsakID være satt
 	})
 	public void knyttTilAnnenSakHappyPath(String sakstype, String fagsakId, String fagsaksystem) {
-		stubAzure();
-		abacPermit();
-		restStsToken();
+		stubAzure();		restStsToken();
 		happyAktoerIdStub();
 		stubFor(post(urlMatching("/safgraphql"))
 				.willReturn(aResponse().withStatus(OK.value())
@@ -129,9 +127,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 
 	@Test
 	public void knyttTilAnnenSakJournalpostNotFound() {
-		stubAzure();
-		abacPermit();
-		restStsToken();
+		stubAzure();		restStsToken();
 		happyAktoerIdStub();
 
 		stubFor(post(urlMatching("/safgraphql"))

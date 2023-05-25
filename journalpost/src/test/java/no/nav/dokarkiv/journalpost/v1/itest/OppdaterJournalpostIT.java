@@ -100,8 +100,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	 */
 	@Test
 	public void shouldFerdigstillJournalpostVedOppdateringUserTokenAndServiceUserToken() {
-		abacPermit();
-
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
@@ -176,8 +174,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldNotProduceAksjonsLoggForEmptyRequest() {
-		abacPermit();
-
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
@@ -199,8 +195,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldUpdateJournalpostWithSaksrelasjonIsNull() {
-		abacPermit();
-
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen")
 				.saksrelasjon(null);
@@ -235,8 +229,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldNotProduceAksjonsLoggForUnchangedFields() {
-		abacPermit();
-
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
@@ -261,8 +253,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFerdigstillJournalpostVedOppdateringOnlyServiceUserToken() {
-		abacPermit();
-
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
@@ -308,8 +298,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSetNavUserIdHeaderSporingWhenServiceUserTokenAndNavUserIdHeaderIsSet() {
-		abacPermit();
-
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
@@ -370,8 +358,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathGsakArkivsak() {
-		abacPermit();
-
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen");
 		Journalpost journalpost = buildAndCommit(journalpostBuilder);
@@ -402,8 +388,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathGsakArkivsakSakstypeIkkeAngitt() {
-		abacPermit();
-
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen");
 		Journalpost journalpost = buildAndCommit(journalpostBuilder);
@@ -433,8 +417,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathPsakArkivsak() {
-		abacPermit();
-
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen");
 		Journalpost journalpost = buildAndCommit(journalpostBuilder);
@@ -465,9 +447,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathNyGenerellSak() {
-		clearSakRepository();
-		abacPermit();
-		restStsToken();
+		clearSakRepository();		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -510,9 +490,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathEksisterendeGenerellSak() {
-		clearSakRepository();
-		abacPermit();
-		restStsToken();
+		clearSakRepository();		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -552,9 +530,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathNyFagsak() {
-		clearSakRepository();
-		abacPermit();
-		restStsToken();
+		clearSakRepository();		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -599,9 +575,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathNyFagsakAktoerId() {
-		clearSakRepository();
-		abacPermit();
-		restStsToken();
+		clearSakRepository();		restStsToken();
 		stubAzure();
 		happyFnrIdentStub();
 
@@ -650,9 +624,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldOppdatereJournalpostWithoutBrukerWhenFnrNotFound() {
-		clearSakRepository();
-		abacPermit();
-		restStsToken();
+		clearSakRepository();		restStsToken();
 		stubAzure();
 		identNotFoundStub();
 
@@ -693,8 +665,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathNyFagsakOrgnr() {
 		clearSakRepository();
-		abacPermit();
-
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen")
 				.brukere(BrukerTestDataProvider.createBruker("11111111111", BrukerTypeCode.PERSON));
@@ -738,9 +708,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathEksisterendeFagsak() {
-		clearSakRepository();
-		abacPermit();
-		restStsToken();
+		clearSakRepository();		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -787,8 +755,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathFagsakPesys() {
 		clearSakRepository();
-		abacPermit();
-
 		long sakRepositoryCount = sakTestRepository.count();
 
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
@@ -826,9 +792,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldUpdateWhenTemaPENAndGenerellSak() {
-		clearSakRepository();
-		abacPermit();
-		restStsToken();
+		clearSakRepository();		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -859,9 +823,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldUpdateWhenTemaUFOAndGenerellSak() {
-		clearSakRepository();
-		abacPermit();
-		restStsToken();
+		clearSakRepository();		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -892,9 +854,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldCallAktoerService() {
-		clearSakRepository();
-		abacPermit();
-		restStsToken();
+		clearSakRepository();		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -921,9 +881,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldNotCallAktoerServiceWithoutBrukerIdTypeFNR() {
-		clearSakRepository();
-		abacPermit();
-		restStsToken();
+		clearSakRepository();		restStsToken();
 		stubAzure();
 		happyFnrIdentStub();
 
@@ -951,8 +909,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldNotCallAktoerServiceWithoutSakstype() {
 		clearSakRepository();
-		abacPermit();
-
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen");
 		Journalpost journalpost = buildAndCommit(journalpostBuilder);
@@ -972,8 +928,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldNotCallAktoerServiceWithSAKFagsystemPP01() {
 		clearSakRepository();
-		abacPermit();
-
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen");
 		Journalpost journalpost = buildAndCommit(journalpostBuilder);
@@ -998,8 +952,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldDeleteAvsenderMottaker() {
 		clearSakRepository();
-		abacPermit();
-
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen");
 		Journalpost journalpost = buildAndCommit(journalpostBuilder);
@@ -1019,9 +971,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldUsePdlNameForAvsenderMottakerNameNull() {
-		clearSakRepository();
-		abacPermit();
-		restStsToken();
+		clearSakRepository();		restStsToken();
 		stubAzure();
 		happyPersonIdentStub();
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)

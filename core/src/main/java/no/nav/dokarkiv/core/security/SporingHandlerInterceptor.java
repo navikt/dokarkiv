@@ -77,7 +77,7 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		putAbacMdcValues(request);
+		putHttpMdcValues(request);
 		String authorizationToken = headerTokenExtractor.getIdToken(request);
 		String navConsumerToken = headerTokenExtractor.getConsumerToken(request);
 		String navUserIdHeader = request.getHeader(NavHeaders.NAV_USER_ID);
@@ -160,7 +160,7 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 		}
 	}
 
-	private void putAbacMdcValues(HttpServletRequest request) {
+	private void putHttpMdcValues(HttpServletRequest request) {
 		MDC.put(MDCConstants.MDC_HTTP_ENDPOINT, request.getRequestURL().toString());
 		MDC.put(MDCConstants.MDC_HTTP_OPERATION, request.getMethod());
 	}

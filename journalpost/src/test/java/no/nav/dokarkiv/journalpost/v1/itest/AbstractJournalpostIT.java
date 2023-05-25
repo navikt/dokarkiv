@@ -62,14 +62,6 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 		}
 	}
 
-	void abacPermit() {
-		stubFor(post(urlEqualTo("/abac"))
-				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile("abac/abac-permit.json")));
-
-	}
-
 	void restStsToken() {
 		stubFor(post(urlEqualTo("/reststs"))
 				.willReturn(aResponse().withStatus(OK.value())

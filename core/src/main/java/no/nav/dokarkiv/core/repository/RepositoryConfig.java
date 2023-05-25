@@ -44,7 +44,7 @@ public class RepositoryConfig {
 		poolDataSource.setPassword(dataSourceProperties.getPassword());
 		poolDataSource.setConnectionFactoryClassName(OracleDataSource.class.getName());
 		poolDataSource.registerConnectionInitializationCallback(connection -> connection.setSchema("joark"));
-		poolDataSource.setMaxConnectionReuseTime(MINUTES.toSeconds(30));
+		poolDataSource.setMaxConnectionReuseTime(MINUTES.toSeconds(5));
 		// Behøver ikke sette setSQLForValidateConnection pga UCP gjør intern ping mot Oracle
 		poolDataSource.setValidateConnectionOnBorrow(true);
 		poolDataSource.setSecondsToTrustIdleConnection((int) MINUTES.toSeconds(3));
