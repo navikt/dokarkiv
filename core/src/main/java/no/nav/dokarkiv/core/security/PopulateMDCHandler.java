@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.core.security;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.NavHeaders;
@@ -14,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 /**
  * @author Sigurd Midttun, Visma Consulting.
  */
@@ -25,9 +25,6 @@ public class PopulateMDCHandler implements HandlerInterceptor {
 		populateCallId(request);
 		populateConsumerId(request);
 		populateUserId(request);
-
-		MDC.put(MDCConstants.MDC_HTTP_ENDPOINT, request.getRequestURL().toString());
-		MDC.put(MDCConstants.MDC_HTTP_OPERATION, request.getMethod());
 		return true;
 	}
 

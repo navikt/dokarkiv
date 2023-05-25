@@ -42,8 +42,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldHappyFinnMottatteJournalposter() {
-		abacPermit();
-
 		List<Journalpost> journalposts = List.of(
 				TestDataUtils.createUbehandletJournalpost(DateTime.now().minusWeeks(2).toDate(), JournalpostTypeCode.I, JournalStatusCode.MO),
 				TestDataUtils.createUbehandletJournalpost(DateTime.now().minusWeeks(2).toDate(), JournalpostTypeCode.I, JournalStatusCode.M)
@@ -145,8 +143,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFailFinnMottatteJournalposter() {
-		abacPermit();
-
 		List<Journalpost> journalposts = List.of(
 				TestDataUtils.createUbehandletJournalpost(DateTime.now().toDate(), JournalpostTypeCode.I, JournalStatusCode.MO),
 				TestDataUtils.createUbehandletJournalpost(DateTime.now().minusWeeks(2).toDate(), JournalpostTypeCode.U, JournalStatusCode.MO),
@@ -170,8 +166,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	@Test
 	public void returnsOKWithResponseJSONifValidRequest() {
-		abacPermit();
-
 		List<Journalpost> journalposts = List.of(
 				TestDataUtils.createUbehandletJournalpost(DateTime.now().minusWeeks(2).toDate(), JournalpostTypeCode.I, JournalStatusCode.MO),
 				TestDataUtils.createUbehandletJournalpost(DateTime.now().minusWeeks(2).toDate(), JournalpostTypeCode.I, JournalStatusCode.M)
@@ -199,8 +193,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	@Test
 	public void returnsUnauthorizedWhenNoAuthorization() {
-		abacPermit();
-
 		var requestEntity = new HttpEntity<>(null, new HttpHeaders());
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN + FINNMOTTATTEJOURNALPOSTER_PENSJON, HttpMethod.GET, requestEntity, String.class);

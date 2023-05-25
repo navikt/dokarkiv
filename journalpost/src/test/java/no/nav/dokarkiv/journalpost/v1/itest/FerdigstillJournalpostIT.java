@@ -29,8 +29,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathInngaaende() {
-		abacPermit();
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
 		journalpostTestRepository.persist(journalpost);
 
@@ -70,7 +68,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
 	public void happyPathInngaaendeForOndemand() {
-		abacPermit();
 		Date datoJournal = new Date(System.currentTimeMillis() - 50000L);
 		Date datoSendtPrint = new Date(System.currentTimeMillis() - 20000L);
 
@@ -120,8 +117,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathUtgaaende() {
-		abacPermit();
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
 		journalpostTestRepository.persist(journalpost);
 
@@ -153,8 +148,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathUtgaaendeUtsendingsKanalL() {
-		abacPermit();
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
 		journalpost.setUtsendingskanal(L);
 		journalpostTestRepository.persist(journalpost);
@@ -187,7 +180,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathJournalstatusFSKanFerdigstilles() {
-		abacPermit();
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
 		journalpostTestRepository.persist(journalpost);
 
@@ -221,8 +213,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathNotat() {
-		abacPermit();
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.N, JournalStatusCode.M).build();
 		journalpost.setAvsenderMottaker(null);
 		journalpostTestRepository.persist(journalpost);
@@ -255,8 +245,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFailIfJournalpostIsNotMidlertidig() {
-		abacPermit();
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.E).build();
 		journalpost.getSaksrelasjon().setFeilregistrert(true);
 		journalpostTestRepository.persist(journalpost);
@@ -285,8 +273,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFailIfRequestJournalfoerendeEnhetIsInvalid() {
-		abacPermit();
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
 		journalpostTestRepository.persist(journalpost);
 
@@ -306,8 +292,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFailIfRequestJournalpostIdIsInvalid() {
-		abacPermit();
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
 		journalpostTestRepository.persist(journalpost);
 
@@ -329,8 +313,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFailIfMissingPaakrevdFelter() {
-		abacPermit();
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
 		journalpost.setAvsenderMottaker(null);
 		journalpost.setInnhold(null);
@@ -357,8 +339,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFailIfFagomradeErInaktivt() {
-		abacPermit();
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
 		String inaktivtFagomrade = "OKO";
 		journalpost.setFagomrade(FagomradeCode.valueOf(inaktivtFagomrade));
@@ -380,13 +360,11 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertTrue(response.getBody().getMessage().contains(String.format("Tema=%s på journalposten er ikke gyldig for ferdigstilling. " +
-				"For å unngå dette i fremtiden bør du fjerne muligheten til å ferdigstille på ugyldige tema", inaktivtFagomrade)));
+																		  "For å unngå dette i fremtiden bør du fjerne muligheten til å ferdigstille på ugyldige tema", inaktivtFagomrade)));
 	}
 
 	@Test
 	public void shouldSetNavUserIdHeaderSporingWhenServiceUserTokenAndNavUserIdHeaderIsSet() {
-		abacPermit();
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
 		journalpostTestRepository.persist(journalpost);
 

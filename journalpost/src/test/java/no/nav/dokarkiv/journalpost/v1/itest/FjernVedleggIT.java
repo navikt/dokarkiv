@@ -28,8 +28,6 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldHappyFjernVedleggTilknyttJournalpost() {
-		abacPermit();
-
 		Journalpost journalpost1 = createJournalpostUnderArbeid();
 		Journalpost journalpost2 = createJournalpostUnderArbeid();
 		Journalpost journalpostSomSkalFjernes = createJournalpostUnderArbeid();
@@ -77,8 +75,6 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFailToFjernVedleggJournalpostEqualsWithDokumentInfoOriginalJournalpostWithStatus4XX() {
-		abacPermit();
-
 		Journalpost journalpost1 = createJournalpostUnderArbeid();
 		Journalpost journalpost2 = createJournalpostUnderArbeid();
 		Journalpost journalpostSomSkalFjernes = createJournalpostUnderArbeid();
@@ -108,8 +104,6 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldReturnNotFoundWhenJournalpostNotFound() {
-		abacPermit();
-
 		commitAndStartNewTransaction();
 		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
 				.dokumentId("1111")
@@ -125,8 +119,6 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldReturnBadRequestWhenDokumentInfoIdNull() {
-		abacPermit();
-
 		commitAndStartNewTransaction();
 		FjernVedleggTilknyttetJournalpostRequest request = FjernVedleggTilknyttetJournalpostRequest.builder()
 				.dokumentId(null)

@@ -3,7 +3,6 @@ package no.nav.dokarkiv.core.metrics;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
-import no.nav.dokarkiv.core.security.abac.AuthorizationException;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
@@ -18,6 +17,6 @@ public class MetricUtils {
 	}
 
 	public static boolean isFunctionalException(Throwable e) {
-		return e instanceof DokarkivFunctionalException || e instanceof AuthorizationException;
+		return e instanceof DokarkivFunctionalException;
 	}
 }

@@ -48,7 +48,6 @@
 		<microsoft-graph.version>5.53.0</microsoft-graph.version>
 
 		<!-- NAV -->
-		<abac-spring.version>1.6.0</abac-spring.version>
 		<token-support.version>2.1.4</token-support.version>
 		<verapdf.version>1.22.2</verapdf.version>
 
@@ -120,11 +119,6 @@
 				<groupId>no.nav.tjenester.brevogarkiv</groupId>
 				<artifactId>dokumentproduksjoninfo-tjenestespesifikasjon</artifactId>
 				<version>${dokumentproduksjoninfo-tjenestespesifikasjon.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.freg</groupId>
-				<artifactId>abac-spring</artifactId>
-				<version>${abac-spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.security</groupId>

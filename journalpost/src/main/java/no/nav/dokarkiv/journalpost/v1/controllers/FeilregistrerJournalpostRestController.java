@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
-import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.journalpost.v1.services.AvbrytService;
 import no.nav.dokarkiv.journalpost.v1.services.FeilregistrerSakstilknytningService;
 import no.nav.dokarkiv.journalpost.v1.services.UkjentBrukerService;
@@ -19,10 +18,8 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFeilregistrerSakstilknytnin
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpphevFeilregistrertSakstilknytning;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSettStatusUtgar;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSettUkjentBruker;
-import no.nav.freg.abac.core.annotation.Abac;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_ARKIV_JOURNALPOST;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_DOMENE;
-import static no.nav.abac.xacml.NavAttributter.RESOURCE_FELLES_RESOURCE_TYPE;
-import static no.nav.abac.xacml.StandardAttributter.ACTION_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ADMIN_UPDATE_ACTION;
-import static no.nav.dokarkiv.core.security.abac.JoarkAbacAttributes.ARKIV_V2;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_AVBRYT;
@@ -63,7 +54,6 @@ public class FeilregistrerJournalpostRestController {
 	private final UkjentBrukerService ukjentBrukerService;
 	private final AvbrytService avbrytService;
 	private final AksjonsLoggService aksjonsLoggService;
-	private final AbacSecurityService abacSecurityServiceV2;
 	private final UtgaarService utgaarService;
 
 	public FeilregistrerJournalpostRestController(
@@ -71,14 +61,12 @@ public class FeilregistrerJournalpostRestController {
 			final UkjentBrukerService ukjentBrukerService,
 			final AvbrytService avbrytService,
 			final AksjonsLoggService aksjonsLoggService,
-			@Qualifier("abacArkivV2SecurityService") AbacSecurityService abacSecurityServiceV2,
 			UtgaarService statusUtgaarService
 	) {
 		this.feilregistrerSakstilknytningService = feilregistrerSakstilknytningService;
 		this.ukjentBrukerService = ukjentBrukerService;
 		this.avbrytService = avbrytService;
 		this.aksjonsLoggService = aksjonsLoggService;
-		this.abacSecurityServiceV2 = abacSecurityServiceV2;
 		this.utgaarService = statusUtgaarService;
 	}
 
@@ -115,13 +103,9 @@ public class FeilregistrerJournalpostRestController {
 	@Transactional
 	@SwaggerSettUkjentBruker
 	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_UKJENT_BRUKER)
-	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
-			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
-			actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark403"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> settUkjentBruker(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
-		abacSecurityServiceV2.assertAccessToJournalpost(journalpostId);
 		List<ArkivElementEndringTO> arkivElementEndringTOList = ukjentBrukerService.settUkjentBruker(journalpostId);
 		populerAksjonslogg(journalpostId, AksjonsTypeCode.UKJENT_BRUKER, arkivElementEndringTOList, FIKK_UKJENT_BRUKER);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til Ukjent Bruker for journalpost med journalpostId={}", journalpostId);
@@ -141,14 +125,10 @@ public class FeilregistrerJournalpostRestController {
 	@Transactional
 	@SwaggerSettStatusUtgar
 	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_STATUS_UTGAAR)
-	@Abac(resources = {@Abac.Attr(key = RESOURCE_FELLES_RESOURCE_TYPE, value = RESOURCE_ARKIV_JOURNALPOST),
-			@Abac.Attr(key = RESOURCE_FELLES_DOMENE, value = ARKIV_V2)},
-			actions = @Abac.Attr(key = ACTION_ID, value = ADMIN_UPDATE_ACTION))
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark405"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> utgaar(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal settes til utgått", required = true, example = "77778888") String journalpostId
 	) {
-		abacSecurityServiceV2.assertAccessToJournalpost(journalpostId);
 		String response = utgaarService.settStatusUtgaar(journalpostId);
 		return ResponseEntity.ok().body(response);
 	}

@@ -2,7 +2,6 @@ package no.nav.dokarkiv.journalpost.v1;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.security.abac.AbacSecurityService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.validators.CommonValidator;
 import org.aspectj.lang.JoinPoint;
@@ -22,12 +21,6 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 @Component
 @Slf4j
 public class JournalpostApiAspects {
-
-    private final AbacSecurityService abacSecurityService;
-
-    public JournalpostApiAspects(AbacSecurityService abacSecurityService) {
-        this.abacSecurityService = abacSecurityService;
-    }
 
     @Before("execution(* no.nav.dokarkiv.journalpost.v1.controllers.FeilregistrerJournalpostRestController.*(..)) && args(journalpostId)")
     public void aConfigureMDC(JoinPoint point, String journalpostId) {

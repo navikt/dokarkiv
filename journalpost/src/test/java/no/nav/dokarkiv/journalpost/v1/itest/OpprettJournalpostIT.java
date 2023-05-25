@@ -110,7 +110,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathOpprettInngaaende() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createRequest(INNGAAENDE);
@@ -161,7 +160,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@ParameterizedTest
 	@EnumSource(value = InnsynCode.class, names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT"})
 	public void happyPathOpprettInngaaendeMedOverstyringAvInnsynsregler(InnsynCode overstyrInnsynsregler) {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
@@ -189,7 +187,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathOpprettInngaaendeUtenOverstyringAvInnsynsregler() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
@@ -214,7 +211,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathOpprettUtgaaende() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE);
@@ -238,7 +234,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathOpprettNotat() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createRequest(NOTAT);
@@ -262,7 +257,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathOpprettOgFerdigstillInngaaende() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createRequest(INNGAAENDE, "9999");
@@ -298,7 +292,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathOpprettOgFerdigstillUtgaaende() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "0123");
@@ -333,7 +326,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathGsakArkivsak() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
@@ -357,7 +349,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathGsakArkivsakSakstypeIkkeAngitt() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
@@ -377,7 +368,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathPsakArkivsak() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
@@ -401,7 +391,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathNyGenerellSak() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
@@ -443,7 +432,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathEksisterendeGenerellSak() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
@@ -474,7 +462,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathNyFagsak() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
@@ -516,7 +503,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathNyFagsakAktoerId() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 		stubAzure();
 		happyFnrIdentStub();
@@ -552,7 +538,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathWithKanalAsNull() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest requestWithKanalAsNull = createMinimalRequestWithKanal(null);
@@ -567,7 +552,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathWithKanalAsEmpty() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest requestWithKanalAsEmpty = createMinimalRequestWithKanal("");
@@ -583,7 +567,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldJournalfoereWhenTemUFOAndGenerellSak() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
@@ -608,7 +591,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldJournalfoereWhenTemaPENAndGenerellSak() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
@@ -633,7 +615,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldOppretteJournalpostWithoutBrukerWhenFnrNotFound() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 		stubAzure();
 		identNotFoundStub();
@@ -663,7 +644,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathNyFagsakOrgnr() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
@@ -698,7 +678,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathEksisterendeFagsak() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
@@ -729,7 +708,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void happyPathFagsakPesys() {
 		clearSakRepository();
-		abacPermit();
 		restStsToken();
 
 		long sakRepositoryCount = sakTestRepository.count();
@@ -754,7 +732,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFailOnFerdigstillingWhenMissingJournalfoerendeEnhet() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createRequest(INNGAAENDE, null);
@@ -782,7 +759,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFailOnFerdigstillingWhenMissingPaakrevdeFelter() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
@@ -839,7 +815,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFailOnFerdigstillingAndSetJournalfoerendeEnhetWhenMissingPaakrevdeFelterAndInputJournalfoerendeEnhetIsMaskinell9999() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
@@ -889,7 +864,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldOppdatertJournalfoerendeEnhetToNullWhenFerdigstillingFailsAndJournalfoerendeEnhetEr9999() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
@@ -939,7 +913,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldRunOKWithoutTittelAndTema() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE).build();
@@ -954,7 +927,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldJournalfoereSoeknadOmStoenadIPensjonsnoed() throws IOException {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = mapper.readValue(classpathToString("__files/opprettJournalpostMedEttDokument.json"), OpprettJournalpostRequest.class);
@@ -969,7 +941,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldEndeligJournalfoereSoeknadOmForeldrepengerVedFoedsel() throws IOException {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = mapper.readValue(classpathToString("__files/soeknadOmForeldrepengerVedFoedsel.json"), OpprettJournalpostRequest.class);
@@ -984,7 +955,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldCallAktoerService() {
-		abacPermit();
 		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
@@ -1010,7 +980,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldNotCallAktoerServiceWithoutBrukerIdTypeFNR() {
-		abacPermit();
 		restStsToken();
 		stubAzure();
 		happyFnrIdentStub();
@@ -1036,7 +1005,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldNotCallAktoerServiceWithSAKFagsystemPP01() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
@@ -1060,7 +1028,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldNotCallAktoerServiceWithoutSakstype() {
-		abacPermit();
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
@@ -1253,7 +1220,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldNotCreateDuplicateJournalpostWithSameEksternReferanseId() {
-		abacPermit();
 		stubAzure();
 		restStsToken();
 

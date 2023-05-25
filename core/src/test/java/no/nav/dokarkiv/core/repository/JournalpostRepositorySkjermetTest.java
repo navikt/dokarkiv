@@ -7,7 +7,6 @@ import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
-import no.nav.dokarkiv.core.security.abac.JdbcAbacSecurityRepository;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
@@ -36,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-@ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class, JdbcAbacSecurityRepository.class})
+@ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class})
 @Transactional
 @ActiveProfiles("itest")
 public class JournalpostRepositorySkjermetTest {

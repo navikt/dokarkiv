@@ -36,8 +36,6 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathFeilregistrer() {
-		abacPermit();
-
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
@@ -71,8 +69,6 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathFeilregistrerWithSaksbehandlerToken() {
-		abacPermit();
-
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
@@ -95,8 +91,6 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathOpphevFeilregistrering() {
-		abacPermit();
-
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.getSaksrelasjon().setFeilregistrert(true);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
@@ -128,8 +122,6 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathUkjentBruker() {
-		abacPermit();
-
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(U);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
@@ -161,8 +153,6 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldGet405WhenJournalPostHaveStatusUtgaaende() {
-		abacPermit();
-
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(U);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
@@ -177,8 +167,6 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSetUtgaarJournalstatusWhenValidatedOk() {
-		abacPermit();
-
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(OD);
 		journalpost.setJournalposttype(I);
@@ -211,8 +199,6 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSetNavIdentInUtfoertAvWhenSaksbehandlerTokenSupplied() {
-		abacPermit();
-
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
