@@ -59,7 +59,7 @@
       "cluster": "prod-gcp"
     },
     {
-      "app": "altinn-meldinger-api",
+      "app": "permitteringsskjema-api",
       "namespace": "permittering-og-nedbemanning",
       "cluster": "prod-gcp"
     },
