@@ -5,7 +5,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.security.handler.AzureAdFlowSporingHandler;
@@ -14,7 +13,6 @@ import no.nav.dokarkiv.core.security.handler.NavSystemkontekstHandler;
 import no.nav.security.token.support.core.configuration.MultiIssuerConfiguration;
 import no.nav.security.token.support.core.context.TokenValidationContext;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
-import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -77,7 +75,6 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		putHttpMdcValues(request);
 		String authorizationToken = headerTokenExtractor.getIdToken(request);
 		String navConsumerToken = headerTokenExtractor.getConsumerToken(request);
 		String navUserIdHeader = request.getHeader(NavHeaders.NAV_USER_ID);
@@ -158,11 +155,6 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 		} catch (Exception e) {
 			log.warn("Det skjedde feil ved henting av consumer, metode eller controller navn for inkrementering av metrikker", e);
 		}
-	}
-
-	private void putHttpMdcValues(HttpServletRequest request) {
-		MDC.put(MDCConstants.MDC_HTTP_ENDPOINT, request.getRequestURL().toString());
-		MDC.put(MDCConstants.MDC_HTTP_OPERATION, request.getMethod());
 	}
 
 	private void incrementConsumerCounter(String consumer, String methodName, String controllerName) {

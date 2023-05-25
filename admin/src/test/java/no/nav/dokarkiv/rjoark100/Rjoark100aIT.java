@@ -145,7 +145,8 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	 * -> dokument(hoveddok)
 	 */
 	@Test
-	public void skalSkjermeDokumentInfoSomErGjenbruktSomHoveddokumentPåEnJournalpostOgSomVedleggPåEnAnnen() throws IOException {		Journalpost originalJournalpost = createUniqueJournalpostWithHoveddokument();
+	public void skalSkjermeDokumentInfoSomErGjenbruktSomHoveddokumentPåEnJournalpostOgSomVedleggPåEnAnnen() throws IOException {
+		Journalpost originalJournalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSkjermes = originalJournalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 

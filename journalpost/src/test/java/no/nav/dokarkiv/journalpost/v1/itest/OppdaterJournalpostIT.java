@@ -447,7 +447,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathNyGenerellSak() {
-		clearSakRepository();		restStsToken();
+		clearSakRepository();
+		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -490,7 +491,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathEksisterendeGenerellSak() {
-		clearSakRepository();		restStsToken();
+		clearSakRepository();
+		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -530,7 +532,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathNyFagsak() {
-		clearSakRepository();		restStsToken();
+		clearSakRepository();
+		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -575,7 +578,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathNyFagsakAktoerId() {
-		clearSakRepository();		restStsToken();
+		clearSakRepository();
+		restStsToken();
 		stubAzure();
 		happyFnrIdentStub();
 
@@ -624,7 +628,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldOppdatereJournalpostWithoutBrukerWhenFnrNotFound() {
-		clearSakRepository();		restStsToken();
+		clearSakRepository();
+		restStsToken();
 		stubAzure();
 		identNotFoundStub();
 
@@ -708,7 +713,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathEksisterendeFagsak() {
-		clearSakRepository();		restStsToken();
+		clearSakRepository();
+		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -792,7 +798,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldUpdateWhenTemaPENAndGenerellSak() {
-		clearSakRepository();		restStsToken();
+		clearSakRepository();
+		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -823,7 +830,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldUpdateWhenTemaUFOAndGenerellSak() {
-		clearSakRepository();		restStsToken();
+		clearSakRepository();
+		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -854,7 +862,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldCallAktoerService() {
-		clearSakRepository();		restStsToken();
+		clearSakRepository();
+		restStsToken();
 		stubAzure();
 		happyAktoerIdStub();
 
@@ -881,7 +890,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldNotCallAktoerServiceWithoutBrukerIdTypeFNR() {
-		clearSakRepository();		restStsToken();
+		clearSakRepository();
+		restStsToken();
 		stubAzure();
 		happyFnrIdentStub();
 
@@ -971,7 +981,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldUsePdlNameForAvsenderMottakerNameNull() {
-		clearSakRepository();		restStsToken();
+		clearSakRepository();
+		restStsToken();
 		stubAzure();
 		happyPersonIdentStub();
 		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)

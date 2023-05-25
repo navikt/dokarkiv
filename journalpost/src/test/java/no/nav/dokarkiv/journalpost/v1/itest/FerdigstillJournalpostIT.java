@@ -67,7 +67,8 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
-	public void happyPathInngaaendeForOndemand() {		Date datoJournal = new Date(System.currentTimeMillis() - 50000L);
+	public void happyPathInngaaendeForOndemand() {
+		Date datoJournal = new Date(System.currentTimeMillis() - 50000L);
 		Date datoSendtPrint = new Date(System.currentTimeMillis() - 20000L);
 
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
@@ -178,7 +179,8 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathJournalstatusFSKanFerdigstilles() {		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
+	public void happyPathJournalstatusFSKanFerdigstilles() {
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -358,7 +360,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertTrue(response.getBody().getMessage().contains(String.format("Tema=%s på journalposten er ikke gyldig for ferdigstilling. " +
-				"For å unngå dette i fremtiden bør du fjerne muligheten til å ferdigstille på ugyldige tema", inaktivtFagomrade)));
+																		  "For å unngå dette i fremtiden bør du fjerne muligheten til å ferdigstille på ugyldige tema", inaktivtFagomrade)));
 	}
 
 	@Test
