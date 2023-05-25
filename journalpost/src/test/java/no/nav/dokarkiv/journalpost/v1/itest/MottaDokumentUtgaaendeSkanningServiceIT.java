@@ -47,7 +47,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 	private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
 	private static final String KILDE = "skanmotutgaaende";
 
-	private final Date mockDate = new Date(Date.UTC(2000, Calendar.NOVEMBER, 10, 0, 0, 0));
+	private final Date mockDate = new Date(Date.UTC(100, Calendar.NOVEMBER, 10, 0, 0, 0)); // aar 2000
 
 	private final String mockMottaksKanal = MottaksKanalCode.SKAN_NETS.toString();
 	private final List<Tilleggsopplysning> mockTilleggsopplysninger = List.of(new Tilleggsopplysning("mockNoekkel",
