@@ -817,7 +817,6 @@ public class OpprettJournalpostRequestValidatorTest {
 		assertThat(exception.getMessage()).contains(format("Validering av %s feilet. Dato kan ikke være frem i tid.","DatoDokument"));
 	}
 
-	@Disabled
 	@ParameterizedTest
 	@MethodSource
 	void shouldLogWarningWhenDatoMottattIsAfter(Date innsendtDato){
@@ -838,7 +837,6 @@ public class OpprettJournalpostRequestValidatorTest {
 		);
 	}
 
-	@Disabled
 	@ParameterizedTest
 	@MethodSource
 	void shouldNotLogWarningWhenDatoMottattIsBeforeOrSameDate(Date innsendtDato){
