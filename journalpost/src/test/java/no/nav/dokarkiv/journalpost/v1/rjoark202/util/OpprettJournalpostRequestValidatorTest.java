@@ -16,18 +16,28 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.time.ZoneId.systemDefault;
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
@@ -794,18 +804,62 @@ public class OpprettJournalpostRequestValidatorTest {
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
 		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.variantformat");
 	}
+
 	@Test
 	void shouldThrowExceptionWhenDatoIsInTheFuture(){
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.behandlingstema("ab0001")
 				.avsenderMottaker(null)
-				.datoDokument(LocalDateTime.now().plus(3, ChronoUnit.DAYS))
+				.datoDokument(LocalDateTime.now().plus(3, DAYS))
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
 		assertThat(exception.getMessage()).contains(format("Validering av %s feilet. Dato kan ikke være frem i tid.","DatoDokument"));
 	}
 
+	@ParameterizedTest
+	@MethodSource
+	void shouldLogWarningWhenDatoMottattIsAfter(Date innsendtDato){
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.behandlingstema("ab0001")
+				.avsenderMottaker(null)
+				.datoMottatt(innsendtDato)
+				.build();
+
+		assertDoesNotThrow(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+	}
+
+	private static Stream<Arguments> shouldLogWarningWhenDatoMottattIsAfter() {
+		var naatid = LocalDate.now();
+
+		return Stream.of(
+				Arguments.of(Date.from(naatid.atStartOfDay().atZone(ZoneId.of("Z")).toInstant().plus(23, HOURS).plus(59, MINUTES)))
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	void shouldNotLogWarningWhenDatoMottattIsBeforeOrSameDate(Date innsendtDato){
+		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.behandlingstema("ab0001")
+				.avsenderMottaker(null)
+				.datoMottatt(innsendtDato)
+				.build();
+
+		assertDoesNotThrow(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+	}
+
+	private static Stream<Arguments> shouldNotLogWarningWhenDatoMottattIsBeforeOrSameDate() {
+		var naatid = LocalDate.now();
+
+		return Stream.of(
+				Arguments.of(Date.from(naatid.atStartOfDay().atZone(systemDefault()).toInstant())),
+				Arguments.of(Date.from(naatid.atStartOfDay().atZone(systemDefault()).toInstant().plus(23, HOURS).plus(59, MINUTES))),
+				Arguments.of(Date.from(naatid.atStartOfDay().atZone(systemDefault()).minus(1, DAYS).toInstant())),
+				Arguments.of(Date.from(naatid.atStartOfDay().atZone(ZoneId.of("Z")).toInstant())), // datoMottatt er UTC uten klokkeslett
+				Arguments.of(Date.from(naatid.atStartOfDay().atZone(ZoneId.of("Z")).toInstant().minus(1, DAYS))) // datoMottatt er UTC uten klokkeslett
+		);
+	}
 
 	@ParameterizedTest
 	@EnumSource(

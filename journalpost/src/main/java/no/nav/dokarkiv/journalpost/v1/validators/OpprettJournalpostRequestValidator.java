@@ -16,6 +16,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
@@ -131,7 +132,7 @@ public class OpprettJournalpostRequestValidator {
 	private void validateDato(LocalDateTime dato, String datoFeltNavn) {
 		LocalDateTime naaTid = LocalDateTime.now().plusSeconds(3);
 		if (dato.isAfter(naaTid)) {
-			throw new InputValideringFeiletException(format("Validering av %s feilet. Dato kan ikke være frem i tid. %s er %s og nå tid er %s",
+			throw new InputValideringFeiletException(format("Validering av %s feilet. Dato kan ikke være frem i tid. %s er %s og nåtid er %s",
 					datoFeltNavn,
 					datoFeltNavn,
 					dato,
@@ -141,13 +142,18 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void softValidateDato(Date dato, String datoFeltNavn) {
-		Date systemdato = Date.from(LocalDateTime.now().plusSeconds(3).atZone(ZoneId.systemDefault()).toInstant());
-		if (dato.compareTo(systemdato) > 0) {
-			log.warn(format("Validering av %s feilet. Dato kan ikke være frem i tid. %s er %s og nå tid er %s",
+		var innsendtDato = dato.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(); // Konverterer til lokaltid på formatet "yyyy-MM-dd"
+		var dagensDato = LocalDate.now();
+
+		if (innsendtDato.isAfter(dagensDato)) {
+			log.warn(format("Validering av %s feilet. %s kan ikke være etter dagens dato=%s, men %s=%s (%s)",
 					datoFeltNavn,
 					datoFeltNavn,
-					dato,
-					systemdato));
+					dagensDato,
+					datoFeltNavn,
+					innsendtDato,
+					dato
+			));
 		}
 	}
 	private void validateBruker(Bruker bruker) {
