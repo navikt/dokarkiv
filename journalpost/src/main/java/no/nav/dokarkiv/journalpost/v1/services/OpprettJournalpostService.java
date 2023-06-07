@@ -46,6 +46,7 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OVERSTYR_INNSYN;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementEksternReferanseIdIkkeSattCounter;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementSakstypeCounter;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -99,6 +100,7 @@ public class OpprettJournalpostService {
 				return new OpprettJournalpostResult(journalpost, true);
 			}
 		}
+		incrementEksternReferanseIdIkkeSattCounter(eksternReferanseId, meterRegistry);
 
 		Optional<Sak> sakOptional = hentSak(request);
 		Long sakId = sakOptional.map(Sak::getSakId).orElse(null);
