@@ -24,14 +24,17 @@ import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
 import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
 public class PdlIdentConsumer implements IdentConsumer {
 
 	private static final String PERSON_IKKE_FUNNET_CODE = "not_found";
-	private static final String TEMA = "Tema";
+	private static final String HEADER_PDL_TEMA = "Tema";
+	// https://pdldocs-navno.msappproxy.net/ekstern/index.html#_dokumenter_hjemmel_vha_tema
+	private static final String HEADER_PDL_BEHANDLINGSNUMMER = "behandlingsnummer";
+	// https://behandlingskatalog.nais.adeo.no/process/purpose/ARKIVPLEIE/756fd557-b95e-4b20-9de9-6179fb8317e6
+	private static final String ARKIVPLEIE_BEHANDLINGSNUMMER = "B315";
 
 	private final WebClient webClient;
 
@@ -40,7 +43,10 @@ public class PdlIdentConsumer implements IdentConsumer {
 							AzureToken azureToken) {
 		this.webClient = webClient.mutate()
 				.baseUrl(dokarkivProperties.getEndpoints().getPdl().getUrl())
-				.defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.defaultHeaders((headers) -> {
+					headers.setContentType(APPLICATION_JSON);
+					headers.set(HEADER_PDL_BEHANDLINGSNUMMER, ARKIVPLEIE_BEHANDLINGSNUMMER);
+				})
 				.filter(new NavHeadersFilter())
 				.filter(new WebClientAzureAuthentication(azureToken, dokarkivProperties.getEndpoints().getPdl().getScope()))
 				.build();
@@ -148,7 +154,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	public String hentPersonIdent(String ident, String tema) {
 
 		ResponseEntity<PdlPersonResponse> pdlPersonResponse = webClient.post()
-				.header(TEMA, tema)
+				.header(HEADER_PDL_TEMA, tema)
 				.bodyValue(mapHentPersonIdentForId(this.validateFolkeregisterIdent(ident)))
 				.retrieve()
 				.toEntity(PdlPersonResponse.class)
