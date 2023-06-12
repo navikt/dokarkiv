@@ -416,6 +416,26 @@
       "app": "spberegning",
       "namespace": "helsearbeidsgiver",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "fpformidling",
+      "namespace": "teamforeldrepenger",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "fptilbake",
+      "namespace": "teamforeldrepenger",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "fpfordel",
+      "namespace": "teamforeldrepenger",
+      "cluster": "prod-fss"
+    },
+    {
+      "app": "fpsoknad-mottak",
+      "namespace": "teamforeldrepenger",
+      "cluster": "prod-fss"
     }
   ]
 }
