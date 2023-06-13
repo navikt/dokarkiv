@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
 
@@ -99,9 +98,6 @@ public class Rjoark901IT extends AbstractHentjournalsakinfoItest {
 		TilgangJournalpostDto responseJournalpost = Objects.requireNonNull(responseEntity.getBody()).getTilgangJournalpostDto();
 		TilgangDokumentInfoDto tilgangDokumentInfoDto = responseJournalpost.getDokument();
 
-		assertTrue(tilgangDokumentInfoDto.getInnskrenketTredjepart());
-		assertTrue(tilgangDokumentInfoDto.getInnskrenketPartsinnsyn());
-		assertTrue(tilgangDokumentInfoDto.getOrganinternt());
 		assertFalse(tilgangDokumentInfoDto.getKassert());
 		assertFalse(responseJournalpost.getSak().getFeilregistrert());
 		assertEquals(DokumentKategoriCode.B, tilgangDokumentInfoDto.getKategori());

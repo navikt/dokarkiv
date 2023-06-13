@@ -411,9 +411,7 @@ public class DefaultOpprettJournalpostArkiverDokumenterValidatorTest {
 										.dokumenttypeId("dokumentTypeId")
 										.sensitivt(true)
 										.tittel("tittel")
-										.innskrenketPartsinnsyn(true)
 										.brevkode("brevkode")
-										.organInternt(false)
 										.kategori(DokumentKategoriCode.ES)
 										.filDetaljerList(
 												getFilDetaljerBuilder()

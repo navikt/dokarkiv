@@ -21,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HentTilgangJournalpostDtoMapperTest {
@@ -65,9 +64,6 @@ public class HentTilgangJournalpostDtoMapperTest {
 		SkjermingTypeCode fildetaljerSkjermingType = SkjermingTypeCode.POL;
 
 		DokumentKategoriCode dokumentKategoriCode = DokumentKategoriCode.B;
-		boolean organinternt = true;
-		boolean innskrenketPartsinnsyn = false;
-		boolean innskrenketTredjepart = true;
 		boolean kassert = true;
 
 		Object[] tuple = new Object[]{
@@ -78,7 +74,7 @@ public class HentTilgangJournalpostDtoMapperTest {
 				sakrelasjonTema, sakrelasjonFagsakNr, sakrelasjonOrgnr,
 				sakrelasjonApplikasjon, sakrelasjonOpprettetAv, journalpostDatetime,
 				dokumentInfoId, dokumentInfoStatus, dokumentInfoBrevkode,
-				dokumentKategoriCode, organinternt, innskrenketPartsinnsyn, innskrenketTredjepart, kassert,
+				dokumentKategoriCode, kassert,
 				dokumentInfoRelasjonerSkjermingType, fildetaljerVariantFormat, fildetaljerSkjermingType, innsyn
 		};
 
@@ -115,9 +111,6 @@ public class HentTilgangJournalpostDtoMapperTest {
 		assertEquals(fildetaljerVariantFormat, journalpostDto.getDokument().getVariant().getVariantFormat());
 		assertEquals(fildetaljerSkjermingType, journalpostDto.getDokument().getVariant().getSkjerming());
 
-		assertTrue(journalpostDto.getDokument().getOrganinternt());
-		assertFalse(journalpostDto.getDokument().getInnskrenketPartsinnsyn());
-		assertTrue(journalpostDto.getDokument().getInnskrenketTredjepart());
 		assertTrue(journalpostDto.getDokument().getKassert());
 	}
 }

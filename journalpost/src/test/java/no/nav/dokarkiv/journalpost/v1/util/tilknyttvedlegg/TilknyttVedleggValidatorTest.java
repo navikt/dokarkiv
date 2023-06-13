@@ -9,20 +9,18 @@ import no.nav.dokarkiv.core.exceptions.KanIkkeTilknytteVedleggException;
 import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggValidator;
 import org.junit.jupiter.api.Test;
 
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_ORGAN_INTERNT;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * @author Olav Røstvold Thorsen, Visma Consulting.
- */
 public class TilknyttVedleggValidatorTest {
 
 	private final TilknyttVedleggValidator validator = new TilknyttVedleggValidator();
 
 	@Test
-	public void happyPath(){
+	void happyPath() {
 		Journalpost targetJournalpost = createJournalpost();
 		targetJournalpost.setJournalstatus(JournalStatusCode.D);
 		targetJournalpost.setJournalposttype(JournalpostTypeCode.U);
@@ -32,18 +30,16 @@ public class TilknyttVedleggValidatorTest {
 
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-				.organInternt(false)
 				.kassert(false)
 				.build();
 
 		validator.validateJournalpostStatus(targetJournalpost);
-		validator.validateSourceJournalpostStatus(sourceJournalpost);
-		validator.validateDokumentInfo(dokumentInfo);
-
+		validator.validateSourceJournalpost(sourceJournalpost);
+		validator.validateSourceDokumentInfo(dokumentInfo);
 	}
 
 	@Test
-	public void shouldThrowExceptionIfJournalpoststatusIsNotUnderProduksjonD() {
+	void shouldThrowExceptionIfJournalpoststatusIsNotUnderProduksjonD() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.J);
 
@@ -52,23 +48,23 @@ public class TilknyttVedleggValidatorTest {
 	}
 
 	@Test
-	public void shouldreturnFalseIfOriginJournalpoststatusIsNotValid() {
+	void shouldreturnFalseIfOriginJournalpoststatusIsNotValid() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(JournalStatusCode.D);
 
-		assertThat(validator.validateSourceJournalpostStatus(journalpost), is(false));
+		assertThat(validator.validateSourceJournalpost(journalpost), is(false));
 	}
 
 	@Test
-	public void shouldreturnFalseIfOriginJournalpoststatusIsNull() {
+	void shouldreturnFalseIfOriginJournalpoststatusIsNull() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(null);
 
-		assertThat(validator.validateSourceJournalpostStatus(journalpost), is(false));
+		assertThat(validator.validateSourceJournalpost(journalpost), is(false));
 	}
 
 	@Test
-	public void shouldReturnFalseIfJournalpostTypeCodeIsNotUtgaande() {
+	void shouldReturnFalseIfJournalpostTypeCodeIsNotUtgaande() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalposttype(JournalpostTypeCode.I);
 
@@ -77,39 +73,29 @@ public class TilknyttVedleggValidatorTest {
 	}
 
 	@Test
-	public void shouldReturnFalseIfDokumentStatusCodeIsNotFerdigstilt() {
+	void shouldReturnFalseWhenSourceJournalpostInnsynIsSKJULES_ORGAN_INTERNT() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setInnsyn(SKJULES_ORGAN_INTERNT);
+
+		assertThat(validator.validateSourceJournalpost(journalpost), is(false));
+	}
+
+	@Test
+	void shouldReturnFalseIfDokumentStatusCodeIsNotFerdigstilt() {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.dokumentstatus(DokumentStatusCode.UNDER_REDIGERING)
 				.build();
 
-		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));
+		assertThat(validator.validateSourceDokumentInfo(dokumentInfo), is(false));
 	}
 
 	@Test
-	public void shouldReturnFalseIfOrganInterntIsTrue() {
-		DokumentInfo dokumentInfo = DokumentInfo.builder()
-				.organInternt(true)
-				.build();
-
-		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));
-	}
-
-	@Test
-	public void shouldReturnFalseIfOrganInterntIsNull() {
-		DokumentInfo dokumentInfo = DokumentInfo.builder()
-				.organInternt(true)
-				.build();
-
-		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));
-	}
-
-	@Test
-	public void shouldReturnFalseIfSlettetIsTrue() {
+	void shouldReturnFalseIfSlettetIsTrue() {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.kassert(true)
 				.build();
 
-		assertThat(validator.validateDokumentInfo(dokumentInfo), is(false));
+		assertThat(validator.validateSourceDokumentInfo(dokumentInfo), is(false));
 	}
 
 }

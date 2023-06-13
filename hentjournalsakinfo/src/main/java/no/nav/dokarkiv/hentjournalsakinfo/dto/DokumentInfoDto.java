@@ -27,8 +27,5 @@ public class DokumentInfoDto {
 	Boolean kassert;
 	List<LogiskVedleggDto> logiske;
 	DokumentKategoriCode kategori;
-	Boolean organInternt;
-	Boolean innskrPartsinnsyn;
-	Boolean innskrTredjepart;
 	Boolean sensitivt;
 }
