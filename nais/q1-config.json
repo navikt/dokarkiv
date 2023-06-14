@@ -248,7 +248,7 @@
       "namespace": "k9saksbehandling",
       "cluster": "dev-fss"
     }, {
-      "app": "k9-punsj",
+      "app": "k9-tilbake",
       "namespace": "k9saksbehandling",
       "cluster": "dev-fss"
     },
