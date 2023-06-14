@@ -247,6 +247,10 @@
       "app": "k9-punsj",
       "namespace": "k9saksbehandling",
       "cluster": "dev-fss"
+    }, {
+      "app": "k9-punsj",
+      "namespace": "k9saksbehandling",
+      "cluster": "dev-fss"
     },
     {
       "app": "flex-joark-mottak",
