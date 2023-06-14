@@ -211,6 +211,10 @@
       "app": "k9-punsj",
       "namespace": "k9saksbehandling",
       "cluster": "prod-fss"
+    },{
+      "app": "k9-tilbake",
+      "namespace": "k9saksbehandling",
+      "cluster": "prod-fss"
     },
     {
       "app": "yrkesskade-melding-mottak",
