@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TilknyttVedleggValidatorTest {
 
@@ -49,15 +50,18 @@ public class TilknyttVedleggValidatorTest {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(J);
 
-		assertThrows(KanIkkeTilknytteVedleggException.class, () -> validator.validateJournalpostStatus(journalpost));
+		Exception e = assertThrows(KanIkkeTilknytteVedleggException.class, () -> validator.validateJournalpostStatus(journalpost));
+		assertTrue(e.getMessage().contains("journalpost må ha journalstatus=D"));
 	}
 
 	@Test
 	void shouldThrowExceptionIfInvalidJournalpostTypeCode() {
 		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(D);
 		journalpost.setJournalposttype(I);
 
-		assertThrows(KanIkkeTilknytteVedleggException.class, () -> validator.validateJournalpostStatus(journalpost));
+		Exception e = assertThrows(KanIkkeTilknytteVedleggException.class, () -> validator.validateJournalpostStatus(journalpost));
+		assertTrue(e.getMessage().contains("journalpost må være en av typene [U, N]"));
 	}
 
 

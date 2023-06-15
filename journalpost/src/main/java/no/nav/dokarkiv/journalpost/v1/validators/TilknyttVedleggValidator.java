@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.KanIkkeTilknytteVedleggException;
 
-import java.util.Set;
+import java.util.EnumSet;
 
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_ORGAN_INTERNT;
@@ -22,8 +22,8 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 @Slf4j
 public class TilknyttVedleggValidator {
 
-	private static final Set<JournalpostTypeCode> GYLDIGE_JOURNALPOSTTYPER = Set.of(U, N);
-	private static final Set<JournalStatusCode> ORIGIN_JOURNALSTATUS_LIST = Set.of(J, FL, FS, E);
+	private static final EnumSet<JournalpostTypeCode> GYLDIGE_JOURNALPOSTTYPER = EnumSet.of(U, N);
+	private static final EnumSet<JournalStatusCode> ORIGIN_JOURNALSTATUS_LIST = EnumSet.of(J, FL, FS, E);
 
 	public void validateJournalpostStatus(Journalpost targetJournalpost) {
 		if (!D.equals(targetJournalpost.getJournalstatus())) {
@@ -32,8 +32,8 @@ public class TilknyttVedleggValidator {
 		}
 
 		if (!GYLDIGE_JOURNALPOSTTYPER.contains(targetJournalpost.getJournalposttype())) {
-			throw new KanIkkeTilknytteVedleggException(String.format("Kan ikke legge til vedlegg på journalpostId=%s med journalpostTypeCode=%s, journalpost må være av type U eller N",
-					targetJournalpost.getJournalpostId(), targetJournalpost.getJournalposttype()));
+			throw new KanIkkeTilknytteVedleggException(String.format("Kan ikke legge til vedlegg på journalpostId=%s med journalpostTypeCode=%s, journalpost må være en av typene %s",
+					targetJournalpost.getJournalpostId(), targetJournalpost.getJournalposttype(), GYLDIGE_JOURNALPOSTTYPER));
 		}
 	}
 
