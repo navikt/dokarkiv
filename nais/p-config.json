@@ -213,6 +213,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "k9-tilbake",
+      "namespace": "k9saksbehandling",
+      "cluster": "prod-fss"
+    },
+    {
       "app": "yrkesskade-melding-mottak",
       "namespace": "yrkesskade",
       "cluster": "prod-gcp"
