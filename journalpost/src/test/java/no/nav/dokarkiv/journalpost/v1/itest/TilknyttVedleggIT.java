@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -14,9 +12,10 @@ import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -35,6 +34,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.util.stream.Collectors.joining;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.FAR;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.KTA;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.PEN;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
@@ -52,6 +58,10 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.MULTI_STATUS;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -68,11 +78,12 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		stubAzure();
 	}
 
-	@Test
-	public void shouldTilknytteArkivVedleggTilJournalpost() {
-		Journalpost targetJournalpost = createJournalpostArkiv();
-		Journalpost sourceJournalpost = createJournalpostArkiv();
-		sourceJournalpost.setJournalstatus(JournalStatusCode.J);
+	@ParameterizedTest
+	@EnumSource(value = JournalpostTypeCode.class, names = {"U", "N"})
+	public void shouldTilknytteArkivVedleggTilJournalpost(JournalpostTypeCode journalpostTypeCode) {
+		Journalpost targetJournalpost = createJournalpostArkiv(journalpostTypeCode);
+		Journalpost sourceJournalpost = createJournalpostArkiv(journalpostTypeCode);
+		sourceJournalpost.setJournalstatus(J);
 		Long targetJournalpostId = saveJournalpost(targetJournalpost).getJournalpostId();
 		Long sourcejournalpostId = saveJournalpost(sourceJournalpost).getJournalpostId();
 
@@ -93,7 +104,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
+				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", PUT, requestHttpEntity, String.class);
 
 		completeCurrentAndStartNewTransaction();
 
@@ -112,11 +123,11 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldTilknytteFlereVedleggTilJournalpost() {
-		Journalpost targetJournalpost = createJournalpostArkiv();
+		Journalpost targetJournalpost = createJournalpostArkiv(U);
 		Journalpost sourceJournalpost1 = createJournalpostSladdet();
 		Journalpost sourceJournalpost2 = createJournalpostSladdet();
-		Journalpost sourceJournalpost3 = createJournalpostArkiv();
-		sourceJournalpost3.setJournalstatus(JournalStatusCode.J);
+		Journalpost sourceJournalpost3 = createJournalpostArkiv(U);
+		sourceJournalpost3.setJournalstatus(J);
 		Long targetJournalpostId = saveJournalpost(targetJournalpost).getJournalpostId();
 		Long sourceJournalpostId1 = saveJournalpost(sourceJournalpost1).getJournalpostId();
 		Long sourceJournalpostId2 = saveJournalpost(sourceJournalpost2).getJournalpostId();
@@ -146,7 +157,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		completeCurrentAndStartNewTransaction();
 
@@ -209,10 +220,10 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldTilknytte2av3VedleggTilJournalpost() {
-		Journalpost journalpostVedlegg = createJournalpostArkiv();
+		Journalpost journalpostVedlegg = createJournalpostArkiv(U);
 		Journalpost sourceJournalpost1 = createJournalpostSladdet();
 		Journalpost sourceJournalpost2 = createJournalpostSladdet();
-		Journalpost sourceJournalpost3 = createJournalpostArkiv();
+		Journalpost sourceJournalpost3 = createJournalpostArkiv(U);
 		Long journalpostIdVedlegg = saveJournalpost(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId1 = saveJournalpost(sourceJournalpost1).getJournalpostId();
 		Long sourceJournalpostId2 = saveJournalpost(sourceJournalpost2).getJournalpostId();
@@ -243,11 +254,11 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		completeCurrentAndStartNewTransaction();
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
+		assertThat(responseEntity.getStatusCode(), is(MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(UGYLDIG_STATUS));
 
 		//Assert 1 Sladdet
@@ -299,14 +310,14 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldOnlyPerformAccessLookupForFagomraadeFARAndKTA() {
-		Journalpost journalpostVedlegg = createJournalpostArkiv();
-		Journalpost sourceJournalpost1 = createJournalpostArkiv();
-		Journalpost sourceJournalpost2 = createJournalpostArkiv();
-		Journalpost sourceJournalpost3 = createJournalpostArkiv();
+		Journalpost journalpostVedlegg = createJournalpostArkiv(U);
+		Journalpost sourceJournalpost1 = createJournalpostArkiv(U);
+		Journalpost sourceJournalpost2 = createJournalpostArkiv(U);
+		Journalpost sourceJournalpost3 = createJournalpostArkiv(U);
 
-		sourceJournalpost1.setFagomrade(FagomradeCode.PEN);
-		sourceJournalpost2.setFagomrade(FagomradeCode.FAR);
-		sourceJournalpost3.setFagomrade(FagomradeCode.KTA);
+		sourceJournalpost1.setFagomrade(PEN);
+		sourceJournalpost2.setFagomrade(FAR);
+		sourceJournalpost3.setFagomrade(KTA);
 
 		Long journalpostIdVedlegg = saveJournalpost(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId1 = saveJournalpost(sourceJournalpost1).getJournalpostId();
@@ -337,7 +348,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-		restTemplate.exchange(URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+		restTemplate.exchange(URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		completeCurrentAndStartNewTransaction();
 
@@ -346,7 +357,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldReturnForbiddenForWrongConsumer() {
-		Journalpost journalpostVedlegg = createJournalpostArkiv();
+		Journalpost journalpostVedlegg = createJournalpostArkiv(U);
 		Journalpost sourceJournalpost = createJournalpostSladdet();
 		Long journalpostIdVedlegg = journalpostTestRepository.persist(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = journalpostTestRepository.persist(sourceJournalpost).getJournalpostId();
@@ -363,8 +374,8 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
+				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", PUT, requestHttpEntity, String.class);
+		assertThat(responseEntity.getStatusCode(), is(MULTI_STATUS));
 	}
 
 	@Test
@@ -379,7 +390,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + UGYLDIG_JOURNALPOST + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
+				URL_JOURNALPOST + UGYLDIG_JOURNALPOST + "/tilknyttVedlegg", PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 	}
@@ -387,7 +398,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldReturnConflictForJournalpostWrongStatus() {
 		Journalpost sourceJournalpost = createJournalpostSladdet();
-		sourceJournalpost.setJournalstatus(JournalStatusCode.M);
+		sourceJournalpost.setJournalstatus(M);
 		Long journalpostIdVedlegg = journalpostTestRepository.persist(sourceJournalpost).getJournalpostId();
 		Long sourceJournalpostId = journalpostTestRepository.persist(sourceJournalpost).getJournalpostId();
 
@@ -403,16 +414,16 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, String.class);
+				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", PUT, requestHttpEntity, String.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.CONFLICT));
+		assertThat(responseEntity.getStatusCode(), is(CONFLICT));
 	}
 
 	@Test
 	public void shouldReturnFeiletDokumentListeAarsakKodeUgyldigStatus() {
-		Journalpost journalpostVedlegg = createJournalpostArkiv();
+		Journalpost journalpostVedlegg = createJournalpostArkiv(U);
 		Journalpost sourceJournalpost = createJournalpostSladdet();
-		sourceJournalpost.setJournalstatus(JournalStatusCode.M);
+		sourceJournalpost.setJournalstatus(M);
 		Long journalpostIdVedlegg = journalpostTestRepository.persist(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = journalpostTestRepository.persist(sourceJournalpost).getJournalpostId();
 
@@ -428,10 +439,10 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
+		assertThat(responseEntity.getStatusCode(), is(MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter(), hasItem(allOf(
 				where(dok -> Long.parseLong(((FeiledeDokumenter) dok).getDokumentInfoId()), is(dokumentInfoId)),
 				where(FeiledeDokumenter::getArsakKode, is(UGYLDIG_STATUS))
@@ -440,7 +451,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldReturnFeiletDokumentListeAarsakKodeIkkeFunnet() {
-		Journalpost journalpostVedlegg = createJournalpostArkiv();
+		Journalpost journalpostVedlegg = createJournalpostArkiv(U);
 		Journalpost sourceJournalpost = createJournalpostSladdet();
 		Long journalpostIdVedlegg = journalpostTestRepository.persist(journalpostVedlegg).getJournalpostId();
 		Long sourceJournalpostId = journalpostTestRepository.persist(sourceJournalpost).getJournalpostId();
@@ -454,19 +465,19 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
+		assertThat(responseEntity.getStatusCode(), is(MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(IKKE_FUNNET));
 	}
 
 	@Test
 	void shouldReturnFeiletDokumentListeArsakKodeIkkeFunnetWhenDokumentFilDoesNotExist() {
-		Journalpost targetJournalpost = createJournalpostArkiv();
-		Journalpost sourceJournalpost = createJournalpostArkiv();
-		sourceJournalpost.setJournalstatus(JournalStatusCode.J);
+		Journalpost targetJournalpost = createJournalpostArkiv(U);
+		Journalpost sourceJournalpost = createJournalpostArkiv(U);
+		sourceJournalpost.setJournalstatus(J);
 		Journalpost sourceJournalpostSladdet = createJournalpostSladdet();
-		sourceJournalpostSladdet.setJournalstatus(JournalStatusCode.J);
+		sourceJournalpostSladdet.setJournalstatus(J);
 		Long targetJournalpostId = saveJournalpost(targetJournalpost).getJournalpostId();
 		Long sourcejournalpostId = saveJournalpost(sourceJournalpost).getJournalpostId();
 		Long sourceJournalpostIdSladdet = saveJournalpost(sourceJournalpostSladdet).getJournalpostId();
@@ -498,9 +509,9 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", HttpMethod.PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.MULTI_STATUS));
+		assertThat(responseEntity.getStatusCode(), is(MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter(), hasSize(2));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(IKKE_FUNNET));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(1).getArsakKode(), is(IKKE_FUNNET));
@@ -557,8 +568,8 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private Journalpost createJournalpostSladdet() {
 		Journalpost journalpostSladdet = createJournalpostWithHoveddokument();
-		journalpostSladdet.setJournalstatus(JournalStatusCode.J);
-		journalpostSladdet.setJournalposttype(JournalpostTypeCode.U);
+		journalpostSladdet.setJournalstatus(J);
+		journalpostSladdet.setJournalposttype(U);
 		journalpostSladdet.setOpprettetAvNavn("opprettetAvNavn");
 		journalpostSladdet.setOpprettetKildeNavn("opprettetKildeNavn");
 		journalpostSladdet.setEndretKildeNavn("endretKildeNavn");
@@ -571,10 +582,10 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		return journalpostSladdet;
 	}
 
-	private Journalpost createJournalpostArkiv() {
+	private Journalpost createJournalpostArkiv(JournalpostTypeCode journalpostTypeCode) {
 		Journalpost journalpostArkiv = createJournalpostWithHoveddokument();
-		journalpostArkiv.setJournalstatus(JournalStatusCode.D);
-		journalpostArkiv.setJournalposttype(JournalpostTypeCode.U);
+		journalpostArkiv.setJournalstatus(D);
+		journalpostArkiv.setJournalposttype(journalpostTypeCode);
 		journalpostArkiv.setOpprettetAvNavn("opprettetAvNavn");
 		journalpostArkiv.setOpprettetKildeNavn("opprettetKildeNavn");
 		journalpostArkiv.setEndretKildeNavn("endretKildeNavn");
@@ -630,8 +641,9 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				+ "] }}}";
 
 		stubFor(post(urlMatching("/safgraphql"))
-				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBody(response)));
 	}
 
