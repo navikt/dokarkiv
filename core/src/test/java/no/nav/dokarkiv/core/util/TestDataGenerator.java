@@ -39,9 +39,6 @@ import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_INNSKRENKET_P
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 public class TestDataGenerator {
 
 	public static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
@@ -292,9 +289,6 @@ public class TestDataGenerator {
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());
 		dokumentInfo.setKategori(DokumentKategoriCode.B);
-		dokumentInfo.setOrganInternt(true);
-		dokumentInfo.setInnskrenketPartsinnsyn(true);
-		dokumentInfo.setInnskrenketPartsinnsynFraTredjepart(true);
 		dokumentInfo.setKassert(false);
 		dokumentInfo.setSensitivt(true);
 		return dokumentInfo;

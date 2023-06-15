@@ -29,21 +29,15 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 
 	private DokumentInfoBuilder() {
 	}
-		
+
 	public static DokumentInfoBuilder getDokumentInfoBuilder() {
 		return new DokumentInfoBuilder();
 	}
-	
+
 	private Long dokumentInfoId;
 	private String brevkode;
 	private String brevgruppe;
 	private Journalpost originalJournalpost;
-	private String konfidensialitet;
-	private String integritet;
-	private String tilgjengelighet;
-    private Boolean innskrenketPartsinnsyn;
-    private Boolean innskrenketPartsinnsynFraTredjepart;
-	private Boolean organInternt;
 	private String konvertertFraSystem;
 	private Boolean sensitivt;
 	private String endretAvNavn;
@@ -59,17 +53,11 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	private List<SkannetInnhold> skannetInnholdList = new ArrayList<>();
 	private Set<FilDetaljer> filDetaljerList = new HashSet<>();
 	private ChangeStamp changeStamp;
-	
+
 	public DokumentInfoBuilder dokumentInfoId(Long value) { this.dokumentInfoId = value; return this; }
 	public DokumentInfoBuilder brevkode(String value) { this.brevkode = value; return this; }
 	public DokumentInfoBuilder brevgruppe(String value) { this.brevgruppe = value; return this; }
 	public DokumentInfoBuilder originalJournalpost(Journalpost value) { this.originalJournalpost = value; return this; }
-	public DokumentInfoBuilder konfidensialitet(String value) { this.konfidensialitet = value; return this; }
-	public DokumentInfoBuilder integritet(String value) { this.integritet = value; return this; }
-	public DokumentInfoBuilder tilgjengelighet(String value) { this.tilgjengelighet = value; return this; }
-    public DokumentInfoBuilder innskrenketPartsinnsyn(Boolean value) { this.innskrenketPartsinnsyn = value; return this; }
-    public DokumentInfoBuilder innskrenketPartsinnsynFraTredjepart(Boolean value) { this.innskrenketPartsinnsynFraTredjepart = value; return this; }
-	public DokumentInfoBuilder organInternt(Boolean value) { this.organInternt = value; return this; }
 	public DokumentInfoBuilder konvertertFraSystem(String value) { this.konvertertFraSystem = value; return this; }
 	public DokumentInfoBuilder sensitivt(Boolean value) { this.sensitivt = value; return this; }
 	public DokumentInfoBuilder endretAvNavn(String value) { this.endretAvNavn = value; return this; }
@@ -83,21 +71,18 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	public DokumentInfoBuilder endretKildeNavn(String value) { this.endretKildeNavn = value; return this; }
 	public DokumentInfoBuilder skannetInnhold(SkannetInnhold... value) {
 		this.skannetInnholdList = Arrays.asList(value); return this; }
-	public DokumentInfoBuilder filDetaljerList(FilDetaljer... value) { 
+	public DokumentInfoBuilder filDetaljerList(FilDetaljer... value) {
 		this.filDetaljerList.addAll(Arrays.asList(value)); return this; }
 	public DokumentInfoBuilder tilleggsopplysninger(Map<String, String> value) {
 		this.tilleggsopplysninger = value; return this; }
-	public DokumentInfoBuilder changeStamp(ChangeStamp changeStamp) { this.changeStamp = changeStamp; return this; } 
-	
+	public DokumentInfoBuilder changeStamp(ChangeStamp changeStamp) { this.changeStamp = changeStamp; return this; }
+
 	@Override
 	public DokumentInfo build() {
 		DokumentInfo dokumentInfo = new DokumentInfo(dokumentInfoId, 1);
 		dokumentInfo.setBrevkode(brevkode);
 		dokumentInfo.setBrevgruppe(brevgruppe);
 		dokumentInfo.setOriginalJournalpost(originalJournalpost);
-        dokumentInfo.setInnskrenketPartsinnsyn(innskrenketPartsinnsyn);
-        dokumentInfo.setInnskrenketPartsinnsynFraTredjepart(innskrenketPartsinnsynFraTredjepart);
-		dokumentInfo.setOrganInternt(organInternt);
 		dokumentInfo.setKonvertertFraSystem(konvertertFraSystem);
 		dokumentInfo.setSensitivt(sensitivt);
 		dokumentInfo.setEndretAvNavn(endretAvNavn);

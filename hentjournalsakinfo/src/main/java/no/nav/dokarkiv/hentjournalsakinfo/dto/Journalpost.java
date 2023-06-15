@@ -121,12 +121,7 @@ record Dokumentinfo(
 		Boolean kassert,
 		DokumentKategoriCode kategori,
 		List<Fildetaljer> fildetaljer,
-		List<LogiskVedlegg> logiskeVedlegg,
-
-		// Ikke brukt av saf - skal bli faset ut
-		Boolean organinternt,
-		Boolean innskrenketPartsinnsyn,
-		Boolean innskrenketTredjepart
+		List<LogiskVedlegg> logiskeVedlegg
 ) {
 }
 

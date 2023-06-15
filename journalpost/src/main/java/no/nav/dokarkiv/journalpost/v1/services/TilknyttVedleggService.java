@@ -240,7 +240,7 @@ public class TilknyttVedleggService {
 		if (sourceJournalpost == null) {
 			addToFeiletDokumentList(feiledeDokumenterList, IKKE_FUNNET, dokumentVedlegg);
 			return false;
-		} else if (!tilknyttVedleggValidator.validateSourceJournalpostStatus(sourceJournalpost)) {
+		} else if (!tilknyttVedleggValidator.validateSourceJournalpost(sourceJournalpost)) {
 			addToFeiletDokumentList(feiledeDokumenterList, UGYLDIG_STATUS, dokumentVedlegg);
 			return false;
 		}
@@ -256,7 +256,7 @@ public class TilknyttVedleggService {
 			log.info(MDC.get(MDC_REQUEST_ID) + " kan ikke knytte dokumentinfo med dokumentInfoId={} til journalpost med journalpostId={} fordi den allerede er tilknyttet journalposten", dokumentVedlegg
 					.getDokumentInfoId(), targetJournalpostId);
 			valid = false;
-		} else if (!tilknyttVedleggValidator.validateDokumentInfo(sourceDokumentInfo)) {
+		} else if (!tilknyttVedleggValidator.validateSourceDokumentInfo(sourceDokumentInfo)) {
 			addToFeiletDokumentList(feiledeDokumenterList, DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
 			valid = false;
 		}
