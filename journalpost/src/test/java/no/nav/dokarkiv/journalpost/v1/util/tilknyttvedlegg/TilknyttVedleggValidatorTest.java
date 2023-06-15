@@ -1,16 +1,20 @@
 package no.nav.dokarkiv.journalpost.v1.util.tilknyttvedlegg;
 
-import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.KanIkkeTilknytteVedleggException;
 import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggValidator;
 import org.junit.jupiter.api.Test;
 
+import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
+import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.UNDER_REDIGERING;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_ORGAN_INTERNT;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,55 +26,57 @@ public class TilknyttVedleggValidatorTest {
 	@Test
 	void happyPath() {
 		Journalpost targetJournalpost = createJournalpost();
-		targetJournalpost.setJournalstatus(JournalStatusCode.D);
-		targetJournalpost.setJournalposttype(JournalpostTypeCode.U);
+		targetJournalpost.setJournalstatus(D);
+		targetJournalpost.setJournalposttype(U);
 
 		Journalpost sourceJournalpost = createJournalpost();
-		sourceJournalpost.setJournalstatus(JournalStatusCode.J);
+		sourceJournalpost.setJournalstatus(J);
 
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
-				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
+				.dokumentstatus(FERDIGSTILT)
 				.kassert(false)
 				.build();
 
-		validator.validateJournalpostStatus(targetJournalpost);
-		validator.validateSourceJournalpost(sourceJournalpost);
-		validator.validateSourceDokumentInfo(dokumentInfo);
+		assertThatCode(() -> {
+			validator.validateJournalpostStatus(targetJournalpost);
+			validator.validateSourceJournalpost(sourceJournalpost);
+			validator.validateSourceDokumentInfo(dokumentInfo);
+		}).doesNotThrowAnyException();
 	}
 
 	@Test
-	void shouldThrowExceptionIfJournalpoststatusIsNotUnderProduksjonD() {
+	void shouldThrowExceptionIfInvalidJournalpoststatus() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.J);
+		journalpost.setJournalstatus(J);
 
-		assertThrows(KanIkkeTilknytteVedleggException.class,
-				() -> validator.validateJournalpostStatus(journalpost));
+		assertThrows(KanIkkeTilknytteVedleggException.class, () -> validator.validateJournalpostStatus(journalpost));
 	}
 
 	@Test
-	void shouldreturnFalseIfOriginJournalpoststatusIsNotValid() {
+	void shouldThrowExceptionIfInvalidJournalpostTypeCode() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.D);
+		journalpost.setJournalposttype(I);
+
+		assertThrows(KanIkkeTilknytteVedleggException.class, () -> validator.validateJournalpostStatus(journalpost));
+	}
+
+
+	@Test
+	void shouldReturnFalseIfOriginJournalpoststatusIsNotValid() {
+		Journalpost journalpost = createJournalpost();
+		journalpost.setJournalstatus(D);
 
 		assertThat(validator.validateSourceJournalpost(journalpost), is(false));
 	}
 
 	@Test
-	void shouldreturnFalseIfOriginJournalpoststatusIsNull() {
+	void shouldReturnFalseIfOriginJournalpoststatusIsNull() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(null);
 
 		assertThat(validator.validateSourceJournalpost(journalpost), is(false));
 	}
 
-	@Test
-	void shouldReturnFalseIfJournalpostTypeCodeIsNotUtgaande() {
-		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalposttype(JournalpostTypeCode.I);
-
-		assertThrows(KanIkkeTilknytteVedleggException.class,
-				() -> validator.validateJournalpostStatus(journalpost));
-	}
 
 	@Test
 	void shouldReturnFalseWhenSourceJournalpostInnsynIsSKJULES_ORGAN_INTERNT() {
@@ -83,7 +89,7 @@ public class TilknyttVedleggValidatorTest {
 	@Test
 	void shouldReturnFalseIfDokumentStatusCodeIsNotFerdigstilt() {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
-				.dokumentstatus(DokumentStatusCode.UNDER_REDIGERING)
+				.dokumentstatus(UNDER_REDIGERING)
 				.build();
 
 		assertThat(validator.validateSourceDokumentInfo(dokumentInfo), is(false));
