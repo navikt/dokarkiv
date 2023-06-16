@@ -34,7 +34,7 @@ import java.util.Map;
 
 import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
-import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_ØNSKE;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_ONSKE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_INNSKRENKET_PARTSINNSYN;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
@@ -123,7 +123,7 @@ public class TestDataGenerator {
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.fagomrade(FagomradeCode.RPO)
 				.mottakskanal(MottaksKanalCode.NAV_NO)
-				.innsyn(SKJULES_BRUKERS_ØNSKE)
+				.innsyn(SKJULES_BRUKERS_ONSKE)
 				.build();
 
 		journalpost.addBruker(createBruker());
