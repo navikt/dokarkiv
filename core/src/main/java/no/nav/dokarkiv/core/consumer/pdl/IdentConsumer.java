@@ -4,8 +4,6 @@ import java.util.List;
 
 /**
  * Interface for tjenester relatert til henting av identer.
- *
- * @author Roar Bjurstrom, Visma Consulting.
  */
 public interface IdentConsumer {
 	/**
@@ -36,5 +34,12 @@ public interface IdentConsumer {
 	 */
 	List<String> hentHistoriskeFolkeregisterIdenter(final String folkeregisterIdent) throws PersonIkkeFunnetException;
 
-	String hentPersonIdent(String id, String tema);
+	/**
+	 * Henter personens fulle navn
+	 *
+	 * @param id Folkeregisterident tilhørende person
+	 * @param tema Tema for tilgang til PDL
+	 * @return Personens fulle navn
+	 */
+	String hentPersonnavn(String id, String tema);
 }
