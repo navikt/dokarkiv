@@ -1,6 +1,9 @@
 package no.nav.dokarkiv.core.consumer.pdl;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,31 +19,13 @@ class PdlPersonResponseTest {
 		assertThat(pdlNavn.getFulltNavn()).isEqualTo("Leonora Dorothea Dahl");
 	}
 
-	@Test
-	void shouldMapNavnWithNullMellomnavn() {
+	@ParameterizedTest
+	@NullSource
+	@ValueSource(strings = {"", " "})
+	void shouldMapNavnWithMellomnavn(String mellomnavn) {
 		PdlPersonResponse.PdlNavn pdlNavn = new PdlPersonResponse.PdlNavn();
 		pdlNavn.setFornavn("Bjarne");
-		pdlNavn.setMellomnavn(null);
-		pdlNavn.setEtternavn("Betjent");
-
-		assertThat(pdlNavn.getFulltNavn()).isEqualTo("Bjarne Betjent");
-	}
-
-	@Test
-	void shouldMapNavnWithBlankMellomnavn() {
-		PdlPersonResponse.PdlNavn pdlNavn = new PdlPersonResponse.PdlNavn();
-		pdlNavn.setFornavn("Bjarne");
-		pdlNavn.setMellomnavn("");
-		pdlNavn.setEtternavn("Betjent");
-
-		assertThat(pdlNavn.getFulltNavn()).isEqualTo("Bjarne Betjent");
-	}
-
-	@Test
-	void shouldMapNavnWithWhitespaceMellomnavn() {
-		PdlPersonResponse.PdlNavn pdlNavn = new PdlPersonResponse.PdlNavn();
-		pdlNavn.setFornavn("Bjarne");
-		pdlNavn.setMellomnavn(" ");
+		pdlNavn.setMellomnavn(mellomnavn);
 		pdlNavn.setEtternavn("Betjent");
 
 		assertThat(pdlNavn.getFulltNavn()).isEqualTo("Bjarne Betjent");
