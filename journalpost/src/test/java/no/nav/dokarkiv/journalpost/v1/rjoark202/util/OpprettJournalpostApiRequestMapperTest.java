@@ -417,7 +417,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 
 	@Test
 	void shouldMapNavnWhenIdTypeAndNavnNull() {
-		when(identConsumerMock.hentPersonIdent(eq(AVSENDER_ID_PERSON), eq(TEMA_FOR))).thenReturn(AVSENDER_NAVN);
+		when(identConsumerMock.hentPersonnavn(eq(AVSENDER_ID_PERSON), eq(TEMA_FOR))).thenReturn(AVSENDER_NAVN);
 
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerPersonWithoutNavnAndIdType());
 		Journalpost jp = mapper.map(request, null);
@@ -426,7 +426,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 
 	@Test
 	void shouldMapNavnWhenIdTypeFNR() {
-		when(identConsumerMock.hentPersonIdent(eq(AVSENDER_ID_PERSON), eq(TEMA_FOR))).thenReturn(AVSENDER_NAVN);
+		when(identConsumerMock.hentPersonnavn(eq(AVSENDER_ID_PERSON), eq(TEMA_FOR))).thenReturn(AVSENDER_NAVN);
 
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerPersonWithoutNavn());
 		Journalpost jp = mapper.map(request, null);

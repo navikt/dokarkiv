@@ -151,7 +151,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Override
-	public String hentPersonIdent(String ident, String tema) {
+	public String hentPersonnavn(String ident, String tema) {
 
 		ResponseEntity<PdlPersonResponse> pdlPersonResponse = webClient.post()
 				.header(HEADER_PDL_TEMA, tema)
@@ -161,7 +161,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.doOnError(this::handleError).block();
 
 		if (pdlPersonResponse.getBody().getData().getHentPerson() != null && !pdlPersonResponse.getBody().getData().getHentPerson().getNavn().isEmpty()) {
-			return pdlPersonResponse.getBody().getData().getHentPerson().getNavn().get(0).getNavn();
+			return pdlPersonResponse.getBody().getData().getHentPerson().getNavn().get(0).getFulltNavn();
 		} else {
 			if (pdlPersonResponse.getBody().getErrors() == null || pdlPersonResponse.getBody().getErrors().isEmpty()) {
 				throw new PdlFunctionalException("Person har ikke navn i pdl.");
