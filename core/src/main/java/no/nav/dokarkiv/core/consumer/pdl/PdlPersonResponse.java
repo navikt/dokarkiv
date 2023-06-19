@@ -34,7 +34,7 @@ public class PdlPersonResponse {
 		private String etternavn;
 
 		public String getFulltNavn() {
-			return Stream.of(fornavn, mellomnavn, etternavn).filter(n -> n != null && !isBlank(n)).collect(joining(" "));
+			return Stream.of(fornavn, mellomnavn, etternavn).filter(n -> !isBlank(n)).collect(joining(" "));
 		}
 	}
 
