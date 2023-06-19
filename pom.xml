@@ -48,7 +48,7 @@
 		<microsoft-graph.version>5.53.0</microsoft-graph.version>
 
 		<!-- NAV -->
-		<token-support.version>2.1.4</token-support.version>
+		<token-support.version>3.1.0</token-support.version>
 		<verapdf.version>1.22.2</verapdf.version>
 
 		<!-- Tjenestegrensesnitt -->
