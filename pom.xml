@@ -31,7 +31,7 @@
 		<java.version>17</java.version>
 		<argLine>-Xmx2048m</argLine>
 
-		<jakarta.jws-api.version>1.1.1</jakarta.jws-api.version>
+		<jakarta.jws-api.version>3.0.0</jakarta.jws-api.version>
 		<oracle.version>19.17.0.0</oracle.version>
 		<cxf.version>3.5.5</cxf.version>
 		<simpleflatmapper.version>8.2.3</simpleflatmapper.version>
