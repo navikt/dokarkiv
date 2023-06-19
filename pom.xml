@@ -36,7 +36,7 @@
 		<cxf.version>3.5.5</cxf.version>
 		<simpleflatmapper.version>8.2.3</simpleflatmapper.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
-		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
+		<logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
 		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
 		<java-jwt.version>4.2.1</java-jwt.version>
 		<jaxb2-basics-runtime.version>0.13.1</jaxb2-basics-runtime.version>
