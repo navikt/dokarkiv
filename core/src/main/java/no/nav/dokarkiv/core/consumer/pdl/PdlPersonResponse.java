@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Data
 public class PdlPersonResponse {
@@ -32,8 +33,8 @@ public class PdlPersonResponse {
 		private String mellomnavn;
 		private String etternavn;
 
-		public String getNavn() {
-			return Stream.of(fornavn, mellomnavn, etternavn).filter(n -> n != null && !n.isEmpty()).collect(joining(" "));
+		public String getFulltNavn() {
+			return Stream.of(fornavn, mellomnavn, etternavn).filter(n -> n != null && !isBlank(n)).collect(joining(" "));
 		}
 	}
 

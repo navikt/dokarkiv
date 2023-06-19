@@ -102,7 +102,7 @@ public class OpprettJournalpostApiRequestMapper {
 			return avsenderMottaker.getNavn();
 		} else if (avsenderMottaker != null && isNotBlank(avsenderMottaker.getId()) &&
 				(avsenderMottaker.getIdType() == null || avsenderMottaker.getIdType() == AvsenderMottakerIdType.FNR)) {
-			return identConsumer.hentPersonIdent(avsenderMottaker.getId(), request.getTema());
+			return identConsumer.hentPersonnavn(avsenderMottaker.getId(), request.getTema());
 		}
 		return null;
 	}
