@@ -122,7 +122,7 @@
       "app": "dokdistadmin-q1",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles" : ["dokdistadmin"]
+      "roles" : ["journalpostApiInternal"]
     },
     {
       "app": "dokdistfordeling-q1",

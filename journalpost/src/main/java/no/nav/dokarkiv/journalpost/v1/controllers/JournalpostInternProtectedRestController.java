@@ -118,7 +118,7 @@ public class JournalpostInternProtectedRestController {
 
 	@Transactional(readOnly = true)
 	@SwaggerFinnIkkeLesteJournalposter
-	@ProtectedWithClaims(issuer = ISSUER_AAD, claimMap = {"roles=dokdistadmin"})
+	@ProtectedWithClaims(issuer = ISSUER_AAD, claimMap = {"roles=journalpostApiInternal"})
 	@GetMapping("/finnIkkeLesteJournalposter/{utsendingsKanal}/{ekspedertFra}/{ekspedertTil}")
 	public ResponseEntity<List<Long>> finnIkkeLesteJournalposter(@PathVariable String utsendingsKanal,
 																 @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ekspedertFra,

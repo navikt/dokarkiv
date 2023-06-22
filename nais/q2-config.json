@@ -128,7 +128,7 @@
       "app": "dokdistadmin",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles" : ["dokdistadmin"]
+      "roles" : ["journalpostApiInternal"]
     },
     {
       "app": "padm2",

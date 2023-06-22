@@ -32,7 +32,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class FinnIkkeLesteJournalposterIT extends AbstractJournalpostIT {
 
-	private final String DOKDISTADMIN = "dokdistadmin";
+	private final String journalpostApiInternal = "journalpostApiInternal";
 	private final int NOT_FOUND = 404;
 	private final int BAD_REQUEST = 400;
 	private final int EN_DAG = 1;
@@ -61,7 +61,7 @@ public class FinnIkkeLesteJournalposterIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndClaim(DOKDISTADMIN));
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndClaim(journalpostApiInternal));
 		ResponseEntity<Long[]> response = restTemplate.exchange(buildUri(NAV_NO.toString(), 5, 1), GET, requestEntity, Long[].class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -78,7 +78,7 @@ public class FinnIkkeLesteJournalposterIT extends AbstractJournalpostIT {
 			"NAV_NO" + "," + EN_DAG + "," + FEM_DAGER + "," + BAD_REQUEST + "," + "EkspedertFra kan ikke være før ekspedertTil"// ekspedertFra er før ekspedertTil
 	})
 	public void finnIkkeLesteJournalposterShouldGiveBadRequestWhenBadInput(String utsendingsKanalCode, int ekspedertFra, int ekspedertTil, int expectedStatusCode, String feilmelding) {
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndClaim(DOKDISTADMIN));
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndClaim(journalpostApiInternal));
 		ResponseEntity<String> response = restTemplate.exchange(buildUri(utsendingsKanalCode, ekspedertFra, ekspedertTil), GET, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(HttpStatus.valueOf(expectedStatusCode)));
 		assertTrue(response.getBody().contains(feilmelding));

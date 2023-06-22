@@ -391,7 +391,7 @@
       "app": "dokdistadmin",
       "namespace": "teamdokumenthandtering",
       "cluster": "prod-fss",
-      "roles" : ["dokdistadmin"]
+      "roles" : ["journalpostApiInternal"]
     },
     {
       "app": "meldekort-api",
