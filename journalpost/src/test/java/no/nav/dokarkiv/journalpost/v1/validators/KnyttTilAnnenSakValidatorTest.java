@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.core.exceptions.InvalidNavConsumerIdFunctionalException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
@@ -25,7 +24,6 @@ class KnyttTilAnnenSakValidatorTest {
     private static final String BRUKER_ID = "12345612345";
     private static final String AKTOER_ID = "12345612345";
     private static final String ORG_NR = "123456789";
-    private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
     private static final String KILDE_JOURNALPOST_ID = "111111111";
     private static final String JOURNALFOERENDE_ENHET = "9999";
     private static final String FEILMELDING = "Validering feilet for journalpostId=111111111. Feilmelding=%s";
@@ -36,38 +34,38 @@ class KnyttTilAnnenSakValidatorTest {
     @Test
     public void shouldValidateRequestWithFnr() {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().bruker(Bruker.builder().id(BRUKER_ID).idType(FNR).build()).build();
-        knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID);
+        knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID);
     }
 
     @Test
     public void shouldValidateRequestWithAktoerid() {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().bruker(Bruker.builder().id(AKTOER_ID).idType(AKTOERID).build()).build();
-        knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID);
+        knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID);
     }
 
     @Test
     public void shouldValidateRequestWithOrgnr() {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().bruker(Bruker.builder().id(ORG_NR).idType(ORGNR).build()).build();
-        knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID);
+        knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID);
     }
 
     @Test
     public void shouldValidateRequestWithGenerellSakAndEmptyFagsakParams() {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().sakstype(SAKSTYPE_GENERELL).fagsakId("").fagsaksystem("").build();
-        knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID);
+        knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID);
     }
 
     @Test
     public void shouldValidateRequestWithGenerellSakAndNullFagsakParams() {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().sakstype(SAKSTYPE_GENERELL).fagsakId(null).fagsaksystem(null).build();
-        knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID);
+        knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID);
     }
 
     // Negative tester på journalpostId
     @Test
     public void shouldThrowInputValideringFeiletExceptionForNullJournalpostId() {
         Exception thrownException = Assertions.assertThrows(InputValideringFeiletException.class, () -> knyttTilAnnenSakValidator
-                .validate(createKnyttTilAnnenSakRequestHappyPath(), null, NAV_CONSUMER_ID));
+                .validate(createKnyttTilAnnenSakRequestHappyPath(), null));
         assertEquals("Validering feilet for journalpostId=null. Feilmelding=kildeJournalpostId er ikke et tall.",
                 thrownException.getMessage());
     }
@@ -75,7 +73,7 @@ class KnyttTilAnnenSakValidatorTest {
     @Test
     public void shouldThrowInputValideringFeiletExceptionForNonNumericJournalpostId() {
         Exception thrownException = Assertions.assertThrows(InputValideringFeiletException.class, () -> knyttTilAnnenSakValidator
-                .validate(createKnyttTilAnnenSakRequestHappyPath(), "123456ab78", NAV_CONSUMER_ID));
+                .validate(createKnyttTilAnnenSakRequestHappyPath(), "123456ab78"));
         assertEquals("Validering feilet for journalpostId=123456ab78. Feilmelding=kildeJournalpostId er ikke et tall.",
                 thrownException.getMessage());
     }
@@ -84,25 +82,8 @@ class KnyttTilAnnenSakValidatorTest {
     public void shouldThrowInputValideringFeiletExceptionForEmptyJournalpostId() {
 
         Exception thrownException = Assertions.assertThrows(InputValideringFeiletException.class, () -> knyttTilAnnenSakValidator
-                .validate(createKnyttTilAnnenSakRequestHappyPath(), "", NAV_CONSUMER_ID));
+                .validate(createKnyttTilAnnenSakRequestHappyPath(), ""));
         assertEquals("Validering feilet for journalpostId=. Feilmelding=kildeJournalpostId er ikke et tall.",
-                thrownException.getMessage());
-    }
-
-    // Negative tester på Nav-Consumer-Id
-    @Test
-    public void shouldThrowInvalidNavConsumerIdFunctionalExceptionForNullNavConsumerId() {
-        Exception thrownException = Assertions.assertThrows(InvalidNavConsumerIdFunctionalException.class, () -> knyttTilAnnenSakValidator
-                .validate(createKnyttTilAnnenSakRequestHappyPath(), KILDE_JOURNALPOST_ID, null));
-        assertEquals("Nav-Consumer-Id kan ikke være null eller tom",
-                thrownException.getMessage());
-    }
-
-    @Test
-    public void shouldThrowInvalidNavConsumerIdFunctionalExceptionForEmptyNavConsumerId() {
-        Exception thrownException = Assertions.assertThrows(InvalidNavConsumerIdFunctionalException.class, () -> knyttTilAnnenSakValidator
-                .validate(createKnyttTilAnnenSakRequestHappyPath(), KILDE_JOURNALPOST_ID, ""));
-        assertEquals("Nav-Consumer-Id kan ikke være null eller tom",
                 thrownException.getMessage());
     }
 
@@ -113,7 +94,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().sakstype("").build();
 
         Exception thrownException = Assertions.assertThrows(InputValideringFeiletException.class, () -> knyttTilAnnenSakValidator
-                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, thrownException.getMessage());
     }
@@ -124,7 +105,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().sakstype(null).build();
 
         Exception thrownException = Assertions.assertThrows(InputValideringFeiletException.class, () -> knyttTilAnnenSakValidator
-                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, thrownException.getMessage());
     }
@@ -135,7 +116,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().sakstype("INVALID").build();
 
         Exception thrownException = Assertions.assertThrows(InputValideringFeiletException.class, () -> knyttTilAnnenSakValidator
-                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, thrownException.getMessage());
     }
@@ -146,7 +127,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().fagsakId("").build();
 
         Exception thrownException = Assertions.assertThrows(InputValideringFeiletException.class, () -> knyttTilAnnenSakValidator
-                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, thrownException.getMessage());
     }
@@ -157,7 +138,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().fagsaksystem("").build();
 
         Exception thrownException = Assertions.assertThrows(InputValideringFeiletException.class, () -> knyttTilAnnenSakValidator
-                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, thrownException.getMessage());
     }
@@ -168,7 +149,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().sakstype(SAKSTYPE_GENERELL).fagsakId(FAGSAK_ID).fagsaksystem("").build();
 
         Exception thrownException = Assertions.assertThrows(InputValideringFeiletException.class, () -> knyttTilAnnenSakValidator
-                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, thrownException.getMessage());
     }
@@ -179,7 +160,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().sakstype(SAKSTYPE_GENERELL).fagsakId("").fagsaksystem(FAGSAK_SYSTEM).build();
 
         Exception thrownException = Assertions.assertThrows(InputValideringFeiletException.class, () -> knyttTilAnnenSakValidator
-                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, thrownException.getMessage());
     }
@@ -200,7 +181,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().bruker(Bruker.builder().idType(FNR).id("101095134a").build()).build();
 
         Exception thrownException = Assertions.assertThrows(InputValideringFeiletException.class, () -> knyttTilAnnenSakValidator
-                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, thrownException.getMessage());
     }
@@ -224,7 +205,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, brukeridtype, brukerid, JOURNALFOERENDE_ENHET);
 
         Exception thrownException = Assertions.assertThrows(InputValideringFeiletException.class, () -> knyttTilAnnenSakValidator
-                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                .validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(createFeilmelding(excpectedMessage), thrownException.getMessage());
     }
@@ -235,7 +216,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().tema(null).build();
 
         Exception actualException = Assertions.assertThrows(InputValideringFeiletException.class, () ->
-                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, actualException.getMessage());
     }
@@ -246,7 +227,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().tema("").build();
 
         Exception actualException = Assertions.assertThrows(InputValideringFeiletException.class, () ->
-                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, actualException.getMessage());
     }
@@ -257,7 +238,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().tema("HJEM").build();
 
         Exception actualException = Assertions.assertThrows(InputValideringFeiletException.class, () ->
-                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, actualException.getMessage());
     }
@@ -268,7 +249,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().tema("HJ").build();
 
         Exception actualException = Assertions.assertThrows(InputValideringFeiletException.class, () ->
-                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, actualException.getMessage());
     }
@@ -279,7 +260,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().journalfoerendeEnhet(null).build();
 
         Exception actualException = Assertions.assertThrows(InputValideringFeiletException.class, () ->
-                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, actualException.getMessage());
     }
@@ -290,7 +271,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().journalfoerendeEnhet("").build();
 
         Exception actualException = Assertions.assertThrows(InputValideringFeiletException.class, () ->
-                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, actualException.getMessage());
     }
@@ -301,7 +282,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().journalfoerendeEnhet("12345").build();
 
         Exception actualException = Assertions.assertThrows(InputValideringFeiletException.class, () ->
-                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, actualException.getMessage());
     }
@@ -312,7 +293,7 @@ class KnyttTilAnnenSakValidatorTest {
         KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder().journalfoerendeEnhet("123").build();
 
         Exception actualException = Assertions.assertThrows(InputValideringFeiletException.class, () ->
-                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID, NAV_CONSUMER_ID));
+                knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID));
 
         assertEquals(expectedMessage, actualException.getMessage());
     }

@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.core.exceptions.InvalidNavConsumerIdFunctionalException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
@@ -14,27 +13,17 @@ import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
-/**
- * @author Tore Sletten, NAV.
- */
-
 @Component
 public class KnyttTilAnnenSakValidator {
 
-	private static final String IDTYPE_FNR = "FNR";
-	private static final String IDTYPE_ORGNR = "ORGNR";
-	private static final String IDTYPE_AKTOERID = "AKTOERID";
 	private static final int FNR_LENGTH = 11;
 	private static final int ORGNR_LENGTH = 9;
 	private static final String SAKSTYPE_FAGSAK = "FAGSAK";
 	private static final String SAKSTYPE_GENERELL = "GENERELL_SAK";
 	private static final int JOURNALFOERENDE_ENHET_LENGTH = 4;
 
-	public void validate(KnyttTilAnnenSakRequest request, String kildeJournalpostId, String navConsumerId) {
+	public void validate(KnyttTilAnnenSakRequest request, String kildeJournalpostId) {
 		try {
-			if (isBlank(navConsumerId)) {
-				throw new InvalidNavConsumerIdFunctionalException("Nav-Consumer-Id kan ikke være null eller tom");
-			}
 			if (!isNumeric(kildeJournalpostId)){
 				throw new InputValideringFeiletException("kildeJournalpostId er ikke et tall.");
 			}

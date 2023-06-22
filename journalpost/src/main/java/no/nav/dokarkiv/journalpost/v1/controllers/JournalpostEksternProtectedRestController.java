@@ -72,7 +72,6 @@ public class JournalpostEksternProtectedRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "knyttTilAnnenSak"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<KnyttTilAnnenSakResponse> knyttTilAnnenSak(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationHeader,
 																	 @Parameter(description = "Nav-Consumer-Token - Systembrukerens OIDC-token. NB: Oppgis kun dersom den NAV-ansattes token er lagt ved under Authorization") @RequestHeader(value = "Nav-Consumer-Token", required = false) String navConsumerToken,
-																	 @Parameter(description = "Nav-Consumer-Id - brukes for sporingsinfo i joark", required = true) @RequestHeader(value = "Nav-Consumer-Id") String navConsumerId,
 																	 @Parameter(description = "Nav-CallId - teknisk sporingsid") @RequestHeader(value = "Nav-CallId", required = false) String navCallId,
 																	 @Parameter(description = "ID til journalposten som det er ønskelig å kopiere", required = true) @PathVariable String kildeJournalpostId,
 																	 @RequestBody KnyttTilAnnenSakRequest knyttTilAnnenSakRequest) {
@@ -80,7 +79,7 @@ public class JournalpostEksternProtectedRestController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		try {
 			log.info("knyttTilAnnenSak har fått har fått kall for å knytte dokumenter til annen sak");
-			knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, kildeJournalpostId, navConsumerId);
+			knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, kildeJournalpostId);
 			KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, Long.parseLong(kildeJournalpostId));
 
 			log.info("knyttTilAnnenSak har knyttet til dokumenter til ny journalpost med journalpostId={}", knyttTilAnnenSakResponse.getNyJournalpostId());
