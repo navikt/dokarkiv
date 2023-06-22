@@ -35,7 +35,7 @@ public final class JournalpostApiMetrics {
 		} else if(sakstype == null && consumerId != null) {
 			Counter.builder(DOK_JOURNALPOSTAPI_SAKSTYPE_COUNT)
 					.tags(TAG_TJENESTE, tjeneste)
-					.tags(TAG_SAKSTYPE, Sakstype.ARKIVSAK.name())
+					.tags(TAG_SAKSTYPE, Sakstype.ARKIVSAK.name() + "_sakstype_null")
 					.tags(TAG_CONSUMERID, consumerId)
 					.register(meterRegistry)
 					.increment();
