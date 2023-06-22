@@ -263,6 +263,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "eessi-pensjon-pdl-produsent",
+      "namespace": "eessipensjon",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "syfosmsak",
       "namespace": "teamsykmelding",
       "cluster": "prod-gcp"
