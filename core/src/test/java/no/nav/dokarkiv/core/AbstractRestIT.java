@@ -199,6 +199,14 @@ public abstract class AbstractRestIT {
 		return createHeadersWithServiceUserToken(SERVICE_USER_ID);
 	}
 
+	protected HttpHeaders createHeadersWithServiceUserTokenAndClaim( String claim) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(APPLICATION_JSON);
+		headers.setBearerAuth(aadTokenWithClaim(SERVICE_USER_ID, claim));
+		headers.add(NAV_CALL_ID, "itest");
+		return headers;
+	}
+
 	protected HttpHeaders createHeadersWithServiceUserToken(String serviceUserId) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
@@ -240,6 +248,10 @@ public abstract class AbstractRestIT {
 
 	protected String restStsToken(String subject) {
 		return token("reststs", subject, Map.of());
+	}
+
+	protected String aadTokenWithClaim(String subject, String role) {
+		return token("aad", subject, Map.of("roles", role));
 	}
 
 	protected String openAmToken(String subject) {

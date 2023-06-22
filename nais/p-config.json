@@ -388,6 +388,12 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "dokdistadmin",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss",
+      "roles" : ["dokdistadmin"]
+    },
+    {
       "app": "meldekort-api",
       "namespace": "meldekort",
       "cluster": "prod-gcp"

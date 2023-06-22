@@ -119,6 +119,12 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "dokdistadmin-q1",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss",
+      "roles" : ["dokdistadmin"]
+    },
+    {
       "app": "dokdistfordeling-q1",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"

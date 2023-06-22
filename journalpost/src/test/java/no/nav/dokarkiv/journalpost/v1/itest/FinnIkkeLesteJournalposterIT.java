@@ -28,8 +28,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class FinnIkkeLesteJournalposterIT extends AbstractJournalpostIT {
+
+	private final String DOKDISTADMIN = "dokdistadmin";
+	private final int NOT_FOUND = 404;
+	private final int BAD_REQUEST = 400;
+	private final int EN_DAG = 1;
+	private final int FEM_DAGER = 5;
 
 	@Test
 	public void happyPathFinnIkkeLesteJournalposter() {
@@ -54,7 +61,7 @@ public class FinnIkkeLesteJournalposterIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndClaim(DOKDISTADMIN));
 		ResponseEntity<Long[]> response = restTemplate.exchange(buildUri(NAV_NO.toString(), 5, 1), GET, requestEntity, Long[].class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -64,11 +71,6 @@ public class FinnIkkeLesteJournalposterIT extends AbstractJournalpostIT {
 
 	}
 
-	private final int NOT_FOUND = 404;
-	private final int BAD_REQUEST = 400;
-	private final int EN_DAG = 1;
-	private final int FEM_DAGER = 5;
-
 	@ParameterizedTest
 	@CsvSource(value = {
 			"," + FEM_DAGER + "," + EN_DAG + "," + NOT_FOUND + "," + "Not Found", // utsendingskanalCode er null - gir 404 fra spring da det mangler en PathVariable
@@ -76,10 +78,17 @@ public class FinnIkkeLesteJournalposterIT extends AbstractJournalpostIT {
 			"NAV_NO" + "," + EN_DAG + "," + FEM_DAGER + "," + BAD_REQUEST + "," + "EkspedertFra kan ikke være før ekspedertTil"// ekspedertFra er før ekspedertTil
 	})
 	public void finnIkkeLesteJournalposterShouldGiveBadRequestWhenBadInput(String utsendingsKanalCode, int ekspedertFra, int ekspedertTil, int expectedStatusCode, String feilmelding) {
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndClaim(DOKDISTADMIN));
 		ResponseEntity<String> response = restTemplate.exchange(buildUri(utsendingsKanalCode, ekspedertFra, ekspedertTil), GET, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(HttpStatus.valueOf(expectedStatusCode)));
 		assertTrue(response.getBody().contains(feilmelding));
+	}
+
+	@Test
+	public void shouldReturnUnauthorizedIfNotDokdistadminRole(){
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+		ResponseEntity<String> response = restTemplate.exchange(buildUri("NAV_NO", 5, 1), GET, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(UNAUTHORIZED));
 	}
 
 	private String buildUri(String utsendingsKanalCode, int ekspedertFraDagerGamle, int ekspedertTilDagerGamle) {

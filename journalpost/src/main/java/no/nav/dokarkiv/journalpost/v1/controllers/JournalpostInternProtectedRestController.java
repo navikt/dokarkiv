@@ -15,6 +15,7 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnIkkeLesteJournalposter;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposterMedTemaEldreEnn;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerMottaDokumentUtgaaendeSkanning;
 import no.nav.security.token.support.core.api.Protected;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.MDC;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validate
 @RestController
 @RequestMapping("/rest/internal/journalpostapi/v1")
 public class JournalpostInternProtectedRestController {
+	static final String ISSUER_AAD = "aad";
 
 	private final FinnMottatteJournalposterService finnMottatteJournalposterService;
 	private final MottaDokumentUtgaaendeSkanningService mottaDokumentUtgaaendeSkanningService;
@@ -116,13 +118,11 @@ public class JournalpostInternProtectedRestController {
 
 	@Transactional(readOnly = true)
 	@SwaggerFinnIkkeLesteJournalposter
+	@ProtectedWithClaims(issuer = ISSUER_AAD, claimMap = {"roles=dokdistadmin"})
 	@GetMapping("/finnIkkeLesteJournalposter/{utsendingsKanal}/{ekspedertFra}/{ekspedertTil}")
 	public ResponseEntity<List<Long>> finnIkkeLesteJournalposter(@PathVariable String utsendingsKanal,
 																 @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ekspedertFra,
 																 @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ekspedertTil) {
-
-		//Hvordan asserter vi at det er dokdistavstemming som har kalt appen?
-		//Kan det utledes fra tokenet på noe vis?
 		log.info(String.format("finnIkkeLesteJournalposter har mottatt kall for å hente alle uleste journalposter i tidsrommet ekspedertFra=%s og ekspedertTil=%s med utsendingskanal=%s", ekspedertFra, ekspedertTil, utsendingsKanal));
 		List<Long> journalpostIds = finnIkkeLesteJournalposterService.finnIkkeLesteJournalposter(utsendingsKanal, ekspedertFra, ekspedertTil);
 		log.info(String.format("finnIkkeLesteJournalposter fant %s uleste journalposter i tidsrommet ekspedertFra=%s, ekspedertTil=%s med utsendingskanal=%s", journalpostIds.size(), ekspedertFra, ekspedertTil, utsendingsKanal));
