@@ -87,6 +87,29 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void happyPathTilbakestillJournalpost() {
+		var clock = Clock.fixed(Instant.now().minus(1, ChronoUnit.HOURS), ZoneId.systemDefault());
+		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
+		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();
+
+		var oppdaterDistribusjonsinfoRequest = OppdaterDistribusjonsinfoRequest.builder()
+				.utsendingsKanal(UtsendingsKanalCode.SDP.name())
+				.settStatusEkspedert(false)
+				.tilbakestillJournalpost(true);
+
+		var oppdaterDistribusjonsinfoEntity = new HttpEntity<>(oppdaterDistribusjonsinfoRequest.build(), createHeadersWithServiceUserToken());
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + "/oppdaterDistribusjonsinfo", HttpMethod.PATCH, oppdaterDistribusjonsinfoEntity, String.class);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+
+		assertEquals(JournalStatusCode.FS, ekspedertJournalpost.getJournalstatus());
+		assertNull(ekspedertJournalpost.getEkspedertDato());
+	}
+
+	@Test
 	public void shouldUpdateStatusAndAksjonsLoggStatusovergang() {
 		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
 		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();

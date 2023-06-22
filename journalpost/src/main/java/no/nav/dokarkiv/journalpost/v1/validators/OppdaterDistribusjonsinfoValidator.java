@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeOppdatereDistribusjonsinfoException;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.WithUtsendingsKanal;
@@ -40,6 +41,7 @@ public class OppdaterDistribusjonsinfoValidator {
 	public static void validateRequest(String journalpostId, OppdaterDistribusjonsinfoRequest request) {
 		validateId(journalpostId, "journalpostId");
 		validateBoolean(request.getSettStatusEkspedert(), "settStatusEkspedert");
+		validateTilbakestillJournalpost(request);
 
 		if (isNotBlank(request.getUtsendingsKanal())) {
 			try {
@@ -51,6 +53,15 @@ public class OppdaterDistribusjonsinfoValidator {
 								Arrays.toString(UtsendingsKanalCode.values())));
 			}
 		}
+	}
+
+	private static void validateTilbakestillJournalpost(OppdaterDistribusjonsinfoRequest request) {
+		if (request.getTilbakestillJournalpost() != null && request.getSettStatusEkspedert() != null) {
+			if (request.getSettStatusEkspedert() && request.getTilbakestillJournalpost()) {
+				throw new InputValideringFeiletException("settStausEkspedert og tilbakestillJournalpost kan ikke være true samtidig");
+			}
+		}
+
 	}
 
 	public JournalpostResponse validateRequest(JournalpostWithDistribusjonsinfo request) {
@@ -70,8 +81,10 @@ public class OppdaterDistribusjonsinfoValidator {
 			UtsendingsKanalCode utsendingsKanal = UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
 
 			String valideringsfeil = switch (utsendingsKanal) {
-				case SDP -> validerFeltOgInnhold("digitalpostkasse", "må være satt når utsendingsKanal=SDP (digital post)", request.getDigitalpostkasse());
-				case NAV_NO -> validerFeltOgInnhold("varsel", "må være satt når utsendingsKanal=NAV_NO", request.getVarsel());
+				case SDP ->
+						validerFeltOgInnhold("digitalpostkasse", "må være satt når utsendingsKanal=SDP (digital post)", request.getDigitalpostkasse());
+				case NAV_NO ->
+						validerFeltOgInnhold("varsel", "må være satt når utsendingsKanal=NAV_NO", request.getVarsel());
 				default -> null;
 			};
 			if (valideringsfeil != null) {
@@ -104,7 +117,7 @@ public class OppdaterDistribusjonsinfoValidator {
 					String.format("Journalposten har journalposttype=%s, men må ha journalposttype=%s for å kunne ekspederes",
 							journalpost.getJournalposttype(),
 							JournalpostTypeCode.U
-							));
+					));
 		}
 		if (!ALLOWED_STATES_FOR_DISTRIBUTION.contains(journalpost.getJournalstatus())) {
 			throw new KanIkkeOppdatereDistribusjonsinfoException(

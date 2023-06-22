@@ -79,12 +79,9 @@ public class JournalpostUpdater {
 			journalpost.setUtsendingskanal(UtsendingsKanalCode.valueOf(request.getUtsendingsKanal()));
 		}
 		if (request.getSettStatusEkspedert()) {
-			tracker.setEndretFlagg(true);
-			tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), JournalStatusCode.E.name());
-			journalpost.setJournalstatus(JournalStatusCode.E);
-			journalpost.setEkspedertDato(OffsetDateTime.now());
-			journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
-			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+			updateJournalstatus(journalpost, tracker, JournalStatusCode.E);
+		}else if(request.getTilbakestillJournalpost() != null && request.getTilbakestillJournalpost()){
+			updateJournalstatus(journalpost, tracker, JournalStatusCode.FS);
 		}
 
 		if (request.getDatoLest() != null && journalpost.getLestDato() == null) {
@@ -92,6 +89,15 @@ public class JournalpostUpdater {
 		}
 
 		return tracker;
+	}
+
+	private static void updateJournalstatus(Journalpost journalpost, ChangeTracker tracker, JournalStatusCode journalStatusCode) {
+		tracker.setEndretFlagg(true);
+		tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), journalStatusCode.name());
+		journalpost.setJournalstatus(journalStatusCode);
+		journalpost.setEkspedertDato(journalStatusCode == JournalStatusCode.E ? OffsetDateTime.now(): null);
+		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
+		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 
 	private void updateJournalfoerendeEnhet(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {

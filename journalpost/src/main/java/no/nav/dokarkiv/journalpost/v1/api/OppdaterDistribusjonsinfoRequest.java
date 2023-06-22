@@ -25,5 +25,9 @@ public class OppdaterDistribusjonsinfoRequest implements WithUtsendingsKanal {
             description = "Sett tidspunkt journalposten ble lest, om det ikke allerede er satt"
     )
     private OffsetDateTime datoLest;
+    @Schema(
+            description = "Settes til true hvis en tidligere ekspedert journalpost skal tilbakestilles i forbindelse med distribusjon i ny kanal (ny kanal angitt i utsendingskanal)"
+    )
+    private Boolean tilbakestillJournalpost;
 
 }
