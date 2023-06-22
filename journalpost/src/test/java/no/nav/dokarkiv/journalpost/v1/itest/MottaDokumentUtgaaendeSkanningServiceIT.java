@@ -44,7 +44,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpostIT {
 	private static final String GYLDIG_CONSUMER = "srvskanmotutgaaende";
-	private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
 	private static final String KILDE = "skanmotutgaaende";
 
 	private final Date mockDate = new Date(Date.UTC(100, Calendar.NOVEMBER, 10, 0, 0, 0)); // aar 2000
@@ -322,7 +321,6 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 	private HttpHeaders createHeaders(String consumer) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add("Nav-Consumer-Id", NAV_CONSUMER_ID);
 		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + openAmToken(consumer));
 
 		return headers;

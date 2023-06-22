@@ -58,15 +58,9 @@ public class PopulateMDCHandler implements HandlerInterceptor {
 	}
 
 	private void populateConsumerId(HttpServletRequest request) {
-		String navConsumerId = request.getHeader(NavHeaders.NAV_CONSUMER_ID);
-
 		String usernameBasicAuth = getUsernameFromBasicAuth(request);
 		if(isNotBlank(usernameBasicAuth)) {
-			navConsumerId = usernameBasicAuth;
-		}
-
-		if (isNotBlank(navConsumerId)) {
-			MDC.put(MDCConstants.MDC_CONSUMER_ID, navConsumerId);
+			MDC.put(MDCConstants.MDC_CONSUMER_ID, usernameBasicAuth);
 		}
 	}
 
