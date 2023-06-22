@@ -192,7 +192,7 @@ public class JournalpostUpdater {
 				oppdaterAvsenderMottaker(endret, journalpost, oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
 			} else if (oppdaterJournalpostRequest.getAvsenderMottaker() != null && oppdaterJournalpostRequest.getAvsenderMottaker().getId() != null && oppdaterJournalpostRequest.getAvsenderMottaker().getIdType() != null) {
 				if (oversettAvsenderMottakerIdType(oppdaterJournalpostRequest.getAvsenderMottaker().getIdType()).equals(AvsenderMottakerIdTypeCode.FNR)) {
-					String navn = identConsumer.hentPersonIdent(oppdaterJournalpostRequest.getAvsenderMottaker().getId(), oppdaterJournalpostRequest.getTema());
+					String navn = identConsumer.hentPersonnavn(oppdaterJournalpostRequest.getAvsenderMottaker().getId(), oppdaterJournalpostRequest.getTema());
 					oppdaterAvsenderMottaker(endret, journalpost, navn);
 
 				}
