@@ -43,18 +43,13 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validate
 @RestController
 @RequestMapping("/rest/internal/journalpostapi/v1")
 public class JournalpostInternProtectedRestController {
-	static final String ISSUER_AAD = "aad";
-
 	private final FinnMottatteJournalposterService finnMottatteJournalposterService;
 	private final MottaDokumentUtgaaendeSkanningService mottaDokumentUtgaaendeSkanningService;
-	private final FinnIkkeLesteJournalposterService finnIkkeLesteJournalposterService;
 
 	public JournalpostInternProtectedRestController(FinnMottatteJournalposterService finnMottatteJournalposterService,
-													MottaDokumentUtgaaendeSkanningService mottaDokumentUtgaaendeSkanningService,
-													FinnIkkeLesteJournalposterService finnIkkeLesteJournalposterService) {
+													MottaDokumentUtgaaendeSkanningService mottaDokumentUtgaaendeSkanningService) {
 		this.finnMottatteJournalposterService = finnMottatteJournalposterService;
 		this.mottaDokumentUtgaaendeSkanningService = mottaDokumentUtgaaendeSkanningService;
-		this.finnIkkeLesteJournalposterService = finnIkkeLesteJournalposterService;
 	}
 
 
@@ -115,19 +110,4 @@ public class JournalpostInternProtectedRestController {
 			throw e;
 		}
 	}
-
-	@Transactional(readOnly = true)
-	@SwaggerFinnIkkeLesteJournalposter
-	@ProtectedWithClaims(issuer = ISSUER_AAD, claimMap = {"roles=journalpostApiInternal"})
-	@GetMapping("/finnIkkeLesteJournalposter/{utsendingsKanal}/{ekspedertFra}/{ekspedertTil}")
-	public ResponseEntity<List<Long>> finnIkkeLesteJournalposter(@PathVariable String utsendingsKanal,
-																 @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ekspedertFra,
-																 @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ekspedertTil) {
-		log.info(String.format("finnIkkeLesteJournalposter har mottatt kall for å hente alle uleste journalposter i tidsrommet ekspedertFra=%s og ekspedertTil=%s med utsendingskanal=%s", ekspedertFra, ekspedertTil, utsendingsKanal));
-		List<Long> journalpostIds = finnIkkeLesteJournalposterService.finnIkkeLesteJournalposter(utsendingsKanal, ekspedertFra, ekspedertTil);
-		log.info(String.format("finnIkkeLesteJournalposter fant %s uleste journalposter i tidsrommet ekspedertFra=%s, ekspedertTil=%s med utsendingskanal=%s", journalpostIds.size(), ekspedertFra, ekspedertTil, utsendingsKanal));
-		return ResponseEntity.ok()
-				.body(journalpostIds);
-	}
-
 }
