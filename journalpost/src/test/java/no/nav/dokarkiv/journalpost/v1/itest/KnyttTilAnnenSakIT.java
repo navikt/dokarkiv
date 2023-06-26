@@ -50,7 +50,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 
 	public static final String URL_JOURNALPOST = "/rest/journalpostapi/v1/journalpost/";
 	public static final String KNYTT_TIL_ANNEN_SAK = "/knyttTilAnnenSak";
-	public static final String NAV_CALL_ID = "Nav-CallId";
+	public static final String NAV_CALL_ID = "itest";
 	private static final String GYLDIG_FNR = "01018912345";
 	public static final String JOURNALFOERENDE_ENHET = "9999";  // Ved automatisk journalføring uten mennesker involvert, skal enhet settes til "9999".
 	public static final String FAGSAK = "FAGSAK";
@@ -76,7 +76,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 		Long journalpostId = journalpostTestRepository.persist(createJournalpostWithHoveddokument()).getJournalpostId();
 		commitAndStartNewTransaction();
 
-		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserTokenAndConsumerId());
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserToken());
 		ResponseEntity<KnyttTilAnnenSakResponse> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, KnyttTilAnnenSakResponse.class);
 		assertEquals(OK, response.getStatusCode());
 
@@ -96,7 +96,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 		valdiateAksjonsloggELement(aksjonsLoggList.get(0), KOPIER_JOURNALPOST, journalpostId, "Z990782");
 		valdiateAksjonsloggELement(aksjonsLoggList.get(1), ENDRE_METADATA, journalpost.getJournalpostId(), "Z990782");
 		valdiateAksjonsloggELement(aksjonsLoggList.get(2), SAKSTILKNYTNING, journalpost.getJournalpostId(), "Z990782");
-		valdiateAksjonsloggELement(aksjonsLoggList.get(3), AksjonsTypeCode.FERDIGSTILL, journalpost.getJournalpostId(), "consumer_id");
+		valdiateAksjonsloggELement(aksjonsLoggList.get(3), AksjonsTypeCode.FERDIGSTILL, journalpost.getJournalpostId(), "srvjoarkadmin");
 
 		verify(exactly(1), postRequestedFor(urlEqualTo("/safgraphql"))
 				.withRequestBody(equalToJson(String.format("""
@@ -120,7 +120,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 			FAGSAK + ",," + FAGSAKSYSTEM + ",FagsakId kan ikke være null eller tom for sakstype FAGSAK"
 	})
 	public void knyttTilAnnenSakShouldFailWithBadInput(String sakstype, String fagsakId, String fagsaksystem, String feilmelding) {
-		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserTokenAndConsumerId());
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserToken());
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "12345678910" + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, String.class);
 		assertTrue(response.getBody().contains(feilmelding));
 		assertThat(response.getStatusCode(), is(BAD_REQUEST));
@@ -137,7 +137,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("saf/safGraphQlResponseJournalpostIkkeFunnet.json")));
 
-		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(), createHeadersWithUserAndServiceUserTokenAndConsumerId());
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(), createHeadersWithUserAndServiceUserToken());
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + JOURNALPOST_ID + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, String.class);
 		assertEquals(NOT_FOUND, response.getStatusCode());
 
