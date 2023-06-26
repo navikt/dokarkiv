@@ -30,14 +30,14 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-public class FinnULesteJournalposterIT extends AbstractJournalpostIT {
+public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 	private final int NOT_FOUND = 404;
 	private final int BAD_REQUEST = 400;
 	private final int EN_DAG = 1;
 	private final int FEM_DAGER = 5;
 
 	@Test
-	public void happyPathFinnULesteJournalposter() {
+	public void happyPathFinnUlesteJournalposter() {
 
 		//Journalpost som skal bli plukket opp
 		Journalpost ulestJournalpostNavNo = opprettUlestJournalpost(NAV_NO, 2, E, U);
@@ -75,7 +75,7 @@ public class FinnULesteJournalposterIT extends AbstractJournalpostIT {
 			"tull" + "," + FEM_DAGER + "," + EN_DAG + "," + BAD_REQUEST + "," + "tull er ikke en gyldig utsendingskanal", //utsendingskanal er ugyldig
 			"NAV_NO" + "," + EN_DAG + "," + FEM_DAGER + "," + BAD_REQUEST + "," + "EkspedertFra kan ikke være før ekspedertTil"// ekspedertFra er før ekspedertTil
 	})
-	public void finnULesteJournalposterShouldGiveBadRequestWhenBadInput(String utsendingsKanalCode, int ekspedertFra, int ekspedertTil, int expectedStatusCode, String feilmelding) {
+	public void finnUlesteJournalposterShouldGiveBadRequestWhenBadInput(String utsendingsKanalCode, int ekspedertFra, int ekspedertTil, int expectedStatusCode, String feilmelding) {
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndClaim(SIKKERHETSNIVAA_ROLE));
 		ResponseEntity<String> response = restTemplate.exchange(buildUri(utsendingsKanalCode, ekspedertFra, ekspedertTil), GET, requestEntity, String.class);
 		assertEquals(response.getStatusCode().value(), expectedStatusCode);
@@ -92,7 +92,7 @@ public class FinnULesteJournalposterIT extends AbstractJournalpostIT {
 	private String buildUri(String utsendingsKanalCode, int ekspedertFraDagerGamle, int ekspedertTilDagerGamle) {
 		LocalDateTime now = LocalDateTime.now();
 		String utsendingskanalUri = utsendingsKanalCode == null ? "" : utsendingsKanalCode;
-		return SIKKERHETSNIVAA_PATH + "/finnULesteJournalposter/" + utsendingskanalUri + "/" + now.minusDays(ekspedertFraDagerGamle) + "/" + now.minusDays(ekspedertTilDagerGamle);
+		return SIKKERHETSNIVAA_PATH + "/finnUlesteJournalposter/" + utsendingskanalUri + "/" + now.minusDays(ekspedertFraDagerGamle) + "/" + now.minusDays(ekspedertTilDagerGamle);
 	}
 
 	private Journalpost opprettLestJournalpost() {

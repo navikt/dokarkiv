@@ -14,19 +14,19 @@ import static java.lang.String.format;
 
 @Slf4j
 @Service
-public class FinnULesteJournalposterService {
+public class FinnUlesteJournalposterService {
 
 	private final SikkerhetsnivaaRepository sikkerhetsnivaaRepository;
 
-	public FinnULesteJournalposterService(SikkerhetsnivaaRepository sikkerhetsnivaaRepository) {
+	public FinnUlesteJournalposterService(SikkerhetsnivaaRepository sikkerhetsnivaaRepository) {
 		this.sikkerhetsnivaaRepository = sikkerhetsnivaaRepository;
 	}
 
-	public List<Long> finnULesteJournalposter(String utsendingskanal, LocalDateTime ekspedertFra, LocalDateTime ekspedertTil) {
+	public List<Long> finnUlesteJournalposter(String utsendingskanal, LocalDateTime ekspedertFra, LocalDateTime ekspedertTil) {
 		validateInput(ekspedertFra, ekspedertTil);
 		Date datoOpprettetStart = convertToDate(ekspedertFra.minusDays(30));
 		Date datoOpprettetSlutt = convertToDate(ekspedertTil.plusDays(2));
-		return sikkerhetsnivaaRepository.findULesteJournalposts(UtsendingsKanalCode.fromString(utsendingskanal), convertToDate(ekspedertFra), convertToDate(ekspedertTil), datoOpprettetStart, datoOpprettetSlutt);
+		return sikkerhetsnivaaRepository.findUlesteJournalposts(UtsendingsKanalCode.fromString(utsendingskanal), convertToDate(ekspedertFra), convertToDate(ekspedertTil), datoOpprettetStart, datoOpprettetSlutt);
 	}
 
 	private void validateInput(LocalDateTime ekspedertFra, LocalDateTime ekspedertTil) {
