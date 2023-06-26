@@ -10,7 +10,6 @@ import no.nav.dokarkiv.core.exceptions.KanIkkeTilknytteVedleggException;
 import java.util.EnumSet;
 
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
-import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_ORGAN_INTERNT;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
@@ -42,7 +41,7 @@ public class TilknyttVedleggValidator {
 			return false;
 		}
 		JournalStatusCode statusCode = sourceJournalpost.getJournalstatus();
-		return ORIGIN_JOURNALSTATUS_LIST.contains(statusCode) && sourceJournalpost.getInnsyn() != SKJULES_ORGAN_INTERNT;
+		return ORIGIN_JOURNALSTATUS_LIST.contains(statusCode);
 	}
 
 	public boolean validateSourceDokumentInfo(DokumentInfo dokumentInfo) {
