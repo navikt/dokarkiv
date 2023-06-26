@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.core.repository;
 
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.projections.IdAndFagomradeHolder;
 import org.springframework.data.jpa.repository.Query;
@@ -21,19 +20,6 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 			and j.changeStamp.createdDate <= :tilOgMedDato
 			""")
 	List<Journalpost> findUbehandledeJournalposts(@Param("tilOgMedDato") Date tilOgMedDato);
-
-	@Query(value = """
-			select j.journalpostId from Journalpost j
-			where j.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U
-			and j.journalstatus = no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E
-			and j.utsendingskanal = :utsendingskanal
-			and j.lestDato is null
-			and j.ekspedertDato >= :ekspedertFra
-			and j.ekspedertDato <= :ekspedertTil
-			""")
-	List<Long> findIkkeLesteJournalposts(@Param("utsendingskanal") UtsendingsKanalCode utsendingskanal,
-										 @Param("ekspedertFra") Date ekspedertFra,
-										 @Param("ekspedertTil") Date ekspedertTil);
 
 	@Query(value = """
 			select j from Journalpost j

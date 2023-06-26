@@ -23,5 +23,5 @@ import java.lang.annotation.Target;
 		@ApiResponse(responseCode = "401", description = "Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått. Krever token fra dokdistadmin", content = @Content),
 		@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
 })
-public @interface SwaggerFinnIkkeLesteJournalposter {
+public @interface SwaggerFinnULesteJournalposter {
 }

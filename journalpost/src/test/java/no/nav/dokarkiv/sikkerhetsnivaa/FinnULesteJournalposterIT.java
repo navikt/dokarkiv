@@ -30,14 +30,14 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-public class FinnIkkeLesteJournalposterIT extends AbstractJournalpostIT {
+public class FinnULesteJournalposterIT extends AbstractJournalpostIT {
 	private final int NOT_FOUND = 404;
 	private final int BAD_REQUEST = 400;
 	private final int EN_DAG = 1;
 	private final int FEM_DAGER = 5;
 
 	@Test
-	public void happyPathFinnIkkeLesteJournalposter() {
+	public void happyPathFinnULesteJournalposter() {
 
 		//Journalpost som skal bli plukket opp
 		Journalpost ulestJournalpostNavNo = opprettUlestJournalpost(NAV_NO, 2, E, U);
@@ -75,7 +75,7 @@ public class FinnIkkeLesteJournalposterIT extends AbstractJournalpostIT {
 			"tull" + "," + FEM_DAGER + "," + EN_DAG + "," + BAD_REQUEST + "," + "tull er ikke en gyldig utsendingskanal", //utsendingskanal er ugyldig
 			"NAV_NO" + "," + EN_DAG + "," + FEM_DAGER + "," + BAD_REQUEST + "," + "EkspedertFra kan ikke være før ekspedertTil"// ekspedertFra er før ekspedertTil
 	})
-	public void finnIkkeLesteJournalposterShouldGiveBadRequestWhenBadInput(String utsendingsKanalCode, int ekspedertFra, int ekspedertTil, int expectedStatusCode, String feilmelding) {
+	public void finnULesteJournalposterShouldGiveBadRequestWhenBadInput(String utsendingsKanalCode, int ekspedertFra, int ekspedertTil, int expectedStatusCode, String feilmelding) {
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndClaim(SIKKERHETSNIVAA_ROLE));
 		ResponseEntity<String> response = restTemplate.exchange(buildUri(utsendingsKanalCode, ekspedertFra, ekspedertTil), GET, requestEntity, String.class);
 		assertEquals(response.getStatusCode().value(), expectedStatusCode);
@@ -83,7 +83,7 @@ public class FinnIkkeLesteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldReturnUnauthorizedIfNotDokdistadminRole() {
+	public void shouldReturnUnauthorizedIfNotSikkerhetsnivaaRole() {
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 		ResponseEntity<String> response = restTemplate.exchange(buildUri(NAV_NO.name(), 5, 1), GET, requestEntity, String.class);
 		assertEquals(response.getStatusCode(), UNAUTHORIZED);
@@ -92,7 +92,7 @@ public class FinnIkkeLesteJournalposterIT extends AbstractJournalpostIT {
 	private String buildUri(String utsendingsKanalCode, int ekspedertFraDagerGamle, int ekspedertTilDagerGamle) {
 		LocalDateTime now = LocalDateTime.now();
 		String utsendingskanalUri = utsendingsKanalCode == null ? "" : utsendingsKanalCode;
-		return SIKKERHETSNIVAA_PATH + "/finnIkkeLesteJournalposter/" + utsendingskanalUri + "/" + now.minusDays(ekspedertFraDagerGamle) + "/" + now.minusDays(ekspedertTilDagerGamle);
+		return SIKKERHETSNIVAA_PATH + "/finnULesteJournalposter/" + utsendingskanalUri + "/" + now.minusDays(ekspedertFraDagerGamle) + "/" + now.minusDays(ekspedertTilDagerGamle);
 	}
 
 	private Journalpost opprettLestJournalpost() {

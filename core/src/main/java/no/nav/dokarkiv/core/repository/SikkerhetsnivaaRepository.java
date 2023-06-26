@@ -22,9 +22,9 @@ public interface SikkerhetsnivaaRepository extends HibernateRepository<Journalpo
 			and j.changeStamp.createdDate >= :datoOpprettetStart
 			and j.changeStamp.createdDate <= :datoOpprettetSlutt
 			""")
-	List<Long> findIkkeLesteJournalposts(@Param("utsendingskanal") UtsendingsKanalCode utsendingskanal,
-										 @Param("ekspedertFra") Date ekspedertFra,
-										 @Param("ekspedertTil") Date ekspedertTil,
-										 @Param ("datoOpprettetStart") Date datoOpprettetStart,
-										 @Param("datoOpprettetSlutt") Date datoOpprettetSlutt);
+	List<Long> findULesteJournalposts(@Param("utsendingskanal") UtsendingsKanalCode utsendingskanal,
+									  @Param("ekspedertFra") Date ekspedertFra,
+									  @Param("ekspedertTil") Date ekspedertTil,
+									  @Param ("datoOpprettetStart") Date datoOpprettetStart,
+									  @Param("datoOpprettetSlutt") Date datoOpprettetSlutt);
 }
