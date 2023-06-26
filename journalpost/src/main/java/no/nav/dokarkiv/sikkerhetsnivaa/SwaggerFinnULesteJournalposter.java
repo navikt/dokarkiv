@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "OK"),
 		@ApiResponse(responseCode = "400", description = "Ugyldig input", content = @Content),
-		@ApiResponse(responseCode = "401", description = "Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått. Krever token fra dokdistadmin", content = @Content),
+		@ApiResponse(responseCode = "401", description = "Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått. Krever token med role api_intern_sikkerhetsnivaa", content = @Content),
 		@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
 })
 public @interface SwaggerFinnULesteJournalposter {
