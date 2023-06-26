@@ -83,11 +83,11 @@ public class TilknyttVedleggValidatorTest {
 
 
 	@Test
-	void shouldReturnFalseWhenSourceJournalpostInnsynIsSKJULES_ORGAN_INTERNT() {
+	void shouldReturnTrueWhenSourceJournalpostInnsynIsSKJULES_ORGAN_INTERNT() {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setInnsyn(SKJULES_ORGAN_INTERNT);
 
-		assertThat(validator.validateSourceJournalpost(journalpost), is(false));
+		assertThat(validator.validateSourceJournalpost(journalpost), is(true));
 	}
 
 	@Test
