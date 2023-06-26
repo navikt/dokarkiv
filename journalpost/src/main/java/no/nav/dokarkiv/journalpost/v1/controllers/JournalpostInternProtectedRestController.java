@@ -8,16 +8,12 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
-import no.nav.dokarkiv.journalpost.v1.services.FinnIkkeLesteJournalposterService;
 import no.nav.dokarkiv.journalpost.v1.services.FinnMottatteJournalposterService;
 import no.nav.dokarkiv.journalpost.v1.services.MottaDokumentUtgaaendeSkanningService;
-import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnIkkeLesteJournalposter;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFinnMottatteJournalposterMedTemaEldreEnn;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerMottaDokumentUtgaaendeSkanning;
 import no.nav.security.token.support.core.api.Protected;
-import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.MDC;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 

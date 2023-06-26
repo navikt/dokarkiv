@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import no.nav.dokarkiv.JournalpostConfig;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.journalpost.v1.JournalpostConfig;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(
 		webEnvironment = RANDOM_PORT,
-		classes = {CoreConfig.class, JournalpostConfig.class},
+		classes = {CoreConfig.class, JournalpostConfig.class },
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles({"itest", "wiremock"})
 @AutoConfigureWireMock(port = 0)

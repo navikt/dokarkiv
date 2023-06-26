@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.swagger;
+package no.nav.dokarkiv.sikkerhetsnivaa;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
