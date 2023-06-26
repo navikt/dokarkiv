@@ -256,7 +256,7 @@ public class TilknyttVedleggService {
 			log.info(MDC.get(MDC_REQUEST_ID) + " kan ikke knytte dokumentinfo med dokumentInfoId={} til journalpost med journalpostId={} fordi den allerede er tilknyttet journalposten", dokumentVedlegg
 					.getDokumentInfoId(), targetJournalpostId);
 			valid = false;
-		} else if (!tilknyttVedleggValidator.validateSourceDokumentInfo(sourceDokumentInfo)) {
+		} else if (tilknyttVedleggValidator.checkIfSourceDokumentInfoIsInvald(sourceDokumentInfo)) {
 			addToFeiletDokumentList(feiledeDokumenterList, DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);
 			valid = false;
 		}

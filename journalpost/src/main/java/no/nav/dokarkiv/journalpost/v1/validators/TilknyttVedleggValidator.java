@@ -45,10 +45,14 @@ public class TilknyttVedleggValidator {
 		return ORIGIN_JOURNALSTATUS_LIST.contains(statusCode) && sourceJournalpost.getInnsyn() != SKJULES_ORGAN_INTERNT;
 	}
 
-	public boolean validateSourceDokumentInfo(DokumentInfo dokumentInfo) {
-		if (dokumentInfo.getDokumentstatus() != null && dokumentInfo.getDokumentstatus() != FERDIGSTILT) {
+	public boolean checkIfSourceDokumentInfoIsInvald(DokumentInfo dokumentInfo) {
+		if (dokumentInfo.isKassert()) {
+			return true;
+		}
+		if (dokumentInfo.getDokumentstatus() == null) {
 			return false;
-		} else return !dokumentInfo.isKassert();
+		}
+		return dokumentInfo.getDokumentstatus() != FERDIGSTILT;
 	}
 
 }

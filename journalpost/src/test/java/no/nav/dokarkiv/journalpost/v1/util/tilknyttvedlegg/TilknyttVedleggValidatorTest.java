@@ -41,7 +41,7 @@ public class TilknyttVedleggValidatorTest {
 		assertThatCode(() -> {
 			validator.validateJournalpostStatus(targetJournalpost);
 			validator.validateSourceJournalpost(sourceJournalpost);
-			validator.validateSourceDokumentInfo(dokumentInfo);
+			validator.checkIfSourceDokumentInfoIsInvald(dokumentInfo);
 		}).doesNotThrowAnyException();
 	}
 
@@ -91,21 +91,30 @@ public class TilknyttVedleggValidatorTest {
 	}
 
 	@Test
-	void shouldReturnFalseIfDokumentStatusCodeIsNotFerdigstilt() {
+	void shouldReturnTrueWhenDokumentStatusCodeIsNotFerdigstilt() {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.dokumentstatus(UNDER_REDIGERING)
 				.build();
 
-		assertThat(validator.validateSourceDokumentInfo(dokumentInfo), is(false));
+		assertThat(validator.checkIfSourceDokumentInfoIsInvald(dokumentInfo), is(true));
 	}
 
 	@Test
-	void shouldReturnFalseIfSlettetIsTrue() {
+	void shouldReturnFalseWhenDokumentStatusCodeIsNull() {
+		DokumentInfo dokumentInfo = DokumentInfo.builder()
+				.dokumentstatus(null)
+				.build();
+
+		assertThat(validator.checkIfSourceDokumentInfoIsInvald(dokumentInfo), is(false));
+	}
+
+	@Test
+	void shouldReturnTrueWhenSlettetIsTrue() {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.kassert(true)
 				.build();
 
-		assertThat(validator.validateSourceDokumentInfo(dokumentInfo), is(false));
+		assertThat(validator.checkIfSourceDokumentInfoIsInvald(dokumentInfo), is(true));
 	}
 
 }

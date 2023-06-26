@@ -83,6 +83,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Journalpost targetJournalpost = createJournalpostArkiv(journalpostTypeCode);
 		Journalpost sourceJournalpost = createJournalpostArkiv(journalpostTypeCode);
 		sourceJournalpost.setJournalstatus(J);
+		sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setDokumentstatus(null);
 		Long targetJournalpostId = saveJournalpost(targetJournalpost).getJournalpostId();
 		Long sourcejournalpostId = saveJournalpost(sourceJournalpost).getJournalpostId();
 
