@@ -52,6 +52,7 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 	private static final String UNKNOWN_VALUE = "unknown";
 	public static final String ISSUER_AZUREV2 = "azurev2";
 	public static final String ISSUER_RESTSTS = "reststs";
+	public static final String ISSUER_AAD = "aad";
 	private final MeterRegistry meterRegistry;
 	private static final String UKJENT = "UKJENT";
 	private final HeaderTokenExtractor headerTokenExtractor;

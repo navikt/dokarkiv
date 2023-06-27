@@ -49,7 +49,7 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 
 	@Query(value = """
 			select new no.nav.dokarkiv.core.repository.projections.IdAndFagomradeHolder(
-			j.journalpostId, j.fagomrade
+			j.journalpostId, j.fagomrade			
 			)
 			from Journalpost j
 			where j.journalpostId in :ids

@@ -38,7 +38,6 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validate
 @RestController
 @RequestMapping("/rest/internal/journalpostapi/v1")
 public class JournalpostInternProtectedRestController {
-
 	private final FinnMottatteJournalposterService finnMottatteJournalposterService;
 	private final MottaDokumentUtgaaendeSkanningService mottaDokumentUtgaaendeSkanningService;
 
@@ -106,5 +105,4 @@ public class JournalpostInternProtectedRestController {
 			throw e;
 		}
 	}
-
 }

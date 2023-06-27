@@ -125,6 +125,12 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "dokdistadmin",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss",
+      "roles" : ["api_intern_sikkerhetsnivaa"]
+    },
+    {
       "app": "padm2",
       "namespace": "teamsykefravr",
       "cluster": "dev-fss"

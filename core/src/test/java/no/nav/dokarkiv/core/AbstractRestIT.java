@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
+import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AAD;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
@@ -185,6 +186,14 @@ public abstract class AbstractRestIT {
 		return createHeadersWithServiceUserToken(SERVICE_USER_ID);
 	}
 
+	protected HttpHeaders createHeadersWithServiceUserTokenAndClaim( String claim) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(APPLICATION_JSON);
+		headers.setBearerAuth(azureTokenWithClaim(SERVICE_USER_ID, claim));
+		headers.add(NAV_CALL_ID, "itest");
+		return headers;
+	}
+
 	protected HttpHeaders createHeadersWithServiceUserToken(String serviceUserId) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
@@ -226,6 +235,10 @@ public abstract class AbstractRestIT {
 
 	protected String restStsToken(String subject) {
 		return token("reststs", subject, Map.of());
+	}
+
+	protected String azureTokenWithClaim(String subject, String role) {
+		return token(ISSUER_AAD, subject, Map.of("roles", role));
 	}
 
 	protected String openAmToken(String subject) {
