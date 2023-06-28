@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
@@ -30,15 +29,13 @@ public class OpprettJournalpostPDFAUtils {
 	}
 
 	public void safeValidateAndLogPDFA(Journalpost journalpost) {
-		//denne tryen skal være veldig unødvendig, men beholder den inntil videre.
-		//Det er ikke så farlig om det er et dokument vi ikke får validert, det er verre om opprettjournalpost slutter å funke..
 		try {
 			List<PDFAValidatorResponse> responses = journalpost.findAllFilDetaljer().stream()
 					.filter(FilDetaljer::isAPdf)
 					.map(this::safeValidateDokumentFil)
 					.filter(Optional::isPresent)
 					.map(Optional::get)
-					.collect(Collectors.toList());
+					.toList();
 
 			String arkivar = determineArkivar(MDC.get(MDC_CONSUMER_ID));
 
@@ -56,9 +53,9 @@ public class OpprettJournalpostPDFAUtils {
 	}
 
 
-	public Optional<PDFAValidatorResponse> safeValidateDokumentFil(FilDetaljer filDetaljer) {
+	private Optional<PDFAValidatorResponse> safeValidateDokumentFil(FilDetaljer filDetaljer) {
 		try {
-			return Optional.of(PDFAValidatorUtil.validatePDFA(filDetaljer));
+			return PDFAValidatorUtil.validatePDFA(filDetaljer);
 		} catch (Throwable t) {
 			log.warn("Kunne ikke validere dokumentfil", t);
 			return Optional.empty();

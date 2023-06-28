@@ -4,9 +4,10 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorResponse;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
@@ -16,9 +17,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil.FEM_MB;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_A;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_B;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_2_A;
@@ -48,50 +51,63 @@ public class PDFAValidatorUtilTest {
 	public void shouldValidateBadPDFA() throws IOException {
 		PDFAValidatorResponse response;
 		try (InputStream pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf")) {
-			response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes()));
+			response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes())).get();
 		}
 
-		assertThat(response.getPdfVersion(), is(PDFA_1_B));
-		assertThat(response.validPdfToString(), is("ugyldig"));
-		assertThat(response.getAssertionResults().size(), is(6));
+		assertThat(response.getPdfVersion()).isEqualTo(PDFA_1_B);
+		assertThat(response.validPdfToString()).isEqualTo("ugyldig");
+		assertThat(response.getAssertionResults().size()).isEqualTo(6);
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = {0, 1})
+	public void shouldAttemptToValidateIfFileIsLessThanOrEqualTo5MB(int reduceSizeBy) {
+		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) ((FEM_MB) - reduceSizeBy)]));
+		assertThat(response).isPresent();
+	}
+
+	@Test
+	public void shouldNotAttemptToValidateIfFileIsMoreThan5MB() {
+		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) (FEM_MB + 1)]));
+		assertThat(response).isEmpty();
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenNoFile() {
-		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(createFilDetaljer(null)));
+		assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(createFilDetaljer(null)));
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenNullFilDetaljer() {
-		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(null));
+		assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(null));
 	}
 
 	@Test
 	void shouldThrowExceptionWhenFilDetaljerEmptyByteArray() {
-		Assertions.assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[0])));
+		assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[0])));
 	}
 
 	private void validatePDFA(PDFAFlavour flavour) throws IOException {
 		PDFAValidatorResponse response;
 		try (InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF)) {
-			response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes()));
+			response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes())).get();
 		}
-		assertThat(response.getAssertionResults(), is(Collections.emptySet()));
-		assertThat(response.getPdfVersion(), is(flavour));
-		assertThat(response.validPdfToString(), is("gyldig"));
+		assertThat(response.getAssertionResults()).isEqualTo(Collections.emptySet());
+		assertThat(response.getPdfVersion()).isEqualTo(flavour);
+		assertThat(response.validPdfToString()).isEqualTo("gyldig");
 	}
 
 	private void validateBadPDFA(PDFAFlavour flavour) throws IOException {
 		PDFAValidatorResponse response;
 		try (InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF)) {
-			response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes()));
+			response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes())).get();
 		}
 
-		assertThat(response.getPdfVersion(), is(flavour));
-		assertThat(response.validPdfToString(), is("ugyldig"));
-		assertThat(response.getAssertionResults().size(), is(1));
+		assertThat(response.getPdfVersion()).isEqualTo(flavour);
+		assertThat(response.validPdfToString()).isEqualTo("ugyldig");
+		assertThat(response.getAssertionResults().size()).isEqualTo(1);
 		List<String> resultList = new ArrayList<>(response.getAssertionResults());
-		assertThat(resultList.get(0), is(faultString));
+		assertThat(resultList.get(0)).isEqualTo(faultString);
 	}
 
 	private FilDetaljer createFilDetaljer(byte[] fil) {
