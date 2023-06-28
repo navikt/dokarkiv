@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static org.apache.commons.io.FileUtils.ONE_MB;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.NO_FLAVOUR;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_A;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_B;
@@ -51,7 +52,7 @@ public class PDFAValidatorUtil {
 	public static Optional<PDFAValidatorResponse> validatePDFA(FilDetaljer filDetaljer) {
 		if (filDetaljer == null || filDetaljer.getFileContent() == null || filDetaljer.getFileContent().length == 0) {
 			throw new InvalidPdfException("Filen er null eller tom");
-		} else if(filDetaljer.getFileContent().length > 5 * FileUtils.ONE_MB) {
+		} else if(filDetaljer.getFileContent().length > 5 * ONE_MB) {
 			log.info(format("FilUuid=%s er større enn 5MB og vil ikke bli validert. Størrelse=%s", filDetaljer.getFilUuid(), filDetaljer.getFileContent().length));
 			return Optional.empty();
 		}

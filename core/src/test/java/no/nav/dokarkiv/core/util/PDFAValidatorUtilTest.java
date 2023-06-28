@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.apache.commons.io.FileUtils.ONE_MB;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_A;
@@ -59,13 +60,13 @@ public class PDFAValidatorUtilTest {
 
 	@Test
 	public void ShouldAttemptToValidateIfFileIsLessThan5MB() {
-		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) (FileUtils.ONE_MB * 5 - 1)]));
+		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) (ONE_MB * 5 - 1)]));
 		assertThat(response).isPresent();
 	}
 
 	@Test
 	public void ShouldNotAttemptToValidateIfFileIsMoreThan5MB() {
-		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) (FileUtils.ONE_MB * 5 + 1)]));
+		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) (ONE_MB * 5 + 1)]));
 		assertThat(response).isEmpty();
 	}
 
