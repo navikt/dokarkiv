@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.pdfValidation;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
+import org.apache.commons.io.FileUtils;
 import org.verapdf.core.ModelParsingException;
 import org.verapdf.core.ValidationException;
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
@@ -19,9 +20,11 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.NO_FLAVOUR;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_A;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_B;
@@ -45,30 +48,24 @@ public class PDFAValidatorUtil {
 		VeraGreenfieldFoundryProvider.initialise();
 	}
 
-	/*
-	Note!
-	Om vi etter hvert trenger å fikse på metadata for å få pdf/a'er gjennom har verapdf støtte for dette:
-	<dependency>
-		<groupId>org.verapdf</groupId>
-		<artifactId>metadata-fixer</artifactId>
-	</dependency>
-	 */
-
-	public static PDFAValidatorResponse validatePDFA(FilDetaljer filDetaljer) {
+	public static Optional<PDFAValidatorResponse> validatePDFA(FilDetaljer filDetaljer) {
 		if (filDetaljer == null || filDetaljer.getFileContent() == null || filDetaljer.getFileContent().length == 0) {
 			throw new InvalidPdfException("Filen er null eller tom");
+		} else if(filDetaljer.getFileContent().length > 5 * FileUtils.ONE_MB) {
+			log.info(format("FilUuid=%s er større enn 5MB og vil ikke bli validert. Størrelse=%s", filDetaljer.getFilUuid(), filDetaljer.getFileContent().length));
+			return Optional.empty();
 		}
 
 		try (VeraPDFFoundry foundry = Foundries.defaultInstance()) {
 			try (PDFAParser parser = foundry.createParser(new ByteArrayInputStream(filDetaljer.getFileContent()))) {
 				// Hvis PDF ikke er på et av de lovlige formatene hopp over valideringen
 				if (!VALID_PDFA_FLAVOURS.contains(parser.getFlavour())) {
-					return returnIncorrectFlavourReponse(filDetaljer, parser.getFlavour());
+					return Optional.of(returnIncorrectFlavourReponse(filDetaljer, parser.getFlavour()));
 				}
-				return doValidatePDFA(filDetaljer, foundry, parser);
+				return Optional.of(doValidatePDFA(filDetaljer, foundry, parser));
 			}
 		} catch (ModelParsingException e) {
-			return returnNotAPdfValidatorResponse(filDetaljer);
+			return Optional.of(returnNotAPdfValidatorResponse(filDetaljer));
 		} catch (Exception e) {
 			throw new InvalidPdfException("Feil under validering av PDF/A", e);
 		}

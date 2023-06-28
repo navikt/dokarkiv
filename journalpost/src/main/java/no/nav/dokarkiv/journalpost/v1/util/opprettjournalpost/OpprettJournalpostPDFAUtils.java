@@ -30,8 +30,6 @@ public class OpprettJournalpostPDFAUtils {
 	}
 
 	public void safeValidateAndLogPDFA(Journalpost journalpost) {
-		//denne tryen skal være veldig unødvendig, men beholder den inntil videre.
-		//Det er ikke så farlig om det er et dokument vi ikke får validert, det er verre om opprettjournalpost slutter å funke..
 		try {
 			List<PDFAValidatorResponse> responses = journalpost.findAllFilDetaljer().stream()
 					.filter(FilDetaljer::isAPdf)
@@ -56,9 +54,9 @@ public class OpprettJournalpostPDFAUtils {
 	}
 
 
-	public Optional<PDFAValidatorResponse> safeValidateDokumentFil(FilDetaljer filDetaljer) {
+	private Optional<PDFAValidatorResponse> safeValidateDokumentFil(FilDetaljer filDetaljer) {
 		try {
-			return Optional.of(PDFAValidatorUtil.validatePDFA(filDetaljer));
+			return PDFAValidatorUtil.validatePDFA(filDetaljer);
 		} catch (Throwable t) {
 			log.warn("Kunne ikke validere dokumentfil", t);
 			return Optional.empty();
