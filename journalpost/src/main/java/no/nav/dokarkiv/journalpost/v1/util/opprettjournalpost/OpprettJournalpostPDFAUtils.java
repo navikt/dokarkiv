@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
@@ -36,7 +35,7 @@ public class OpprettJournalpostPDFAUtils {
 					.map(this::safeValidateDokumentFil)
 					.filter(Optional::isPresent)
 					.map(Optional::get)
-					.collect(Collectors.toList());
+					.toList();
 
 			String arkivar = determineArkivar(MDC.get(MDC_CONSUMER_ID));
 

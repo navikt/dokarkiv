@@ -4,7 +4,6 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorResponse;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -59,13 +58,13 @@ public class PDFAValidatorUtilTest {
 	}
 
 	@Test
-	public void ShouldAttemptToValidateIfFileIsLessThan5MB() {
-		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) (ONE_MB * 5 - 1)]));
+	public void shouldAttemptToValidateIfFileIsLessThanOrEqualTo5MB() {
+		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) (ONE_MB * 5)]));
 		assertThat(response).isPresent();
 	}
 
 	@Test
-	public void ShouldNotAttemptToValidateIfFileIsMoreThan5MB() {
+	public void shouldNotAttemptToValidateIfFileIsMoreThan5MB() {
 		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) (ONE_MB * 5 + 1)]));
 		assertThat(response).isEmpty();
 	}
