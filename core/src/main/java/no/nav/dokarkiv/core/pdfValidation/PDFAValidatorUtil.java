@@ -43,7 +43,7 @@ public class PDFAValidatorUtil {
 	private static final EnumSet<PDFAFlavour> VALID_PDFA_FLAVOURS = EnumSet.of(PDFA_1_A, PDFA_1_B, PDFA_2_A, PDFA_2_B, PDFA_2_U, PDFA_3_A, PDFA_3_B, PDFA_3_U);
 	public static final Set<String> NOT_A_PDFA = Set.of("Dokumentet er ikke en PDFA");
 	public static final Set<String> NON_VALID_PDFA_VERSION = Set.of("Dokumentet er ikke på et av de registrerte lovlige formatene " + VALID_PDFA_FLAVOURS);
-	private static final long FEM_MB = 5 * ONE_MB;
+	public static final long FEM_MB = 5 * ONE_MB;
 
 	static {
 		VeraGreenfieldFoundryProvider.initialise();
@@ -53,7 +53,7 @@ public class PDFAValidatorUtil {
 		if (filDetaljer == null || filDetaljer.getFileContent() == null || filDetaljer.getFileContent().length == 0) {
 			throw new InvalidPdfException("Filen er null eller tom");
 		} else if (filDetaljer.getFileContent().length > FEM_MB) {
-			log.info(format("FilUuid=%s er større enn 5MB og vil ikke bli validert. Størrelse=%s", filDetaljer.getFilUuid(), filDetaljer.getFileContent().length));
+			log.info(format("FilUuid=%s er større enn 5 MB og vil ikke bli validert. Størrelse=%s", filDetaljer.getFilUuid(), filDetaljer.getFileContent().length));
 			return Optional.empty();
 		}
 

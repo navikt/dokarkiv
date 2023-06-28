@@ -6,6 +6,8 @@ import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorResponse;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
@@ -17,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.apache.commons.io.FileUtils.ONE_MB;
+import static no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil.FEM_MB;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_A;
@@ -57,15 +59,16 @@ public class PDFAValidatorUtilTest {
 		assertThat(response.getAssertionResults().size()).isEqualTo(6);
 	}
 
-	@Test
-	public void shouldAttemptToValidateIfFileIsLessThanOrEqualTo5MB() {
-		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) (ONE_MB * 5)]));
+	@ParameterizedTest
+	@ValueSource(ints = {0, 1})
+	public void shouldAttemptToValidateIfFileIsLessThanOrEqualTo5MB(int reduceSizeBy) {
+		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) ((FEM_MB) - reduceSizeBy)]));
 		assertThat(response).isPresent();
 	}
 
 	@Test
 	public void shouldNotAttemptToValidateIfFileIsMoreThan5MB() {
-		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) (ONE_MB * 5 + 1)]));
+		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) (FEM_MB + 1)]));
 		assertThat(response).isEmpty();
 	}
 
