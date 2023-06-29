@@ -31,7 +31,6 @@
 		<java.version>17</java.version>
 		<argLine>-Xmx2048m</argLine>
 
-		<jakarta.jws-api.version>1.1.1</jakarta.jws-api.version>
 		<oracle.version>19.17.0.0</oracle.version>
 		<cxf.version>3.5.5</cxf.version>
 		<simpleflatmapper.version>8.2.3</simpleflatmapper.version>
@@ -143,11 +142,6 @@
 				<version>${simpleflatmapper.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>jakarta.jws</groupId>
-				<artifactId>jakarta.jws-api</artifactId>
-				<version>${jakarta.jws-api.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-bom</artifactId>
 				<version>${cxf.version}</version>
@@ -251,6 +245,20 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<resources>
