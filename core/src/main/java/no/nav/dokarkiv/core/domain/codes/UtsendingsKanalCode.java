@@ -1,6 +1,9 @@
 package no.nav.dokarkiv.core.domain.codes;
 
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
+
+import static java.lang.String.format;
 
 /**
  * Enum for codes in T_K_UTSENDINGS_KANAL.
@@ -72,6 +75,14 @@ public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, 
 	@Override
 	public Class<? extends CodesTablePeriodicItem<UtsendingsKanalCode, String>> getCtiClass() {
 		return UtsendingsKanalCti.class;
+	}
+
+	public static UtsendingsKanalCode fromString(String utsendingskanal) {
+		try {
+			return UtsendingsKanalCode.valueOf(utsendingskanal.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			throw new InputValideringFeiletException(format("%s er ikke en gyldig utsendingskanal", utsendingskanal));
+		}
 	}
 
 }

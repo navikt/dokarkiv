@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.util.tilknyttvedlegg;
 
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.core.exceptions.InvalidNavConsumerIdFunctionalException;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggRequestValidator;
 import org.junit.jupiter.api.Test;
@@ -55,15 +54,5 @@ public class TilknyttVedleggRequestValidatorTest {
 		assertThrows(InputValideringFeiletException.class,
 				() -> tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest),
 				"DokumentInfoId må være satt");
-	}
-
-	@Test
-	public void shouldThrowExceptionIfconsumerIdIsMissing() {
-		MDC.clear();
-		tilknyttVedleggRequest = createTilknyttVedleggRequest();
-
-		assertThrows(InvalidNavConsumerIdFunctionalException.class,
-				() -> tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest),
-				"Nav-Consumer-Id kan ikke være null");
 	}
 }

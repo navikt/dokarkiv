@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
+import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AAD;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
@@ -181,22 +182,16 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
-	protected HttpHeaders createHeadersWithUserAndServiceUserTokenAndConsumerId() {
-		return createHeadersWithUserAndServiceUserTokenAndConsumerId("consumer_id");
-	}
-
-	protected HttpHeaders createHeadersWithUserAndServiceUserTokenAndConsumerId(String consumerId) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(openAmToken(PERSON_USER_ID));
-		headers.add(NAV_CONSUMER_TOKEN, BEARER + restStsToken(SERVICE_USER_ID));
-		headers.add(NAV_CALL_ID, "Nav-CallId");
-		headers.add(NavHeaders.NAV_CONSUMER_ID, consumerId);
-		return headers;
-	}
-
 	protected HttpHeaders createHeadersWithServiceUserToken() {
 		return createHeadersWithServiceUserToken(SERVICE_USER_ID);
+	}
+
+	protected HttpHeaders createHeadersWithServiceUserTokenAndClaim( String claim) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(APPLICATION_JSON);
+		headers.setBearerAuth(azureTokenWithClaim(SERVICE_USER_ID, claim));
+		headers.add(NAV_CALL_ID, "itest");
+		return headers;
 	}
 
 	protected HttpHeaders createHeadersWithServiceUserToken(String serviceUserId) {
@@ -240,6 +235,10 @@ public abstract class AbstractRestIT {
 
 	protected String restStsToken(String subject) {
 		return token("reststs", subject, Map.of());
+	}
+
+	protected String azureTokenWithClaim(String subject, String role) {
+		return token(ISSUER_AAD, subject, Map.of("roles", role));
 	}
 
 	protected String openAmToken(String subject) {

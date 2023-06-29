@@ -32,7 +32,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	private static final String FINNMOTTATTEJOURNALPOSTER_PENSJON = "finnMottatteJournalposter/PEN/5";
-	private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
 	private static final String FAGKODE_UFO = "UFO";
 	private static final String FAGKODE_PEN = "PEN";
 	private static final int DEFAULT_DAGER_GAMLE = 5;
@@ -206,7 +205,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	private HttpHeaders createHeaders(String serviceUser) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add("Nav-Consumer-Id", NAV_CONSUMER_ID);
 		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + restStsToken(serviceUser));
 
 		return headers;

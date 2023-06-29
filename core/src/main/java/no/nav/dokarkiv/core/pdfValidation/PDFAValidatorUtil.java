@@ -19,9 +19,12 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+import static org.apache.commons.io.FileUtils.ONE_MB;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.NO_FLAVOUR;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_A;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_B;
@@ -40,35 +43,30 @@ public class PDFAValidatorUtil {
 	private static final EnumSet<PDFAFlavour> VALID_PDFA_FLAVOURS = EnumSet.of(PDFA_1_A, PDFA_1_B, PDFA_2_A, PDFA_2_B, PDFA_2_U, PDFA_3_A, PDFA_3_B, PDFA_3_U);
 	public static final Set<String> NOT_A_PDFA = Set.of("Dokumentet er ikke en PDFA");
 	public static final Set<String> NON_VALID_PDFA_VERSION = Set.of("Dokumentet er ikke på et av de registrerte lovlige formatene " + VALID_PDFA_FLAVOURS);
+	public static final long FEM_MB = 5 * ONE_MB;
 
 	static {
 		VeraGreenfieldFoundryProvider.initialise();
 	}
 
-	/*
-	Note!
-	Om vi etter hvert trenger å fikse på metadata for å få pdf/a'er gjennom har verapdf støtte for dette:
-	<dependency>
-		<groupId>org.verapdf</groupId>
-		<artifactId>metadata-fixer</artifactId>
-	</dependency>
-	 */
-
-	public static PDFAValidatorResponse validatePDFA(FilDetaljer filDetaljer) {
+	public static Optional<PDFAValidatorResponse> validatePDFA(FilDetaljer filDetaljer) {
 		if (filDetaljer == null || filDetaljer.getFileContent() == null || filDetaljer.getFileContent().length == 0) {
 			throw new InvalidPdfException("Filen er null eller tom");
+		} else if (filDetaljer.getFileContent().length > FEM_MB) {
+			log.info(format("FilUuid=%s er større enn 5 MB og vil ikke bli validert. Størrelse=%s", filDetaljer.getFilUuid(), filDetaljer.getFileContent().length));
+			return Optional.empty();
 		}
 
 		try (VeraPDFFoundry foundry = Foundries.defaultInstance()) {
 			try (PDFAParser parser = foundry.createParser(new ByteArrayInputStream(filDetaljer.getFileContent()))) {
 				// Hvis PDF ikke er på et av de lovlige formatene hopp over valideringen
 				if (!VALID_PDFA_FLAVOURS.contains(parser.getFlavour())) {
-					return returnIncorrectFlavourReponse(filDetaljer, parser.getFlavour());
+					return Optional.of(returnIncorrectFlavourReponse(filDetaljer, parser.getFlavour()));
 				}
-				return doValidatePDFA(filDetaljer, foundry, parser);
+				return Optional.of(doValidatePDFA(filDetaljer, foundry, parser));
 			}
 		} catch (ModelParsingException e) {
-			return returnNotAPdfValidatorResponse(filDetaljer);
+			return Optional.of(returnNotAPdfValidatorResponse(filDetaljer));
 		} catch (Exception e) {
 			throw new InvalidPdfException("Feil under validering av PDF/A", e);
 		}

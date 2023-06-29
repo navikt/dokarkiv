@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
@@ -15,13 +16,10 @@ import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
-import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
-import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.ChangeTracker;
@@ -38,14 +36,22 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_METADATA;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.ALTINN;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO_CHAT;
 import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
 import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_MULTIPLIER;
+import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
+import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementOppdateringAvAvsenderMedDigitalMottakskanalCounter;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementSakstypeCounter;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
 
@@ -54,9 +60,9 @@ import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValid
 public class OppdaterJournalpostService {
 
 	private static final String APPLIKASJON_FS22 = "FS22";
+	private static final EnumSet<MottaksKanalCode> DIGITALE_KANALER = EnumSet.of(NAV_NO, NAV_NO_CHAT, ALTINN);
 
 	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
-	private final DokumentInfoRepository dokumentInfoRepository;
 	private final JournalpostUpdater journalpostUpdater;
 	private final SaksrelasjonUpdater saksrelasjonUpdater;
 	private final DokumentInfoUpdater dokumentInfoUpdater;
@@ -69,7 +75,6 @@ public class OppdaterJournalpostService {
 	public OppdaterJournalpostService(JournalpostRepositorySkjermet journalpostRepositorySkjermet,
 									  JournalpostUpdater journalpostUpdater,
 									  SaksrelasjonUpdater saksrelasjonUpdater,
-									  DokumentInfoRepository dokumentInfoRepository,
 									  DokumentInfoUpdater dokumentInfoUpdater,
 									  LagreAksjonsLoggService lagreAksjonsLoggService,
 									  AksjonsLoggService aksjonsLoggService,
@@ -77,7 +82,6 @@ public class OppdaterJournalpostService {
 									  final HentSakerRepository hentSakerRepository,
 									  final MeterRegistry meterRegistry) {
 		this.journalpostRepositorySkjermet = journalpostRepositorySkjermet;
-		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.journalpostUpdater = journalpostUpdater;
 		this.saksrelasjonUpdater = saksrelasjonUpdater;
 		this.dokumentInfoUpdater = dokumentInfoUpdater;
@@ -98,12 +102,17 @@ public class OppdaterJournalpostService {
 		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
+		if (oppdateringAvAvsenderMedDigitalMottakskanal(oppdaterJournalpostRequest, journalpost)) {
+			log.info("Avsender på digitalt innsendt journalpost med mottakskanal={} ble oppdatert", journalpost.getMottakskanal());
+			incrementOppdateringAvAvsenderMedDigitalMottakskanalCounter(meterRegistry);
+		}
+
 		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus(), journalpost.getJournalposttype());
 
 		if (oppdaterJournalpostRequest.getSak() != null) {
 			Sakstype sakstype = oppdaterJournalpostRequest.getSak().getSakstype();
 			incrementSakstypeCounter(sakstype, "oppdaterjournalpost", meterRegistry);
-			if ((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())) {
+			if ((FAGSAK.equals(sakstype) || GENERELL_SAK.equals(sakstype)) && !PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())) {
 				sakId = identifiserEllerOpprettArkivsak(oppdaterJournalpostRequest);
 			}
 		}
@@ -135,9 +144,7 @@ public class OppdaterJournalpostService {
 				}
 			}
 		}
-
 	}
-
 
 	public void knyttTilAnnenSakOppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 		Long sakId = null;
@@ -150,7 +157,7 @@ public class OppdaterJournalpostService {
 		if (oppdaterJournalpostRequest.getSak() != null) {
 			Sakstype sakstype = oppdaterJournalpostRequest.getSak().getSakstype();
 			incrementSakstypeCounter(sakstype, "oppdaterjournalpost", meterRegistry);
-			if ((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())) {
+			if ((FAGSAK.equals(sakstype) || GENERELL_SAK.equals(sakstype)) && !PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())) {
 				sakId = identifiserEllerOpprettArkivsak(oppdaterJournalpostRequest);
 			}
 		}
@@ -179,8 +186,6 @@ public class OppdaterJournalpostService {
 			log.warn("Kunne ikke skrive til AksjonsLogg: " + e.getMessage());
 		}
 	}
-
-
 
 	private String hentMeldingFraAksjonsType(AksjonsTypeCode kode) {
 		return kode.equals(SAKSTILKNYTNING) ?
@@ -213,7 +218,7 @@ public class OppdaterJournalpostService {
 	private Sak createSak(OppdaterJournalpostRequest request) {
 		return Sak.builder()
 				.aktoerId(hentAktoerId(request.getBruker()))
-				.orgnr(BrukerIdType.ORGNR.equals(request.getBruker().getIdType()) ?
+				.orgnr(ORGNR.equals(request.getBruker().getIdType()) ?
 						request.getBruker().getId() : null)
 				.tema(request.getTema())
 				.applikasjon(FAGSAK.equals(request.getSak().getSakstype()) ?
@@ -226,13 +231,15 @@ public class OppdaterJournalpostService {
 	}
 
 	private String hentAktoerId(Bruker bruker) {
-		switch (bruker.getIdType()) {
-			case AKTOERID:
-				return bruker.getId();
-			case FNR:
-				return identConsumer.hentAktoerId(bruker.getId());
-			default:
-				return null;
-		}
+		return switch (bruker.getIdType()) {
+			case AKTOERID -> bruker.getId();
+			case FNR -> identConsumer.hentAktoerId(bruker.getId());
+			default -> null;
+		};
+	}
+
+	private static boolean oppdateringAvAvsenderMedDigitalMottakskanal(OppdaterJournalpostRequest oppdaterJournalpostRequest, Journalpost journalpost) {
+		return (DIGITALE_KANALER.contains(journalpost.getMottakskanal()) && oppdaterJournalpostRequest.getAvsenderMottaker() != null) &&
+				(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn() != null || oppdaterJournalpostRequest.getAvsenderMottaker().getId() != null);
 	}
 }
