@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.11</version>
+		<version>2.7.13</version>
 	</parent>
 
 	<groupId>no.nav.dokarkiv</groupId>
@@ -32,19 +32,20 @@
 		<argLine>-Xmx2048m</argLine>
 
 		<oracle.version>19.17.0.0</oracle.version>
-		<cxf.version>3.5.5</cxf.version>
-		<simpleflatmapper.version>8.2.3</simpleflatmapper.version>
+		<cxf.version>3.6.1</cxf.version>
+		<sfm-springjdbc.version>8.2.3</sfm-springjdbc.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
 		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
-		<java-jwt.version>4.2.1</java-jwt.version>
+		<java-jwt.version>4.4.0</java-jwt.version>
 		<jaxb2-basics-runtime.version>0.13.1</jaxb2-basics-runtime.version>
-		<google-cloud-storage.version>2.19.0</google-cloud-storage.version>
-		<tink.version>1.8.0</tink.version>
+		<google-cloud-storage.version>2.23.0</google-cloud-storage.version>
+		<tink.version>1.9.0</tink.version>
+		<tink-gcpkms.version>1.8.0</tink-gcpkms.version>
 
-		<commons-io.version>2.11.0</commons-io.version>
+		<commons-io.version>2.13.0</commons-io.version>
 		<springdoc-openapi-ui.version>1.7.0</springdoc-openapi-ui.version>
-		<microsoft-graph.version>5.61.0</microsoft-graph.version>
+		<microsoft-graph.version>5.62.0</microsoft-graph.version>
 
 		<!-- NAV -->
 		<token-support.version>2.1.4</token-support.version>
@@ -56,8 +57,8 @@
 		<dokumentproduksjoninfo-tjenestespesifikasjon.version>3-9eba8ba</dokumentproduksjoninfo-tjenestespesifikasjon.version>
 
 		<!-- test -->
-		<datasource-proxy-spring-boot-starter.version>1.8.1</datasource-proxy-spring-boot-starter.version>
-		<spring-cloud-contract-wiremock.version>3.1.6</spring-cloud-contract-wiremock.version>
+		<datasource-proxy-spring-boot-starter.version>1.9.0</datasource-proxy-spring-boot-starter.version>
+		<spring-cloud-contract-wiremock.version>3.1.7</spring-cloud-contract-wiremock.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
 
@@ -139,7 +140,7 @@
 			<dependency>
 				<groupId>org.simpleflatmapper</groupId>
 				<artifactId>sfm-springjdbc</artifactId>
-				<version>${simpleflatmapper.version}</version>
+				<version>${sfm-springjdbc.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
@@ -198,7 +199,7 @@
 			<dependency>
 				<groupId>com.google.crypto.tink</groupId>
 				<artifactId>tink-gcpkms</artifactId>
-				<version>${tink.version}</version>
+				<version>${tink-gcpkms.version}</version>
 			</dependency>
 
 			<dependency>
