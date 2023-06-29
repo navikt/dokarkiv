@@ -41,7 +41,7 @@ public class OppdaterDistribusjonsinfoValidator {
 	public static void validateRequest(String journalpostId, OppdaterDistribusjonsinfoRequest request) {
 		validateId(journalpostId, "journalpostId");
 		validateBoolean(request.getSettStatusEkspedert(), "settStatusEkspedert");
-		validateTilbakestillJournalpost(request);
+		validateStatusendringJournalpost(request);
 
 		if (isNotBlank(request.getUtsendingsKanal())) {
 			try {
@@ -55,10 +55,10 @@ public class OppdaterDistribusjonsinfoValidator {
 		}
 	}
 
-	private static void validateTilbakestillJournalpost(OppdaterDistribusjonsinfoRequest request) {
+	private static void validateStatusendringJournalpost(OppdaterDistribusjonsinfoRequest request) {
 		if (request.getTilbakestillJournalpost() != null && request.getSettStatusEkspedert() != null) {
 			if (request.getSettStatusEkspedert() && request.getTilbakestillJournalpost()) {
-				throw new InputValideringFeiletException("settStausEkspedert og tilbakestillJournalpost kan ikke være true samtidig");
+				throw new InputValideringFeiletException("settStatusEkspedert og tilbakestillJournalpost kan ikke være true samtidig");
 			}
 		}
 

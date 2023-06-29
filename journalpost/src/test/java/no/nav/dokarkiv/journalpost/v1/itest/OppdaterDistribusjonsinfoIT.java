@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -88,7 +89,6 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathTilbakestillJournalpost() {
-		var clock = Clock.fixed(Instant.now().minus(1, ChronoUnit.HOURS), ZoneId.systemDefault());
 		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
 		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();
 
@@ -103,10 +103,11 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+		var ekspedertJournalpost = journalpostTestRepository.findById(journalpostId);
+		assertThat(ekspedertJournalpost).isPresent();
 
-		assertEquals(JournalStatusCode.FS, ekspedertJournalpost.getJournalstatus());
-		assertNull(ekspedertJournalpost.getEkspedertDato());
+		assertThat(ekspedertJournalpost.get().getJournalstatus()).isEqualTo(JournalStatusCode.FS);
+		assertThat(ekspedertJournalpost.get().getEkspedertDato()).isNull();
 	}
 
 	@Test

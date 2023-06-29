@@ -38,6 +38,8 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALFORENDE_ENHET;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Component
@@ -79,9 +81,9 @@ public class JournalpostUpdater {
 			journalpost.setUtsendingskanal(UtsendingsKanalCode.valueOf(request.getUtsendingsKanal()));
 		}
 		if (request.getSettStatusEkspedert()) {
-			updateJournalstatus(journalpost, tracker, JournalStatusCode.E);
-		}else if(request.getTilbakestillJournalpost() != null && request.getTilbakestillJournalpost()){
-			updateJournalstatus(journalpost, tracker, JournalStatusCode.FS);
+			updateJournalstatus(journalpost, tracker, E);
+		} else if (request.getTilbakestillJournalpost() != null && request.getTilbakestillJournalpost()) {
+			updateJournalstatus(journalpost, tracker, FS);
 		}
 
 		if (request.getDatoLest() != null && journalpost.getLestDato() == null) {
@@ -95,7 +97,7 @@ public class JournalpostUpdater {
 		tracker.setEndretFlagg(true);
 		tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), journalStatusCode.name());
 		journalpost.setJournalstatus(journalStatusCode);
-		journalpost.setEkspedertDato(journalStatusCode == JournalStatusCode.E ? OffsetDateTime.now(): null);
+		journalpost.setEkspedertDato(journalStatusCode == E ? OffsetDateTime.now() : null);
 		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
