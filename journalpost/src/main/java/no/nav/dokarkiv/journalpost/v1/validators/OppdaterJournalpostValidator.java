@@ -38,6 +38,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 public final class OppdaterJournalpostValidator {
+
 	private static final int FNR_LENGTH = 11;
 	private static final int AKTOERID_LENGTH = 13;
 	private static final int ORGNR_LENGTH = 9;
@@ -47,7 +48,6 @@ public final class OppdaterJournalpostValidator {
 	private static final EnumSet<JournalStatusCode> NOTAT_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
 
 	private static final Pattern BEHANDLINGSTEMA_PATTERN = Pattern.compile("ab\\d{4}");
-
 
 	private OppdaterJournalpostValidator() {
 	}
