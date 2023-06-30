@@ -47,7 +47,7 @@ public class OppdaterDistribusjonsinfoValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenSettStatusEkspedertAndTilbakestillJournalpost() {
+	public void shouldThrowExceptionWhenSettStatusEkspedertAndTilbakestillJournalpostAreTrue() {
 		OppdaterDistribusjonsinfoRequest oppdaterDistribusjonsinfoRequest = OppdaterDistribusjonsinfoRequest.builder()
 				.settStatusEkspedert(true)
 				.tilbakestillJournalpost(true)
