@@ -125,9 +125,9 @@ spec:
           {{#if roles}}
           permissions:
             roles:
-              {{ #each roles}}
+              {{#each roles}}
               - "{{this}}"
-                {{/each}}
+              {{/each}}
           {{/if}}
     {{/each}}
 {{/if}}
