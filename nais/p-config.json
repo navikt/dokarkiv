@@ -385,13 +385,13 @@
     {
       "app": "dokdistavstemming",
       "namespace": "teamdokumenthandtering",
-      "cluster": "prod-fss"
+      "cluster": "prod-fss",
+      "roles" : ["api_intern_sikkerhetsnivaa"]
     },
     {
       "app": "dokdistadmin",
       "namespace": "teamdokumenthandtering",
-      "cluster": "prod-fss",
-      "roles" : ["api_intern_sikkerhetsnivaa"]
+      "cluster": "prod-fss"
     },
     {
       "app": "meldekort-api",

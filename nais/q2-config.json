@@ -127,8 +127,7 @@
     {
       "app": "dokdistadmin",
       "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss",
-      "roles" : ["api_intern_sikkerhetsnivaa"]
+      "cluster": "dev-fss"
     },
     {
       "app": "padm2",
@@ -383,7 +382,8 @@
     {
       "app": "dokdistavstemming",
       "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss"
+      "cluster": "dev-fss",
+      "roles" : ["api_intern_sikkerhetsnivaa"]
     },
     {
       "app": "meldekort-api-q2",
