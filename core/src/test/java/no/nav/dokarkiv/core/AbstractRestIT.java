@@ -92,6 +92,8 @@ public abstract class AbstractRestIT {
 	protected static final String PERSON_USER_ID = "Z990782";
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
+	protected static final String DEFAULT_CLAIM_OID = "oid";
+	protected static final String ROLES = "roles";
 
 	protected static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
 
@@ -238,7 +240,7 @@ public abstract class AbstractRestIT {
 	}
 
 	protected String azureTokenWithClaim(String subject, String role) {
-		return token(ISSUER_AZUREV2, subject, Map.of("roles", role, "oid", subject));
+		return token(ISSUER_AZUREV2, subject, Map.of(ROLES, role, DEFAULT_CLAIM_OID, subject));
 	}
 
 	protected String openAmToken(String subject) {
