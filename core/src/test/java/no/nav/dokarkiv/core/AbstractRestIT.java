@@ -89,7 +89,6 @@ public abstract class AbstractRestIT {
 	protected static final String BEARER = "Bearer ";
 	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	protected static final String SERVICE_USER_ID = "srvjoarkadmin";
-	protected static final String NON_PRIVILEGED_SERVICE_USER = "srvimaginaryapp";
 	protected static final String PERSON_USER_ID = "Z990782";
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
@@ -190,7 +189,7 @@ public abstract class AbstractRestIT {
 	protected HttpHeaders createHeadersWithServiceUserTokenAndClaim(String claim) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(azureTokenWithClaim(NON_PRIVILEGED_SERVICE_USER, claim));
+		headers.setBearerAuth(azureTokenWithClaim(SERVICE_USER_ID, claim));
 		headers.add(NAV_CALL_ID, "itest");
 		return headers;
 	}
