@@ -53,7 +53,7 @@ public class PDFAValidatorUtil {
 		if (filDetaljer == null || filDetaljer.getFileContent() == null || filDetaljer.getFileContent().length == 0) {
 			throw new InvalidPdfException("Filen er null eller tom");
 		} else if (filDetaljer.getFileContent().length > FEM_MB) {
-			log.info(format("FilUuid=%s er større enn 5 MB og vil ikke bli validert. Størrelse=%s", filDetaljer.getFilUuid(), filDetaljer.getFileContent().length));
+			log.info(format("FilUuid=%s er større enn 5 MB og vil ikke bli validert. Størrelse=%s MB", filDetaljer.getFilUuid(), convertToMb(filDetaljer.getFileContent().length)));
 			return Optional.empty();
 		}
 
@@ -70,6 +70,10 @@ public class PDFAValidatorUtil {
 		} catch (Exception e) {
 			throw new InvalidPdfException("Feil under validering av PDF/A", e);
 		}
+	}
+
+	private static Float convertToMb(long size){
+		return (float)size / ONE_MB;
 	}
 
 	private static PDFAValidatorResponse doValidatePDFA(FilDetaljer filDetaljer, VeraPDFFoundry foundry, PDFAParser parser) throws ValidationException, IOException {

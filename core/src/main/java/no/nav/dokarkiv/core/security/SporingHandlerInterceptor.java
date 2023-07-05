@@ -95,7 +95,11 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 		final TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
 		if (tokenValidationContext.getJwtTokenAsOptional(ISSUER_AZUREV2).isPresent()) {
 			// Azure AD token (header: Authorization). Oauth 2.0 client credential grant flow og on-behalf-of flow
+			log.info("Token er av tupe azurev2");
 			azureAdFlowSporingHandler.handle(tokenValidationContext.getJwtToken(ISSUER_AZUREV2), navUserIdHeader);
+		} else if (	tokenValidationContext.getJwtTokenAsOptional(ISSUER_AAD).isPresent()) {
+			log.info("token er av type aad");
+			azureAdFlowSporingHandler.handle(tokenValidationContext.getJwtToken(ISSUER_AAD), navUserIdHeader);
 		} else if (tokenValidationContext.getFirstValidToken().isPresent() && isEmpty(navConsumerToken)) {
 			// REST-STS (header: Authorization). System til system
 			if (navSystemkontekstHandler.handle(tokenValidationContext.getFirstValidToken().get(), response, navUserIdHeader)) {
@@ -109,6 +113,7 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 				return false;
 			}
 		} else {
+			log.info("Ukjent issuer!");
 			return handleInvalidAuthorizationHeaderToken(response);
 		}
 
