@@ -80,8 +80,10 @@ public class AzureAdFlowSporingHandler {
 	private void handleClientCredentialGrantFlow(JwtToken token, String navUserIdHeader) {
 		final String appClaim = findAppClaim(token.getJwtTokenClaims());
 		if (navUserIdHeader == null) {
+			log.info("navuserIdHeader == null");
 			handleClientCredentialGrantFlowAppContext(appClaim);
 		} else {
+			log.info("navuseridheader!=null");
 			handleClientCredentialGrantFlowNavUserIdHeaderContext(appClaim, navUserIdHeader.trim());
 		}
 	}
