@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
-import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AAD;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
@@ -90,6 +89,7 @@ public abstract class AbstractRestIT {
 	protected static final String BEARER = "Bearer ";
 	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	protected static final String SERVICE_USER_ID = "srvjoarkadmin";
+	protected static final String NON_PRIVILEGED_SERVICE_USER = "srvimaginaryapp";
 	protected static final String PERSON_USER_ID = "Z990782";
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
@@ -187,10 +187,10 @@ public abstract class AbstractRestIT {
 		return createHeadersWithServiceUserToken(SERVICE_USER_ID);
 	}
 
-	protected HttpHeaders createHeadersWithServiceUserTokenAndClaim( String claim) {
+	protected HttpHeaders createHeadersWithServiceUserTokenAndClaim(String claim) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(azureTokenWithClaim("srvdokdistavstemming", claim));
+		headers.setBearerAuth(azureTokenWithClaim(NON_PRIVILEGED_SERVICE_USER, claim));
 		headers.add(NAV_CALL_ID, "itest");
 		return headers;
 	}
@@ -239,15 +239,11 @@ public abstract class AbstractRestIT {
 	}
 
 	protected String azureTokenWithClaim(String subject, String role) {
-		return token(ISSUER_AAD, subject, Map.of("roles", role, "oid", subject));
+		return token(ISSUER_AZUREV2, subject, Map.of("roles", role, "oid", subject));
 	}
 
 	protected String openAmToken(String subject) {
 		return token("openam", subject, Map.of());
-	}
-
-	protected String azureToken(String subject) {
-		return token("azurev2", subject, Map.of());
 	}
 
 	protected String token(String issuer, String subject, Map<String, Object> claims) {

@@ -52,7 +52,6 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 	private static final String UNKNOWN_VALUE = "unknown";
 	public static final String ISSUER_AZUREV2 = "azurev2";
 	public static final String ISSUER_RESTSTS = "reststs";
-	public static final String ISSUER_AAD = "azurev2";
 	private final MeterRegistry meterRegistry;
 	private static final String UKJENT = "UKJENT";
 	private final HeaderTokenExtractor headerTokenExtractor;
@@ -95,11 +94,7 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 		final TokenValidationContext tokenValidationContext = tokenValidationContextHolder.getTokenValidationContext();
 		if (tokenValidationContext.getJwtTokenAsOptional(ISSUER_AZUREV2).isPresent()) {
 			// Azure AD token (header: Authorization). Oauth 2.0 client credential grant flow og on-behalf-of flow
-			log.info("Token er av tupe azurev2");
 			azureAdFlowSporingHandler.handle(tokenValidationContext.getJwtToken(ISSUER_AZUREV2), navUserIdHeader);
-		} else if (	tokenValidationContext.getJwtTokenAsOptional(ISSUER_AAD).isPresent()) {
-			log.info("token er av type aad");
-			azureAdFlowSporingHandler.handle(tokenValidationContext.getJwtToken(ISSUER_AAD), navUserIdHeader);
 		} else if (tokenValidationContext.getFirstValidToken().isPresent() && isEmpty(navConsumerToken)) {
 			// REST-STS (header: Authorization). System til system
 			if (navSystemkontekstHandler.handle(tokenValidationContext.getFirstValidToken().get(), response, navUserIdHeader)) {
@@ -113,7 +108,6 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 				return false;
 			}
 		} else {
-			log.info("Ukjent issuer!");
 			return handleInvalidAuthorizationHeaderToken(response);
 		}
 
