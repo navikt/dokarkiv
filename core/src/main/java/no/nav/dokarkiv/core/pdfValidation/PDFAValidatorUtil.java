@@ -72,8 +72,8 @@ public class PDFAValidatorUtil {
 		}
 	}
 
-	private static Float convertToMB(long size){
-		return (float)size / ONE_MB;
+	private static float convertToMB(long size){
+		return (float) size / ONE_MB;
 	}
 
 	private static PDFAValidatorResponse doValidatePDFA(FilDetaljer filDetaljer, VeraPDFFoundry foundry, PDFAParser parser) throws ValidationException, IOException {
