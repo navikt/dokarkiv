@@ -7,4 +7,5 @@ public class MDCConstants {
 	public static final String MDC_USER_ID = "userId";
 	public static final String MDC_USER_NAME = "userName";
 	public static final String MDC_CONSUMER_ID = "consumerId";
+	public static final String MDC_JOURNALPOST_ID = "journalpostId";
 }
