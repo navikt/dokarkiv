@@ -61,8 +61,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
@@ -115,10 +117,11 @@ public class ArkiverOgJournalfoerRestController {
 		try {
 			MDC.put(MDC_REQUEST_ID, "rjoark201");
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for ferdigstilling av journalpost med journalpostId={}", journalpostId);
+			MDC.put(MDC_JOURNALPOST_ID, journalpostId);
 			ferdigstillJournalpostValidator.validateRequest(journalpostId, request);
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-			ferdigstillJournalpostService.ferdigstill(Long.parseLong(journalpostId), request);
+			ferdigstillJournalpostService.ferdigstill(parseLong(journalpostId), request);
 			log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
 
 			return ResponseEntity.ok()
@@ -141,11 +144,12 @@ public class ArkiverOgJournalfoerRestController {
 		try {
 			MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for oppdatering av distribusjonsinfo for journalpostId={}", journalpostId);
+			MDC.put(MDC_JOURNALPOST_ID, journalpostId);
 			validateId(journalpostId, "journalpostId");
 			OppdaterDistribusjonsinfoValidator.validateRequest(journalpostId, request);
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-			oppdaterDistribusjonsinfoService.oppdaterDistribusjonsinfo(Long.parseLong(journalpostId), request);
+			oppdaterDistribusjonsinfoService.oppdaterDistribusjonsinfo(parseLong(journalpostId), request);
 
 			log.info(MDC.get(MDC_REQUEST_ID) + " har oppdatert distribusjonsinfo på journalpost med journalpostId={}", journalpostId);
 
@@ -176,10 +180,10 @@ public class ArkiverOgJournalfoerRestController {
 		try {
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 			MDC.put(MDC_REQUEST_ID, "oppdaterjournalpost");
+			MDC.put(MDC_JOURNALPOST_ID, journalpostId);
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å oppdatere journalpost med journalpostId={}", journalpostId);
 			validateId(journalpostId, "journalpostId");
-
-			oppdaterJournalpostService.oppdaterJournalpost(Long.parseLong(journalpostId), request);
+			oppdaterJournalpostService.oppdaterJournalpost(parseLong(journalpostId), request);
 
 			log.info("oppdaterjournalpost har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
 			return OppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
@@ -279,6 +283,7 @@ public class ArkiverOgJournalfoerRestController {
 																	@RequestBody FjernVedleggTilknyttetJournalpostRequest request) {
 		try {
 			MDC.put(MDCConstants.MDC_REQUEST_ID, "fjernVedleggTilknyttetJournalpost");
+			MDC.put(MDC_JOURNALPOST_ID, journalpostId);
 			validateId(journalpostId, "tilknyttJournalpostId");
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 			log.info("Fjerne vedlegg med dokumentinfoId={} som er knyttet til journalpost med journalpostId={}", request.getDokumentId(), journalpostId);
