@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
-import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AAD;
+import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
@@ -92,6 +92,8 @@ public abstract class AbstractRestIT {
 	protected static final String PERSON_USER_ID = "Z990782";
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
+	protected static final String DEFAULT_CLAIM_OID = "oid";
+	protected static final String ROLES = "roles";
 
 	protected static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
 
@@ -186,7 +188,7 @@ public abstract class AbstractRestIT {
 		return createHeadersWithServiceUserToken(SERVICE_USER_ID);
 	}
 
-	protected HttpHeaders createHeadersWithServiceUserTokenAndClaim( String claim) {
+	protected HttpHeaders createHeadersWithServiceUserTokenAndClaim(String claim) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(azureTokenWithClaim(SERVICE_USER_ID, claim));
@@ -238,15 +240,11 @@ public abstract class AbstractRestIT {
 	}
 
 	protected String azureTokenWithClaim(String subject, String role) {
-		return token(ISSUER_AAD, subject, Map.of("roles", role));
+		return token(ISSUER_AZUREV2, subject, Map.of(ROLES, role, DEFAULT_CLAIM_OID, subject));
 	}
 
 	protected String openAmToken(String subject) {
 		return token("openam", subject, Map.of());
-	}
-
-	protected String azureToken(String subject) {
-		return token("azurev2", subject, Map.of());
 	}
 
 	protected String token(String issuer, String subject, Map<String, Object> claims) {

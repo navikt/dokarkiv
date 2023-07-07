@@ -122,5 +122,12 @@ spec:
         - application: {{app}}
           namespace: {{namespace}}
           cluster: {{cluster}}
+          {{#if roles}}
+          permissions:
+            roles:
+              {{#each roles}}
+              - "{{this}}"
+              {{/each}}
+          {{/if}}
     {{/each}}
 {{/if}}

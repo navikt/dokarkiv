@@ -15,7 +15,7 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AAD;
+import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaController.SIKKERHETSNIVAA_PATH;
 import static no.nav.dokarkiv.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaController.SIKKERHETSNIVAA_ROLE;
 
@@ -24,7 +24,7 @@ import static no.nav.dokarkiv.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaCo
 @RestController
 @Transactional(readOnly = true)
 @RequestMapping(SIKKERHETSNIVAA_PATH)
-@ProtectedWithClaims(issuer = ISSUER_AAD, claimMap = {"roles=" + SIKKERHETSNIVAA_ROLE})
+@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + SIKKERHETSNIVAA_ROLE})
 public class JournalpostInternSikkerhetsnivaaController {
 
 	public static final String SIKKERHETSNIVAA_ROLE = "api_intern_sikkerhetsnivaa";

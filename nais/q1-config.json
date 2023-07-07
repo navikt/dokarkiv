@@ -121,8 +121,7 @@
     {
       "app": "dokdistadmin-q1",
       "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss",
-      "roles" : ["api_intern_sikkerhetsnivaa"]
+      "cluster": "dev-fss"
     },
     {
       "app": "dokdistfordeling-q1",
