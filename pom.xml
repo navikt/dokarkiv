@@ -38,7 +38,7 @@
 		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
 		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
-		<jaxb2-basics-runtime.version>0.13.1</jaxb2-basics-runtime.version>
+		<jaxb2-basics-runtime.version>1.11.1-PUBLISHED-BY-MISTAKE</jaxb2-basics-runtime.version>
 		<google-cloud-storage.version>2.23.0</google-cloud-storage.version>
 		<tink.version>1.9.0</tink.version>
 		<tink-gcpkms.version>1.8.0</tink-gcpkms.version>
