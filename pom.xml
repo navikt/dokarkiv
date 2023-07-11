@@ -31,7 +31,6 @@
 		<java.version>17</java.version>
 		<argLine>-Xmx2048m</argLine>
 
-		<oracle.version>19.17.0.0</oracle.version>
 		<cxf.version>3.6.1</cxf.version>
 		<sfm-springjdbc.version>8.2.3</sfm-springjdbc.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
