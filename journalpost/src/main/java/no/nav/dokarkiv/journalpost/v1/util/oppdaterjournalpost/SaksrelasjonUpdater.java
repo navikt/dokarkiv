@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -22,7 +23,9 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJO
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_APPLIKASJON;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_FAGSAKNR;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
+@Slf4j
 @Component
 public class SaksrelasjonUpdater {
 
@@ -53,12 +56,51 @@ public class SaksrelasjonUpdater {
 			if (endret.isEndretFlagg() && !newSak) {
 				saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 				saksrelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+			} else if(!endret.isEndretFlagg() && !newSak) {
+				MDC.put("mma-6992", "request.sak=samme_sak");
+				vurderResetSaksrelasjon(journalpost, request);
 			}
 			if (newSak) {
 				journalpost.setSaksrelasjon(saksrelasjon);
 			}
+		} else {
+			MDC.put("mma-6992", "request.sak=null");
+			vurderResetSaksrelasjon(journalpost, request);
 		}
 		return endret;
+	}
+
+	private static void vurderResetSaksrelasjon(Journalpost journalpost, OppdaterJournalpostRequest request) {
+		vurderResetSaksrelasjonTemaEndring(journalpost, request);
+		vurderResetSaksrelasjonBrukerEndring(journalpost, request);
+	}
+
+	private static void vurderResetSaksrelasjonTemaEndring(Journalpost journalpost, OppdaterJournalpostRequest request) {
+		String nyTema = request.getTema();
+		if(isBlank(nyTema)) {
+			return;
+		}
+		String tema = journalpost.getFagomrade().name();
+		if(!tema.equals(nyTema)) {
+			log.info("oppdaterJournalpost - Forsøker annen tema oppdatering der request.sak=null. tema={}, nyTema={}", tema, nyTema);
+		}
+	}
+
+	private static void vurderResetSaksrelasjonBrukerEndring(Journalpost journalpost, OppdaterJournalpostRequest request) {
+		if(request.getBruker() == null) {
+			return;
+		}
+		String nyBrukerId = request.getBruker().getId();
+		if(journalpost.getBrukere().isEmpty()) {
+			return;
+		}
+		String brukerId = journalpost.getBrukere().iterator().next().getBrukerId();
+		if(isBlank(brukerId)) {
+			return;
+		}
+		if(!brukerId.equals(nyBrukerId)) {
+			log.info("oppdaterJournalpost - Forsøker annen bruker oppdatering der request.sak=null. brukerId er forskjellige");
+		}
 	}
 
 	private void updateSaksnummer(Long sakId, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
