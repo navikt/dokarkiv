@@ -13,8 +13,6 @@
   "LDAP_BASEDN": "dc=preprod,dc=local",
   "SECURITYTOKENSERVICE_URL": "https://security-token-service.dev.adeo.no/rest/v1/sts/token",
   "DOKARKIV_ENDPOINTS_PDL_URL": "https://pdl-api.dev.intern.nav.no/graphql",
-  "JOARK_HENTDOKUMENT_BASEURL": "https://wasapp-q4.adeo.no/joarkweb/HentDokument",
-  "DOKARKIV_HENTDOKUMENT_BASEURL": "https://dokarkiv-q4.dev.intern.nav.no/hentdokument",
   "DOKARKIV_ENDPOINTS_SAF_URL": "https://saf-q4.dev.intern.nav.no/graphql",
   "DOKARKIV_ENDPOINTS_SAF_SCOPE": "api://dev-fss.teamdokumenthandtering.saf-q4/.default",
   "DOKARKIV_ENDPOINTS_PDL_SCOPE": "api://dev-fss.pdl.pdl-api/.default",
