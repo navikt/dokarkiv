@@ -23,6 +23,8 @@ import java.util.Date;
 
 /**
  * Inneholder metadata om gyldige urler for å hente dokumenter.
+ *
+ * Brukes av {@link no.nav.dokarkiv.core.repository.JoarkDeleteRepository} for permanent sletting av journalposter fra joarkadmin
  */
 @Entity
 @Table(name = "T_DOK_URL_INFO")

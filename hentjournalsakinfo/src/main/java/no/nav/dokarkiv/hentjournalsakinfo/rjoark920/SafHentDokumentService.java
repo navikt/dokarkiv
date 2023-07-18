@@ -14,12 +14,9 @@ import static org.apache.commons.io.IOUtils.toByteArray;
 @Slf4j
 public class SafHentDokumentService {
 	private final SafHentDokumentRepository safHentDokumentRepository;
-	private final SafHentDokumentJoarkRepository safHentDokumentJoarkRepository;
 
-	public SafHentDokumentService(SafHentDokumentRepository safHentDokumentRepository,
-								  SafHentDokumentJoarkRepository safHentDokumentJoarkRepository) {
+	public SafHentDokumentService(SafHentDokumentRepository safHentDokumentRepository) {
 		this.safHentDokumentRepository = safHentDokumentRepository;
-		this.safHentDokumentJoarkRepository = safHentDokumentJoarkRepository;
 	}
 
 	public SafHentDokumentResponse hentDokumentByDokumentinfoIdAndVariant(Long dokumentinfoId, VariantFormatCode variant) {
@@ -43,15 +40,10 @@ public class SafHentDokumentService {
 				throw new RuntimeException("Klarte ikke å lese dokument fra binaryStream. dokumentInfoId=" + dokumentinfoId + ", variantFormat=" + variant, e);
 			}
 		} else if (joarkDokumentDto.isOndemandDocument()) {
-			log.warn("Dokument med dokumentInfoId={}, variantformat={} er et OnDemand dokument. Henter fra Joark.", dokumentinfoId, variant);
-			byte[] ondemandDokument = safHentDokumentJoarkRepository.hentDokument(joarkDokumentDto);
-			log.warn("Dokument med dokumentInfoId={}, variantformat={} hentet fra ondemand via joark. size={}", dokumentinfoId, variant, ondemandDokument.length);
-			return SafHentDokumentResponse.builder()
-					.dokument(ondemandDokument)
-					.filtype(joarkDokumentDto.getFiltype())
-					.build();
+			log.warn("Dokument med dokumentInfoId={}, variantformat={} har OnDemandId={} og finnes ikke i fagarkivet", dokumentinfoId, variant, joarkDokumentDto.getOndemandId());
+			throw new DocumentNotFoundException("Fysisk dokument med dokumentinfoId=" + dokumentinfoId + " og variant=" + variant + " ikke funnet i joark");
 		} else {
-			throw new DocumentNotFoundException("Fysisk dokument med dokumentinfoId=" + dokumentinfoId + " og variant=" + variant + " ikke funnet i Joark eller OnDemand.");
+			throw new DocumentNotFoundException("Fysisk dokument med dokumentinfoId=" + dokumentinfoId + " og variant=" + variant + " ikke funnet i joark");
 		}
 	}
 }
