@@ -44,9 +44,7 @@ class HentDokumentService {
 		Blob dokument = hentDokumentDto.dokument();
 		try {
 			InputStream binaryStream = dokument.getBinaryStream();
-			HentDokumentResponse hentDokumentResponse = new HentDokumentResponse(hentDokumentDto.filtype(), binaryStream);
-			dokument.free();
-			return hentDokumentResponse;
+			return new HentDokumentResponse(hentDokumentDto.filtype(), binaryStream);
 		} catch (SQLException e) {
 			throw new DokarkivTechnicalException("Klarte ikke lese fra binaryStream", e);
 		}
