@@ -38,7 +38,8 @@
     {
       "app": "saf-q5",
       "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss"
+      "cluster": "dev-fss",
+      "roles" : ["api_intern_safintern"]
     },
     {
       "app": "pensjon-psak-q5",

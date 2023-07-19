@@ -2,8 +2,6 @@ package no.nav.dokarkiv.core.exceptions;
 
 /**
  * The main technical exception type in Joark.
- *
- * @author Joakim Bjørnstad, Jbit AS
  */
 public class DokarkivTechnicalException extends RuntimeException {
 	public DokarkivTechnicalException() {

@@ -25,6 +25,7 @@
 		<module>arkivervariant</module>
 		<module>admin</module>
 		<module>journalpost</module>
+		<module>safintern</module>
 	</modules>
 
 	<properties>
@@ -105,6 +106,11 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>journalpost</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>no.nav.dokarkiv</groupId>
+				<artifactId>safintern</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
