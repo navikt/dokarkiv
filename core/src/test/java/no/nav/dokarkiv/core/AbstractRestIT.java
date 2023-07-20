@@ -188,10 +188,10 @@ public abstract class AbstractRestIT {
 		return createHeadersWithServiceUserToken(SERVICE_USER_ID);
 	}
 
-	protected HttpHeaders createHeadersWithServiceUserTokenAndClaim(String claim) {
+	protected HttpHeaders createHeadersWithServiceUserTokenAndRolesClaim(String role) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(azureTokenWithClaim(SERVICE_USER_ID, claim));
+		headers.setBearerAuth(azureTokenWithRolesClaim(SERVICE_USER_ID, role));
 		headers.add(NAV_CALL_ID, "itest");
 		return headers;
 	}
@@ -239,7 +239,7 @@ public abstract class AbstractRestIT {
 		return token("reststs", subject, Map.of());
 	}
 
-	protected String azureTokenWithClaim(String subject, String role) {
+	protected String azureTokenWithRolesClaim(String subject, String role) {
 		return token(ISSUER_AZUREV2, subject, Map.of(ROLES, role, DEFAULT_CLAIM_OID, subject));
 	}
 

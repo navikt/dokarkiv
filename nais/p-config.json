@@ -88,7 +88,14 @@
     {
       "app": "safselvbetjening",
       "namespace": "teamdokumenthandtering",
-      "cluster": "prod-fss"
+      "cluster": "prod-fss",
+      "roles" : ["api_intern_safintern"]
+    },
+    {
+      "app": "saf",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss",
+      "roles" : ["api_intern_safintern"]
     },
     {
       "app": "dokmotaltinn",

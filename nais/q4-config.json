@@ -38,7 +38,8 @@
     {
       "app": "saf-q4",
       "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss"
+      "cluster": "dev-fss",
+      "roles" : ["api_intern_safintern"]
     },
     {
       "app": "testnav-dokarkiv-proxy-trygdeetaten",

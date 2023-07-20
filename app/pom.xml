@@ -40,6 +40,10 @@
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>journalpost</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.dokarkiv</groupId>
+			<artifactId>safintern</artifactId>
+		</dependency>
 
 		<!-- annet -->
 		<dependency>

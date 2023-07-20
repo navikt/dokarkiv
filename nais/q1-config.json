@@ -102,9 +102,16 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "safselvbetjening",
+      "app": "safselvbetjening-q1",
       "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss"
+      "cluster": "dev-fss",
+      "roles" : ["api_intern_safintern"]
+    },
+    {
+      "app": "saf-q1",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss",
+      "roles" : ["api_intern_safintern"]
     },
     {
       "app": "dokmotaltinn",

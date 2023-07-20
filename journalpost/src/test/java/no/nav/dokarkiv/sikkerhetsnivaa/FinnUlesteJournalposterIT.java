@@ -59,7 +59,7 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndClaim(SIKKERHETSNIVAA_ROLE));
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim(SIKKERHETSNIVAA_ROLE));
 		ResponseEntity<Long[]> response = restTemplate.exchange(buildUri(NAV_NO.toString(), 5, 1), GET, requestEntity, Long[].class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -76,7 +76,7 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 			"NAV_NO" + "," + EN_DAG + "," + FEM_DAGER + "," + BAD_REQUEST + "," + "EkspedertFra kan ikke være før ekspedertTil"// ekspedertFra er før ekspedertTil
 	})
 	public void finnUlesteJournalposterShouldGiveBadRequestWhenBadInput(String utsendingsKanalCode, int ekspedertFra, int ekspedertTil, int expectedStatusCode, String feilmelding) {
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndClaim(SIKKERHETSNIVAA_ROLE));
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim(SIKKERHETSNIVAA_ROLE));
 		ResponseEntity<String> response = restTemplate.exchange(buildUri(utsendingsKanalCode, ekspedertFra, ekspedertTil), GET, requestEntity, String.class);
 		assertEquals(response.getStatusCode().value(), expectedStatusCode);
 		assertTrue(response.getBody().contains(feilmelding));
