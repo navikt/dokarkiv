@@ -5,16 +5,18 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import static org.apache.commons.io.IOUtils.toByteArray;
+
 @Slf4j
 @Component
-@Transactional(readOnly = true)
 class HentDokumentService {
 	private final HentDokumentRepository hentDokumentRepository;
 
@@ -43,10 +45,11 @@ class HentDokumentService {
 	private HentDokumentResponse mapHentDokument(HentDokumentDto hentDokumentDto) {
 		Blob dokument = hentDokumentDto.dokument();
 		try {
-			InputStream binaryStream = dokument.getBinaryStream();
-			return new HentDokumentResponse(hentDokumentDto.filtype(), binaryStream);
-		} catch (SQLException e) {
-			throw new DokarkivTechnicalException("Klarte ikke lese fra binaryStream", e);
+			byte[] buf = toByteArray(dokument.getBinaryStream());
+			InputStream byteArrayStream = new ByteArrayInputStream(buf);
+			return new HentDokumentResponse(hentDokumentDto.filtype(), byteArrayStream, buf.length);
+		} catch (SQLException | IOException e) {
+			throw new DokarkivTechnicalException("Klarte ikke lese ferdig binaryStream", e);
 		}
 	}
 }
