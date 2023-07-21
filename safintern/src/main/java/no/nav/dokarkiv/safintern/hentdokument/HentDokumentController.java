@@ -43,6 +43,7 @@ class HentDokumentController {
 
 		return ResponseEntity.ok()
 				.header(CONTENT_TYPE, mimeTypeForFileExtension)
+				.contentLength(hentDokumentResponse.dokumentLength())
 				.body(new InputStreamResource(hentDokumentResponse.dokument()));
 	}
 }
