@@ -5,7 +5,6 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.util.MimeTypeMapper;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.safintern.SafinternConstants.BASE_PATH;
 import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @Slf4j
 @RestController
@@ -38,10 +38,12 @@ class HentDokumentController {
 		log.info("safintern/hentDokument henter dokument med dokumentInfoId={}, variant={}", dokumentInfoId, variant);
 		HentDokumentResponse hentDokumentResponse = hentDokumentService.hentDokumentBy(dokumentInfoId, variant);
 		String mimeTypeForFileExtension = mimeTypeMapper.getMimeTypeForFileExtension(hentDokumentResponse.filtype());
-		log.info("safintern/hentDokument hentet dokument med dokumentInfoId={}, variant={}, Content-Type={}", dokumentInfoId, variant, mimeTypeForFileExtension);
+		log.info("safintern/hentDokument hentet dokument med dokumentInfoId={}, variant={}, Content-Type={}, Content-Length={}",
+				dokumentInfoId, variant, mimeTypeForFileExtension, hentDokumentResponse.dokumentLength());
 
 		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_TYPE, mimeTypeForFileExtension)
+				.header(CONTENT_TYPE, mimeTypeForFileExtension)
+				.contentLength(hentDokumentResponse.dokumentLength())
 				.body(new InputStreamResource(hentDokumentResponse.dokument()));
 	}
 }
