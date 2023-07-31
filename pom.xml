@@ -58,7 +58,7 @@
 
 		<!-- test -->
 		<datasource-proxy-spring-boot-starter.version>1.9.0</datasource-proxy-spring-boot-starter.version>
-		<spring-cloud-contract-wiremock.version>3.1.7</spring-cloud-contract-wiremock.version>
+		<spring-cloud-contract-wiremock.version>4.0.4</spring-cloud-contract-wiremock.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
 
