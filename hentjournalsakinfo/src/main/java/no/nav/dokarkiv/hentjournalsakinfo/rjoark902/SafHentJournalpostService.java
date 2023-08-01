@@ -11,7 +11,11 @@ public class SafHentJournalpostService {
 		this.hentJournalpostSpringJdbcRepository = hentJournalpostSpringJdbcRepository;
 	}
 
-	public SafHentJournalpostResponse hentJournalpostByJournalpostId(Long journalpostId, String eksternReferanseId) {
-		return new SafHentJournalpostResponse(hentJournalpostSpringJdbcRepository.hentJournalpost(journalpostId, eksternReferanseId));
+	public SafHentJournalpostResponse hentJournalpostByJournalpostId(Long journalpostId) {
+		return new SafHentJournalpostResponse(hentJournalpostSpringJdbcRepository.hentJournalpostByJournalpostId(journalpostId));
+	}
+
+	public SafHentJournalpostResponse hentJournalpostByEksternReferanseId(String eksternReferanseId) {
+		return new SafHentJournalpostResponse(hentJournalpostSpringJdbcRepository.hentJournalpostByEksternReferanseId(eksternReferanseId));
 	}
 }

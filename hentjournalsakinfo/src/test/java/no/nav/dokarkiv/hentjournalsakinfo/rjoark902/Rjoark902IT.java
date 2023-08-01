@@ -30,7 +30,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID;
@@ -50,7 +49,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 
-	private static final String HENTJOURNALSAKINFO_HENTJOURNALPOST = "/hentjournalsakinfo/hentjournalpost";
+	private static final String HENTJOURNALSAKINFO_HENTJOURNALPOST = "/hentjournalsakinfo/hentjournalpost/";
 	private static final String AVSENDER = "bob";
 	private static final String JOURNALFOERT_AV = "test user journalfoert";
 	private static final String JOURNALFOERENDE_ENHET = "2990";
@@ -86,11 +85,9 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	public void shouldGetJournalpost() {
 		Journalpost storedJournalpost = buildAndPersistJournalpost();
 		Long journalpostId = storedJournalpost.getJournalpostId();
-		String eksternReferanseId = storedJournalpost.getKanalReferanseId();
 
 		String uri = UriComponentsBuilder.fromUriString(HENTJOURNALSAKINFO_HENTJOURNALPOST)
-				.queryParamIfPresent("journalpostId", Optional.ofNullable(journalpostId))
-				.queryParamIfPresent("eksternReferanseId", Optional.ofNullable(eksternReferanseId))
+				.path(journalpostId.toString())
 				.build().toUriString();
 
 		ResponseEntity<SafHentJournalpostResponseForTest> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponseForTest.class);
@@ -154,7 +151,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		String eksternReferanseId = storedJournalpost.getKanalReferanseId();
 
 		String uri = UriComponentsBuilder.fromUriString(HENTJOURNALSAKINFO_HENTJOURNALPOST)
-				.queryParamIfPresent("eksternReferanseId", Optional.ofNullable(eksternReferanseId))
+				.path("eksternreferanse/" + eksternReferanseId)
 				.build().toUriString();
 
 		ResponseEntity<SafHentJournalpostResponseForTest> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponseForTest.class);
@@ -227,7 +224,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		TestTransaction.end();
 
 		String uri = UriComponentsBuilder.fromUriString(HENTJOURNALSAKINFO_HENTJOURNALPOST)
-				.queryParamIfPresent("journalpostId", Optional.ofNullable(journalpost.getJournalpostId()))
+				.path(journalpost.getJournalpostId().toString())
 				.build().toUriString();
 
 		ResponseEntity<SafHentJournalpostResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponse.class);
@@ -248,7 +245,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		String eksternReferanseId = storedJournalpost.getKanalReferanseId();
 
 		String uri = UriComponentsBuilder.fromUriString(HENTJOURNALSAKINFO_HENTJOURNALPOST)
-				.queryParamIfPresent("eksternReferanseId", Optional.ofNullable(eksternReferanseId))
+				.path("eksternreferanse/" + eksternReferanseId)
 				.build().toUriString();
 
 		ResponseEntity<SafHentJournalpostResponseForTest> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponseForTest.class);

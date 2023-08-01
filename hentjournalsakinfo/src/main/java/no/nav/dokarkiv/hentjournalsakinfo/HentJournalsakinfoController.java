@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Positive;
@@ -84,13 +83,19 @@ public class HentJournalsakinfoController {
 	}
 
 	@Transactional(readOnly = true)
-	@GetMapping(value = "/hentjournalpost")
+	@GetMapping(value = "/hentjournalpost/{journalpostId}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark902"}, percentiles = {0.5, 0.95})
-	public SafHentJournalpostResponse safHentJournalpost(@RequestParam(value = "journalpostId", required = false) @Positive(message = "journalpostId må være et heltall verdi.") Long journalpostId,
-														 @RequestParam(value = "eksternReferanseId", required = false) @Size(max = 200, message = "eksternReferanseId må ha max 200 tegn.") String eksternReferanseId) {
-		String logNavn = journalpostId != null ? "journalpostId" : "eksternReferanseId";
-		log.info("rjoark902 har mottatt forespørsel om journalpost med " + logNavn + "={}", journalpostId != null ? journalpostId : eksternReferanseId);
-		return safHentJournalpostService.hentJournalpostByJournalpostId(journalpostId, eksternReferanseId);
+	public SafHentJournalpostResponse safHentJournalpost(@PathVariable @Positive(message = "journalpostId må være et heltall verdi.") Long journalpostId) {
+		log.info("rjoark902 har mottatt forespørsel om journalpost med journalpostId={}", journalpostId);
+		return safHentJournalpostService.hentJournalpostByJournalpostId(journalpostId);
+	}
+
+	@Transactional(readOnly = true)
+	@GetMapping(value = "/hentjournalpost/eksternreferanse/{eksternReferanseId}")
+	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark902"}, percentiles = {0.5, 0.95})
+	public SafHentJournalpostResponse safHentJournalpostByEksternReferanseId(@PathVariable @Size(max = 200, message = "eksternReferanseId må ha max 200 tegn.") String eksternReferanseId) {
+		log.info("rjoark902 har mottatt forespørsel om journalpost med eksternReferanseId={}", eksternReferanseId);
+		return safHentJournalpostService.hentJournalpostByEksternReferanseId(eksternReferanseId);
 	}
 
 	@Transactional(readOnly = true)

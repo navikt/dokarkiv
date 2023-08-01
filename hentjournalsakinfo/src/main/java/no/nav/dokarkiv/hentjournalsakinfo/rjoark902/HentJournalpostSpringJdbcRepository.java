@@ -29,15 +29,22 @@ class HentJournalpostSpringJdbcRepository {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	HentJournalpostDto hentJournalpost(final Long journalpostId, String eksternReferanseId) {
-		return journalpostFromJoark(journalpostId, eksternReferanseId)
+	HentJournalpostDto hentJournalpostByJournalpostId(final Long journalpostId) {
+		MapSqlParameterSource namedParams = buildNamedParams("journalpostId", journalpostId.toString());
+		String hentJournalpostSql = hentJournalpostSql() + journalpostIdWhereClause();
+		return journalpostFromJoark(hentJournalpostSql, namedParams)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException("Journalpost med journalpostId=" + journalpostId + " ikke funnet."));
 	}
 
-	private Optional<HentJournalpostDto> journalpostFromJoark(final Long journalpostId, final String eksternReferanseId) {
-		MapSqlParameterSource namedParams = journalpostId != null ? buildNamedParams(journalpostId.toString()) : buildNamedParamsByEksternReferanseId(eksternReferanseId);
-		String hentJournalpostSql = journalpostId != null ? hentJournalpostSql() + journalpostIdWhereClause() : hentJournalpostSql() + eksternReferanseIdWhereClause();
-		List<HentJournalpostDto> journalpostDtoList = jdbcTemplate.query(hentJournalpostSql, namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
+	HentJournalpostDto hentJournalpostByEksternReferanseId(final String eksternReferanseId) {
+		MapSqlParameterSource namedParams = buildNamedParams("eksternReferanseId", eksternReferanseId);
+		String hentJournalpostSql = hentJournalpostSql() + eksternReferanseIdWhereClause();
+		return journalpostFromJoark(hentJournalpostSql, namedParams)
+				.orElseThrow(() -> new JournalpostIkkeFunnetException("Journalpost med eksternReferanseId=" + eksternReferanseId + " ikke funnet."));
+	}
+
+	private Optional<HentJournalpostDto> journalpostFromJoark(String sql, MapSqlParameterSource namedParams) {
+		List<HentJournalpostDto> journalpostDtoList = jdbcTemplate.query(sql, namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
 		if (journalpostDtoList == null || journalpostDtoList.isEmpty()) {
 			return Optional.empty();
 		} else {
@@ -45,15 +52,9 @@ class HentJournalpostSpringJdbcRepository {
 		}
 	}
 
-	private MapSqlParameterSource buildNamedParams(String journalpostId) {
+	private MapSqlParameterSource buildNamedParams(String paramNavn, String value) {
 		MapSqlParameterSource namedParams = new MapSqlParameterSource();
-		namedParams.addValue("journalpostId", journalpostId);
-		return namedParams;
-	}
-
-	private MapSqlParameterSource buildNamedParamsByEksternReferanseId(String eksternReferanseId) {
-		MapSqlParameterSource namedParams = new MapSqlParameterSource();
-		namedParams.addValue("eksternReferanseId", eksternReferanseId);
+		namedParams.addValue(paramNavn, value);
 		return namedParams;
 	}
 }
