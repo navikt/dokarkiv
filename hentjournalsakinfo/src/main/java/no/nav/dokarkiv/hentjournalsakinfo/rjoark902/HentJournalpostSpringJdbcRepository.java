@@ -11,11 +11,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static no.nav.dokarkiv.hentjournalsakinfo.rjoark902.HentJournalpostSqlGenerator.eksternReferanseIdWhereClause;
 import static no.nav.dokarkiv.hentjournalsakinfo.rjoark902.HentJournalpostSqlGenerator.hentJournalpostSql;
+import static no.nav.dokarkiv.hentjournalsakinfo.rjoark902.HentJournalpostSqlGenerator.journalpostIdWhereClause;
 
 @Slf4j
 @Repository
 class HentJournalpostSpringJdbcRepository {
+
 	private static final ResultSetExtractor<List<HentJournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
 			.addKeys("journalpostid", "saksrelasjon_sakid", "tilleggsopplysninger_nokkel", "dokumenter_dokumentinfoid", "dokumenter_logiske_vedleggid", "dokumenter_varianter_variantf")
 			.newResultSetExtractor(HentJournalpostDto.class);
@@ -26,14 +29,14 @@ class HentJournalpostSpringJdbcRepository {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	HentJournalpostDto hentJournalpost(final String journalpostId) {
-		return journalpostFromJoark(journalpostId)
+	HentJournalpostDto hentJournalpost(final Long journalpostId, String eksternReferanseId) {
+		return journalpostFromJoark(journalpostId, eksternReferanseId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException("Journalpost med journalpostId=" + journalpostId + " ikke funnet."));
 	}
 
-	private Optional<HentJournalpostDto> journalpostFromJoark(final String journalpostId) {
-		MapSqlParameterSource namedParams = buildNamedParams(journalpostId);
-		String hentJournalpostSql = hentJournalpostSql();
+	private Optional<HentJournalpostDto> journalpostFromJoark(final Long journalpostId, final String eksternReferanseId) {
+		MapSqlParameterSource namedParams = journalpostId != null ? buildNamedParams(journalpostId.toString()) : buildNamedParamsByEksternReferanseId(eksternReferanseId);
+		String hentJournalpostSql = journalpostId != null ? hentJournalpostSql() + journalpostIdWhereClause() : hentJournalpostSql() + eksternReferanseIdWhereClause();
 		List<HentJournalpostDto> journalpostDtoList = jdbcTemplate.query(hentJournalpostSql, namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
 		if (journalpostDtoList == null || journalpostDtoList.isEmpty()) {
 			return Optional.empty();
@@ -45,6 +48,12 @@ class HentJournalpostSpringJdbcRepository {
 	private MapSqlParameterSource buildNamedParams(String journalpostId) {
 		MapSqlParameterSource namedParams = new MapSqlParameterSource();
 		namedParams.addValue("journalpostId", journalpostId);
+		return namedParams;
+	}
+
+	private MapSqlParameterSource buildNamedParamsByEksternReferanseId(String eksternReferanseId) {
+		MapSqlParameterSource namedParams = new MapSqlParameterSource();
+		namedParams.addValue("eksternReferanseId", eksternReferanseId);
 		return namedParams;
 	}
 }
