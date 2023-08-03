@@ -83,7 +83,6 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	// Happy path
 	@Test
 	public void shouldGetJournalpost() {
-		"".toLowerCase();
 		Journalpost storedJournalpost = buildAndPersistJournalpost();
 		Long journalpostId = storedJournalpost.getJournalpostId();
 
