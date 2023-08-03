@@ -85,15 +85,14 @@ public class HentJournalsakinfoController {
 	@Transactional(readOnly = true)
 	@GetMapping(value = "/hentjournalpost/{journalpostId}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark902"}, percentiles = {0.5, 0.95})
-	public SafHentJournalpostResponse safHentJournalpost(@PathVariable @Positive(message = "journalpostId må være et heltall verdi.") Long journalpostId) {
+	public SafHentJournalpostResponse safHentJournalpost(@PathVariable @Positive(message = "journalpostId må være et heltall.") Long journalpostId) {
 		log.info("rjoark902 har mottatt forespørsel om journalpost med journalpostId={}", journalpostId);
 		return safHentJournalpostService.hentJournalpostByJournalpostId(journalpostId);
 	}
 
 	@Transactional(readOnly = true)
 	@GetMapping(value = "/hentjournalpost/eksternreferanse/{eksternReferanseId}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark902"}, percentiles = {0.5, 0.95})
-	public SafHentJournalpostResponse safHentJournalpostByEksternReferanseId(@PathVariable @Size(max = 200, message = "eksternReferanseId må ha max 200 tegn.") String eksternReferanseId) {
+	public SafHentJournalpostResponse safHentJournalpostByEksternReferanseId(@PathVariable @Size(max = 200, message = "eksternReferanseId kan ha maks 200 tegn.") String eksternReferanseId) {
 		log.info("rjoark902 har mottatt forespørsel om journalpost med eksternReferanseId={}", eksternReferanseId);
 		return safHentJournalpostService.hentJournalpostByEksternReferanseId(eksternReferanseId);
 	}

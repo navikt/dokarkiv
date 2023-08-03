@@ -83,6 +83,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	// Happy path
 	@Test
 	public void shouldGetJournalpost() {
+		"".toLowerCase();
 		Journalpost storedJournalpost = buildAndPersistJournalpost();
 		Long journalpostId = storedJournalpost.getJournalpostId();
 
@@ -148,10 +149,9 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	public void shouldGetJournalpostByEksternReferanseId() {
 		Journalpost storedJournalpost = buildAndPersistJournalpost();
 		Long journalpostId = storedJournalpost.getJournalpostId();
-		String eksternReferanseId = storedJournalpost.getKanalReferanseId();
 
 		String uri = UriComponentsBuilder.fromUriString(HENTJOURNALSAKINFO_HENTJOURNALPOST)
-				.path("eksternreferanse/" + eksternReferanseId)
+				.path("eksternreferanse/" + KANAL_REFERANSE_ID)
 				.build().toUriString();
 
 		ResponseEntity<SafHentJournalpostResponseForTest> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponseForTest.class);
@@ -261,6 +261,19 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 		long journalpostId = 54321L;
 
 		String uri = HENTJOURNALSAKINFO_HENTJOURNALPOST + journalpostId;
+		ResponseEntity<SafHentJournalpostResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(NOT_FOUND));
+	}
+
+	@Test
+	public void shouldFailToGetJournalpostByEkstErnReferanseId() {
+		buildAndPersistJournalpost();
+		String ekstErnReferanseId = "ekstErnReferanseId";
+
+		String uri = UriComponentsBuilder.fromUriString(HENTJOURNALSAKINFO_HENTJOURNALPOST)
+				.path("eksternreferanse/" + ekstErnReferanseId)
+				.build().toUriString();
 		ResponseEntity<SafHentJournalpostResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(NOT_FOUND));
