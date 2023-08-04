@@ -268,7 +268,7 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	@Test
 	public void shouldFailToGetJournalpostByEkstErnReferanseId() {
 		buildAndPersistJournalpost();
-		String ekstErnReferanseId = "ekstErnReferanseId";
+		String ekstErnReferanseId = "eksternReferanseId";
 
 		String uri = UriComponentsBuilder.fromUriString(HENTJOURNALSAKINFO_HENTJOURNALPOST)
 				.path("eksternreferanse/" + ekstErnReferanseId)
