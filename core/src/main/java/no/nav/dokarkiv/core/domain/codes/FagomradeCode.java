@@ -26,13 +26,13 @@ public enum FagomradeCode {
 	GRU,
 	/** Kontantstøtte */
 	KON,
-	/** Omsorgspenger, Pleiepenger og opplæringspenger */
+	/** Omsorgspenger, pleiepenger og opplæringspenger */
 	OMS,
 	/** Supplerende stønad */
 	SUP,
-	/** Yrkesskade / Menerstatning */
+	/** Yrkesskade og menerstatning */
 	YRK,
-	/** Enslig forsørger */
+	/** Enslig mor eller far */
 	ENF,
 	/** Stønadsregnskap */
 	STO,
@@ -40,11 +40,11 @@ public enum FagomradeCode {
 	FOS,
 	/** Erstatning */
 	ERS,
-	/** Saksomkostning */
+	/** Sakskostnader */
 	SAK,
 	/** Dagpenger */
 	DAG,
-	/** Individstønad */
+	/** Tiltakspenger */
 	IND,
 	/** Mob.stønad */
 	MOB,
@@ -62,7 +62,7 @@ public enum FagomradeCode {
 	SYK,
 	/** Sykemelding */
 	SYM,
-	/** Feilutbetaling (Arenaytelser) */
+	/** Feilutbetaling */
 	FEI,
 	/** Generell */
 	GEN,
@@ -82,11 +82,11 @@ public enum FagomradeCode {
 	UKJ,
 	/** Tiltak */
 	TIL,
-	/** Rekruttering og Stilling */
+	/** Rekruttering */
 	REK,
 	/** Inkluderende Arbeidsliv */
 	IAR,
-	/** Ajourhold - Grunnopplysninger */
+	/** Ajourhold – grunnopplysninger */
 	AGR,
 	/** Trekk */
 	TRK,
@@ -101,9 +101,9 @@ public enum FagomradeCode {
 	/** Sanksjon - Arbeidsgiver */
 	@Deprecated
 	SAA,
-	/** Sanksjon - Person */
+	/** Sanksjon – person */
 	SAP,
-	/** Oppfølging */
+	/** Oppfølging – arbeidsgiver */
 	OPA,
 	/** Serviceklager */
 	SER,
@@ -112,7 +112,7 @@ public enum FagomradeCode {
 	SIK,
 	/** Unntak fra medlemskap */
 	UFM,
-	/** Tilleggsstønad arbeidsøkere */
+	/** Tilleggsstønad – arbeidssøkere */
 	TSR,
 	/** Tilleggsstønad */
 	TSO,
@@ -120,7 +120,7 @@ public enum FagomradeCode {
 	RVE,
 	/** Retting av personopplysninger */
 	RPO,
-	/** Farskap */
+	/** Foreldreskap */
 	FAR,
 	/** Midlertidig kompensasjonsordning for selvstendig næringsdrivende og frilansere*/
 	FRI,
