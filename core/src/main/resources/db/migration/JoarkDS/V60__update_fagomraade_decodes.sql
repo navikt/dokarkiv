@@ -53,7 +53,7 @@ set dekode = 'Sakskostnader',
 where k_fagomrade='SAK';
 
 update T_K_FAGOMRADE
-set dekode = 'Sanksjon – person'
+set dekode = 'Sanksjon – person',
     dato_endret = current_timestamp,
     endret_av = 'MMA-7023'
 where k_fagomrade='SAP';
