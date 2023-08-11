@@ -5,137 +5,137 @@ package no.nav.dokarkiv.core.domain.codes;
  */
 public enum FagomradeCode {
 
-	/** Bidrag */
-	BID,
-	/** Pensjon */
-	PEN,
-	/** Okonomi */
-	@Deprecated
-	OKO,
-	/** Bil */
-	BIL,
-	/** Hjelpemidler */
-	HJE,
+	/** Arbeidsavklaringspenger */
+	AAP,
+	/** AA-registeret */
+	AAR,
+	/** Ajourhold – grunnopplysninger */
+	AGR,
+	/** Arbeidsrådgivning – psykologtester */
+	ARP,
+	/** Arbeidsrådgivning – skjermet */
+	ARS,
 	/** Barnetrygd */
 	BAR,
+	/** Bidrag */
+	BID,
+	/** Bil */
+	BIL,
+	/** Condictio indebiti */
+	@Deprecated
+	CON,
+	/** Dagpenger */
+	DAG,
+	/** Enslig mor eller far */
+	ENF,
+	/** Erstatning */
+	ERS,
+	/** Barnepensjon */
+	EYB,
+	/** Omstillingsstønad */
+	EYO,
+	/** Foreldreskap */
+	FAR,
+	/** Feilutbetaling */
+	FEI,
+	/** Fiskerpensjon */
+	FIP,
 	/** Foreldre- og svangerskapspenger */
 	FOR,
+	/** Forsikring */
+	FOS,
+	/** Midlertidig kompensasjonsordning for selvstendig næringsdrivende og frilansere*/
+	FRI,
+	/** Fullmakt */
+	FUL,
+	/** Generell */
+	GEN,
 	/** Gravferdsstønad */
 	GRA,
 	/** Grunn- og hjelpestønad */
 	GRU,
-	/** Kontantstøtte */
-	KON,
-	/** Omsorgspenger, Pleiepenger og opplæringspenger */
-	OMS,
-	/** Supplerende stønad */
-	SUP,
-	/** Yrkesskade / Menerstatning */
-	YRK,
-	/** Enslig forsørger */
-	ENF,
-	/** Stønadsregnskap */
-	STO,
-	/** Forsikring */
-	FOS,
-	/** Erstatning */
-	ERS,
-	/** Saksomkostning */
-	SAK,
-	/** Dagpenger */
-	DAG,
-	/** Individstønad */
-	IND,
-	/** Mob.stønad */
-	MOB,
-	/** Oppfølging */
-	OPP,
-	/** Ventelønn */
-	VEN,
-	/** Yrkesrettet attføring */
-	YRA,
-	/** Rehabiliteringspenger */
-	REH,
-	/** Uføreytelser */
-	UFO,
-	/** Sykepenger */
-	SYK,
-	/** Sykemelding */
-	SYM,
-	/** Feilutbetaling (Arenaytelser) */
-	FEI,
-	/** Generell */
-	GEN,
-	/** Arbeidsavklaringspenger */
-	AAP,
-	/** Fullmakt */
-	FUL,
 	/** Helsetjenester og ort. Hjelpemidler */
 	HEL,
-	/** Condictio indebiti */
-	@Deprecated
-	CON,
-	/** Medlemskap */
-	MED,
-	/** Ukjent */
-	@Deprecated
-	UKJ,
-	/** Tiltak */
-	TIL,
-	/** Rekruttering og Stilling */
-	REK,
+	/** Hjelpemidler */
+	HJE,
 	/** Inkluderende Arbeidsliv */
 	IAR,
-	/** Ajourhold - Grunnopplysninger */
-	AGR,
-	/** Trekk */
-	TRK,
+	/** Tiltakspenger */
+	IND,
+	/** Kontantstøtte */
+	KON,
+	/** Klage – lønnsgaranti */
+	KLL,
+	/** Kontroll – anmeldelse */
+	KTA,
 	/** Kontroll */
 	KTR,
+	/** Medlemskap */
+	MED,
+	/** Mob.stønad */
+	MOB,
+	/** Okonomi */
+	@Deprecated
+	OKO,
+	/** Omsorgspenger, pleiepenger og opplæringspenger */
+	OMS,
+	/** Oppfølging – arbeidsgiver */
+	OPA,
+	/** Oppfølging */
+	OPP,
+	/** Pensjon */
+	PEN,
 	/** Permittering og masseoppsigelser */
 	PER,
-	/** AA-registeret */
-	AAR,
-	/** Trygdeavgift */
-	TRY,
+	/** Rehabiliteringspenger */
+	REH,
+	/** Rekruttering */
+	REK,
+	/** Retting av personopplysninger */
+	RPO,
+	/** Rettferdsvederlag */
+	RVE,
 	/** Sanksjon - Arbeidsgiver */
 	@Deprecated
 	SAA,
-	/** Sanksjon - Person */
+	/** Sakskostnader */
+	SAK,
+	/** Sanksjon – person */
 	SAP,
-	/** Oppfølging */
-	OPA,
 	/** Serviceklager */
 	SER,
 	/** Sikkerhetstiltak */
 	@Deprecated
 	SIK,
-	/** Unntak fra medlemskap */
-	UFM,
-	/** Tilleggsstønad arbeidsøkere */
-	TSR,
+	/** Stønadsregnskap */
+	STO,
+	/** Sykepenger */
+	SYK,
+	/** Sykemelding */
+	SYM,
+	/** Supplerende stønad */
+	SUP,
+	/** Tiltak */
+	TIL,
+	/** Trekk */
+	TRK,
+	/** Trygdeavgift */
+	TRY,
 	/** Tilleggsstønad */
 	TSO,
-	/** Rettferdsvederlag */
-	RVE,
-	/** Retting av personopplysninger */
-	RPO,
-	/** Farskap */
-	FAR,
-	/** Midlertidig kompensasjonsordning for selvstendig næringsdrivende og frilansere*/
-	FRI,
-	/** Barnepensjon */
-	EYB,
-	/** Omstillingsstønad */
-	EYO,
-	/** Kontroll – anmeldelse */
-	KTA,
-	/** Fiskerpensjon */
-	FIP,
-	/** Arbeidsrådgivning – skjermet */
-	ARS,
-	/** Arbeidsrådgivning – psykologtester */
-	ARP,
-	/** Klage – lønnsgaranti */
-	KLL
+	/** Tilleggsstønad – arbeidssøkere */
+	TSR,
+	/** Unntak fra medlemskap */
+	UFM,
+	/** Uføreytelser */
+	UFO,
+	/** Ukjent */
+	@Deprecated
+	UKJ,
+	/** Ventelønn */
+	VEN,
+	/** Yrkesrettet attføring */
+	YRA,
+	/** Yrkesskade og menerstatning */
+	YRK
 }
