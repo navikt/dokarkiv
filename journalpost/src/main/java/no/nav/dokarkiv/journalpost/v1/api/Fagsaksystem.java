@@ -22,5 +22,7 @@ public enum Fagsaksystem {
     OMSORGSPENGER,
     HJELPEMIDLER,
     BARNEBRILLER,
-    EY
+    EY,
+    AAP,
+    DAGPENGER
 }
