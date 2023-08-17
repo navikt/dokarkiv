@@ -211,8 +211,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	private final Set<Bruker> brukere = new HashSet<>();
 
 	// Bidireksjonelle OneToOne relasjoner blir eager fetched fra Journalpost
-	@OneToOne(mappedBy = "journalpost", fetch = FetchType.LAZY)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
+	@OneToOne(mappedBy = "journalpost", cascade = javax.persistence.CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private Saksrelasjon saksrelasjon;
 
 	@OneToMany(mappedBy = "journalpost")
