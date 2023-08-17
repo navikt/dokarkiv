@@ -224,6 +224,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "etterlatte-testdata",
+      "namespace": "etterlatte",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "spinnsyn-arkivering",
       "namespace": "flex",
       "cluster": "dev-gcp"
