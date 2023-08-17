@@ -56,51 +56,60 @@ public class SaksrelasjonUpdater {
 			if (endret.isEndretFlagg() && !newSak) {
 				saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 				saksrelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-			} else if(!endret.isEndretFlagg() && !newSak) {
+			} else if (!endret.isEndretFlagg() && !newSak) {
 				MDC.put("mma-6992", "request.sak=samme_sak");
-				vurderResetSaksrelasjon(journalpost, request);
+				vurderResetSaksrelasjon(journalpost, request, endret);
 			}
 			if (newSak) {
 				journalpost.setSaksrelasjon(saksrelasjon);
 			}
 		} else {
 			MDC.put("mma-6992", "request.sak=null");
-			vurderResetSaksrelasjon(journalpost, request);
+			vurderResetSaksrelasjon(journalpost, request, endret);
 		}
 		return endret;
 	}
 
-	private static void vurderResetSaksrelasjon(Journalpost journalpost, OppdaterJournalpostRequest request) {
-		vurderResetSaksrelasjonTemaEndring(journalpost, request);
-		vurderResetSaksrelasjonBrukerEndring(journalpost, request);
+	private static void vurderResetSaksrelasjon(Journalpost journalpost, OppdaterJournalpostRequest request, ChangeTracker endret) {
+		vurderResetSaksrelasjonTemaEndring(journalpost, request, endret);
+		vurderResetSaksrelasjonBrukerEndring(journalpost, request, endret);
 	}
 
-	private static void vurderResetSaksrelasjonTemaEndring(Journalpost journalpost, OppdaterJournalpostRequest request) {
+	private static void vurderResetSaksrelasjonTemaEndring(Journalpost journalpost, OppdaterJournalpostRequest request, ChangeTracker endret) {
 		String nyTema = request.getTema();
-		if(isBlank(nyTema)) {
+		if (isBlank(nyTema)) {
 			return;
 		}
 		String tema = journalpost.getFagomrade().name();
-		if(!tema.equals(nyTema)) {
+		if (!tema.equals(nyTema)) {
+			journalpost.setSaksrelasjon(null);
+			endret.add(SAKSRELASJON_FAGSYSTEM,tema, "");
+			//todo nuller ut saksrelasjon
 			log.info("oppdaterJournalpost - Forsøker annen tema oppdatering der request.sak=null. tema={}, nyTema={}", tema, nyTema);
 		}
 	}
 
-	private static void vurderResetSaksrelasjonBrukerEndring(Journalpost journalpost, OppdaterJournalpostRequest request) {
-		if(request.getBruker() == null) {
+	private static void vurderResetSaksrelasjonBrukerEndring(Journalpost journalpost, OppdaterJournalpostRequest request, ChangeTracker endret) {
+		if (request.getBruker() == null) {
 			return;
 		}
 		String nyBrukerId = request.getBruker().getId();
-		if(journalpost.getBrukere().isEmpty()) {
+		if (journalpost.getBrukere().isEmpty()) {
 			return;
 		}
 		String brukerId = journalpost.getBrukere().iterator().next().getBrukerId();
-		if(isBlank(brukerId)) {
+		if (isBlank(brukerId)) {
 			return;
 		}
-		if(!brukerId.equals(nyBrukerId)) {
+		if (!brukerId.equals(nyBrukerId)) {
+			endret.add(SAKSRELASJON_FAGSYSTEM,journalpost.getSaksrelasjon().getFagsystem().toString(), null);
+			journalpost.setSaksrelasjon(null);
+			//todo nuller ut saksrelasjon
 			log.info("oppdaterJournalpost - Forsøker annen bruker oppdatering der request.sak=null. brukerId er forskjellige");
 		}
+	}
+
+	private static void nullUtSaksrelasjon(Journalpost journalpost) {
 	}
 
 	private void updateSaksnummer(Long sakId, OppdaterJournalpostRequest request, Saksrelasjon saksrelasjon, ChangeTracker endret) {
@@ -116,7 +125,7 @@ public class SaksrelasjonUpdater {
 		} else {
 			throw new UgyldigInputException("Kan ikke oppdatere sakId basert på input");
 		}
-		if(oldSakId == null) {
+		if (oldSakId == null) {
 			endret.add(SAKSRELASJON_SAKID, null, saksrelasjon.getSakId().toString());
 		} else {
 			endret.add(SAKSRELASJON_SAKID, oldSakId.toString(), saksrelasjon.getSakId().toString());

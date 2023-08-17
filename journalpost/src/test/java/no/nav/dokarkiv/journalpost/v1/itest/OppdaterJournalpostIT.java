@@ -70,6 +70,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OppdaterJournalpostIT extends AbstractJournalpostIT {
@@ -169,6 +170,38 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(2).getApplikasjon());
 		assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(2).getAksjon());
 		assertEquals(2, aksjonsLoggList.get(2).getArkivElementEndringer().size());
+
+		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldFjerneSaksrelasjonWhenOppdaterJournalpostEndrerBrukerEllerTema() {
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen"));
+		Long journalpostId = journalpost.getJournalpostId();
+		String nyttTema = TEMA_UFO;
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(nyttTema)
+				.build();
+
+		TestTransaction.start();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+
+		TestTransaction.flagForCommit();
+//		TestTransaction.end();
+
+//		TestTransaction.start();
+		Journalpost oppdatertJP = journalpostTestRepository.findById(journalpostId).get();
+
+		assertThat(oppdatertJP.getFagomrade().name(), is(nyttTema));
+		assertNull(oppdatertJP.getSaksrelasjon());
 
 		TestTransaction.end();
 	}
