@@ -82,9 +82,12 @@ public class SaksrelasjonUpdater {
 		}
 		String tema = journalpost.getFagomrade().name();
 		if (!tema.equals(nyTema)) {
-			journalpost.setSaksrelasjon(null);
-			endret.add(SAKSRELASJON_FAGSYSTEM, tema, "");
-			log.info("oppdaterJournalpost - Sletter saksrelasjon da tema endres fra tema={} til nyTema={}", tema, nyTema);
+			if(journalpost.getSaksrelasjon() != null) {
+				endret.add(SAKSRELASJON_FAGSYSTEM, journalpost.getSaksrelasjon().getFagsystem().toString(), "");
+				endret.add(SAKSRELASJON_SAKID, journalpost.getSaksrelasjon().getSakId().toString(), "");
+				journalpost.setSaksrelasjon(null);
+				log.info("oppdaterJournalpost - Sletter saksrelasjon da tema endres fra tema={} til nyTema={}", tema, nyTema);
+			}
 		}
 	}
 
@@ -103,6 +106,7 @@ public class SaksrelasjonUpdater {
 		if (!brukerId.equals(nyBrukerId)) {
 			if (journalpost.getSaksrelasjon() != null) {
 				endret.add(SAKSRELASJON_FAGSYSTEM, journalpost.getSaksrelasjon().getFagsystem().toString(), null);
+				endret.add(SAKSRELASJON_SAKID, journalpost.getSaksrelasjon().getSakId().toString(), null);
 				journalpost.setSaksrelasjon(null);
 			}
 			log.info("oppdaterJournalpost - Sletter saksrelasjon fordi bruker er endret");

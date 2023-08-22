@@ -201,6 +201,9 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJP.getFagomrade().name(), is(nyttTema));
 		assertNull(oppdatertJP.getSaksrelasjon());
 
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assert(!aksjonsLoggList.isEmpty());
+
 		TestTransaction.end();
 	}
 
