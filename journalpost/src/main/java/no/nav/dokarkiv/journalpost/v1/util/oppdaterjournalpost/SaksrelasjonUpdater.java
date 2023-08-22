@@ -86,8 +86,8 @@ public class SaksrelasjonUpdater {
 				String fagsystem = journalpost.getSaksrelasjon().getFagsystem().toString();
 				String sakId = journalpost.getSaksrelasjon().getSakId().toString();
 
-				endret.add(SAKSRELASJON_FAGSYSTEM, fagsystem, "");
-				endret.add(SAKSRELASJON_SAKID, sakId, "");
+				endret.add(SAKSRELASJON_FAGSYSTEM, fagsystem, null);
+				endret.add(SAKSRELASJON_SAKID, sakId, null);
 				journalpost.setSaksrelasjon(null);
 
 				log.info("oppdaterJournalpost - Sletter saksrelasjon (fagsystem={} sakId={}) fordi tema endres fra tema={} til nyTema={}", fagsystem, sakId, tema, nyTema);
