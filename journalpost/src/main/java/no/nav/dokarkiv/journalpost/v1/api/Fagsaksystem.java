@@ -24,5 +24,15 @@ public enum Fagsaksystem {
     BARNEBRILLER,
     EY,
     AAP,
-    DAGPENGER
+    DAGPENGER,
+
+    /**
+     * Yrkesskade
+     */
+    KOMPYS,
+
+    /**
+     * DSOP Kontroll
+     */
+    ARGUS
 }
