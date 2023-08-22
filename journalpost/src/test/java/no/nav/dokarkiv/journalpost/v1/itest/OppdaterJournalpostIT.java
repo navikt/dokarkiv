@@ -175,7 +175,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldFjerneSaksrelasjonWhenOppdaterJournalpostEndrerBrukerEllerTema() {
+	public void shouldFjerneSaksrelasjonWhenOppdaterJournalpostEndrerTema() {
 		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
@@ -199,6 +199,42 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		Journalpost oppdatertJP = journalpostTestRepository.findById(journalpostId).get();
 
 		assertThat(oppdatertJP.getFagomrade().name(), is(nyttTema));
+		assertNull(oppdatertJP.getSaksrelasjon());
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assert(!aksjonsLoggList.isEmpty());
+
+		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldFjerneSaksrelasjonWhenOppdaterJournalpostEndrerBruker() {
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen"));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		Bruker nyBruker = Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.bruker(nyBruker)
+				.build();
+
+		TestTransaction.start();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+
+		TestTransaction.flagForCommit();
+
+		Journalpost oppdatertJP = journalpostTestRepository.findById(journalpostId).get();
+
+		assertThat(oppdatertJP.getBrukere().size(), is(1));
+		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getId()));
+		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType(), is(BrukerTypeCode.PERSON));
 		assertNull(oppdatertJP.getSaksrelasjon());
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
