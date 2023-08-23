@@ -55,6 +55,8 @@ public class Sak {
 					* EY (Etterlatteytelser)
 					* AAP
 					* DAGPENGER
+					* KOMPYS
+					* ARGUS
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",
