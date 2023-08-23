@@ -26,14 +26,16 @@ public class AksjonsLoggServiceImpl implements AksjonsLoggService {
 
 	public void validateAndSaveAksjonsLogg(AksjonsLoggTO aksjonsLoggTO, List<ArkivElementEndringTO> arkivElementEndringTOList) {
 
-		log.info(String.format("Lagrer aksjonslogg med aksjonsType=%s, dokumentInfoId=%s og journalpostId=%s", aksjonsLoggTO.getAksjon(), aksjonsLoggTO
-				.getDokumentInfoId(), aksjonsLoggTO.getJournalpostId()));
+		log.info("Lagrer aksjonslogg med aksjonsType={}, dokumentInfoId={} og journalpostId={}",
+				aksjonsLoggTO.getAksjon(),
+				aksjonsLoggTO.getDokumentInfoId(),
+				aksjonsLoggTO.getJournalpostId());
 		aksjonsLoggValidator.validateAksjonslogg(aksjonsLoggTO);
 		aksjonsLoggValidator.validateArkivElementToList(arkivElementEndringTOList);
 
 		Journalpost journalpost = aksjonsLoggTO.getJournalpostId() == null ? null :
 				journalpostRepository.findById(aksjonsLoggTO.getJournalpostId())
-					.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", aksjonsLoggTO.getJournalpostId())));
+						.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", aksjonsLoggTO.getJournalpostId())));
 
 		AksjonsLogg aksjonsLogg = AksjonsLoggMapper.mapToAksjonsLoggAndSetDefaults(aksjonsLoggTO, arkivElementEndringTOList, journalpost);
 

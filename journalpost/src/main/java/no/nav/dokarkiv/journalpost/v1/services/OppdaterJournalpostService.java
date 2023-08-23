@@ -117,18 +117,20 @@ public class OppdaterJournalpostService {
 			}
 		}
 
-		ChangeTracker changeTracker = journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
-		if (!changeTracker.getChanges().isEmpty()) {
-			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
-					ENDRE_METADATA, journalpostId, null,
-					hentMeldingFraAksjonsType(ENDRE_METADATA), null, changeTracker.getChanges());
-		}
 
-		changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, sakId);
+
+		ChangeTracker changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, sakId);
 		if (!changeTracker.getChanges().isEmpty()) {
 			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
 					SAKSTILKNYTNING, journalpostId, null,
 					hentMeldingFraAksjonsType(SAKSTILKNYTNING), null, changeTracker.getChanges());
+		}
+
+		changeTracker = journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
+		if (!changeTracker.getChanges().isEmpty()) {
+			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(
+					ENDRE_METADATA, journalpostId, null,
+					hentMeldingFraAksjonsType(ENDRE_METADATA), null, changeTracker.getChanges());
 		}
 
 		if (oppdaterJournalpostRequest.getDokumenter() != null) {

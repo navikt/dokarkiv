@@ -70,6 +70,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OppdaterJournalpostIT extends AbstractJournalpostIT {
@@ -157,18 +158,87 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(PERSON_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getApplikasjon());
-		assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(0).getAksjon());
-		assertEquals(6, aksjonsLoggList.get(0).getArkivElementEndringer().size());
+		assertEquals(AksjonsTypeCode.SAKSTILKNYTNING, aksjonsLoggList.get(0).getAksjon());
+		assertEquals(3, aksjonsLoggList.get(0).getArkivElementEndringer().size());
 
 		assertEquals(PERSON_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getApplikasjon());
-		assertEquals(AksjonsTypeCode.SAKSTILKNYTNING, aksjonsLoggList.get(1).getAksjon());
-		assertEquals(3, aksjonsLoggList.get(1).getArkivElementEndringer().size());
+		assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(1).getAksjon());
+		assertEquals(6, aksjonsLoggList.get(1).getArkivElementEndringer().size());
 
 		assertEquals(PERSON_USER_ID, aksjonsLoggList.get(2).getUtfoertAv());
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(2).getApplikasjon());
 		assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(2).getAksjon());
 		assertEquals(2, aksjonsLoggList.get(2).getArkivElementEndringer().size());
+
+		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldFjerneSaksrelasjonWhenOppdaterJournalpostEndrerTema() {
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen"));
+		Long journalpostId = journalpost.getJournalpostId();
+		String nyttTema = TEMA_UFO;
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(nyttTema)
+				.build();
+
+		TestTransaction.start();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+
+		TestTransaction.flagForCommit();
+
+		Journalpost oppdatertJP = journalpostTestRepository.findById(journalpostId).get();
+
+		assertThat(oppdatertJP.getFagomrade().name(), is(nyttTema));
+		assertNull(oppdatertJP.getSaksrelasjon());
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assert(!aksjonsLoggList.isEmpty());
+
+		TestTransaction.end();
+	}
+
+	@Test
+	public void shouldFjerneSaksrelasjonWhenOppdaterJournalpostEndrerBruker() {
+		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen"));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		Bruker nyBruker = Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.bruker(nyBruker)
+				.build();
+
+		TestTransaction.start();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+
+		TestTransaction.flagForCommit();
+
+		Journalpost oppdatertJP = journalpostTestRepository.findById(journalpostId).get();
+
+		assertThat(oppdatertJP.getBrukere().size(), is(1));
+		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getId()));
+		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType(), is(BrukerTypeCode.PERSON));
+		assertNull(oppdatertJP.getSaksrelasjon());
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assert(!aksjonsLoggList.isEmpty());
 
 		TestTransaction.end();
 	}
