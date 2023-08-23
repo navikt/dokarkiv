@@ -67,6 +67,11 @@ public class MimeTypeMapperTest {
 	}
 
 	@Test
+	public void shouldGetMimeTypeForPng() {
+		assertExpectedMimeTypeForFileExtension("image/png", "png");
+	}
+
+	@Test
 	public void shouldGetMimeTypeForTiff() {
 		assertExpectedMimeTypeForFileExtension("image/tiff", "tiff");
 	}

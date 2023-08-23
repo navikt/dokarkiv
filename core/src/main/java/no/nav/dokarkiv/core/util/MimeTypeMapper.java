@@ -7,18 +7,15 @@ import java.util.Map;
 
 /**
  * Maps filetypes to corresponding MIME type.
- * 
- * 
- * @author Hans Olav Loftum, BEKK
  */
 public class MimeTypeMapper {
 
 	private static final String TEXT_XML = "text/xml";
 	private static final String APPLICATION_PDF = "application/pdf";
 	private final Map<String, String> mimeTypes = new HashMap<>();
-	
+
 	private static final String MIMETYPE_BINARY = "application/binary";
-	
+
 	/**
 	 * Should have mapping for all FileTypeCodes
 	 */
@@ -33,6 +30,7 @@ public class MimeTypeMapper {
 		mimeTypes.put("meta", TEXT_XML);
 		mimeTypes.put("dlf", "application/dlf");
 		mimeTypes.put("jpeg", "image/jpeg");
+		mimeTypes.put("png", "image/png");
 		mimeTypes.put("tiff", "image/tiff");
 		mimeTypes.put("doc", "application/msword");
 		mimeTypes.put("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
@@ -40,9 +38,10 @@ public class MimeTypeMapper {
 		mimeTypes.put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 		mimeTypes.put("json", "application/json");
 	}
-	
+
 	/**
 	 * Maps file extension to corresponding MIME type.
+	 *
 	 * @param extension The file extension
 	 * @return the corresponding MIME type.
 	 */
