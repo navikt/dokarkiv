@@ -457,6 +457,11 @@
       "app": "fpsoknad-mottak",
       "namespace": "teamforeldrepenger",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "server-helse",
+      "namespace": "helseopplysninger",
+      "cluster": "dev-gcp"
     }
   ]
 }
