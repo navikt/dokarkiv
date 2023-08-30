@@ -1,0 +1,145 @@
+{
+  "antallRetur": 3,
+  "avsenderMottaker": {
+    "id": "02016126007",
+    "land": "NO",
+    "navn": "Jim Hopper",
+    "type": "FNR"
+  },
+  "behandlingstema": "ab0438",
+  "behandlingstemanavn": null,
+  "bruker": {
+    "id": "123213",
+    "type": "PERSON"
+  },
+  "dokumenter": [
+    {
+      "brevkode": "Brevkode",
+      "dokumentInfoId": dokumentInfoId_hoveddokument_replace,
+      "dokumenttypeId": "0000001",
+      "ferdigDato": "2023-08-11T12:01:01.001+00:00",
+      "fildetaljer": [
+        {
+          "format": "ARKIV",
+          "navn": "navn",
+          "skjerming": null,
+          "stoerrelse": "13",
+          "type": "PDF",
+          "uuid": "filUuidHoveddokumentArkiv"
+        },
+        {
+          "format": "PRODUKSJON",
+          "navn": "navn",
+          "skjerming": null,
+          "stoerrelse": "13",
+          "type": "PDF",
+          "uuid": "filUuidHoveddokumentProduksjon"
+        }
+      ],
+      "kassert": false,
+      "kategori": "ES",
+      "logiskVedlegg": [
+        {
+          "tittel": "Henvendelse fra lege",
+          "vedleggId": logiskVedleggId_hoveddokument_replace
+        }
+      ],
+      "originalJournalpostId": journalpostId_replace,
+      "sensitivt": true,
+      "skjerming": null,
+      "status": "FERDIGSTILT",
+      "tittel": "TITTEL"
+    },
+    {
+      "brevkode": "Brevkode",
+      "dokumentInfoId": dokumentInfoId_vedlegg_replace,
+      "dokumenttypeId": "0000001",
+      "ferdigDato": "2023-08-11T12:01:01.001+00:00",
+      "fildetaljer": [
+        {
+          "format": "ARKIV",
+          "navn": "navn",
+          "skjerming": null,
+          "stoerrelse": "13",
+          "type": "PDF",
+          "uuid": "filUuidVedleggArkiv"
+        },
+        {
+          "format": "PRODUKSJON",
+          "navn": "navn",
+          "skjerming": null,
+          "stoerrelse": "13",
+          "type": "PDF",
+          "uuid": "filUuidVedleggProduksjon"
+        }
+      ],
+      "kassert": false,
+      "kategori": "ES",
+      "logiskVedlegg": [
+        {
+          "tittel": "Henvendelse fra lege",
+          "vedleggId": logiskVedleggId_vedlegg_replace
+        }
+      ],
+      "originalJournalpostId": journalpostId_replace,
+      "sensitivt": true,
+      "skjerming": null,
+      "status": "FERDIGSTILT",
+      "tittel": "TITTEL"
+    }
+  ],
+  "fagomraade": "RPO",
+  "fagomraadenavn": "Retting av personopplysninger",
+  "innhold": "Innhold",
+  "innsyn": "BRUK_STANDARDREGLER",
+  "journalfoerendeEnhet": "9999",
+  "journalfoertAvNavn": "Bjarne Betjent",
+  "journalpostId": journalpostId_replace,
+  "kanalreferanseId": "KANAL REFERANSE ID",
+  "mottakskanal": "NAV_NO",
+  "opprettetAvNavn": "Opprettet navn",
+  "relevanteDatoer": {
+    "ekspedert": "2023-08-11T12:01:01.001+00:00",
+    "forsendelseMottatt": "2023-08-11T12:01:01.001+00:00",
+    "hoveddokument": "2023-08-11T12:01:01.001+00:00",
+    "journalfoert": "2023-08-11T12:01:01.001+00:00",
+    "lest": "2023-08-11T12:01:01.001+00:00",
+    "opprettet": "opprettet_replace",
+    "retur": "2023-08-11T12:01:01.001+00:00",
+    "sendtPrint": "2023-08-11T12:01:01.001+00:00"
+  },
+  "saksrelasjon": {
+    "fagsystem": "FS22",
+    "feilregistrert": false,
+    "sak": {
+      "aktoerId": "111113333333",
+      "applikasjon": "AO01",
+      "fagsakNr": "1234",
+      "opprettetTid": "2023-08-11T00:00:00",
+      "orgNr": null,
+      "tema": "RPO"
+    },
+    "sakId": sakId_replace
+  },
+  "skjerming": "POL",
+  "status": "FS",
+  "tilleggsopplysninger": {
+    "tillegg": "tillegg_verdi"
+  },
+  "type": "U",
+  "utsendingsInfo": {
+    "digitalPostadresse": null,
+    "epostVarsel": null,
+    "fysiskPostadresse": {
+      "adresselinje1": "adresselinje1",
+      "adresselinje2": "adresselinje2",
+      "adresselinje3": "adresselinje3",
+      "landkode": "NO",
+      "postnummer": "postnummer",
+      "poststed": "poststed"
+    },
+    "navNoVarsling": null,
+    "smsVarsel": null
+  },
+  "utsendingskanal": "S"
+}

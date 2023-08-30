@@ -22,7 +22,10 @@ public class Fagomrade {
 	@Column(name = "k_fagomrade")
 	private String kode;
 
-	@Column(name = "er_gyldig", length = 1)
+	@Column(name = "dekode", length = 200, nullable = false)
+	private String dekode;
+
+	@Column(name = "er_gyldig", length = 1, nullable = false)
 	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean erGyldig;
 

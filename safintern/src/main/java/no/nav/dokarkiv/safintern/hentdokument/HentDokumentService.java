@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import static org.apache.commons.io.IOUtils.toByteArray;
 
 @Slf4j
 @Component
+@Transactional(readOnly = true)
 class HentDokumentService {
 	private final HentDokumentRepository hentDokumentRepository;
 

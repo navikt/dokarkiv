@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -47,6 +48,7 @@ public class TestDataGenerator {
 	public static final String ENDRET_AV_NAVN = "Endret av navn";
 	public static final String AVSENDER_MOTTAKER_ID = "02016126007";
 	public static final String AVSENDER_MOTTAKER_NAVN = "Jim Hopper";
+	public static final String AVSENDER_MOTTAKER_LAND = "NO";
 	public static final AvsenderMottakerIdTypeCode AVSENDER_MOTTAKER_ID_TYPE = AvsenderMottakerIdTypeCode.FNR;
 	public static final String TITTEL = "FysiskSlettDokument";
 	public static final String BREVGRUPPE = "Brevgruppe";
@@ -78,11 +80,21 @@ public class TestDataGenerator {
 	public static final String POSTNUMMER = "postnummer";
 	public static final String POSTSTED = "poststed";
 	public static final String LANDKODE = "landkode";
+	public static final String LANDKODE_NO = "NO";
 	public static final String DIGITALKONTAKT_INFORMASJON = "{\n          \"epost\": \"epostaddress3@nav.no\",\n          \"sms\": \"11111111\"\n        }";
 	public static final String VARSELTEKST = "{\n          \"epost\": \"Du har fått brev fra NAV\",\n          \"sms\": \"Du har fått brev fra NAV\"\n        }";
 	public static final String DIGITALPOSTKASSEADRESSE = "0000487236";
 	public static final String DIGITALPOSTKASSELEVERANDOR = "123456789";
 	public static final String SKANNET_INNHOLD_TITTEL = "Henvendelse fra lege";
+	public static final String BEHANDLINGSTEMA = "ab0438";
+	public static final String BEHANDLINGSTEMA_DEKODE = "Lønnskompensasjon";
+	public static final String JOURNALFOERENDE_ENHET = "9999";
+	public static final String JOURNALFOERT_AV_NAVN = "Bjarne Betjent";
+	public static final SkjermingTypeCode SKJERMING_TYPE_CODE = SkjermingTypeCode.POL;
+	public static final String GSAK_FAGSAKNR = "1234";
+	public static final String GSAK_TEMA = "RPO";
+	public static final String GSAK_APPLIKASJON = "AO01";
+	public static final String GSAK_OPPRETTET_AV = "itest";
 
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
@@ -110,6 +122,47 @@ public class TestDataGenerator {
 		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 
 		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost));
+		return journalpost;
+	}
+
+	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(Long sakId) {
+		Journalpost journalpost = Journalpost.builder()
+				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
+				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
+				.avsenderMottakerIdType(AVSENDER_MOTTAKER_ID_TYPE)
+				.land(AVSENDER_MOTTAKER_LAND)
+				.mottattDato(new Date())
+				.journalDato(new Date())
+				.sendtPrintDato(new Date())
+				.ekspedertDato(new Date())
+				.avsendtReturDato(new Date())
+				.dokumentDato(new Date())
+				.lestDato(LESTDATO)
+				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
+				.journalstatus(JournalStatusCode.FS)
+				.journalposttype(JournalpostTypeCode.U)
+				.innhold(INNHOLD)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.opprettetAvNavn(OPPRETTET_AV_NAVN)
+				.fagomrade(FagomradeCode.RPO)
+				.mottakskanal(MottaksKanalCode.NAV_NO)
+				.antallRetur(ANTALL_RETUR)
+				.kanalReferanseId(KANAL_REFERANSE_ID)
+				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
+				.journalfortAvNavn(JOURNALFOERT_AV_NAVN)
+				.innsyn(BRUK_STANDARDREGLER)
+				.skjermingType(SKJERMING_TYPE_CODE)
+				.build();
+
+		journalpost.addBruker(createBruker());
+		journalpost.addBruker(createBruker());
+		journalpost.addKryssReferanse(createKryssreferanse());
+		journalpost.setSaksrelasjon(createSaksrelasjon(journalpost, sakId));
+		journalpost.setTilleggsopplysninger(createTilleggsopplysninger());
+		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+
+		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost));
+		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjon(journalpost));
 		return journalpost;
 	}
 
@@ -235,6 +288,17 @@ public class TestDataGenerator {
 		return saksrelasjon;
 	}
 
+	public static Saksrelasjon createSaksrelasjon(Journalpost journalpost, Long sakId) {
+		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
+				.fagsystem(FagsystemCode.FS22)
+				.sakId(sakId)
+				.journalpost(journalpost)
+				.feilregistrert(false)
+				.build();
+		saksrelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return saksrelasjon;
+	}
+
 	public static Saksrelasjon createPsakSaksrelasjon() {
 		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
 				.fagsystem(FagsystemCode.PEN)
@@ -269,6 +333,11 @@ public class TestDataGenerator {
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.tittel(DOKUMENT_INFO_TITTEL)
 				.dokumenttypeId(DOKUMENT_TYPE_ID)
+				.dokumentFerdigDato(new Date())
+				.brevkode(BREVKODE)
+				.kassert(false)
+				.kategori(DokumentKategoriCode.ES)
+				.sensitivt(true)
 				.build();
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV));
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.PRODUKSJON));
@@ -304,7 +373,7 @@ public class TestDataGenerator {
 	}
 
 	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode) {
-			return createFildetaljerOgFil(dokumentInfo, variantFormatCode, FilDetaljer.generateUuid());
+		return createFildetaljerOgFil(dokumentInfo, variantFormatCode, FilDetaljer.generateUuid());
 	}
 
 
@@ -315,6 +384,7 @@ public class TestDataGenerator {
 				.filnavn(FIL_NAVN)
 				.filtype(FilTypeCode.PDF)
 				.filUuid(filUuid)
+				.filstorrelse(String.valueOf(FIL.length))
 				.variantFormat(variantFormatCode)
 				.build();
 		filDetaljer.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
@@ -349,10 +419,10 @@ public class TestDataGenerator {
 		// sakId = 1 when persisted.
 		return Sak.builder()
 				.aktoerId(AKTOER_ID)
-				.fagsakNr("1234")
-				.tema("RPO")
-				.applikasjon("AO01")
-				.opprettetAv("itest")
+				.fagsakNr(GSAK_FAGSAKNR)
+				.tema(GSAK_TEMA)
+				.applikasjon(GSAK_APPLIKASJON)
+				.opprettetAv(GSAK_OPPRETTET_AV)
 				.opprettetTidspunkt(LocalDate.now().atStartOfDay())
 				.build();
 	}
