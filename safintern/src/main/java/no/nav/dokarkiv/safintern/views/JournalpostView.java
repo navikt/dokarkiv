@@ -44,7 +44,7 @@ public interface JournalpostView {
 	@Mapping("kanalReferanseId")
 	String getKanalreferanseId();
 
-	//	@Mapping("mottakskanal")
+	@Mapping("mottakskanal")
 	MottaksKanalCode getMottakskanal();
 
 	@Mapping("utsendingskanal")
