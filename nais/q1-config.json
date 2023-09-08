@@ -434,6 +434,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "tiltakspenger-dokument",
+      "namespace": "tpts",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "spberegning",
       "namespace": "helsearbeidsgiver",
       "cluster": "dev-fss"
