@@ -59,7 +59,6 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	@GenericGenerator(name = "fil_detaljer_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
 			parameters = {@Parameter(name = "sequence_name", value = "T_FIL_DETALJER_SEQ")})
 	@Column(name = "fil_detaljer_id", nullable = false)
-	@Setter(AccessLevel.NONE)
 	@ToString.Include
 	private Long fildetaljerId;
 

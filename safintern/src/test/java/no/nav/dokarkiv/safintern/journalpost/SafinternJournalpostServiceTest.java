@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.safintern.journalpost;
 
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
@@ -14,6 +16,7 @@ import no.nav.dokarkiv.core.repository.UtsendingsInfoTestRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.safintern.SafinternConfig;
+import no.nav.dokarkiv.safintern.views.JournalpostView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +34,7 @@ import java.util.List;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -77,6 +81,11 @@ public class SafinternJournalpostServiceTest {
 		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
 		utsendingsInfoTestRepository.persist(utsendingsInfo);
 
-		safinternJournalpostService.hentJournalpostById(actualJournalpost.getJournalpostId(), List.of(""));
+		JournalpostView journalpostView = safinternJournalpostService.hentJournalpostById(actualJournalpost.getJournalpostId(), List.of("status", "mottakskanal"));
+
+		assertThat(journalpostView.getMottakskanal()).isEqualTo(MottaksKanalCode.NAV_NO);
+		assertThat(journalpostView.getStatus()).isEqualTo(JournalStatusCode.FS);
+		assertThat(journalpostView.getSaksrelasjon()).isNull();
+		assertThat(journalpostView.getUtsendingskanal()).isNull();
 	}
 }

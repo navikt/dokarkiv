@@ -1,13 +1,11 @@
 package no.nav.dokarkiv.core.domain.codes;
 
-import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
-
 /**
  * Enum for codes in T_K_MOTTAKS_KANAL. 
  * 
  * @author Per Kristian Foss, Visma Sirius
  */
-public enum MottaksKanalCode implements CtiRelationship<MottaksKanalCode, String> {
+public enum MottaksKanalCode {
 
 	/** EESSI */
 	EESSI,
@@ -33,11 +31,4 @@ public enum MottaksKanalCode implements CtiRelationship<MottaksKanalCode, String
 	INNSENDT_NAV_ANSATT,
 	/** Innlogget chat **/
 	NAV_NO_CHAT;
-
-	/** {@inheritDoc} */
-	@Override
-	public Class<? extends CodesTablePeriodicItem<MottaksKanalCode, String>> getCtiClass() {
-		return MottaksKanalCti.class;
-	}	
-
 }

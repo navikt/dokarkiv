@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.core.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -80,7 +79,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 			parameters = {@Parameter(name = "sequence_name", value = "T_DOKUMENT_INFO_SEQ"),
 					@Parameter(name = "initial_value", value = "200000000")})
 	@Column(name = "dokument_info_id", nullable = false)
-	@Setter(AccessLevel.NONE)
 	@ToString.Include
 	private Long dokumentInfoId;
 

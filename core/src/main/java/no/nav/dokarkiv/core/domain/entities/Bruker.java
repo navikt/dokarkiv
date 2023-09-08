@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,7 +44,6 @@ public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 			parameters = {@Parameter(name = "sequence_name", value = "T_BRUKER_SEQ"),
 					@Parameter(name = "initial_value", value = "200000000")})
 	@Column(name = "brukerinfo_id", nullable = false)
-	@Setter(AccessLevel.NONE)
 	private Long brukerInfoId;
 
 	@Column(name = "bruker_id", length = 11, nullable = false)

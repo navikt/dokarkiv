@@ -100,7 +100,7 @@ public interface JournalpostView {
 
 	Map<String, String> getTilleggsopplysninger();
 
-	@Mapping(value = "journalpostDokumentInfoRelasjoner")
+	@Mapping("journalpostDokumentInfoRelasjoner")
 	List<DokumentinfoView> getDokumenter();
 
 	class FagomraadenavnSubqueryProvider implements SubqueryProvider {

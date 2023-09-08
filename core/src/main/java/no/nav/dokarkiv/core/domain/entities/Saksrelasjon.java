@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.core.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,7 +45,6 @@ public class Saksrelasjon extends AbstractPersistentVersionedDomainObjectWithKil
 			parameters = {@Parameter(name = "sequence_name", value = "T_SAKSRELASJON_SEQ"),
 					@Parameter(name = "initial_value", value = "200000000")})
 	@Column(name = "saksrelasjon_id", nullable = false)
-	@Setter(AccessLevel.NONE)
 	private Long saksrelasjonId;
 
 	@Column(name = "sak_id", nullable = false)
