@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.safintern.views;
 
 import com.blazebit.persistence.SubqueryInitiator;
-import com.blazebit.persistence.view.CollectionMapping;
 import com.blazebit.persistence.view.EntityView;
 import com.blazebit.persistence.view.FetchStrategy;
 import com.blazebit.persistence.view.IdMapping;
@@ -45,7 +44,7 @@ public interface JournalpostView {
 	@Mapping("kanalReferanseId")
 	String getKanalreferanseId();
 
-	@Mapping("mottakskanal")
+	//	@Mapping("mottakskanal")
 	MottaksKanalCode getMottakskanal();
 
 	@Mapping("utsendingskanal")
@@ -101,8 +100,7 @@ public interface JournalpostView {
 
 	Map<String, String> getTilleggsopplysninger();
 
-	@Mapping("journalpostDokumentInfoRelasjoner")
-	@CollectionMapping
+	@Mapping(value = "journalpostDokumentInfoRelasjoner")
 	List<DokumentinfoView> getDokumenter();
 
 	class FagomraadenavnSubqueryProvider implements SubqueryProvider {

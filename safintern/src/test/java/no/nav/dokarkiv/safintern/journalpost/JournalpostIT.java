@@ -14,6 +14,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.KANAL_REFERANSE_ID;
@@ -43,6 +44,22 @@ public class JournalpostIT extends AbstractSafinternTest {
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse("/journalpost/journalpost-response.json", persistedJournalpost));
+	}
+
+	@Test
+	void shouldGetJournalpostByJournalpostIdWithFields() {
+		Sak persistedSak = sakTestRepository.persist(createGsak());
+		Long sakId = persistedSak.getSakId();
+		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		List<String> fields = List.of("journalpostId", "saksrelasjon");
+		ResponseEntity<String> responseEntity = restTemplate.exchange(journalpostIdPath(actualJournalpost.getJournalpostId(), fields), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse("/journalpost/journalpost-response-fields.json", persistedJournalpost));
 	}
 
 	@Test
@@ -95,7 +112,15 @@ public class JournalpostIT extends AbstractSafinternTest {
 	}
 
 	String journalpostIdPath(Long journalpostId) {
-		return SafinternConstants.BASE_PATH + "/journalpost/journalpostId/%d".formatted(journalpostId);
+		return journalpostIdPath(journalpostId, List.of());
+	}
+
+	String journalpostIdPath(Long journalpostId, List<String> fields) {
+		if(fields.isEmpty()) {
+			return SafinternConstants.BASE_PATH + "/journalpost/journalpostId/%d".formatted(journalpostId);
+		} else {
+			return SafinternConstants.BASE_PATH + "/journalpost/journalpostId/%d?fields=%s".formatted(journalpostId, String.join(",", fields));
+		}
 	}
 
 	String eksternReferanseIdPath(String eksternReferanseId) {

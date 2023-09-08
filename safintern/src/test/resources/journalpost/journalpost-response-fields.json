@@ -1,0 +1,38 @@
+{
+  "antallRetur": null,
+  "avsenderMottaker": null,
+  "behandlingstema": null,
+  "behandlingstemanavn": null,
+  "bruker": null,
+  "dokumenter": null,
+  "fagomraade": null,
+  "fagomraadenavn": null,
+  "innhold": null,
+  "innsyn": null,
+  "journalfoerendeEnhet": null,
+  "journalfoertAvNavn": null,
+  "journalpostId": journalpostId_replace,
+  "kanalreferanseId": null,
+  "mottakskanal": "NAV_NO",
+  "opprettetAvNavn": null,
+  "relevanteDatoer": null,
+  "saksrelasjon": {
+    "fagsystem": "FS22",
+    "feilregistrert": false,
+    "sak": {
+      "aktoerId": "111113333333",
+      "applikasjon": "AO01",
+      "fagsakNr": "1234",
+      "opprettetTid": "2023-08-11T00:00:00",
+      "orgNr": null,
+      "tema": "RPO"
+    },
+    "sakId": sakId_replace
+  },
+  "skjerming": null,
+  "status": null,
+  "tilleggsopplysninger": {},
+  "type": null,
+  "utsendingsInfo": null,
+  "utsendingskanal": null
+}

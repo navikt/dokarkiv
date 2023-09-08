@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.util.Optional;
 
+import static no.nav.dokarkiv.safintern.views.FetchPaths.DOKUMENTER;
+
 @Repository
 class SafinternJournalpostRepository {
 	private final EntityManager em;
@@ -27,11 +29,9 @@ class SafinternJournalpostRepository {
 	Optional<JournalpostView> hentJournalpostById(final Long journalpostId, EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs) {
 		try {
 			CriteriaBuilder<Journalpost> cb = cbf.create(em, Journalpost.class, "j")
-					.where("journalpostId").eq(journalpostId)
-					.orderByAsc("journalpostDokumentInfoRelasjoner.tilknyttetJournalpostSom")
-					.orderByAsc("journalpostDokumentInfoRelasjoner.journalpostDokumentInfoRelasjonId");
+					.where("journalpostId").eq(journalpostId);
 
-			CriteriaBuilder<JournalpostView> journalpostBuilder = evm.applySetting(evs, cb);
+			CriteriaBuilder<JournalpostView> journalpostBuilder = evm.applySetting(evs, dokumenterOrder(evs, cb));
 			return Optional.of(journalpostBuilder.getSingleResult());
 		} catch (NoResultException e) {
 			return Optional.empty();
@@ -41,14 +41,19 @@ class SafinternJournalpostRepository {
 	Optional<JournalpostView> hentJournalpostByEksternReferanseId(final String eksternReferanseId, EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs) {
 		try {
 			CriteriaBuilder<Journalpost> cb = cbf.create(em, Journalpost.class, "j")
-					.where("kanalReferanseId").eq(eksternReferanseId)
-					.orderByAsc("journalpostDokumentInfoRelasjoner.tilknyttetJournalpostSom")
-					.orderByAsc("journalpostDokumentInfoRelasjoner.journalpostDokumentInfoRelasjonId");
-
-			CriteriaBuilder<JournalpostView> journalpostBuilder = evm.applySetting(evs, cb);
+					.where("kanalReferanseId").eq(eksternReferanseId);
+			CriteriaBuilder<JournalpostView> journalpostBuilder = evm.applySetting(evs, dokumenterOrder(evs, cb));
 			return Optional.of(journalpostBuilder.getSingleResult());
 		} catch (NoResultException e) {
 			return Optional.empty();
 		}
+	}
+
+	private static CriteriaBuilder<Journalpost> dokumenterOrder(EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs, CriteriaBuilder<Journalpost> cb) {
+		if (evs.getFetches().contains(DOKUMENTER)) {
+			return cb.orderByAsc("journalpostDokumentInfoRelasjoner.tilknyttetJournalpostSom")
+					.orderByAsc("journalpostDokumentInfoRelasjoner.journalpostDokumentInfoRelasjonId");
+		}
+		return cb;
 	}
 }

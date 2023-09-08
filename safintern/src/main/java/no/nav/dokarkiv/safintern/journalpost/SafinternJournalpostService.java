@@ -45,7 +45,9 @@ public class SafinternJournalpostService {
 			if (FetchPaths.erGyldig(path)) {
 				evs.fetch(path);
 			} else {
-				log.error("safintern/journalpost forsøker fetch på ugyldig path={}", path);
+				String feilmelding = "safintern/journalpost forsøker fetch på ugyldig path=" + path;
+				log.error(feilmelding);
+				throw new IllegalArgumentException(feilmelding);
 			}
 		}
 		return evs;
