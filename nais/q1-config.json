@@ -149,6 +149,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "isaktivitetskrav",
+      "namespace": "teamsykefravr",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "isbehandlerdialog",
       "namespace": "teamsykefravr",
       "cluster": "dev-gcp"

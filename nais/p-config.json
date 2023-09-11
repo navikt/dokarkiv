@@ -123,6 +123,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "isaktivitetskrav",
+      "namespace": "teamsykefravr",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "isbehandlerdialog",
       "namespace": "teamsykefravr",
       "cluster": "prod-gcp"
