@@ -5,6 +5,7 @@ import com.blazebit.persistence.view.EntityView;
 import com.blazebit.persistence.view.IdMapping;
 import com.blazebit.persistence.view.Mapping;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+@JsonPropertyOrder({"dokumentInfoId"})
 @EntityView(JournalpostDokumentInfoRelasjon.class)
 public interface DokumentinfoView {
 	@JsonIgnore

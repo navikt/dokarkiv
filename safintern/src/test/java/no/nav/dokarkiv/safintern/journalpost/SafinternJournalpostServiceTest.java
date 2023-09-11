@@ -35,6 +35,7 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyP
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -87,5 +88,13 @@ public class SafinternJournalpostServiceTest {
 		assertThat(journalpostView.getStatus()).isEqualTo(JournalStatusCode.FS);
 		assertThat(journalpostView.getSaksrelasjon()).isNull();
 		assertThat(journalpostView.getUtsendingskanal()).isNull();
+	}
+
+	@Test
+	void shouldThrowExceptionWhenFetchValueNotFound() {
+		assertThatThrownBy(() ->
+						safinternJournalpostService.hentJournalpostById(123L, List.of("utsendingsinfo")),
+				"fetch verdier må være godkjent av FetchPaths")
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 }

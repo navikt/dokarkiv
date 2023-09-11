@@ -1,4 +1,22 @@
 {
+  "journalpostId": journalpostId_replace,
+  "type": "U",
+  "fagomraade": "RPO",
+  "fagomraadenavn": "Retting av personopplysninger",
+  "status": "FS",
+  "saksrelasjon": {
+    "fagsystem": "FS22",
+    "feilregistrert": false,
+    "sak": {
+      "aktoerId": "111113333333",
+      "applikasjon": "AO01",
+      "fagsakNr": "1234",
+      "opprettetTid": "2023-08-11T00:00:00",
+      "orgNr": null,
+      "tema": "RPO"
+    },
+    "sakId": sakId_replace
+  },
   "antallRetur": 3,
   "avsenderMottaker": {
     "id": "02016126007",
@@ -14,8 +32,8 @@
   },
   "dokumenter": [
     {
-      "brevkode": "Brevkode",
       "dokumentInfoId": dokumentInfoId_hoveddokument_replace,
+      "brevkode": "Brevkode",
       "dokumenttypeId": "0000001",
       "ferdigDato": "2023-08-11T12:01:01.001+00:00",
       "fildetaljer": [
@@ -51,8 +69,8 @@
       "tittel": "TITTEL"
     },
     {
-      "brevkode": "Brevkode",
       "dokumentInfoId": dokumentInfoId_vedlegg_replace,
+      "brevkode": "Brevkode",
       "dokumenttypeId": "0000001",
       "ferdigDato": "2023-08-11T12:01:01.001+00:00",
       "fildetaljer": [
@@ -88,13 +106,10 @@
       "tittel": "TITTEL"
     }
   ],
-  "fagomraade": "RPO",
-  "fagomraadenavn": "Retting av personopplysninger",
   "innhold": "Innhold",
   "innsyn": "BRUK_STANDARDREGLER",
   "journalfoerendeEnhet": "9999",
   "journalfoertAvNavn": "Bjarne Betjent",
-  "journalpostId": journalpostId_replace,
   "kanalreferanseId": "KANAL REFERANSE ID",
   "mottakskanal": "NAV_NO",
   "opprettetAvNavn": "Opprettet navn",
@@ -108,25 +123,10 @@
     "retur": "2023-08-11T12:01:01.001+00:00",
     "sendtPrint": "2023-08-11T12:01:01.001+00:00"
   },
-  "saksrelasjon": {
-    "fagsystem": "FS22",
-    "feilregistrert": false,
-    "sak": {
-      "aktoerId": "111113333333",
-      "applikasjon": "AO01",
-      "fagsakNr": "1234",
-      "opprettetTid": "2023-08-11T00:00:00",
-      "orgNr": null,
-      "tema": "RPO"
-    },
-    "sakId": sakId_replace
-  },
   "skjerming": "POL",
-  "status": "FS",
   "tilleggsopplysninger": {
     "tillegg": "tillegg_verdi"
   },
-  "type": "U",
   "utsendingsInfo": {
     "digitalPostadresse": null,
     "epostVarsel": null,

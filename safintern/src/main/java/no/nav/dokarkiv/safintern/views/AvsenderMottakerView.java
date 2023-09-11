@@ -19,3 +19,4 @@ public interface AvsenderMottakerView {
 	@Mapping("land")
 	String getLand();
 }
+
