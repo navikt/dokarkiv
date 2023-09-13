@@ -11,7 +11,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.util.TestDataUtils;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -28,6 +27,9 @@ import java.util.stream.Collectors;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
@@ -37,12 +39,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = {CoreConfig.class, AdminConfig.class, AbstractAdminIT.Config.class},
-		properties = {"spring.main.allow-bean-definition-overriding=true"})
+		classes = {CoreConfig.class, AdminConfig.class, AbstractAdminIT.Config.class})
 @ActiveProfiles({"itest", "wiremock"})
 @EnableMockOAuth2Server
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractAdminIT extends AbstractRestIT {
+
 	protected static final String URL_KASSERDOKUMENT = "/rest/admin/kasserdokument/";
 	protected static final String URL_KASSERDOKUMENT_SKJERM = "/rest/admin/kasserdokument/skjerm";
 	protected static final String URL_SKJERMARKIVENHET = "/rest/admin/skjermarkivenhet/";
@@ -61,7 +63,6 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 			when(azureAdGraphService.userInGroup(NO_ACCESS_PERSON_USER_ID, "0000-GA-joark-vedlikehold")).thenReturn(false);
 			return azureAdGraphService;
 		}
-
 	}
 
 	protected void reinitTransaction() {
@@ -118,9 +119,9 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected void assertCommongAksjonsLoggValues(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode, String expectedMelding) {
 		assertThat("aksjon", aksjonsLogg.getAksjon(), is(expectedAksjonsTypeCode));
-		assertThat("ufoertAv", aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
-		assertThat("hjemmel", aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
-		assertThat("melding", aksjonsLogg.getMelding(), is(expectedMelding == null ? TestDataUtils.AKSJON_MELDING : expectedMelding));
+		assertThat("ufoertAv", aksjonsLogg.getUtfoertAv(), is(AKSJON_UTFOERT_AV));
+		assertThat("hjemmel", aksjonsLogg.getHjemmel(), is(AKSJON_HJEMMEL));
+		assertThat("melding", aksjonsLogg.getMelding(), is(expectedMelding == null ? AKSJON_MELDING : expectedMelding));
 		assertThat("applikasjon", aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
 		assertThat("bruker", aksjonsLogg.getBruker(), is(BRUKER_ID));
 	}
