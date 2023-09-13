@@ -225,14 +225,7 @@ class SafinternJournalpostRepositoryTest {
 	}
 
 	private static void assertRelevanteDatoer(RelevanteDatoerView relevanteDatoer) {
-		assertThat(relevanteDatoer.getForsendelseMottatt()).isNotNull();
-		assertThat(relevanteDatoer.getHoveddokument()).isNotNull();
-		assertThat(relevanteDatoer.getJournalfoert()).isNotNull();
-		assertThat(relevanteDatoer.getSendtPrint()).isNotNull();
-		assertThat(relevanteDatoer.getEkspedert()).isNotNull();
-		assertThat(relevanteDatoer.getRetur()).isNotNull();
-		assertThat(relevanteDatoer.getLest()).isNotNull();
-		assertThat(relevanteDatoer.getOpprettet()).isNotNull();
+		assertThat(relevanteDatoer).hasNoNullFieldsOrProperties();
 	}
 
 	private static void assertAvsenderMottaker(AvsenderMottakerView avsenderMottaker) {

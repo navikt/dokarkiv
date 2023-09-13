@@ -38,7 +38,7 @@ public final class FetchPaths {
 	}
 
 	public static boolean erGyldig(String fetchPath) {
-		if(isBlank(fetchPath)) {
+		if (isBlank(fetchPath)) {
 			return false;
 		}
 		return GYLDIGE_PATHS.contains(fetchPath);

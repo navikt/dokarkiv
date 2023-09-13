@@ -28,7 +28,6 @@ public class BlazePersistenceConfig {
 	@Lazy(false)
 	public CriteriaBuilderFactory createCriteriaBuilderFactory() {
 		CriteriaBuilderConfiguration config = Criteria.getDefault();
-		// do some configuration
 		return config.createCriteriaBuilderFactory(entityManagerFactory);
 	}
 

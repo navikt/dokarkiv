@@ -33,7 +33,6 @@
 		<dependency>
 			<groupId>com.blazebit</groupId>
 			<artifactId>blaze-persistence-entity-view-api</artifactId>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.blazebit</groupId>
@@ -43,7 +42,6 @@
 		<dependency>
 			<groupId>com.blazebit</groupId>
 			<artifactId>blaze-persistence-integration-entity-view-spring</artifactId>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.blazebit</groupId>
