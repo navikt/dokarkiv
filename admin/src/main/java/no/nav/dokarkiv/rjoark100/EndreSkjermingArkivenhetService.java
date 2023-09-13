@@ -32,8 +32,8 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljer
 import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
-@Service
 @Slf4j
+@Service
 public class EndreSkjermingArkivenhetService {
 
 	private final SkjermingService skjermingService;
