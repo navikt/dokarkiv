@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.13</version>
+		<version>2.7.15</version>
 	</parent>
 
 	<groupId>no.nav.dokarkiv</groupId>
@@ -30,7 +30,6 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<argLine>-Xmx2048m</argLine>
 
 		<cxf.version>3.6.1</cxf.version>
 		<sfm-springjdbc.version>8.2.3</sfm-springjdbc.version>
@@ -39,16 +38,16 @@
 		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
 		<jaxb2-basics-runtime.version>0.13.1</jaxb2-basics-runtime.version>
-		<google-cloud-storage.version>2.24.0</google-cloud-storage.version>
-		<tink.version>1.9.0</tink.version>
+		<google-cloud-storage.version>2.26.1</google-cloud-storage.version>
+		<tink.version>1.10.0</tink.version>
 		<tink-gcpkms.version>1.8.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.9</blaze-persistence.version>
 		<commons-io.version>2.13.0</commons-io.version>
 		<springdoc-openapi-ui.version>1.7.0</springdoc-openapi-ui.version>
-		<microsoft-graph.version>5.62.0</microsoft-graph.version>
+		<microsoft-graph.version>5.70.0</microsoft-graph.version>
 
 		<!-- NAV -->
-		<token-support.version>2.1.4</token-support.version>
+		<token-support.version>2.1.9</token-support.version>
 		<verapdf.version>1.22.2</verapdf.version>
 
 		<!-- Tjenestegrensesnitt -->
@@ -58,7 +57,7 @@
 
 		<!-- test -->
 		<datasource-proxy-spring-boot-starter.version>1.9.0</datasource-proxy-spring-boot-starter.version>
-		<spring-cloud-contract-wiremock.version>3.1.7</spring-cloud-contract-wiremock.version>
+		<spring-cloud-contract-wiremock.version>3.1.8</spring-cloud-contract-wiremock.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
 
