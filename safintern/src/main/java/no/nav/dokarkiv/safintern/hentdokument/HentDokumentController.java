@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.util.MimeTypeMapper;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +18,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @Slf4j
 @RestController
-@Transactional(readOnly = true)
 @RequestMapping(BASE_PATH)
 @ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + ROLE_CLAIM_TILGANG})
 class HentDokumentController {

@@ -90,7 +90,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			@Parameter(name = "sequence_name", value = "T_JOURNALPOST_SEQ"),
 			@Parameter(name = "initial_value", value = "200000000")})
 	@Column(name = "journalpost_id", nullable = false)
-	@Setter(AccessLevel.NONE)
 	@ToString.Include
 	private Long journalpostId;
 

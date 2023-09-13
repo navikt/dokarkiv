@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,7 +39,6 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 			parameters = {@Parameter(name = "sequence_name", value = "T_SKANNET_INNHOLD_SEQ"),
 					@Parameter(name = "initial_value", value = "200000000")})
 	@Column(name = "skannet_innhold_id", nullable = false)
-	@Setter(AccessLevel.NONE)
 	@ToString.Include
 	private Long skannetInnholdId;
 

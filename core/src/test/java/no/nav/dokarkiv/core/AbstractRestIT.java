@@ -19,6 +19,7 @@ import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.security.mock.oauth2.MockOAuth2Server;
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,11 +37,14 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
@@ -114,38 +118,52 @@ public abstract class AbstractRestIT {
 		fagomradeTestRepository.persist(
 				Fagomrade.builder()
 						.kode("OKO")
+						.dekode("Stønadsregnskap")
 						.erGyldig(false)
 						.datoTilOgMed(LocalDate.of(2023, 5, 1))
 						.build());
 		fagomradeTestRepository.persist(
 				Fagomrade.builder()
 						.kode("PEN")
+						.dekode("Pensjon")
 						.erGyldig(true)
 						.build());
 		fagomradeTestRepository.persist(
 				Fagomrade.builder()
 						.kode("SYK")
+						.dekode("Sykepenger")
 						.erGyldig(true)
 						.build());
 		fagomradeTestRepository.persist(
 				Fagomrade.builder()
 						.kode("SYM")
+						.dekode("Sykmelding")
 						.erGyldig(true)
 						.build());
 		fagomradeTestRepository.persist(
 				Fagomrade.builder()
 						.kode("TIL")
+						.dekode("Tiltak")
 						.erGyldig(true)
 						.build());
 		fagomradeTestRepository.persist(
 				Fagomrade.builder()
 						.kode("UFO")
+						.dekode("Uføreytelser")
 						.erGyldig(true)
 						.build());
 		fagomradeTestRepository.persist(
 				Fagomrade.builder()
 						.kode("FOR")
+						.dekode("Foreldrepenger")
 						.erGyldig(true)
+						.build());
+		fagomradeTestRepository.persist(
+				Fagomrade.builder()
+						.kode("RPO")
+						.dekode("Retting av personopplysninger")
+						.erGyldig(false)
+						.datoTilOgMed(LocalDate.of(2023, 5, 1))
 						.build());
 
 		TestTransaction.flagForCommit();
@@ -261,5 +279,13 @@ public abstract class AbstractRestIT {
 						3600
 				)
 		).serialize();
+	}
+
+	protected String classpathResourceToString(String path) {
+		try {
+			return IOUtils.toString(requireNonNull(getClass().getResourceAsStream(path)), UTF_8);
+		} catch (IOException e) {
+			return null;
+		}
 	}
 }

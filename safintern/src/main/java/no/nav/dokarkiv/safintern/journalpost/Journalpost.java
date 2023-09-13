@@ -1,4 +1,5 @@
-package no.nav.dokarkiv.hentjournalsakinfo.dto;
+package no.nav.dokarkiv.safintern.journalpost;
+
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;

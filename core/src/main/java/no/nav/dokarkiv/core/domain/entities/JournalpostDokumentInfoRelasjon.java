@@ -48,11 +48,9 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@GenericGenerator(name = "journalpostDokumentInfoRelasjon_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
 			parameters = {@Parameter(name = "sequence_name", value = "T_JP_DOK_INFO_REL_SEQ")})
 	@Column(name = "jp_dok_info_rel_id", nullable = false)
-	@Setter(AccessLevel.NONE)
 	private Long journalpostDokumentInfoRelasjonId;
 
 	@Embedded
-	@Setter(AccessLevel.NONE)
 	private JournalpostDokumentInfoRelasjonId embeddedId;
 
 	@Column(name = "tilknyttet_av_navn", nullable = false, length = 50)

@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.domain.entities;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,7 +42,6 @@ public class Kryssreferanse extends AbstractPersistentVersionedDomainObjectWithK
 	@GenericGenerator(name = "kryssreferanse_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
 			parameters = {@Parameter(name = "sequence_name", value = "T_KRYSSREFERANSE_SEQ")})
 	@Column(name = "kryssreferanse_id", nullable = false)
-	@Setter(AccessLevel.NONE)
 	private Long kryssreferanseId;
 
 	@Column(name = "referanse_id", nullable = false, length = 20)
