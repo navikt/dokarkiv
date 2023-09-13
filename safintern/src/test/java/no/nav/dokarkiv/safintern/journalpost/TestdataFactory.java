@@ -42,6 +42,8 @@ import static java.time.temporal.ChronoField.MILLI_OF_SECOND;
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 
 public class TestdataFactory {
 
@@ -75,7 +77,7 @@ public class TestdataFactory {
 	static final String BEHANDLINGSTEMA_DEKODE = "Lønnskompensasjon";
 	static final String JOURNALFOERENDE_ENHET = "9999";
 	static final String JOURNALFOERT_AV_NAVN = "Bjarne Betjent";
-	static final SkjermingTypeCode SKJERMING_TYPE_CODE = SkjermingTypeCode.POL;
+	static final SkjermingTypeCode SKJERMING_TYPE_CODE = POL;
 	static final String GSAK_FAGSAKNR = "1234";
 	static final String GSAK_TEMA = "RPO";
 	static final String GSAK_APPLIKASJON = "AO01";
@@ -157,7 +159,8 @@ public class TestdataFactory {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
 				.journalpost(journalpost)
 				.dokumentInfo(dokumentInfo)
-				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+				.tilknyttetJournalpostSom(VEDLEGG)
+				.skjermingType(POL)
 				.build();
 
 		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
@@ -235,6 +238,7 @@ public class TestdataFactory {
 				.filUuid(filUuid)
 				.filstorrelse(String.valueOf(FIL.length))
 				.variantFormat(variantFormatCode)
+				.skjermingType(POL)
 				.build();
 		filDetaljer.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return filDetaljer;

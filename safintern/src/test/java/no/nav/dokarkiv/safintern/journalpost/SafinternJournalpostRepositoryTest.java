@@ -56,6 +56,7 @@ import java.util.Set;
 
 import static com.blazebit.persistence.view.EntityViewSetting.create;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.ADRESSELINJE1;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.ADRESSELINJE2;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.ADRESSELINJE3;
@@ -311,7 +312,7 @@ class SafinternJournalpostRepositoryTest {
 
 	private static void assertVedlegg(DokumentinfoView vedlegg, Long journalpostId) {
 		assertThat(vedlegg.getDokumentInfoId()).isNotNull();
-		assertThat(vedlegg.getSkjerming()).isNull();
+		assertThat(vedlegg.getSkjerming()).isEqualTo(SKJERMING_TYPE_CODE);
 		assertThat(vedlegg.getStatus()).isEqualTo(DokumentStatusCode.FERDIGSTILT);
 		assertThat(vedlegg.getFerdigDato()).isNotNull();
 		assertThat(vedlegg.getBrevkode()).isEqualTo(BREVKODE);
@@ -336,8 +337,8 @@ class SafinternJournalpostRepositoryTest {
 				FildetaljerView::getStoerrelse,
 				FildetaljerView::getSkjerming,
 				FildetaljerView::getFormat).containsExactlyInAnyOrder(
-				tuple(FIL_NAVN, FilTypeCode.PDF, "13", null, VariantFormatCode.ARKIV),
-				tuple(FIL_NAVN, FilTypeCode.PDF, "13", null, VariantFormatCode.PRODUKSJON)
+				tuple(FIL_NAVN, FilTypeCode.PDF, "13", POL, VariantFormatCode.ARKIV),
+				tuple(FIL_NAVN, FilTypeCode.PDF, "13", POL, VariantFormatCode.PRODUKSJON)
 		);
 	}
 

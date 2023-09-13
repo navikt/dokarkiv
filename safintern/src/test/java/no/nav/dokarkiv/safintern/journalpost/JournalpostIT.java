@@ -3,6 +3,7 @@ package no.nav.dokarkiv.safintern.journalpost;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
@@ -84,7 +85,11 @@ public class JournalpostIT extends AbstractSafinternTest {
 		Date createdDate = journalpost.getChangeStamp().getCreatedDate();
 		String nowIso = formattedDate().toFormatter().format(createdDate.toInstant().atZone(ZoneId.of("UTC"))) + "+00:00";
 		DokumentInfo hoved = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		DokumentInfo vedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG).iterator().next().getDokumentInfo();
+		DokumentInfo vedlegg = journalpost.getJournalpostDokumentInfoRelasjonerAdmin().stream()
+				.filter(journalpostDokumentInfoRelasjon -> VEDLEGG == journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom())
+				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo).findFirst().get();
+		assertThat(hoved).isNotNull();
+		assertThat(vedlegg).isNotNull();
 		return classpathResourceToString(path)
 				.replace("opprettet_replace", nowIso)
 				.replace("journalpostId_replace", journalpost.getJournalpostId().toString())

@@ -4,6 +4,8 @@
   "fagomraade": "RPO",
   "fagomraadenavn": "Retting av personopplysninger",
   "status": "FS",
+  "innsyn": "BRUK_STANDARDREGLER",
+  "skjerming": "POL",
   "saksrelasjon": {
     "fagsystem": "FS22",
     "feilregistrert": false,
@@ -17,13 +19,23 @@
     },
     "sakId": sakId_replace
   },
-  "antallRetur": 3,
+  "relevanteDatoer": {
+    "ekspedert": "2023-08-11T12:01:01.001+00:00",
+    "forsendelseMottatt": "2023-08-11T12:01:01.001+00:00",
+    "hoveddokument": "2023-08-11T12:01:01.001+00:00",
+    "journalfoert": "2023-08-11T12:01:01.001+00:00",
+    "lest": "2023-08-11T12:01:01.001+00:00",
+    "opprettet": "opprettet_replace",
+    "retur": "2023-08-11T12:01:01.001+00:00",
+    "sendtPrint": "2023-08-11T12:01:01.001+00:00"
+  },
   "avsenderMottaker": {
     "id": "02016126007",
     "land": "NO",
     "navn": "Jim Hopper",
     "type": "FNR"
   },
+  "antallRetur": 3,
   "behandlingstema": "ab0438",
   "behandlingstemanavn": null,
   "bruker": {
@@ -40,7 +52,7 @@
         {
           "format": "ARKIV",
           "navn": "navn",
-          "skjerming": null,
+          "skjerming": "POL",
           "stoerrelse": "13",
           "type": "PDF",
           "uuid": "filUuidHoveddokumentArkiv"
@@ -48,7 +60,7 @@
         {
           "format": "PRODUKSJON",
           "navn": "navn",
-          "skjerming": null,
+          "skjerming": "POL",
           "stoerrelse": "13",
           "type": "PDF",
           "uuid": "filUuidHoveddokumentProduksjon"
@@ -77,7 +89,7 @@
         {
           "format": "ARKIV",
           "navn": "navn",
-          "skjerming": null,
+          "skjerming": "POL",
           "stoerrelse": "13",
           "type": "PDF",
           "uuid": "filUuidVedleggArkiv"
@@ -85,7 +97,7 @@
         {
           "format": "PRODUKSJON",
           "navn": "navn",
-          "skjerming": null,
+          "skjerming": "POL",
           "stoerrelse": "13",
           "type": "PDF",
           "uuid": "filUuidVedleggProduksjon"
@@ -101,29 +113,17 @@
       ],
       "originalJournalpostId": journalpostId_replace,
       "sensitivt": true,
-      "skjerming": null,
+      "skjerming": "POL",
       "status": "FERDIGSTILT",
       "tittel": "TITTEL"
     }
   ],
   "innhold": "Innhold",
-  "innsyn": "BRUK_STANDARDREGLER",
   "journalfoerendeEnhet": "9999",
   "journalfoertAvNavn": "Bjarne Betjent",
   "kanalreferanseId": "KANAL REFERANSE ID",
   "mottakskanal": "NAV_NO",
   "opprettetAvNavn": "Opprettet navn",
-  "relevanteDatoer": {
-    "ekspedert": "2023-08-11T12:01:01.001+00:00",
-    "forsendelseMottatt": "2023-08-11T12:01:01.001+00:00",
-    "hoveddokument": "2023-08-11T12:01:01.001+00:00",
-    "journalfoert": "2023-08-11T12:01:01.001+00:00",
-    "lest": "2023-08-11T12:01:01.001+00:00",
-    "opprettet": "opprettet_replace",
-    "retur": "2023-08-11T12:01:01.001+00:00",
-    "sendtPrint": "2023-08-11T12:01:01.001+00:00"
-  },
-  "skjerming": "POL",
   "tilleggsopplysninger": {
     "tillegg": "tillegg_verdi"
   },

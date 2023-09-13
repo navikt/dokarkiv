@@ -31,7 +31,11 @@ import java.util.Map;
 		"fagomraade",
 		"fagomraadenavn",
 		"status",
-		"saksrelasjon"
+		"innsyn",
+		"skjerming",
+		"saksrelasjon",
+		"relevanteDatoer",
+		"avsenderMottaker"
 })
 @EntityView(Journalpost.class)
 public interface JournalpostView {

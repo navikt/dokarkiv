@@ -4,6 +4,8 @@
   "fagomraade": null,
   "fagomraadenavn": null,
   "status": null,
+  "innsyn": null,
+  "skjerming": null,
   "saksrelasjon": {
     "fagsystem": "FS22",
     "feilregistrert": false,
@@ -17,8 +19,9 @@
     },
     "sakId": sakId_replace
   },
-  "antallRetur": null,
+  "relevanteDatoer": null,
   "avsenderMottaker": null,
+  "antallRetur": null,
   "behandlingstema": null,
   "behandlingstemanavn": null,
   "bruker": null,
@@ -55,14 +58,11 @@
     }
   ],
   "innhold": null,
-  "innsyn": null,
   "journalfoerendeEnhet": null,
   "journalfoertAvNavn": null,
   "kanalreferanseId": null,
   "mottakskanal": "NAV_NO",
   "opprettetAvNavn": null,
-  "relevanteDatoer": null,
-  "skjerming": null,
   "tilleggsopplysninger": {},
   "utsendingsInfo": null,
   "utsendingskanal": null
