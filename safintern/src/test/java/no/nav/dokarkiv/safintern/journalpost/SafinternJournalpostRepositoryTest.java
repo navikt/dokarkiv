@@ -75,6 +75,7 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.DOKUMENT_TYP
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.FIL_NAVN;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.GSAK_APPLIKASJON;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.GSAK_FAGSAKNR;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.GSAK_ORGNR;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.GSAK_TEMA;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.INNHOLD;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.JOURNALFOERENDE_ENHET;
@@ -287,7 +288,7 @@ class SafinternJournalpostRepositoryTest {
 		assertThat(saksrelasjon.getSak().getSakId()).isEqualTo(sakId);
 		assertThat(saksrelasjon.getSak().getTema()).isEqualTo(GSAK_TEMA);
 		assertThat(saksrelasjon.getSak().getAktoerId()).isEqualTo(AKTOER_ID);
-		assertThat(saksrelasjon.getSak().getOrgNr()).isNull();
+		assertThat(saksrelasjon.getSak().getOrgNr()).isEqualTo(GSAK_ORGNR);
 		assertThat(saksrelasjon.getSak().getFagsakNr()).isEqualTo(GSAK_FAGSAKNR);
 		assertThat(saksrelasjon.getSak().getApplikasjon()).isEqualTo(GSAK_APPLIKASJON);
 		assertThat(saksrelasjon.getSak().getOpprettetTid()).isNotNull();

@@ -14,7 +14,7 @@
       "applikasjon": "AO01",
       "fagsakNr": "1234",
       "opprettetTid": "2023-08-11T00:00:00",
-      "orgNr": null,
+      "orgNr": "812345678",
       "tema": "RPO"
     },
     "sakId": sakId_replace
@@ -37,7 +37,6 @@
   },
   "antallRetur": 3,
   "behandlingstema": "ab0438",
-  "behandlingstemanavn": null,
   "bruker": {
     "id": "123213",
     "type": "PERSON"
@@ -76,7 +75,6 @@
       ],
       "originalJournalpostId": journalpostId_replace,
       "sensitivt": true,
-      "skjerming": null,
       "status": "FERDIGSTILT",
       "tittel": "TITTEL"
     },
@@ -128,8 +126,6 @@
     "tillegg": "tillegg_verdi"
   },
   "utsendingsInfo": {
-    "digitalPostadresse": null,
-    "epostVarsel": null,
     "fysiskPostadresse": {
       "adresselinje1": "adresselinje1",
       "adresselinje2": "adresselinje2",
@@ -137,9 +133,7 @@
       "landkode": "NO",
       "postnummer": "postnummer",
       "poststed": "poststed"
-    },
-    "navNoVarsling": null,
-    "smsVarsel": null
+    }
   },
   "utsendingskanal": "S"
 }

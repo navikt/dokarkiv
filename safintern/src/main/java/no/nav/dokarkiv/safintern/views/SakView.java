@@ -4,14 +4,16 @@ import com.blazebit.persistence.view.EntityView;
 import com.blazebit.persistence.view.IdMapping;
 import com.blazebit.persistence.view.Mapping;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 
 import java.time.LocalDateTime;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @EntityView(Sak.class)
 public interface SakView {
-	@IdMapping("sakId")
 	@JsonIgnore
+	@IdMapping("sakId")
 	Long getSakId();
 
 	@Mapping("tema")

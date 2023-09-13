@@ -86,6 +86,7 @@ public class TestdataFactory {
 	static final String FIL_UUID_PRODUKSJON_HOVEDDOKUMENT = "filUuidHoveddokumentProduksjon";
 	static final String FIL_UUID_ARKIV_VEDLEGG = "filUuidVedleggArkiv";
 	static final String FIL_UUID_PRODUKSJON_VEDLEGG = "filUuidVedleggProduksjon";
+	static final String GSAK_ORGNR = "812345678";
 	private static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2023-08-11T12:01:01.001Z"), ZoneId.of("Europe/Oslo"));
 
 	static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(Long sakId) {
@@ -244,11 +245,12 @@ public class TestdataFactory {
 		return filDetaljer;
 	}
 
-	static no.nav.dokarkiv.core.domain.entities.Sak createGsak() {
+	static Sak createGsak() {
 		// sakId = 1 when persisted.
 		return Sak.builder()
 				.aktoerId(AKTOER_ID)
 				.fagsakNr(GSAK_FAGSAKNR)
+				.orgnr(GSAK_ORGNR)
 				.tema(GSAK_TEMA)
 				.applikasjon(GSAK_APPLIKASJON)
 				.opprettetAv(GSAK_OPPRETTET_AV)

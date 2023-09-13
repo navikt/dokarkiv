@@ -4,13 +4,15 @@ import com.blazebit.persistence.view.EntityView;
 import com.blazebit.persistence.view.IdMapping;
 import com.blazebit.persistence.view.Mapping;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @EntityView(UtsendingsInfo.class)
 public interface UtsendingsInfoView {
-	@IdMapping
 	@JsonIgnore
+	@IdMapping
 	Long getJournalpostId();
 
 	@Mapping("fysiskPostadresse")
@@ -22,11 +24,11 @@ public interface UtsendingsInfoView {
 	@Mapping("digitalPostadresse")
 	DigitalPostadresseView getDigitalPostadresse();
 
-	@Mapping("epostVarsler.epostvarsel")
 	@JsonRawValue
+	@Mapping("epostVarsler.epostvarsel")
 	String getEpostVarsel();
 
-	@Mapping("smsVarsler.smsvarsel")
 	@JsonRawValue
+	@Mapping("smsVarsler.smsvarsel")
 	String getSmsVarsel();
 }

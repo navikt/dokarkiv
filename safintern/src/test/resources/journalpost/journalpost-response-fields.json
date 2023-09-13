@@ -1,11 +1,5 @@
 {
   "journalpostId": journalpostId_replace,
-  "type": null,
-  "fagomraade": null,
-  "fagomraadenavn": null,
-  "status": null,
-  "innsyn": null,
-  "skjerming": null,
   "saksrelasjon": {
     "fagsystem": "FS22",
     "feilregistrert": false,
@@ -14,56 +8,21 @@
       "applikasjon": "AO01",
       "fagsakNr": "1234",
       "opprettetTid": "2023-08-11T00:00:00",
-      "orgNr": null,
+      "orgNr": "812345678",
       "tema": "RPO"
     },
     "sakId": sakId_replace
   },
-  "relevanteDatoer": null,
-  "avsenderMottaker": null,
-  "antallRetur": null,
-  "behandlingstema": null,
-  "behandlingstemanavn": null,
-  "bruker": null,
   "dokumenter": [
     {
-      "dokumentInfoId": null,
-      "brevkode": null,
-      "dokumenttypeId": null,
-      "ferdigDato": null,
       "fildetaljer": [],
-      "kassert": null,
-      "kategori": null,
-      "logiskVedlegg": [],
-      "originalJournalpostId": null,
-      "sensitivt": null,
-      "skjerming": null,
-      "status": null,
-      "tittel": null
+      "logiskVedlegg": []
     },
     {
-      "dokumentInfoId": null,
-      "brevkode": null,
-      "dokumenttypeId": null,
-      "ferdigDato": null,
       "fildetaljer": [],
-      "kassert": null,
-      "kategori": null,
-      "logiskVedlegg": [],
-      "originalJournalpostId": null,
-      "sensitivt": null,
-      "skjerming": null,
-      "status": null,
-      "tittel": null
+      "logiskVedlegg": []
     }
   ],
-  "innhold": null,
-  "journalfoerendeEnhet": null,
-  "journalfoertAvNavn": null,
-  "kanalreferanseId": null,
   "mottakskanal": "NAV_NO",
-  "opprettetAvNavn": null,
-  "tilleggsopplysninger": {},
-  "utsendingsInfo": null,
-  "utsendingskanal": null
+  "tilleggsopplysninger": {}
 }

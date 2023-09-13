@@ -9,6 +9,7 @@ import com.blazebit.persistence.view.Mapping;
 import com.blazebit.persistence.view.MappingCorrelatedSimple;
 import com.blazebit.persistence.view.MappingSubquery;
 import com.blazebit.persistence.view.SubqueryProvider;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import no.nav.dokarkiv.core.domain.codes.BehandlingstemaCti;
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
@@ -25,6 +26,7 @@ import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import java.util.List;
 import java.util.Map;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
 		"journalpostId",
 		"type",

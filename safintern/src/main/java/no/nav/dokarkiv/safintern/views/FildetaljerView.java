@@ -4,15 +4,17 @@ import com.blazebit.persistence.view.EntityView;
 import com.blazebit.persistence.view.IdMapping;
 import com.blazebit.persistence.view.Mapping;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @EntityView(FilDetaljer.class)
 public interface FildetaljerView {
-	@IdMapping
 	@JsonIgnore
+	@IdMapping
 	Long getFildetaljerId();
 
 	@Mapping("skjermingType")
