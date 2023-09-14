@@ -3,7 +3,6 @@ package no.nav.dokarkiv.rjoark101;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.JournalpostDokumentInfoPair;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
@@ -21,19 +20,20 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
+import static java.util.Collections.singletonList;
+import static java.util.Objects.nonNull;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_DOKUMENT_INFO_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_DOKUMENT_INFO_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_TILKNYTTET_SOM;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 @Slf4j
@@ -46,7 +46,11 @@ public class SlettArkivenhetService {
 	private final DokumentInfoRepository dokumentInfoRepository;
 	private final EntityManager entityManager;
 
-	public SlettArkivenhetService(JoarkDeleteRepository deleteRepository, JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, JournalpostRepository journalpostRepository, DokumentInfoRepository dokumentInfoRepository, EntityManager entityManager) {
+	public SlettArkivenhetService(JoarkDeleteRepository deleteRepository,
+								  JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository,
+								  JournalpostRepository journalpostRepository,
+								  DokumentInfoRepository dokumentInfoRepository,
+								  EntityManager entityManager) {
 		this.deleteRepository = deleteRepository;
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.journalpostRepository = journalpostRepository;
@@ -109,20 +113,20 @@ public class SlettArkivenhetService {
 		List<JournalpostDokumentInfoRelasjon> relasjonList = journalpostDokumentInfoRelasjonRepository
 				.findAllByJournalpostJournalpostId(journalpostId)
 				.stream()
-				.filter(rel -> rel.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.VEDLEGG)
-				.collect(Collectors.toList());
+				.filter(rel -> rel.getTilknyttetJournalpostSom() == VEDLEGG)
+				.toList();
 
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = relasjonList.get(0);
-		vedleggRelasjon.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
+		vedleggRelasjon.setTilknyttetJournalpostSom(HOVEDDOKUMENT);
 		journalpostDokumentInfoRelasjonRepository.merge(vedleggRelasjon);
 
 		Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
 		aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, vedleggRelasjon.getDokumentInfo()
-				.getDokumentInfoId()), Collections.singletonList(
+				.getDokumentInfoId()), singletonList(
 				ArkivElementEndringTO.builder()
 						.arkivElement(RELASJON_TILKNYTTET_SOM)
-						.fraVerdi(TilknyttetJournalpostSomCode.VEDLEGG.name())
-						.tilVerdi(TilknyttetJournalpostSomCode.HOVEDDOKUMENT.name())
+						.fraVerdi(VEDLEGG.name())
+						.tilVerdi(HOVEDDOKUMENT.name())
 						.build()
 		));
 		return aksjonsLoggMap;
@@ -132,8 +136,7 @@ public class SlettArkivenhetService {
 	private Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> slettJournalpostRelasjonerKnyttetTilDokumentInfo(Long dokumentInfoId, List<JournalpostDokumentInfoRelasjon> relasjonList, Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMap) {
 		relasjonList.forEach(relasjon -> {
 			Long journalpostId = relasjon.getJournalpost().getJournalpostId();
-			List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
-			arkivElementEndringTOList.addAll(slettJournalpostDokumentInfoRelasjonFraDatabasen(relasjon));
+			List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>(slettJournalpostDokumentInfoRelasjonFraDatabasen(relasjon));
 			aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, dokumentInfoId), arkivElementEndringTOList);
 		});
 
@@ -164,7 +167,6 @@ public class SlettArkivenhetService {
 		return aksjonsLoggMap;
 	}
 
-
 	private void validerAtHoveddokumentIkkeHarRelasjonerTilAndreJournalposter(Journalpost journalpost) {
 		DokumentInfo dokumentInfoHoveddokument = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		if (dokumentInfoHoveddokument.getJournalpostRelasjoner().size() > 1) {
@@ -185,14 +187,12 @@ public class SlettArkivenhetService {
 	}
 
 	private boolean sjekkOmJournalpostErSplittetUtFraEnAnnenJournalpost(Journalpost journalpost) {
-		if (!journalpost.getJournalpostDokumentInfoRelasjoner()
-				.isEmpty() && journalpost.findHoveddokumentDokumentInfoRelasjon() != null) {
+		if (!journalpost.getJournalpostDokumentInfoRelasjoner().isEmpty() && journalpost.findHoveddokumentDokumentInfoRelasjon() != null) {
 			Journalpost hoveddokOrigJp = journalpost.findHoveddokumentDokumentInfoRelasjon()
 					.getDokumentInfo()
 					.getOriginalJournalpost();
 
-			if (Objects.nonNull(hoveddokOrigJp) &&
-					isFalse(journalpost.getJournalpostId().equals(hoveddokOrigJp.getJournalpostId()))) {
+			if (nonNull(hoveddokOrigJp) && isFalse(journalpost.getJournalpostId().equals(hoveddokOrigJp.getJournalpostId()))) {
 				log.warn(String.format("Journalpost som slettes er splittet hvor originale journalpost=%s", hoveddokOrigJp.getJournalpostId()));
 				return true;
 			}
@@ -205,10 +205,8 @@ public class SlettArkivenhetService {
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostId);
 		Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
 		relasjoner
-				.forEach(relasjon -> {
-					aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, relasjon.getDokumentInfo()
-							.getDokumentInfoId()), slettJournalpostDokumentInfoRelasjon(relasjon));
-				});
+				.forEach(relasjon -> aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId,
+						relasjon.getDokumentInfo().getDokumentInfoId()), slettJournalpostDokumentInfoRelasjon(relasjon)));
 
 		return aksjonsLoggMap;
 	}
@@ -237,7 +235,7 @@ public class SlettArkivenhetService {
 				relasjon.getJournalpost().getJournalpostId(),
 				relasjon.getDokumentInfo().getDokumentInfoId());
 
-		return new ArrayList<>(Arrays.asList(
+		return new ArrayList<>(singletonList(
 				ArkivElementEndringTO.builder()
 						.arkivElement(RELASJON_DOKUMENT_INFO_ID)
 						.fraVerdi(relasjon.getDokumentInfo().getDokumentInfoId().toString())
@@ -255,7 +253,7 @@ public class SlettArkivenhetService {
 		deleteRepository.deleteBrukereByJournalpostId(journalpostId);
 		deleteRepository.deleteJournalpostByJournalpostId(journalpostId);
 
-		return Collections.singletonList(
+		return singletonList(
 				ArkivElementEndringTO.builder()
 						.arkivElement(JOURNALPOST_JOURNALPOST_ID)
 						.fraVerdi(journalpostId.toString())
@@ -270,7 +268,8 @@ public class SlettArkivenhetService {
 		deleteRepository.deleteSkannetInnholdByDokumentInfoId(dokumentInfoId);
 		deleteRepository.deleteDokInfoTilleggByDokumentInfoId(dokumentInfoId);
 		deleteRepository.deleteDokInfoByDokumentInfoId(dokumentInfoId);
-		return Collections.singletonList(
+
+		return singletonList(
 				ArkivElementEndringTO.builder()
 						.arkivElement(DOKUMENT_INFO_DOKUMENT_INFO_ID)
 						.fraVerdi(dokumentInfoId.toString())
@@ -284,7 +283,7 @@ public class SlettArkivenhetService {
 		deleteRepository.deleteDokumentFilByDokumentInfoIdAndVariantFormat(dokumentInfoId, variantFormatCode.name());
 		deleteRepository.deleteFilDetaljerByDokumentInfoIdAndVariantFormat(dokumentInfoId, variantFormatCode.name());
 
-		return Collections.singletonList(
+		return singletonList(
 				ArkivElementEndringTO.builder()
 						.arkivElement(FILDETALJER_VARIANTFORMAT)
 						.fraVerdi(variantFormatCode.name())

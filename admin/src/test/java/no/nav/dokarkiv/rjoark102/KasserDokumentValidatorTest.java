@@ -25,7 +25,7 @@ public class KasserDokumentValidatorTest {
 
 	@Test
 	public void throwExceptionWhenKassertAvIsNull() {
-		KasserDokumentRequest request = KasserDokumentRequest.builder().dokumentInfoId(1l).build();
+		KasserDokumentRequest request = KasserDokumentRequest.builder().dokumentInfoId(1L).build();
 		assertThrows(UgyldigInputException.class, () ->
 				validator.validerKasserDokumentRequest(request), "KassertAvNavn kan ikke være null");
 	}

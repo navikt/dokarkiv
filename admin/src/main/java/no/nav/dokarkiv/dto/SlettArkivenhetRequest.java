@@ -5,9 +5,6 @@ import lombok.Data;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @Data
 @Builder
 public class SlettArkivenhetRequest {

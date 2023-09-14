@@ -1,27 +1,22 @@
 package no.nav.dokarkiv.rjoark100;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
+import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.JournalpostDokumentInfoPair;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
-import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigSkjermArkivenhetRequestException;
 import no.nav.dokarkiv.dto.SkjermArkivenhetRequest;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Component
 public class SkjermArkivEnhetOrchestrator {
-
 
 	private final EndreSkjermingArkivenhetService endreSkjermingArkivenhetService;
 	private final LagreAksjonsLoggService lagreAksjonsLoggService;
