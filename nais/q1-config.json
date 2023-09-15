@@ -472,6 +472,11 @@
       "app": "server-helse",
       "namespace": "helseopplysninger",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "tilleggsstonader-integrasjoner",
+      "namespace": "tilleggsstonader",
+      "cluster": "dev-gcp"
     }
   ]
 }
