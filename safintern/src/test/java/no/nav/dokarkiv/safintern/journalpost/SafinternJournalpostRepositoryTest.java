@@ -1,12 +1,10 @@
 package no.nav.dokarkiv.safintern.journalpost;
 
 
-import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -26,7 +24,6 @@ import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.safintern.SafinternConfig;
 import no.nav.dokarkiv.safintern.views.AvsenderMottakerView;
-import no.nav.dokarkiv.safintern.views.BrukerView;
 import no.nav.dokarkiv.safintern.views.DigitalPostadresseView;
 import no.nav.dokarkiv.safintern.views.DokumentinfoView;
 import no.nav.dokarkiv.safintern.views.FildetaljerView;
@@ -35,7 +32,6 @@ import no.nav.dokarkiv.safintern.views.JournalpostView;
 import no.nav.dokarkiv.safintern.views.LogiskVedleggView;
 import no.nav.dokarkiv.safintern.views.NavNoVarslingView;
 import no.nav.dokarkiv.safintern.views.RelevanteDatoerView;
-import no.nav.dokarkiv.safintern.views.SaksrelasjonView;
 import no.nav.dokarkiv.safintern.views.UtsendingsInfoView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,10 +53,11 @@ import java.util.Set;
 import static com.blazebit.persistence.view.EntityViewSetting.create;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertBruker;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertSak;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.ADRESSELINJE1;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.ADRESSELINJE2;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.ADRESSELINJE3;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.AKTOER_ID;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.ANTALL_RETUR;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.AVSENDER_MOTTAKER_ID;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.AVSENDER_MOTTAKER_ID_TYPE;
@@ -69,14 +66,9 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.AVSENDER_MOT
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.BEHANDLINGSTEMA;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.BEHANDLINGSTEMA_DEKODE;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.BREVKODE;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.BRUKER_ID;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.DOKUMENT_INFO_TITTEL;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.DOKUMENT_TYPE_ID;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.FIL_NAVN;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.GSAK_APPLIKASJON;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.GSAK_FAGSAKNR;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.GSAK_ORGNR;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.GSAK_TEMA;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.INNHOLD;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.JOURNALFOERT_AV_NAVN;
@@ -235,11 +227,6 @@ class SafinternJournalpostRepositoryTest {
 		assertThat(avsenderMottaker.getLand()).isEqualTo(AVSENDER_MOTTAKER_LAND);
 	}
 
-	private static void assertBruker(BrukerView brukerView) {
-		assertThat(brukerView.getId()).isEqualTo(BRUKER_ID);
-		assertThat(brukerView.getType()).isEqualTo(BrukerTypeCode.PERSON);
-	}
-
 	private static void assertFysiskpostadresseUtsendingsInfo(UtsendingsInfoView utsendingsInfo) {
 		assertThat(utsendingsInfo.getNavNoVarsling()).isNull();
 		assertThat(utsendingsInfo.getDigitalPostadresse()).isNull();
@@ -272,19 +259,6 @@ class SafinternJournalpostRepositoryTest {
 		assertThat(digitalPostadresse.getLeverandoer()).isEqualTo("12345678");
 		assertThat(utsendingsInfo.getEpostVarsel()).isEqualToIgnoringWhitespace("[{\"tittel\":\"tittel\",\"tekst\":\"tekst\",\"epostadresse\":\"homer@epos.gr\",\"varslingstidspunkt\":\"2023-02-27T12:30:00.000\"}]");
 		assertThat(utsendingsInfo.getSmsVarsel()).isEqualToIgnoringWhitespace("[{\"tekst\":\"tekst\",\"mobilnummer\":\"+4700000000\",\"varslingstidspunkt\":\"2023-02-27T12:30:00.000\"}]");
-	}
-
-	private static void assertSak(Long sakId, SaksrelasjonView saksrelasjon) {
-		assertThat(saksrelasjon.getSakId()).isEqualTo(sakId);
-		assertThat(saksrelasjon.getFagsystem()).isEqualTo(FagsystemCode.FS22);
-		assertThat(saksrelasjon.getFeilregistrert()).isFalse();
-		assertThat(saksrelasjon.getSak().getSakId()).isEqualTo(sakId);
-		assertThat(saksrelasjon.getSak().getTema()).isEqualTo(GSAK_TEMA);
-		assertThat(saksrelasjon.getSak().getAktoerId()).isEqualTo(AKTOER_ID);
-		assertThat(saksrelasjon.getSak().getOrgNr()).isEqualTo(GSAK_ORGNR);
-		assertThat(saksrelasjon.getSak().getFagsakNr()).isEqualTo(GSAK_FAGSAKNR);
-		assertThat(saksrelasjon.getSak().getApplikasjon()).isEqualTo(GSAK_APPLIKASJON);
-		assertThat(saksrelasjon.getSak().getOpprettetTid()).isNotNull();
 	}
 
 	private static void assertHoveddokument(DokumentinfoView hoveddokument, Long journalpostId) {

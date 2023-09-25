@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Set;
 
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.safintern.SafinternConstants.BASE_PATH;
@@ -30,7 +30,7 @@ public class JournalpostController {
 
 	@GetMapping(value = "/journalpost/journalpostId/{journalpostId}", produces = APPLICATION_JSON_VALUE)
 	public JournalpostView hentJournalpostById(@PathVariable final Long journalpostId,
-											   @RequestParam(required = false) List<String> fields) {
+											   @RequestParam(required = false) Set<String> fields) {
 		log.info("safintern/journalpost har mottatt kall om journalpost med journalpostId={}, fields={}", journalpostId, fields);
 		JournalpostView journalpostView = safinternJournalpostService.hentJournalpostById(journalpostId, fields);
 		log.info("safintern/journalpost hentet journalpost med journalpostId={}", journalpostId);
@@ -39,7 +39,7 @@ public class JournalpostController {
 
 	@GetMapping(value = "/journalpost/eksternReferanseId/{eksternReferanseId}", produces = APPLICATION_JSON_VALUE)
 	public JournalpostView hentJournalpostByEksternReferanseId(@PathVariable final String eksternReferanseId,
-															   @RequestParam(required = false) List<String> fields) {
+															   @RequestParam(required = false) Set<String> fields) {
 		log.info("safintern/journalpost har mottatt kall om journalpost med eksternReferanseId={}, fields={}", eksternReferanseId, fields);
 		JournalpostView journalpostView = safinternJournalpostService.hentJournalpostByEksternReferanseId(eksternReferanseId, fields);
 		log.info("safintern/journalpost hentet journalpost med eksternReferanseId={}", eksternReferanseId);
