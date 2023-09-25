@@ -37,6 +37,16 @@ public class JournalpostController {
 		return journalpostView;
 	}
 
+	@GetMapping(value = "/journalpost/journalpostId/{journalpostId}/dokumentInfoId/{dokumentInfoId}", produces = APPLICATION_JSON_VALUE)
+	public JournalpostView hentJournalpostById(@PathVariable final Long journalpostId,
+											   @PathVariable final Long dokumentInfoId,
+											   @RequestParam(required = false) Set<String> fields) {
+		log.info("safintern/journalpost har mottatt kall om journalpost med journalpostId={}, dokumentInfoId={}, fields={}", journalpostId, dokumentInfoId, fields);
+		JournalpostView journalpostView = safinternJournalpostService.hentJournalpostByIdAndDokumentInfoId(journalpostId, dokumentInfoId, fields);
+		log.info("safintern/journalpost hentet journalpost med journalpostId={}, dokumentInfoId={}", journalpostId, dokumentInfoId);
+		return journalpostView;
+	}
+
 	@GetMapping(value = "/journalpost/eksternReferanseId/{eksternReferanseId}", produces = APPLICATION_JSON_VALUE)
 	public JournalpostView hentJournalpostByEksternReferanseId(@PathVariable final String eksternReferanseId,
 															   @RequestParam(required = false) Set<String> fields) {

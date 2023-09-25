@@ -137,22 +137,7 @@ class SafinternJournalpostRepositoryTest {
 		JournalpostView journalpostView = safinternJournalpostRepository.hentJournalpostById(actualJournalpost.getJournalpostId(), create(JournalpostView.class)).orElse(null);
 		Long journalpostId = journalpostView.getJournalpostId();
 		assertThat(journalpostId).isNotNull();
-		assertThat(journalpostView.getFagomraade()).isEqualTo(FagomradeCode.RPO);
-		assertThat(journalpostView.getFagomraadenavn()).isEqualTo("Retting av personopplysninger");
-		assertThat(journalpostView.getStatus()).isEqualTo(JournalStatusCode.FS);
-		assertThat(journalpostView.getType()).isEqualTo(JournalpostTypeCode.U);
-		assertThat(journalpostView.getKanalreferanseId()).isEqualTo(KANAL_REFERANSE_ID);
-		assertThat(journalpostView.getMottakskanal()).isEqualTo(MottaksKanalCode.NAV_NO);
-		assertThat(journalpostView.getUtsendingskanal()).isEqualTo(UtsendingsKanalCode.S);
-		assertThat(journalpostView.getBehandlingstema()).isEqualTo(BEHANDLINGSTEMA);
-		assertThat(journalpostView.getBehandlingstemanavn()).isEqualTo(BEHANDLINGSTEMA_DEKODE);
-		assertThat(journalpostView.getInnhold()).isEqualTo(INNHOLD);
-		assertThat(journalpostView.getJournalfoerendeEnhet()).isEqualTo(JOURNALFOERENDE_ENHET);
-		assertThat(journalpostView.getJournalfoertAvNavn()).isEqualTo(JOURNALFOERT_AV_NAVN);
-		assertThat(journalpostView.getOpprettetAvNavn()).isEqualTo(OPPRETTET_AV_NAVN);
-		assertThat(journalpostView.getAntallRetur()).isEqualTo(ANTALL_RETUR);
-		assertThat(journalpostView.getInnsyn()).isEqualTo(BRUK_STANDARDREGLER);
-		assertThat(journalpostView.getSkjerming()).isEqualTo(SKJERMING_TYPE_CODE);
+		assertJournalpost(journalpostView);
 		assertTilleggsopplysninger(journalpostView.getTilleggsopplysninger());
 		assertRelevanteDatoer(journalpostView.getRelevanteDatoer());
 		assertAvsenderMottaker(journalpostView.getAvsenderMottaker());
@@ -168,6 +153,66 @@ class SafinternJournalpostRepositoryTest {
 
 		DokumentinfoView vedleggView = dokumenterView.get(1);
 		assertVedlegg(vedleggView, journalpostId);
+	}
+
+	@Test
+	void shouldHentJournalpostByEksternReferanseId() {
+		Sak persistedSak = sakTestRepository.persist(createGsak());
+		Long sakId = persistedSak.getSakId();
+		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		journalpostTestRepository.persist(actualJournalpost);
+		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
+		utsendingsInfoTestRepository.persist(utsendingsInfo);
+
+		JournalpostView journalpostView = safinternJournalpostRepository.hentJournalpostByEksternReferanseId(KANAL_REFERANSE_ID, create(JournalpostView.class)).orElse(null);
+		Long journalpostId = journalpostView.getJournalpostId();
+		assertThat(journalpostId).isNotNull();
+		assertJournalpost(journalpostView);
+		assertTilleggsopplysninger(journalpostView.getTilleggsopplysninger());
+		assertRelevanteDatoer(journalpostView.getRelevanteDatoer());
+		assertAvsenderMottaker(journalpostView.getAvsenderMottaker());
+		assertSak(sakId, journalpostView.getSaksrelasjon());
+		assertBruker(journalpostView.getBruker());
+		assertFysiskpostadresseUtsendingsInfo(journalpostView.getUtsendingsInfo());
+
+		List<DokumentinfoView> dokumenterView = journalpostView.getDokumenter();
+		assertThat(dokumenterView).hasSize(2);
+
+		DokumentinfoView hoveddokumentView = dokumenterView.get(0);
+		assertHoveddokument(hoveddokumentView, journalpostId);
+
+		DokumentinfoView vedleggView = dokumenterView.get(1);
+		assertVedlegg(vedleggView, journalpostId);
+	}
+
+	@Test
+	void shouldHentJournalpostByJournalpostIdAndDokumentInfoId() {
+		Sak persistedSak = sakTestRepository.persist(createGsak());
+		Long sakId = persistedSak.getSakId();
+		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		journalpostTestRepository.persist(actualJournalpost);
+		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
+		utsendingsInfoTestRepository.persist(utsendingsInfo);
+
+		Long dokumentInfoId = actualJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+		JournalpostView journalpostView = safinternJournalpostRepository.hentJournalpostByIdDokumentInfoId(actualJournalpost.getJournalpostId(), dokumentInfoId, create(JournalpostView.class)).orElse(null);
+		Long journalpostId = journalpostView.getJournalpostId();
+		assertThat(journalpostId).isNotNull();
+		assertJournalpost(journalpostView);
+		assertTilleggsopplysninger(journalpostView.getTilleggsopplysninger());
+		assertRelevanteDatoer(journalpostView.getRelevanteDatoer());
+		assertAvsenderMottaker(journalpostView.getAvsenderMottaker());
+		assertSak(sakId, journalpostView.getSaksrelasjon());
+		assertBruker(journalpostView.getBruker());
+		assertFysiskpostadresseUtsendingsInfo(journalpostView.getUtsendingsInfo());
+
+		List<DokumentinfoView> dokumenterView = journalpostView.getDokumenter();
+		assertThat(dokumenterView).hasSize(1);
+
+		DokumentinfoView hoveddokumentView = dokumenterView.get(0);
+		assertHoveddokument(hoveddokumentView, journalpostId);
 	}
 
 	@Test
@@ -209,6 +254,32 @@ class SafinternJournalpostRepositoryTest {
 		Optional<JournalpostView> journalpostView = safinternJournalpostRepository.hentJournalpostByEksternReferanseId("ekstern", create(JournalpostView.class));
 
 		assertThat(journalpostView).isEmpty();
+	}
+
+	@Test
+	void shouldReturnNullWhenJournalpostIdAndDokumentInfoIdNotFound() {
+		Optional<JournalpostView> journalpostView = safinternJournalpostRepository.hentJournalpostByIdDokumentInfoId(123L, 321L, create(JournalpostView.class));
+
+		assertThat(journalpostView).isEmpty();
+	}
+
+	private static void assertJournalpost(JournalpostView journalpostView) {
+		assertThat(journalpostView.getFagomraade()).isEqualTo(FagomradeCode.RPO);
+		assertThat(journalpostView.getFagomraadenavn()).isEqualTo("Retting av personopplysninger");
+		assertThat(journalpostView.getStatus()).isEqualTo(JournalStatusCode.FS);
+		assertThat(journalpostView.getType()).isEqualTo(JournalpostTypeCode.U);
+		assertThat(journalpostView.getKanalreferanseId()).isEqualTo(KANAL_REFERANSE_ID);
+		assertThat(journalpostView.getMottakskanal()).isEqualTo(MottaksKanalCode.NAV_NO);
+		assertThat(journalpostView.getUtsendingskanal()).isEqualTo(UtsendingsKanalCode.S);
+		assertThat(journalpostView.getBehandlingstema()).isEqualTo(BEHANDLINGSTEMA);
+		assertThat(journalpostView.getBehandlingstemanavn()).isEqualTo(BEHANDLINGSTEMA_DEKODE);
+		assertThat(journalpostView.getInnhold()).isEqualTo(INNHOLD);
+		assertThat(journalpostView.getJournalfoerendeEnhet()).isEqualTo(JOURNALFOERENDE_ENHET);
+		assertThat(journalpostView.getJournalfoertAvNavn()).isEqualTo(JOURNALFOERT_AV_NAVN);
+		assertThat(journalpostView.getOpprettetAvNavn()).isEqualTo(OPPRETTET_AV_NAVN);
+		assertThat(journalpostView.getAntallRetur()).isEqualTo(ANTALL_RETUR);
+		assertThat(journalpostView.getInnsyn()).isEqualTo(BRUK_STANDARDREGLER);
+		assertThat(journalpostView.getSkjerming()).isEqualTo(SKJERMING_TYPE_CODE);
 	}
 
 	private static void assertTilleggsopplysninger(Map<String, String> tilleggsopplysninger) {

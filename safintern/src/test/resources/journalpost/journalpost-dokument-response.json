@@ -1,0 +1,102 @@
+{
+  "journalpostId": journalpostId_replace,
+  "type": "U",
+  "fagomraade": "RPO",
+  "fagomraadenavn": "Retting av personopplysninger",
+  "status": "FS",
+  "innsyn": "BRUK_STANDARDREGLER",
+  "skjerming": "POL",
+  "saksrelasjon": {
+    "fagsystem": "FS22",
+    "feilregistrert": false,
+    "sak": {
+      "aktoerId": "111113333333",
+      "applikasjon": "AO01",
+      "fagsakNr": "1234",
+      "opprettetTid": "2023-08-11T00:00:00",
+      "orgNr": "812345678",
+      "tema": "RPO"
+    },
+    "sakId": sakId_replace
+  },
+  "relevanteDatoer": {
+    "ekspedert": "2023-08-11T12:01:01.001+00:00",
+    "forsendelseMottatt": "2023-08-11T12:01:01.001+00:00",
+    "hoveddokument": "2023-08-11T12:01:01.001+00:00",
+    "journalfoert": "2023-08-11T12:01:01.001+00:00",
+    "lest": "2023-08-11T12:01:01.001+00:00",
+    "opprettet": "opprettet_replace",
+    "retur": "2023-08-11T12:01:01.001+00:00",
+    "sendtPrint": "2023-08-11T12:01:01.001+00:00"
+  },
+  "avsenderMottaker": {
+    "id": "02016126007",
+    "land": "NO",
+    "navn": "Jim Hopper",
+    "type": "FNR"
+  },
+  "antallRetur": 3,
+  "behandlingstema": "ab0438",
+  "bruker": {
+    "id": "123213",
+    "type": "PERSON"
+  },
+  "dokumenter": [
+    {
+      "dokumentInfoId": dokumentInfoId_hoveddokument_replace,
+      "brevkode": "Brevkode",
+      "dokumenttypeId": "0000001",
+      "ferdigDato": "2023-08-11T12:01:01.001+00:00",
+      "fildetaljer": [
+        {
+          "format": "ARKIV",
+          "navn": "navn",
+          "skjerming": "POL",
+          "stoerrelse": "13",
+          "type": "PDF",
+          "uuid": "filUuidHoveddokumentArkiv"
+        },
+        {
+          "format": "PRODUKSJON",
+          "navn": "navn",
+          "skjerming": "POL",
+          "stoerrelse": "13",
+          "type": "PDF",
+          "uuid": "filUuidHoveddokumentProduksjon"
+        }
+      ],
+      "kassert": false,
+      "kategori": "ES",
+      "logiskVedlegg": [
+        {
+          "tittel": "Henvendelse fra lege",
+          "vedleggId": logiskVedleggId_hoveddokument_replace
+        }
+      ],
+      "originalJournalpostId": journalpostId_replace,
+      "sensitivt": true,
+      "status": "FERDIGSTILT",
+      "tittel": "TITTEL"
+    }
+  ],
+  "innhold": "Innhold",
+  "journalfoerendeEnhet": "9999",
+  "journalfoertAvNavn": "Bjarne Betjent",
+  "kanalreferanseId": "KANAL REFERANSE ID",
+  "mottakskanal": "NAV_NO",
+  "opprettetAvNavn": "Opprettet navn",
+  "tilleggsopplysninger": {
+    "tillegg": "tillegg_verdi"
+  },
+  "utsendingsInfo": {
+    "fysiskPostadresse": {
+      "adresselinje1": "adresselinje1",
+      "adresselinje2": "adresselinje2",
+      "adresselinje3": "adresselinje3",
+      "landkode": "NO",
+      "postnummer": "postnummer",
+      "poststed": "poststed"
+    }
+  },
+  "utsendingskanal": "S"
+}

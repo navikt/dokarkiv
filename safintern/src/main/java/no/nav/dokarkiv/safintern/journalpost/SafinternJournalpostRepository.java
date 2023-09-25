@@ -38,10 +38,24 @@ class SafinternJournalpostRepository {
 		}
 	}
 
+	Optional<JournalpostView> hentJournalpostByIdDokumentInfoId(final Long journalpostId, final Long dokumentInfoId, EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs) {
+		try {
+			CriteriaBuilder<Journalpost> cb = cbf.create(em, Journalpost.class, "j")
+					.where("j.journalpostDokumentInfoRelasjoner.embeddedId.journalpostId").eq(journalpostId)
+					.where("j.journalpostDokumentInfoRelasjoner.embeddedId.dokumentInfoId").eq(dokumentInfoId);
+
+			CriteriaBuilder<JournalpostView> journalpostBuilder = evm.applySetting(evs, dokumenterOrder(evs, cb));
+			return Optional.of(journalpostBuilder.getSingleResult());
+		} catch (NoResultException e) {
+			return Optional.empty();
+		}
+	}
+
 	Optional<JournalpostView> hentJournalpostByEksternReferanseId(final String eksternReferanseId, EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs) {
 		try {
 			CriteriaBuilder<Journalpost> cb = cbf.create(em, Journalpost.class, "j")
 					.where("kanalReferanseId").eq(eksternReferanseId);
+
 			CriteriaBuilder<JournalpostView> journalpostBuilder = evm.applySetting(evs, dokumenterOrder(evs, cb));
 			return Optional.of(journalpostBuilder.getSingleResult());
 		} catch (NoResultException e) {
@@ -50,7 +64,7 @@ class SafinternJournalpostRepository {
 	}
 
 	private static CriteriaBuilder<Journalpost> dokumenterOrder(EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs, CriteriaBuilder<Journalpost> cb) {
-		if (evs.getFetches().contains(DOKUMENTER)) {
+		if (evs.getFetches().isEmpty() || evs.getFetches().stream().anyMatch(f -> f.contains(DOKUMENTER))) {
 			return cb.orderByAsc("journalpostDokumentInfoRelasjoner.tilknyttetJournalpostSom")
 					.orderByAsc("journalpostDokumentInfoRelasjoner.journalpostDokumentInfoRelasjonId");
 		}

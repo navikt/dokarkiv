@@ -29,6 +29,12 @@ public class SafinternJournalpostService {
 				.orElseThrow(() -> new JournalpostIkkeFunnetException("Journalpost med journalpostId=" + journalpostId + " ikke funnet"));
 	}
 
+	public JournalpostView hentJournalpostByIdAndDokumentInfoId(final Long journalpostId, final Long dokumentInfoId, Set<String> fields) {
+		EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs = fetch(fields);
+		return repository.hentJournalpostByIdDokumentInfoId(journalpostId, dokumentInfoId, evs)
+				.orElseThrow(() -> new JournalpostIkkeFunnetException("Journalpost med journalpostId=" + journalpostId + ", dokumentInfoId" + dokumentInfoId + " ikke funnet"));
+	}
+
 	public JournalpostView hentJournalpostByEksternReferanseId(final String eksternReferanseId, Set<String> fields) {
 		EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs = fetch(fields);
 		return repository.hentJournalpostByEksternReferanseId(eksternReferanseId, evs)
