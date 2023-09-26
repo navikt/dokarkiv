@@ -81,6 +81,25 @@ public class JournalpostIT extends AbstractSafinternTest {
 		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse("/journalpost/journalpost-response.json", persistedJournalpost));
 	}
 
+	@Test
+	void shouldGetJournalpostByIdAndDokumentInfoId() {
+		Sak persistedSak = sakTestRepository.persist(createGsak());
+		Long sakId = persistedSak.getSakId();
+		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
+		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
+		utsendingsInfoTestRepository.persist(utsendingsInfo);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long dokumentInfoId = actualJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+		ResponseEntity<String> responseEntity = restTemplate.exchange(journalpostIdDokumentInfoIdPath(actualJournalpost.getJournalpostId(), dokumentInfoId), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse("/journalpost/journalpost-dokument-response.json", persistedJournalpost));
+	}
+
 	private String mapStringResponse(String path, Journalpost journalpost) {
 		Date createdDate = journalpost.getChangeStamp().getCreatedDate();
 		String nowIso = formattedDate().toFormatter().format(createdDate.toInstant().atZone(ZoneId.of("UTC"))) + "+00:00";
@@ -130,5 +149,9 @@ public class JournalpostIT extends AbstractSafinternTest {
 
 	String eksternReferanseIdPath(String eksternReferanseId) {
 		return SafinternConstants.BASE_PATH + "/journalpost/eksternReferanseId/%s".formatted(eksternReferanseId);
+	}
+
+	String journalpostIdDokumentInfoIdPath(Long journalpostId, Long dokumentInfoId) {
+		return SafinternConstants.BASE_PATH + "/journalpost/journalpostId/%d/dokumentInfoId/%d".formatted(journalpostId, dokumentInfoId);
 	}
 }

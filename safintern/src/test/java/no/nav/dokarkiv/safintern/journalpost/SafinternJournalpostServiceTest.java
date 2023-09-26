@@ -1,9 +1,6 @@
 package no.nav.dokarkiv.safintern.journalpost;
 
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
-import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
@@ -16,6 +13,7 @@ import no.nav.dokarkiv.core.repository.UtsendingsInfoTestRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.safintern.SafinternConfig;
+import no.nav.dokarkiv.safintern.views.DokumentinfoView;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,8 +27,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.RPO;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.S;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertBruker;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertSak;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.SKJERMING_TYPE_CODE;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
@@ -77,23 +83,44 @@ public class SafinternJournalpostServiceTest {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
 		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
-		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		actualJournalpost.setUtsendingskanal(S);
 		journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
 		utsendingsInfoTestRepository.persist(utsendingsInfo);
 
-		JournalpostView journalpostView = safinternJournalpostService.hentJournalpostById(actualJournalpost.getJournalpostId(), List.of("status", "mottakskanal"));
+		JournalpostView journalpostView = safinternJournalpostService.hentJournalpostById(actualJournalpost.getJournalpostId(), Set.of("status", "mottakskanal"));
 
-		assertThat(journalpostView.getMottakskanal()).isEqualTo(MottaksKanalCode.NAV_NO);
-		assertThat(journalpostView.getStatus()).isEqualTo(JournalStatusCode.FS);
+		assertThat(journalpostView.getMottakskanal()).isEqualTo(NAV_NO);
+		assertThat(journalpostView.getStatus()).isEqualTo(FS);
 		assertThat(journalpostView.getSaksrelasjon()).isNull();
 		assertThat(journalpostView.getUtsendingskanal()).isNull();
 	}
 
 	@Test
+	void shouldFetchDokumenterPaths() {
+		Sak persistedSak = sakTestRepository.persist(createGsak());
+		Long sakId = persistedSak.getSakId();
+		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		actualJournalpost.setUtsendingskanal(S);
+		journalpostTestRepository.persist(actualJournalpost);
+		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
+		utsendingsInfoTestRepository.persist(utsendingsInfo);
+
+		JournalpostView journalpostView = safinternJournalpostService.hentJournalpostById(actualJournalpost.getJournalpostId(), Set.of("bruker", "saksrelasjon", "fagomraade", "status", "skjerming", "dokumenter.skjerming"));
+
+		assertThat(journalpostView.getFagomraade()).isEqualTo(RPO);
+		assertThat(journalpostView.getStatus()).isEqualTo(FS);
+		assertThat(journalpostView.getSkjerming()).isEqualTo(SKJERMING_TYPE_CODE);
+		assertSak(sakId, journalpostView.getSaksrelasjon());
+		assertBruker(journalpostView.getBruker());
+		assertThat(journalpostView.getDokumenter()).hasSize(2);
+		assertThat(journalpostView.getDokumenter()).extracting(DokumentinfoView::getSkjerming).containsExactly(null, POL);
+	}
+
+	@Test
 	void shouldThrowExceptionWhenFetchValueNotFound() {
 		assertThatThrownBy(() ->
-						safinternJournalpostService.hentJournalpostById(123L, List.of("utsendingsinfo")),
+						safinternJournalpostService.hentJournalpostById(123L, Set.of("utsendingsinfo")),
 				"fetch verdier må være godkjent av FetchPaths")
 				.isInstanceOf(IllegalArgumentException.class);
 	}
