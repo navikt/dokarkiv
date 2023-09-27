@@ -36,6 +36,7 @@ public final class FetchPaths {
 		GYLDIGE_PATHS.add("tilleggsopplysninger");
 		GYLDIGE_PATHS.add(DOKUMENTER);
 		GYLDIGE_PATHS.add(DOKUMENTER + ".skjerming");
+		GYLDIGE_PATHS.add(DOKUMENTER + ".fildetaljer");
 	}
 
 	public static boolean erGyldig(String fetchPath) {
