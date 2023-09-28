@@ -85,7 +85,7 @@ public class HentJournalsakinfoController {
 	@Transactional(readOnly = true)
 	@GetMapping(value = "/hentjournalpost/{journalpostId}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark902"}, percentiles = {0.5, 0.95})
-	public SafHentJournalpostResponse safHentJournalpost(@PathVariable @PositiveOrZero(message = "journalpostId må være større en heltall.") Long journalpostId) {
+	public SafHentJournalpostResponse safHentJournalpost(@PathVariable @PositiveOrZero(message = "journalpostId må være et heltall.") Long journalpostId) {
 		log.info("rjoark902 har mottatt forespørsel om journalpost med journalpostId={}", journalpostId);
 		return safHentJournalpostService.hentJournalpostByJournalpostId(journalpostId);
 	}
