@@ -117,8 +117,6 @@ public class OppdaterJournalpostService {
 			}
 		}
 
-
-
 		ChangeTracker changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, sakId);
 		if (!changeTracker.getChanges().isEmpty()) {
 			lagreAksjonsLoggService.lagreAksjonsLoggForJournalpost(

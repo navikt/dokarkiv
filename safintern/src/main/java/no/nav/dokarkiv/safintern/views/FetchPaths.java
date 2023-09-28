@@ -6,7 +6,7 @@ import java.util.Set;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public final class FetchPaths {
-	private static final Set<String> GYLDIGE_PATHS = new HashSet<>();
+	static final Set<String> GYLDIGE_PATHS = new HashSet<>();
 
 	public static final String DOKUMENTER = "dokumenter";
 
@@ -35,6 +35,8 @@ public final class FetchPaths {
 		GYLDIGE_PATHS.add("utsendingsInfo");
 		GYLDIGE_PATHS.add("tilleggsopplysninger");
 		GYLDIGE_PATHS.add(DOKUMENTER);
+		GYLDIGE_PATHS.add(DOKUMENTER + ".dokumentInfoId");
+		GYLDIGE_PATHS.add(DOKUMENTER + ".fildetaljer");
 		GYLDIGE_PATHS.add(DOKUMENTER + ".skjerming");
 	}
 
