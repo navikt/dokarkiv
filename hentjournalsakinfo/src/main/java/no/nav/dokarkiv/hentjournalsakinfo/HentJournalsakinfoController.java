@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -85,7 +85,7 @@ public class HentJournalsakinfoController {
 	@Transactional(readOnly = true)
 	@GetMapping(value = "/hentjournalpost/{journalpostId}")
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark902"}, percentiles = {0.5, 0.95})
-	public SafHentJournalpostResponse safHentJournalpost(@PathVariable @Positive(message = "journalpostId må være et heltall.") Long journalpostId) {
+	public SafHentJournalpostResponse safHentJournalpost(@PathVariable @PositiveOrZero(message = "journalpostId må være et heltall.") Long journalpostId) {
 		log.info("rjoark902 har mottatt forespørsel om journalpost med journalpostId={}", journalpostId);
 		return safHentJournalpostService.hentJournalpostByJournalpostId(journalpostId);
 	}

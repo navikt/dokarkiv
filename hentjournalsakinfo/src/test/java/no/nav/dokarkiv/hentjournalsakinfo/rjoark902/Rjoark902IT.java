@@ -266,6 +266,28 @@ public class Rjoark902IT extends AbstractHentjournalsakinfoItest {
 	}
 
 	@Test
+	public void shouldFailWithNotFoundWhenJournalpostIdErZero() {
+		buildAndPersistJournalpost();
+		long journalpostId = 0;
+
+		String uri = HENTJOURNALSAKINFO_HENTJOURNALPOST + journalpostId;
+		ResponseEntity<SafHentJournalpostResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(NOT_FOUND));
+	}
+
+	@Test
+	public void shouldFailWhenJournalpostIdErNegativeNumber() {
+		buildAndPersistJournalpost();
+		long journalpostId = -12345L;
+
+		String uri = HENTJOURNALSAKINFO_HENTJOURNALPOST + journalpostId;
+		ResponseEntity<SafHentJournalpostResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, createHeaderEntity(), SafHentJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(BAD_REQUEST));
+	}
+
+	@Test
 	public void shouldFailToGetJournalpostByEkstErnReferanseId() {
 		buildAndPersistJournalpost();
 		String ekstErnReferanseId = "eksternReferanseId";
