@@ -6,7 +6,7 @@ import java.util.Set;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public final class FetchPaths {
-	private static final Set<String> GYLDIGE_PATHS = new HashSet<>();
+	static final Set<String> GYLDIGE_PATHS = new HashSet<>();
 
 	public static final String DOKUMENTER = "dokumenter";
 
