@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.core.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -62,7 +61,6 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_skjerming_type", length = 50)
-	@Setter(AccessLevel.NONE)
 	private SkjermingTypeCode skjermingType;
 
 	@ManyToOne(fetch = FetchType.LAZY)
