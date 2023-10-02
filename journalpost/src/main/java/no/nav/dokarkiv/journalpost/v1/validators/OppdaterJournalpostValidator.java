@@ -110,6 +110,7 @@ public final class OppdaterJournalpostValidator {
 
 		return feilmeldinger;
 	}
+
 	private static String checkIfTooOldFieldIsSet(Object field, String fieldName, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType){
 		String isIllegalFieldSet = checkIfIllegalFieldIsSet(field, fieldName, journalpoststatus,journalpostType);
 		return isIllegalFieldSet == null ? null : isIllegalFieldSet + " Som er mer enn 1 år gammel";
