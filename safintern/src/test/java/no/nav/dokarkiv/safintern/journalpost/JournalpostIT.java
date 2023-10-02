@@ -15,9 +15,9 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
@@ -56,7 +56,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		List<String> fields = List.of("journalpostId", "saksrelasjon");
+		var fields = Set.of("journalpostId", "saksrelasjon");
 		ResponseEntity<String> responseEntity = restTemplate.exchange(journalpostIdPath(actualJournalpost.getJournalpostId(), fields), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
@@ -100,12 +100,34 @@ public class JournalpostIT extends AbstractSafinternTest {
 		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse("/journalpost/journalpost-dokument-response.json", persistedJournalpost));
 	}
 
+	@Test
+	void shouldGetJournalpostByIdAndDokumentInfoIdWithSafTilgangFetches() {
+		Sak persistedSak = sakTestRepository.persist(createGsak());
+		Long sakId = persistedSak.getSakId();
+		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		actualJournalpost.findHoveddokumentDokumentInfoRelasjon().setSkjermingType(POL);
+		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long dokumentInfoId = actualJournalpost.getJournalpostDokumentInfoRelasjonerAdmin()
+				.stream().filter(JournalpostDokumentInfoRelasjon::isHoveddokument).findFirst().get().getDokumentInfo().getDokumentInfoId();
+		var fields = Set.of("journalpostId", "fagomraade", "status", "skjerming", "bruker", "saksrelasjon", "dokumenter.dokumentInfoId", "dokumenter.skjerming", "dokumenter.fildetaljer");
+		ResponseEntity<String> responseEntity = restTemplate.exchange(journalpostIdDokumentInfoIdPath(actualJournalpost.getJournalpostId(), dokumentInfoId, fields), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse("/journalpost/journalpost-dokument-saf-tilgang-response.json", persistedJournalpost));
+	}
+
 	private String mapStringResponse(String path, Journalpost journalpost) {
 		Date createdDate = journalpost.getChangeStamp().getCreatedDate();
 		String nowIso = formattedDate().toFormatter().format(createdDate.toInstant().atZone(ZoneId.of("UTC"))) + "+00:00";
-		DokumentInfo hoved = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		DokumentInfo hoved = journalpost.getJournalpostDokumentInfoRelasjonerAdmin().stream()
+				.filter(JournalpostDokumentInfoRelasjon::isHoveddokument)
+				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo).findFirst().get();
 		DokumentInfo vedlegg = journalpost.getJournalpostDokumentInfoRelasjonerAdmin().stream()
-				.filter(journalpostDokumentInfoRelasjon -> VEDLEGG == journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom())
+				.filter(JournalpostDokumentInfoRelasjon::isVedlegg)
 				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo).findFirst().get();
 		assertThat(hoved).isNotNull();
 		assertThat(vedlegg).isNotNull();
@@ -136,14 +158,15 @@ public class JournalpostIT extends AbstractSafinternTest {
 	}
 
 	String journalpostIdPath(Long journalpostId) {
-		return journalpostIdPath(journalpostId, List.of());
+		return journalpostIdPath(journalpostId, Set.of());
 	}
 
-	String journalpostIdPath(Long journalpostId, List<String> fields) {
-		if(fields.isEmpty()) {
+	String journalpostIdPath(Long journalpostId, Set<String> fields) {
+		if (fields.isEmpty()) {
 			return SafinternConstants.BASE_PATH + "/journalpost/journalpostId/%d".formatted(journalpostId);
 		} else {
-			return SafinternConstants.BASE_PATH + "/journalpost/journalpostId/%d?fields=%s".formatted(journalpostId, String.join(",", fields));
+			return SafinternConstants.BASE_PATH + "/journalpost/journalpostId/%d?fields=%s"
+					.formatted(journalpostId, String.join(",", fields));
 		}
 	}
 
@@ -153,5 +176,10 @@ public class JournalpostIT extends AbstractSafinternTest {
 
 	String journalpostIdDokumentInfoIdPath(Long journalpostId, Long dokumentInfoId) {
 		return SafinternConstants.BASE_PATH + "/journalpost/journalpostId/%d/dokumentInfoId/%d".formatted(journalpostId, dokumentInfoId);
+	}
+
+	String journalpostIdDokumentInfoIdPath(Long journalpostId, Long dokumentInfoId, Set<String> fields) {
+		return SafinternConstants.BASE_PATH + "/journalpost/journalpostId/%d/dokumentInfoId/%d?fields=%s"
+				.formatted(journalpostId, dokumentInfoId, String.join(",", fields));
 	}
 }
