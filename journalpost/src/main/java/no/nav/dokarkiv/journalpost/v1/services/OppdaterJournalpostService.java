@@ -101,13 +101,12 @@ public class OppdaterJournalpostService {
 
 		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
-
 		if (oppdateringAvAvsenderMedDigitalMottakskanal(oppdaterJournalpostRequest, journalpost)) {
 			log.info("Avsender på digitalt innsendt journalpost med mottakskanal={} ble oppdatert", journalpost.getMottakskanal());
 			incrementOppdateringAvAvsenderMedDigitalMottakskanalCounter(meterRegistry);
 		}
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus(), journalpost.getJournalposttype());
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 
 		if (oppdaterJournalpostRequest.getSak() != null) {
 			Sakstype sakstype = oppdaterJournalpostRequest.getSak().getSakstype();
@@ -152,7 +151,7 @@ public class OppdaterJournalpostService {
 		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost.getJournalstatus(), journalpost.getJournalposttype());
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 
 		if (oppdaterJournalpostRequest.getSak() != null) {
 			Sakstype sakstype = oppdaterJournalpostRequest.getSak().getSakstype();

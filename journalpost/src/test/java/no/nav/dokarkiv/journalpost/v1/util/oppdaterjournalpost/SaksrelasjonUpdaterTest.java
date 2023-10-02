@@ -43,7 +43,7 @@ public class SaksrelasjonUpdaterTest {
 	public void shouldUpdateSaksrelasjon() throws UgyldigAksjonsLoggException {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
-		Journalpost journalpost = TestUtils.createJournalpost();
+		Journalpost journalpost = TestUtils.createEnkelJournalpost();
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, SAK_ID);
 
@@ -57,7 +57,7 @@ public class SaksrelasjonUpdaterTest {
 	public void shouldUpdateSaksrelasjonWhenSaksrelasjonIsNull() {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
-		Journalpost journalpost = TestUtils.createJournalpost();
+		Journalpost journalpost = TestUtils.createEnkelJournalpost();
 		journalpost.setSaksrelasjon(null);
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
@@ -79,7 +79,7 @@ public class SaksrelasjonUpdaterTest {
 				.build();
 
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
-		Journalpost journalpost = TestUtils.createJournalpost();
+		Journalpost journalpost = TestUtils.createEnkelJournalpost();
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
 		assertEquals(parseLong(PENSJON_FAGSAK_ID), journalpost.getSaksrelasjon().getSakId());
@@ -95,7 +95,7 @@ public class SaksrelasjonUpdaterTest {
 				.build();
 
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
-		Journalpost journalpost = TestUtils.createJournalpost();
+		Journalpost journalpost = TestUtils.createEnkelJournalpost();
 
 		assertThrows(UgyldigInputException.class,
 				() -> updater.updateFields(journalpost, oppdaterJournalpostRequest, null),
@@ -111,7 +111,7 @@ public class SaksrelasjonUpdaterTest {
 				.build();
 
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
-		Journalpost journalpost = TestUtils.createJournalpost();
+		Journalpost journalpost = TestUtils.createEnkelJournalpost();
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, SAK_ID);
 		assertEquals(SAK_ID, journalpost.getSaksrelasjon().getSakId());
@@ -121,7 +121,7 @@ public class SaksrelasjonUpdaterTest {
 	public void shouldUpdateSaksrelasjonWhenSaksrelasjonSakIdIsNull() {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
-		Journalpost journalpost = TestUtils.createJournalpost();
+		Journalpost journalpost = TestUtils.createEnkelJournalpost();
 		journalpost.getSaksrelasjon().setSakId(null);
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
@@ -137,7 +137,7 @@ public class SaksrelasjonUpdaterTest {
 	public void shouldUpdateSaksrelasjonWhenSaksrelasjonFagsystemIsNull() {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
-		Journalpost journalpost = TestUtils.createJournalpost();
+		Journalpost journalpost = TestUtils.createEnkelJournalpost();
 		journalpost.getSaksrelasjon().setFagsystem(null);
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
@@ -159,7 +159,7 @@ public class SaksrelasjonUpdaterTest {
 				.build();
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
 
-		Journalpost journalpost = TestUtils.createJournalpost();
+		Journalpost journalpost = TestUtils.createEnkelJournalpost();
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest, SAK_ID);
 

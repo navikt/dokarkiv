@@ -125,7 +125,7 @@ public class TestUtils {
 	public static final String FNR = "01010199999";
 	public static final String FNR_2 = "01010188888";
 
-	public static Journalpost createJournalpost() {
+	public static Journalpost createEnkelJournalpost() {
 		Journalpost journalpost = Journalpost.builder()
 				.journalpostId(JOURNALPOST_ID)
 				.journalstatus(JournalStatusCode.J)
@@ -154,6 +154,14 @@ public class TestUtils {
 
 	}
 
+	public static Journalpost createEnkelJournalpost(JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType){
+		return Journalpost.builder()
+				.journalpostId(JOURNALPOST_ID)
+				.journalstatus(journalpostStatus)
+				.journalposttype(journalpostType)
+				.build();
+	}
+
 	public static Journalpost createJournalpostForOppdatering() {
 		Journalpost journalpost = Journalpost.builder()
 				.journalstatus(JournalStatusCode.M)
@@ -177,7 +185,6 @@ public class TestUtils {
 		journalpost.addJournalpostDokumentInfoRelasjon(createJournalpostDokumentinfoRelasjon1());
 		return journalpost;
 	}
-
 
 	public static JournalpostDokumentInfoRelasjon createJournalpostDokumentinfoRelasjon1() {
 		return JournalpostDokumentInfoRelasjon.builder()

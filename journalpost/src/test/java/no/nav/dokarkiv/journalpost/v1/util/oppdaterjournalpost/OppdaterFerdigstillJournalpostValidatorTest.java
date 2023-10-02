@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
@@ -8,6 +9,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -51,6 +53,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEnkelJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createSak;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
@@ -61,11 +64,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class OppdaterFerdigstillJournalpostValidatorTest {
 
 	private OppdaterJournalpostRequest oppdaterJournalpostRequest;
+	private Journalpost journalpost;
 
 	@Test
 	public void happyPath() {
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
-		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+		journalpost = TestUtils.createEnkelJournalpost(M, I);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 	}
 
 	@Test
@@ -76,8 +81,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.sak(Sak.builder().sakstype(FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(AO01).build())
 				.datoDokument(LocalDateTime.now().minusDays(2))
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(M, I);
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 	}
 
 	@Test
@@ -87,8 +93,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(GENERELL_SAK).build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(M, I);
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 	}
 
 	@Test
@@ -100,8 +107,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.arkivsaksystem(GSAK)
 						.build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(M, I);
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 	}
 
 	@Test
@@ -111,8 +119,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(GENERELL_SAK).build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(M, I);
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 	}
 
 	@Test
@@ -122,8 +131,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(GENERELL_SAK).build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(M, I);
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, M, I);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 	}
 
 	@Test
@@ -133,8 +143,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(AO01).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(M, I);
 
-		var exception = assertThrows(InputValideringFeiletException.class, () -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I));
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Sak.arkivsaksnummer");
 	}
 
@@ -145,9 +156,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(GENERELL_SAK).fagsakId(FAGSAK_ID).build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(M, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Sak.fagsakId");
 	}
 
@@ -161,9 +173,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.fagsakId(FAGSAK_ID)
 						.build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(M, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Sak.fagsakId");
 	}
 
@@ -175,9 +188,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(input, U);
 
 		var exception = assertThrows(InputValideringFeiletException.class, () ->
-				validateOppdaterteFelt(oppdaterJournalpostRequest, input, U));
+				validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains(
 				format("AvsendeMottakerId kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=U", input),
 				format("AvsendeMottakerNavn kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=U", input));
@@ -189,9 +203,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(input, N);
 
 		var exception = assertThrows(InputValideringFeiletException.class, () ->
-				validateOppdaterteFelt(oppdaterJournalpostRequest, input, N));
+				validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains(
 				format("AvsendeMottakerId kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=N", input),
 				format("AvsendeMottakerNavn kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=N", input));
@@ -203,8 +218,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(J, U);
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, J, U);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 	}
 
 	@ParameterizedTest
@@ -213,9 +229,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.tittel("tittel")
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(input, U);
 
 		var exception = assertThrows(InputValideringFeiletException.class, () ->
-				validateOppdaterteFelt(oppdaterJournalpostRequest, input, U));
+				validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains(
 				format("Tittel kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=U", input));
 	}
@@ -226,8 +243,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.tittel("tittel")
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(JournalStatusCode.valueOf(input), N);
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, JournalStatusCode.valueOf(input), N);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 	}
 
 	// Det skal alltid være lov til å endre brevkode. Se commit.
@@ -239,8 +257,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 								.brevkode("oppdatert")
 								.dokumentInfoId(DOKUMENTINFO_ID1)
 								.build())).build();
+		journalpost = TestUtils.createEnkelJournalpost(FS, U);
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 	}
 
 	@Test
@@ -248,9 +267,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.bruker(createBrukerPerson())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(J, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, J, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Bruker kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I");
 	}
 
@@ -259,9 +279,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.sak(createSak())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(J, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, J, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Sak kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I");
 	}
 
@@ -273,27 +294,30 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.arkivsaksystem(GSAK)
 						.build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(M, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Sak.arkivsaksnummer må være et heltall, og saken må være opprettet i GSAK/PSAK");
 	}
 
 	@Test
 	public void shouldFailIfJournalFoerendeEnhetSetForStatusJ() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().journalfoerendeEnhet(JOURNALFOERENDE_ENHET).build();
+		journalpost = TestUtils.createEnkelJournalpost(J, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, J, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("JournalfoerendeEnhet kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I");
 	}
 
 	@Test
 	public void shouldFailIfTemaSetForStatusJ() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().tema(TEMA_FOR).build();
+		journalpost = TestUtils.createEnkelJournalpost(J, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, J, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Tema kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I");
 	}
 
@@ -302,9 +326,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.bruker(createBrukerPerson())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(FS, U);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Bruker kan ikke oppdateres for journalpost med journalpoststatus=FS og journalposttype=U");
 	}
 
@@ -313,49 +338,55 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.sak(createSak())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(FS, U);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Sak kan ikke oppdateres for journalpost med journalpoststatus=FS og journalposttype=U");
 	}
 
 	@Test
 	public void shouldFailIfJournalFoerendeEnhetSetForStatusFS() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().journalfoerendeEnhet(JOURNALFOERENDE_ENHET).build();
+		journalpost = TestUtils.createEnkelJournalpost(FS, U);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("JournalfoerendeEnhet kan ikke oppdateres for journalpost med journalpoststatus=FS og journalposttype=U");
 	}
 
 	@Test
 	public void shouldFailIfTemaSetForStatusFS() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().tema(TEMA_FOR).build();
+		journalpost = TestUtils.createEnkelJournalpost(FS, U);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS, U));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Tema kan ikke oppdateres for journalpost med journalpoststatus=FS og journalposttype=U");
 	}
 
 	@Test
 	public void shouldFailIfDatoReturSetForStatusFSAndNotat() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder().datoRetur(Date.valueOf(LOCAL_DATE_TIME.toLocalDate())).build();
+		journalpost = TestUtils.createEnkelJournalpost(FS, N);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS, N));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("DatoRetur kan ikke oppdateres for journalpost med journalpoststatus=FS og journalposttype=N");
 	}
+
 	@Test
-	public void shouldFailIfDatoDokumenIsFremtid(){
+	public void shouldFailIfDatoDokumenIsFremtid() {
 
 		var datoDokument = LocalDateTime.now().plusDays(2);
 
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.datoDokument(datoDokument)
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(FS, N);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, FS,N));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 
 		assertThat(exception.getMessage()).contains(
 				format("%s er ugyldig verdi for datoDokument. Feltet kan ikke settes frem i tid. Nåtid er ", datoDokument));
@@ -377,7 +408,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.idType(AvsenderMottakerIdType.HPRNR)
 						.build())
 				.build();
-		validateOppdaterteFelt(oppdaterJournalpostRequest, D, I);
+		journalpost = TestUtils.createEnkelJournalpost(D, I);
+
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 	}
 
 	@Test
@@ -391,9 +424,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.fagsaksystem(AO01)
 						.build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(D, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Bruker.id og Bruker.idType må være satt dersom sakstype=FAKSAK. Mottatt id=null idType=FNR");
 	}
 
@@ -411,9 +445,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.idType(AvsenderMottakerIdType.HPRNR)
 						.build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(D, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Bruker.id må være 9 siffer for Bruker.idType=ORGNR. Mottatt id=99999*****");
 	}
 
@@ -429,9 +464,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.id("abc11111111")
 						.build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(D, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Bruker.id kan kun bestå av tall. Mottatt id=abc11111111");
 	}
 
@@ -447,9 +483,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.id("1122334455")
 						.build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(D, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Bruker.id må være 11 siffer for Bruker.idType=FNR. Mottatt id=11223***** har lengde=10");
 	}
 
@@ -465,9 +502,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.id("1122334455")
 						.build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(D, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Bruker.id må være 9 siffer for Bruker.idType=ORGNR. Mottatt id=11223***** har lengde=10");
 	}
 
@@ -483,9 +521,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.id("1122334455")
 						.build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(D, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Bruker.id må være 11 siffer for Bruker.idType=AKTOERID. Mottatt id=11223***** har lengde=10");
 	}
 
@@ -500,9 +539,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.fagsaksystem(AO01)
 						.build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(D, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, D, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Bruker.id og Bruker.idType må være satt dersom sakstype=FAKSAK. Mottatt id=null idType=null");
 	}
 
@@ -515,9 +555,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(GENERELL_SAK).build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(M, I);
 
 		InputValideringFeiletException e = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertEquals(String.format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema),
 				e.getMessage());
 	}
@@ -531,9 +572,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.idType(idType)
 						.build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(J, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, J, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).containsAnyOf(
 				"Oppdatering av avsenderMottaker.id for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.idType er satt.",
 				"Oppdatering av avsenderMottaker.idType for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.id er satt.");
@@ -556,8 +598,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						.idType(idType)
 						.build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(J, I);
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, J, I);
+		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 	}
 
 	private static Stream<Arguments> shouldValidateAvsenderMottakerWhenBothIdAndTypeIsSetOrNotSet() {
@@ -577,9 +620,10 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(PP01).build())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(M, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, M, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains("Sak.fagsakId må være et heltall for saker opprettet i PSAK");
 	}
 
@@ -599,14 +643,33 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.build();
+		journalpost = TestUtils.createEnkelJournalpost(J, I);
 
 		var exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, J, I));
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains(
 				"Bruker kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I",
 				"Sak kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I",
 				"Tema kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I",
 				"JournalfoerendeEnhet kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I",
 				"Oppdatering av avsenderMottaker.id for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.idType er satt.");
+	}
+
+	@Test
+	public void shoudThrowExceptionWhenUpdatingAvsenderOnOldJournapost() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.id(AVSENDER_ID_PERSON)
+						.idType(AvsenderMottakerIdType.FNR)
+						.build())
+				.build();
+		journalpost = TestUtils.createEnkelJournalpost(J, I);
+		journalpost.setJournalDato(Date.valueOf(LOCAL_DATE_TIME.toLocalDate()));
+
+		var exception = assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
+		assertThat(exception.getMessage()).contains(" Som er mer enn 1 år gammel");
+		assertThat(exception.getMessage()).doesNotContain("null Som er mer enn 1 år gammel");
+
 	}
 }

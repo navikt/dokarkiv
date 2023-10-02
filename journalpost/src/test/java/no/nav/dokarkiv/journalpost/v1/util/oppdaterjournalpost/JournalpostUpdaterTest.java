@@ -47,7 +47,7 @@ public class JournalpostUpdaterTest {
 	@Test
 	public void shouldUpdateJournalpost() throws UgyldigAksjonsLoggException {
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
-		journalpost = TestUtils.createJournalpost();
+		journalpost = TestUtils.createEnkelJournalpost();
 
 		assertThat(journalpost.getBrukere(), hasSize(2));
 
@@ -74,7 +74,7 @@ public class JournalpostUpdaterTest {
 		Date earliest = new Date();
 		oppdaterJournalpostRequest = TestUtils.createPutOppdaterJournalpostRequestWithDatoRetur(earliest);
 
-		journalpost = TestUtils.createJournalpost();
+		journalpost = TestUtils.createEnkelJournalpost();
 		assertNull(journalpost.getAntallRetur());
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
