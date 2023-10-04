@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.copyOf;
+import static no.nav.dokarkiv.core.util.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
 import static no.nav.dokarkiv.core.util.FilMagicNumberValidator.isFileMagicNumberValid;
 import static org.apache.commons.io.FileUtils.ONE_MB;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.NO_FLAVOUR;
@@ -48,7 +49,6 @@ public class PDFAValidatorUtil {
 	public static final Set<String> NOT_A_PDFA = Set.of("Dokumentet er ikke en PDFA");
 	public static final Set<String> NON_VALID_PDFA_VERSION = Set.of("Dokumentet er ikke på et av de registrerte lovlige formatene " + VALID_PDFA_FLAVOURS);
 	public static final long FEM_MB = 5 * ONE_MB;
-	public static final byte[] PDF_MAGIC_NUMBER = new byte[]{(byte) 0x25, (byte) 0x50, (byte) 0x44, (byte) 0x46, (byte) 0x2D};
 
 
 	static {
