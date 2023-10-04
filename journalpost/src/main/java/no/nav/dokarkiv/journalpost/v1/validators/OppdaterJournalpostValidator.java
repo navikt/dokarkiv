@@ -9,6 +9,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -116,9 +117,10 @@ public final class OppdaterJournalpostValidator {
 
 	private static String checkIfTooOldFieldIsSet(Object field, String fieldName, Date journalDato) {
 		if (field != null) {
+			SimpleDateFormat datoFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm");
 			return format("%s kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s",
 					fieldName,
-					journalDato);
+					datoFormat.format(journalDato));
 		}
 		return null;
 	}
