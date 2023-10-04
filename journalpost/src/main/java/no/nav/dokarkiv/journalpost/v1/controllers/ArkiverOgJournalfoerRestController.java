@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
@@ -270,7 +271,7 @@ public class ArkiverOgJournalfoerRestController {
 									.isPresent())
 							.dokumenter(dokumenter)
 							.build());
-		} catch (InputValideringFeiletException | UgyldigInputException e) {
+		} catch (InputValideringFeiletException | InvalidPdfException | UgyldigInputException e) {
 			throw new ResponseStatusException(BAD_REQUEST, format("Kunne ikke opprette journalpost. %s",  e.getMessage()));
 		}
 	}
