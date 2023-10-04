@@ -16,14 +16,18 @@ import org.verapdf.pdfa.results.ValidationResult;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.Arrays.copyOf;
+import static no.nav.dokarkiv.core.util.FilMagicNumberValidator.isFileMagicNumberValid;
 import static org.apache.commons.io.FileUtils.ONE_MB;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.NO_FLAVOUR;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_A;
@@ -44,17 +48,26 @@ public class PDFAValidatorUtil {
 	public static final Set<String> NOT_A_PDFA = Set.of("Dokumentet er ikke en PDFA");
 	public static final Set<String> NON_VALID_PDFA_VERSION = Set.of("Dokumentet er ikke på et av de registrerte lovlige formatene " + VALID_PDFA_FLAVOURS);
 	public static final long FEM_MB = 5 * ONE_MB;
+	public static final byte[] PDF_MAGIC_NUMBER = new byte[]{(byte) 0x25, (byte) 0x50, (byte) 0x44, (byte) 0x46, (byte) 0x2D};
+
 
 	static {
 		VeraGreenfieldFoundryProvider.initialise();
 	}
 
-	public static Optional<PDFAValidatorResponse> validatePDFA(FilDetaljer filDetaljer) {
+	public static Optional<PDFAValidatorResponse> validatePDFA(FilDetaljer filDetaljer) throws InvalidPdfException {
 		if (filDetaljer == null || filDetaljer.getFileContent() == null || filDetaljer.getFileContent().length == 0) {
 			throw new InvalidPdfException("Filen er null eller tom");
 		} else if (filDetaljer.getFileContent().length > FEM_MB) {
 			log.info(format("FilUuid=%s er større enn 5 MB og vil ikke bli validert. Størrelse=%s MB", filDetaljer.getFilUuid(), convertToMB(filDetaljer.getFileContent().length)));
 			return Optional.empty();
+		}
+
+		if (!isFileMagicNumberValid(filDetaljer)) {
+			throw new InvalidPdfException(String.format("Ugyldig PDF/A magisk tall={%s}", HexFormat.of()
+					.withUpperCase()
+					.withDelimiter(" ")
+					.formatHex(copyOf(filDetaljer.getFileContent(), PDF_MAGIC_NUMBER.length))));
 		}
 
 		try (VeraPDFFoundry foundry = Foundries.defaultInstance()) {
@@ -72,7 +85,7 @@ public class PDFAValidatorUtil {
 		}
 	}
 
-	private static float convertToMB(long size){
+	private static float convertToMB(long size) {
 		return (float) size / ONE_MB;
 	}
 
@@ -104,4 +117,8 @@ public class PDFAValidatorUtil {
 		return new PDFAValidatorResponse(false, false, flavour, NON_VALID_PDFA_VERSION, filDetaljer);
 	}
 
+	private static boolean hasValidPDFMagicNumber(byte[] fileContentMagicNumber) {
+		log.info("filecontent magic number er {}", fileContentMagicNumber);
+		return Arrays.equals(fileContentMagicNumber, PDF_MAGIC_NUMBER);
+	}
 }
