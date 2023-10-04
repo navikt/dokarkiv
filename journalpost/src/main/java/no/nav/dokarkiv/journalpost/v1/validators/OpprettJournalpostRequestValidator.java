@@ -38,8 +38,6 @@ import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.valueOf;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO_UINNLOGGET;
-import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
-import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileMagicNumberValid;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
@@ -47,6 +45,8 @@ import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
+import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
+import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileMagicNumberValid;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -378,14 +378,10 @@ public class OpprettJournalpostRequestValidator {
 		}
 
 		if (!isFileMagicNumberValid(dokumentVariant.getFiltype(), dokumentVariant.getFysiskDokument())) {
-			log.warn("Dokument.dokumentvariant.fysiskDokument har ugyldig PDF/A magisk tall={ }.", HexFormat.of()
-					.withUpperCase()
-					.withDelimiter(" ")
-					.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length)));
-			throw new InvalidPdfException(format("Dokument.dokumentvariant.fysiskDokument har ugyldig PDF/A magisk tall={%s}.", HexFormat.of()
-					.withUpperCase()
-					.withDelimiter(" ")
-					.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length))));
+			throw new InvalidPdfException(format("Dokument.dokumentvariant.fysiskDokument kan ikke lagres i fagarkivet. Dokumentet har angitt filtype=%s med fysiskDokument har magicNumber={%s}.",
+					dokumentVariant.getFiltype(), HexFormat.of().withUpperCase()
+							.withDelimiter(" ")
+							.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length))));
 		}
 	}
 

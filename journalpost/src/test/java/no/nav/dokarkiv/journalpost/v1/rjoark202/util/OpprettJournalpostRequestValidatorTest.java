@@ -932,7 +932,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 
 		var exception = assertThrows(InvalidPdfException.class, () -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.fysiskDokument har ugyldig PDF/A magisk tall={EF BF BD EF BF}.");
+		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.fysiskDokument kan ikke lagres i fagarkivet. Dokumentet har angitt filtype=PDF med fysiskDokument har magicNumber={EF BF BD EF BF}.");
 	}
 
 	@Test
