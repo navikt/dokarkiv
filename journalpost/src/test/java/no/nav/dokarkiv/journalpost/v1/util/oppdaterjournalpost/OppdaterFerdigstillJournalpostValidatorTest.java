@@ -45,6 +45,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTINFO_ID1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.LOCAL_DATE_TIME;
@@ -661,15 +662,17 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.id(AVSENDER_ID_PERSON)
 						.idType(AvsenderMottakerIdType.FNR)
+						.navn(AVSENDER_NAVN)
 						.build())
+				.tittel(DOKUMENT_TITTEL1)
 				.build();
 		journalpost = TestUtils.createEnkelJournalpost(J, I);
 		journalpost.setJournalDato(Date.valueOf(LOCAL_DATE_TIME.toLocalDate()));
 
 		var exception = assertThrows(InputValideringFeiletException.class,
 				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
-		assertThat(exception.getMessage()).contains(" Som er mer enn 1 år gammel");
-		assertThat(exception.getMessage()).doesNotContain("null Som er mer enn 1 år gammel");
-
+		assertThat(exception.getMessage()).contains("AvsenderMottaker.Id kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato",
+				"AvsenderMottaker.Navn kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato",
+				"Tittel kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato");
 	}
 }

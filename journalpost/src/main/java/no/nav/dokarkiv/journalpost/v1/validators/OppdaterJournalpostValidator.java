@@ -12,6 +12,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -82,7 +83,7 @@ public final class OppdaterJournalpostValidator {
 		}
 	}
 
-	private static List<String> validateInngaaende(OppdaterJournalpostRequest request, Journalpost journalpost){
+	private static List<String> validateInngaaende(OppdaterJournalpostRequest request, Journalpost journalpost) {
 		JournalStatusCode journalpostStatus = journalpost.getJournalstatus();
 		JournalpostTypeCode journalpostType = journalpost.getJournalposttype();
 
@@ -98,11 +99,13 @@ public final class OppdaterJournalpostValidator {
 			if (request.getAvsenderMottaker() != null) {
 				feilmeldinger.add(validateAvsenderMottakerInngaaende(request.getAvsenderMottaker()));
 			}
-			if( journalpost.getJournalDato() != null &&
-			journalpost.getJournalDato().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1))){
-				feilmeldinger.add(checkIfTooOldFieldIsSet(request.getAvsenderMottaker().getId(), "AvsenderMottakerId", journalpostStatus, journalpostType));
-				feilmeldinger.add(checkIfTooOldFieldIsSet(request.getAvsenderMottaker().getNavn(), "AvsenderMottakerNavn", journalpostStatus, journalpostType));
-				feilmeldinger.add(checkIfTooOldFieldIsSet(request.getTittel(), "Tittel", journalpostStatus, journalpostType));
+			if (journalpost.getJournalDato() != null &&
+					journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1))) {
+				if (request.getAvsenderMottaker() != null) {
+					feilmeldinger.add(checkIfTooOldFieldIsSet(request.getAvsenderMottaker().getId(), "AvsenderMottaker.Id", journalpost.getJournalDato()));
+					feilmeldinger.add(checkIfTooOldFieldIsSet(request.getAvsenderMottaker().getNavn(), "AvsenderMottaker.Navn", journalpost.getJournalDato()));
+				}
+				feilmeldinger.add(checkIfTooOldFieldIsSet(request.getTittel(), "Tittel", journalpost.getJournalDato()));
 			}
 		} else if (request.getSak() != null) {
 			feilmeldinger.addAll(validateSak(request.getSak(), request.getBruker(), request.getTema()));
@@ -111,9 +114,13 @@ public final class OppdaterJournalpostValidator {
 		return feilmeldinger;
 	}
 
-	private static String checkIfTooOldFieldIsSet(Object field, String fieldName, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType){
-		String isIllegalFieldSet = checkIfIllegalFieldIsSet(field, fieldName, journalpoststatus,journalpostType);
-		return isIllegalFieldSet == null ? null : isIllegalFieldSet + " Som er mer enn 1 år gammel";
+	private static String checkIfTooOldFieldIsSet(Object field, String fieldName, Date journalDato) {
+		if (field != null) {
+			return format("%s kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s",
+					fieldName,
+					journalDato);
+		}
+		return null;
 	}
 
 
@@ -280,7 +287,7 @@ public final class OppdaterJournalpostValidator {
 	}
 
 	private static String validateBehandlingstema(String behandlingstema) {
-		if (!BEHANDLINGSTEMA_PATTERN.matcher(behandlingstema).matches())  {
+		if (!BEHANDLINGSTEMA_PATTERN.matcher(behandlingstema).matches()) {
 			return format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema);
 		}
 		return null;
