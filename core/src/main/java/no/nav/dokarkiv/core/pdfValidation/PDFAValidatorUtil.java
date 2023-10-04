@@ -55,7 +55,7 @@ public class PDFAValidatorUtil {
 		VeraGreenfieldFoundryProvider.initialise();
 	}
 
-	public static Optional<PDFAValidatorResponse> validatePDFA(FilDetaljer filDetaljer) throws InvalidPdfException {
+	public static Optional<PDFAValidatorResponse> validatePDFA(FilDetaljer filDetaljer) {
 		if (filDetaljer == null || filDetaljer.getFileContent() == null || filDetaljer.getFileContent().length == 0) {
 			throw new InvalidPdfException("Filen er null eller tom");
 		} else if (filDetaljer.getFileContent().length > FEM_MB) {
