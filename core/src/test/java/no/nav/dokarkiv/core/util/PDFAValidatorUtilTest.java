@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.core.util;
 
-import com.google.common.primitives.Bytes;
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.core.pdfValidation.PDFAValidatorResponse;
@@ -21,10 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.*;
-import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
 import static no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil.FEM_MB;
-import static org.apache.commons.io.FileUtils.ONE_MB;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_A;
@@ -65,12 +60,9 @@ public class PDFAValidatorUtilTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(ints = {4722, 1024*1024})
-	public void shouldAttemptToValidateIfFileIsLessThanOrEqualTo5MB(int reduceSizeBy) throws IOException {
-		byte[] pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf").readAllBytes();
-		byte[] concatByte = Bytes.concat(pdfFile, new byte[(int) ((FEM_MB) - reduceSizeBy)]);
-
-		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(concatByte));
+	@ValueSource(ints = {0, 1})
+	public void shouldAttemptToValidateIfFileIsLessThanOrEqualTo5MB(int reduceSizeBy) {
+		Optional<PDFAValidatorResponse> response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[(int) ((FEM_MB) - reduceSizeBy)]));
 		assertThat(response).isPresent();
 	}
 
@@ -90,17 +82,6 @@ public class PDFAValidatorUtilTest {
 		assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(null));
 	}
 
-	@Test
-	public void shouldThrowExceptionWhenContainsInvalidMagicNumber() throws IOException {
-		InputStream pdfFile = classpathToInputStream("pdf/pdf/2021_01_06_nasjonale_tiltak_feil.pdf");
-		FilDetaljer filDetaljer = createFilDetaljer(pdfFile.readAllBytes());
-		filDetaljer.setFildetaljerId(134L);
-		filDetaljer.setFiltype(FilTypeCode.PDF);
-
-		InvalidPdfException invalidPdfException = assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(filDetaljer));
-
-		assertThat(invalidPdfException.getMessage()).isEqualTo("Ugyldig PDF/A magisk tall={FF D8 FF E0 00}");
-	}
 	@Test
 	void shouldThrowExceptionWhenFilDetaljerEmptyByteArray() {
 		assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[0])));
@@ -132,7 +113,6 @@ public class PDFAValidatorUtilTest {
 	private FilDetaljer createFilDetaljer(byte[] fil) {
 		FilDetaljer detaljer = new FilDetaljer();
 		detaljer.setFileContent(fil);
-		detaljer.setFiltype(FilTypeCode.PDF);
 		return detaljer;
 	}
 

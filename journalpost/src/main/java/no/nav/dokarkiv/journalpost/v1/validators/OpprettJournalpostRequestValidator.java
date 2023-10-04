@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.String.format;
+import static java.util.Arrays.copyOf;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.SER;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDFA;
@@ -35,6 +38,8 @@ import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.valueOf;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO_UINNLOGGET;
+import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
+import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileMagicNumberValid;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
@@ -370,6 +375,17 @@ public class OpprettJournalpostRequestValidator {
 		}
 		if (dokumentVariant.getFysiskDokument() == null || dokumentVariant.getFysiskDokument().length == 0) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.fysiskDokument må være en base64 representert fil større en 0 bytes.");
+		}
+
+		if (!isFileMagicNumberValid(dokumentVariant.getFiltype(), dokumentVariant.getFysiskDokument())) {
+			log.warn("Dokument.dokumentvariant.fysiskDokument har ugyldig PDF/A magisk tall={ }.", HexFormat.of()
+					.withUpperCase()
+					.withDelimiter(" ")
+					.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length)));
+			throw new InvalidPdfException(format("Dokument.dokumentvariant.fysiskDokument har ugyldig PDF/A magisk tall={%s}.", HexFormat.of()
+					.withUpperCase()
+					.withDelimiter(" ")
+					.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length))));
 		}
 	}
 

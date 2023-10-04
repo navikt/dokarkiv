@@ -1,8 +1,6 @@
-package no.nav.dokarkiv.core.util;
+package no.nav.dokarkiv.journalpost.v1.validators;
 
 import lombok.SneakyThrows;
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
-import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 
@@ -20,9 +18,8 @@ class FilMagicNumberValidatorTest {
 	@Test
 	public void retrunTrueWhenContainsValidatePDFMagicNumber() {
 		byte[] pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf");
-		FilDetaljer filDetaljer = createFilDetaljer(pdfFile, PDF);
 
-		boolean isValidPDF = FilMagicNumberValidator.isFileMagicNumberValid(filDetaljer);
+		boolean isValidPDF = FilMagicNumberValidator.isFileMagicNumberValid(PDF.name(), pdfFile);
 		assertTrue(isValidPDF);
 	}
 
@@ -30,9 +27,8 @@ class FilMagicNumberValidatorTest {
 	@Test
 	public void returnFalseWhenContainsInvalidPDFMagicNumber() {
 		byte[] pdfFile = classpathToInputStream("pdf/pdf/2021_01_06_nasjonale_tiltak_feil.pdf");
-		FilDetaljer filDetaljer = createFilDetaljer(pdfFile, PDF);
 
-		boolean isValidPDF = FilMagicNumberValidator.isFileMagicNumberValid(filDetaljer);
+		boolean isValidPDF = FilMagicNumberValidator.isFileMagicNumberValid(PDF.name(), pdfFile);
 		assertFalse(isValidPDF);
 	}
 
@@ -40,9 +36,8 @@ class FilMagicNumberValidatorTest {
 	@Test
 	public void returnTrueWhenContainsValidJPEGMagicNumber() {
 		byte[] jpegFile = classpathToInputStream("jpeg/2021_01_06_nasjonale_tiltak_16_9.jpg");
-		FilDetaljer filDetaljer = createFilDetaljer(jpegFile, JPEG);
 
-		boolean isValidJPEG = FilMagicNumberValidator.isFileMagicNumberValid(filDetaljer);
+		boolean isValidJPEG = FilMagicNumberValidator.isFileMagicNumberValid(JPEG.name(), jpegFile);
 		assertTrue(isValidJPEG);
 	}
 
@@ -50,9 +45,8 @@ class FilMagicNumberValidatorTest {
 	@Test
 	public void returnFalseWhenContainsInvalidJPEGMagicNumber() {
 		byte[] jpegFile = classpathToInputStream("jpeg/2021_01_06_nasjonale_tiltak_feil.jpg");
-		FilDetaljer filDetaljer = createFilDetaljer(jpegFile, JPEG);
 
-		boolean isValidJPEG = FilMagicNumberValidator.isFileMagicNumberValid(filDetaljer);
+		boolean isValidJPEG = FilMagicNumberValidator.isFileMagicNumberValid(JPEG.name(), jpegFile);
 		assertFalse(isValidJPEG);
 	}
 
@@ -60,27 +54,18 @@ class FilMagicNumberValidatorTest {
 	@Test
 	public void returnTrueWhenContainsValidPNGMagicNumber() {
 		byte[] pngFile = classpathToInputStream("png/2021_01_06_nasjonale_tiltak.png");
-		FilDetaljer filDetaljer = createFilDetaljer(pngFile, PNG);
 
-		boolean isValidPNG = FilMagicNumberValidator.isFileMagicNumberValid(filDetaljer);
+		boolean isValidPNG = FilMagicNumberValidator.isFileMagicNumberValid(PNG.name(), pngFile);
 		assertTrue(isValidPNG);
 	}
 
 	@SneakyThrows
 	@Test
 	public void returnFalseWhenContainsInvalidPNGMagicNumber() {
-		byte[] jpegFile = classpathToInputStream("png/2021_01_06_nasjonale_tiltak_feil.png");
-		FilDetaljer filDetaljer = createFilDetaljer(jpegFile, PNG);
+		byte[] pngFile = classpathToInputStream("png/2021_01_06_nasjonale_tiltak_feil.png");
 
-		boolean isValidPNG = FilMagicNumberValidator.isFileMagicNumberValid(filDetaljer);
+		boolean isValidPNG = FilMagicNumberValidator.isFileMagicNumberValid(PNG.name(), pngFile);
 		assertFalse(isValidPNG);
-	}
-
-	private FilDetaljer createFilDetaljer(byte[] fil, FilTypeCode filTypeCode) {
-		FilDetaljer detaljer = new FilDetaljer();
-		detaljer.setFileContent(fil);
-		detaljer.setFiltype(filTypeCode);
-		return detaljer;
 	}
 
 	private static byte[] classpathToInputStream(String classpathResource) throws IOException {
