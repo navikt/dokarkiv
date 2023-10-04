@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
@@ -16,7 +17,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -47,6 +47,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_WITH_INVALID_MAGIC_NUMBER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET_UGYLDIG;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
@@ -58,6 +59,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.LOVLIGE_INNSYNSKODER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
@@ -806,7 +808,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	void shouldThrowExceptionWhenDatoIsInTheFuture(){
+	void shouldThrowExceptionWhenDatoIsInTheFuture() {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.behandlingstema("ab0001")
 				.avsenderMottaker(null)
@@ -814,12 +816,12 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains(format("Validering av %s feilet. Dato kan ikke være frem i tid.","DatoDokument"));
+		assertThat(exception.getMessage()).contains(format("Validering av %s feilet. Dato kan ikke være frem i tid.", "DatoDokument"));
 	}
 
 	@ParameterizedTest
 	@MethodSource
-	void shouldLogWarningWhenDatoMottattIsAfter(Date innsendtDato){
+	void shouldLogWarningWhenDatoMottattIsAfter(Date innsendtDato) {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.behandlingstema("ab0001")
 				.avsenderMottaker(null)
@@ -839,7 +841,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@ParameterizedTest
 	@MethodSource
-	void shouldNotLogWarningWhenDatoMottattIsBeforeOrSameDate(Date innsendtDato){
+	void shouldNotLogWarningWhenDatoMottattIsBeforeOrSameDate(Date innsendtDato) {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.behandlingstema("ab0001")
 				.avsenderMottaker(null)
@@ -916,6 +918,26 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
+	public void shouldThrowExceptionWhenFysiskDokumentContainsInvalidMagicNumber() {
+		OpprettJournalpostRequest opprettJournalpostRequest = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.dokumenter(List.of(Dokument.builder()
+						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.dokumentvarianter(List.of(
+								DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.fysiskDokument(FYSISK_DOKUMENT_WITH_INVALID_MAGIC_NUMBER)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.build()))
+						.build()))
+				.build();
+
+
+		assertThatExceptionOfType(InvalidPdfException.class)
+				.isThrownBy(() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL))
+				.withMessage("Dokument.dokumentvariant.fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={EF BF BD EF BF} matcher ikke angitt filtype=PDF.");
+	}
+
+	@Test
 	public void shouldThrowExceptionWhenFysiskZeroLength() {
 		OpprettJournalpostRequest opprettJournalpostRequest = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(List.of(Dokument.builder()
@@ -933,6 +955,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL));
 		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.fysiskDokument må være en base64 representert fil større en 0 bytes.");
 	}
+
 
 	@Test
 	void shouldThrowExceptionWhenFagsakAndFagsystemPP01AndFagsakIdNotNumeric() {

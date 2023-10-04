@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
@@ -21,13 +22,19 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.String.format;
+import static java.util.Arrays.copyOf;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.SER;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDFA;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.valueOf;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO_UINNLOGGET;
@@ -38,6 +45,8 @@ import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
+import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
+import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileContentContainsValidMagicNumber;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -77,10 +86,10 @@ public class OpprettJournalpostRequestValidator {
 		if (isNotBlank(request.getJournalfoerendeEnhet())) {
 			validateJournalpost(journalpostFerdigstilt, request.getJournalfoerendeEnhet());
 		}
-		if(request.getDatoDokument() != null){
+		if (request.getDatoDokument() != null) {
 			validateDato(request.getDatoDokument(), "DatoDokument");
 		}
-		if(request.getDatoMottatt() != null) {
+		if (request.getDatoMottatt() != null) {
 			softValidateDato(request.getDatoMottatt(), "DatoMottatt");
 		}
 		if (!request.getDokumenter().isEmpty()) {
@@ -156,6 +165,7 @@ public class OpprettJournalpostRequestValidator {
 			));
 		}
 	}
+
 	private void validateBruker(Bruker bruker) {
 		if (isBlank(bruker.getId())) {
 			throw new InputValideringFeiletException("Bruker.id må være satt.");
@@ -173,7 +183,7 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateTema(String tema) {
-		if(StringUtils.isEmpty(tema)){
+		if (StringUtils.isEmpty(tema)) {
 			throw new InputValideringFeiletException(format("Kan ikke opprette journalpost uten tema. Mottok tema=%s", tema));
 		}
 		try {
@@ -193,7 +203,7 @@ public class OpprettJournalpostRequestValidator {
 	}
 
 	private void validateJournalpost(String journalpostFerdigstilt, String journalfoerendeEnhet) {
-		if (Boolean.FALSE.toString().equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet)) {
+		if (FALSE.toString().equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet)) {
 			throw new InputValideringFeiletException(format("Ikke mulig å opprette journalpost på journalfoerendeEnhet=%s (maskinell) så lenge journalposten ikke forsøkes å ferdigstilles",
 					MASKINELL_JOURNALFOERENDE_ENHET));
 		}
@@ -343,7 +353,7 @@ public class OpprettJournalpostRequestValidator {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype må være satt");
 		}
 		try {
-			FilTypeCode.valueOf(dokumentVariant.getFiltype());
+			valueOf(dokumentVariant.getFiltype());
 		} catch (IllegalArgumentException e) {
 			throw new InputValideringFeiletException(format("Dokument.dokumentvariant.filtype %s. Gyldige verdier for filtype er %s",
 					VALIDERER_IKKE_MOT_KODEVERK,
@@ -360,11 +370,19 @@ public class OpprettJournalpostRequestValidator {
 					Arrays.toString(VariantFormatCode.values())));
 		}
 		if (dokumentVariant.getVariantformat().equals(VariantFormatCode.ARKIV.name())
-				&& !Arrays.asList(FilTypeCode.PDF, FilTypeCode.PDFA).contains(FilTypeCode.valueOf(dokumentVariant.getFiltype()))) {
+				&& !Arrays.asList(PDF, PDFA).contains(valueOf(dokumentVariant.getFiltype()))) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV.");
 		}
 		if (dokumentVariant.getFysiskDokument() == null || dokumentVariant.getFysiskDokument().length == 0) {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.fysiskDokument må være en base64 representert fil større en 0 bytes.");
+		}
+
+		if (!isFileContentContainsValidMagicNumber(dokumentVariant.getFiltype(), dokumentVariant.getFysiskDokument())) {
+			throw new InvalidPdfException(format("Dokument.dokumentvariant.fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={%s} matcher ikke angitt filtype=%s.",
+					HexFormat.of().withUpperCase()
+							.withDelimiter(" ")
+							.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length)),
+					dokumentVariant.getFiltype()));
 		}
 	}
 
