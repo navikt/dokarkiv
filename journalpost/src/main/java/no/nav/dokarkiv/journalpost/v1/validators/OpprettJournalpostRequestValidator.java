@@ -46,7 +46,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
-import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileMagicNumberValid;
+import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileContentContainsValidMagicNumber;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -377,11 +377,12 @@ public class OpprettJournalpostRequestValidator {
 			throw new InputValideringFeiletException("Dokument.dokumentvariant.fysiskDokument må være en base64 representert fil større en 0 bytes.");
 		}
 
-		if (!isFileMagicNumberValid(dokumentVariant.getFiltype(), dokumentVariant.getFysiskDokument())) {
-			throw new InvalidPdfException(format("Dokument.dokumentvariant.fysiskDokument kan ikke lagres i fagarkivet. Dokumentet har angitt filtype=%s med fysiskDokument har magicNumber={%s}.",
-					dokumentVariant.getFiltype(), HexFormat.of().withUpperCase()
+		if (!isFileContentContainsValidMagicNumber(dokumentVariant.getFiltype(), dokumentVariant.getFysiskDokument())) {
+			throw new InvalidPdfException(format("Dokument.dokumentvariant.fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={%s} matcher ikke angitt filtype=%s.",
+					HexFormat.of().withUpperCase()
 							.withDelimiter(" ")
-							.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length))));
+							.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length)),
+					dokumentVariant.getFiltype()));
 		}
 	}
 

@@ -59,6 +59,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.LOVLIGE_INNSYNSKODER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
@@ -931,8 +932,9 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 
-		var exception = assertThrows(InvalidPdfException.class, () -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.fysiskDokument kan ikke lagres i fagarkivet. Dokumentet har angitt filtype=PDF med fysiskDokument har magicNumber={EF BF BD EF BF}.");
+		assertThatExceptionOfType(InvalidPdfException.class)
+				.isThrownBy(() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL))
+				.withMessage("Dokument.dokumentvariant.fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={EF BF BD EF BF} matcher ikke angitt filtype=PDF.");
 	}
 
 	@Test
