@@ -150,6 +150,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "brev-administrasjon-q2",
+      "namespace": "isa",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "journalforing-frontend-q1",
       "namespace": "isa",
       "cluster": "dev-fss"
