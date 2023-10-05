@@ -100,13 +100,12 @@ public final class OppdaterJournalpostValidator {
 			if (request.getAvsenderMottaker() != null) {
 				feilmeldinger.add(validateAvsenderMottakerInngaaende(request.getAvsenderMottaker()));
 			}
-			if (journalpost.getJournalDato() != null &&
-					journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1))) {
+			if (checkIfJournalChangeIsOld(journalpost)) {
 				if (request.getAvsenderMottaker() != null) {
-					feilmeldinger.add(checkIfTooOldFieldIsSet(request.getAvsenderMottaker().getId(), "AvsenderMottaker.Id", journalpost.getJournalDato()));
-					feilmeldinger.add(checkIfTooOldFieldIsSet(request.getAvsenderMottaker().getNavn(), "AvsenderMottaker.Navn", journalpost.getJournalDato()));
+					feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getAvsenderMottaker().getId(), "AvsenderMottaker.Id", journalpost.getJournalDato()));
+					feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getAvsenderMottaker().getNavn(), "AvsenderMottaker.Navn", journalpost.getJournalDato()));
 				}
-				feilmeldinger.add(checkIfTooOldFieldIsSet(request.getTittel(), "Tittel", journalpost.getJournalDato()));
+				feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getTittel(), "Tittel", journalpost.getJournalDato()));
 			}
 		} else if (request.getSak() != null) {
 			feilmeldinger.addAll(validateSak(request.getSak(), request.getBruker(), request.getTema()));
@@ -115,9 +114,14 @@ public final class OppdaterJournalpostValidator {
 		return feilmeldinger;
 	}
 
-	private static String checkIfTooOldFieldIsSet(Object field, String fieldName, Date journalDato) {
+	private static boolean checkIfJournalChangeIsOld(Journalpost journalpost) {
+		return journalpost.getJournalDato() != null &&
+				journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
+	}
+
+	private static String checkIfFieldIsBeingUpdatedAfterLockDate(Object field, String fieldName, Date journalDato) {
 		if (field != null) {
-			SimpleDateFormat datoFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm");
+			SimpleDateFormat datoFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 			return format("%s kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s",
 					fieldName,
 					datoFormat.format(journalDato));
