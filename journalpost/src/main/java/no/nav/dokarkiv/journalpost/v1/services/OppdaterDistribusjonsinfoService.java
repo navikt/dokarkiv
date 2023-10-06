@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
+import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
@@ -80,6 +81,8 @@ public class OppdaterDistribusjonsinfoService {
 							null, trackStatusSattTilEkspedert.getChanges());
 				}
 				return JournalpostResponse.ok(journalpostWithDistribusjonsinfo.getJournalpostId());
+			} catch (NullPointerException e) {
+				throw new DokarkivTechnicalException("Klarte ikke opprette UtsendingsInfo for journalpostId=" + journalpost.getJournalpostId(), e);
 			} catch (DokarkivFunctionalException e) {
 				return JournalpostResponse.error(journalpostWithDistribusjonsinfo.getJournalpostId(), e.getMessage());
 			}
