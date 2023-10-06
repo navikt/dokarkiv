@@ -21,14 +21,14 @@ class FilMagicNumberValidatorTest {
 
 	@ParameterizedTest
 	@MethodSource
-	public void shouldReturnTrueWhenContainsValidMagicNumber(byte[] fileContent, FilTypeCode filType) {
-		assertThat(isFileContentContainsValidMagicNumber(filType.name(), fileContent)).isTrue();
+	public void shouldReturnTrueWhenContainsValidMagicNumber(byte[] filContenet, FilTypeCode filType) {
+		assertThat(isFileContentContainsValidMagicNumber(filType.name(), filContenet)).isTrue();
 	}
 
 	@ParameterizedTest
 	@MethodSource
-	public void shouldReturnFalseWhenContainsInvalidMagicNumber(byte[] fileContent, FilTypeCode filType) {
-		assertThat(isFileContentContainsValidMagicNumber(filType.name(), fileContent)).isFalse();
+	public void shouldReturnFalseWhenContainsInvalidMagicNumber(byte[] filContenet, FilTypeCode filType) {
+		assertThat(isFileContentContainsValidMagicNumber(filType.name(), filContenet)).isFalse();
 	}
 
 	private static Stream<Arguments> shouldReturnTrueWhenContainsValidMagicNumber() throws IOException {
