@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
+import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
@@ -20,6 +21,9 @@ public class EpostVarsel {
 	private LocalDateTime varslingstidspunkt;
 
 	public UtsendingsInfo.EpostVarsel toInternal() {
+		if (varslingstidspunkt == null) {
+			throw new DokarkivFunctionalException("epostvarsel.varslingstidspunkt er null");
+		}
 		return new UtsendingsInfo.EpostVarsel(tittel, tekst, epostadresse, varslingstidspunkt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 	}
 }
