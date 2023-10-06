@@ -77,6 +77,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FNR_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_WITH_INVALID_MAGIC_NUMBER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
@@ -812,6 +813,41 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
 		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(6);
+	}
+
+	@Test
+	public void shouldFeilWhenFysiskDokumentFileContentNotMatchesWithFileTypeMagicNumber() {
+		restStsToken();
+
+		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
+				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
+				.dokumenter(singletonList(
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL1)
+								.brevkode(BREVKODE1)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(Arrays.asList(DokumentVariant.builder()
+												.filtype(FILTYPE_PDF)
+												.variantformat(VARIANTFORMAT_ARKIV)
+												.fysiskDokument(FYSISK_DOKUMENT_WITH_INVALID_MAGIC_NUMBER)
+												.batchnavn(BATCHNAVN)
+												.build(),
+										DokumentVariant.builder()
+												.filtype(FILTYPE_XML)
+												.variantformat(VARIANTFORMAT_ORIGINAL)
+												.filnavn(FILNAVN)
+												.fysiskDokument(FYSISK_DOKUMENT_2)
+												.batchnavn(BATCHNAVN)
+												.build()))
+								.build()))
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertNull(response.getBody().getMelding());
 	}
 
 	@Test
