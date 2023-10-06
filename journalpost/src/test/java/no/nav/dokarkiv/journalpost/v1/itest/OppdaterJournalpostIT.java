@@ -46,6 +46,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.lang.Long.parseLong;
+import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.INNHOLD;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.PEN;
@@ -57,6 +58,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAIL_AKTOER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FNR;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.LOCAL_DATE_TIME;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.PENSJON_FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_SYM;
@@ -1048,6 +1050,28 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertEquals("", journalpostOppdatert.getAvsenderMottakerId());
+	}
+	@Test
+	public void shouldNotUpdateAvsenderMottakerOnJournalpostOlderThanOneYear() {
+		clearSakRepository();
+		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J)
+				.endretAvNavn("saksbehandlersen")
+				.journalDato(java.sql.Date.valueOf(LOCAL_DATE_TIME.toLocalDate()));
+		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder().id("5").navn("Mak Mekker").build())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertEquals("1", journalpostOppdatert.getAvsenderMottakerId());
+		assertEquals("Bjarne Betjent", journalpostOppdatert.getAvsenderMottaker());
+
 	}
 
 	@Test
