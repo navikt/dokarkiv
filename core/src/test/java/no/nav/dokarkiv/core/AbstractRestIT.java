@@ -117,8 +117,8 @@ public abstract class AbstractRestIT {
 	private void lagreFagomraader() {
 		fagomradeTestRepository.persist(
 				Fagomrade.builder()
-						.kode("OKO")
-						.dekode("Stønadsregnskap")
+						.kode("UKJ")
+						.dekode("Ukjent")
 						.erGyldig(false)
 						.datoTilOgMed(LocalDate.of(2023, 5, 1))
 						.build());

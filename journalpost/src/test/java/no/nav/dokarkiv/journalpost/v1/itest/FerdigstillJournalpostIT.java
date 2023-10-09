@@ -340,7 +340,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldFailIfFagomradeErInaktivt() {
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
-		String inaktivtFagomrade = "OKO";
+		String inaktivtFagomrade = "UKJ";
 		journalpost.setFagomrade(FagomradeCode.valueOf(inaktivtFagomrade));
 		journalpostTestRepository.persist(journalpost);
 

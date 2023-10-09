@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 class FagomradeServiceTest {
 
 	private static final String AKTIVT_FAGOMRADE = "FOR";
-	private static final String INAKTIVT_FAGOMRADE = "SIK";
+	private static final String INAKTIVT_FAGOMRADE = "UKJ";
 	private static final String UGYLDIG_FAGOMRADE = "ABC";
 
 	@Mock
