@@ -31,6 +31,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import org.verapdf.xmp.impl.Base64;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -87,9 +88,7 @@ public class TestUtils {
 	public static final String VEDLEGGINNHOLD1 = "vedlegginnhold1";
 	public static final String DOKUMENTINFO_ID2 = "74545455";
 	public static final String DOKUMNETTYPE_ID2 = "dokumenttypeID2";
-	public static final String DOKUMNETTYPE_ID_UPDATE = "dokumenttypeID_UPDATE";
 	public static final String BREVKODE2 = "brevkode2";
-	public static final String BREVKODE_UPDATE = "brevkode_Update";
 	public static final String DOKUMENT_TITTEL2 = "dokumentTittel2";
 	public static final String SKANNETINNHOLD_ID2 = "9874564";
 	public static final String VEDLEGGINNHOLD2 = "vedlegginnhold2";
@@ -112,7 +111,8 @@ public class TestUtils {
 	public static final String FILTYPE_XML = "XML";
 	public static final String VARIANTFORMAT_ARKIV = "ARKIV";
 	public static final String VARIANTFORMAT_ORIGINAL = "ORIGINAL";
-	public static final byte[] FYSISK_DOKUMENT = "DOKUMENT".getBytes();
+	public static final byte[] FYSISK_DOKUMENT = Base64.decode("JVBERi0xLjcNCiWhs8U=").getBytes();
+	public static final byte[] FYSISK_DOKUMENT_WITH_INVALID_MAGIC_NUMBER = Base64.decode("/9j/4AAQSkZJRgABAQEAZA==").getBytes();
 	public static final byte[] FYSISK_DOKUMENT_2 = "DOKUMENT_2".getBytes();
 	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
 	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
@@ -423,27 +423,10 @@ public class TestUtils {
 				.build();
 	}
 
-	public static AvsenderMottaker createAvsenderMottakerUtenIdType() {
-		return AvsenderMottaker.builder()
-				.navn(AVSENDER_NAVN_UTLORGANISASJON)
-				.id(AVSENDER_ID_UTLORGANISASJON)
-				.idType(null)
-				.land(AVSENDER_MOTTAKER_LAND)
-				.build();
-	}
-
-
 	public static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerPerson() {
 		return no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
 				.idType(BrukerIdType.FNR)
 				.id(BRUKER_ID_PERSON)
-				.build();
-	}
-
-	public static no.nav.dokarkiv.journalpost.v1.api.Bruker createBrukerOrganisasjon() {
-		return no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
-				.idType(BrukerIdType.ORGNR)
-				.id(BRUKER_ID_ORGANISASJON)
 				.build();
 	}
 
