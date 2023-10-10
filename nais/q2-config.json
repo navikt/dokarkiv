@@ -406,19 +406,24 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "pensjon-pen-q2",
+      "namespace": "pensjon-q2",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "pensjon-psak-q2",
       "namespace": "teampensjon",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "pensjon-psak-q2",
+      "namespace": "pensjon-q2",
       "cluster": "dev-fss"
     },
     {
       "app": "hm-joark-sink",
       "namespace": "teamdigihot",
       "cluster": "dev-gcp"
-    },
-    {
-      "app": "pensjon-pen-q2",
-      "namespace": "teampensjon",
-      "cluster": "dev-fss"
     },
     {
       "app": "tiltakspenger-soknad-api",
