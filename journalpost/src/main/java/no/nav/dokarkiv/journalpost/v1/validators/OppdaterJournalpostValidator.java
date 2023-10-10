@@ -2,14 +2,18 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -52,11 +56,13 @@ public final class OppdaterJournalpostValidator {
 	private OppdaterJournalpostValidator() {
 	}
 
-	public static void validateOppdaterteFelt(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
+	public static void validateOppdaterteFelt(OppdaterJournalpostRequest request, Journalpost journalpost) {
+		JournalStatusCode journalpostStatus = journalpost.getJournalstatus();
+		JournalpostTypeCode journalpostType = journalpost.getJournalposttype();
 		List<String> feilmeldinger = new ArrayList<>();
 
 		if (I.equals(journalpostType)) {
-			feilmeldinger.addAll(validateInngaaende(request, journalpostStatus, journalpostType));
+			feilmeldinger.addAll(validateInngaaende(request, journalpost));
 		} else if (U.equals(journalpostType)) {
 			feilmeldinger.addAll(validateUtgaaende(request, journalpostStatus, journalpostType));
 		} else if (N.equals(journalpostType)) {
@@ -78,7 +84,10 @@ public final class OppdaterJournalpostValidator {
 		}
 	}
 
-	private static List<String> validateInngaaende(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
+	private static List<String> validateInngaaende(OppdaterJournalpostRequest request, Journalpost journalpost) {
+		JournalStatusCode journalpostStatus = journalpost.getJournalstatus();
+		JournalpostTypeCode journalpostType = journalpost.getJournalposttype();
+
 		List<String> feilmeldinger = new ArrayList<>();
 
 		feilmeldinger.add(checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType));
@@ -91,12 +100,35 @@ public final class OppdaterJournalpostValidator {
 			if (request.getAvsenderMottaker() != null) {
 				feilmeldinger.add(validateAvsenderMottakerInngaaende(request.getAvsenderMottaker()));
 			}
+			if (checkIfJournalChangeIsOld(journalpost)) {
+				if (request.getAvsenderMottaker() != null) {
+					feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getAvsenderMottaker().getId(), "AvsenderMottaker.Id", journalpost.getJournalDato()));
+					feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getAvsenderMottaker().getNavn(), "AvsenderMottaker.Navn", journalpost.getJournalDato()));
+				}
+				feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getTittel(), "Tittel", journalpost.getJournalDato()));
+			}
 		} else if (request.getSak() != null) {
 			feilmeldinger.addAll(validateSak(request.getSak(), request.getBruker(), request.getTema()));
 		}
 
 		return feilmeldinger;
 	}
+
+	private static boolean checkIfJournalChangeIsOld(Journalpost journalpost) {
+		return journalpost.getJournalDato() != null &&
+				journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
+	}
+
+	private static String checkIfFieldIsBeingUpdatedAfterLockDate(Object field, String fieldName, Date journalDato) {
+		if (field != null) {
+			SimpleDateFormat datoFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			return format("%s kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s",
+					fieldName,
+					datoFormat.format(journalDato));
+		}
+		return null;
+	}
+
 
 	private static List<String> validateUtgaaende(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
 		List<String> feilmeldinger = new ArrayList<>();
@@ -261,7 +293,7 @@ public final class OppdaterJournalpostValidator {
 	}
 
 	private static String validateBehandlingstema(String behandlingstema) {
-		if (!BEHANDLINGSTEMA_PATTERN.matcher(behandlingstema).matches())  {
+		if (!BEHANDLINGSTEMA_PATTERN.matcher(behandlingstema).matches()) {
 			return format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema);
 		}
 		return null;
