@@ -74,6 +74,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
@@ -204,7 +205,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertNull(oppdatertJP.getSaksrelasjon());
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assert(!aksjonsLoggList.isEmpty());
+		assert (!aksjonsLoggList.isEmpty());
 
 		TestTransaction.end();
 	}
@@ -240,7 +241,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertNull(oppdatertJP.getSaksrelasjon());
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assert(!aksjonsLoggList.isEmpty());
+		assert (!aksjonsLoggList.isEmpty());
 
 		TestTransaction.end();
 	}
@@ -1051,6 +1052,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertEquals("", journalpostOppdatert.getAvsenderMottakerId());
 	}
+
 	@Test
 	public void shouldNotUpdateAvsenderMottakerOnJournalpostOlderThanOneYear() {
 		clearSakRepository();
@@ -1063,15 +1065,17 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
-				.avsenderMottaker(AvsenderMottaker.builder().id("5").navn("Mak Mekker").build())
+				.avsenderMottaker(AvsenderMottaker.builder().id("5").navn("Max Mekker").build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(BAD_REQUEST));
+
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertEquals("1", journalpostOppdatert.getAvsenderMottakerId());
 		assertEquals("Bjarne Betjent", journalpostOppdatert.getAvsenderMottaker());
-
 	}
 
 	@Test
