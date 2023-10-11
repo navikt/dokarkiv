@@ -100,6 +100,9 @@ public class JournalpostIT extends AbstractSafinternTest {
 		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse("/journalpost/journalpost-dokument-response.json", persistedJournalpost));
 	}
 
+	/**
+	 * Fields brukes av saf til å hente tilgang metadata. Viktig at alle felt er med da et feilaktig null-felt kan gi tilgang da det ikke burde
+	 */
 	@Test
 	void shouldGetJournalpostByIdAndDokumentInfoIdWithSafTilgangFetches() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
@@ -113,11 +116,36 @@ public class JournalpostIT extends AbstractSafinternTest {
 
 		Long dokumentInfoId = actualJournalpost.getJournalpostDokumentInfoRelasjonerAdmin()
 				.stream().filter(JournalpostDokumentInfoRelasjon::isHoveddokument).findFirst().get().getDokumentInfo().getDokumentInfoId();
-		var fields = Set.of("journalpostId", "fagomraade", "status", "skjerming", "bruker", "saksrelasjon", "dokumenter.dokumentInfoId", "dokumenter.skjerming", "dokumenter.fildetaljer");
-		ResponseEntity<String> responseEntity = restTemplate.exchange(journalpostIdDokumentInfoIdPath(actualJournalpost.getJournalpostId(), dokumentInfoId, fields), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
+		var safHentDokumentTilgangFields = Set.of("journalpostId", "fagomraade", "status", "skjerming", "bruker", "saksrelasjon", "dokumenter.dokumentInfoId", "dokumenter.skjerming", "dokumenter.fildetaljer");
+		ResponseEntity<String> responseEntity = restTemplate.exchange(journalpostIdDokumentInfoIdPath(actualJournalpost.getJournalpostId(), dokumentInfoId, safHentDokumentTilgangFields), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse("/journalpost/journalpost-dokument-saf-tilgang-response.json", persistedJournalpost));
+	}
+
+	/**
+	 * Fields brukes av safselvbetjening til å hente tilgang metadata. Viktig at alle felt er med da et feilaktig null-felt kan gi tilgang da det ikke burde
+	 */
+	@Test
+	void shouldGetJournalpostByIdAndDokumentInfoIdWithSafselvbetjeningTilgangFetches() {
+		Sak persistedSak = sakTestRepository.persist(createGsak());
+		Long sakId = persistedSak.getSakId();
+		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		actualJournalpost.findHoveddokumentDokumentInfoRelasjon().setSkjermingType(POL);
+		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long dokumentInfoId = actualJournalpost.getJournalpostDokumentInfoRelasjonerAdmin()
+				.stream().filter(JournalpostDokumentInfoRelasjon::isHoveddokument).findFirst().get().getDokumentInfo().getDokumentInfoId();
+		var safselvbetjeningHentDokumentTilgangFields = Set.of("journalpostId", "fagomraade", "status", "type", "skjerming", "mottakskanal", "innsyn",
+				"bruker", "avsenderMottaker", "relevanteDatoer", "saksrelasjon",
+				"dokumenter.dokumentInfoId", "dokumenter.kassert", "dokumenter.kategori", "dokumenter.skjerming", "dokumenter.fildetaljer");
+		ResponseEntity<String> responseEntity = restTemplate.exchange(journalpostIdDokumentInfoIdPath(actualJournalpost.getJournalpostId(), dokumentInfoId, safselvbetjeningHentDokumentTilgangFields), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse("/journalpost/journalpost-dokument-safselvbetjening-tilgang-response.json", persistedJournalpost));
 	}
 
 	private String mapStringResponse(String path, Journalpost journalpost) {

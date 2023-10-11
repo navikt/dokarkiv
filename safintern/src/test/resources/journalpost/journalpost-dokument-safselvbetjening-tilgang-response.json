@@ -1,0 +1,72 @@
+{
+  "journalpostId": journalpostId_replace,
+  "type": "U",
+  "fagomraade": "RPO",
+  "status": "FS",
+  "innsyn": "BRUK_STANDARDREGLER",
+  "skjerming": "POL",
+  "saksrelasjon": {
+    "fagsystem": "FS22",
+    "feilregistrert": false,
+    "sak": {
+      "aktoerId": "111113333333",
+      "applikasjon": "AO01",
+      "fagsakNr": "1234",
+      "opprettetTid": "2023-08-11T00:00:00",
+      "orgNr": "812345678",
+      "tema": "RPO"
+    },
+    "sakId": sakId_replace
+  },
+  "relevanteDatoer": {
+    "ekspedert": "2023-08-11T12:01:01.001+00:00",
+    "forsendelseMottatt": "2023-08-11T12:01:01.001+00:00",
+    "hoveddokument": "2023-08-11T12:01:01.001+00:00",
+    "journalfoert": "2023-08-11T12:01:01.001+00:00",
+    "lest": "2023-08-11T12:01:01.001+00:00",
+    "opprettet": "opprettet_replace",
+    "retur": "2023-08-11T12:01:01.001+00:00",
+    "sendtPrint": "2023-08-11T12:01:01.001+00:00"
+  },
+  "avsenderMottaker": {
+    "id": "02016126007",
+    "land": "NO",
+    "navn": "Jim Hopper",
+    "type": "FNR"
+  },
+  "bruker": {
+    "id": "123213",
+    "type": "PERSON"
+  },
+  "dokumenter": [
+    {
+      "dokumentInfoId": dokumentInfoId_hoveddokument_replace,
+      "fildetaljer": [
+        {
+          "format": "ARKIV",
+          "navn": "navn",
+          "skjerming": "POL",
+          "stoerrelse": "13",
+          "type": "PDF",
+          "uuid": "filUuidHoveddokumentArkiv"
+        },
+        {
+          "format": "PRODUKSJON",
+          "navn": "navn",
+          "skjerming": "POL",
+          "stoerrelse": "13",
+          "type": "PDF",
+          "uuid": "filUuidHoveddokumentProduksjon"
+        }
+      ],
+      "kassert": false,
+      "kategori": "ES",
+      "logiskVedlegg": [],
+      "sensitivt": true,
+      "skjerming": "POL"
+    }
+  ],
+  "mottakskanal": "NAV_NO",
+  "opprettetAvNavn": "Opprettet navn",
+  "tilleggsopplysninger": {}
+}
