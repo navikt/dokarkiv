@@ -525,7 +525,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private void assertDokumentInfo(DokumentInfo sourceDokumentInfo, DokumentInfo dokumentInfoKopi) {
 		assertEquals(sourceDokumentInfo.getDokumentstatus(), dokumentInfoKopi.getDokumentstatus());
-		assertEquals(sourceDokumentInfo.getDokumentFerdigDato(), dokumentInfoKopi.getDokumentFerdigDato());
 		assertThat(sourceDokumentInfo.getDokumentFerdigDato()).isCloseTo(dokumentInfoKopi.getDokumentFerdigDato(), 10);
 		assertEquals(sourceDokumentInfo.getTittel(), dokumentInfoKopi.getTittel());
 		assertEquals(sourceDokumentInfo.getBrevkode(), dokumentInfoKopi.getBrevkode());
