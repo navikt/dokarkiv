@@ -10,7 +10,7 @@ class FetchPathsTest {
 	@Test
 	void shouldVerifyNumFetchPaths() {
 		// Sjekker antallet pga det kan få negative konsekvenser for klienter/tilgangskontroll hvis man fjerner en fetch path
-		assertThat(FetchPaths.GYLDIGE_PATHS).hasSize(27);
+		assertThat(FetchPaths.GYLDIGE_PATHS).hasSize(29);
 	}
 
 	@Test
