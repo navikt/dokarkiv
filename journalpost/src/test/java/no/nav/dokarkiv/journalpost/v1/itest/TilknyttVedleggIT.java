@@ -56,6 +56,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -525,6 +526,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private void assertDokumentInfo(DokumentInfo sourceDokumentInfo, DokumentInfo dokumentInfoKopi) {
 		assertEquals(sourceDokumentInfo.getDokumentstatus(), dokumentInfoKopi.getDokumentstatus());
+		assertNotNull(sourceDokumentInfo.getDokumentFerdigDato());
 		assertThat(sourceDokumentInfo.getDokumentFerdigDato()).isCloseTo(dokumentInfoKopi.getDokumentFerdigDato(), 10);
 		assertEquals(sourceDokumentInfo.getTittel(), dokumentInfoKopi.getTittel());
 		assertEquals(sourceDokumentInfo.getBrevkode(), dokumentInfoKopi.getBrevkode());
