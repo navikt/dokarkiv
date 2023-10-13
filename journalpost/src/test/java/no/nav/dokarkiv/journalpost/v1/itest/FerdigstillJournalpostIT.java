@@ -19,6 +19,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.util.Date;
 import java.util.List;
 
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -334,7 +335,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertTrue(response.getBody().getMessage().contains("Journalpost.avsendMottaker"));
-		assertTrue(response.getBody().getMessage().contains("Journalpost.innhold"));
+		assertTrue(response.getBody().getMessage().contains(JOURNALPOST_INNHOLD));
 	}
 
 	@Test

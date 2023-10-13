@@ -18,6 +18,7 @@ import java.util.List;
 
 import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.UTGAAR;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
@@ -59,7 +60,7 @@ public class UtgaarService {
 		}
 
 		ArkivElementEndringTO endring = ArkivElementEndringTO.builder()
-				.arkivElement("Journalpost.journalStatus")
+				.arkivElement(JOURNALPOST_JOURNALSTATUS)
 				.fraVerdi(oldJournalStatus.name())
 				.tilVerdi(journalpost.getJournalstatus().name())
 				.build();

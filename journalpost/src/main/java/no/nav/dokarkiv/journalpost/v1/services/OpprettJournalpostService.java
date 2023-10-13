@@ -41,6 +41,11 @@ import java.util.stream.Stream;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALFORENDE_ENHET;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO.arkivElementEndringNew;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OVERSTYR_INNSYN;
@@ -190,12 +195,12 @@ public class OpprettJournalpostService {
 				.orElse(null);
 
 		populerAksjonslogg(journalpostId, OPPRETT, brukerId, Stream.of(
-						arkivElementEndringNew("Journalpost.fagomrade",
+						arkivElementEndringNew(JOURNALPOST_FAGOMRADE,
 								journalpost.getFagomrade() != null ? journalpost.getFagomrade().name() : null),
-						arkivElementEndringNew("Journalpost.innhold", journalpost.getInnhold()),
-						arkivElementEndringNew("Journalpost.avsend_mottaker", journalpost.getAvsenderMottaker()),
-						arkivElementEndringNew("Journalpost.avsend_mottak_id", journalpost.getAvsenderMottakerId()),
-						arkivElementEndringNew("Journalpost.journalf_enhet", journalpost.getJournalForendeEnhetId()),
+						arkivElementEndringNew(JOURNALPOST_INNHOLD, journalpost.getInnhold()),
+						arkivElementEndringNew(JOURNALPOST_AVSENDER_MOTTAKER, journalpost.getAvsenderMottaker()),
+						arkivElementEndringNew(JOURNALPOST_AVSENDER_MOTTAKER_ID, journalpost.getAvsenderMottakerId()),
+						arkivElementEndringNew(JOURNALPOST_JOURNALFORENDE_ENHET, journalpost.getJournalForendeEnhetId()),
 						arkivElementEndringNew("Bruker.bruker_id", brukerId)
 				).filter(elementEndring -> Objects.nonNull(elementEndring.getTilVerdi()))
 				.toList());
