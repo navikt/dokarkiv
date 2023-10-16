@@ -53,6 +53,8 @@ import java.util.Set;
 import static com.blazebit.persistence.view.EntityViewSetting.create;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertBruker;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertSak;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.ADRESSELINJE1;
@@ -334,6 +336,7 @@ class SafinternJournalpostRepositoryTest {
 
 	private static void assertHoveddokument(DokumentinfoView hoveddokument, Long journalpostId) {
 		assertThat(hoveddokument.getDokumentInfoId()).isNotNull();
+		assertThat(hoveddokument.getTilknyttetSom()).isEqualTo(HOVEDDOKUMENT);
 		assertThat(hoveddokument.getSkjerming()).isNull();
 		assertThat(hoveddokument.getStatus()).isEqualTo(DokumentStatusCode.FERDIGSTILT);
 		assertThat(hoveddokument.getFerdigDato()).isNotNull();
@@ -351,6 +354,7 @@ class SafinternJournalpostRepositoryTest {
 
 	private static void assertVedlegg(DokumentinfoView vedlegg, Long journalpostId) {
 		assertThat(vedlegg.getDokumentInfoId()).isNotNull();
+		assertThat(vedlegg.getTilknyttetSom()).isEqualTo(VEDLEGG);
 		assertThat(vedlegg.getSkjerming()).isEqualTo(SKJERMING_TYPE_CODE);
 		assertThat(vedlegg.getStatus()).isEqualTo(DokumentStatusCode.FERDIGSTILT);
 		assertThat(vedlegg.getFerdigDato()).isNotNull();
