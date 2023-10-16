@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 
 import java.util.Date;
@@ -26,6 +27,9 @@ public interface DokumentinfoView {
 
 	@Mapping("dokumentInfo.dokumentInfoId")
 	Long getDokumentInfoId();
+
+	@Mapping("tilknyttetJournalpostSom")
+	TilknyttetJournalpostSomCode getTilknyttetSom();
 
 	@Mapping("skjermingType")
 	SkjermingTypeCode getSkjerming();
