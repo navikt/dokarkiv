@@ -656,7 +656,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokument.dokumentkategori");
+		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentkategori validerer ikke mot kodeverk. Mottatt dokumentkategori=kategori");
 	}
 
 	@Test
@@ -672,7 +672,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.filtype");
+		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentvariant(ARKIV).filtype må være satt");
 	}
 
 	@Test
@@ -688,7 +688,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.filtype");
+		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentvariant(ARKIV).filtype validerer ikke mot kodeverk. Gyldige verdier for filtype er");
 	}
 
 	@Test
@@ -704,7 +704,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.filtype");
+		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentvariant(ARKIV).filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV");
 	}
 
 	@Test
@@ -720,7 +720,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.variantformat");
+		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentvariant.variantformat må være satt");
 	}
 
 	@Test
@@ -736,7 +736,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.variantformat");
+		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentvariant(variantformat).variantformat validerer ikke mot kodeverk. Gyldige verdier for variantformat er");
 	}
 
 	@Test
@@ -804,7 +804,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.variantformat");
+		assertThat(exception.getMessage()).contains("Dokumenter.dokumentvariant.variantformat");
 	}
 
 	@Test
@@ -812,7 +812,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.behandlingstema("ab0001")
 				.avsenderMottaker(null)
-				.datoDokument(LocalDateTime.now().plus(3, DAYS))
+				.datoDokument(LocalDateTime.now().plusDays(3))
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
@@ -914,7 +914,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.fysiskDokument må være en base64 representert fil større en 0 bytes.");
+		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument må være en base64 representert fil større en 0 bytes");
 	}
 
 	@Test
@@ -934,7 +934,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InvalidPdfException.class)
 				.isThrownBy(() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL))
-				.withMessage("Dokument.dokumentvariant.fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={EF BF BD EF BF} matcher ikke angitt filtype=PDF.");
+				.withMessage("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={EF BF BD EF BF} matcher ikke angitt filtype=PDF");
 	}
 
 	@Test
@@ -953,7 +953,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokument.dokumentvariant.fysiskDokument må være en base64 representert fil større en 0 bytes.");
+		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument må være en base64 representert fil større en 0 bytes");
 	}
 
 

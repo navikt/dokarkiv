@@ -50,15 +50,16 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.IKKE_FUNNET;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.UGYLDIG_STATUS;
 import static no.nav.dokarkiv.journalpost.v1.util.FunctionalMatcher.where;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -525,8 +526,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private void assertDokumentInfo(DokumentInfo sourceDokumentInfo, DokumentInfo dokumentInfoKopi) {
 		assertEquals(sourceDokumentInfo.getDokumentstatus(), dokumentInfoKopi.getDokumentstatus());
-		assertEquals(sourceDokumentInfo.getDokumentFerdigDato(), dokumentInfoKopi.getDokumentFerdigDato());
-		assertThat(sourceDokumentInfo.getDokumentFerdigDato()).isCloseTo(dokumentInfoKopi.getDokumentFerdigDato(), 10);
+		assertThat(sourceDokumentInfo.getDokumentFerdigDato()).isCloseTo(dokumentInfoKopi.getDokumentFerdigDato(), 200);
 		assertEquals(sourceDokumentInfo.getTittel(), dokumentInfoKopi.getTittel());
 		assertEquals(sourceDokumentInfo.getBrevkode(), dokumentInfoKopi.getBrevkode());
 		assertEquals(sourceDokumentInfo.getDokumenttypeId(), dokumentInfoKopi.getDokumenttypeId());

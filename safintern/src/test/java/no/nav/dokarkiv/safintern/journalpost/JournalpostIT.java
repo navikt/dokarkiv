@@ -141,7 +141,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 				.stream().filter(JournalpostDokumentInfoRelasjon::isHoveddokument).findFirst().get().getDokumentInfo().getDokumentInfoId();
 		var safselvbetjeningHentDokumentTilgangFields = Set.of("journalpostId", "fagomraade", "status", "type", "skjerming", "mottakskanal", "innsyn",
 				"bruker", "avsenderMottaker", "relevanteDatoer", "saksrelasjon",
-				"dokumenter.dokumentInfoId", "dokumenter.kassert", "dokumenter.kategori", "dokumenter.skjerming", "dokumenter.fildetaljer");
+				"dokumenter.dokumentInfoId", "dokumenter.tilknyttetSom", "dokumenter.kassert", "dokumenter.kategori", "dokumenter.skjerming", "dokumenter.fildetaljer");
 		ResponseEntity<String> responseEntity = restTemplate.exchange(journalpostIdDokumentInfoIdPath(actualJournalpost.getJournalpostId(), dokumentInfoId, safselvbetjeningHentDokumentTilgangFields), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);

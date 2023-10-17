@@ -63,7 +63,8 @@
       "kategori": "ES",
       "logiskVedlegg": [],
       "sensitivt": true,
-      "skjerming": "POL"
+      "skjerming": "POL",
+      "tilknyttetSom": "HOVEDDOKUMENT"
     }
   ],
   "mottakskanal": "NAV_NO",

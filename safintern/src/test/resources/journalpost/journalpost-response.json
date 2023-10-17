@@ -76,6 +76,7 @@
       "originalJournalpostId": journalpostId_replace,
       "sensitivt": true,
       "status": "FERDIGSTILT",
+      "tilknyttetSom": "HOVEDDOKUMENT",
       "tittel": "TITTEL"
     },
     {
@@ -113,6 +114,7 @@
       "sensitivt": true,
       "skjerming": "POL",
       "status": "FERDIGSTILT",
+      "tilknyttetSom": "VEDLEGG",
       "tittel": "TITTEL"
     }
   ],
