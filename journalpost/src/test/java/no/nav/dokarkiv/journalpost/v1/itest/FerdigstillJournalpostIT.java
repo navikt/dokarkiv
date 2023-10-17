@@ -187,8 +187,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		journalpost.getUtsendingskanal();
-
 		Long journalpostId = journalpost.getJournalpostId();
 		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
 				.journalfoerendeEnhet("9999")
@@ -263,6 +261,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 				restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
 						requestEntity, RestConsumerExceptionResponse.class);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMessage());
 
 		assertThat(response.getBody().getMessage()).contains(
