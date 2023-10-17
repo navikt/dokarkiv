@@ -14,7 +14,6 @@ import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
 import org.junit.jupiter.api.Test;
 
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
@@ -120,7 +119,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		assertThrows(KanIkkeFerdigstilleException.class,
 				() -> validator.validatePaakrevdeFelter(journalpost),
-				JOURNALPOST_AVSENDER_MOTTAKER);
+				"Journalpost.avsendMottaker");
 	}
 
 	@Test
