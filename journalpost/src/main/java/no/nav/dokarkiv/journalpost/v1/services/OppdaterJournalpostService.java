@@ -43,6 +43,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_METADATA;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.ALTINN;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.EESSI;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO_CHAT;
 import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
@@ -60,7 +61,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValid
 public class OppdaterJournalpostService {
 
 	private static final String APPLIKASJON_FS22 = "FS22";
-	private static final EnumSet<MottaksKanalCode> DIGITALE_KANALER = EnumSet.of(NAV_NO, NAV_NO_CHAT, ALTINN);
+	private static final EnumSet<MottaksKanalCode> DIGITALE_KANALER = EnumSet.of(NAV_NO, NAV_NO_CHAT, ALTINN, EESSI);
 
 	private final JournalpostRepositorySkjermet journalpostRepositorySkjermet;
 	private final JournalpostUpdater journalpostUpdater;
