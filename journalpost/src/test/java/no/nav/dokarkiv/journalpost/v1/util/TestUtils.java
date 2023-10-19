@@ -31,7 +31,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
-import org.verapdf.xmp.impl.Base64;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,6 +38,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -111,8 +111,8 @@ public class TestUtils {
 	public static final String FILTYPE_XML = "XML";
 	public static final String VARIANTFORMAT_ARKIV = "ARKIV";
 	public static final String VARIANTFORMAT_ORIGINAL = "ORIGINAL";
-	public static final byte[] FYSISK_DOKUMENT = Base64.decode("JVBERi0xLjcNCiWhs8U=").getBytes();
-	public static final byte[] FYSISK_DOKUMENT_WITH_INVALID_MAGIC_NUMBER = Base64.decode("/9j/4AAQSkZJRgABAQEAZA==").getBytes();
+	public static final byte[] FYSISK_DOKUMENT = Base64.getDecoder().decode("JVBERi0xLjcNCiWhs8U=");
+	public static final byte[] FYSISK_DOKUMENT_WITH_INVALID_MAGIC_NUMBER = Base64.getDecoder().decode("/9j/4AAQSkZJRgABAQEAZA==");
 	public static final byte[] FYSISK_DOKUMENT_2 = "DOKUMENT_2".getBytes();
 	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
 	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
@@ -154,7 +154,7 @@ public class TestUtils {
 
 	}
 
-	public static Journalpost createEnkelJournalpost(JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType){
+	public static Journalpost createEnkelJournalpost(JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
 		return Journalpost.builder()
 				.journalpostId(JOURNALPOST_ID)
 				.journalstatus(journalpostStatus)

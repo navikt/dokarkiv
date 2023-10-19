@@ -69,20 +69,18 @@ public class OpprettJournalpostRequestValidatorTest {
 	public static final String FORSOEKFERDIGSTILL = "false";
 	public static final String JOURNALFOERENDE_ENHET = "9999";
 
-	private OpprettJournalpostRequest request;
-
 	private final OpprettJournalpostRequestValidator validator = new OpprettJournalpostRequestValidator();
 
 	@Test
 	public void happyPath() {
-		request = createRequest(JournalpostType.INNGAAENDE);
+		OpprettJournalpostRequest request = createRequest(JournalpostType.INNGAAENDE);
 
 		validator.validateRequest(request, FORSOEKFERDIGSTILL);
 	}
 
 	@Test
 	public void shouldNotThrowExceptionIfMottakskanalTemaCombinationIsValid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_SER)
 				.kanal("NAV_NO_UINNLOGGET")
 				.build();
@@ -92,7 +90,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldValidateWhenNoAvsenderMottaker() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(null)
 				.build();
 
@@ -101,7 +99,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void happyPathFagsak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
@@ -111,7 +109,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void happyPathGenerellSak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
@@ -121,7 +119,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void happyPathArkivsak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 		validator.validateRequest(request, FORSOEKFERDIGSTILL);
@@ -129,7 +127,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void happyPathGenerellSakTemaUFO() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_UFO)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
@@ -139,7 +137,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldJournalfoereWhenJournalfoerendeEnhetEr9999AndForsoekFerdigstillErTrue() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.journalfoerendeEnhet(TestUtils.JOURNALFOERENDE_ENHET)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
@@ -149,7 +147,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldValidateOkWhenJournaforendeEnhetErNull() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.journalfoerendeEnhet(null)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
@@ -158,7 +156,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenJournaforendeEnhetIsNotNullOrNot4Digits() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET_UGYLDIG)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
@@ -170,7 +168,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenJournaforendeEnhetIsLotsOfSpaces() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.journalfoerendeEnhet(TestUtils.JOURNALFOERENDE_ENHET_UGYLDIG_WHITESPACES)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
@@ -182,7 +180,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void happyPathGenerellSakTemaPEN() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_PEN)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
@@ -193,7 +191,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenTemaNotSet() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(null)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.build();
@@ -205,7 +203,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenBrukerNotSetForFagsak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.bruker(null)
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
@@ -217,7 +215,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenFagsakIdNotSetForFagsak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(null).fagsaksystem(Fagsaksystem.AO01).build())
@@ -229,7 +227,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenFagsaksystemNotSetForFagsak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(null).build())
@@ -241,7 +239,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenArkivsaknummerSetForFagsak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).arkivsaksnummer(ARKIVSAKSNUMMER).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
@@ -253,7 +251,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenArkivsaksystemSetForFagsak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).arkivsaksystem(Arkivsaksystem.GSAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.AO01).build())
@@ -265,7 +263,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenBrukerNotSetForGenerellSak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.bruker(null)
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
@@ -277,7 +275,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenFagsakIdSetForGenerellSak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).fagsakId(FAGSAK_ID).build())
@@ -289,7 +287,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenFagsaksystemSetForGenerellSak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).fagsaksystem(Fagsaksystem.AO01).build())
@@ -301,7 +299,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenArkivsaknummerSetForGenerellSak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
@@ -313,7 +311,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenArkivsaksystemSetForGenerellSak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).arkivsaksystem(Arkivsaksystem.GSAK).build())
@@ -325,7 +323,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenFagsakIdSetForArkivsak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).fagsakId(FAGSAK_ID).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 
@@ -335,7 +333,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenFagsaksystemSetForArkivsak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).fagsaksystem(Fagsaksystem.AO01).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 
@@ -345,7 +343,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenArkivsaksnummerNotSetForArkivsak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).build())
 				.build();
 
@@ -355,7 +353,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenJournalfoerendeEnhetEr9999AndForsoekFerdigstillErFalse() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
@@ -366,7 +364,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenArkivsaksystemNotSetForArkivsak() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 
@@ -376,7 +374,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdIsSetButNotIdType() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("11223344556")
@@ -390,7 +388,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeIsSetAndNotId() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.id(null)
 						.idType(AvsenderMottakerIdType.FNR)
@@ -404,7 +402,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeFNRAndIdNot11Digits() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("1111111111a")
@@ -418,7 +416,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeFNRAndMoreThan11Digits() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("111111111111")
@@ -432,7 +430,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeORGNRAndIdNot9Digits() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("NO7777777")
@@ -447,7 +445,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"88888888", "1010101010"})
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeORGNRAndIdLessThan9OrMoreThan9Digits(String orgnr) {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id(orgnr)
@@ -462,7 +460,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"7777777", "88888888", "999999999"})
 	public void shouldValidateWhenAvsenderMottakerIdTypeHPRNRAnd7To9Digits(String hprnr) {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id(hprnr)
@@ -475,7 +473,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRAndIdNotANumber() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id("777777a")
@@ -490,7 +488,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"666666", "1010101010"})
 	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRAndIdLessThan7OrMoreThan9Digits(String hprnr) {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
 						.id(hprnr)
@@ -504,7 +502,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIsMissingId() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder()
 						.id(null)
 						.build())
@@ -516,7 +514,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIdIsNotNumeric() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.FNR)
 						.id("abc11111111")
@@ -529,7 +527,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIdHasInvalidLengthForFnr() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.FNR)
 						.id("1122334455")
@@ -542,7 +540,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIdHasInvalidLengthForOrgnr() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.ORGNR)
 						.id("1122334455")
@@ -555,7 +553,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIdHasInvalidLengthForAktoerid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder()
 						.idType(BrukerIdType.AKTOERID)
 						.id("1122334455")
@@ -568,7 +566,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfTemaIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema("tema")
 				.build();
 
@@ -578,7 +576,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfBehandlingstemaIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.behandlingstema("behandlingstema")
 				.build();
 
@@ -588,7 +586,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfInngaaendeKanalIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.kanal("kanal")
 				.build();
 
@@ -598,7 +596,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfMottakskanalTemaCombinationIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
 				.kanal("NAV_NO_UINNLOGGET")
 				.build();
@@ -609,7 +607,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfUtgaaendeKanalIsInvalid() {
-		request = createMinimalRequest(JournalpostType.UTGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.UTGAAENDE)
 				.kanal("kanal")
 				.build();
 
@@ -619,7 +617,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfSakIsMissingArkivsaksnummer() {
-		request = createMinimalRequest(JournalpostType.UTGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.UTGAAENDE)
 				.sak(Sak.builder()
 						.arkivsaksystem(Arkivsaksystem.GSAK)
 						.arkivsaksnummer(null)
@@ -632,7 +630,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfArkivsaksnummerNotNumeric() {
-		request = createMinimalRequest(JournalpostType.UTGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.UTGAAENDE)
 				.sak(Sak.builder()
 						.arkivsaksystem(Arkivsaksystem.GSAK)
 						.arkivsaksnummer("quack123")
@@ -645,7 +643,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfDokumentkategoriIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori("kategori")
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
@@ -661,7 +659,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfFiltypeIsNotSet() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
@@ -677,7 +675,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfFiltypeIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
@@ -693,7 +691,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfFiltypeIsInvalidForARKIV() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
@@ -709,7 +707,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfVariantformatIsNotSet() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
@@ -725,7 +723,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfVariantformatIsInvalid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
@@ -741,7 +739,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfDokumenterIsEmpty() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(new ArrayList<>())
 				.build();
 
@@ -751,7 +749,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenBehandlingstemaIsNotValid() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.behandlingstema("ab333")
 				.avsenderMottaker(null)
 				.build();
@@ -762,7 +760,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldNotThrowExceptionIfDifferentVariantformat() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(List.of(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(List.of(DokumentVariant.builder()
@@ -782,7 +780,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionIfDuplicateVariantformat() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(List.of(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(List.of(DokumentVariant.builder()
@@ -809,7 +807,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	void shouldThrowExceptionWhenDatoIsInTheFuture() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.behandlingstema("ab0001")
 				.avsenderMottaker(null)
 				.datoDokument(LocalDateTime.now().plusDays(3))
@@ -822,7 +820,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	@ParameterizedTest
 	@MethodSource
 	void shouldLogWarningWhenDatoMottattIsAfter(Date innsendtDato) {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.behandlingstema("ab0001")
 				.avsenderMottaker(null)
 				.datoMottatt(innsendtDato)
@@ -842,7 +840,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	@ParameterizedTest
 	@MethodSource
 	void shouldNotLogWarningWhenDatoMottattIsBeforeOrSameDate(Date innsendtDato) {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.behandlingstema("ab0001")
 				.avsenderMottaker(null)
 				.datoMottatt(innsendtDato)
@@ -869,7 +867,7 @@ public class OpprettJournalpostRequestValidatorTest {
 			names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT"},
 			mode = EXCLUDE)
 	void shouldThrowExceptionIfOverstyrInnsynsreglerIsInvalid(InnsynCode overstyrInnsynsregler) {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
 						.sakstype(Sakstype.GENERELL_SAK)
@@ -887,7 +885,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	@EnumSource(value = InnsynCode.class, names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT"})
 	@NullSource
 	void shouldNotThrowExceptionWhenOverstyrInnsynsreglerIsValid(InnsynCode overstyrInnsynsregler) {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
 						.sakstype(Sakstype.GENERELL_SAK)
@@ -932,9 +930,10 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 
+		//FF D8 FF E0 00
 		assertThatExceptionOfType(InvalidPdfException.class)
 				.isThrownBy(() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL))
-				.withMessage("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={EF BF BD EF BF} matcher ikke angitt filtype=PDF");
+				.withMessage("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={FF D8 FF E0 00} matcher ikke angitt filtype=PDF");
 	}
 
 	@Test
@@ -959,7 +958,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@Test
 	void shouldThrowExceptionWhenFagsakAndFagsystemPP01AndFagsakIdNotNumeric() {
-		request = createMinimalRequest(JournalpostType.INNGAAENDE)
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_PEN)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(Fagsaksystem.PP01).build())
