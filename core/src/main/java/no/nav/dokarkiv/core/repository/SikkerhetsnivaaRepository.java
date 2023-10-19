@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface SikkerhetsnivaaRepository extends HibernateRepository<Journalpost>, BaseJpaRepository<Journalpost, Long> {
 
-
 	@Query(value = """
 			select j.journalpostId from Journalpost j
 			where j.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U
@@ -21,10 +20,13 @@ public interface SikkerhetsnivaaRepository extends HibernateRepository<Journalpo
 			and j.ekspedertDato <= :ekspedertTil
 			and j.changeStamp.createdDate >= :datoOpprettetStart
 			and j.changeStamp.createdDate <= :datoOpprettetSlutt
+			and (j.saksrelasjon.feilregistrert is null or j.saksrelasjon.feilregistrert = false)
 			""")
-	List<Long> findUlesteJournalposts(@Param("utsendingskanal") UtsendingsKanalCode utsendingskanal,
-									  @Param("ekspedertFra") Date ekspedertFra,
-									  @Param("ekspedertTil") Date ekspedertTil,
-									  @Param ("datoOpprettetStart") Date datoOpprettetStart,
-									  @Param("datoOpprettetSlutt") Date datoOpprettetSlutt);
+	List<Long>
+	finnUlesteJournalposter(@Param("utsendingskanal") UtsendingsKanalCode utsendingskanal,
+							@Param("ekspedertFra") Date ekspedertFra,
+							@Param("ekspedertTil") Date ekspedertTil,
+							@Param("datoOpprettetStart") Date datoOpprettetStart,
+							@Param("datoOpprettetSlutt") Date datoOpprettetSlutt
+	);
 }

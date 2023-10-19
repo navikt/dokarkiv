@@ -15,9 +15,11 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaController.SIKKERHETSNIVAA_PATH;
 import static no.nav.dokarkiv.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaController.SIKKERHETSNIVAA_ROLE;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
 @Tag(name = "journalpostapi - internt", description = "Interne tjenester mot journalpost for sikkerhetsnivaa")
 @Slf4j
@@ -37,15 +39,18 @@ public class JournalpostInternSikkerhetsnivaaController {
 	}
 
 	@SwaggerFinnUlesteJournalposter
-	@GetMapping("/finnUlesteJournalposter/{utsendingsKanal}/{ekspedertFra}/{ekspedertTil}")
-	public ResponseEntity<List<Long>> finnUlesteJournalposter(@PathVariable @NotBlank(message = "Sti-parameter utsendingsKanal må ha en verdi") String utsendingsKanal,
-															  @PathVariable @NotBlank(message = "Sti-parameter ekspedertFra må ha en verdi") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ekspedertFra,
-															  @PathVariable @NotBlank(message = "Sti-parameter ekspedertTil må ha en verdi") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ekspedertTil) {
-		log.info(String.format("finnUlesteJournalposter har mottatt kall for å hente alle uleste journalposter i tidsrommet ekspedertFra=%s og ekspedertTil=%s med utsendingskanal=%s", ekspedertFra, ekspedertTil, utsendingsKanal));
-		List<Long> journalpostIds = finnUlesteJournalposterService.finnUlesteJournalposter(utsendingsKanal, ekspedertFra, ekspedertTil);
-		log.info(String.format("finnUlesteJournalposter fant %s uleste journalposter i tidsrommet ekspedertFra=%s, ekspedertTil=%s med utsendingskanal=%s", journalpostIds.size(), ekspedertFra, ekspedertTil, utsendingsKanal));
-		return ResponseEntity.ok()
-				.body(journalpostIds);
+	@GetMapping("/finnUlesteJournalposter/{utsendingskanal}/{ekspedertFra}/{ekspedertTil}")
+	public ResponseEntity<List<Long>> finnUlesteJournalposter(@PathVariable @NotBlank(message = "Sti-parameter utsendingskanal må ha en verdi") String utsendingskanal,
+															  @PathVariable @NotBlank(message = "Sti-parameter ekspedertFra må ha en verdi") @DateTimeFormat(iso = DATE_TIME) LocalDateTime ekspedertFra,
+															  @PathVariable @NotBlank(message = "Sti-parameter ekspedertTil må ha en verdi") @DateTimeFormat(iso = DATE_TIME) LocalDateTime ekspedertTil) {
+
+		log.info(format("finnUlesteJournalposter har mottatt kall for å hente alle uleste journalposter i tidsrommet ekspedertFra=%s og ekspedertTil=%s med utsendingskanal=%s", ekspedertFra, ekspedertTil, utsendingskanal));
+
+		List<Long> journalpostIder = finnUlesteJournalposterService.finnUlesteJournalposter(utsendingskanal, ekspedertFra, ekspedertTil);
+
+		log.info(format("finnUlesteJournalposter fant %s uleste journalposter i tidsrommet ekspedertFra=%s, ekspedertTil=%s med utsendingskanal=%s", journalpostIder.size(), ekspedertFra, ekspedertTil, utsendingskanal));
+
+		return ResponseEntity.ok().body(journalpostIder);
 	}
 
 }

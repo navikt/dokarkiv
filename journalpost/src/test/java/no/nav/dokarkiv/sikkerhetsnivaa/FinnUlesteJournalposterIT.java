@@ -14,8 +14,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 
+import static java.util.Arrays.asList;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
@@ -24,68 +24,73 @@ import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.SDP;
 import static no.nav.dokarkiv.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaController.SIKKERHETSNIVAA_PATH;
 import static no.nav.dokarkiv.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaController.SIKKERHETSNIVAA_ROLE;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
-	private final int NOT_FOUND = 404;
-	private final int BAD_REQUEST = 400;
-	private final int EN_DAG = 1;
-	private final int FEM_DAGER = 5;
 
+	private static final int NOT_FOUND = 404;
+	private static final int BAD_REQUEST = 400;
+	private static final int EN_DAG = 1;
+	private static final int FEM_DAGER = 5;
+
+
+	// Skal finne uleste journalposter med utsendingskanal NAV_NO med ekspederttidspunkt i tidsintervallet [ekspedertFra, ekspedertTil] = [5 dager siden, 1 dager siden]
 	@Test
-	public void happyPathFinnUlesteJournalposter() {
+	public void skalFinneUlesteJournalposter() {
 
 		//Journalpost som skal bli plukket opp
-		Journalpost ulestJournalpostNavNo = opprettUlestJournalpost(NAV_NO, 2, E, U);
+		Journalpost aktuellUlestJournalpost = opprettUlestJournalpost(NAV_NO, 2, E, U);
 
 		//Journalposter som ikke skal bli plukket opp
-		//Journalposten har blitt lest
-		Journalpost lestJournalpost = opprettLestJournalpost();
-		//feil kanal
-		Journalpost ulestJournalpostSDP = opprettUlestJournalpost(SDP, 2, E, U);
-		//Ekspedert etter ekspedertTil
-		Journalpost ulestJournalpostForNyligEkspedert = opprettUlestJournalpost(NAV_NO, 0, E, U);
-		//Feil status FS, ikke E
-		Journalpost ulestJournalpostFS = opprettUlestJournalpost(NAV_NO, 2, FS, U);
-		//Feil journalposttype I, ikke U
-		Journalpost ulestJournalpostTypeI = opprettUlestJournalpost(NAV_NO, 2, E, I);
+		Journalpost alleredeLest = opprettLestJournalpost();
+		Journalpost feilKanal = opprettUlestJournalpost(SDP, 2, E, U);
+		Journalpost forNyligEkspedert = opprettUlestJournalpost(NAV_NO, 0, E, U);
+		Journalpost feilJournalstatus = opprettUlestJournalpost(NAV_NO, 2, FS, U);
+		Journalpost feilJournalposttype = opprettUlestJournalpost(NAV_NO, 2, E, I);
+		Journalpost feilregistrertSaksrelasjon = opprettUlestJournalpost(NAV_NO, 2, E, U);
+		feilregistrertSaksrelasjon.getSaksrelasjon().setFeilregistrert(true);
 
-		journalpostTestRepository.persistAll(Arrays.asList(lestJournalpost, ulestJournalpostSDP, ulestJournalpostForNyligEkspedert, ulestJournalpostFS, ulestJournalpostTypeI));
-		long ulestJournalpostId = journalpostTestRepository.persist(ulestJournalpostNavNo).getJournalpostId();
+		journalpostTestRepository.persistAll(asList(alleredeLest, feilKanal, forNyligEkspedert, feilJournalstatus, feilJournalposttype, feilregistrertSaksrelasjon));
+		var ulestJournalpostId = journalpostTestRepository.persist(aktuellUlestJournalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim(SIKKERHETSNIVAA_ROLE));
-		ResponseEntity<Long[]> response = restTemplate.exchange(buildUri(NAV_NO.toString(), 5, 1), GET, requestEntity, Long[].class);
+		var response = restTemplate.exchange(buildUri(NAV_NO.toString(), 5, 1), GET, requestEntity, Long[].class);
 
 		assertEquals(OK, response.getStatusCode());
-		Long[] resultList = response.getBody();
-		assertEquals(resultList.length, 1);
-		assertEquals(resultList[0], ulestJournalpostId);
-
+		var ulesteJournalposter = response.getBody();
+		assertThat(ulesteJournalposter)
+				.singleElement()
+				.satisfies(journalpost -> assertThat(journalpost).isEqualTo(ulestJournalpostId));
 	}
 
 	@ParameterizedTest
 	@CsvSource(value = {
 			"," + FEM_DAGER + "," + EN_DAG + "," + NOT_FOUND + "," + "Not Found", // utsendingskanalCode er null - gir 404 fra spring da det mangler en PathVariable
-			"tull" + "," + FEM_DAGER + "," + EN_DAG + "," + BAD_REQUEST + "," + "tull er ikke en gyldig utsendingskanal", //utsendingskanal er ugyldig
-			"NAV_NO" + "," + EN_DAG + "," + FEM_DAGER + "," + BAD_REQUEST + "," + "EkspedertFra kan ikke være før ekspedertTil"// ekspedertFra er før ekspedertTil
+			"tull" + "," + FEM_DAGER + "," + EN_DAG + "," + BAD_REQUEST + "," + "tull er ikke en gyldig utsendingskanal", // utsendingskanal er ugyldig
+			"NAV_NO" + "," + EN_DAG + "," + FEM_DAGER + "," + BAD_REQUEST + "," + "EkspedertFra kan ikke være før ekspedertTil" // ekspedertFra er før ekspedertTil
 	})
-	public void finnUlesteJournalposterShouldGiveBadRequestWhenBadInput(String utsendingsKanalCode, int ekspedertFra, int ekspedertTil, int expectedStatusCode, String feilmelding) {
+	public void skalReturnereBadRequestForUgyldigInput(String utsendingsKanalCode, int ekspedertFra, int ekspedertTil, int expectedStatusCode, String feilmelding) {
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim(SIKKERHETSNIVAA_ROLE));
-		ResponseEntity<String> response = restTemplate.exchange(buildUri(utsendingsKanalCode, ekspedertFra, ekspedertTil), GET, requestEntity, String.class);
-		assertEquals(response.getStatusCode().value(), expectedStatusCode);
-		assertTrue(response.getBody().contains(feilmelding));
+
+		var response = restTemplate.exchange(buildUri(utsendingsKanalCode, ekspedertFra, ekspedertTil), GET, requestEntity, String.class);
+
+		assertThat(response.getStatusCode().value()).isEqualTo(expectedStatusCode);
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody()).contains(feilmelding);
 	}
 
 	@Test
-	public void shouldReturnUnauthorizedIfNotSikkerhetsnivaaRole() {
+	public void skalReturnereUnauthorizedHvisSikkerhetsnivaaRoleMangler() {
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+
 		ResponseEntity<String> response = restTemplate.exchange(buildUri(NAV_NO.name(), 5, 1), GET, requestEntity, String.class);
+
 		assertEquals(response.getStatusCode(), UNAUTHORIZED);
 	}
 
