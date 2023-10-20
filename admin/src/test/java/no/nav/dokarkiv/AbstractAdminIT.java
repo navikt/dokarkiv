@@ -145,6 +145,10 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 				.setParameter("jp", journalpostId)
 				.getResultList()
 				.size(), is(0));
+		assertThat(entityManager.createQuery("select '1' from UtsendingsInfo where journalpostId=:journalpostId")
+				.setParameter("journalpostId", journalpostId)
+				.getResultList()
+				.size(), is(0));
 		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostId).size(), is(0));
 	}
 

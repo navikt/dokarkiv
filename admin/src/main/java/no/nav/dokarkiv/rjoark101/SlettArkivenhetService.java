@@ -69,16 +69,16 @@ public class SlettArkivenhetService {
 		sjekkOmJournalpostErSplittetUtFraEnAnnenJournalpost(journalpost);
 
 		Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
-
 		aksjonsLoggMap.putAll(slettDokumentInfoRelasjonerKnyttetTilJournalpost(journalpostId));
-		aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, null), slettJournalpostFraDatabasen(journalpost.getJournalpostId()));
+		List<ArkivElementEndringTO> journalpostSlettet = slettJournalpostFraDatabasen(journalpost.getJournalpostId());
+		aksjonsLoggMap.put(JournalpostDokumentInfoPair.of(journalpostId, null), journalpostSlettet);
 
 		return aksjonsLoggMap;
 	}
 
 	public Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> slettDokumentInfo(Long dokumentInfoId) {
 		if (isFalse(dokumentInfoRepository.existsById(dokumentInfoId))) {
-			throw new DokumentInfoIkkeFunnetException(String.format("Fant ingen dokumentInfo med dokumentInfoId=%s i databasen", dokumentInfoId));
+			throw new DokumentInfoIkkeFunnetException(String.format("Fant ingen DokumentInfo med dokumentInfoId=%s i databasen", dokumentInfoId));
 		}
 
 		Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMap = new HashMap<>();
@@ -115,6 +115,11 @@ public class SlettArkivenhetService {
 				.stream()
 				.filter(rel -> rel.getTilknyttetJournalpostSom() == VEDLEGG)
 				.toList();
+
+		if (relasjonList.isEmpty()) {
+			log.warn("JournalpostId={} har ingen hoveddokument relasjoner, finner angivelig ingen vedlegg å gjøre om til hoveddokument", journalpostId);
+			return new HashMap<>();
+		}
 
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = relasjonList.get(0);
 		vedleggRelasjon.setTilknyttetJournalpostSom(HOVEDDOKUMENT);
@@ -170,7 +175,7 @@ public class SlettArkivenhetService {
 	private void validerAtHoveddokumentIkkeHarRelasjonerTilAndreJournalposter(Journalpost journalpost) {
 		DokumentInfo dokumentInfoHoveddokument = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		if (dokumentInfoHoveddokument.getJournalpostRelasjoner().size() > 1) {
-			throw new JournalpostKanIkkeSlettesException(String.format("Hoveddokument er tilknyttet andre journalposter. All (gjen)bruk av dokumentinfo %s må fjernes før journalpost kan slettes.",
+			throw new JournalpostKanIkkeSlettesException(String.format("Hoveddokument er tilknyttet andre journalposter. All (gjen)bruk av dokumentInfoId=%s må fjernes før journalpost kan slettes.",
 					dokumentInfoHoveddokument.getDokumentInfoId()));
 		}
 	}
@@ -181,7 +186,7 @@ public class SlettArkivenhetService {
 
 		if (dokumenterMedJournalpostSattSomOriginalJournalpost.size() > journalpost.getJournalpostDokumentInfoRelasjonerAdmin()
 				.size()) {
-			throw new JournalpostKanIkkeSlettesException(String.format("Journalpost=%s er splittet og kan ikke slettes før de splittete dokumentene er slettet",
+			throw new JournalpostKanIkkeSlettesException(String.format("JournalpostId=%s er splittet og kan ikke slettes før de splittete dokumentene er slettet",
 					journalpost.getJournalpostId()));
 		}
 	}
@@ -193,7 +198,7 @@ public class SlettArkivenhetService {
 					.getOriginalJournalpost();
 
 			if (nonNull(hoveddokOrigJp) && isFalse(journalpost.getJournalpostId().equals(hoveddokOrigJp.getJournalpostId()))) {
-				log.warn(String.format("Journalpost som slettes er splittet hvor originale journalpost=%s", hoveddokOrigJp.getJournalpostId()));
+				log.warn(String.format("Journalpost som slettes er splittet. original journalpostId=%s", hoveddokOrigJp.getJournalpostId()));
 				return true;
 			}
 		}
@@ -244,13 +249,13 @@ public class SlettArkivenhetService {
 		);
 	}
 
-
 	private List<ArkivElementEndringTO> slettJournalpostFraDatabasen(Long journalpostId) {
 		deleteRepository.deleteDokUrlInfoByJournalpostId(journalpostId);
 		deleteRepository.deleteKryssreferanseByJournalpostId(journalpostId);
 		deleteRepository.deleteJPTilleggByJournalpostId(journalpostId);
 		deleteRepository.deleteSaksrelasjonByJournalpostId(journalpostId);
 		deleteRepository.deleteBrukereByJournalpostId(journalpostId);
+		deleteRepository.deleteUtsendingsInfoByJournalpostId(journalpostId);
 		deleteRepository.deleteJournalpostByJournalpostId(journalpostId);
 
 		return singletonList(

@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.Long.parseLong;
@@ -95,6 +96,8 @@ public class TestDataGenerator {
 	public static final String GSAK_TEMA = "RPO";
 	public static final String GSAK_APPLIKASJON = "AO01";
 	public static final String GSAK_OPPRETTET_AV = "itest";
+	public static final String EPOSTADRESSE = "example@example.org";
+	public static final String TELEFONNUMMER = "+4711111111";
 
 	public static Journalpost createJournalpostWithHoveddokument() {
 		Journalpost journalpost = Journalpost.builder()
@@ -431,11 +434,15 @@ public class TestDataGenerator {
 		return new UtsendingsInfo.FysiskPostadresse(ADRESSELINJE1, ADRESSELINJE2, ADRESSELINJE3, POSTNUMMER, POSTSTED, LANDKODE);
 	}
 
-	public static UtsendingsInfo.NavNoVarsling createNavNoVarsling() {
-		return new UtsendingsInfo.NavNoVarsling(DIGITALKONTAKT_INFORMASJON, VARSELTEKST);
+	public static UtsendingsInfo createNavNoUtsendingsInfo(Journalpost journalpost) {
+		return new UtsendingsInfo(journalpost, new UtsendingsInfo.NavNoVarsling(), createEpostVarsel(), createSmsVarsler());
 	}
 
-	public static UtsendingsInfo.DigitalPostadresse createDigitalPostadresse() {
-		return new UtsendingsInfo.DigitalPostadresse(DIGITALPOSTKASSEADRESSE, DIGITALPOSTKASSELEVERANDOR);
+	public static UtsendingsInfo.SmsVarsler createSmsVarsler() {
+		return new UtsendingsInfo.SmsVarsler(List.of(new UtsendingsInfo.SmsVarsel(VARSELTEKST, TELEFONNUMMER, "2023-03-01T11:00:00.000")));
+	}
+
+	public static UtsendingsInfo.EpostVarsler createEpostVarsel() {
+		return new UtsendingsInfo.EpostVarsler(List.of(new UtsendingsInfo.EpostVarsel(TITTEL, VARSELTEKST, EPOSTADRESSE, "2023-03-01T11:00:00.000")));
 	}
 }

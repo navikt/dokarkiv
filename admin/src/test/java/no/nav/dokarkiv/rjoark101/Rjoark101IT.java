@@ -37,6 +37,7 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoVedleggRelasjon;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithSplittetHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createNavNoUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,12 +51,13 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 * Test med arkivEnhet=JOURNALPOST
 	 */
 	@Test
-	public void skalSletteJournalpostMedHoveddokumentOgEnVedlegg() {
+	public void skalSletteJournalpostMedHoveddokumentOgEttVedlegg() {
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		saveJournalpost(journalpost);
+		utsendingsInfoTestRepository.persist(createNavNoUtsendingsInfo(journalpost));
 
 		createDokumentInfoVedleggRelasjon(journalpost);
 		saveJournalpost(journalpost1);
