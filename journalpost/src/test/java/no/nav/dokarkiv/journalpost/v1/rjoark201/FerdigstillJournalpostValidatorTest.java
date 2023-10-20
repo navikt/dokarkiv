@@ -107,7 +107,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		var exception = assertThrows(KanIkkeFerdigstilleException.class,
 				() -> validator.validatePaakrevdeFelter(journalpost));
-		assertTrue(excpetion.getMessage().contains("Journalpost.fagomrade"));
+		assertTrue(exception.getMessage().contains("Journalpost.fagomrade"));
 	}
 
 	@Test
