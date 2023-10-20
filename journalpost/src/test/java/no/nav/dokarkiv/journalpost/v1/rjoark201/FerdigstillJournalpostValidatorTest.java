@@ -105,7 +105,7 @@ public class FerdigstillJournalpostValidatorTest {
 		journalpost.setJournalstatus(JournalStatusCode.M);
 		journalpost.setFagomrade(null);
 
-		var excpetion = assertThrows(KanIkkeFerdigstilleException.class,
+		var exception = assertThrows(KanIkkeFerdigstilleException.class,
 				() -> validator.validatePaakrevdeFelter(journalpost));
 		assertTrue(excpetion.getMessage().contains("Journalpost.fagomrade"));
 	}
