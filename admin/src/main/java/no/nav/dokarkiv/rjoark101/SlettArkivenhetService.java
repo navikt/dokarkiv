@@ -116,6 +116,11 @@ public class SlettArkivenhetService {
 				.filter(rel -> rel.getTilknyttetJournalpostSom() == VEDLEGG)
 				.toList();
 
+		if (relasjonList.isEmpty()) {
+			log.warn("JournalpostId={} har ingen hoveddokument relasjoner, finner angivelig ingen vedlegg å gjøre om til hoveddokument", journalpostId);
+			return new HashMap<>();
+		}
+
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = relasjonList.get(0);
 		vedleggRelasjon.setTilknyttetJournalpostSom(HOVEDDOKUMENT);
 		journalpostDokumentInfoRelasjonRepository.merge(vedleggRelasjon);
