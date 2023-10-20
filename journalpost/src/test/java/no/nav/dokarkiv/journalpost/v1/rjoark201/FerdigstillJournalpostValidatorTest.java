@@ -14,8 +14,6 @@ import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
 import org.junit.jupiter.api.Test;
 
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -98,7 +96,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		var exception = assertThrows(KanIkkeFerdigstilleException.class,
 				() -> validator.validatePaakrevdeFelter(journalpost));
-		assertTrue(exception.getMessage().contains(JOURNALPOST_INNHOLD));
+		assertTrue(exception.getMessage().contains("Journalpost.innhold"));
 	}
 
 	@Test
@@ -109,7 +107,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		var excpetion = assertThrows(KanIkkeFerdigstilleException.class,
 				() -> validator.validatePaakrevdeFelter(journalpost));
-		assertTrue(excpetion.getMessage().contains(JOURNALPOST_FAGOMRADE));
+		assertTrue(excpetion.getMessage().contains("Journalpost.fagomrade"));
 	}
 
 	@Test

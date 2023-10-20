@@ -16,9 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.String.format;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_TITTEL;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
@@ -133,8 +130,8 @@ public class FerdigstillJournalpostValidator {
 	}
 
 	private void verifyPaakrevdeFelterJournalpost(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {
-		verifyFieldNotNull(journalpost.getFagomrade(), JOURNALPOST_FAGOMRADE, manglendePaakrevdeFelter);
-		verifyStringNotBlank(journalpost.getInnhold(), JOURNALPOST_INNHOLD, manglendePaakrevdeFelter);
+		verifyFieldNotNull(journalpost.getFagomrade(), "Journalpost.fagomrade", manglendePaakrevdeFelter);
+		verifyStringNotBlank(journalpost.getInnhold(), "Journalpost.innhold", manglendePaakrevdeFelter);
 		if (!JournalpostTypeCode.N.equals(journalpost.getJournalposttype())) {
 			verifyStringNotBlank(journalpost.getAvsenderMottaker(), "Journalpost.avsendMottaker.navn", manglendePaakrevdeFelter);
 		}
@@ -163,7 +160,7 @@ public class FerdigstillJournalpostValidator {
 	}
 
 	private void verifyMandatoryFelterDokumentinfo(DokumentInfo dokumentInfo, List<String> manglendePaakrevdeFelter) {
-		verifyStringNotBlank(dokumentInfo.getTittel(), DOKUMENT_INFO_TITTEL, manglendePaakrevdeFelter);
+		verifyStringNotBlank(dokumentInfo.getTittel(), "DokumentInfo.tittel", manglendePaakrevdeFelter);
 	}
 
 	/**
