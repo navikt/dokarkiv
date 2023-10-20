@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Long.parseLong;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
 
 @Component
 public class UkjentBrukerService {
@@ -34,7 +35,7 @@ public class UkjentBrukerService {
         }
 
         return Arrays.asList(ArkivElementEndringTO.builder()
-                .arkivElement("Journalpost.journalStatus")
+                .arkivElement(JOURNALPOST_JOURNALSTATUS)
                 .fraVerdi(oldJournalStatus.name())
                 .tilVerdi(journalpost.getJournalstatus().name())
                 .build());
