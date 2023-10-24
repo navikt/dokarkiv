@@ -273,7 +273,6 @@
       "namespace": "k9saksbehandling",
       "cluster": "dev-fss"
     },
-
     {
       "app": "k9-fordel",
       "namespace": "k9saksbehandling",
