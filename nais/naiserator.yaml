@@ -32,8 +32,6 @@ spec:
       value: {{ LDAP_DOMAIN }}
     - name: LDAP_BASEDN
       value: {{ LDAP_BASEDN }}
-    - name: SECURITYTOKENSERVICE_URL
-      value: {{ SECURITYTOKENSERVICE_URL }}
     - name: DOKARKIV_ENDPOINTS_PDL_URL
       value: {{ DOKARKIV_ENDPOINTS_PDL_URL }}
     - name: DOKARKIV_ENDPOINTS_SAF_URL

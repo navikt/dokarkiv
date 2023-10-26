@@ -11,7 +11,6 @@
   "LDAP_SERVICEUSER_BASEDN": "ou=ServiceAccounts,dc=adeo,dc=no",
   "LDAP_DOMAIN": "ADEO.NO",
   "LDAP_BASEDN": "dc=adeo,dc=no",
-  "SECURITYTOKENSERVICE_URL": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",
   "DOKARKIV_ENDPOINTS_PDL_URL": "https://pdl-api.intern.nav.no/graphql",
   "DOKARKIV_ENDPOINTS_SAF_URL": "https://saf.nais.adeo.no/graphql",
   "DOKARKIV_ENDPOINTS_SAF_SCOPE": "api://prod-fss.teamdokumenthandtering.saf/.default",
