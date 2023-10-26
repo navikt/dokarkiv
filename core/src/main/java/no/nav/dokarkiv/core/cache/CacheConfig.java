@@ -18,9 +18,6 @@ import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Configuration
 @EnableCaching
 public class CacheConfig {
@@ -28,7 +25,6 @@ public class CacheConfig {
 	public static final String USERNAME_TOKEN_CACHE = "usernameTokenCache";
 	public static final String NAVUSER_CACHE = "navuserCache";
 	public static final String NAVSERVICEUSER_CACHE = "navserviceuserCache";
-	public static final String REST_STS_CACHE = "RESTSTS";
 	public static final String HISTORISKE_IDENTER = "historiskeIdenterCache";
 	public static final String FAGOMRADE_CACHE = "fagomradeCache";
 	public static final String AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE = "azureClientCredentialGraphTokeCache";
@@ -70,11 +66,6 @@ public class CacheConfig {
 						.maximumSize(10)
 						.recordStats()
 						.build()),
-				new CaffeineCache(REST_STS_CACHE, Caffeine.newBuilder()
-						.expireAfterWrite(50, MINUTES)
-						.maximumSize(1)
-						.recordStats()
-						.build()),
 				new CaffeineCache(HISTORISKE_IDENTER, Caffeine.newBuilder()
 						.expireAfterWrite(10, MINUTES)
 						.maximumSize(25000)
@@ -100,10 +91,10 @@ public class CacheConfig {
 						.maximumSize(1000)
 						.recordStats()
 						.build()),
-                new CaffeineCache(FAGOMRADE_CACHE, Caffeine.newBuilder()
-                        .expireAfterWrite(24, HOURS)
-                        .maximumSize(FagomradeCode.values().length)
-                        .recordStats()
-                        .build()));
+				new CaffeineCache(FAGOMRADE_CACHE, Caffeine.newBuilder()
+						.expireAfterWrite(24, HOURS)
+						.maximumSize(FagomradeCode.values().length)
+						.recordStats()
+						.build()));
 	}
 }

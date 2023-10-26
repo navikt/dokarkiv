@@ -10,8 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
@@ -49,7 +47,6 @@ public class SkjermingService {
 				.isEmpty());
 	}
 
-
 	public boolean isAllFildetaljerSkjermet(DokumentInfo dokumentInfo) {
 		return dokumentInfo.getFildetaljerListeAdmin()
 				.stream()
@@ -85,16 +82,4 @@ public class SkjermingService {
 				.setParameter("skjermingTypeCode", skjermingTypeCode);
 		q.executeUpdate();
 	}
-
-
-	public static Long convertBigToLong(Object value) {
-		if (value instanceof BigDecimal) {
-			return ((BigDecimal) value).longValue();
-		} else if (value instanceof BigInteger) {
-			return ((BigInteger) value).longValue();
-		}
-		return (Long) value;
-	}
-
-
 }
