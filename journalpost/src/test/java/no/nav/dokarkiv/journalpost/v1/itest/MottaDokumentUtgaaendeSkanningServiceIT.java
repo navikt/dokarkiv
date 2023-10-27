@@ -55,7 +55,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 	private final byte[] mockData = "mockData".getBytes();
 	private final String mockFilnavn = "mockFilnavn";
 
-	private ObjectMapper mapper = new ObjectMapper();
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Test
 	public void mottaDokumentHappy() {
@@ -141,13 +141,10 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
 	@Test
 	public void shouldReturnBadRequestWithInvalidRequest() throws IOException {
-		String expectedErrorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av request " +
-				"journalpostId=%s " +
-				"mottakskanal=SKAN_NETS " +
-				"batchnavn=mockBatchnavn " +
-				"feilmedling=Kan ikke validere request: " +
-				"dokumentvarianter[0] har ugyldig filtype mockUgyldigFiltype, har ugyldig variantformat " +
-				"mockUgyldigVariantformat, mangler fysiskDokument";
+		String expectedErrorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av request. " +
+									  "journalpostId=%s, mottakskanal=SKAN_NETS, batchnavn=mockBatchnavn, feilmelding=Kan ikke validere request: " +
+									  "dokumentvarianter[0] har ugyldig filtype mockUgyldigFiltype, har ugyldig variantformat " +
+									  "mockUgyldigVariantformat, mangler fysiskDokument";
 
 		Journalpost journalpost = generateTestJournalpost(
 				JournalpostTypeCode.U,
@@ -173,11 +170,9 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
 	@Test
 	public void shouldReturnBadRequestWithMissingElements() {
-		String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av journalpost " +
-				"journalpostId=%s " +
-				"mottakskanal=SKAN_NETS " +
-				"batchnavn=mockBatchnavn " +
-				"feilmedling=Kan ikke validere journalpost: Har ikke hoveddokument";
+		String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av journalpost. " +
+							  "journalpostId=%s, mottakskanal=SKAN_NETS, batchnavn=mockBatchnavn, feilmelding=Kan ikke validere journalpost: " +
+							  "Har ikke hoveddokument";
 
 		Journalpost journalpost = generateTestJournalpost(
 				JournalpostTypeCode.I,
@@ -217,7 +212,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		var responseEntity = doPutTransaction(GYLDIG_CONSUMER, request, journalpostId);
 
 		try {
-			JsonNode responseBody = mapper.readTree((String) responseEntity.getBody());
+			JsonNode responseBody = mapper.readTree(responseEntity.getBody());
 
 			assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
 			assertEquals(String.format(errorMessage, journalpostId), responseBody.get("message").textValue());
@@ -229,11 +224,9 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
 	@Test
 	public void shouldReturnConflictWithInvalidJournalpostTypeCode() {
-		String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av journalpost " +
-				"journalpostId=%s " +
-				"mottakskanal=SKAN_NETS " +
-				"batchnavn=mockBatchnavn " +
-				"feilmedling=Kan ikke validere journalpost: Journalposten har ugyldig journalposttype=I";
+		String errorMessage = "mottaDokumentUtgaaendeSkanning feilet ved validering av journalpost. " +
+							  "journalpostId=%s, mottakskanal=SKAN_NETS, batchnavn=mockBatchnavn, feilmelding=Kan ikke validere journalpost: " +
+							  "Journalposten har ugyldig journalposttype=I";
 
 		Journalpost journalpost = generateTestJournalpost(
 				JournalpostTypeCode.I,
@@ -250,7 +243,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		var responseEntity = doPutTransaction(GYLDIG_CONSUMER, request, journalpostId);
 
 		try {
-			JsonNode responseBody = mapper.readTree((String) responseEntity.getBody());
+			JsonNode responseBody = mapper.readTree(responseEntity.getBody());
 
 			assertEquals(String.format(errorMessage, journalpostId, journalpostId), responseBody.get("message").textValue());
 			assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
@@ -262,14 +255,12 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
 	@Test
 	public void shouldReturnNotFoundIfJournalpostDoesNotExist() throws IOException {
-
-		String expectedErrorMessage = "mottaDokumentUtgaaendeSkanning\n" + "journalpost med id 0 ikke funnet";
+		String expectedErrorMessage = "mottaDokumentUtgaaendeSkanning journalpostId=0 ikke funnet i databasen";
 		long journalpostId = 0L;
 
 		MottaDokumentUtgaaendeSkanningRequest request = createGyldigRequest();
 
 		validateRequestResponse(request, GYLDIG_CONSUMER, journalpostId, expectedErrorMessage, HttpStatus.NOT_FOUND);
-
 	}
 
 	private MottaDokumentUtgaaendeSkanningRequest createGyldigRequest() {
@@ -283,7 +274,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		));
 	}
 
-	private ResponseEntity doPutTransaction(String consumer, MottaDokumentUtgaaendeSkanningRequest request, long journalpostId) {
+	private ResponseEntity<String> doPutTransaction(String consumer, MottaDokumentUtgaaendeSkanningRequest request, long journalpostId) {
 		HttpHeaders headers = createHeaders(consumer);
 		HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
@@ -301,7 +292,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		var responseEntity = restTemplate.exchange(
 				URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT,
 				requestHttpEntity, String.class);
-		JsonNode responseBody = mapper.readTree((String) responseEntity.getBody());
+		JsonNode responseBody = mapper.readTree(responseEntity.getBody());
 
 
 		assertEquals(String.format(expectedErrorMessage, journalpostId), responseBody.get("message").textValue());

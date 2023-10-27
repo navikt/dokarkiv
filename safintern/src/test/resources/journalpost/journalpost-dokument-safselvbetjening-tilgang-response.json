@@ -69,5 +69,6 @@
   ],
   "mottakskanal": "NAV_NO",
   "opprettetAvNavn": "Opprettet navn",
-  "tilleggsopplysninger": {}
+  "tilleggsopplysninger": {},
+  "utsendingskanal": "S"
 }

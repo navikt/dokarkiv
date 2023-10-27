@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.15</version>
+		<version>2.7.17</version>
 	</parent>
 
 	<groupId>no.nav.dokarkiv</groupId>
@@ -31,11 +31,10 @@
 	<properties>
 		<java.version>17</java.version>
 
-		<cxf.version>3.6.1</cxf.version>
+		<cxf.version>3.6.2</cxf.version>
 		<sfm-springjdbc.version>8.2.3</sfm-springjdbc.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
-		<logback-syslog4j.version>1.0.0</logback-syslog4j.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
 		<jaxb2-basics-runtime.version>0.13.1</jaxb2-basics-runtime.version>
 		<google-cloud-storage.version>2.26.1</google-cloud-storage.version>
@@ -169,21 +168,6 @@
 				<groupId>net.logstash.logback</groupId>
 				<artifactId>logstash-logback-encoder</artifactId>
 				<version>${logstash-logback-encoder.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.papertrailapp</groupId>
-				<artifactId>logback-syslog4j</artifactId>
-				<version>${logback-syslog4j.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>ch.qos.logback</groupId>
-						<artifactId>logback-core</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>ch.qos.logback</groupId>
-						<artifactId>logback-classic</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.jvnet.jaxb2_commons</groupId>

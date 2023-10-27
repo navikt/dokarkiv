@@ -2,23 +2,6 @@
 <included>
 	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-	<appender name="auditLogger" class="com.papertrailapp.logback.Syslog4jAppender">
-		<layout class="ch.qos.logback.classic.PatternLayout">
-			<pattern>[%d, %-5p, %C:%L] - [%X{user},%X{transaction},%X{applicationKey}] - %m%n</pattern>
-		</layout>
-
-		<syslogConfig class="org.productivity.java.syslog4j.impl.net.tcp.TCPNetSyslogConfig">
-			<host>audit.nais</host>
-			<port>6514</port>
-			<ident>dokarkiv_audit</ident>
-			<maxMessageLength>128000</maxMessageLength>
-		</syslogConfig>
-	</appender>
-
-	<logger level="INFO" name="auditLogger" additivity="false">
-		<appender-ref ref="auditLogger"/>
-	</logger>
-
 	<appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
 			<throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
@@ -45,15 +28,15 @@
 		<appender-ref ref="stdout_json"/>
 	</logger>
 
-<!--	 Hibernate deprecated warnings -->
+	<!--	 Hibernate deprecated warnings -->
 	<logger name="org.hibernate.orm.deprecation" additivity="false" level="ERROR"/>
-<!--	 Remove noise due to wrong use of AddressingFeature -->
+	<!--	 Remove noise due to wrong use of AddressingFeature -->
 	<logger name="org.apache.cxf.ws.addressing.ContextUtils" additivity="false" level="ERROR"/>
 	<logger name="org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor" additivity="false" level="ERROR"/>
 	<logger name="org.apache.cxf.ws.addressing.soap.MAPCodec" additivity="false" level="ERROR"/>
 	<logger name="org.apache.wss4j.common.crypto.CryptoBase" additivity="false" level="ERROR"/>
 	<logger name="log4j.logger.org.apache.cxf.interceptor" additivity="false" level="ERROR"/>
-<!--	 Remove spam from VeraPDF -->
+	<!--	 Remove spam from VeraPDF -->
 	<logger name="org.verapdf.pd.font.Encoding" additivity="false" level="ERROR"/>
 	<logger name="org.verapdf.gf.model.factory.operators.OperatorParser" additivity="false" level="ERROR"/>
 </included>

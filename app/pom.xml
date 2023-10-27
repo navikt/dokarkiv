@@ -58,10 +58,6 @@
 			<groupId>net.logstash.logback</groupId>
 			<artifactId>logstash-logback-encoder</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.papertrailapp</groupId>
-			<artifactId>logback-syslog4j</artifactId>
-		</dependency>
 
 		<!-- Test -->
 		<dependency>
@@ -73,13 +69,11 @@
 	</dependencies>
 
 	<build>
+		<finalName>app</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<finalName>app</finalName>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

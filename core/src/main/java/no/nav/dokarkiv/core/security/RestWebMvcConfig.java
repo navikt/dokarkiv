@@ -12,9 +12,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @EnableJwtTokenValidation(ignore = {"org.springframework", "org.springdoc"})
 @Configuration
 public class RestWebMvcConfig implements WebMvcConfigurer {
