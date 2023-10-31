@@ -42,17 +42,7 @@
     },
     {
       "app": "pensjon-pen-q0",
-      "namespace": "teampensjon",
-      "cluster": "dev-fss"
-    },
-    {
-      "app": "pensjon-pen-q0",
       "namespace": "pensjon-q0",
-      "cluster": "dev-fss"
-    },
-    {
-      "app": "pensjon-psak-q0",
-      "namespace": "teampensjon",
       "cluster": "dev-fss"
     },
     {

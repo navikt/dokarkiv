@@ -401,17 +401,7 @@
     },
     {
       "app": "pensjon-pen-q2",
-      "namespace": "teampensjon",
-      "cluster": "dev-fss"
-    },
-    {
-      "app": "pensjon-pen-q2",
       "namespace": "pensjon-q2",
-      "cluster": "dev-fss"
-    },
-    {
-      "app": "pensjon-psak-q2",
-      "namespace": "teampensjon",
       "cluster": "dev-fss"
     },
     {
