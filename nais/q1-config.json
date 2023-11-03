@@ -486,6 +486,11 @@
       "app": "tilleggsstonader-integrasjoner",
       "namespace": "tilleggsstonader",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "macgyver",
+      "namespace": "teamsykmelding",
+      "cluster": "dev-gcp"
     }
   ]
 }
