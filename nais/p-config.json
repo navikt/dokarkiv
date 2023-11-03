@@ -461,6 +461,11 @@
       "app": "fpsoknad-mottak",
       "namespace": "teamforeldrepenger",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "macgyver",
+      "namespace": "teamsykmelding",
+      "cluster": "prod-gcp"
     }
   ]
 }
