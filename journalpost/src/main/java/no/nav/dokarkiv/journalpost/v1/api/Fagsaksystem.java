@@ -34,5 +34,7 @@ public enum Fagsaksystem {
     /**
      * DSOP Kontroll
      */
-    ARGUS
+    ARGUS,
+    NEESSI,
+    TILLEGGSSTONADER
 }
