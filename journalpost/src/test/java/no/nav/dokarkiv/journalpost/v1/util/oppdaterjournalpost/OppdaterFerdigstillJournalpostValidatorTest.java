@@ -240,13 +240,15 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {"FS", "E"})
-	void shouldUpdateIfTittelIsSetForJournalPostTypeN(String input) {
+	void shouldFailIfTittelIsSetForJournalPostTypeN(String input) {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.tittel("tittel")
 				.build();
 		journalpost = createEnkelJournalpost(JournalStatusCode.valueOf(input), N);
 
-		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
+		var exception = assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
+		assertThat(exception.getMessage()).contains(String.format("Tittel kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=N",input));
 	}
 
 	// Det skal alltid være lov til å endre brevkode. Se commit.
