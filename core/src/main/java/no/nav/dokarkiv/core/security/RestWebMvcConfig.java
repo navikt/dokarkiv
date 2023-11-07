@@ -8,9 +8,15 @@ import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
+
+import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @EnableJwtTokenValidation(ignore = {"org.springframework", "org.springdoc"})
 @Configuration
@@ -55,5 +61,13 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
         registry.addInterceptor(new PopulateMDCHandler())
                 .addPathPatterns("/rest/**", "/hentjournalsakinfo/**");
+    }
+
+    @Override
+    public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+        LoggingExceptionResolver loggingExceptionResolver = new LoggingExceptionResolver();
+        loggingExceptionResolver.setOrder(HIGHEST_PRECEDENCE);
+        resolvers.add(loggingExceptionResolver);
+        AnnotationAwareOrderComparator.sort(resolvers);
     }
 }
