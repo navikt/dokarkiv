@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -46,7 +47,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.lang.Long.parseLong;
-import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.INNHOLD;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.PEN;
@@ -1076,6 +1076,43 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertEquals("1", journalpostOppdatert.getAvsenderMottakerId());
 		assertEquals("Bjarne Betjent", journalpostOppdatert.getAvsenderMottaker());
+	}
+
+	@Test
+	public void shouldNotUpdateTittelOnFerdigstiltJournalpostNotat() {
+		clearSakRepository();
+
+		Journalpost journalpostDraft = Journalpost.builder()
+				.avsenderMottakerId("1")
+				.journalposttype(JournalpostTypeCode.N)
+				.journalstatus(JournalStatusCode.FL)
+				.endretAvNavn("saksbehandlersen")
+				.innhold("Gammel tittel")
+				.journalDato(java.sql.Date.valueOf(LOCAL_DATE_TIME.toLocalDate()))
+				.fagomrade(FagomradeCode.PEN)
+				.build();
+		journalpostDraft.setOpprettetKildeNavn("itest");
+
+		Journalpost journalpost = journalpostTestRepository.persist(journalpostDraft);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.tittel("Ny tittel")
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(BAD_REQUEST));
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertEquals("Gammel tittel", journalpostOppdatert.getInnhold());
 	}
 
 	@Test
