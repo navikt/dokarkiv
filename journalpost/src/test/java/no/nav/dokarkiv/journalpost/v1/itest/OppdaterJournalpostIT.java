@@ -26,6 +26,7 @@ import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -36,6 +37,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import javax.validation.constraints.AssertTrue;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -71,6 +73,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -1111,7 +1114,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode(), is(BAD_REQUEST));
 
-		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).orElse(null);
+		assert journalpostOppdatert != null;
 		assertEquals("Gammel tittel", journalpostOppdatert.getInnhold());
 	}
 
