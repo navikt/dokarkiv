@@ -248,7 +248,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 		var exception = assertThrows(InputValideringFeiletException.class,
 				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
-		assertThat(exception.getMessage()).contains(String.format("Tittel kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=N",input));
+		assertThat(exception.getMessage()).contains(String.format("Tittel kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=N", input));
 	}
 
 	// Det skal alltid være lov til å endre brevkode. Se commit.
