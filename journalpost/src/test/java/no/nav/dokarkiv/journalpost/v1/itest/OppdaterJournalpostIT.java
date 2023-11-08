@@ -69,6 +69,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
@@ -1110,7 +1111,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(BAD_REQUEST));
-		assertTrue(Objects.requireNonNull(responseEntity.getBody()).getMessage().contains("Tittel kan ikke oppdateres for journalpost med journalpoststatus=FL og journalposttype=N"));
+		assertThat(Objects.requireNonNull(responseEntity.getBody()).getMessage(), containsString("Tittel kan ikke oppdateres for journalpost med journalpoststatus=FL og journalposttype=N"));
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).orElse(null);
 		assert journalpostOppdatert != null;
