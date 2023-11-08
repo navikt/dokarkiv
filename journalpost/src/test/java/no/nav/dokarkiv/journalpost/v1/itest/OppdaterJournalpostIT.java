@@ -38,6 +38,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -1142,6 +1143,18 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")));
 	}
 
+	@Test
+	void shouldReturnBadRequestWithErrorMessageOnInvalidFagsaksystem() {
+
+		var requestString = classpathToString("__files/oppdaterJournalpostBodyMedUgyldigFagsaksystem.json");
+		HttpEntity<String> stringHttpEntity = new HttpEntity<>(requestString, oidcHeaders());
+		var responseEntity = restTemplate.exchange(URL_JOURNALPOST + "123123123", HttpMethod.PUT, stringHttpEntity, String.class);
+
+		String forventetFeilmelding = "Feltet sak.fagsaksystem=UGYLDIG må være en av %s".formatted(Arrays.toString(Fagsaksystem.values()));
+
+		assertThat(responseEntity.getStatusCode(), is(BAD_REQUEST));
+		assertThat(responseEntity.getBody(), containsString(forventetFeilmelding));
+	}
 
 	private OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {
 		return OppdaterJournalpostRequest.builder()
