@@ -1,0 +1,40 @@
+{
+  "tittel": "Ettersendelse av something",
+  "tema": "FOR",
+  "behandlingstema": "ab0001",
+  "avsenderMottaker": {
+    "id": "12312312312",
+    "idType": "FNR",
+    "navn": "etternavn, fornavn",
+    "land": "Legoland"
+  },
+  "bruker": {
+    "idType": "FNR",
+    "id": "12312312312"
+  },
+  "sak": {
+    "sakstype": null,
+    "fagsakId": null,
+    "fagsaksystem": "UGYLDIG",
+    "arkivsaksnummer": "123123",
+    "arkivsaksystem": "GSAK"
+  },
+  "journalfoerendeEnhet": "9999",
+  "datoRetur": null,
+  "datoDokument": [2023, 11, 3, 11, 29, 10, 392709000],
+  "datoMottatt": null,
+  "tilleggsopplysninger": [
+    {
+      "nokkel": "nokkel",
+      "verdi": "verdi"
+    }
+  ],
+  "dokumenter": [
+    {
+      "dokumentInfoId": "200000000",
+      "brevkode": "brevkode",
+      "tittel": "Ettersendelse av something",
+      "sensitivtPselv": null
+    }
+  ]
+}

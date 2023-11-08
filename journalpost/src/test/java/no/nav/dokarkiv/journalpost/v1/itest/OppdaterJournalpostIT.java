@@ -37,6 +37,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -46,7 +47,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.lang.Long.parseLong;
-import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.DOKUMENT_TITTEL;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.INNHOLD;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.PEN;
@@ -68,6 +68,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
@@ -1102,6 +1103,18 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")));
 	}
 
+	@Test
+	void shouldReturnBadRequestWithErrorMessageOnInvalidFagsaksystem() {
+
+		var requestString = classpathToString("__files/oppdaterJournalpostBodyMedUgyldigFagsaksystem.json");
+		HttpEntity<String> stringHttpEntity = new HttpEntity<>(requestString, oidcHeaders());
+		var responseEntity = restTemplate.exchange(URL_JOURNALPOST + "123123123", HttpMethod.PUT, stringHttpEntity, String.class);
+
+		String forventetFeilmelding = "Feltet sak.fagsaksystem=UGYLDIG må være en av %s".formatted(Arrays.toString(Fagsaksystem.values()));
+
+		assertThat(responseEntity.getStatusCode(), is(BAD_REQUEST));
+		assertThat(responseEntity.getBody(), containsString(forventetFeilmelding));
+	}
 
 	private OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {
 		return OppdaterJournalpostRequest.builder()
