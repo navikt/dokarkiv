@@ -239,7 +239,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"FS", "E"})
+	@ValueSource(strings = {"FL", "FS", "E"})
 	void shouldFailIfTittelIsSetForJournalPostTypeN(String input) {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.tittel("tittel")

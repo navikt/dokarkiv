@@ -42,6 +42,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -1110,9 +1111,10 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(BAD_REQUEST));
+		assertTrue(Objects.requireNonNull(responseEntity.getBody()).getMessage().contains("Tittel kan ikke oppdateres for journalpost med journalpoststatus=FL og journalposttype=N"));
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).orElse(null);
 		assert journalpostOppdatert != null;
