@@ -66,7 +66,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
     @Override
     public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
         LoggingExceptionResolver loggingExceptionResolver = new LoggingExceptionResolver();
-        loggingExceptionResolver.setOrder(HIGHEST_PRECEDENCE);
+        loggingExceptionResolver.setOrder(HIGHEST_PRECEDENCE + 1);
         resolvers.add(loggingExceptionResolver);
         AnnotationAwareOrderComparator.sort(resolvers);
     }
