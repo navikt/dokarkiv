@@ -167,6 +167,7 @@ public final class OppdaterJournalpostValidator {
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType));
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType));
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTittel(), "Tittel", journalpostStatus, journalpostType));
 		} else if (request.getSak() != null) {
 			feilmeldinger.addAll(validateSak(request.getSak(), request.getBruker(), request.getTema()));
 		}
