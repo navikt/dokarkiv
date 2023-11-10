@@ -46,11 +46,6 @@
       "cluster": "dev-fss"
     },
     {
-      "app": "pensjon-psak-q0",
-      "namespace": "pensjon-q0",
-      "cluster": "dev-fss"
-    },
-    {
       "app": "pensjon-selvbetjening-soknad-alder-backend-q0",
       "namespace": "pensjonselvbetjening",
       "cluster": "dev-gcp"
