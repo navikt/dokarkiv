@@ -41,11 +41,6 @@
       "roles" : ["api_intern_safintern"]
     },
     {
-      "app": "pensjon-psak-q5",
-      "namespace": "pensjon-q5",
-      "cluster": "dev-fss"
-    },
-    {
       "app": "pensjon-pen-q5",
       "namespace": "pensjon-q5",
       "cluster": "dev-fss"

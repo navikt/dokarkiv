@@ -405,11 +405,6 @@
       "cluster": "dev-fss"
     },
     {
-      "app": "pensjon-psak-q2",
-      "namespace": "pensjon-q2",
-      "cluster": "dev-fss"
-    },
-    {
       "app": "hm-joark-sink",
       "namespace": "teamdigihot",
       "cluster": "dev-gcp"
