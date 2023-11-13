@@ -41,7 +41,7 @@
 		<tink.version>1.10.0</tink.version>
 		<tink-gcpkms.version>1.8.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.9</blaze-persistence.version>
-		<commons-io.version>2.13.0</commons-io.version>
+		<commons-io.version>2.15.0</commons-io.version>
 		<springdoc-openapi-ui.version>1.7.0</springdoc-openapi-ui.version>
 		<microsoft-graph.version>5.70.0</microsoft-graph.version>
 
