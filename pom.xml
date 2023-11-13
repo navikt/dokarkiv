@@ -38,7 +38,7 @@
 		<java-jwt.version>4.4.0</java-jwt.version>
 		<jaxb2-basics-runtime.version>0.13.1</jaxb2-basics-runtime.version>
 		<google-cloud-storage.version>2.26.1</google-cloud-storage.version>
-		<tink.version>1.10.0</tink.version>
+		<tink.version>1.11.0</tink.version>
 		<tink-gcpkms.version>1.8.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.9</blaze-persistence.version>
 		<commons-io.version>2.15.0</commons-io.version>
