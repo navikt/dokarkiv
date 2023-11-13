@@ -75,6 +75,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 
 		assertThat(persistedJournalpost1.getSendtPrintDato(), is(nullValue()));
 		assertThat(persistedJournalpost1.getAntallRetur(), is(nullValue()));
+		assertThat(persistedJournalpost1.getAvsendtReturDato(), is(nullValue()));
 		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(persistedJournalpost1.getUtsendingskanal().name(), is(UTSENDINGSKANAL));
 	}
@@ -132,11 +133,12 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 				.withDatoSendt(null);
 		arkiverDokumentproduksjonProvider.settJournalpostAttributter(request);
 
-		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
+		Journalpost persistedJournalpost = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 
-		assertThat(persistedJournalpost1.getSendtPrintDato(), is(nullValue()));
-		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
-		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ORIGINAL_ENDRET_AV_NAVN));
+		assertThat(persistedJournalpost.getSendtPrintDato(), is(nullValue()));
+		assertThat(persistedJournalpost.getAntallRetur(), is(ANTALL_RETURPOST));
+		assertThat(persistedJournalpost.getEndretAvNavn(), is(ORIGINAL_ENDRET_AV_NAVN));
+		assertThat(persistedJournalpost.getAvsendtReturDato(), is(DateProvider.getToday()));
 	}
 
 	@Test
@@ -156,6 +158,8 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 		assertThat(persistedJournalpost2.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(persistedJournalpost2.getEndretAvNavn(), is(ENDRET_AV_NAVN));
+		assertThat(persistedJournalpost1.getAvsendtReturDato(), is(DateProvider.getToday()));
+		assertThat(persistedJournalpost2.getAvsendtReturDato(), is(DateProvider.getToday()));
 	}
 
 	@Test
