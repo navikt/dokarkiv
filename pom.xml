@@ -43,7 +43,7 @@
 		<blaze-persistence.version>1.6.9</blaze-persistence.version>
 		<commons-io.version>2.13.0</commons-io.version>
 		<springdoc-openapi-ui.version>1.7.0</springdoc-openapi-ui.version>
-		<microsoft-graph.version>5.70.0</microsoft-graph.version>
+		<microsoft-graph.version>5.76.0</microsoft-graph.version>
 
 		<!-- NAV -->
 		<token-support.version>2.1.9</token-support.version>
