@@ -160,7 +160,7 @@
     {
       "app": "journalforing-frontend-q1",
       "namespace": "isa",
-      "cluster": "dev-fss"
+      "cluster": "dev-gcp"
     },
     {
       "app": "fritakagp",
