@@ -112,6 +112,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "dokdistdpv",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss"
+    },
+    {
       "app": "padm2",
       "namespace": "teamsykefravr",
       "cluster": "prod-fss"

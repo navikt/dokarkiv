@@ -124,6 +124,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "dokdistdpv",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "dokdistadmin",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"
