@@ -115,7 +115,7 @@
       "app": "dokdistdpv",
       "namespace": "teamdokumenthandtering",
       "cluster": "prod-fss",
-      "roles" : ["api_intern_sikkerhetsnivaa"]
+      "roles": ["api_intern_sikkerhetsnivaa"]
     },
     {
       "app": "padm2",

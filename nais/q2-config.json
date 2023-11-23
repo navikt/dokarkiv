@@ -105,7 +105,7 @@
       "app": "safselvbetjening",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles" : ["api_intern_safintern"]
+      "roles": ["api_intern_safintern"]
     },
     {
       "app": "saf",
@@ -127,7 +127,7 @@
       "app": "dokdistdpv",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles" : ["api_intern_sikkerhetsnivaa"]
+      "roles": ["api_intern_sikkerhetsnivaa"]
     },
     {
       "app": "dokdistadmin",
