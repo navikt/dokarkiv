@@ -126,7 +126,8 @@
     {
       "app": "dokdistdpv",
       "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss"
+      "cluster": "dev-fss",
+      "roles" : ["api_intern_sikkerhetsnivaa"]
     },
     {
       "app": "dokdistadmin",
