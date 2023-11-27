@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
@@ -45,16 +46,25 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static com.blazebit.persistence.view.EntityViewSetting.create;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.BREVBESTILLING;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.FULLVERSJON;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ORIGINAL;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON_DLF;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SKANNING_META;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertBruker;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertSak;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.ADRESSELINJE1;
@@ -81,9 +91,16 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.POSTNUMMER;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.POSTSTED;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.SKANNET_INNHOLD_TITTEL;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.SKJERMING_TYPE_CODE;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.TILLEGGOPPLYSNINGER_KEY;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.TILLEGGOPPLYSNINGER_VAL;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.TILLEGGOPPLYSNINGER_KEY_1;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.TILLEGGOPPLYSNINGER_KEY_2;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.TILLEGGOPPLYSNINGER_KEY_3;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.TILLEGGOPPLYSNINGER_KEY_4;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.TILLEGGOPPLYSNINGER_VAL_1;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.TILLEGGOPPLYSNINGER_VAL_2;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.TILLEGGOPPLYSNINGER_VAL_3;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.TILLEGGOPPLYSNINGER_VAL_4;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createDigitalPostUtsendingsInfo;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFildetaljerOgFil;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
@@ -147,13 +164,14 @@ class SafinternJournalpostRepositoryTest {
 		assertBruker(journalpostView.getBruker());
 		assertFysiskpostadresseUtsendingsInfo(journalpostView.getUtsendingsInfo());
 
-		List<DokumentinfoView> dokumenterView = journalpostView.getDokumenter();
+		Set<DokumentinfoView> dokumenterView = journalpostView.getDokumenter();
 		assertThat(dokumenterView).hasSize(2);
 
-		DokumentinfoView hoveddokumentView = dokumenterView.get(0);
+		Iterator<DokumentinfoView> iterator = dokumenterView.iterator();
+		DokumentinfoView hoveddokumentView = iterator.next();
 		assertHoveddokument(hoveddokumentView, journalpostId);
 
-		DokumentinfoView vedleggView = dokumenterView.get(1);
+		DokumentinfoView vedleggView = iterator.next();
 		assertVedlegg(vedleggView, journalpostId);
 	}
 
@@ -178,13 +196,14 @@ class SafinternJournalpostRepositoryTest {
 		assertBruker(journalpostView.getBruker());
 		assertFysiskpostadresseUtsendingsInfo(journalpostView.getUtsendingsInfo());
 
-		List<DokumentinfoView> dokumenterView = journalpostView.getDokumenter();
+		Set<DokumentinfoView> dokumenterView = journalpostView.getDokumenter();
 		assertThat(dokumenterView).hasSize(2);
 
-		DokumentinfoView hoveddokumentView = dokumenterView.get(0);
+		Iterator<DokumentinfoView> iterator = dokumenterView.iterator();
+		DokumentinfoView hoveddokumentView = iterator.next();
 		assertHoveddokument(hoveddokumentView, journalpostId);
 
-		DokumentinfoView vedleggView = dokumenterView.get(1);
+		DokumentinfoView vedleggView = iterator.next();
 		assertVedlegg(vedleggView, journalpostId);
 	}
 
@@ -210,10 +229,10 @@ class SafinternJournalpostRepositoryTest {
 		assertBruker(journalpostView.getBruker());
 		assertFysiskpostadresseUtsendingsInfo(journalpostView.getUtsendingsInfo());
 
-		List<DokumentinfoView> dokumenterView = journalpostView.getDokumenter();
+		Set<DokumentinfoView> dokumenterView = journalpostView.getDokumenter();
 		assertThat(dokumenterView).hasSize(1);
 
-		DokumentinfoView hoveddokumentView = dokumenterView.get(0);
+		DokumentinfoView hoveddokumentView = dokumenterView.iterator().next();
 		assertHoveddokument(hoveddokumentView, journalpostId);
 	}
 
@@ -265,6 +284,27 @@ class SafinternJournalpostRepositoryTest {
 		assertThat(journalpostView).isEmpty();
 	}
 
+	@Test
+	void shouldReturnFiveValidVariantformater() {
+		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		DokumentInfo dokumentInfo = actualJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, SLADDET, FilTypeCode.XML, UUID.randomUUID().toString()));
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, ORIGINAL, FilTypeCode.XML, UUID.randomUUID().toString()));
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, FULLVERSJON, FilTypeCode.XML, UUID.randomUUID().toString()));
+		// disse skal ikke hentes
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, SKANNING_META, FilTypeCode.XML, UUID.randomUUID().toString()));
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, BREVBESTILLING, FilTypeCode.XML, UUID.randomUUID().toString()));
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, PRODUKSJON_DLF, FilTypeCode.XML, UUID.randomUUID().toString()));
+		journalpostTestRepository.persist(actualJournalpost);
+
+		JournalpostView journalpostView = safinternJournalpostRepository.hentJournalpostById(actualJournalpost.getJournalpostId(), create(JournalpostView.class)).orElse(null);
+		assertThat(journalpostView.getDokumenter().iterator().next().getFildetaljer())
+				.hasSize(5)
+				.extracting(FildetaljerView::getFormat)
+				.containsExactlyInAnyOrder(ARKIV, SLADDET, PRODUKSJON, FULLVERSJON, ORIGINAL);
+	}
+
 	private static void assertJournalpost(JournalpostView journalpostView) {
 		assertThat(journalpostView.getFagomraade()).isEqualTo(FagomradeCode.RPO);
 		assertThat(journalpostView.getFagomraadenavn()).isEqualTo("Retting av personopplysninger");
@@ -285,8 +325,11 @@ class SafinternJournalpostRepositoryTest {
 	}
 
 	private static void assertTilleggsopplysninger(Map<String, String> tilleggsopplysninger) {
-		assertThat(tilleggsopplysninger).hasSize(1);
-		assertThat(tilleggsopplysninger).extractingByKey(TILLEGGOPPLYSNINGER_KEY).isEqualTo(TILLEGGOPPLYSNINGER_VAL);
+		assertThat(tilleggsopplysninger).hasSize(4);
+		assertThat(tilleggsopplysninger).extractingByKey(TILLEGGOPPLYSNINGER_KEY_1).isEqualTo(TILLEGGOPPLYSNINGER_VAL_1);
+		assertThat(tilleggsopplysninger).extractingByKey(TILLEGGOPPLYSNINGER_KEY_2).isEqualTo(TILLEGGOPPLYSNINGER_VAL_2);
+		assertThat(tilleggsopplysninger).extractingByKey(TILLEGGOPPLYSNINGER_KEY_3).isEqualTo(TILLEGGOPPLYSNINGER_VAL_3);
+		assertThat(tilleggsopplysninger).extractingByKey(TILLEGGOPPLYSNINGER_KEY_4).isEqualTo(TILLEGGOPPLYSNINGER_VAL_4);
 	}
 
 	private static void assertRelevanteDatoer(RelevanteDatoerView relevanteDatoer) {
@@ -370,7 +413,7 @@ class SafinternJournalpostRepositoryTest {
 		assertLogiskVedlegg(vedlegg.getLogiskVedlegg());
 	}
 
-	private static void assertVarianter(List<FildetaljerView> varianter) {
+	private static void assertVarianter(Set<FildetaljerView> varianter) {
 		assertThat(varianter).hasSize(2);
 
 		assertThat(varianter).extracting(FildetaljerView::getUuid)
@@ -380,8 +423,8 @@ class SafinternJournalpostRepositoryTest {
 				FildetaljerView::getStoerrelse,
 				FildetaljerView::getSkjerming,
 				FildetaljerView::getFormat).containsExactlyInAnyOrder(
-				tuple(FIL_NAVN, FilTypeCode.PDF, "13", POL, VariantFormatCode.ARKIV),
-				tuple(FIL_NAVN, FilTypeCode.PDF, "13", POL, VariantFormatCode.PRODUKSJON)
+				tuple(FIL_NAVN, FilTypeCode.PDF, "13", POL, ARKIV),
+				tuple(FIL_NAVN, FilTypeCode.JSON, "13", POL, VariantFormatCode.PRODUKSJON)
 		);
 	}
 

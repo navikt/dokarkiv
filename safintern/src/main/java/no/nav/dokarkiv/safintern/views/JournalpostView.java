@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.safintern.views;
 
 import com.blazebit.persistence.SubqueryInitiator;
+import com.blazebit.persistence.view.CollectionMapping;
 import com.blazebit.persistence.view.EntityView;
 import com.blazebit.persistence.view.FetchStrategy;
 import com.blazebit.persistence.view.IdMapping;
@@ -23,8 +24,8 @@ import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -113,10 +114,12 @@ public interface JournalpostView {
 	)
 	UtsendingsInfoView getUtsendingsInfo();
 
+	@CollectionMapping(ordered = true)
 	Map<String, String> getTilleggsopplysninger();
 
 	@Mapping("journalpostDokumentInfoRelasjoner")
-	List<DokumentinfoView> getDokumenter();
+	@CollectionMapping(ordered = true)
+	Set<DokumentinfoView> getDokumenter();
 
 	class FagomraadenavnSubqueryProvider implements SubqueryProvider {
 

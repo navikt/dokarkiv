@@ -61,7 +61,7 @@
           "navn": "navn",
           "skjerming": "POL",
           "stoerrelse": "13",
-          "type": "PDF",
+          "type": "JSON",
           "uuid": "filUuidHoveddokumentProduksjon"
         }
       ],
@@ -87,7 +87,10 @@
   "mottakskanal": "NAV_NO",
   "opprettetAvNavn": "Opprettet navn",
   "tilleggsopplysninger": {
-    "tillegg": "tillegg_verdi"
+    "tillegg3": "tillegg_verdi3",
+    "tillegg2": "tillegg_verdi2",
+    "tillegg1": "tillegg_verdi1",
+    "tillegg4": "tillegg_verdi4"
   },
   "utsendingsInfo": {
     "fysiskPostadresse": {

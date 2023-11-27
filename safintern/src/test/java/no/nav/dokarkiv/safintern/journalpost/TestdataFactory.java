@@ -59,8 +59,14 @@ public class TestdataFactory {
 	static final String DOKUMENT_INFO_TITTEL = "TITTEL";
 	static final String DOKUMENT_TYPE_ID = "0000001";
 	static final String FIL_NAVN = "navn";
-	static final String TILLEGGOPPLYSNINGER_KEY = "tillegg";
-	static final String TILLEGGOPPLYSNINGER_VAL = "tillegg_verdi";
+	static final String TILLEGGOPPLYSNINGER_KEY_1 = "tillegg1";
+	static final String TILLEGGOPPLYSNINGER_VAL_1 = "tillegg_verdi1";
+	static final String TILLEGGOPPLYSNINGER_KEY_2 = "tillegg2";
+	static final String TILLEGGOPPLYSNINGER_VAL_2 = "tillegg_verdi2";
+	static final String TILLEGGOPPLYSNINGER_KEY_3 = "tillegg3";
+	static final String TILLEGGOPPLYSNINGER_VAL_3 = "tillegg_verdi3";
+	static final String TILLEGGOPPLYSNINGER_KEY_4 = "tillegg4";
+	static final String TILLEGGOPPLYSNINGER_VAL_4 = "tillegg_verdi4";
 	static final String INNHOLD = "Innhold";
 	static final byte[] FIL = "Test dokument".getBytes();
 	static final Integer ANTALL_RETUR = 3;
@@ -133,7 +139,10 @@ public class TestdataFactory {
 
 	static Map<String, String> createTilleggsopplysninger() {
 		Map<String, String> tilleggsopplysninger = new HashMap<>();
-		tilleggsopplysninger.put(TILLEGGOPPLYSNINGER_KEY, TILLEGGOPPLYSNINGER_VAL);
+		tilleggsopplysninger.put(TILLEGGOPPLYSNINGER_KEY_1, TILLEGGOPPLYSNINGER_VAL_1);
+		tilleggsopplysninger.put(TILLEGGOPPLYSNINGER_KEY_2, TILLEGGOPPLYSNINGER_VAL_2);
+		tilleggsopplysninger.put(TILLEGGOPPLYSNINGER_KEY_3, TILLEGGOPPLYSNINGER_VAL_3);
+		tilleggsopplysninger.put(TILLEGGOPPLYSNINGER_KEY_4, TILLEGGOPPLYSNINGER_VAL_4);
 		return tilleggsopplysninger;
 	}
 
@@ -212,8 +221,8 @@ public class TestdataFactory {
 				.kategori(DokumentKategoriCode.ES)
 				.sensitivt(true)
 				.build();
-		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV, filUuidArkiv));
-		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.PRODUKSJON, filUuidProduksjon));
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV, FilTypeCode.PDF, filUuidArkiv));
+		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.PRODUKSJON, FilTypeCode.JSON, filUuidProduksjon));
 		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());
@@ -230,12 +239,12 @@ public class TestdataFactory {
 	}
 
 
-	static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, String filUuid) {
+	static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, FilTypeCode filTypeCode, String filUuid) {
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.dokumentInfo(dokumentInfo)
 				.fileContent(FIL)
 				.filnavn(FIL_NAVN)
-				.filtype(FilTypeCode.PDF)
+				.filtype(filTypeCode)
 				.filUuid(filUuid)
 				.filstorrelse(String.valueOf(FIL.length))
 				.variantFormat(variantFormatCode)
