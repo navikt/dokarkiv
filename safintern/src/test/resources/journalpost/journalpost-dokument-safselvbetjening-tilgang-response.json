@@ -55,7 +55,7 @@
           "navn": "navn",
           "skjerming": "POL",
           "stoerrelse": "13",
-          "type": "PDF",
+          "type": "JSON",
           "uuid": "filUuidHoveddokumentProduksjon"
         }
       ],

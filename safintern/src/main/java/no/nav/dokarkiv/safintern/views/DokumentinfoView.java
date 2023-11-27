@@ -14,7 +14,6 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -61,9 +60,15 @@ public interface DokumentinfoView {
 	@Mapping("dokumentInfo.kassert")
 	Boolean getKassert();
 
-	@Mapping("dokumentInfo.fildetaljerListe")
+	@Mapping("dokumentInfo.fildetaljerListe[(variantFormat in(" +
+			 "no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV," +
+			 "no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET," +
+			 "no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON," +
+			 "no.nav.dokarkiv.core.domain.codes.VariantFormatCode.FULLVERSJON," +
+			 "no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ORIGINAL" +
+			 "))]")
 	@CollectionMapping
-	List<FildetaljerView> getFildetaljer();
+	Set<FildetaljerView> getFildetaljer();
 
 	@Mapping("dokumentInfo.skannetInnholdListe")
 	@CollectionMapping
