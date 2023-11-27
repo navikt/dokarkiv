@@ -275,6 +275,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "k9-formidling",
+      "namespace": "k9saksbehandling",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "flex-joark-mottak",
       "namespace": "flex",
       "cluster": "dev-gcp"
