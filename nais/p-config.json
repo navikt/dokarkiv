@@ -472,6 +472,11 @@
       "app": "macgyver",
       "namespace": "teamsykmelding",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "innsending",
+      "namespace": "aap",
+      "cluster": "prod-gcp"
     }
   ]
 }

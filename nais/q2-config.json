@@ -449,6 +449,11 @@
       "app": "fpsoknad-mottak",
       "namespace": "teamforeldrepenger",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "innsending",
+      "namespace": "aap",
+      "cluster": "dev-gcp"
     }
   ]
 }
