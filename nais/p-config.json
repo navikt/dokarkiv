@@ -118,6 +118,11 @@
       "roles": ["api_intern_sikkerhetsnivaa"]
     },
     {
+      "app": "arenaondemandtojoark",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss"
+    },
+    {
       "app": "padm2",
       "namespace": "teamsykefravr",
       "cluster": "prod-fss"
