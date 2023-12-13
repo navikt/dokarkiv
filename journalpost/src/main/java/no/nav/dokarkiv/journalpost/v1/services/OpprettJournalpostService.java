@@ -12,6 +12,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
@@ -95,11 +96,11 @@ public class OpprettJournalpostService {
 	}
 
 	public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
-		final String eksternReferanseId = request.getEksternReferanseId();
+		final String eksternReferanseId = validateAndGetEksternReferanseId(request);
 		boolean journalpostExists = isJournalpostExists(eksternReferanseId);
 		if (journalpostExists) {
 			Optional<Journalpost> existingJournalpost = findJournalpostByEksternReferanseId(eksternReferanseId);
-			if(existingJournalpost.isPresent()) {
+			if (existingJournalpost.isPresent()) {
 				final Journalpost journalpost = existingJournalpost.get();
 				log.warn("Journalpost med eksternReferanseId={} for kanal={} finnes fra før. Oppretter ikke ny journalpost.", eksternReferanseId, journalpost.getMottakskanal());
 				return new OpprettJournalpostResult(journalpost, true);
@@ -127,6 +128,20 @@ public class OpprettJournalpostService {
 		}
 
 		return new OpprettJournalpostResult(journalpost, false);
+	}
+
+	private String validateAndGetEksternReferanseId(OpprettJournalpostRequest request) {
+		String eksternReferanseId = request.getEksternReferanseId();
+		if (eksternReferanseId == null) {
+			return null;
+		}
+		if (eksternReferanseId.length() > 200) {
+			throw new InputValideringFeiletException("EksternReferanseId kan ikke være over 200 tegn");
+		}
+		if (!eksternReferanseId.matches("\\w+")) {
+			throw new InputValideringFeiletException("EksternReferanseId kan bare inneholde annet enn alfanumeriske tegn");
+		}
+		return eksternReferanseId;
 	}
 
 	private Optional<Sak> hentSak(OpprettJournalpostRequest request) {
@@ -247,6 +262,7 @@ public class OpprettJournalpostService {
 	private boolean isJournalpostExists(String eksternReferanseId) {
 		return isNotBlank(eksternReferanseId) && journalpostRepository.existsByKanalReferanseId(eksternReferanseId);
 	}
+
 	private Optional<Journalpost> findJournalpostByEksternReferanseId(String eksternReferanseId) {
 		//eksternReferanseId == kanalReferanseId
 		return isBlank(eksternReferanseId) ? Optional.empty() : journalpostRepository.findByKanalReferanseId(eksternReferanseId);
