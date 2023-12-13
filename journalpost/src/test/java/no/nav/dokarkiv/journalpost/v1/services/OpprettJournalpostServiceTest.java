@@ -10,6 +10,8 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -52,10 +54,7 @@ public class OpprettJournalpostServiceTest {
 	public void opprettDuplikatJournalpostMedJournalposttypeUtgaaendeTest() {
 		String eksternReferanseId = "testerDuplikater";
 		OpprettJournalpostRequest request = getOpprettJournalpostRequest(eksternReferanseId);
-		Journalpost journalpostEksisterende = Journalpost.builder()
-				.journalposttype(JournalpostTypeCode.U)
-				.kanalReferanseId(eksternReferanseId)
-				.build();
+		Journalpost journalpostEksisterende = getJournalpost(eksternReferanseId);
 		when(journalpostRepository.existsByKanalReferanseId(eksternReferanseId)).thenReturn(true);
 		when(journalpostRepository.findByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
 		OpprettJournalpostResult result = opprettJournalpostService.opprettJournalpost(request);
@@ -76,8 +75,20 @@ public class OpprettJournalpostServiceTest {
 		);
 		assertThrows(InputValideringFeiletException.class,
 				() -> opprettJournalpostService.opprettJournalpost(ugyldigeTegnRequest),
-				"EksternReferanseId kan bare inneholde annet enn alfanumeriske tegn"
+				"EksternReferanseId kan bare inneholde alfanumeriske tegn og følgende spesialtegn :;,.=-_~$&+*\"\\@!"
 		);
+	}
+	@ParameterizedTest
+	@ValueSource(strings = {"alfanumeriskString1", "65efa501-1554-4538-a553-1db5b31ad40b", "StrengMed\\backslash", "epost@adresse.noe", "AlleGyldigeTegn2:;,.=-_~$&+*\"\\@!"})
+	public void skalOppretteJournalpostMedValideringAvGyldigEksternReferanseId(String eksternReferanseId){
+		OpprettJournalpostRequest request = getOpprettJournalpostRequest(eksternReferanseId);
+		Journalpost journalpostEksisterende = getJournalpost(eksternReferanseId);
+
+		when(journalpostRepository.existsByKanalReferanseId(eksternReferanseId)).thenReturn(true);
+		when(journalpostRepository.findByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
+
+		OpprettJournalpostResult alfanumeriskResult = opprettJournalpostService.opprettJournalpost(request);
+		assertTrue(alfanumeriskResult.isAlreadyOpprettet());
 	}
 
 	private static OpprettJournalpostRequest getOpprettJournalpostRequest(String eksternReferanseId) {
@@ -85,6 +96,13 @@ public class OpprettJournalpostServiceTest {
 				.eksternReferanseId(eksternReferanseId)
 				.kanal(MottaksKanalCode.NAV_NO.toString())
 				.journalposttype(JournalpostType.UTGAAENDE)
+				.build();
+	}
+
+	private static Journalpost getJournalpost(String eksternReferanseId) {
+		return Journalpost.builder()
+				.journalposttype(JournalpostTypeCode.U)
+				.kanalReferanseId(eksternReferanseId)
 				.build();
 	}
 }

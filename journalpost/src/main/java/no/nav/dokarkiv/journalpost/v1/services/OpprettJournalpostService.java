@@ -138,8 +138,8 @@ public class OpprettJournalpostService {
 		if (eksternReferanseId.length() > 200) {
 			throw new InputValideringFeiletException("EksternReferanseId kan ikke være over 200 tegn");
 		}
-		if (!eksternReferanseId.matches("\\w+")) {
-			throw new InputValideringFeiletException("EksternReferanseId kan bare inneholde annet enn alfanumeriske tegn");
+		if (!eksternReferanseId.matches("[a-zA-Z0-9-._~!$&\"\\\\*+,;=:@]+")) {
+			throw new InputValideringFeiletException("EksternReferanseId kan bare inneholde alfanumeriske tegn og følgende spesialtegn :;,.=-_~$&+*\"\\@!");
 		}
 		return eksternReferanseId;
 	}
