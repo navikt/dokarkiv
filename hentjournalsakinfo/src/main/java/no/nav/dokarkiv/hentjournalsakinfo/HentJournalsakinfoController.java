@@ -5,8 +5,6 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterService;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark902.SafHentJournalpostResponse;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark902.SafHentJournalpostService;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark903.Tilknytning;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark903.TilknyttedeJournalposterResponse;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark903.TilknyttedeJournalposterService;
@@ -16,15 +14,12 @@ import no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusServi
 import no.nav.security.token.support.core.api.Unprotected;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.PositiveOrZero;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 @Slf4j
@@ -33,16 +28,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/hentjournalsakinfo")
 public class HentJournalsakinfoController {
-	private final SafHentJournalpostService safHentJournalpostService;
 	private final FinnJournalposterService finnJournalposterService;
 	private final FinnJournalposterStatusService finnJournalposterStatusService;
 	private final TilknyttedeJournalposterService tilknyttedeJournalposterService;
 
-	public HentJournalsakinfoController(SafHentJournalpostService safHentJournalpostService,
-										FinnJournalposterService finnJournalposterService,
+	public HentJournalsakinfoController(FinnJournalposterService finnJournalposterService,
 										FinnJournalposterStatusService finnJournalposterStatusService,
 										TilknyttedeJournalposterService tilknyttedeJournalposterService) {
-		this.safHentJournalpostService = safHentJournalpostService;
 		this.finnJournalposterService = finnJournalposterService;
 		this.finnJournalposterStatusService = finnJournalposterStatusService;
 		this.tilknyttedeJournalposterService = tilknyttedeJournalposterService;
@@ -62,21 +54,6 @@ public class HentJournalsakinfoController {
 		FinnJournalposterResponseTo finnJournalposterResponseTo = finnJournalposterService.finnJournalposter(finnJournalposterRequestTo);
 		log.info("rjoark900 fant og returnerer {} journalposter med request={}.", finnJournalposterResponseTo.getTilgangJournalposter().size(), finnJournalposterRequestTo);
 		return finnJournalposterResponseTo;
-	}
-
-	@Transactional(readOnly = true)
-	@GetMapping(value = "/hentjournalpost/{journalpostId}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark902"}, percentiles = {0.5, 0.95})
-	public SafHentJournalpostResponse safHentJournalpost(@PathVariable @PositiveOrZero(message = "journalpostId må være et heltall.") Long journalpostId) {
-		log.info("rjoark902 har mottatt forespørsel om journalpost med journalpostId={}", journalpostId);
-		return safHentJournalpostService.hentJournalpostByJournalpostId(journalpostId);
-	}
-
-	@Transactional(readOnly = true)
-	@GetMapping(value = "/hentjournalpost/eksternreferanse/{eksternReferanseId}")
-	public SafHentJournalpostResponse safHentJournalpostByEksternReferanseId(@PathVariable @Size(max = 200, message = "eksternReferanseId kan ha maks 200 tegn.") String eksternReferanseId) {
-		log.info("rjoark902 har mottatt forespørsel om journalpost med eksternReferanseId={}", eksternReferanseId);
-		return safHentJournalpostService.hentJournalpostByEksternReferanseId(eksternReferanseId);
 	}
 
 	@Transactional(readOnly = true)
