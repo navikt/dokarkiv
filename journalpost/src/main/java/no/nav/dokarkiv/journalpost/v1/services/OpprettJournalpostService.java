@@ -96,7 +96,7 @@ public class OpprettJournalpostService {
 	}
 
 	public OpprettJournalpostResult opprettJournalpost(OpprettJournalpostRequest request) {
-		final String eksternReferanseId = validateAndGetEksternReferanseId(request);
+		final String eksternReferanseId = request.getEksternReferanseId();
 		boolean journalpostExists = isJournalpostExists(eksternReferanseId);
 		if (journalpostExists) {
 			Optional<Journalpost> existingJournalpost = findJournalpostByEksternReferanseId(eksternReferanseId);
@@ -128,20 +128,6 @@ public class OpprettJournalpostService {
 		}
 
 		return new OpprettJournalpostResult(journalpost, false);
-	}
-
-	private String validateAndGetEksternReferanseId(OpprettJournalpostRequest request) {
-		String eksternReferanseId = request.getEksternReferanseId();
-		if (eksternReferanseId == null) {
-			return null;
-		}
-		if (eksternReferanseId.length() > 200) {
-			throw new InputValideringFeiletException("EksternReferanseId kan ikke være over 200 tegn");
-		}
-		if (!eksternReferanseId.matches("[a-zA-Z0-9-._~!$&\"\\\\*+,;=:@]+")) {
-			throw new InputValideringFeiletException("EksternReferanseId kan bare inneholde alfanumeriske tegn og følgende spesialtegn :;,.=-_~$&+*\"\\@!");
-		}
-		return eksternReferanseId;
 	}
 
 	private Optional<Sak> hentSak(OpprettJournalpostRequest request) {

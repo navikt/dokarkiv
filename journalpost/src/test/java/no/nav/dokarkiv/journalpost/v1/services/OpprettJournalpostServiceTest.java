@@ -11,12 +11,15 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -53,56 +56,19 @@ public class OpprettJournalpostServiceTest {
 	@Test
 	public void opprettDuplikatJournalpostMedJournalposttypeUtgaaendeTest() {
 		String eksternReferanseId = "testerDuplikater";
-		OpprettJournalpostRequest request = getOpprettJournalpostRequest(eksternReferanseId);
-		Journalpost journalpostEksisterende = getJournalpost(eksternReferanseId);
+		OpprettJournalpostRequest request = OpprettJournalpostRequest.builder()
+				.eksternReferanseId(eksternReferanseId)
+				.kanal(MottaksKanalCode.NAV_NO.toString())
+				.journalposttype(JournalpostType.UTGAAENDE)
+				.build();
+		Journalpost journalpostEksisterende = Journalpost.builder()
+				.journalposttype(JournalpostTypeCode.U)
+				.kanalReferanseId(eksternReferanseId)
+				.build();
 		when(journalpostRepository.existsByKanalReferanseId(eksternReferanseId)).thenReturn(true);
 		when(journalpostRepository.findByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
 		OpprettJournalpostResult result = opprettJournalpostService.opprettJournalpost(request);
 		assertTrue(result.isAlreadyOpprettet());
 		assertEquals(result.getJournalpost(), journalpostEksisterende);
-	}
-
-	@Test
-	public void skalIkkeOppretteJournalpostMedFeilIEksternReferanseId() {
-		String forLangEksternReferanseId = "bj5bzAng3tvvY7ao0A15Kj8lq3RuN78rPTDYQp9lz416At7egwxVKw3klqZngX39eYdwqDIs6KUbGurS97R78Mz25WO3r7ththg8QVf2HY1col7713VLSSFHvQKHzftl2aKIXF48pnftmwbNX201aX2msQDb8G8nd31gyzfvzZvYX0hcPeU9g5nm5NeV43RLRaKyR1BLG";
-		String ugyldigeTegnReferanseId = "ØÆÅhører og mellomrom hører ikke hjemme i url og dermed i eksternReferanseId";
-		OpprettJournalpostRequest forLangRequest = getOpprettJournalpostRequest(forLangEksternReferanseId);
-		OpprettJournalpostRequest ugyldigeTegnRequest = getOpprettJournalpostRequest(ugyldigeTegnReferanseId);
-
-		assertThrows(InputValideringFeiletException.class,
-				() -> opprettJournalpostService.opprettJournalpost(forLangRequest),
-				"EksternReferanseId kan ikke være over 200 tegn"
-		);
-		assertThrows(InputValideringFeiletException.class,
-				() -> opprettJournalpostService.opprettJournalpost(ugyldigeTegnRequest),
-				"EksternReferanseId kan bare inneholde alfanumeriske tegn og følgende spesialtegn :;,.=-_~$&+*\"\\@!"
-		);
-	}
-	@ParameterizedTest
-	@ValueSource(strings = {"alfanumeriskString1", "65efa501-1554-4538-a553-1db5b31ad40b", "StrengMed\\backslash", "epost@adresse.noe", "AlleGyldigeTegn2:;,.=-_~$&+*\"\\@!"})
-	public void skalOppretteJournalpostMedValideringAvGyldigEksternReferanseId(String eksternReferanseId){
-		OpprettJournalpostRequest request = getOpprettJournalpostRequest(eksternReferanseId);
-		Journalpost journalpostEksisterende = getJournalpost(eksternReferanseId);
-
-		when(journalpostRepository.existsByKanalReferanseId(eksternReferanseId)).thenReturn(true);
-		when(journalpostRepository.findByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
-
-		OpprettJournalpostResult alfanumeriskResult = opprettJournalpostService.opprettJournalpost(request);
-		assertTrue(alfanumeriskResult.isAlreadyOpprettet());
-	}
-
-	private static OpprettJournalpostRequest getOpprettJournalpostRequest(String eksternReferanseId) {
-		return OpprettJournalpostRequest.builder()
-				.eksternReferanseId(eksternReferanseId)
-				.kanal(MottaksKanalCode.NAV_NO.toString())
-				.journalposttype(JournalpostType.UTGAAENDE)
-				.build();
-	}
-
-	private static Journalpost getJournalpost(String eksternReferanseId) {
-		return Journalpost.builder()
-				.journalposttype(JournalpostTypeCode.U)
-				.kanalReferanseId(eksternReferanseId)
-				.build();
 	}
 }
