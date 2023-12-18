@@ -87,6 +87,9 @@ public class OpprettJournalpostRequestValidator {
 		if (isNotBlank(request.getJournalfoerendeEnhet())) {
 			validateJournalpost(journalpostFerdigstilt, request.getJournalfoerendeEnhet());
 		}
+		if (isNotBlank(request.getEksternReferanseId())) {
+			validateEksternReferanseId(request.getEksternReferanseId());
+		}
 		if (request.getDatoDokument() != null) {
 			validateDato(request.getDatoDokument(), "DatoDokument");
 		}
@@ -212,6 +215,17 @@ public class OpprettJournalpostRequestValidator {
 		if (FALSE.toString().equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet)) {
 			throw new InputValideringFeiletException(format("Ikke mulig å opprette journalpost på journalfoerendeEnhet=%s (maskinell) så lenge journalposten ikke forsøkes å ferdigstilles",
 					MASKINELL_JOURNALFOERENDE_ENHET));
+		}
+	}
+
+	private void validateEksternReferanseId(String eksternReferanseId) {
+		if (eksternReferanseId != null) {
+			if (eksternReferanseId.length() > 200) {
+				throw new InputValideringFeiletException(format("EksternReferanseId kan ikke være over 200 tegn. Mottatt eksternReferanseId=%s", eksternReferanseId));
+			}
+			if (!eksternReferanseId.matches("[a-zA-Z0-9-._~!$&\"\\\\*+,;=:@]+")) {
+				throw new InputValideringFeiletException(format("EksternReferanseId kan bare inneholde alfanumeriske tegn og følgende spesialtegn :;,.=-_~$&+*\"\\@! Mottatt eksternReferanseId=%s", eksternReferanseId));
+			}
 		}
 	}
 
@@ -382,7 +396,7 @@ public class OpprettJournalpostRequestValidator {
 					Arrays.toString(VariantFormatCode.values())));
 		}
 		if (variantFormat.equals(VariantFormatCode.ARKIV.name())
-			&& !Arrays.asList(PDF, PDFA).contains(valueOf(dokumentVariant.getFiltype()))) {
+				&& !Arrays.asList(PDF, PDFA).contains(valueOf(dokumentVariant.getFiltype()))) {
 			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV",
 					dokumentIdx, variantFormat));
 		}
