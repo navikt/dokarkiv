@@ -58,6 +58,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGIN
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.LOVLIGE_INNSYNSKODER;
+import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.MASKINELL_JOURNALFOERENDE_ENHET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -67,7 +68,6 @@ import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 public class OpprettJournalpostRequestValidatorTest {
 
 	public static final String FORSOEKFERDIGSTILL = "false";
-	public static final String JOURNALFOERENDE_ENHET = "9999";
 
 	private final OpprettJournalpostRequestValidator validator = new OpprettJournalpostRequestValidator();
 
@@ -135,15 +135,15 @@ public class OpprettJournalpostRequestValidatorTest {
 		validator.validateRequest(request, FORSOEKFERDIGSTILL);
 	}
 
-	@Test
-	public void shouldJournalfoereWhenJournalfoerendeEnhetEr9999AndForsoekFerdigstillErTrue() {
-		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+	@ParameterizedTest
+	@EnumSource(value = JournalpostType.class, names = {"INNGAAENDE"}, mode = EXCLUDE)
+	public void shouldJournalfoereWhenJournalfoerendeEnhetEr9999AndJournpostTypeErUlikInngaaendeAndForsoekFerdigstillErTrue(JournalpostType journalpostType) {
+		OpprettJournalpostRequest request = createMinimalRequest(journalpostType)
 				.journalfoerendeEnhet(TestUtils.JOURNALFOERENDE_ENHET)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 		validator.validateRequest(request, FORSOEKFERDIGSTILL);
 	}
-
 
 	@Test
 	public void shouldValidateOkWhenJournaforendeEnhetErNull() {
@@ -352,14 +352,14 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenJournalfoerendeEnhetEr9999AndForsoekFerdigstillErFalse() {
+	public void shouldThrowExceptionWhenJournalfoerendeEnhetEr9999AndJournalpostTypeErInngaaendeAndForsoekFerdigstillErFalse() {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
-				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
+				.journalfoerendeEnhet(MASKINELL_JOURNALFOERENDE_ENHET)
 				.sak(Sak.builder().sakstype(Sakstype.ARKIVSAK).arkivsaksystem(Arkivsaksystem.GSAK).arkivsaksnummer(ARKIVSAKSNUMMER).build())
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Ikke mulig å opprette journalpost på journalfoerendeEnhet=9999");
+		assertThat(exception.getMessage()).contains("Ikke mulig å opprette journalpost med type inngaaende på journalfoerendeEnhet=9999 (maskinell) så lenge journalposten ikke forsøkes å ferdigstilles");
 	}
 
 	@Test

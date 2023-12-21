@@ -13,6 +13,7 @@ import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
+import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +44,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
+import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
@@ -85,7 +87,7 @@ public class OpprettJournalpostRequestValidator {
 			validateSak(request.getSak(), request.getBruker());
 		}
 		if (isNotBlank(request.getJournalfoerendeEnhet())) {
-			validateJournalpost(journalpostFerdigstilt, request.getJournalfoerendeEnhet());
+			validateJournalfoerendeEnhet(journalpostFerdigstilt, request.getJournalfoerendeEnhet(), request.getJournalposttype());
 		}
 		if (isNotBlank(request.getEksternReferanseId())) {
 			validateEksternReferanseId(request.getEksternReferanseId());
@@ -211,9 +213,9 @@ public class OpprettJournalpostRequestValidator {
 		}
 	}
 
-	private void validateJournalpost(String journalpostFerdigstilt, String journalfoerendeEnhet) {
-		if (FALSE.toString().equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet)) {
-			throw new InputValideringFeiletException(format("Ikke mulig å opprette journalpost på journalfoerendeEnhet=%s (maskinell) så lenge journalposten ikke forsøkes å ferdigstilles",
+	private void validateJournalfoerendeEnhet(String journalpostFerdigstilt, String journalfoerendeEnhet, JournalpostType journalposttype) {
+		if (FALSE.toString().equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet) && INNGAAENDE.equals(journalposttype)) {
+			throw new InputValideringFeiletException(format("Ikke mulig å opprette journalpost med type inngaaende på journalfoerendeEnhet=%s (maskinell) så lenge journalposten ikke forsøkes å ferdigstilles",
 					MASKINELL_JOURNALFOERENDE_ENHET));
 		}
 	}
