@@ -15,6 +15,8 @@ public enum MottaksKanalCode {
 	NAV_NO,
 	/** ALTINN */
 	ALTINN,
+	/** Altinn innboks */
+	ALTINN_INNBOKS,
 	/** Skanning Pensjon */
 	SKAN_PEN,
 	/** Skanning Nets */
@@ -30,5 +32,7 @@ public enum MottaksKanalCode {
 	/** Innsendt av NAV-ansatt **/
 	INNSENDT_NAV_ANSATT,
 	/** Innlogget chat **/
-	NAV_NO_CHAT;
+	NAV_NO_CHAT,
+	/** E-post */
+	E_POST;
 }
