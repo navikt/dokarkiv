@@ -35,6 +35,11 @@
   "AZURE_AD_ADMIN_ROLE": "cc9f8c69-9a8b-4cd1-a1c7-d5e993cc7e5a",
   "AZURE_IAC_RULES": [
     {
+      "app": "spre-gosys",
+      "namespace": "tbd",
+      "cluster": "prod-fss"
+    },
+    {
       "app": "salesforce",
       "namespace": "teamcrm",
       "cluster": "prod-external"
