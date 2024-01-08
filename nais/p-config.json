@@ -40,6 +40,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "spre-gosys",
+      "namespace": "tbd",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "salesforce",
       "namespace": "teamcrm",
       "cluster": "prod-external"
