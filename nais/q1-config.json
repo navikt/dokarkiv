@@ -38,11 +38,6 @@
     {
       "app": "spre-gosys",
       "namespace": "tbd",
-      "cluster": "dev-fss"
-    },
-    {
-      "app": "spre-gosys",
-      "namespace": "tbd",
       "cluster": "dev-gcp"
     },
     {
