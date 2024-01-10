@@ -52,7 +52,7 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 		Journalpost feilJournalstatus = opprettUlestJournalpost(NAV_NO, 2, FS, U);
 		Journalpost feilJournalposttype = opprettUlestJournalpost(NAV_NO, 2, E, I);
 		Journalpost feilregistrertSaksrelasjon = opprettUlestJournalpost(NAV_NO, 2, E, U);
-		Journalpost ulestAarsoppgave = opprettUlestJournalpost(NAV_NO, 2, E, I, "Årsoppgave");
+		Journalpost ulestAarsoppgave = opprettUlestJournalpost(NAV_NO, 2, E, U, "Årsoppgave");
 		feilregistrertSaksrelasjon.getSaksrelasjon().setFeilregistrert(true);
 
 		journalpostTestRepository.persistAll(asList(alleredeLest, feilKanal, forNyligEkspedert, feilJournalstatus, feilJournalposttype, feilregistrertSaksrelasjon, ulestAarsoppgave));
