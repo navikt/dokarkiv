@@ -52,9 +52,10 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 		Journalpost feilJournalstatus = opprettUlestJournalpost(NAV_NO, 2, FS, U);
 		Journalpost feilJournalposttype = opprettUlestJournalpost(NAV_NO, 2, E, I);
 		Journalpost feilregistrertSaksrelasjon = opprettUlestJournalpost(NAV_NO, 2, E, U);
+		Journalpost ulestAarsoppgave = opprettUlestJournalpost(NAV_NO, 2, E, U, "Årsoppgave");
 		feilregistrertSaksrelasjon.getSaksrelasjon().setFeilregistrert(true);
 
-		journalpostTestRepository.persistAll(asList(alleredeLest, feilKanal, forNyligEkspedert, feilJournalstatus, feilJournalposttype, feilregistrertSaksrelasjon));
+		journalpostTestRepository.persistAll(asList(alleredeLest, feilKanal, forNyligEkspedert, feilJournalstatus, feilJournalposttype, feilregistrertSaksrelasjon, ulestAarsoppgave));
 		var ulestJournalpostId = journalpostTestRepository.persist(aktuellUlestJournalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
@@ -104,6 +105,12 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 		OffsetDateTime now = OffsetDateTime.now();
 		Journalpost journalpost = generateBaseJp(2);
 		journalpost.setLestDato(now.minusHours(5));
+		return journalpost;
+	}
+
+	private Journalpost opprettUlestJournalpost(UtsendingsKanalCode kanalCode, int dagerSidenEkspedert, JournalStatusCode statusCode, JournalpostTypeCode journalpostTypeCode, String innhold) {
+		Journalpost journalpost = opprettUlestJournalpost(kanalCode, dagerSidenEkspedert, statusCode, journalpostTypeCode);
+		journalpost.setInnhold(innhold);
 		return journalpost;
 	}
 

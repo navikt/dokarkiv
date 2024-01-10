@@ -16,6 +16,7 @@ public interface SikkerhetsnivaaRepository extends HibernateRepository<Journalpo
 			and j.journalstatus = no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E
 			and j.utsendingskanal = :utsendingskanal
 			and j.lestDato is null
+			and j.innhold != 'Årsoppgave'
 			and j.ekspedertDato >= :ekspedertFra
 			and j.ekspedertDato <= :ekspedertTil
 			and j.changeStamp.createdDate >= :datoOpprettetStart
