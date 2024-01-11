@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.sikkerhetsnivaa;
 
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
@@ -52,7 +53,7 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 		Journalpost feilJournalstatus = opprettUlestJournalpost(NAV_NO, 2, FS, U);
 		Journalpost feilJournalposttype = opprettUlestJournalpost(NAV_NO, 2, E, I);
 		Journalpost feilregistrertSaksrelasjon = opprettUlestJournalpost(NAV_NO, 2, E, U);
-		Journalpost ulestAarsoppgave = opprettUlestJournalpost(NAV_NO, 2, E, U, "Årsoppgave");
+		Journalpost ulestAarsoppgave = opprettUlestJournalpost(NAV_NO, 2, E, U, FagomradeCode.STO);
 		feilregistrertSaksrelasjon.getSaksrelasjon().setFeilregistrert(true);
 
 		journalpostTestRepository.persistAll(asList(alleredeLest, feilKanal, forNyligEkspedert, feilJournalstatus, feilJournalposttype, feilregistrertSaksrelasjon, ulestAarsoppgave));
@@ -108,9 +109,9 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 		return journalpost;
 	}
 
-	private Journalpost opprettUlestJournalpost(UtsendingsKanalCode kanalCode, int dagerSidenEkspedert, JournalStatusCode statusCode, JournalpostTypeCode journalpostTypeCode, String innhold) {
+	private Journalpost opprettUlestJournalpost(UtsendingsKanalCode kanalCode, int dagerSidenEkspedert, JournalStatusCode statusCode, JournalpostTypeCode journalpostTypeCode, FagomradeCode tema) {
 		Journalpost journalpost = opprettUlestJournalpost(kanalCode, dagerSidenEkspedert, statusCode, journalpostTypeCode);
-		journalpost.setInnhold(innhold);
+		journalpost.setFagomrade(tema);
 		return journalpost;
 	}
 
