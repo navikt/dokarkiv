@@ -37,7 +37,7 @@
 		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
 		<jaxb2-basics-runtime.version>0.13.1</jaxb2-basics-runtime.version>
-		<google-cloud-storage.version>2.30.1</google-cloud-storage.version>
+		<google-cloud-storage.version>2.31.0</google-cloud-storage.version>
 		<tink.version>1.11.0</tink.version>
 		<tink-gcpkms.version>1.9.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.9</blaze-persistence.version>
