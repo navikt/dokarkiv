@@ -71,8 +71,7 @@ public class HentSakerRepository {
 		}
 
 		cq.where(predicates.toArray(new Predicate[0]));
-		cq.orderBy(cb.desc(sak.get("opprettetTidspunkt")));
-
+		cq.orderBy(cb.asc(sak.get("sakId")));
 
 		TypedQuery<Sak> query = entityManager.createQuery(cq);
 		return query.getResultList();
