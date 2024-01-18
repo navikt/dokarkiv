@@ -159,7 +159,7 @@ public class OpprettJournalpostService {
 			var harDuplikateSaker = listeMedSakId.size() > 1;
 
 			if (harDuplikateSaker) {
-				log.info("OpprettJournalpostService har duplikate saker={}. Velger den nyeste saken={}", listeMedSakId, valgtSak);
+				log.info("OpprettJournalpostService har duplikate saker={}. Velger den nyeste saken={}", listeMedSakId, valgtSak.getSakId());
 			}
 
 			return valgtSak;
