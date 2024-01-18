@@ -454,6 +454,11 @@
       "app": "innsending",
       "namespace": "aap",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "orkivar",
+      "namespace": "dab",
+      "cluster": "dev-gcp"
     }
   ]
 }

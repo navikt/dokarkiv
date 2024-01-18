@@ -36,6 +36,11 @@
   "AZURE_AD_ADMIN_ROLE": "9732f7dd-550f-4aba-b64a-e1db5428604b",
   "AZURE_IAC_RULES": [
     {
+      "app": "spre-gosys",
+      "namespace": "tbd",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "salesforce",
       "namespace": "teamcrm",
       "cluster": "dev-external"
@@ -496,6 +501,11 @@
     {
       "app": "macgyver",
       "namespace": "teamsykmelding",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "lps-oppfolgingsplan-mottak",
+      "namespace": "team-esyfo",
       "cluster": "dev-gcp"
     }
   ]
