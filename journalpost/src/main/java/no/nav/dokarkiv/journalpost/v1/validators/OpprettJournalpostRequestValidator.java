@@ -237,8 +237,8 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateKanal(OpprettJournalpostRequest request) {
 		if (request.isInngaaende()) {
-			if(request.getKanal() == null) {
-				throw new InputValideringFeiletException("Mottakskanal er påkrevd for inngående journalposter");
+			if (request.getKanal() == null) {
+				throw new InputValideringFeiletException("Kanal er påkrevd for inngående journalposter");
 			}
 
 			try {
@@ -256,8 +256,7 @@ public class OpprettJournalpostRequestValidator {
 						SER.name()));
 			}
 
-		} else if (isNotBlank(request.getKanal()))
-		{
+		} else if (isNotBlank(request.getKanal())) {
 			try {
 				UtsendingsKanalCode.valueOf(request.getKanal());
 			} catch (IllegalArgumentException e) {
