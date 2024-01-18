@@ -80,9 +80,7 @@ public class OpprettJournalpostRequestValidator {
 		if (isNotBlank(request.getBehandlingstema())) {
 			validateBehandlingstema(request.getBehandlingstema());
 		}
-		if (isNotBlank(request.getKanal())) {
-			validateKanal(request);
-		}
+		validateKanal(request);
 		if (request.getSak() != null) {
 			validateSak(request.getSak(), request.getBruker());
 		}
@@ -239,6 +237,10 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateKanal(OpprettJournalpostRequest request) {
 		if (request.isInngaaende()) {
+			if (request.getKanal() == null) {
+				throw new InputValideringFeiletException("Kanal er påkrevd for inngående journalposter");
+			}
+
 			try {
 				MottaksKanalCode.valueOf(request.getKanal());
 			} catch (IllegalArgumentException e) {
@@ -254,7 +256,7 @@ public class OpprettJournalpostRequestValidator {
 						SER.name()));
 			}
 
-		} else {
+		} else if (isNotBlank(request.getKanal())) {
 			try {
 				UtsendingsKanalCode.valueOf(request.getKanal());
 			} catch (IllegalArgumentException e) {

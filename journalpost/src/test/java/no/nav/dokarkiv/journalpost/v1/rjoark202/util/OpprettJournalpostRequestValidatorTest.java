@@ -595,6 +595,16 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
+	public void shouldThrowExceptionIfInngaaendeAndMottaksKanalIsNotSet() {
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.kanal(null)
+				.build();
+
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Kanal er påkrevd for inngående journalposter");
+	}
+
+	@Test
 	public void shouldThrowExceptionIfMottakskanalTemaCombinationIsInvalid() {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_FOR)
