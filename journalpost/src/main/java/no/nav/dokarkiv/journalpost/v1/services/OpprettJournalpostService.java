@@ -153,7 +153,16 @@ public class OpprettJournalpostService {
 		if (saker.isEmpty()) {
 			return hentSakerRepository.lagre(sak);
 		} else {
-			return saker.stream().max(Comparator.comparing(Sak::getSakId)).orElseThrow(UgyldigInputException::new);
+			var valgtSak = saker.stream().max(Comparator.comparing(Sak::getSakId)).orElseThrow(UgyldigInputException::new);
+
+			var listeMedSakId = saker.stream().map(Sak::getSakId).toList();
+			var harDuplikateSaker = listeMedSakId.size() > 1;
+
+			if (harDuplikateSaker) {
+				log.info("OpprettJournalpostService har duplikate saker={}. Velger den nyeste saken={}", listeMedSakId, valgtSak);
+			}
+
+			return valgtSak;
 		}
 	}
 
