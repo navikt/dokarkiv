@@ -765,7 +765,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
 				.tema(TEMA_FOR)
-				.tittel(INNHOLD)
 				.journalfoerendeEnhet("2340")
 				.bruker(Bruker.builder()
 						.id(BRUKER_ID_PERSON)
@@ -794,7 +793,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
-		assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: Journalpost.mottakskanal");
+		assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: Journalpost.innhold");
 		assertFalse(response.getBody().getJournalpostferdigstilt());
 
 		Journalpost journalpost = journalpostTestRepository.findById(parseLong(response.getBody().getJournalpostId())).orElseThrow();
@@ -812,7 +811,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(6);
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(5);
 	}
 
 	@Test
@@ -856,7 +855,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
 				.tema(TEMA_FOR)
-				.tittel(INNHOLD)
 				.journalfoerendeEnhet("9999")
 				.bruker(Bruker.builder()
 						.id(BRUKER_ID_PERSON)
@@ -885,7 +883,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
-		assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: Journalpost.mottakskanal");
+		assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: Journalpost.innhold");
 		assertFalse(response.getBody().getJournalpostferdigstilt());
 
 		Journalpost journalpost = journalpostTestRepository.findById(parseLong(response.getBody().getJournalpostId())).orElseThrow();

@@ -593,6 +593,15 @@ public class OpprettJournalpostRequestValidatorTest {
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
 		assertThat(exception.getMessage()).contains("kanal");
 	}
+	@Test
+	public void shouldThrowExceptionIfInngaaendeAndMottaksKanalIsNotSet() {
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.kanal(null)
+				.build();
+
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Mottakskanal er påkrevd for inngående journalposter");
+	}
 
 	@Test
 	public void shouldThrowExceptionIfMottakskanalTemaCombinationIsInvalid() {

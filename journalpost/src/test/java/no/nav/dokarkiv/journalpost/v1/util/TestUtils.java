@@ -47,6 +47,7 @@ import java.util.List;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
+import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
 
 /**
@@ -552,6 +553,7 @@ public class TestUtils {
 		return OpprettJournalpostRequest.builder()
 				.journalposttype(journalpostType)
 				.tema(FagomradeCode.FOR.name())
+				.kanal(journalpostType == INNGAAENDE ? "NAV_NO" : null)
 				.dokumenter(Collections.singletonList(
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)
