@@ -15,7 +15,6 @@ import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
@@ -34,11 +33,11 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
+import static java.lang.String.format;
+import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_METADATA;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
@@ -101,7 +100,7 @@ public class OppdaterJournalpostService {
 		Long sakId = null;
 
 		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 		if (oppdateringAvAvsenderMedDigitalMottakskanal(oppdaterJournalpostRequest, journalpost)) {
 			log.info("Avsender på digitalt innsendt journalpost med mottakskanal={} ble oppdatert", journalpost.getMottakskanal());
 			incrementOppdateringAvAvsenderMedDigitalMottakskanalCounter(meterRegistry);
@@ -112,6 +111,7 @@ public class OppdaterJournalpostService {
 		if (oppdaterJournalpostRequest.getSak() != null) {
 			Sakstype sakstype = oppdaterJournalpostRequest.getSak().getSakstype();
 			incrementSakstypeCounter(sakstype, "oppdaterjournalpost", meterRegistry);
+
 			if ((FAGSAK.equals(sakstype) || GENERELL_SAK.equals(sakstype)) && !PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())) {
 				sakId = identifiserEllerOpprettArkivsak(oppdaterJournalpostRequest);
 			}
@@ -150,13 +150,14 @@ public class OppdaterJournalpostService {
 		Long sakId = null;
 
 		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 
 		if (oppdaterJournalpostRequest.getSak() != null) {
 			Sakstype sakstype = oppdaterJournalpostRequest.getSak().getSakstype();
 			incrementSakstypeCounter(sakstype, "oppdaterjournalpost", meterRegistry);
+
 			if ((FAGSAK.equals(sakstype) || GENERELL_SAK.equals(sakstype)) && !PP01.equals(oppdaterJournalpostRequest.getSak().getFagsaksystem())) {
 				sakId = identifiserEllerOpprettArkivsak(oppdaterJournalpostRequest);
 			}
@@ -164,7 +165,7 @@ public class OppdaterJournalpostService {
 
 		ChangeTracker changeTracker = journalpostUpdater.updateFields(journalpost, oppdaterJournalpostRequest);
 		if (!changeTracker.getChanges().isEmpty()) {
-			populerAksjonslogg(journalpostId, ENDRE_METADATA,changeTracker.getChanges());
+			populerAksjonslogg(journalpostId, ENDRE_METADATA, changeTracker.getChanges());
 		}
 
 		changeTracker = saksrelasjonUpdater.updateFields(journalpost, oppdaterJournalpostRequest, sakId);
@@ -195,7 +196,7 @@ public class OppdaterJournalpostService {
 
 	private void assertDokumentInfoNotNull(DokumentInfo dokumentInfo, String journalpostId, String dokumentId) {
 		if (dokumentInfo == null) {
-			throw new DokumentIkkeFunnetException(String.format("Fant ingen dokument med dokumentId=%s paa journalpost med journalpostId=%s", dokumentId, journalpostId));
+			throw new DokumentIkkeFunnetException(format("Fant ingen dokument med dokumentId=%s paa journalpost med journalpostId=%s", dokumentId, journalpostId));
 		}
 	}
 
@@ -204,23 +205,15 @@ public class OppdaterJournalpostService {
 		List<Sak> saker = hentSakerRepository.finnSaker(SakSearchCriteria.builder()
 				.aktoerId(sak.getAktoerId())
 				.orgnr(sak.getOrgnr())
-				.tema(Collections.singletonList(sak.getTema()))
+				.tema(singletonList(sak.getTema()))
 				.applikasjon(sak.getApplikasjon())
 				.fagsakNr(sak.getFagsakNr())
 				.build());
+
 		if (saker.isEmpty()) {
 			return hentSakerRepository.lagre(sak).getSakId();
 		} else {
-			var valgtSak = saker.stream().map(Sak::getSakId).max(Comparator.naturalOrder()).orElseThrow(UgyldigInputException::new);
-
-			var listeMedSakId = saker.stream().map(Sak::getSakId).toList();
-			var harDuplikateSaker = listeMedSakId.size() > 1;
-
-			if (harDuplikateSaker) {
-				log.info("OppdaterJournalpostService/knyttTilAnnenSak har duplikate saker={}. Velger den nyeste saken={}", listeMedSakId, valgtSak);
-			}
-
-			return valgtSak;
+			return saker.get(0).getSakId(); // Hent eldste sak
 		}
 	}
 
@@ -249,6 +242,6 @@ public class OppdaterJournalpostService {
 
 	private static boolean oppdateringAvAvsenderMedDigitalMottakskanal(OppdaterJournalpostRequest oppdaterJournalpostRequest, Journalpost journalpost) {
 		return (DIGITALE_KANALER.contains(journalpost.getMottakskanal()) && oppdaterJournalpostRequest.getAvsenderMottaker() != null) &&
-				(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn() != null || oppdaterJournalpostRequest.getAvsenderMottaker().getId() != null);
+			   (oppdaterJournalpostRequest.getAvsenderMottaker().getNavn() != null || oppdaterJournalpostRequest.getAvsenderMottaker().getId() != null);
 	}
 }

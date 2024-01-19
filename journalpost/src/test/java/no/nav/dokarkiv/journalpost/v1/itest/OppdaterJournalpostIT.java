@@ -608,6 +608,51 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void happyPathVelgEldsteSakBlantToEksisterendeSaker() {
+		clearSakRepository();
+		restStsToken();
+		stubAzure();
+		happyAktoerIdStub();
+
+		no.nav.dokarkiv.core.domain.entities.Sak eldsteSak = createGenerellSak();
+		sakTestRepository.persist(eldsteSak);
+		commitAndStartNewTransaction();
+
+		no.nav.dokarkiv.core.domain.entities.Sak nyesteSak = createGenerellSak();
+		sakTestRepository.persist(nyesteSak);
+		commitAndStartNewTransaction();
+
+		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+				.endretAvNavn("saksbehandlersen");
+
+		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Long journalpostId = journalpost.getJournalpostId();
+
+		assertEquals(sakTestRepository.count(), 2);
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder()
+						.sakstype(Sakstype.GENERELL_SAK)
+						.build())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
+				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+
+		TestTransaction.start();
+		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
+		assertEquals(saksrelasjon.getSakId(), eldsteSak.getSakId());
+		assertEquals(saksrelasjon.getFagsystem(), FS22);
+		TestTransaction.end();
+	}
+
+	@Test
 	public void happyPathNyFagsak() {
 		clearSakRepository();
 		restStsToken();

@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
-import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
@@ -23,7 +22,6 @@ import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.core.sporing.DefaultSporingPopulator;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
-import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
@@ -33,13 +31,13 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
+import static java.util.Comparator.comparing;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER;
@@ -51,7 +49,9 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO.arkivElemen
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OVERSTYR_INNSYN;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementEksternReferanseIdIkkeSattCounter;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementSakstypeCounter;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -134,7 +134,8 @@ public class OpprettJournalpostService {
 		if (request.getSak() != null) {
 			Sakstype sakstype = request.getSak().getSakstype();
 			incrementSakstypeCounter(sakstype, "opprettjournalpost", meterRegistry);
-			if ((FAGSAK.equals(sakstype) || Sakstype.GENERELL_SAK.equals(sakstype)) && !Fagsaksystem.PP01.equals(request.getSak().getFagsaksystem())) {
+
+			if ((FAGSAK.equals(sakstype) || GENERELL_SAK.equals(sakstype)) && !PP01.equals(request.getSak().getFagsaksystem())) {
 				return Optional.of(identifiserEllerOpprettArkivsak(request));
 			}
 		}
@@ -150,19 +151,11 @@ public class OpprettJournalpostService {
 				.applikasjon(sak.getApplikasjon())
 				.fagsakNr(sak.getFagsakNr())
 				.build());
+
 		if (saker.isEmpty()) {
 			return hentSakerRepository.lagre(sak);
 		} else {
-			var valgtSak = saker.stream().max(Comparator.comparing(Sak::getSakId)).orElseThrow(UgyldigInputException::new);
-
-			var listeMedSakId = saker.stream().map(Sak::getSakId).toList();
-			var harDuplikateSaker = listeMedSakId.size() > 1;
-
-			if (harDuplikateSaker) {
-				log.info("OpprettJournalpostService har duplikate saker={}. Velger den nyeste saken={}", listeMedSakId, valgtSak.getSakId());
-			}
-
-			return valgtSak;
+			return saker.get(0); // Hent eldste sak
 		}
 	}
 

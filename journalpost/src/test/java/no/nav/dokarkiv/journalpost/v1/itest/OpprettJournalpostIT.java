@@ -462,6 +462,40 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void happyPathVelgEldsteSakBlantToEksisterendeSaker() {
+		clearSakRepository();
+		restStsToken();
+		stubAzure();
+		happyAktoerIdStub();
+
+		no.nav.dokarkiv.core.domain.entities.Sak eldsteSak = createGenerellSak();
+		sakTestRepository.persist(eldsteSak);
+		commitAndStartNewTransaction();
+
+		no.nav.dokarkiv.core.domain.entities.Sak nyesteSak = createGenerellSak();
+		sakTestRepository.persist(nyesteSak);
+		commitAndStartNewTransaction();
+
+		assertEquals(2, sakTestRepository.count());
+
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.GENERELL_SAK).build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(2, sakTestRepository.count());
+
+		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
+		assertEquals(saksrelasjon.getSakId(), eldsteSak.getSakId());
+		assertEquals(saksrelasjon.getFagsystem(), FS22);
+	}
+
+	@Test
 	public void happyPathNyFagsak() {
 		clearSakRepository();
 		restStsToken();
