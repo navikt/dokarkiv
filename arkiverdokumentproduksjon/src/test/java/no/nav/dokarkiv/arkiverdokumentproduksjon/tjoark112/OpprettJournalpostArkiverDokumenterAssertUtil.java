@@ -26,8 +26,6 @@ import static org.hamcrest.Matchers.hasEntry;
 
 /**
  * Assert util specific for operation OpprettJournalpostArkiverDokument
- *
- * @author Stig Strøm
  */
 public class OpprettJournalpostArkiverDokumenterAssertUtil {
 
@@ -44,9 +42,7 @@ public class OpprettJournalpostArkiverDokumenterAssertUtil {
 
 	private static void assertJournalpostFields(no.nav.dokarkiv.core.domain.entities.Journalpost domainJournalpost) {
 		assertThat(domainJournalpost.getFagomrade(), is(OpprettJournalpostArkiverDokumenterDataUtil.FAGOMRADE));
-		assertThat(
-				domainJournalpost.getJournalForendeEnhetId(),
-				is(OpprettJournalpostArkiverDokumenterDataUtil.JOURNALFOERENDE_ENHET_REF));
+		assertThat(domainJournalpost.getJournalForendeEnhetId(), is(OpprettJournalpostArkiverDokumenterDataUtil.JOURNALFOERENDE_ENHET_REF));
 		assertThat(domainJournalpost.getOpprettetAvNavn(), is(OpprettJournalpostArkiverDokumenterDataUtil.OPPRETTET_AV_NAVN));
 		assertThat(domainJournalpost.getInnhold(), is(OpprettJournalpostArkiverDokumenterDataUtil.INNHOLD));
 		assertThat(domainJournalpost.getAvsenderMottaker(), is(OpprettJournalpostArkiverDokumenterDataUtil.EKSTERNPART_NAVN));
@@ -54,6 +50,7 @@ public class OpprettJournalpostArkiverDokumenterAssertUtil {
 		assertThat(domainJournalpost.getLand(), is(OpprettJournalpostArkiverDokumenterDataUtil.LAND));
 		assertThat(domainJournalpost.getDokumentDato(), is(OpprettJournalpostArkiverDokumenterDataUtil.DATO_DOKUMENT));
 		assertThat(domainJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
+		assertThat(domainJournalpost.getKanalReferanseId(), is(BESTILLINGS_ID));
 	}
 
 	private static void assertHovedDokumentInfo(DokumentInfo domainDokumentInfo) {

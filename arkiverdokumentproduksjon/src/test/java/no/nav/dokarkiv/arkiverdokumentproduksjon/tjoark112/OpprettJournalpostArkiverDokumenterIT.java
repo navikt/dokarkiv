@@ -42,10 +42,12 @@ public class OpprettJournalpostArkiverDokumenterIT extends AbstractArkiverdokume
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		when(dokprodMellomlagerStorage.downloadObject(eq(FILREFERANSE_GCS), anyString())).thenReturn((Optional.of("{\n" +
-				"  \"axml\" : \"" + DOKUMENT_INNHOLD_BASE64 + "\",\n" +
-				"  \"pdf\": \"" + DOKUMENT_INNHOLD_BASE64 + "\"\n" +
-				"}")));
+		when(dokprodMellomlagerStorage.downloadObject(eq(FILREFERANSE_GCS), anyString())).thenReturn((Optional.of("""
+				{
+				  "axml" : "%s",
+				  "pdf": "%s"
+				}
+				""".formatted(DOKUMENT_INNHOLD_BASE64, DOKUMENT_INNHOLD_BASE64))));
 	}
 
 	@Test
