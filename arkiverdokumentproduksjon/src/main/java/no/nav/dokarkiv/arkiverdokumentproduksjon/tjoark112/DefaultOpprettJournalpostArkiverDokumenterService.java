@@ -101,6 +101,8 @@ public class DefaultOpprettJournalpostArkiverDokumenterService implements Oppret
 	}
 
 	private Journalpost findPreviousJournalforing(OpprettJournalpostArkiverDokumenterRequestTo requestTo) {
+		// Denne kan endres til å sjekke etter duplikat på kanalReferanseId i stedet for i dokumentinfo.tilleggsopplysninger
+		// Kan utføres etter at endringen der denne kommentaren ligger har vist seg å være stabil
 		final DokumentInfo dokumentInfo = requestTo.getJournalpost().findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		final String bestillingsId = dokumentInfo.getTilleggsopplysninger().get(BESTILLINGS_ID_KEY);
 		if (isNullOrEmpty(bestillingsId)) {

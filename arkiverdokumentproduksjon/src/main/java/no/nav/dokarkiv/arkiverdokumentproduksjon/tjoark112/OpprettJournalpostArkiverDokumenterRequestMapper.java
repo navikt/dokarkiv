@@ -73,7 +73,7 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 				.getOpplysningsverdi();
 		addJournalpostDokumentInfoRelasjon(domainJournalpost, dokumentInfoHoveddokument, TilknyttetJournalpostSomCode.HOVEDDOKUMENT, bestillingsId);
 		dokumentInfoVedleggList.forEach(dokumentInfo -> addJournalpostDokumentInfoRelasjon(domainJournalpost, dokumentInfo, TilknyttetJournalpostSomCode.VEDLEGG, bestillingsId));
-
+		domainJournalpost.setKanalReferanseId(bestillingsId);
 		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder
 				.currentRequestContext().getComponentId());
 
