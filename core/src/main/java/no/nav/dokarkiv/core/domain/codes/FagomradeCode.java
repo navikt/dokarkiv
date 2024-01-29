@@ -98,7 +98,7 @@ public enum FagomradeCode {
 	SAP,
 	/** Serviceklager */
 	SER,
-	/** Stønadsregnskap */
+	/** Regnskap/utbetaling/årsoppgave */
 	STO,
 	/** Sykepenger */
 	SYK,
