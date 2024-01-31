@@ -507,6 +507,11 @@
       "app": "lps-oppfolgingsplan-mottak",
       "namespace": "team-esyfo",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "spinosaurus",
+      "namespace": "helsearbeidsgiver",
+      "cluster": "dev-gcp"
     }
   ]
 }
