@@ -492,6 +492,11 @@
       "app": "lps-oppfolgingsplan-mottak",
       "namespace": "team-esyfo",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "spinosaurus",
+      "namespace": "helsearbeidsgiver",
+      "cluster": "prod-gcp"
     }
   ]
 }
