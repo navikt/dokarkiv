@@ -1,7 +1,18 @@
+CREATE TABLE T_K_BRUKER_ID_T
+(
+    K_BRUKER_ID_T    VARCHAR2(40)  NOT NULL
+        CONSTRAINT T_K_BRUKER_ID_T
+        PRIMARY KEY,
+    DEKODE         VARCHAR2(200) NOT NULL,
+    OPPRETTET_AV   VARCHAR2(20)  NOT NULL,
+    DATO_ENDRET    TIMESTAMP(6)  NULL,
+    ENDRET_AV      VARCHAR2(20)  NULL
+);
 
-update T_K_FAGOMRADE
-set dekode = 'Regnskap/utbetaling/årsoppgave',
-    dato_endret = timestamp '2023-01-23 14:00:00',
-    endret_av = 'MMA-7278'
-where k_fagomrade='STO'
-;
+Insert Into T_K_BRUKER_ID_T (K_BRUKER_ID_T, DEKODE, OPPRETTET_AV )
+VALUES ('FNR', 'Identitetsnummer i Folkeregisteret. Kan være fødselsnummer eller D-nummer. Identifiserer personer som har tilknytning til Norge',
+        'MMA-7293');
+
+Insert Into T_K_BRUKER_ID_T (K_BRUKER_ID_T, DEKODE, OPPRETTET_AV )
+VALUES ('ORGNR', 'Organisasjonsnummer i Enhetsregisteret og Foretaksregisteret. Identifiserer juridiske personer som bedrifter i Norge',
+        'MMA-7293');
