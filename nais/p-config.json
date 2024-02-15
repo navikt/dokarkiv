@@ -278,6 +278,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "eux-journal",
+      "namespace": "eessibasis",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "eessi-pensjon-journalforing",
       "namespace": "eessipensjon",
       "cluster": "prod-gcp"
