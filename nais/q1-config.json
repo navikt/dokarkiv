@@ -319,6 +319,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "eux-journal-q1",
+      "namespace": "eessibasis",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "syfosmsak",
       "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
