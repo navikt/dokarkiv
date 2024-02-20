@@ -40,6 +40,7 @@ import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.valueOf;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO_UINNLOGGET;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
@@ -353,6 +354,16 @@ public class OpprettJournalpostRequestValidator {
 		if (!isEmpty(dokument.getDokumentvarianter())) {
 			dokument.getDokumentvarianter().forEach(dokumentVariant -> validateDokumentVariant(dokumentIdx, dokumentVariant));
 			validateUniqueVariant(dokument.getDokumentvarianter(), dokument);
+			validateAtleastOneArkivVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
+		}
+	}
+
+	public void validateAtleastOneArkivVariantFormatPerDokument(List<DokumentVariant> dokumentvarianter, Dokument dokument){
+		if(dokumentvarianter.stream().noneMatch(dokumentVariant -> dokumentVariant.getVariantformat().equals(ARKIV.name()))){
+			throw new InputValideringFeiletException(format("Alle dokumenter må innholde minst en dokumentvariant av typen %s. %s inneholder ingen varianter av type %s",
+					ARKIV.name(),
+					dokument.getTittel(),
+					ARKIV.name()));
 		}
 	}
 
@@ -399,7 +410,7 @@ public class OpprettJournalpostRequestValidator {
 					VALIDERER_IKKE_MOT_KODEVERK,
 					Arrays.toString(VariantFormatCode.values())));
 		}
-		if (variantFormat.equals(VariantFormatCode.ARKIV.name())
+		if (variantFormat.equals(ARKIV.name())
 				&& !Arrays.asList(PDF, PDFA).contains(valueOf(dokumentVariant.getFiltype()))) {
 			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV",
 					dokumentIdx, variantFormat));
