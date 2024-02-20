@@ -835,6 +835,18 @@ public class OpprettJournalpostRequestValidatorTest {
 		assertThat(exception.getMessage()).contains("Alle dokumenter må innholde minst en dokumentvariant av typen ARKIV.");
 	}
 
+	@Test
+	public void shoudThrowExeceptionIfNotAtleastOneDocumentIsPresent(){
+		OpprettJournalpostRequest request = OpprettJournalpostRequest.builder()
+				.journalposttype(INNGAAENDE)
+				.tema(FagomradeCode.FOR.name())
+				.kanal("NAV_NO")
+				.build();
+
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Kan ikke opprette journalpost uten dokumenter.");
+	}
+
 	@ParameterizedTest
 	@ValueSource(strings = {"alfanumeriskString1", "65efa501-1554-4538-a553-1db5b31ad40b", "StrengMed\\backslash", "epost@adresse.noe", "AlleGyldigeTegn2:;,.=-_~$&+*\"\\@!"})
 	void validEksternReferanseId(String eksternReferanseId) {
