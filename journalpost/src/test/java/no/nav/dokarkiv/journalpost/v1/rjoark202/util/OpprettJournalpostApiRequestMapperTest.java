@@ -365,20 +365,6 @@ public class OpprettJournalpostApiRequestMapperTest {
 	}
 
 	@Test
-	void shouldMapInngaaendeJournalpostWithoutDokumentvarianter() {
-		OpprettJournalpostRequest request = createBaseRequest(JournalpostType.INNGAAENDE)
-				.dokumenter(List.of(
-						Dokument.builder()
-								.tittel(DOKUMENT_TITTEL1)
-								.brevkode(BREVKODE1)
-								.dokumentKategori(DOKUMENTKATEGORI_SED)
-								.build()))
-				.build();
-		Journalpost jp = mapper.map(request, null);
-		assertEquals(jp.getJournalstatus(), JournalStatusCode.OD);
-	}
-
-	@Test
 	void shouldMapInngaaendeJournalpostWithDokumentvarianter() {
 		OpprettJournalpostRequest request = createBaseRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(List.of(

@@ -52,7 +52,6 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.trim;
-import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
 
 @Component
 public class OpprettJournalpostApiRequestMapper {
@@ -144,16 +143,7 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private JournalStatusCode mapJournalstatus(OpprettJournalpostRequest request) {
-		if (manglerDokumentvarianter(request)) {
-			return JournalpostType.INNGAAENDE.equals(request.getJournalposttype()) ? JournalStatusCode.OD : JournalStatusCode.R;
-		} else {
 			return JournalpostType.INNGAAENDE.equals(request.getJournalposttype()) ? JournalStatusCode.M : JournalStatusCode.D;
-		}
-	}
-
-	private boolean manglerDokumentvarianter(OpprettJournalpostRequest request) {
-		// sjekker om ett eller flere dokumenter mangler dokumentvarianter
-		return request.getDokumenter().stream().anyMatch(d -> isEmpty(d.getDokumentvarianter()));
 	}
 
 	private Map<String, String> mapTilleggsopplysninger(OpprettJournalpostRequest request) {
