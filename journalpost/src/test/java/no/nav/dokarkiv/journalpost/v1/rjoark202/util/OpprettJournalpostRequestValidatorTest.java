@@ -818,7 +818,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionVariantformatArkivIsMissing() {
+	public void shouldThrowExceptionWhenVariantformatArkivIsMissing() {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(List.of(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
@@ -833,6 +833,33 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
 		assertThat(exception.getMessage()).contains("Alle dokumenter må innholde minst en dokumentvariant av typen ARKIV.");
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenADocumentHasMultipleVariantformatArkiv() {
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.dokumenter(List.of(Dokument.builder()
+						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.dokumentvarianter(List.of(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.build(),
+								DokumentVariant.builder()
+										.filtype(FILTYPE_XML)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.variantformat(VARIANTFORMAT_ORIGINAL)
+										.build(),
+								DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.build()))
+						.build()))
+				.build();
+
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
+		assertThat(exception.getMessage()).contains("Variantformat=ARKIV funnet 2 ganger");
 	}
 
 	@Test
