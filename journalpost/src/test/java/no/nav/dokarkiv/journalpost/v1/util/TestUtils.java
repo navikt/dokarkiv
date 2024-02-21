@@ -561,9 +561,9 @@ public class TestUtils {
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
 								.dokumentvarianter(List.of(
 										DokumentVariant.builder()
-												.filtype(FILTYPE_XML)
+												.filtype(FILTYPE_PDF)
 												.fysiskDokument(FYSISK_DOKUMENT)
-												.variantformat(VARIANTFORMAT_ORIGINAL)
+												.variantformat(VARIANTFORMAT_ARKIV)
 												.build()))
 								.build()));
 	}

@@ -833,7 +833,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(()-> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessage("Alle dokumenter må innholde en dokumentvariant av typen ARKIV");
+				.withMessageContaining("Alle dokumenter må innholde en dokumentvariant av typen ARKIV");
 	}
 
 	@Test
@@ -845,7 +845,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Alle dokumenter må innholde en dokumentvariant av typen ARKIV.");
+		assertThat(exception.getMessage()).contains("Alle dokumenter må innholde en dokumentvariant av typen ARKIV");
 	}
 
 	@Test
