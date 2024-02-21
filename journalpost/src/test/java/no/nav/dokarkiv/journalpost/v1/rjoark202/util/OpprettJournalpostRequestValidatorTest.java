@@ -791,7 +791,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfDuplicateVariantformat() {
+	public void shouldThrowExceptionWhenDocumentHasDuplicateVariantformat() {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(List.of(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
