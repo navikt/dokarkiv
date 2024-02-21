@@ -813,8 +813,9 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build()))
 				.build();
 
-		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokumenter.dokumentvariant.variantformat");
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
+				.withMessageContaining("Dokumenter.dokumentvariant.variantformat");
 	}
 
 	@Test
@@ -832,7 +833,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
-				.isThrownBy(()-> validator.validateRequest(request, FORSOEKFERDIGSTILL))
+				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
 				.withMessageContaining("Alle dokumenter må innholde en dokumentvariant av typen ARKIV");
 	}
 
@@ -844,8 +845,9 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build()))
 				.build();
 
-		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Alle dokumenter må innholde en dokumentvariant av typen ARKIV");
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
+				.withMessageContaining("Alle dokumenter må innholde en dokumentvariant av typen ARKIV");
 	}
 
 	@Test
@@ -871,8 +873,9 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build()))
 				.build();
 
-		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Variantformat=ARKIV funnet 2 ganger");
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
+				.withMessageContaining("Variantformat=ARKIV funnet 2 ganger");
 	}
 
 	@Test
@@ -883,8 +886,9 @@ public class OpprettJournalpostRequestValidatorTest {
 				.kanal("NAV_NO")
 				.build();
 
-		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Kan ikke opprette journalpost uten dokumenter.");
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
+				.withMessageContaining("Kan ikke opprette journalpost uten dokumenter");
 	}
 
 	@ParameterizedTest
