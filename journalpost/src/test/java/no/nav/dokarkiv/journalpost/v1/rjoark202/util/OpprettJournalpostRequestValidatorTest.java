@@ -863,7 +863,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shoudThrowExeceptionIfNotAtleastOneDocumentIsPresent(){
+	public void shoudThrowExeceptionIfNotAtleastOneDocumentIsPresent() {
 		OpprettJournalpostRequest request = OpprettJournalpostRequest.builder()
 				.journalposttype(INNGAAENDE)
 				.tema(FagomradeCode.FOR.name())

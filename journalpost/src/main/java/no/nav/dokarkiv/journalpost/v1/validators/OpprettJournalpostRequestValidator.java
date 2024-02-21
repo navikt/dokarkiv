@@ -358,8 +358,8 @@ public class OpprettJournalpostRequestValidator {
 		}
 	}
 
-	public void validateAtleastOneArkivVariantFormatPerDokument(List<DokumentVariant> dokumentvarianter, Dokument dokument){
-		if(dokumentvarianter.stream().noneMatch(dokumentVariant -> dokumentVariant.getVariantformat().equals(ARKIV.name()))){
+	public void validateAtleastOneArkivVariantFormatPerDokument(List<DokumentVariant> dokumentvarianter, Dokument dokument) {
+		if (dokumentvarianter.stream().noneMatch(dokumentVariant -> dokumentVariant.getVariantformat().equals(ARKIV.name()))) {
 			throw new InputValideringFeiletException(format("Alle dokumenter må innholde minst en dokumentvariant av typen %s. %s inneholder ingen varianter av type %s",
 					ARKIV.name(),
 					dokument.getTittel(),

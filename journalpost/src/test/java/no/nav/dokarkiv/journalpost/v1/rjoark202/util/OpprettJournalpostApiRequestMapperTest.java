@@ -280,11 +280,11 @@ public class OpprettJournalpostApiRequestMapperTest {
 		var exception = assertThrows(InputValideringFeiletException.class, () -> mapper.map(request, SAK_ID));
 		assertThat(exception.getMessage()).contains(
 				"""
-				Kan ikke legge saksrelasjon til journalpost. For fagsaker og generelle saker må en av følgende regler være oppfylt:
-				1) sakstype er FAGSAK og fagsaksystem er PP01
-				2) sakstype er FAGSAK eller GENERELL_SAK, og fagsaksystem er ikke PP01
-				Mottatt: sakstype=FAGSAK, fagsaksystem=null
-				""");
+						Kan ikke legge saksrelasjon til journalpost. For fagsaker og generelle saker må en av følgende regler være oppfylt:
+						1) sakstype er FAGSAK og fagsaksystem er PP01
+						2) sakstype er FAGSAK eller GENERELL_SAK, og fagsaksystem er ikke PP01
+						Mottatt: sakstype=FAGSAK, fagsaksystem=null
+						""");
 	}
 
 	@Test
