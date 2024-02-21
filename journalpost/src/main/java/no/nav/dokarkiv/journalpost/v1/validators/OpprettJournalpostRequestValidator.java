@@ -354,13 +354,15 @@ public class OpprettJournalpostRequestValidator {
 		if (!isEmpty(dokument.getDokumentvarianter())) {
 			dokument.getDokumentvarianter().forEach(dokumentVariant -> validateDokumentVariant(dokumentIdx, dokumentVariant));
 			validateUniqueVariant(dokument.getDokumentvarianter(), dokument);
-			validateAtleastOneArkivVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
+			validateOneArkivVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
+		}else {
+			throw new InputValideringFeiletException(format("Alle dokumenter må innholde en dokumentvariant av typen %S", ARKIV.name()));
 		}
 	}
 
-	public void validateAtleastOneArkivVariantFormatPerDokument(List<DokumentVariant> dokumentvarianter, Dokument dokument) {
-		if (dokumentvarianter.stream().noneMatch(dokumentVariant -> dokumentVariant.getVariantformat().equals(ARKIV.name()))) {
-			throw new InputValideringFeiletException(format("Alle dokumenter må innholde minst en dokumentvariant av typen %s. %s inneholder ingen varianter av type %s",
+	public void validateOneArkivVariantFormatPerDokument(List<DokumentVariant> dokumentvarianter, Dokument dokument) {
+		if (dokumentvarianter.stream().filter(dokumentVariant -> dokumentVariant.getVariantformat().equals(ARKIV.name())).count() != 1) {
+			throw new InputValideringFeiletException(format("Alle dokumenter må innholde en dokumentvariant av typen %s. %s inneholder ingen varianter av type %s",
 					ARKIV.name(),
 					dokument.getTittel(),
 					ARKIV.name()));

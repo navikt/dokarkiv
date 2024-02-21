@@ -831,8 +831,21 @@ public class OpprettJournalpostRequestValidatorTest {
 						.build()))
 				.build();
 
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(()-> validator.validateRequest(request, FORSOEKFERDIGSTILL))
+				.withMessage("Alle dokumenter må innholde en dokumentvariant av typen ARKIV");
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenDocumentHasNoVariantformat() {
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.dokumenter(List.of(Dokument.builder()
+						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.build()))
+				.build();
+
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Alle dokumenter må innholde minst en dokumentvariant av typen ARKIV.");
+		assertThat(exception.getMessage()).contains("Alle dokumenter må innholde en dokumentvariant av typen ARKIV.");
 	}
 
 	@Test
