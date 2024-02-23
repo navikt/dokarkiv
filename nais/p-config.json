@@ -484,6 +484,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "tilleggsstonader-integrasjoner",
+      "namespace": "tilleggsstonader",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "macgyver",
       "namespace": "teamsykmelding",
       "cluster": "prod-gcp"
