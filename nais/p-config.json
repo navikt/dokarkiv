@@ -148,6 +148,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "isarbeidsuforhet",
+      "namespace": "teamsykefravr",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "journalforing-frontend",
       "namespace": "isa",
       "cluster": "prod-gcp"
