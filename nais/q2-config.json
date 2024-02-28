@@ -469,6 +469,11 @@
       "app": "orkivar",
       "namespace": "dab",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "soknadsarkiverer",
+      "namespace": "team-soknad",
+      "cluster": "dev-gcp"
     }
   ]
 }
