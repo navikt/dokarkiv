@@ -1171,7 +1171,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertThat(responseFirst.getBody().getJournalpostId()).isNotNull();
 		assertFalse(responseFirst.getBody().getJournalpostferdigstilt());
 		assertThat(responseFirst.getBody().getJournalstatus()).isEqualTo("MIDLERTIDIG");
-		assertThat(responseFirst.getBody().getMelding()).contains("mangler arkivvariant");
 		assertThat(responseFirst.getBody().getDokumenter()).hasSize(1);
 		assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
 		assertNotNull(responseSecond.getBody());

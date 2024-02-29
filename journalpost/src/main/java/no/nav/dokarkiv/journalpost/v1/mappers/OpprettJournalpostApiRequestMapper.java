@@ -52,7 +52,6 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.trim;
-import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
 
 @Component
 public class OpprettJournalpostApiRequestMapper {
@@ -144,16 +143,7 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private JournalStatusCode mapJournalstatus(OpprettJournalpostRequest request) {
-		if (manglerDokumentvarianter(request)) {
-			return JournalpostType.INNGAAENDE.equals(request.getJournalposttype()) ? JournalStatusCode.OD : JournalStatusCode.R;
-		} else {
-			return JournalpostType.INNGAAENDE.equals(request.getJournalposttype()) ? JournalStatusCode.M : JournalStatusCode.D;
-		}
-	}
-
-	private boolean manglerDokumentvarianter(OpprettJournalpostRequest request) {
-		// sjekker om ett eller flere dokumenter mangler dokumentvarianter
-		return request.getDokumenter().stream().anyMatch(d -> isEmpty(d.getDokumentvarianter()));
+		return JournalpostType.INNGAAENDE.equals(request.getJournalposttype()) ? JournalStatusCode.M : JournalStatusCode.D;
 	}
 
 	private Map<String, String> mapTilleggsopplysninger(OpprettJournalpostRequest request) {
@@ -222,12 +212,12 @@ public class OpprettJournalpostApiRequestMapper {
 		} else {
 			throw new InputValideringFeiletException(format(
 					"""
-					Kan ikke legge saksrelasjon til journalpost. En av følgende regler må være oppfylt:
-					1) sakstype er FAGSAK eller GENERELL_SAK, og fagsaksystem er ikke PP01
-					2) sakstype er ARKIVSAK eller ikke satt
-					3) sakstype er FAGSAK og fagsaksystem er PP01.
-					Mottatt: sakstype=%s, fagsaksystem=%s, fagsakId=%s
-					""",
+							Kan ikke legge saksrelasjon til journalpost. En av følgende regler må være oppfylt:
+							1) sakstype er FAGSAK eller GENERELL_SAK, og fagsaksystem er ikke PP01
+							2) sakstype er ARKIVSAK eller ikke satt
+							3) sakstype er FAGSAK og fagsaksystem er PP01.
+							Mottatt: sakstype=%s, fagsaksystem=%s, fagsakId=%s
+							""",
 					request.getSak().getSakstype(),
 					request.getSak().getFagsaksystem(),
 					request.getSak().getFagsakId()));
@@ -262,16 +252,16 @@ public class OpprettJournalpostApiRequestMapper {
 		if (isValidFagsaksystem(sakstype, fagsaksystem) && PP01.equals(fagsaksystem)) {
 			return FagsystemCode.PEN;
 		} else if ((isValidFagsaksystem(sakstype, fagsaksystem) || Sakstype.GENERELL_SAK.equals(sakstype))
-				   && !PP01.equals(fagsaksystem)) {
+				&& !PP01.equals(fagsaksystem)) {
 			return FagsystemCode.FS22;
 		} else {
 			throw new InputValideringFeiletException(format(
 					"""
-					Kan ikke legge saksrelasjon til journalpost. For fagsaker og generelle saker må en av følgende regler være oppfylt:
-					1) sakstype er FAGSAK og fagsaksystem er PP01
-					2) sakstype er FAGSAK eller GENERELL_SAK, og fagsaksystem er ikke PP01
-					Mottatt: sakstype=%s, fagsaksystem=%s
-					""",
+							Kan ikke legge saksrelasjon til journalpost. For fagsaker og generelle saker må en av følgende regler være oppfylt:
+							1) sakstype er FAGSAK og fagsaksystem er PP01
+							2) sakstype er FAGSAK eller GENERELL_SAK, og fagsaksystem er ikke PP01
+							Mottatt: sakstype=%s, fagsaksystem=%s
+							""",
 					sakstype,
 					fagsaksystem));
 		}

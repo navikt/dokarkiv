@@ -280,11 +280,11 @@ public class OpprettJournalpostApiRequestMapperTest {
 		var exception = assertThrows(InputValideringFeiletException.class, () -> mapper.map(request, SAK_ID));
 		assertThat(exception.getMessage()).contains(
 				"""
-				Kan ikke legge saksrelasjon til journalpost. For fagsaker og generelle saker må en av følgende regler være oppfylt:
-				1) sakstype er FAGSAK og fagsaksystem er PP01
-				2) sakstype er FAGSAK eller GENERELL_SAK, og fagsaksystem er ikke PP01
-				Mottatt: sakstype=FAGSAK, fagsaksystem=null
-				""");
+						Kan ikke legge saksrelasjon til journalpost. For fagsaker og generelle saker må en av følgende regler være oppfylt:
+						1) sakstype er FAGSAK og fagsaksystem er PP01
+						2) sakstype er FAGSAK eller GENERELL_SAK, og fagsaksystem er ikke PP01
+						Mottatt: sakstype=FAGSAK, fagsaksystem=null
+						""");
 	}
 
 	@Test
@@ -362,20 +362,6 @@ public class OpprettJournalpostApiRequestMapperTest {
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerUtlandOrganisasjon());
 		Journalpost jp = mapper.map(request, null);
 		assertEquals(AvsenderMottakerIdTypeCode.UTL_ORG, jp.getAvsenderMottakerIdType());
-	}
-
-	@Test
-	void shouldMapInngaaendeJournalpostWithoutDokumentvarianter() {
-		OpprettJournalpostRequest request = createBaseRequest(JournalpostType.INNGAAENDE)
-				.dokumenter(List.of(
-						Dokument.builder()
-								.tittel(DOKUMENT_TITTEL1)
-								.brevkode(BREVKODE1)
-								.dokumentKategori(DOKUMENTKATEGORI_SED)
-								.build()))
-				.build();
-		Journalpost jp = mapper.map(request, null);
-		assertEquals(jp.getJournalstatus(), JournalStatusCode.OD);
 	}
 
 	@Test

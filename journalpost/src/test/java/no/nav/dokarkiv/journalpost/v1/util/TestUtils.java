@@ -559,6 +559,12 @@ public class TestUtils {
 								.tittel(DOKUMENT_TITTEL1)
 								.brevkode(BREVKODE1)
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(List.of(
+										DokumentVariant.builder()
+												.filtype(FILTYPE_PDF)
+												.fysiskDokument(FYSISK_DOKUMENT)
+												.variantformat(VARIANTFORMAT_ARKIV)
+												.build()))
 								.build()));
 	}
 
@@ -574,6 +580,12 @@ public class TestUtils {
 								.tittel(DOKUMENT_TITTEL1)
 								.brevkode(BREVKODE1)
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(List.of(
+										DokumentVariant.builder()
+												.filtype(FILTYPE_PDF)
+												.fysiskDokument(FYSISK_DOKUMENT)
+												.variantformat(VARIANTFORMAT_ARKIV)
+												.build()))
 								.build()))
 				.build();
 	}
