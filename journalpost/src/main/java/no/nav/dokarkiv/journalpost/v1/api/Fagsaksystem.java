@@ -36,5 +36,6 @@ public enum Fagsaksystem {
      */
     ARGUS,
     NEESSI,
-    TILLEGGSSTONADER
+    TILLEGGSSTONADER,
+    ARBEIDSOPPFOLGING
 }
