@@ -512,6 +512,11 @@
       "app": "spinosaurus",
       "namespace": "helsearbeidsgiver",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "orkivar",
+      "namespace": "dab",
+      "cluster": "prod-gcp"
     }
   ]
 }
