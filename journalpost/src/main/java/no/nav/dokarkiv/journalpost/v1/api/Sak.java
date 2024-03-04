@@ -58,7 +58,7 @@ public class Sak {
 					* KOMPYS
 					* ARGUS
 					* NEESSI
-					* TILLEGGSSTONADER,
+					* TILLEGGSSTONADER
 					* ARBEIDSOPPFOLGING
 
 					Skal kun settes dersom sakstype = FAGSAK.
