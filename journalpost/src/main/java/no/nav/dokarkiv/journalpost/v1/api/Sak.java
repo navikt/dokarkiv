@@ -59,6 +59,7 @@ public class Sak {
 					* ARGUS
 					* NEESSI
 					* TILLEGGSSTONADER
+					* ARBEIDSOPPFOLGING
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",
