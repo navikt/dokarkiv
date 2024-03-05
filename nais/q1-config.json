@@ -329,6 +329,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "eux-nav-rinasak-datasync-q1",
+      "namespace": "eessibasis",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "syfosmsak",
       "namespace": "teamsykmelding",
       "cluster": "dev-gcp"

@@ -315,6 +315,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "eux-nav-rinasak-datasync-q2",
+      "namespace": "eessibasis",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "eessi-pensjon-journalforing-q2",
       "namespace": "eessipensjon",
       "cluster": "dev-gcp"
