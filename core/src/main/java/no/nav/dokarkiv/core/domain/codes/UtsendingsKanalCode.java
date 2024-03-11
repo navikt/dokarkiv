@@ -65,7 +65,7 @@ public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, 
 	 */
 	NAV_NO_CHAT,
 	/**
-	 * Taushetsbelagt digital post til virksomhet
+	 * Taushetsbelagt Post via Altinn
 	 */
 	DPVT;
 
