@@ -39,7 +39,7 @@ public class DokumentVariant {
 	@ArraySchema(arraySchema = @Schema(
 			description = "Selve dokumentet. Hvis filtype er PDF/XML, ved fysisk dokument brukes bytearray.",
 			required = true,
-			example = "U8O4a25hZCBvbSBkYWdwZW5nZXIgdmVkIHBlcm1pdHRlcmluZw==")
+			example = "JVBERi0xLgoxIDAgb2JqPDwvUGFnZXMgMiAwIFI+PmVuZG9iagoyIDAgb2JqPDwvS2lkc1szIDAgUl0vQ291bnQgMT4+ZW5kb2JqCjMgMCBvYmo8PC9QYXJlbnQgMiAwIFI+PmVuZG9iagp0cmFpbGVyIDw8L1Jvb3QgMSAwIFI+Pgo=")
 	)
 	private byte[] fysiskDokument;
 
