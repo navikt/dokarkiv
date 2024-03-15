@@ -479,6 +479,11 @@
       "app": "soknadsarkiverer",
       "namespace": "team-soknad",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "mottak",
+      "namespace": "aap",
+      "cluster": "dev-gcp"
     }
   ]
 }
