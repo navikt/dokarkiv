@@ -18,9 +18,6 @@ import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @Component
 @Transactional
 public class SkjermingServiceTest {

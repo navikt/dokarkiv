@@ -47,6 +47,7 @@ import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VED
 
 public class TestdataFactory {
 
+	static final String INNSYNSBESKRIVELSE_BRUK_STANDARDREGLER = "Standardreglene avgjør om dokumentet vises";
 	static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	static final String OPPRETTET_AV_NAVN = "Opprettet navn";
 	static final String AVSENDER_MOTTAKER_ID = "02016126007";

@@ -26,7 +26,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 		classes = {CoreConfig.class, SafinternConfig.class, AbstractSafinternTest.Config.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"}
 )
-@ActiveProfiles({"itest", "wiremock"})
+@ActiveProfiles("itest")
 public abstract class AbstractSafinternTest extends AbstractRestIT {
 
 	@Configuration
@@ -50,11 +50,6 @@ public abstract class AbstractSafinternTest extends AbstractRestIT {
 
 	@Autowired
 	protected ObjectMapper objectMapper;
-
-	@BeforeEach
-	public void setUpItest() {
-
-	}
 
 	protected HttpEntity<?> createHeaderEntityMedTilgang() {
 		return new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim(ROLE_CLAIM_TILGANG));
