@@ -1,0 +1,145 @@
+package no.nav.dokarkiv.journalpost.v1.validators;
+
+import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
+import no.nav.dokarkiv.journalpost.v1.api.Dokument;
+import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
+
+import java.util.Arrays;
+import java.util.HexFormat;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
+import static java.util.Arrays.copyOf;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDFA;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.valueOf;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
+import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileContentContainsValidMagicNumber;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
+
+@Slf4j
+public final class DokumentValidator {
+
+	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
+
+	private DokumentValidator() {
+	}
+
+	public static void validateDokument(final int dokumentIdx, Dokument dokument) {
+
+		if (isNotBlank(dokument.getDokumentKategori())) {
+			try {
+				DokumentKategoriCode.valueOf(dokument.getDokumentKategori());
+			} catch (IllegalArgumentException e) {
+				throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentkategori %s. Gyldige verdier for dokumentkategori er %s. Mottatt dokumentkategori=%s",
+						dokumentIdx,
+						VALIDERER_IKKE_MOT_KODEVERK,
+						Arrays.toString(DokumentKategoriCode.values()),
+						dokument.getDokumentKategori()));
+			}
+		}
+
+		if (!isEmpty(dokument.getDokumentvarianter())) {
+			dokument.getDokumentvarianter().forEach(dokumentVariant -> validateDokumentVariant(dokumentIdx, dokumentVariant));
+			validateUniqueVariant(dokument.getDokumentvarianter(), dokument);
+			validateOneArkivVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
+		} else {
+			throw new InputValideringFeiletException(format("Alle dokumenter må innholde en dokumentvariant av typen %s", ARKIV.name()));
+		}
+	}
+
+	private static void validateOneArkivVariantFormatPerDokument(List<DokumentVariant> dokumentvarianter, Dokument dokument) {
+		if (dokumentvarianter.stream()
+					.filter(dokumentVariant -> dokumentVariant.getVariantformat().equals(ARKIV.name()))
+					.count() != 1) {
+			throw new InputValideringFeiletException(format("Alle dokumenter må innholde en dokumentvariant av typen %s. %s inneholder følgende varianter: %s",
+					ARKIV.name(),
+					dokument.getTittel(),
+					dokumentvarianter.stream()
+							.map(DokumentVariant::getVariantformat)
+							.collect(Collectors.joining(", "))));
+		}
+	}
+
+	private static void validateUniqueVariant(List<DokumentVariant> dokumentvarianter, Dokument dokument) {
+		String duplikater = dokumentvarianter
+				.stream()
+				.collect(Collectors.groupingBy(DokumentVariant::getVariantformat, Collectors.counting()))
+				.entrySet()
+				.stream()
+				.filter(s -> s.getValue() > 1)
+				.map(entry -> format("Variantformat=%s funnet %s ganger", entry.getKey(), entry.getValue()))
+				.collect(Collectors.joining(", "));
+
+		if (!duplikater.isEmpty()) {
+			throw new InputValideringFeiletException(format("Dokumenter.dokumentvariant.variantformat må være unik. Fant følgende duplikater for dokument med tittel=%s: %s",
+					dokument.getTittel(),
+					duplikater));
+		}
+	}
+
+	private static void validateDokumentVariant(final int dokumentIdx, DokumentVariant dokumentVariant) {
+		final String variantFormat = dokumentVariant.getVariantformat();
+
+		if (isBlank(dokumentVariant.getFiltype())) {
+			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).filtype må være satt", dokumentIdx, variantFormat));
+		}
+
+		try {
+			FilTypeCode.valueOf(dokumentVariant.getFiltype());
+		} catch (IllegalArgumentException e) {
+			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).filtype %s. Gyldige verdier for filtype er %s. Mottatt filtype=%s",
+					dokumentIdx,
+					variantFormat,
+					VALIDERER_IKKE_MOT_KODEVERK,
+					Arrays.toString(FilTypeCode.values()),
+					dokumentVariant.getFiltype()));
+		}
+
+		if (isBlank(variantFormat)) {
+			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant.variantformat må være satt", dokumentIdx));
+		}
+
+		try {
+			VariantFormatCode.valueOf(variantFormat);
+		} catch (IllegalArgumentException e) {
+			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).variantformat %s. Gyldige verdier for variantformat er %s. Mottatt variantformat=%s",
+					dokumentIdx,
+					variantFormat,
+					VALIDERER_IKKE_MOT_KODEVERK,
+					Arrays.toString(VariantFormatCode.values()),
+					variantFormat));
+		}
+
+		if (variantFormat.equals(ARKIV.name()) && !Arrays.asList(PDF, PDFA).contains(valueOf(dokumentVariant.getFiltype()))) {
+			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV. Mottatt filtype=%s",
+					dokumentIdx,
+					variantFormat,
+					dokumentVariant.getFiltype()));
+		}
+
+		if (dokumentVariant.getFysiskDokument() == null || dokumentVariant.getFysiskDokument().length == 0) {
+			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).fysiskDokument må være en base64 representert fil større enn 0 bytes",
+					dokumentIdx, variantFormat));
+		}
+
+		if (!isFileContentContainsValidMagicNumber(dokumentVariant.getFiltype(), dokumentVariant.getFysiskDokument())) {
+			throw new InvalidPdfException(format("Dokumenter[%d].dokumentvariant(%s).fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={%s} matcher ikke angitt filtype=%s",
+					dokumentIdx,
+					variantFormat,
+					HexFormat.of().withUpperCase()
+							.withDelimiter(" ")
+							.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length)),
+					dokumentVariant.getFiltype()));
+		}
+	}
+}

@@ -1,18 +1,13 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
-import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
@@ -23,24 +18,17 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.String.format;
-import static java.util.Arrays.copyOf;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.SER;
-import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
-import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDFA;
-import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.valueOf;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO_UINNLOGGET;
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
@@ -49,12 +37,10 @@ import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
-import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
-import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileContentContainsValidMagicNumber;
+import static no.nav.dokarkiv.journalpost.v1.validators.DokumentValidator.validateDokument;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
-import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
 
 @Slf4j
 public class OpprettJournalpostRequestValidator {
@@ -337,99 +323,6 @@ public class OpprettJournalpostRequestValidator {
 		}
 		if (!isNumeric(sak.getArkivsaksnummer())) {
 			throw new InputValideringFeiletException("Sak.arkivsaksnummer må være et heltall, og saken må være opprettet i GSAK/PSAK");
-		}
-	}
-
-	private void validateDokument(final int dokumentIdx, Dokument dokument) {
-		if (isNotBlank(dokument.getDokumentKategori())) {
-			try {
-				DokumentKategoriCode.valueOf(dokument.getDokumentKategori());
-			} catch (IllegalArgumentException e) {
-				throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentkategori %s. Mottatt dokumentkategori=%s",
-						dokumentIdx,
-						VALIDERER_IKKE_MOT_KODEVERK,
-						dokument.getDokumentKategori()));
-			}
-		}
-		if (!isEmpty(dokument.getDokumentvarianter())) {
-			dokument.getDokumentvarianter().forEach(dokumentVariant -> validateDokumentVariant(dokumentIdx, dokumentVariant));
-			validateUniqueVariant(dokument.getDokumentvarianter(), dokument);
-			validateOneArkivVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
-		}else {
-			throw new InputValideringFeiletException(format("Alle dokumenter må innholde en dokumentvariant av typen %S", ARKIV.name()));
-		}
-	}
-
-	public void validateOneArkivVariantFormatPerDokument(List<DokumentVariant> dokumentvarianter, Dokument dokument) {
-		if (dokumentvarianter.stream().filter(dokumentVariant -> dokumentVariant.getVariantformat().equals(ARKIV.name())).count() != 1) {
-			throw new InputValideringFeiletException(format("Alle dokumenter må innholde en dokumentvariant av typen %s. %s inneholder følgende varianter: %s",
-					ARKIV.name(),
-					dokument.getTittel(),
-					dokumentvarianter.stream().map(DokumentVariant::getVariantformat).collect(Collectors.joining(", "))));
-		}
-	}
-
-	private void validateUniqueVariant(List<DokumentVariant> dokumentvarianter, Dokument dokument) {
-		String duplikater = dokumentvarianter
-				.stream()
-				.collect(Collectors.groupingBy(DokumentVariant::getVariantformat, Collectors.counting()))
-				.entrySet()
-				.stream()
-				.filter(s -> s.getValue() > 1)
-				.map(entry -> format("Variantformat=%s funnet %s ganger", entry.getKey(), entry.getValue()))
-				.collect(Collectors.joining(", "));
-
-		if (!duplikater.isEmpty()) {
-			throw new InputValideringFeiletException(format("Dokumenter.dokumentvariant.variantformat må være unik. Fant følgende duplikater for dokument med tittel=%s: %s",
-					dokument.getTittel(),
-					duplikater));
-		}
-	}
-
-	private void validateDokumentVariant(final int dokumentIdx, DokumentVariant dokumentVariant) {
-		final String variantFormat = dokumentVariant.getVariantformat();
-		if (isBlank(dokumentVariant.getFiltype())) {
-			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).filtype må være satt", dokumentIdx, variantFormat));
-		}
-		try {
-			valueOf(dokumentVariant.getFiltype());
-		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).filtype %s. Gyldige verdier for filtype er %s",
-					dokumentIdx,
-					variantFormat,
-					VALIDERER_IKKE_MOT_KODEVERK,
-					Arrays.toString(FilTypeCode.values())));
-		}
-		if (isBlank(variantFormat)) {
-			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant.variantformat må være satt", dokumentIdx));
-		}
-		try {
-			VariantFormatCode.valueOf(variantFormat);
-		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).variantformat %s. Gyldige verdier for variantformat er %s",
-					dokumentIdx,
-					variantFormat,
-					VALIDERER_IKKE_MOT_KODEVERK,
-					Arrays.toString(VariantFormatCode.values())));
-		}
-		if (variantFormat.equals(ARKIV.name())
-				&& !Arrays.asList(PDF, PDFA).contains(valueOf(dokumentVariant.getFiltype()))) {
-			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV",
-					dokumentIdx, variantFormat));
-		}
-		if (dokumentVariant.getFysiskDokument() == null || dokumentVariant.getFysiskDokument().length == 0) {
-			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).fysiskDokument må være en base64 representert fil større en 0 bytes",
-					dokumentIdx, variantFormat));
-		}
-
-		if (!isFileContentContainsValidMagicNumber(dokumentVariant.getFiltype(), dokumentVariant.getFysiskDokument())) {
-			throw new InvalidPdfException(format("Dokumenter[%d].dokumentvariant(%s).fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={%s} matcher ikke angitt filtype=%s",
-					dokumentIdx,
-					variantFormat,
-					HexFormat.of().withUpperCase()
-							.withDelimiter(" ")
-							.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length)),
-					dokumentVariant.getFiltype()));
 		}
 	}
 
