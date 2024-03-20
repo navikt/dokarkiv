@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
@@ -30,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -653,7 +655,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		assertThat(exception.getMessage()).contains("Sak.arkivsaksnummer");
 	}
 
-	@Test
+ 	@Test
 	public void shouldThrowExceptionIfDokumentkategoriIsInvalid() {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
@@ -666,7 +668,8 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentkategori validerer ikke mot kodeverk. Mottatt dokumentkategori=kategori");
+		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentkategori validerer ikke mot kodeverk. Gyldige verdier for dokumentkategori er %s. Mottatt dokumentkategori=kategori"
+				.formatted(Arrays.toString(DokumentKategoriCode.values())));
 	}
 
 	@Test
@@ -1028,7 +1031,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument må være en base64 representert fil større en 0 bytes");
+		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument må være en base64 representert fil større enn 0 bytes");
 	}
 
 	@Test
@@ -1068,7 +1071,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument må være en base64 representert fil større en 0 bytes");
+		assertThat(exception.getMessage()).contains("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument må være en base64 representert fil større enn 0 bytes");
 	}
 
 
