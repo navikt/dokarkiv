@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import no.nav.dokarkiv.core.domain.codes.BehandlingstemaCti;
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.Innsyn;
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -35,6 +36,7 @@ import java.util.Set;
 		"fagomraadenavn",
 		"status",
 		"innsyn",
+		"innsynsbeskrivelse",
 		"skjerming",
 		"saksrelasjon",
 		"relevanteDatoer",
@@ -90,6 +92,9 @@ public interface JournalpostView {
 	@Mapping("innsyn")
 	InnsynCode getInnsyn();
 
+	@MappingSubquery(InnsynSubqueryProvider.class)
+	String getInnsynsbeskrivelse();
+
 	@Mapping("skjermingType")
 	SkjermingTypeCode getSkjerming();
 
@@ -139,6 +144,17 @@ public interface JournalpostView {
 			return subqueryBuilder.from(BehandlingstemaCti.class, "bt")
 					.select("decode")
 					.where("bt.code").eqExpression("EMBEDDING_VIEW(behandlingstema)")
+					.end();
+		}
+	}
+
+	class InnsynSubqueryProvider implements SubqueryProvider {
+
+		@Override
+		public <T> T createSubquery(SubqueryInitiator<T> subqueryBuilder) {
+			return subqueryBuilder.from(Innsyn.class, "i")
+					.select("beskrivelse")
+					.where("i.kode").eqExpression("EMBEDDING_VIEW(innsyn)")
 					.end();
 		}
 	}

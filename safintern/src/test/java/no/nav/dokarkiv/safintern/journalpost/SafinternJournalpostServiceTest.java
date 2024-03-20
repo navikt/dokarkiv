@@ -43,10 +43,13 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ExtendWith(SpringExtension.class)
 @DataJpaTest
-@ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class, SkjermingServiceTest.class, SafinternConfig.class})
-@Transactional
+@ContextConfiguration(classes = {
+		RepositoryConfig.class,
+		SkjermingService.class,
+		SkjermingServiceTest.class,
+		SafinternConfig.class}
+)
 @ActiveProfiles("itest")
 public class SafinternJournalpostServiceTest {
 

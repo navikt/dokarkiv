@@ -6,9 +6,10 @@ import java.util.Set;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public final class FetchPaths {
-	static final Set<String> GYLDIGE_PATHS = new HashSet<>();
 
 	public static final String DOKUMENTER = "dokumenter";
+
+	static final Set<String> GYLDIGE_PATHS = new HashSet<>();
 
 	static {
 		GYLDIGE_PATHS.add("journalpostId");
@@ -27,6 +28,7 @@ public final class FetchPaths {
 		GYLDIGE_PATHS.add("opprettetAvNavn");
 		GYLDIGE_PATHS.add("antallRetur");
 		GYLDIGE_PATHS.add("innsyn");
+		GYLDIGE_PATHS.add("innsynsbeskrivelse");
 		GYLDIGE_PATHS.add("skjerming");
 		GYLDIGE_PATHS.add("relevanteDatoer");
 		GYLDIGE_PATHS.add("avsenderMottaker");

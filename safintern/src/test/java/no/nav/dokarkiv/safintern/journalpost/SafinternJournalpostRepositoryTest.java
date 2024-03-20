@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.safintern.journalpost;
 
-
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
@@ -22,7 +21,6 @@ import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.repository.SakTestRepository;
 import no.nav.dokarkiv.core.repository.UtsendingsInfoTestRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
-import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.safintern.SafinternConfig;
 import no.nav.dokarkiv.safintern.views.AvsenderMottakerView;
 import no.nav.dokarkiv.safintern.views.DigitalPostadresseView;
@@ -36,15 +34,12 @@ import no.nav.dokarkiv.safintern.views.RelevanteDatoerView;
 import no.nav.dokarkiv.safintern.views.UtsendingsInfoView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.Map;
@@ -65,6 +60,7 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON_DLF;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SKANNING_META;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUsername;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertBruker;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertSak;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.ADRESSELINJE1;
@@ -82,6 +78,7 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.DOKUMENT_INF
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.DOKUMENT_TYPE_ID;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.FIL_NAVN;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.INNHOLD;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.BRUK_STANDARDREGLER_INNSYNSBESKRIVELSE;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.JOURNALFOERT_AV_NAVN;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.KANAL_REFERANSE_ID;
@@ -108,10 +105,8 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createNavNoU
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class, SkjermingServiceTest.class, SafinternConfig.class})
-@Transactional
 @ActiveProfiles("itest")
 class SafinternJournalpostRepositoryTest {
 
@@ -130,17 +125,10 @@ class SafinternJournalpostRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		RequestContextUtil.createAndSetUsername("itest", "itest");
-		entityManager.createNativeQuery("""
-				INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) VALUES ('ab0438','Lønnskompensasjon',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','itest',timestamp '2018-10-05 13:00:00','itest');
-				""").executeUpdate();
-		fagomradeTestRepository.persist(
-				Fagomrade.builder()
-						.kode("RPO")
-						.dekode("Retting av personopplysninger")
-						.erGyldig(false)
-						.datoTilOgMed(LocalDate.of(2023, 5, 1))
-						.build());
+		createAndSetUsername("itest", "itest");
+		saveInnsyn();
+		saveBehandlingstema();
+		saveFagomrade();
 	}
 
 	@Test
@@ -305,6 +293,30 @@ class SafinternJournalpostRepositoryTest {
 				.containsExactlyInAnyOrder(ARKIV, SLADDET, PRODUKSJON, FULLVERSJON, ORIGINAL);
 	}
 
+	private void saveBehandlingstema() {
+		entityManager.createNativeQuery("""
+					INSERT INTO T_K_BEHANDLINGSTEMA (k_behandlingstema,dekode,dato_fom,dato_tom,er_gyldig,dato_opprettet,opprettet_av,dato_endret,endret_av) 
+					VALUES ('ab0438','Lønnskompensasjon',date '1900-01-01',NULL,'1',timestamp '2018-10-05 13:00:00','itest',timestamp '2018-10-05 13:00:00','itest');
+				""").executeUpdate();
+	}
+
+	private int saveInnsyn() {
+		return entityManager.createNativeQuery("""
+					INSERT INTO T_K_INNSYN (k_innsyn,beskrivelse) 
+					VALUES ('BRUK_STANDARDREGLER','Standardreglene avgjør om dokumentet vises');
+				""").executeUpdate();
+	}
+
+	private void saveFagomrade() {
+		fagomradeTestRepository.persist(
+				Fagomrade.builder()
+						.kode("RPO")
+						.dekode("Retting av personopplysninger")
+						.erGyldig(false)
+						.datoTilOgMed(LocalDate.of(2023, 5, 1))
+						.build());
+	}
+
 	private static void assertJournalpost(JournalpostView journalpostView) {
 		assertThat(journalpostView.getFagomraade()).isEqualTo(FagomradeCode.RPO);
 		assertThat(journalpostView.getFagomraadenavn()).isEqualTo("Retting av personopplysninger");
@@ -321,6 +333,7 @@ class SafinternJournalpostRepositoryTest {
 		assertThat(journalpostView.getOpprettetAvNavn()).isEqualTo(OPPRETTET_AV_NAVN);
 		assertThat(journalpostView.getAntallRetur()).isEqualTo(ANTALL_RETUR);
 		assertThat(journalpostView.getInnsyn()).isEqualTo(BRUK_STANDARDREGLER);
+		assertThat(journalpostView.getInnsynsbeskrivelse()).isEqualTo(BRUK_STANDARDREGLER_INNSYNSBESKRIVELSE);
 		assertThat(journalpostView.getSkjerming()).isEqualTo(SKJERMING_TYPE_CODE);
 	}
 
