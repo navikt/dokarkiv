@@ -60,6 +60,7 @@ public class Sak {
 					* NEESSI
 					* TILLEGGSSTONADER
 					* ARBEIDSOPPFOLGING
+					* TILTAKSPENGER
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",

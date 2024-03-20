@@ -37,5 +37,6 @@ public enum Fagsaksystem {
     ARGUS,
     NEESSI,
     TILLEGGSSTONADER,
-    ARBEIDSOPPFOLGING
+    ARBEIDSOPPFOLGING,
+    TILTAKSPENGER
 }
