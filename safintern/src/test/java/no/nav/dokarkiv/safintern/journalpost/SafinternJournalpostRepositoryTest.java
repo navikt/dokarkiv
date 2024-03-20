@@ -78,7 +78,7 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.DOKUMENT_INF
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.DOKUMENT_TYPE_ID;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.FIL_NAVN;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.INNHOLD;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.INNSYNSBESKRIVELSE_BRUK_STANDARDREGLER;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.BRUK_STANDARDREGLER_INNSYNSBESKRIVELSE;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.JOURNALFOERT_AV_NAVN;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.KANAL_REFERANSE_ID;
@@ -333,7 +333,7 @@ class SafinternJournalpostRepositoryTest {
 		assertThat(journalpostView.getOpprettetAvNavn()).isEqualTo(OPPRETTET_AV_NAVN);
 		assertThat(journalpostView.getAntallRetur()).isEqualTo(ANTALL_RETUR);
 		assertThat(journalpostView.getInnsyn()).isEqualTo(BRUK_STANDARDREGLER);
-		assertThat(journalpostView.getInnsynsbeskrivelse()).isEqualTo(INNSYNSBESKRIVELSE_BRUK_STANDARDREGLER);
+		assertThat(journalpostView.getInnsynsbeskrivelse()).isEqualTo(BRUK_STANDARDREGLER_INNSYNSBESKRIVELSE);
 		assertThat(journalpostView.getSkjerming()).isEqualTo(SKJERMING_TYPE_CODE);
 	}
 
