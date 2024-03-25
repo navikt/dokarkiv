@@ -49,9 +49,9 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OVERSTYR_INNSYN;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.ALTINN;
-import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AAP;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.DAGPENGER;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.KELVIN;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
@@ -1032,7 +1032,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.tema(TEMA_UFO)
 				.sak(Sak.builder()
 						.sakstype(Sakstype.FAGSAK)
-						.fagsaksystem(AAP)
+						.fagsaksystem(KELVIN)
 						.fagsakId(FAGSAK_ID)
 						.build())
 				.bruker(Bruker.builder()

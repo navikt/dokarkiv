@@ -53,7 +53,7 @@ public class Sak {
 					* HJELPEMIDLER
 					* BARNEBRILLER
 					* EY (Etterlatteytelser)
-					* AAP
+					* KELVIN
 					* DAGPENGER
 					* KOMPYS
 					* ARGUS
