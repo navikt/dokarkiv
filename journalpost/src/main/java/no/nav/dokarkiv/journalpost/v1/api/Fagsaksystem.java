@@ -23,7 +23,10 @@ public enum Fagsaksystem {
     HJELPEMIDLER,
     BARNEBRILLER,
     EY,
-    AAP,
+    /**
+     * Produktområde AAP
+     */
+    KELVIN,
     DAGPENGER,
 
     /**
