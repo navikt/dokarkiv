@@ -269,7 +269,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNull(response.getBody().getMelding());
-		assertTrue(response.getBody().getJournalpostferdigstilt());
+		assertTrue(response.getBody().isJournalpostferdigstilt());
 		assertNotNull(response.getBody().getDokumenter());
 		assertNotNull(response.getBody().getDokumenter().get(0).getDokumentInfoId());
 
@@ -304,7 +304,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNull(response.getBody().getMelding());
-		assertTrue(response.getBody().getJournalpostferdigstilt());
+		assertTrue(response.getBody().isJournalpostferdigstilt());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
@@ -778,7 +778,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
-		assertFalse(response.getBody().getJournalpostferdigstilt());
+		assertFalse(response.getBody().isJournalpostferdigstilt());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
@@ -828,7 +828,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
 		assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: Journalpost.innhold");
-		assertFalse(response.getBody().getJournalpostferdigstilt());
+		assertFalse(response.getBody().isJournalpostferdigstilt());
 
 		Journalpost journalpost = journalpostTestRepository.findById(parseLong(response.getBody().getJournalpostId())).orElseThrow();
 		assertNotNull(journalpost.getJournalpostId());
@@ -918,7 +918,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
 		assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: Journalpost.innhold");
-		assertFalse(response.getBody().getJournalpostferdigstilt());
+		assertFalse(response.getBody().isJournalpostferdigstilt());
 
 		Journalpost journalpost = journalpostTestRepository.findById(parseLong(response.getBody().getJournalpostId())).orElseThrow();
 		assertNotNull(journalpost.getJournalpostId());
@@ -963,7 +963,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
 		assertThat(response.getBody().getMelding()).contains(String.format("Kunne ikke ferdigstille: Journalpost med journalpostId=%s må ha en saksrelasjon", response.getBody().getJournalpostId()));
-		assertFalse(response.getBody().getJournalpostferdigstilt());
+		assertFalse(response.getBody().isJournalpostferdigstilt());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
@@ -1146,7 +1146,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, responseFirst.getStatusCode());
 		assertNotNull(responseFirst.getBody());
 		assertThat(responseFirst.getBody().getJournalpostId()).isNotNull();
-		assertTrue(responseFirst.getBody().getJournalpostferdigstilt());
+		assertTrue(responseFirst.getBody().isJournalpostferdigstilt());
 		assertThat(responseFirst.getBody().getJournalstatus()).isEqualTo("ENDELIG");
 		assertThat(responseFirst.getBody().getMelding()).isNull();
 		assertThat(responseFirst.getBody().getDokumenter()).hasSize(1);
@@ -1169,7 +1169,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, responseFirst.getStatusCode());
 		assertNotNull(responseFirst.getBody());
 		assertThat(responseFirst.getBody().getJournalpostId()).isNotNull();
-		assertFalse(responseFirst.getBody().getJournalpostferdigstilt());
+		assertFalse(responseFirst.getBody().isJournalpostferdigstilt());
 		assertThat(responseFirst.getBody().getJournalstatus()).isEqualTo("MIDLERTIDIG");
 		assertThat(responseFirst.getBody().getDokumenter()).hasSize(1);
 		assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
@@ -1336,7 +1336,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(res1.getJournalpostId(), res2.getJournalpostId());
 		assertEquals(res1.getJournalstatus(), res2.getJournalstatus());
 		assertEquals(res1.getMelding(), res2.getMelding());
-		assertEquals(res1.getJournalpostferdigstilt(), res2.getJournalpostferdigstilt());
+		assertEquals(res1.isJournalpostferdigstilt(), res2.isJournalpostferdigstilt());
 		assertEquals(res1.getDokumenter().size(), res2.getDokumenter().size());
 		for (int i = 0; i < res1.getDokumenter().size(); i++) {
 			assertEquals(res1.getDokumenter().get(i).getDokumentInfoId(), res2.getDokumenter().get(i).getDokumentInfoId());
