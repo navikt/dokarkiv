@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Schema
 @Builder
 @Getter
@@ -30,7 +32,7 @@ public class OpprettJournalpostRequest {
 
 	@NotNull(message = "Journalposttype kan ikke være null")
 	@Schema(
-			required = true,
+			requiredMode = REQUIRED,
 			description = """
 					INNGAAENDE brukes for dokumentasjon som NAV har mottatt fra en ekstern part. Dette kan være søknader, ettersendelser av dokumentasjon til sak eller meldinger fra arbeidsgivere.
 					     

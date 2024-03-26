@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Schema
 @Builder
 @Getter
@@ -18,7 +20,7 @@ public class OpprettJournalpostResponse {
 
 	@Schema(
 			description = "JournalpostId som har blitt opprettet",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "467010363"
 	)
 	private String journalpostId;
@@ -35,7 +37,7 @@ public class OpprettJournalpostResponse {
 
 					 Feltet er deprekert og vil bli fjernet i fremtiden. Bruk journalpostferdigstilt i stedet.
 					 """,
-			required = true,
+			requiredMode = REQUIRED,
 			example = "ENDELIG"
 	)
 	@Deprecated
@@ -49,10 +51,11 @@ public class OpprettJournalpostResponse {
 	private String melding;
 
 	@Schema(
-			description = "True eller False for om journalpost ble ferdigstilt",
+			description = "true eller false for om journalpost ble ferdigstilt",
+			requiredMode = REQUIRED,
 			example = "true"
 	)
-	private Boolean journalpostferdigstilt;
+	private boolean journalpostferdigstilt;
 
 	@Schema(
 			description = "Dokumentene på journalposten."
