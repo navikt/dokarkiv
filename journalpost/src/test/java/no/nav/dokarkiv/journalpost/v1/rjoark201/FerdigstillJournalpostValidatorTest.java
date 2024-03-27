@@ -13,6 +13,8 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -213,10 +215,11 @@ public class FerdigstillJournalpostValidatorTest {
 	}
 
 
-	@Test
-	public void shouldValidateJournalStatusOD() {
+	@ParameterizedTest
+	@EnumSource(value = JournalStatusCode.class, names = {"FL", "FS", "D", "A", "OD"})
+	public void shouldValidateJournalStatus(JournalStatusCode journalStatusCode) {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.OD);
+		journalpost.setJournalstatus(journalStatusCode);
 		journalpost.setJournalposttype(JournalpostTypeCode.I);
 
 		validator.validateJournalpostTilstand(journalpost);

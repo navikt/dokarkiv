@@ -91,7 +91,7 @@ public class DefaultFerdigstillJournalpostValidatorTest {
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = JournalStatusCode.class, mode = EnumSource.Mode.EXCLUDE, names = {"D", "FS", "FL"})
+	@EnumSource(value = JournalStatusCode.class, mode = EnumSource.Mode.EXCLUDE, names = {"D", "FS", "FL", "A"})
 	public void validateJournalpost_shouldThrowExceptionIfJournalstatusIsWrong(JournalStatusCode journalStatus) {
 		Journalpost journalpostWithIllegalJournalStatus = createJournalpost(ARKIV);
 		journalpostWithIllegalJournalStatus.setJournalstatus(journalStatus);

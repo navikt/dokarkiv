@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108;
 
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.UNDER_REDIGERING;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
@@ -39,7 +40,7 @@ public class DefaultFerdigstillJournalpostValidator implements FerdigstillJourna
 	public void validate(final Journalpost journalpost) throws UgyldigJournalStatusVerdiException,
 			UgyldigDokumentStatusVerdiException {
 		validateIfJournalpostHasHoveddokument(journalpost);
-		validateIfJournalpostHasCorrectStatus(journalpost);
+		validateIfJournalpostHasCorrectStatusForCompletion(journalpost);
 		validateDokumentInfoAndFildetaljer(journalpost);
 	}
 
@@ -50,12 +51,12 @@ public class DefaultFerdigstillJournalpostValidator implements FerdigstillJourna
 		}
 	}
 
-	private void validateIfJournalpostHasCorrectStatus(final Journalpost journalpost) throws UgyldigJournalStatusVerdiException {
+	private void validateIfJournalpostHasCorrectStatusForCompletion(final Journalpost journalpost) throws UgyldigJournalStatusVerdiException {
 		JournalStatusCode journalstatus = journalpost.getJournalstatus();
 
-		if (journalstatus != D && journalstatus != FS && journalstatus != FL) {
-			throw new UgyldigJournalStatusVerdiException("Expected one of Journalstatus.D or Journalstatus.FS or Journalstatus.FL for journalpostId="
-					+ journalpost.getJournalpostId(), journalstatus);
+		if (journalstatus != D && journalstatus != FS && journalstatus != FL && journalstatus != A) {
+			throw new UgyldigJournalStatusVerdiException("Journalpost med  journalpostId=" + journalpost.getJournalpostId() +
+			" Journalstatus må være enten A, D, FS eller FL for å kunne ferdigstilles.", journalstatus);
 		}
 	}
 
