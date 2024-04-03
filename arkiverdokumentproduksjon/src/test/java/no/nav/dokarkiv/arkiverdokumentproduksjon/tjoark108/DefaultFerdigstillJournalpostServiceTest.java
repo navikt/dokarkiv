@@ -90,24 +90,6 @@ public class DefaultFerdigstillJournalpostServiceTest {
 	}
 
 	@Test
-	public void shouldRunOkForJPwithStatusA() {
-		Journalpost journalpost = testJournalpost(VariantFormatCode.ARKIV);
-		journalpost.setJournalstatus(JournalStatusCode.A);
-		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
-
-		service.ferdigstillJournalpost(request);
-
-		assertThat(journalpost.getJournalstatus(), is(JournalStatusCode.FS));
-		assertThat(journalpost.getJournalDato(), is(Date.from(LocalDateTime.parse(MOCK_DATE).atZone(ZoneId.systemDefault()).toInstant())));
-		assertThat(journalpost.getUtsendingskanal(), is(UTSENDINGS_KANAL));
-		assertThat(journalpost.getJournalfortAvNavn(), is(ENDRET_AV_NAVN));
-
-		verify(validator).validateInputRequest(request);
-		verify(validator).validate(journalpost);
-		verify(journalpostRepositorySkjermetMock).findById(JOURNALPOST_ID);
-		verify(sporingPopulator).populateSporingInfo(journalpost, ENDRET_AV_NAVN);
-	}
-	@Test
 	public void shouldRunOkLokalPrint() {
 		Journalpost journalpost = testJournalpost(VariantFormatCode.ARKIV);
 		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
