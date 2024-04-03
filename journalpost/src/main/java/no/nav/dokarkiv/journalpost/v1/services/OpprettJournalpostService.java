@@ -106,7 +106,6 @@ public class OpprettJournalpostService {
 				return new OpprettJournalpostResult(journalpost, true);
 			}
 		}
-		incrementEksternReferanseIdIkkeSattCounter(eksternReferanseId, meterRegistry);
 
 		Optional<Sak> sakOptional = hentSak(request);
 		Long sakId = sakOptional.map(Sak::getSakId).orElse(null);
@@ -122,6 +121,7 @@ public class OpprettJournalpostService {
 		populerAksjonsloggFromChanges(journalpost.getJournalpostId(), sakOptional);
 
 		log.info(MDC.get(MDC_REQUEST_ID) + " har opprettet ny journalpost, journalpostId={} og status={}", journalpost.getJournalpostId(), journalpost.getJournalstatus());
+		incrementEksternReferanseIdIkkeSattCounter(eksternReferanseId, meterRegistry, journalpost.getJournalpostId());
 
 		if (!SKANMOTOVRIG.equalsIgnoreCase(journalpost.getOpprettetAvNavn())) {
 			opprettJournalpostPDFAUtils.safeValidateAndLogPDFA(journalpost);

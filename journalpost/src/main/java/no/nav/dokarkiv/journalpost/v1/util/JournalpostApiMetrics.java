@@ -2,15 +2,18 @@ package no.nav.dokarkiv.journalpost.v1.util;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import org.slf4j.MDC;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Metrikker for journalpostapi
  */
+@Slf4j
 public final class JournalpostApiMetrics {
 
 	public static final String DOK_JOURNALPOSTAPI_SAKSTYPE_COUNT = "dok_journalpostapi_sakstype_count";
@@ -46,9 +49,10 @@ public final class JournalpostApiMetrics {
 
 	// Teller for å se hvilke klienter som ikke setter eksternReferanseId
 	// Analyse for å se om vi kan sette feltet som påkrevd
-	public static void incrementEksternReferanseIdIkkeSattCounter(String eksternReferanseId, MeterRegistry meterRegistry) {
+	public static void incrementEksternReferanseIdIkkeSattCounter(String eksternReferanseId, MeterRegistry meterRegistry, long journalpostId) {
 		if (isBlank(eksternReferanseId)) {
 			String consumerId = MDC.get(MDC_CONSUMER_ID);
+			log.warn(format("Journalpost med journalpostId=%s fra=%s mangler eksternReferanseId", journalpostId, consumerId));
 
 			Counter.builder(DOK_JOURNALPOSTAPI_EKSTERNREFERANSEID_IKKESATT_COUNT)
 					.tags(TAG_CONSUMERID, consumerId)
