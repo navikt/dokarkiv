@@ -12,7 +12,7 @@ import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -31,7 +31,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class FerdigstillJournalpostValidator {
 
-	private static final List<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = Arrays.asList(M, MO, UB, D, R, OD, FL, FS, A);
+	private static final EnumSet<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = EnumSet.of(M, MO, UB, D, R, OD, FL, FS, A);
 
 	public FerdigstillJournalpostValidator() {
 		// Vi setter ingenting her
