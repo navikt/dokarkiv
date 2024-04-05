@@ -320,6 +320,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "eux-journalarkivar-q2",
+      "namespace": "eessibasis",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "eux-nav-rinasak-datasync-q2",
       "namespace": "eessibasis",
       "cluster": "dev-gcp"
