@@ -80,11 +80,11 @@ public class KopierJournalpostService {
 	private void resetJournalpoststatus(Journalpost journalpost) {
 		JournalpostTypeCode type = journalpost.getJournalposttype();
 		if (JournalpostTypeCode.I.equals(type)) {
-			journalpost.setJournalstatus(JournalStatusCode.OD);
+			journalpost.setJournalstatus(JournalStatusCode.R);
 		} else if (JournalpostTypeCode.U.equals(type)) {
-			journalpost.setJournalstatus(JournalStatusCode.D);
+			journalpost.setJournalstatus(JournalStatusCode.M);
 		} else { // Notat
-			journalpost.setJournalstatus(JournalStatusCode.D);
+			journalpost.setJournalstatus(JournalStatusCode.M);
 		}
 	}
 }
