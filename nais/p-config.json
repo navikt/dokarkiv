@@ -293,6 +293,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "eux-journalarkivar",
+      "namespace": "eessibasis",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "eux-nav-rinasak-datasync",
       "namespace": "eessibasis",
       "cluster": "prod-gcp"
