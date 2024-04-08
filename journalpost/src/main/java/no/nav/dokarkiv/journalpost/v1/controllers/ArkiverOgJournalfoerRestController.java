@@ -21,6 +21,7 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.KopierJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
@@ -320,7 +321,7 @@ public class ArkiverOgJournalfoerRestController {
 	@PostMapping("/kopierJournalpost")
 	@SwaggerKopierJournalpost
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "kopierJournalpost"}, percentiles = {0.5, 0.95}, histogram = true)
-	public ResponseEntity<String> kopierJournalpost(
+	public ResponseEntity<KopierJournalpostResponse> kopierJournalpost(
 			@Parameter(
 					name = "kildeJournalpostId",
 					description = "Angir kildeJournalpostId som skal kopiere f.eks. 467011764",
@@ -337,11 +338,13 @@ public class ArkiverOgJournalfoerRestController {
 
 			validateId(kildeJournalpostId, "kildeJournalpostId");
 
-			Long nyJournalpostId = kopierJournalpostService.kopierJournalpost(valueOf(kildeJournalpostId));
+			Long kopierJournalpostId = kopierJournalpostService.kopierJournalpost(valueOf(kildeJournalpostId));
 
 			return ResponseEntity.status(CREATED)
-					.contentType(APPLICATION_JSON)
-					.body("\"%s\"".formatted(valueOf(nyJournalpostId)));
+					.body(KopierJournalpostResponse.builder()
+							.kopierJournalpostId(valueOf(kopierJournalpostId))
+							.build()
+					);
 
 		} catch (JournalpostIkkeFunnetException e) {
 			String message = format("Kunne ikke finne journalpost med journalpostId=%s i joark", kildeJournalpostId);

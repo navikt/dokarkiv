@@ -4,6 +4,7 @@ import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.journalpost.v1.api.KopierJournalpostResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.buildJournalpost;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
@@ -34,6 +36,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 public class KopierJournalpostIT extends AbstractJournalpostIT {
 
+	private static final String BAD_REQUEST_FEILMELDING = "Kan ikke kopiere journalpost med journalpostId=%s fordi journalpost har ugyldig status=%s";
+
 	@ParameterizedTest
 	@MethodSource("journalpostTypeMedGyldigJournalpostStatus")
 	public void shouldHappyKopierJournalpost(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus) {
@@ -47,10 +51,10 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<Object> kopierRequestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> kopierJournalpostResponse = restTemplate.exchange(URL_JOURNALPOST + KOPIER_QUERY + journalpost.getJournalpostId(), POST, kopierRequestEntity, String.class);
+		ResponseEntity<KopierJournalpostResponse> kopierJournalpostResponse = restTemplate.exchange(URL_JOURNALPOST + KOPIER_QUERY + journalpost.getJournalpostId(), POST, kopierRequestEntity, KopierJournalpostResponse.class);
 
 		assertThat(kopierJournalpostResponse.getStatusCode()).isEqualTo(CREATED);
-		assertThat(kopierJournalpostResponse.getBody()).isNotEmpty();
+		assertThat(kopierJournalpostResponse.getBody()).isNotNull();
 
 	}
 
@@ -78,6 +82,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		ResponseEntity<String> kopierJournalpostResponse = restTemplate.exchange(URL_JOURNALPOST + KOPIER_QUERY + journalpost.getJournalpostId(), POST, kopierRequestEntity, String.class);
 
 		assertThat(kopierJournalpostResponse.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(kopierJournalpostResponse.getBody()).contains(format(BAD_REQUEST_FEILMELDING, journalpost.getJournalpostId(), journalpost.getJournalstatus()));
 	}
 
 	private static Stream<Arguments> journalpostTypeMedUgyldigJournalpostStatus() {
