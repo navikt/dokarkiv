@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.InnsynCode;
+import no.nav.dokarkiv.core.domain.codes.Innsyn;
+import no.nav.dokarkiv.core.domain.codes.InnsynDto;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -56,6 +57,6 @@ public class TilknyttetJournalpostDto {
 	private String kanalReferanseId;
 	private List<TilleggsopplysningDto> tilleggsopplysninger;
 	private List<DokumentInfoDto> dokumenter;
-	private InnsynCode innsyn;
+	private InnsynDto innsyn;
 	private UtsendingsInfoDto utsendingsInfo;
 }

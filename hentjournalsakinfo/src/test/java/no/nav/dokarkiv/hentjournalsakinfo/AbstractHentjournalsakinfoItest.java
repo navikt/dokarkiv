@@ -31,6 +31,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import java.util.UUID;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.generateInnsynWithDescription;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -110,5 +111,9 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 		Journalpost journalpostWithHoveddokument = createJournalpostWithHoveddokument();
 		journalpostWithHoveddokument.setKanalReferanseId(TestDataUtils.KANAL_REFERANSE_ID + UUID.randomUUID());
 		return journalpostWithHoveddokument;
+	}
+
+	protected void populateInnsyn() {
+		generateInnsynWithDescription().forEach(entityManager::persist);
 	}
 }
