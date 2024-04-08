@@ -4,10 +4,10 @@ import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 
@@ -35,7 +35,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class KopierJournalpostIT extends AbstractJournalpostIT {
 
 	@ParameterizedTest
-	@MethodSource
+	@MethodSource("journalpostTypeMedGyldigJournalpostStatus")
 	public void shouldHappyKopierJournalpost(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus) {
 		restStsToken();
 
@@ -45,7 +45,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = buildAndCommit(journalpostBuilder);
 
 
-		HttpEntity kopierRequestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+		HttpEntity<Object> kopierRequestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> kopierJournalpostResponse = restTemplate.exchange(URL_JOURNALPOST + KOPIER_QUERY + journalpost.getJournalpostId(), POST, kopierRequestEntity, String.class);
 
@@ -54,7 +54,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
 	}
 
-	private static Stream<Arguments> shouldHappyKopierJournalpost() {
+	private static Stream<Arguments> journalpostTypeMedGyldigJournalpostStatus() {
 		return Stream.of(Arguments.of(I, J),
 				Arguments.of(U, FS),
 				Arguments.of(U, FL),
@@ -63,7 +63,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@ParameterizedTest
-	@MethodSource
+	@MethodSource("journalpostTypeMedUgyldigJournalpostStatus")
 	public void shouldThrowBadRequestExceptionWhenJournalpostHaveInvalidStatus(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus) {
 		restStsToken();
 
@@ -73,14 +73,14 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = buildAndCommit(journalpostBuilder);
 
 
-		HttpEntity kopierRequestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+		HttpEntity<Object> kopierRequestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> kopierJournalpostResponse = restTemplate.exchange(URL_JOURNALPOST + KOPIER_QUERY + journalpost.getJournalpostId(), POST, kopierRequestEntity, String.class);
 
 		assertThat(kopierJournalpostResponse.getStatusCode()).isEqualTo(BAD_REQUEST);
 	}
 
-	private static Stream<Arguments> shouldThrowBadRequestExceptionWhenJournalpostHaveInvalidStatus() {
+	private static Stream<Arguments> journalpostTypeMedUgyldigJournalpostStatus() {
 		return Stream.of(Arguments.of(I, R),
 				Arguments.of(I, A),
 				Arguments.of(U, M),
@@ -90,32 +90,36 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 				Arguments.of(N, M));
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"123"})
-	public void shouldThrowNotFoundWhenJournalpostNotFoundInJoark(String journalpostId) {
-
-		stubAzure();
+	@Test
+	public void shouldThrowNotFoundWhenJournalpostNotFoundInJoark() {
 		restStsToken();
 
-		HttpEntity kopierRequestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+		HttpEntity<Object> kopierRequestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> kopierJournalpostResponse = restTemplate.exchange(URL_JOURNALPOST + KOPIER_QUERY + journalpostId, POST, kopierRequestEntity, String.class);
+		ResponseEntity<String> kopierJournalpostResponse = restTemplate.exchange(URL_JOURNALPOST + KOPIER_QUERY + "123", POST, kopierRequestEntity, String.class);
 
 		assertThat(kopierJournalpostResponse.getStatusCode()).isEqualTo(NOT_FOUND);
-		assertThat(kopierJournalpostResponse.getBody()).isNotEmpty();
+		assertThat(kopierJournalpostResponse.getBody()).contains("Kunne ikke finne journalpost med journalpostId=123 i joark");
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"", "NAV"})
-	public void shouldThrowBadRequestWhenJournalpostIdAreNullOrNonNumeric(String journalpostId) {
+	@MethodSource("ugyldigJournalpostIdArguments")
+	public void shouldThrowBadRequestWhenJournalpostIdAreNullOrNonNumeric(String journalpostId, String message) {
 		stubAzure();
 		restStsToken();
 
-		HttpEntity kopierRequestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+		HttpEntity<Object> kopierRequestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> kopierJournalpostResponse = restTemplate.exchange(URL_JOURNALPOST + KOPIER_QUERY + journalpostId, POST, kopierRequestEntity, String.class);
 
 		assertThat(kopierJournalpostResponse.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(kopierJournalpostResponse.getBody()).isNotEmpty();
+		assertThat(kopierJournalpostResponse.getBody()).contains(message);
+	}
+
+	private static Stream<Arguments> ugyldigJournalpostIdArguments() {
+		return Stream.of(
+				Arguments.of("", "kildeJournalpostId kan ikke være null eller tomt. kildeJournalpostId="),
+				Arguments.of("NAV", "kildeJournalpostId må være et heltall. Mottatt verdi=NAV. kildeJournalpostId=NAV")
+		);
 	}
 }
