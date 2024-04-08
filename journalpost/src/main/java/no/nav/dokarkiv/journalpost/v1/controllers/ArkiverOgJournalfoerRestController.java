@@ -137,9 +137,10 @@ public class ArkiverOgJournalfoerRestController {
 					.contentType(APPLICATION_JSON)
 					.body("\"Journalpost ferdigstilt\"");
 
-		} catch (KanIkkeFerdigstilleException | JournalpostIkkeMidlertidigException | DokumentUnderRedigeringException e) {
+		} catch (KanIkkeFerdigstilleException | JournalpostIkkeMidlertidigException |
+				 DokumentUnderRedigeringException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					format("Kunne ikke ferdigstille journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()));
+					format("Kunne ikke ferdigstille journalpost med journalpostId=%s. %s", journalpostId, e.getMessage()));
 		}
 	}
 
@@ -168,7 +169,7 @@ public class ArkiverOgJournalfoerRestController {
 
 		} catch (InputValideringFeiletException | KanIkkeOppdatereDistribusjonsinfoException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					format("Kunne ikke oppdatere distribusjonsinfo for journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()));
+					format("Kunne ikke oppdatere distribusjonsinfo for journalpost med journalpostId=%s. %s", journalpostId, e.getMessage()));
 		}
 	}
 
@@ -198,7 +199,7 @@ public class ArkiverOgJournalfoerRestController {
 			return OppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
 		} catch (InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					format("Kunne ikke oppdatere journalpost med journalpostId=%s. %s", journalpostId,  e.getMessage()));
+					format("Kunne ikke oppdatere journalpost med journalpostId=%s. %s", journalpostId, e.getMessage()));
 		}
 	}
 
