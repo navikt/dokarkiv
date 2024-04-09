@@ -82,6 +82,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 
 	@Test
 	public void shouldReturnVedleggOrderedByRelasjonId() {
+		populateInnsyn();
 		DokumentInfo vedlegg2 = createDokumentInfo();
 		dokumentInfoRepository.persist(vedlegg2);
 		DokumentInfo vedlegg1 = createDokumentInfo();
@@ -105,7 +106,8 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertThat(journalpostDto.getDokumenter().get(0).getDokumentInfoId(), is(hoveddokument.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(1).getDokumentInfoId(), is(vedlegg1.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(2).getDokumentInfoId(), is(vedlegg2.getDokumentInfoId()));
-		assertThat(journalpostDto.getInnsyn(), is(BRUK_STANDARDREGLER));
+		assertThat(journalpostDto.getInnsyn().getKode(), is(BRUK_STANDARDREGLER));
+		assertThat(journalpostDto.getInnsyn().getBeskrivelse(), is("beskrivelse av " + BRUK_STANDARDREGLER));
 		assertEquals(LESTDATO, journalpostDto.getLestDato());
 	}
 
