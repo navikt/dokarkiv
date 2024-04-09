@@ -48,6 +48,16 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 	Optional<Journalpost> fetchById(Long id);
 
 	@Query(value = """
+			select j
+			from Journalpost j
+			left join fetch j.journalpostDokumentInfoRelasjoner jdir
+			left join fetch jdir.dokumentInfo d
+			left join fetch d.fildetaljerListe
+			where j.journalpostId = :id
+			""")
+	Optional<Journalpost> fetchByIdWithJournalpostDokumentInfoRelasjoner(Long id);
+
+	@Query(value = """
 			select new no.nav.dokarkiv.core.repository.projections.IdAndFagomradeHolder(
 			j.journalpostId, j.fagomrade			
 			)

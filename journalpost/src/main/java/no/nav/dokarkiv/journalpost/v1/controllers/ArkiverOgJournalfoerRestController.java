@@ -14,6 +14,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeKopiereException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeLeggeTilVedleggException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeOppdatereDistribusjonsinfoException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeSlettetVedleggKnyttetTilJournalpostException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
@@ -25,6 +26,8 @@ import no.nav.dokarkiv.journalpost.v1.api.KopierJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.lastOppVedlegg.LastOppVedleggRequest;
+import no.nav.dokarkiv.journalpost.v1.api.lastOppVedlegg.LastOppVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfoId;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
@@ -32,16 +35,19 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.FjernVedleggTilknyttetJournalpost;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
+import no.nav.dokarkiv.journalpost.v1.services.LastOppVedleggService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFerdigstillJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFjernVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLastOppVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
+import no.nav.dokarkiv.journalpost.v1.validators.LastOppVedleggValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import no.nav.security.token.support.core.api.Protected;
@@ -99,13 +105,15 @@ public class ArkiverOgJournalfoerRestController {
 	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
 	private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
 	private final KopierJournalpostService kopierJournalpostService;
+	private final LastOppVedleggService lastOppVedleggService;
 
 	public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
 											  final OppdaterJournalpostService oppdaterJournalpostService,
 											  final OpprettJournalpostService opprettJournalpostService,
 											  final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
 											  final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost,
-											  final KopierJournalpostService kopierJournalpostService) {
+											  final KopierJournalpostService kopierJournalpostService,
+											  final LastOppVedleggService lastOppVedleggService) {
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 		this.oppdaterJournalpostService = oppdaterJournalpostService;
 		this.opprettJournalpostService = opprettJournalpostService;
@@ -114,6 +122,7 @@ public class ArkiverOgJournalfoerRestController {
 		this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
 		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
 		this.kopierJournalpostService = kopierJournalpostService;
+		this.lastOppVedleggService = lastOppVedleggService;
 	}
 
 	@Transactional
@@ -351,6 +360,49 @@ public class ArkiverOgJournalfoerRestController {
 			throw new ResponseStatusException(NOT_FOUND, message);
 		} catch (KanIkkeKopiereException | InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST, e.getMessage());
+		}
+	}
+
+	@Transactional
+	@SwaggerLastOppVedlegg
+	@PatchMapping("/{journalpostId}/lastOppVedlegg")
+	public ResponseEntity<LastOppVedleggResponse> lastOppVedlegg(
+			@Parameter(
+					name = "journalpostId",
+					description = "Angir JournalpostId for journalpost vedlegget skal legges til",
+					required = true,
+					example = "467011764"
+			)
+			@PathVariable String journalpostId,
+			@RequestBody LastOppVedleggRequest request
+	) {
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+		MDC.put(MDC_REQUEST_ID, "lastOppVedlegg");
+		MDC.put(MDC_JOURNALPOST_ID, journalpostId);
+
+		log.info("lastOppVedlegg har mottatt kall om å legge til vedlegg på journalpost med journalpostId={}", journalpostId);
+
+		try {
+			validateId(journalpostId, "journalpostId");
+			LastOppVedleggValidator.validateRequest(request);
+
+			LastOppVedleggResponse response = lastOppVedleggService.lastOppVedlegg(journalpostId, request);
+
+			log.info("lastOppVedlegg har lagt til vedlegg med dokumentInfoId={} på journalpost med journalpostId={}",
+					response.dokumentInfoId(), journalpostId);
+
+			return ResponseEntity
+					.status(CREATED)
+					.body(response);
+
+		} catch (InputValideringFeiletException e) {
+			throw new ResponseStatusException(BAD_REQUEST,
+					"Kunne ikke legge til vedlegg på journalpost med journalpostId=%s. Validering av input feilet: %s"
+							.formatted(journalpostId, e.getMessage()));
+		} catch (KanIkkeLeggeTilVedleggException e) {
+			throw new ResponseStatusException(CONFLICT,
+					"Kunne ikke legge til vedlegg på journalpost med journalpostId=%s. %s"
+							.formatted(journalpostId, e.getMessage()));
 		}
 	}
 

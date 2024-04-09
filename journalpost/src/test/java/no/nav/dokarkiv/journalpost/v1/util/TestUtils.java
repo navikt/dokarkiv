@@ -121,6 +121,9 @@ public class TestUtils {
 	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
 	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";
 	public static final String FILNAVN = "filnavn";
+	public static final String FILNAVN_PDF = "filnavn.pdf";
+	public static final String FILNAVN_XML = "filnavn.xml";
+	public static final String FILNAVN_VEDLEGG = "vedlegg.pdf";
 	public static final String BATCHNAVN = "batchnavn";
 
 	public static final String CONSUMER_ID = "consumerId";
