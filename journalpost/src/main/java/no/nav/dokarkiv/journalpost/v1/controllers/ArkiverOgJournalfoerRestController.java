@@ -334,7 +334,7 @@ public class ArkiverOgJournalfoerRestController {
 			MDC.put(MDC_REQUEST_ID, "kopierJournalpost");
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
-			log.info("kopierJournalpost har mottatt kall for kopiere av journalpost med journalpostId={}", kildeJournalpostId);
+			log.info("kopierJournalpost har mottatt kall for kopiere journalpost med journalpostId={}", kildeJournalpostId);
 
 			validateId(kildeJournalpostId, "kildeJournalpostId");
 
