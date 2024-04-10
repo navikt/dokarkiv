@@ -7,6 +7,8 @@ import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
+import no.nav.dokarkiv.core.domain.codes.Innsyn;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -29,10 +31,12 @@ import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
@@ -444,5 +448,13 @@ public class TestDataGenerator {
 
 	public static UtsendingsInfo.EpostVarsler createEpostVarsel() {
 		return new UtsendingsInfo.EpostVarsler(List.of(new UtsendingsInfo.EpostVarsel(TITTEL, VARSELTEKST, EPOSTADRESSE, "2023-03-01T11:00:00.000")));
+	}
+
+	public static Stream<Innsyn> generateInnsynWithDescription() {
+		return Stream.of(InnsynCode.values())
+				.map(code -> Innsyn.builder()
+						.kode(code.name())
+						.beskrivelse("beskrivelse av " + code.name())
+						.build());
 	}
 }

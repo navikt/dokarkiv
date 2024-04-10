@@ -50,5 +50,6 @@ public class JournalpostDto {
 	List<TilleggsopplysningDto> tilleggsopplysninger;
 	List<DokumentInfoDto> dokumenter;
 	InnsynCode innsyn;
+	String innsynbeskrivelse;
 	UtsendingsInfoDto utsendingsInfo;
 }

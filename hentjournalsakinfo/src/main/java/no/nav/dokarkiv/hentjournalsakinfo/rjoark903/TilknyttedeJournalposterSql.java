@@ -22,6 +22,7 @@ final class TilknyttedeJournalposterSql {
 					"              LEFT JOIN t_jp_tillegg t ON j.journalpost_id = t.journalpost_id\n" +
 					"              LEFT JOIN t_k_behandlingstema bt ON j.k_behandlingstema = bt.k_behandlingstema\n" +
 					"              LEFT JOIN t_bruker b ON j.journalpost_id = b.journalpost_id\n" +
+					"              LEFT JOIN t_k_innsyn i ON j.k_innsyn = i.k_innsyn\n" +
 					"              JOIN t_jp_dok_info_rel rel ON j.journalpost_id = rel.journalpost_id\n" +
 					"              JOIN t_dokument_info d ON rel.dokument_info_id = d.dokument_info_id\n" +
 					"              LEFT JOIN t_fil_detaljer fd ON d.dokument_info_id = fd.dokument_info_id AND\n" +
