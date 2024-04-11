@@ -124,6 +124,13 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 		return journalpost;
 	}
 
+	protected Journalpost buildAndCommit(final Journalpost journalpost) {
+		Journalpost nyJournalpost = journalpostTestRepository.persist(journalpost);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		return nyJournalpost;
+	}
+
 	protected void clearSakRepository() {
 		sakTestRepository.deleteAll();
 		commitAndStartNewTransaction();

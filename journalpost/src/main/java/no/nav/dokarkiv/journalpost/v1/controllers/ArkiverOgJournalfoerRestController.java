@@ -324,7 +324,7 @@ public class ArkiverOgJournalfoerRestController {
 	public ResponseEntity<KopierJournalpostResponse> kopierJournalpost(
 			@Parameter(
 					name = "kildeJournalpostId",
-					description = "Angir kildeJournalpostId som skal kopiere f.eks. 467011764",
+					description = "Angir kildeJournalpostId som skal kopieres",
 					required = true,
 					example = "467011764"
 			)
