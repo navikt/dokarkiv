@@ -10,11 +10,14 @@ import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
@@ -64,16 +67,26 @@ class DokumentValidatorTest {
 		assertDoesNotThrow(() -> DokumentValidator.validateDokument(0, dokument));
 	}
 
-	@Test
-	void shouldThrowExceptionWhenDokumentkategoriIsInvalid() {
+	@ParameterizedTest
+	@MethodSource
+	void shouldThrowExceptionWhenDokumentkategoriIsInvalid(Integer dokumentIdx, String feilmelding) {
 		var dokument = dokumentBuilder
 				.dokumentKategori(DOKUMENTKATEGORI_UGYLDIG)
 				.build();
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
-				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("Dokumenter[0].dokumentkategori validerer ikke mot kodeverk. Gyldige verdier for dokumentkategori er %s. Mottatt dokumentkategori=%s",
-						Arrays.toString(DokumentKategoriCode.values()), DOKUMENTKATEGORI_UGYLDIG);
+				.isThrownBy(() -> DokumentValidator.validateDokument(dokumentIdx, dokument))
+				.withMessage(feilmelding);
+	}
+
+	private static Stream<Arguments> shouldThrowExceptionWhenDokumentkategoriIsInvalid() {
+		final String feilmelding = "%s.dokumentkategori validerer ikke mot kodeverk. Gyldige verdier for dokumentkategori er %s. Mottatt dokumentkategori=%s";
+		final String dokumentKategoriKoder = Arrays.toString(DokumentKategoriCode.values());
+
+		return Stream.of(
+				Arguments.of(0, feilmelding.formatted("Dokumenter[0]", dokumentKategoriKoder, DOKUMENTKATEGORI_UGYLDIG)),
+				Arguments.of(null, feilmelding.formatted("Dokument", dokumentKategoriKoder, DOKUMENTKATEGORI_UGYLDIG))
+		);
 	}
 
 	@Test
@@ -125,7 +138,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("Dokumenter.dokumentvariant.variantformat må være unik. Fant følgende duplikater for dokument med tittel=%s: Variantformat=%s funnet 2 ganger",
+				.withMessage("Dokument.dokumentvariant.variantformat må være unik. Fant følgende duplikater for dokument med tittel=%s: Variantformat=%s funnet 2 ganger",
 						DOKUMENT_TITTEL1, VARIANTFORMAT_ORIGINAL);
 	}
 
@@ -233,5 +246,4 @@ class DokumentValidatorTest {
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
 				.withMessage("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={FF D8 FF E0 00} matcher ikke angitt filtype=PDF");
 	}
-
 }

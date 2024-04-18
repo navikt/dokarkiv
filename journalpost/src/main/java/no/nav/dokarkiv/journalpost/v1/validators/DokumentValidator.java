@@ -34,23 +34,35 @@ public final class DokumentValidator {
 	private DokumentValidator() {
 	}
 
-	public static void validateDokument(final int dokumentIdx, Dokument dokument) {
+	public static void validateDokument(final Dokument dokument) {
+		validateDokument(null, dokument);
+	}
+
+	public static void validateDokument(final Integer dokumentIdx, Dokument dokument) {
+
+		validateDokumentKategori(dokumentIdx, dokument);
+		validateDokumentVarianter(dokumentIdx, dokument);
+	}
+
+	private static void validateDokumentKategori(Integer dokumentIdx, Dokument dokument) {
 
 		if (isNotBlank(dokument.getDokumentKategori())) {
 			try {
 				DokumentKategoriCode.valueOf(dokument.getDokumentKategori());
 			} catch (IllegalArgumentException e) {
-				throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentkategori %s. Gyldige verdier for dokumentkategori er %s. Mottatt dokumentkategori=%s",
-						dokumentIdx,
+				throw new InputValideringFeiletException(format("%s.dokumentkategori %s. Gyldige verdier for dokumentkategori er %s. Mottatt dokumentkategori=%s",
+						dokumentnummerPrefix(dokumentIdx),
 						VALIDERER_IKKE_MOT_KODEVERK,
 						Arrays.toString(DokumentKategoriCode.values()),
 						dokument.getDokumentKategori()));
 			}
 		}
+	}
 
+	private static void validateDokumentVarianter(Integer dokumentIdx, Dokument dokument) {
 		if (!isEmpty(dokument.getDokumentvarianter())) {
-			dokument.getDokumentvarianter().forEach(dokumentVariant -> validateDokumentVariant(dokumentIdx, dokumentVariant));
-			validateUniqueVariant(dokument.getDokumentvarianter(), dokument);
+			dokument.getDokumentvarianter().forEach(dokumentVariant -> validateDokumentvariant(dokumentIdx, dokumentVariant));
+			validateUniqueDokumentvariant(dokument.getDokumentvarianter(), dokument);
 			validateOneArkivVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
 		} else {
 			throw new InputValideringFeiletException(format("Alle dokumenter må innholde en dokumentvariant av typen %s", ARKIV.name()));
@@ -70,7 +82,7 @@ public final class DokumentValidator {
 		}
 	}
 
-	private static void validateUniqueVariant(List<DokumentVariant> dokumentvarianter, Dokument dokument) {
+	private static void validateUniqueDokumentvariant(List<DokumentVariant> dokumentvarianter, Dokument dokument) {
 		String duplikater = dokumentvarianter
 				.stream()
 				.collect(Collectors.groupingBy(DokumentVariant::getVariantformat, Collectors.counting()))
@@ -81,24 +93,24 @@ public final class DokumentValidator {
 				.collect(Collectors.joining(", "));
 
 		if (!duplikater.isEmpty()) {
-			throw new InputValideringFeiletException(format("Dokumenter.dokumentvariant.variantformat må være unik. Fant følgende duplikater for dokument med tittel=%s: %s",
+			throw new InputValideringFeiletException(format("Dokument.dokumentvariant.variantformat må være unik. Fant følgende duplikater for dokument med tittel=%s: %s",
 					dokument.getTittel(),
 					duplikater));
 		}
 	}
 
-	private static void validateDokumentVariant(final int dokumentIdx, DokumentVariant dokumentVariant) {
+	private static void validateDokumentvariant(final Integer dokumentIdx, DokumentVariant dokumentVariant) {
 		final String variantFormat = dokumentVariant.getVariantformat();
 
 		if (isBlank(dokumentVariant.getFiltype())) {
-			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).filtype må være satt", dokumentIdx, variantFormat));
+			throw new InputValideringFeiletException(format("%s.dokumentvariant(%s).filtype må være satt", dokumentnummerPrefix(dokumentIdx), variantFormat));
 		}
 
 		try {
 			FilTypeCode.valueOf(dokumentVariant.getFiltype());
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).filtype %s. Gyldige verdier for filtype er %s. Mottatt filtype=%s",
-					dokumentIdx,
+			throw new InputValideringFeiletException(format("%s.dokumentvariant(%s).filtype %s. Gyldige verdier for filtype er %s. Mottatt filtype=%s",
+					dokumentnummerPrefix(dokumentIdx),
 					variantFormat,
 					VALIDERER_IKKE_MOT_KODEVERK,
 					Arrays.toString(FilTypeCode.values()),
@@ -106,14 +118,14 @@ public final class DokumentValidator {
 		}
 
 		if (isBlank(variantFormat)) {
-			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant.variantformat må være satt", dokumentIdx));
+			throw new InputValideringFeiletException(format("%s.dokumentvariant.variantformat må være satt", dokumentnummerPrefix(dokumentIdx)));
 		}
 
 		try {
 			VariantFormatCode.valueOf(variantFormat);
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).variantformat %s. Gyldige verdier for variantformat er %s. Mottatt variantformat=%s",
-					dokumentIdx,
+			throw new InputValideringFeiletException(format("%s.dokumentvariant(%s).variantformat %s. Gyldige verdier for variantformat er %s. Mottatt variantformat=%s",
+					dokumentnummerPrefix(dokumentIdx),
 					variantFormat,
 					VALIDERER_IKKE_MOT_KODEVERK,
 					Arrays.toString(VariantFormatCode.values()),
@@ -121,25 +133,29 @@ public final class DokumentValidator {
 		}
 
 		if (variantFormat.equals(ARKIV.name()) && !Arrays.asList(PDF, PDFA).contains(valueOf(dokumentVariant.getFiltype()))) {
-			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV. Mottatt filtype=%s",
-					dokumentIdx,
+			throw new InputValideringFeiletException(format("%s.dokumentvariant(%s).filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV. Mottatt filtype=%s",
+					dokumentnummerPrefix(dokumentIdx),
 					variantFormat,
 					dokumentVariant.getFiltype()));
 		}
 
 		if (dokumentVariant.getFysiskDokument() == null || dokumentVariant.getFysiskDokument().length == 0) {
-			throw new InputValideringFeiletException(format("Dokumenter[%d].dokumentvariant(%s).fysiskDokument må være en base64 representert fil større enn 0 bytes",
-					dokumentIdx, variantFormat));
+			throw new InputValideringFeiletException(format("%s.dokumentvariant(%s).fysiskDokument må være en base64 representert fil større enn 0 bytes",
+					dokumentnummerPrefix(dokumentIdx), variantFormat));
 		}
 
 		if (!isFileContentContainsValidMagicNumber(dokumentVariant.getFiltype(), dokumentVariant.getFysiskDokument())) {
-			throw new InvalidPdfException(format("Dokumenter[%d].dokumentvariant(%s).fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={%s} matcher ikke angitt filtype=%s",
-					dokumentIdx,
+			throw new InvalidPdfException(format("%s.dokumentvariant(%s).fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={%s} matcher ikke angitt filtype=%s",
+					dokumentnummerPrefix(dokumentIdx),
 					variantFormat,
 					HexFormat.of().withUpperCase()
 							.withDelimiter(" ")
 							.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length)),
 					dokumentVariant.getFiltype()));
 		}
+	}
+
+	private static String dokumentnummerPrefix(Integer dokumentIdx) {
+		return dokumentIdx == null ? "Dokument" : "Dokumenter[%s]".formatted(dokumentIdx);
 	}
 }

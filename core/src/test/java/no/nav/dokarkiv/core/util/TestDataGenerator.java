@@ -31,7 +31,6 @@ import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -380,15 +379,22 @@ public class TestDataGenerator {
 	}
 
 	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode) {
-		return createFildetaljerOgFil(dokumentInfo, variantFormatCode, FilDetaljer.generateUuid());
+		return createFildetaljerOgFil(dokumentInfo, variantFormatCode, FilDetaljer.generateUuid(), FIL_NAVN);
 	}
 
+	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, String uuid) {
+		return createFildetaljerOgFil(dokumentInfo, variantFormatCode, uuid, FIL_NAVN);
+	}
 
-	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, String filUuid) {
+	public static FilDetaljer createFildetaljerOgFilMedFilnavn(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, String filnavn) {
+		return createFildetaljerOgFil(dokumentInfo, variantFormatCode, FilDetaljer.generateUuid(), filnavn);
+	}
+
+	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, String filUuid, String filnavn) {
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.dokumentInfo(dokumentInfo)
 				.fileContent(FIL)
-				.filnavn(FIL_NAVN)
+				.filnavn(filnavn)
 				.filtype(FilTypeCode.PDF)
 				.filUuid(filUuid)
 				.filstorrelse(String.valueOf(FIL.length))

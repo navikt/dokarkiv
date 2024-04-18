@@ -818,7 +818,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Dokumenter.dokumentvariant.variantformat");
+				.withMessageContaining("Dokument.dokumentvariant.variantformat");
 	}
 
 	@Test
