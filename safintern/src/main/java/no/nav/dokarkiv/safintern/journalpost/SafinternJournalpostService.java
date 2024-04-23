@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -39,6 +40,15 @@ public class SafinternJournalpostService {
 		EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs = fetch(fields);
 		return repository.hentJournalpostByEksternReferanseId(eksternReferanseId, evs)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException("Journalpost med eksternReferanseId=" + eksternReferanseId + " ikke funnet"));
+	}
+
+	public List<JournalpostView> hentJournalposterTilknyttetGjenbruk(long dokumentInfoId, Set<String> fields) {
+		EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs = fetch(fields);
+		List<JournalpostView> journalpostViews = repository.hentTilknyttedeJournalposterGjenbruk(dokumentInfoId, evs);
+		if (journalpostViews.isEmpty()) {
+			throw new JournalpostIkkeFunnetException("Fant ingen Journalpost tilknyttet dokumentInfoId" + dokumentInfoId);
+		}
+		return journalpostViews;
 	}
 
 	@NotNull

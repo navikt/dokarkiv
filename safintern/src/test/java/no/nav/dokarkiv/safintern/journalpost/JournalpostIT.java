@@ -8,13 +8,16 @@ import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
 import no.nav.dokarkiv.safintern.SafinternConstants;
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
@@ -22,6 +25,7 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.KANAL_REFERA
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createHoveddokumentRelasjonGjenbruktDokumentInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.formattedDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -185,6 +189,47 @@ public class JournalpostIT extends AbstractSafinternTest {
 		assertThat(responseEntity.getBody()).contains("Journalpost med eksternReferanseId=ekstern ikke funnet");
 	}
 
+	@Test
+	void shouldGetJournalposterTilknyttetDokumentInfoId() {
+		Sak persistedSak = sakTestRepository.persist(createGsak());
+		Long sakId = persistedSak.getSakId();
+		Journalpost opprinneligJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost gjenbrukendeJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		gjenbrukendeJournalpost.setKanalReferanseId("carnal referanseid");
+		gjenbrukendeJournalpost.getJournalpostDokumentInfoRelasjoner().forEach(gjenbrukendeJournalpost::removeJournalpostDokumentInfoRelasjon);
+		gjenbrukendeJournalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjonGjenbruktDokumentInfo(gjenbrukendeJournalpost, opprinneligJournalpost.getDokumentInfoFromJpDokInfoRelasjoner(0)));
+		opprinneligJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		gjenbrukendeJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		Journalpost persistedJournalpost = journalpostTestRepository.persist(opprinneligJournalpost);
+		journalpostTestRepository.persist(gjenbrukendeJournalpost);
+		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(opprinneligJournalpost);
+		utsendingsInfoTestRepository.persist(utsendingsInfo);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long dokumentInfoId = opprinneligJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+		ResponseEntity<List<MinimalAssertableJournalpost>> responseEntity = restTemplate.exchange(tilknyttedeJournalposterPath(dokumentInfoId), HttpMethod.GET, createHeaderEntityMedTilgang(), new ParameterizedTypeReference<>() {
+		});
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody()).hasSize(2);
+		assertThat(responseEntity.getBody()).has(
+				new Condition<List>(o -> o.stream().anyMatch(x -> {
+					MinimalAssertableJournalpost assertedJP = (MinimalAssertableJournalpost) x;
+					return gjenbrukendeJournalpost.getJournalpostId().equals(assertedJP.journalpostId()) &&
+								assertedJP.dokumenter().size() == 1 &&
+								assertedJP.dokumenter().get(0).originalJournalpostId().equals(opprinneligJournalpost.getJournalpostId());
+				}), "respons inneholder gjenbrukendeJournalpost og den har akkurat ett dokument og originalJournalpostId for dokumentet tilhører den opprinnelige journalposten"));
+
+		List<Long> dokumentIds = responseEntity.getBody().stream()
+				.map(MinimalAssertableJournalpost::dokumenter)
+				.flatMap(List::stream)
+				.map(MinimalAssertableDokumentInfo::dokumentInfoId).toList();
+		assertThat(dokumentIds).hasSize(2);
+		assertThat(dokumentIds.get(0)).isEqualTo(dokumentIds.get(1));
+
+	}
+
 	String journalpostIdPath(Long journalpostId) {
 		return journalpostIdPath(journalpostId, Set.of());
 	}
@@ -210,4 +255,12 @@ public class JournalpostIT extends AbstractSafinternTest {
 		return SafinternConstants.BASE_PATH + "/journalpost/journalpostId/%d/dokumentInfoId/%d?fields=%s"
 				.formatted(journalpostId, dokumentInfoId, String.join(",", fields));
 	}
+
+	String tilknyttedeJournalposterPath(long dokumentInfoId) {
+		return SafinternConstants.BASE_PATH + "/tilknyttedeJournalposter/gjenbruk/dokumentInfoId/%s".formatted(dokumentInfoId);
+	}
+
+	record MinimalAssertableJournalpost(Long journalpostId, List<MinimalAssertableDokumentInfo> dokumenter) {}
+	record MinimalAssertableDokumentInfo(Long dokumentInfoId, Long originalJournalpostId) {}
+
 }

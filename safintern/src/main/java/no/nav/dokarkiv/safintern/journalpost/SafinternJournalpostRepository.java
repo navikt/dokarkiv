@@ -10,8 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import java.util.List;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.safintern.views.FetchPaths.DOKUMENTER;
 
 @Repository
@@ -61,6 +63,19 @@ class SafinternJournalpostRepository {
 		} catch (NoResultException e) {
 			return Optional.empty();
 		}
+	}
+
+	List<JournalpostView> hentTilknyttedeJournalposterGjenbruk(long dokumentInfoId, EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs) {
+		try {
+			CriteriaBuilder<Journalpost> cb = cbf.create(em, Journalpost.class, "j")
+					.where("j.journalpostDokumentInfoRelasjoner.dokumentInfo.dokumentInfoId").eq(dokumentInfoId);
+
+			CriteriaBuilder<JournalpostView> journalpostBuilder = evm.applySetting(evs, dokumenterOrder(evs, cb));
+			return journalpostBuilder.getResultList();
+		} catch (NoResultException e) {
+			return emptyList();
+		}
+
 	}
 
 	private static CriteriaBuilder<Journalpost> dokumenterOrder(EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs, CriteriaBuilder<Journalpost> cb) {
