@@ -96,7 +96,7 @@ public class AzureAdGraphService {
 				.get().getCurrentPage();
 
 		if (res.size() != 1) {
-			log.warn(format("Azure AD finner ikke bruker med ident=%s. %s", navIdent, BRUKER_IKKE_FUNNET));
+			log.warn("Azure AD finner ikke bruker med ident={}. {}", navIdent, BRUKER_IKKE_FUNNET);
 			return null;
 		}
 
