@@ -5,9 +5,10 @@ Mer informasjon om appen og Rest-endepunktene finner du på henholdsvis [Conflue
 og [Swagger-doken](https://dokarkiv.dev.intern.nav.no/swagger-ui/index.html).
 
 ## Distribusjon av tjenesten (deployment)
-Distribusjon av tjenesten er gjort av Jenkins:
-[regoppslag CI / CD](https://dok-jenkins.adeo.no/job/dokarkiv/job/master/)
-Push/merge til masterbranch vil teste, bygge og deploye til produksjonsmiljø og testmiljø.
+Distribusjon av tjenesten er gjort av [Github Actions](https://github.com/navikt/dokarkiv/actions).
+Push/merge til branch vil teste, bygge og deploye til testmiljø. Ved merge til master lages det et utkast til release på
+Github. Deploy til prod skjer ved å fullføre
+[det release-utkastet på github.](https://github.com/navikt/dokarkiv/releases)
 
 ## Kjøre prosjektet lokalt
 For å kjøre opp applikasjonen lokalt, bruk profile `nais` og systemvariabler hentet fra vault: [System variabler](https://vault.adeo.no/ui/vault/secrets/secret/list/dokument/dokarkiv/) 
