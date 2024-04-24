@@ -11,25 +11,26 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
 import wiremock.com.google.common.io.Resources;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(
@@ -64,35 +65,40 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	void restStsToken() {
 		stubFor(post(urlEqualTo("/reststs"))
-				.willReturn(aResponse().withStatus(OK.value())
+				.willReturn(aResponse()
+						.withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("reststs/reststs-happy.json")));
 	}
 
 	void happyPersonIdentStub() {
 		stubFor(post(urlEqualTo("/pdl"))
-				.willReturn(aResponse().withStatus(OK.value())
+				.willReturn(aResponse()
+						.withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-hentperson-happy.json")));
 	}
 
 	void happyFnrIdentStub() {
 		stubFor(post(urlEqualTo("/pdl"))
-				.willReturn(aResponse().withStatus(OK.value())
+				.willReturn(aResponse()
+						.withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-folkeregisterident-happy.json")));
 	}
 
 	void identNotFoundStub() {
 		stubFor(post(urlEqualTo("/pdl"))
-				.willReturn(aResponse().withStatus(OK.value())
+				.willReturn(aResponse()
+						.withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-ident-notfound.json")));
 	}
 
 	void happyAktoerIdStub() {
 		stubFor(post(urlEqualTo("/pdl"))
-				.willReturn(aResponse().withStatus(OK.value())
+				.willReturn(aResponse()
+						.withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-aktoerid-happy.json")));
 	}
@@ -111,7 +117,7 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	public static String resourceUrlToString(URL url) {
 		try {
-			return Resources.toString(url, StandardCharsets.UTF_8);
+			return Resources.toString(url, UTF_8);
 		} catch (IOException e) {
 			throw new RuntimeException("Could not convert url to String" + url);
 		}
@@ -144,8 +150,8 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	protected HttpHeaders oidcHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + OIDC_TOKEN_PERSON_USER_TEST);
+		headers.setContentType(APPLICATION_JSON);
+		headers.add(AUTHORIZATION, BEARER + OIDC_TOKEN_PERSON_USER_TEST);
 		headers.add(NAV_CONSUMER_TOKEN, BEARER + OIDC_TOKEN_SERVICE_USER_TEST);
 		return headers;
 	}
