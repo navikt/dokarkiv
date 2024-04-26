@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
@@ -55,14 +54,5 @@ public class JournalpostController {
 		JournalpostView journalpostView = safinternJournalpostService.hentJournalpostByEksternReferanseId(eksternReferanseId, fields);
 		log.info("safintern/journalpost hentet journalpost med eksternReferanseId={}", eksternReferanseId);
 		return journalpostView;
-	}
-
-	@GetMapping(value = "/tilknyttedeJournalposter/gjenbruk/dokumentInfoId/{dokumentInfoId}", produces = APPLICATION_JSON_VALUE)
-	public List<JournalpostView> hentJournalpostTilknyttetGjenbruk(@PathVariable Long dokumentInfoId,
-														   @RequestParam(required = false) Set<String> fields) {
-		log.info("safintern/tilknyttedeJournalposter har mottatt kall om journalposter tiilknyttet dokumentInfoId={}, fields={}", dokumentInfoId, fields);
-		List<JournalpostView> journalpostsView = safinternJournalpostService.hentJournalposterTilknyttetGjenbruk(dokumentInfoId, fields);
-		log.info("safintern/tilknyttedeJournalposter hentet journalposter tilknyttet dokumentInfoId={}", dokumentInfoId);
-		return journalpostsView;
 	}
 }
