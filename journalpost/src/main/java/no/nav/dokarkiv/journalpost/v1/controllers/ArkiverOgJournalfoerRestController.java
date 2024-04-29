@@ -359,13 +359,13 @@ public class ArkiverOgJournalfoerRestController {
 			if (kopierJournalpostResult.duplikatEksternReferanseId()) {
 				return ResponseEntity.status(CONFLICT)
 						.body(KopierJournalpostResponse.builder()
-								.kopierJournalpostId(valueOf(kopierJournalpostResult.nyJournalpostId()))
+								.kopierJournalpostId(valueOf(kopierJournalpostResult.kopierJournalpostId()))
 								.build()
 						);
 			} else {
 				return ResponseEntity.status(CREATED)
 						.body(KopierJournalpostResponse.builder()
-								.kopierJournalpostId(valueOf(kopierJournalpostResult.nyJournalpostId()))
+								.kopierJournalpostId(valueOf(kopierJournalpostResult.kopierJournalpostId()))
 								.build()
 						);
 			}

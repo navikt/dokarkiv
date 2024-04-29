@@ -50,12 +50,14 @@ public class KopierJournalpostService {
 			Optional<Journalpost> existingJournalpost = journalpostRepository.findByKanalReferanseId(eksternReferanseId);
 			if (existingJournalpost.isPresent()) {
 				final Journalpost journalpost = existingJournalpost.get();
+				Long duplikatJournalpostId = journalpost.getJournalpostId();
 				log.warn("kopierJournalpost - Journalpost med eksternReferanseId={} er allerede kopiert og har journalpostId={}. Kopierer ikke ny journalpost.",
-						eksternReferanseId, journalpost.getJournalpostId());
-				return new KopierJournalpostResult(journalpost.getJournalpostId(), true);
+						eksternReferanseId, duplikatJournalpostId);
+				return new KopierJournalpostResult(duplikatJournalpostId, true);
 			}
 		}
-		return new KopierJournalpostResult(doKopierJournalpost(journalpostId, eksternReferanseId), false);
+		Long nyJournalpostId = doKopierJournalpost(journalpostId, eksternReferanseId);
+		return new KopierJournalpostResult(nyJournalpostId, false);
 	}
 
 	public Long kopierJournalpost(Long journalpostId) {
