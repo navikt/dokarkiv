@@ -18,13 +18,13 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
 public class JournalpostCopier {
 
-	public Journalpost copy(Journalpost journalpost) {
+	public Journalpost copy(Journalpost journalpost, String eksternReferanseId) {
 		Journalpost kopiertJournalpost = journalpost.toBuilder()
 				.journalpostId(null)
 				.opprettetAvNavn(null)
 				.tilleggsopplysninger(copyTilleggsopplysninger(journalpost.getTilleggsopplysninger()))
 				.saksrelasjon(null)
-				.kanalReferanseId(copyKanalReferanseId(journalpost.getKanalReferanseId()))
+				.kanalReferanseId(mapKanalReferanseId(journalpost, eksternReferanseId))
 				.build();
 
 		kopiertJournalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
@@ -47,6 +47,10 @@ public class JournalpostCopier {
 		journalpost.getKryssreferanser().forEach(kopiertJournalpost::addKryssReferanse);
 
 		return kopiertJournalpost;
+	}
+
+	private String mapKanalReferanseId(Journalpost journalpost, String eksternReferanseId) {
+		return eksternReferanseId == null ? copyKanalReferanseId(journalpost.getKanalReferanseId()) : eksternReferanseId;
 	}
 
 	private String copyKanalReferanseId(String kanalReferanseId) {

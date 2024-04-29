@@ -83,6 +83,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	private static final long serialVersionUID = 8744278542606158366L;
 	private static final List<JournalStatusCode> ENDELIG_JOURNALFOERING_STATUS = Arrays.asList(J, JournalStatusCode.FS, JournalStatusCode.FL);
 	private static final List<JournalStatusCode> MIDLERTIDIG_INNGAAENDE_JOURNALFOERING_STATUS = Arrays.asList(MO, M, UB);
+	public static final int KANAL_REFERANSE_ID_LENGTH = 200;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "journalpost_seq")
@@ -126,7 +127,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "endret_av_navn", length = 50)
 	private String endretAvNavn;
 
-	@Column(name = "kanal_referanse_id", unique = true, length = 200)
+	@Column(name = "kanal_referanse_id", unique = true, length = KANAL_REFERANSE_ID_LENGTH)
 	private String kanalReferanseId;
 
 	@Enumerated(EnumType.STRING)
