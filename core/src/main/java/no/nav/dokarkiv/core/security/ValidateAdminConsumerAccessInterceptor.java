@@ -8,26 +8,26 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 import static java.lang.String.format;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 public class ValidateAdminConsumerAccessInterceptor implements HandlerInterceptor {
 
-	private static final String ADMIN_SERVICE_USER = "srvjoarkadmin";
+	private static final List<String> VALID_CALLERS = List.of("joarkadmin");
+	private static final String AUTHORIZED_PARTY_NAME_CLAIM = "azp_name";
+	private static final String OID_CLAIM = "oid";
 
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
 	private final AzureAdGraphService azureAdGraphService;
-	private final String adminServiceUserAdRole;
+	private final String joarkVedlikeholdAdGruppeId;
 
-	public ValidateAdminConsumerAccessInterceptor(AzureAdGraphService azureAdGraphService, String adminServiceUserAdRole) {
+	public ValidateAdminConsumerAccessInterceptor(AzureAdGraphService azureAdGraphService, String joarkVedlikeholdAdGruppeId) {
 		this.azureAdGraphService = azureAdGraphService;
-		this.adminServiceUserAdRole = adminServiceUserAdRole;
+		this.joarkVedlikeholdAdGruppeId = joarkVedlikeholdAdGruppeId;
 	}
 
 	@Override
@@ -38,64 +38,47 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 			return true;
 		}
 
-		String navConsumerToken = headerTokenExtractor.getConsumerToken(request);
 		String authorizationToken = headerTokenExtractor.getIdToken(request);
+		if (authorizationToken == null) {
+			log.warn("Kall mot admin-endepunkt mangler Authorization-header");
 
-		if (isEmpty(navConsumerToken)) {
-			if (isFalse(isTokenBelongsToUser(authorizationToken, ADMIN_SERVICE_USER))) {
-				String message = format("OIDC token på Authorization-header må tilhøre servicebruker på %s", ADMIN_SERVICE_USER);
-				log.warn(message);
-				response.sendError(SC_UNAUTHORIZED, message);
-				return false;
-			}
-		} else if (isNotEmpty(navConsumerToken)) {
-			if (isFalse(isTokenBelongsToUser(navConsumerToken, ADMIN_SERVICE_USER))) {
-				String message = format("OIDC token på Nav-Consumer-Token header må tilhøre serviceuser på %s", ADMIN_SERVICE_USER);
-				log.warn(message);
-				response.sendError(SC_UNAUTHORIZED, message);
-				return false;
-			} else if (isFalse(isUserInTokenHasRole(authorizationToken, adminServiceUserAdRole))) {
-				String message = format("NAVIdent må være medlem av gruppen guid=\"%s\" i Azure AD", adminServiceUserAdRole);
-				log.error(message);
-				response.sendError(SC_UNAUTHORIZED, message);
-				return false;
-			}
-		} else {
-			String message = "Token header må være satt";
-			log.warn(message);
-			response.sendError(SC_UNAUTHORIZED, message);
+			response.sendError(SC_UNAUTHORIZED, "Authorization-header må være satt");
 			return false;
 		}
+
+		if (!consumerAppIsJoarkadmin(authorizationToken)) {
+			log.warn(format("OIDC-token på Authorization-header tilhører ikke en av følgende apper=%s", VALID_CALLERS));
+
+			response.sendError(SC_UNAUTHORIZED, format("OIDC-token på Authorization-header må tilhøre en av følgende apper=%s", VALID_CALLERS));
+			return false;
+		}
+
+		if (!userHasRequiredRole(authorizationToken, joarkVedlikeholdAdGruppeId)) {
+			log.error(format("NAVIdent er ikke medlem av gruppen guid=\"%s\" i Azure AD", joarkVedlikeholdAdGruppeId));
+
+			response.sendError(SC_UNAUTHORIZED, format("NAVIdent må være medlem av gruppen guid=\"%s\" i Azure AD", joarkVedlikeholdAdGruppeId));
+			return false;
+		}
+
 		return true;
 	}
 
-	public boolean isUserInTokenHasRole(String token, String ldapGroup) {
-		String userId = getSubjectFromToken(token);
-		return azureAdGraphService.userInGroup(userId, ldapGroup);
-	}
-
-	public boolean isTokenBelongsToUser(String token, String subject) {
-		if (isNotEmpty(token)) {
-			String consumerID = getSubjectFromToken(token);
-			return subject.equalsIgnoreCase(consumerID) || azureClaimWorkaround(token);
-		}
-		return false;
-	}
-
-	private boolean azureClaimWorkaround(String token) {
+	private static boolean consumerAppIsJoarkadmin(String token) {
 		DecodedJWT decode = JWT.decode(token);
-		String azpName = decode.getClaim("azp_name").asString();
+		String azpName = decode.getClaim(AUTHORIZED_PARTY_NAME_CLAIM).asString();
+
 		if (azpName == null) {
 			return false;
-		} else {
-			return azpName.contains("joarkadmin");
 		}
+
+		return VALID_CALLERS.stream().anyMatch(azpName::contains);
 	}
 
-	private String getSubjectFromToken(String token) {
-		if (isEmpty(token)) {
-			return null;
-		}
-		return JWT.decode(token).getSubject();
+	public boolean userHasRequiredRole(String token, String azureAdGroup) {
+		DecodedJWT decode = JWT.decode(token);
+		String oid = decode.getClaim(OID_CLAIM).asString();
+
+		return azureAdGraphService.userIsMemberOfGroup(oid, azureAdGroup);
 	}
+
 }

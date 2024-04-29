@@ -63,6 +63,19 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Transactional
 @EnableMockOAuth2Server
 public abstract class AbstractRestIT {
+
+	protected static final String BEARER = "Bearer ";
+	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
+	protected static final String SERVICE_USER_ID = "srvjoarkadmin";
+	protected static final String APP_NAME_WITH_NAMESPACE = "teamdokumenthandtering:joarkadmin";
+	protected static final String PERSON_USER_ID = "Z990782";
+	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
+	protected static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
+	protected static final String DEFAULT_CLAIM_OID = "oid";
+	protected static final String CLAIM_AZP_NAME = "azp_name";
+	protected static final String CLAIM_NAME = "name";
+	protected static final String ROLES = "roles";
+
 	@Autowired
 	protected JournalpostTestRepository journalpostTestRepository;
 	@Autowired
@@ -89,17 +102,6 @@ public abstract class AbstractRestIT {
 	protected FagomradeTestRepository fagomradeTestRepository;
 	@Autowired
 	private MockOAuth2Server server;
-
-	protected static final String BEARER = "Bearer ";
-	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
-	protected static final String SERVICE_USER_ID = "srvjoarkadmin";
-	protected static final String PERSON_USER_ID = "Z990782";
-	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
-	protected static final String NO_ACCESS_SERVICE_USER_ID = "srvdokarkiv";
-	protected static final String DEFAULT_CLAIM_OID = "oid";
-	protected static final String ROLES = "roles";
-
-	protected static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
 
 	@BeforeAll
 	public static void setupRequestContext() {
@@ -214,6 +216,16 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
+	protected HttpHeaders createAuthorizationHeaders(String azpName, String msUserId) {
+		HttpHeaders headers = new HttpHeaders();
+
+		headers.setContentType(APPLICATION_JSON);
+		headers.setBearerAuth(azureTokenWithAzpKey(azpName, msUserId));
+		headers.add(NAV_CALL_ID, "itest");
+
+		return headers;
+	}
+
 	protected HttpHeaders createHeadersWithServiceUserToken(String serviceUserId) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
@@ -231,12 +243,14 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
-	protected HttpHeaders createHeadersWithAksjon() {
-		HttpHeaders httpHeaders = createHeadersWithUserAndServiceUserToken();
+	protected HttpHeaders createHeadersWithAksjonslogg(String azpName, String msUserId) {
+		HttpHeaders httpHeaders = createAuthorizationHeaders(azpName, msUserId);
+
 		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER, AKSJON_BRUKER);
 		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER, AKSJON_HJEMMEL);
 		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER, AKSJON_MELDING);
 		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER, AKSJON_UTFOERT_AV);
+
 		return httpHeaders;
 	}
 
@@ -261,8 +275,32 @@ public abstract class AbstractRestIT {
 		return token(ISSUER_AZUREV2, subject, Map.of(ROLES, role, DEFAULT_CLAIM_OID, subject));
 	}
 
+	protected String azureTokenWithAzpKey(String callingApp, String user) {
+		return token(Map.of(
+				CLAIM_AZP_NAME, callingApp,
+				DEFAULT_CLAIM_OID, user,
+				CLAIM_NAME,"F_Z991234 E_Z991234")
+		);
+	}
+
 	protected String openAmToken(String subject) {
 		return token("openam", subject, Map.of());
+	}
+
+	protected String token(Map<String, Object> claims) {
+		String audience = "aud-localhost";
+		return server.issueToken(
+				ISSUER_AZUREV2,
+				"dokarkiv-itest",
+				new DefaultOAuth2TokenCallback(
+						ISSUER_AZUREV2,
+						"Z991234",
+						"JWT",
+						List.of(audience),
+						claims,
+						3600
+				)
+		).serialize();
 	}
 
 	protected String token(String issuer, String subject, Map<String, Object> claims) {

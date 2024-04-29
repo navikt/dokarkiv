@@ -45,6 +45,7 @@ import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class Rjoark101IT extends AbstractAdminIT {
 	/**
@@ -71,7 +72,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThat(journalpostList.size()).isEqualTo(3);
 		assertThatJournalpostIsNotDeleted(journalpost);
 
-		HttpHeaders httpHeaders = createHeadersWithAksjon();
+		HttpHeaders httpHeaders = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
 		httpHeaders.remove(AKSJONS_LOGG_MELDING_HEADER);
 		var responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
 				new HttpEntity<>(SlettArkivenhetRequest.builder()
@@ -183,7 +184,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostSomSkalSlettes.getJournalpostId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 
 		reinitTransaction();
@@ -284,7 +285,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpost1.getJournalpostId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				RestConsumerExceptionResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_ACCEPTABLE);
@@ -335,7 +336,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostOriginal.getJournalpostId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				RestConsumerExceptionResponse.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_ACCEPTABLE);
 
@@ -345,7 +346,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostSplit1.getJournalpostId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 		assertThat(responseEntity1.getStatusCode()).isEqualTo(OK);
 
@@ -354,7 +355,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostSplit2.getJournalpostId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 		assertThat(responseEntity2.getStatusCode()).isEqualTo(OK);
 
@@ -398,7 +399,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostSomSkalSlettes.getJournalpostId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				RestConsumerExceptionResponse.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_ACCEPTABLE);
 
@@ -408,7 +409,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(DOKUMENT_INFO)
 						.dokumentInfoId(dokumentInfoHoveddokument.getDokumentInfoId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 		assertThat(responseEntity2.getStatusCode()).isEqualTo(OK);
 
@@ -418,7 +419,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostSomSkalSlettes.getJournalpostId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 		assertThat(responseEntity3.getStatusCode()).isEqualTo(OK);
 
@@ -448,7 +449,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(1L)
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				RestConsumerExceptionResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
@@ -487,7 +488,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
 		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes.getJournalpostId()).size()).isEqualTo(3);
 
-		HttpHeaders httpHeaders = createHeadersWithAksjon();
+		HttpHeaders httpHeaders = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
 		httpHeaders.remove(AKSJONS_LOGG_MELDING_HEADER);
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
@@ -570,7 +571,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(DOKUMENT_INFO)
 						.dokumentInfoId(dokumentInfoSomSkalSlettes.getDokumentInfoId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
@@ -654,7 +655,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(DOKUMENT_INFO)
 						.dokumentInfoId(vedleggRelasjon.getDokumentInfo().getDokumentInfoId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 		assertThat(responseEntityVedlegg.getStatusCode()).isEqualTo(OK);
 
@@ -675,7 +676,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(DOKUMENT_INFO)
 						.dokumentInfoId(dokumentInfoSomSkalSlettes.getDokumentInfoId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 		assertThat(responseEntityHoveddokument.getStatusCode()).isEqualTo(OK);
 
@@ -759,7 +760,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(DOKUMENT_INFO)
 						.dokumentInfoId(relasjonVedlegg.getDokumentInfo().getDokumentInfoId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
@@ -847,7 +848,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 								.getDokumentInfo()
 								.getDokumentInfoId())
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_ACCEPTABLE);
 
@@ -874,7 +875,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(DOKUMENT_INFO)
 						.dokumentInfoId(1L)
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
@@ -903,7 +904,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		List<DokumentInfo> dokumentInfoList = dokumentInfoTestRepository.findAll();
 		assertThat(dokumentInfoList.size()).isEqualTo(1);
 
-		HttpHeaders httpHeaders = createHeadersWithAksjon();
+		HttpHeaders httpHeaders = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
 		httpHeaders.remove(AKSJONS_LOGG_MELDING_HEADER);
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
@@ -963,7 +964,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 								.getDokumentInfoId())
 						.variant(VariantFormatCode.SLADDET)
 						.build(),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				RestConsumerExceptionResponse.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
 
@@ -972,6 +973,32 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatDokumentInfoIsNotDeleted(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
 		assertThatFildetaljerIsNotDeleted(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV));
 		assertThatFildetaljerIsNotDeleted(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(PRODUKSJON));
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedHvisKallendeAppIkkeErJoarkadmin() {
+		var AZP_NAME_DOKMET = "dev-fss:teamdokumenthandtering:dokmet";
+		var headers = createAuthorizationHeaders(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE, new HttpEntity<>(SlettArkivenhetRequest.builder()
+				.arkivenhet(JOURNALPOST)
+				.journalpostId(Long.valueOf("123"))
+				.build(), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må tilhøre en av følgende apper=[joarkadmin]");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
+		var headers = createAuthorizationHeaders(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS);
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE, new HttpEntity<>(SlettArkivenhetRequest.builder()
+				.arkivenhet(JOURNALPOST)
+				.journalpostId(Long.valueOf("123"))
+				.build(), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("NAVIdent må være medlem av gruppen");
 	}
 
 }

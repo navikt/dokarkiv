@@ -31,8 +31,8 @@ import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-@Component
 @Slf4j
+@Component
 @Profile({"nais", "local"})
 public class AzureAdGraphService {
 
@@ -60,31 +60,16 @@ public class AzureAdGraphService {
 		return user.givenName + " " + user.surname;
 	}
 
-	@Cacheable(value = AZURE_HENT_AD_GRUPPER, key = "#navIdent")
+	@Cacheable(value = AZURE_HENT_AD_GRUPPER, key = "#userId")
 	@Retryable(exclude = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Boolean userInGroup(String navIdent, String adGroup) {
-		User user = getUser(navIdent);
+	public Boolean userIsMemberOfGroup(String userId, String adGroup) {
+		List<String> groups = getAzureGroupsByPrincipal(userId);
 
-		if (user == null) {
-			return false;
-		}
-
-		List<String> groups = getAzureGroupsByPrincipal(user.id);
 		return groups.contains(adGroup);
 	}
 
-	private String getUserToken() {
-		return azureToken.clientCredentialAccessToken(MICROSOFT_GRAPH_SCOPE_APP);
-	}
-
-	GraphServiceClient<Request> getGraphClient(String accessToken) {
-		return GraphServiceClient.builder()
-				.authenticationProvider(url -> CompletableFuture.completedFuture(accessToken))
-				.buildClient();
-	}
-
 	private User getUser(String navIdent) {
-		LinkedList<Option> requestOptions = new LinkedList<Option>();
+		LinkedList<Option> requestOptions = new LinkedList<>();
 		requestOptions.add(new HeaderOption("ConsistencyLevel", "eventual"));
 		requestOptions.add(new QueryOption("$filter", "onPremisesSamAccountName eq '" + navIdent + "'"));
 
@@ -119,6 +104,16 @@ public class AzureAdGraphService {
 		} catch (Exception e) {
 			throw new DokarkivTechnicalException(format("Kunne ikke hente gruppeinformasjon fra Azure, Feilmelding=%s", e.getMessage()));
 		}
+	}
+
+	GraphServiceClient<Request> getGraphClient(String accessToken) {
+		return GraphServiceClient.builder()
+				.authenticationProvider(url -> CompletableFuture.completedFuture(accessToken))
+				.buildClient();
+	}
+
+	private String getUserToken() {
+		return azureToken.clientCredentialAccessToken(MICROSOFT_GRAPH_SCOPE_APP);
 	}
 
 }

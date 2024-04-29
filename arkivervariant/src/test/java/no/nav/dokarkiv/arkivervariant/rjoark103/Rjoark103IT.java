@@ -2,43 +2,43 @@ package no.nav.dokarkiv.arkivervariant.rjoark103;
 
 import no.nav.dokarkiv.arkivervariant.AbstractArkiverVariantIT;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.util.TestDataUtils;
-import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.FIL;
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FILUUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ARKIVERING;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
+import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
+import static org.apache.commons.codec.binary.Base64.encodeBase64String;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 	@Test
-	public void shouldSaveFileAsSladdetVariant() throws IOException {
+	public void shouldSaveFileAsSladdetVariant() {
 		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -48,73 +48,66 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(Base64.encodeBase64String(FIL))
+				.fil(encodeBase64String(FIL))
 				.filnavn("filnavn")
 				.variant(SLADDET)
-				.filType(FilTypeCode.PDF).build();
+				.filType(PDF).build();
 
-		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjon());
+		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
 
-		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT,
-				HttpMethod.POST,
-				httpEntity,
-				ArkiverVariantResponse.class);
+		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(URL_ARKIVERVARIANT, POST, httpEntity, ArkiverVariantResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
 		TestTransaction.start();
 		assertTrue(dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId()).isPresent());
-		DokumentInfo persistedDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId())
-				.get();
-		assertThat(persistedDokumentInfo.getFildetaljerListeAdmin().size(), is(2));
-		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV), notNullValue());
-		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET), notNullValue());
-		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)
-				.getFiltype(), is(FilTypeCode.PDF));
-		DokumentFil dokumentFil = dokumentFilTestRepository.findByFilUuid(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)
-				.getFilUuid());
-		assertThat(dokumentFil.getFil(), is(FIL));
-		assertThat(responseEntity.getBody().getFilUuid(), is(dokumentFil.getFilUuid()));
-		assertThat(responseEntity.getBody().getVariantFormatCode(), is(SLADDET));
-		assertThat(responseEntity.getBody().getDokumentInfoId(), is(persistedDokumentInfo.getDokumentInfoId()));
+		DokumentInfo persistedDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId()).get();
+		assertThat(persistedDokumentInfo.getFildetaljerListeAdmin().size()).isEqualTo(2);
+		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(ARKIV)).isNotNull();
+		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)).isNotNull();
+		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET).getFiltype()).isEqualTo(PDF);
+		DokumentFil dokumentFil = dokumentFilTestRepository.findByFilUuid(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET).getFilUuid());
+		assertThat(dokumentFil.getFil()).isEqualTo(FIL);
+		assertThat(responseEntity.getBody().getFilUuid()).isEqualTo(dokumentFil.getFilUuid());
+		assertThat(responseEntity.getBody().getVariantFormatCode()).isEqualTo(SLADDET);
+		assertThat(responseEntity.getBody().getDokumentInfoId()).isEqualTo(persistedDokumentInfo.getDokumentInfoId());
 
 		TestTransaction.end();
 
 		TestTransaction.start();
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList.size(), is(1));
+		assertThat(aksjonsLoggList.size()).isEqualTo(1);
 
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
-		assertThat(aksjonsLogg.getAksjon(), is(AksjonsTypeCode.ARKIVERING));
-		assertThat(aksjonsLogg.getUtfoertAv(), is(TestDataUtils.AKSJON_UTFOERT_AV));
-		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
-		assertThat(aksjonsLogg.getMelding(), is(TestDataUtils.AKSJON_MELDING));
-		assertThat(aksjonsLogg.getJournalpostId(), is(journalpost.getJournalpostId()));
-		assertThat(aksjonsLogg.getDokumentInfoId(), is(dokumentInfo.getDokumentInfoId()));
-		assertThat(aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
-		assertThat(aksjonsLogg.getArkivElementEndringer().size(), is(2));
+		assertThat(aksjonsLogg.getAksjon()).isEqualTo(ARKIVERING);
+		assertThat(aksjonsLogg.getUtfoertAv()).isEqualTo(AKSJON_UTFOERT_AV);
+		assertThat(aksjonsLogg.getHjemmel()).isEqualTo(AKSJON_HJEMMEL);
+		assertThat(aksjonsLogg.getMelding()).isEqualTo(AKSJON_MELDING);
+		assertThat(aksjonsLogg.getJournalpostId()).isEqualTo(journalpost.getJournalpostId());
+		assertThat(aksjonsLogg.getDokumentInfoId()).isEqualTo(dokumentInfo.getDokumentInfoId());
+		assertThat(aksjonsLogg.getApplikasjon()).isEqualTo(APP_NAME_WITH_NAMESPACE);
+		assertThat(aksjonsLogg.getArkivElementEndringer().size()).isEqualTo(2);
 
 		List<ArkivElementEndring> arkivElementEndringList = new ArrayList<>(aksjonsLogg.getArkivElementEndringer());
 		assertThat(arkivElementEndringList.stream()
-				.map(ArkivElementEndring::toStringElementFraTil)
-				.collect(Collectors.toList()), hasItems(ArkivElementEndring.builder()
-						.arkivElement(FILDETALJER_FILUUID)
-						.fraVerdi(null)
-						.tilVerdi(responseEntity.getBody().getFilUuid())
-						.build().toStringElementFraTil(),
-				ArkivElementEndring.builder()
-						.arkivElement(FILDETALJER_VARIANTFORMAT)
-						.fraVerdi(null)
-						.tilVerdi(SLADDET.name())
-						.build().toStringElementFraTil()
+				.map(ArkivElementEndring::toStringElementFraTil).toList())
+				.containsExactlyInAnyOrderElementsOf(List.of(ArkivElementEndring.builder()
+								.arkivElement(FILDETALJER_FILUUID)
+								.fraVerdi(null)
+								.tilVerdi(responseEntity.getBody().getFilUuid())
+								.build().toStringElementFraTil(),
+						ArkivElementEndring.builder()
+								.arkivElement(FILDETALJER_VARIANTFORMAT)
+								.fraVerdi(null)
+								.tilVerdi(SLADDET.name())
+								.build().toStringElementFraTil())
 
-		));
+				);
 		TestTransaction.end();
 	}
 
 	@Test
-	public void shouldFailWithBadRequestWhenVariantAlreadyExists() throws IOException {
+	public void shouldFailWithBadRequestWhenVariantAlreadyExists() {
 		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -124,82 +117,87 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(Base64.encodeBase64String(FIL))
+				.fil(encodeBase64String(FIL))
 				.filnavn("filnavn")
 				.variant(SLADDET)
-				.filType(FilTypeCode.PDF).build();
+				.filType(PDF).build();
 
-		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjon());
+		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
 
-		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT,
-				HttpMethod.POST,
-				httpEntity,
-				ArkiverVariantResponse.class);
+		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(URL_ARKIVERVARIANT, POST, httpEntity, ArkiverVariantResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
 		byte[] FIL2 = "NEW FILE".getBytes();
 
 		request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(Base64.encodeBase64String(FIL2))
+				.fil(encodeBase64String(FIL2))
 				.filnavn("filnavn")
 				.variant(SLADDET)
-				.filType(FilTypeCode.PDF).build();
+				.filType(PDF).build();
 
-		var httpEntity2 = new HttpEntity<>(request, createHeadersWithAksjon());
+		var httpEntity2 = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
 
 		ResponseEntity<RestConsumerExceptionResponse> responseEntity2 = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
-				HttpMethod.POST,
+				POST,
 				httpEntity2,
 				RestConsumerExceptionResponse.class);
-		assertThat(responseEntity2.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity2.getStatusCode()).isEqualTo(BAD_REQUEST);
 	}
 
 	@Test
-	public void shouldFailWithNotFoundWhenDokumentInfoIsNotFound() throws IOException {
+	public void shouldFailWithNotFoundWhenDokumentInfoIsNotFound() {
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(123456L)
-				.fil(Base64.encodeBase64String(FIL))
+				.fil(encodeBase64String(FIL))
 				.filnavn("filnavn")
 				.variant(SLADDET)
-				.filType(FilTypeCode.PDF).build();
+				.filType(PDF).build();
 
-		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjon());
+		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
 
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT,
-				HttpMethod.POST,
-				httpEntity,
-				RestConsumerExceptionResponse.class);
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_ARKIVERVARIANT, POST, httpEntity, RestConsumerExceptionResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
-
+		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
 	}
 
 	@Test
-	public void shouldNotAllowOperationIfNotSrvJoarkadminConsumer() {
+	public void skalReturnereUnauthorizedHvisKallendeAppIkkeErJoarkadmin() {
 		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
-
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		var AZP_NAME_DOKMET = "dev-fss:teamdokumenthandtering:dokmet";
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
+		var headers = createAuthorizationHeaders(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
 
-		var httpEntity = new HttpEntity<>(Base64.encodeBase64String(FIL), createHeadersWithServiceUserToken(NO_ACCESS_SERVICE_USER_ID));
+		ResponseEntity<String> responseEntity =  restTemplate.exchange(URL_ARKIVERVARIANT, POST, new HttpEntity<>(ArkiverVariantRequest.builder()
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.fil(encodeBase64String(FIL))
+				.filnavn("filnavn")
+				.variant(SLADDET)
+				.filType(PDF).build(), headers), String.class);
 
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
-				URL_ARKIVERVARIANT,
-				HttpMethod.POST,
-				httpEntity,
-				RestConsumerExceptionResponse.class);
-
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
-
-
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må tilhøre en av følgende apper=[joarkadmin]");
 	}
 
+	@Test
+	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
+		var headers = createAuthorizationHeaders(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS);
+
+		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
+		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+
+		ResponseEntity<String> responseEntity =  restTemplate.exchange(URL_ARKIVERVARIANT, POST, new HttpEntity<>(ArkiverVariantRequest.builder()
+				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+				.fil(encodeBase64String(FIL))
+				.filnavn("filnavn")
+				.variant(SLADDET)
+				.filType(PDF).build(), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("NAVIdent må være medlem av gruppen");
+	}
 
 }
