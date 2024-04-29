@@ -532,6 +532,11 @@
       "app": "orkivar",
       "namespace": "dab",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "amt-distribusjon",
+      "namespace": "amt",
+      "cluster": "prod-gcp"
     }
   ]
 }
