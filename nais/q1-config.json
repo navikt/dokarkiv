@@ -239,6 +239,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "etterlatte-gyldig-soeknad",
+      "namespace": "etterlatte",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "journalfoer-soeknad",
       "namespace": "etterlatte",
       "cluster": "dev-gcp"
