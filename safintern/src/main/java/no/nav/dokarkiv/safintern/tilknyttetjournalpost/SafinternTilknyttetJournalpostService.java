@@ -3,12 +3,16 @@ package no.nav.dokarkiv.safintern.tilknyttetjournalpost;
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.view.EntityViewSetting;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
-import no.nav.dokarkiv.safintern.FetchingFieldsUtil;
+import no.nav.dokarkiv.safintern.views.FetchPaths;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
+import org.slf4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Set;
 
@@ -24,12 +28,32 @@ public class SafinternTilknyttetJournalpostService {
 	}
 
 	public List<JournalpostView> hentJournalposterTilknyttetGjenbruk(long dokumentInfoId, Set<String> fields) {
-		EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs = FetchingFieldsUtil.fetch(fields, log);
-		List<JournalpostView> journalpostViews = repository.hentTilknyttedeJournalposterGjenbruk(dokumentInfoId, evs);
-		if (journalpostViews.isEmpty()) {
-			throw new JournalpostIkkeFunnetException("Fant ingen Journalpost tilknyttet dokumentInfoId" + dokumentInfoId);
+		try {
+			var evs = fetchDokument(fields, log);
+			List<JournalpostView> journalpostViews = repository.hentTilknyttedeJournalposterGjenbruk(dokumentInfoId, evs);
+			if (journalpostViews.isEmpty()) {
+				throw new JournalpostIkkeFunnetException("Fant ingen Journalpost tilknyttet dokumentInfoId=" + dokumentInfoId);
+			}
+			return journalpostViews;
+		} catch (EmptyResultDataAccessException|NoResultException e) {
+			throw new DokumentInfoIkkeFunnetException("Fant ingen DokumentInfo med DokumentInfoId=" + dokumentInfoId);
 		}
-		return journalpostViews;
 	}
 
+	public static EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> fetchDokument(Set<String> fields, Logger callingClassLogger) {
+		if (fields == null || fields.isEmpty()) {
+			return EntityViewSetting.create(JournalpostView.class);
+		}
+		var evs = EntityViewSetting.create(JournalpostView.class);
+		for (String path : fields) {
+			if (FetchPaths.erGyldig(path)) {
+				evs.fetch(path);
+			} else {
+				String feilmelding = "safintern/tilknyttetJournalpost forsøker fetch på ugyldig path=" + path;
+				callingClassLogger.error(feilmelding);
+				throw new IllegalArgumentException(feilmelding);
+			}
+		}
+		return evs;
+	}
 }

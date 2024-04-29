@@ -15,13 +15,16 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.UUID;
 
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createDokumentInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createHoveddokumentRelasjonGjenbruktDokumentInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.formattedDate;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 public class TilknyttetJournalpostIT extends AbstractSafinternTest {
@@ -50,6 +53,21 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(persistedJournalpost, gjenbrukendeJournalpost, classpathResourceToString("/tilknyttetjournalpost/journalpost-dokumenter-response.json")));
 	}
+
+	@Test
+	void shouldGet404WhenDokumentInfoPresentButNotJournalposts() {
+		DokumentInfo dokumentInfo = createDokumentInfo(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+		DokumentInfo persistedDokumentInfo = dokumentInfoTestRepository.persist(dokumentInfo);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long dokumentInfoId = persistedDokumentInfo.getDokumentInfoId();
+		ResponseEntity<String> responseEntity = restTemplate.exchange(tilknyttedeJournalposterPath(dokumentInfoId), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
+		assertThat(responseEntity.getBody()).containsIgnoringCase("Fant ingen Journalpost tilknyttet dokumentInfoId=" + dokumentInfoId);
+	}
+
 
 	String tilknyttedeJournalposterPath(long dokumentInfoId) {
 		return SafinternConstants.BASE_PATH + "/tilknyttedeJournalposter/gjenbruk/dokumentInfoId/%s".formatted(dokumentInfoId);

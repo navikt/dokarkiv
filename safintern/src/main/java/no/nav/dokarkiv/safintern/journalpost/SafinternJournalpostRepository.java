@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.util.Optional;
 
-import static no.nav.dokarkiv.safintern.FetchingFieldsUtil.dokumenterOrder;
+import static no.nav.dokarkiv.safintern.views.FetchPaths.DOKUMENTER;
 
 @Repository
 class SafinternJournalpostRepository {
@@ -61,5 +61,13 @@ class SafinternJournalpostRepository {
 		} catch (NoResultException e) {
 			return Optional.empty();
 		}
+	}
+
+	public static CriteriaBuilder<Journalpost> dokumenterOrder(EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs, CriteriaBuilder<Journalpost> cb) {
+		if (evs.getFetches().isEmpty() || evs.getFetches().stream().anyMatch(f -> f.contains(DOKUMENTER))) {
+			return cb.orderByAsc("journalpostDokumentInfoRelasjoner.tilknyttetJournalpostSom")
+					.orderByAsc("journalpostDokumentInfoRelasjoner.journalpostDokumentInfoRelasjonId");
+		}
+		return cb;
 	}
 }
