@@ -494,6 +494,11 @@
       "app": "mottak",
       "namespace": "aap",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "amt-distribusjon",
+      "namespace": "amt",
+      "cluster": "dev-gcp"
     }
   ]
 }
