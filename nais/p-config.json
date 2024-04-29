@@ -203,6 +203,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "etterlatte-gyldig-soeknad",
+      "namespace": "etterlatte",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "journalfoer-soeknad",
       "namespace": "etterlatte",
       "cluster": "prod-gcp"
