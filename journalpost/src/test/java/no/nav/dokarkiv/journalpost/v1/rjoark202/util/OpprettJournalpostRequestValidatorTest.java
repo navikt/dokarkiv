@@ -918,9 +918,9 @@ public class OpprettJournalpostRequestValidatorTest {
 	private static Stream<Arguments> feilEksternReferanseId() {
 		return Stream.of(
 				Arguments.of("bj5bzAng3tvvY7ao0A15Kj8lq3RuN78rPTDYQp9lz416At7egwxVKw3klqZngX39eYdwqDIs6KUbGurS97R78Mz25WO3r7ththg8QVf2HY1col7713VLSSFHvQKHzftl2aKIXF48pnftmwbNX201aX2msQDb8G8nd31gyzfvzZvYX0hcPeU9g5nm5NeV43RLRaKyR1BLG",
-						"EksternReferanseId kan ikke være over 200 tegn. Mottatt eksternReferanseId=bj5bzAng3tvvY7ao0A15Kj8lq3RuN78rPTDYQp9lz416At7egwxVKw3klqZngX39eYdwqDIs6KUbGurS97R78Mz25WO3r7ththg8QVf2HY1col7713VLSSFHvQKHzftl2aKIXF48pnftmwbNX201aX2msQDb8G8nd31gyzfvzZvYX0hcPeU9g5nm5NeV43RLRaKyR1BLG"),
+						"eksternReferanseId kan ikke være over 200 tegn. Mottatt eksternReferanseId=bj5bzAng3tvvY7ao0A15Kj8lq3RuN78rPTDYQp9lz416At7egwxVKw3klqZngX39eYdwqDIs6KUbGurS97R78Mz25WO3r7ththg8QVf2HY1col7713VLSSFHvQKHzftl2aKIXF48pnftmwbNX201aX2msQDb8G8nd31gyzfvzZvYX0hcPeU9g5nm5NeV43RLRaKyR1BLG"),
 				Arguments.of("ØÆÅhører og mellomrom hører ikke hjemme i url og dermed i eksternReferanseId",
-						"EksternReferanseId kan bare inneholde alfanumeriske tegn og følgende spesialtegn :;,.=-_~$&+*\"\\@! Mottatt eksternReferanseId=ØÆÅhører og mellomrom hører ikke hjemme i url og dermed i eksternReferanseId")
+						"eksternReferanseId kan bare inneholde alfanumeriske tegn og følgende spesialtegn :;,.=-_~$&+*\"\\@! Mottatt eksternReferanseId=ØÆÅhører og mellomrom hører ikke hjemme i url og dermed i eksternReferanseId")
 		);
 	}
 

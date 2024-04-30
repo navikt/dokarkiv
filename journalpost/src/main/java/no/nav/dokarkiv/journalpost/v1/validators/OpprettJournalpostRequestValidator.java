@@ -37,6 +37,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateEksternReferanseId;
 import static no.nav.dokarkiv.journalpost.v1.validators.DokumentValidator.validateDokument;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -202,17 +203,6 @@ public class OpprettJournalpostRequestValidator {
 		if (FALSE.toString().equals(journalpostFerdigstilt) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalfoerendeEnhet) && INNGAAENDE.equals(journalposttype)) {
 			throw new InputValideringFeiletException(format("Ikke mulig å opprette journalpost med type inngaaende på journalfoerendeEnhet=%s (maskinell) så lenge journalposten ikke forsøkes å ferdigstilles",
 					MASKINELL_JOURNALFOERENDE_ENHET));
-		}
-	}
-
-	private void validateEksternReferanseId(String eksternReferanseId) {
-		if (eksternReferanseId != null) {
-			if (eksternReferanseId.length() > 200) {
-				throw new InputValideringFeiletException(format("EksternReferanseId kan ikke være over 200 tegn. Mottatt eksternReferanseId=%s", eksternReferanseId));
-			}
-			if (!eksternReferanseId.matches("[a-zA-Z0-9-._~!$&\"\\\\*+,;=:@]+")) {
-				throw new InputValideringFeiletException(format("EksternReferanseId kan bare inneholde alfanumeriske tegn og følgende spesialtegn :;,.=-_~$&+*\"\\@! Mottatt eksternReferanseId=%s", eksternReferanseId));
-			}
 		}
 	}
 

@@ -22,6 +22,7 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.KopierJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.KopierJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
@@ -34,6 +35,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.FjernVedleggTilknyttetJournalpost;
+import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.LastOppVedleggService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
@@ -79,6 +81,8 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateEksternReferanseId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.MASKINELL_JOURNALFOERENDE_ENHET;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -337,28 +341,39 @@ public class ArkiverOgJournalfoerRestController {
 					required = true,
 					example = "467011764"
 			)
-			@RequestParam String kildeJournalpostId) {
+			@RequestParam String kildeJournalpostId,
+			@RequestBody KopierJournalpostRequest request) {
 
 		try {
 			MDC.put(MDC_REQUEST_ID, "kopierJournalpost");
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
-			log.info("kopierJournalpost har mottatt kall for kopiere journalpost med journalpostId={}", kildeJournalpostId);
-
 			validateId(kildeJournalpostId, "kildeJournalpostId");
+			hasText(request.getEksternReferanseId(), "eksternReferanseId");
+			validateEksternReferanseId(request.getEksternReferanseId());
 
-			Long kopierJournalpostId = kopierJournalpostService.kopierJournalpost(valueOf(kildeJournalpostId));
+			log.info("kopierJournalpost har mottatt kall for kopiere journalpost med journalpostId={}, eksternReferanseId={}", kildeJournalpostId, request.getEksternReferanseId());
 
-			return ResponseEntity.status(CREATED)
-					.body(KopierJournalpostResponse.builder()
-							.kopierJournalpostId(valueOf(kopierJournalpostId))
-							.build()
-					);
+			KopierJournalpostResult kopierJournalpostResult = kopierJournalpostService.kopierJournalpost(valueOf(kildeJournalpostId), request.getEksternReferanseId());
+
+			if (kopierJournalpostResult.duplikatEksternReferanseId()) {
+				return ResponseEntity.status(CONFLICT)
+						.body(KopierJournalpostResponse.builder()
+								.kopierJournalpostId(valueOf(kopierJournalpostResult.kopierJournalpostId()))
+								.build()
+						);
+			} else {
+				return ResponseEntity.status(CREATED)
+						.body(KopierJournalpostResponse.builder()
+								.kopierJournalpostId(valueOf(kopierJournalpostResult.kopierJournalpostId()))
+								.build()
+						);
+			}
 
 		} catch (JournalpostIkkeFunnetException e) {
 			String message = format("Kunne ikke finne journalpost med journalpostId=%s i joark", kildeJournalpostId);
 			throw new ResponseStatusException(NOT_FOUND, message);
-		} catch (KanIkkeKopiereException | InputValideringFeiletException e) {
+		} catch (KanIkkeKopiereException | IllegalArgumentException | InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST, e.getMessage());
 		}
 	}
