@@ -51,6 +51,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected static final String URL_SKJERMARKIVENHET = "/rest/admin/skjermarkivenhet/";
 	protected static final String URL_SLETTARKIVENHET = "/rest/admin/slettarkivenhet";
 
+	protected static final String AZP_NAME_DOKMET = "dev-fss:teamdokumenthandtering:dokmet";
 	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
 	protected static final String MS_AD_GROUP_ID = "abcd163a-9821-4637-a23d-b706e5b24809";
 	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
@@ -61,8 +62,8 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 		AzureAdGraphService azureAdGraphService() {
 			AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);
 
-			when(azureAdGraphService.userIsMemberOfGroup(MS_USER_ID_WITH_GROUP_ACCESS, MS_AD_GROUP_ID)).thenReturn(true);
-			when(azureAdGraphService.userIsMemberOfGroup(MS_USER_ID_WITHOUT_GROUP_ACCESS, MS_AD_GROUP_ID)).thenReturn(false);
+			when(azureAdGraphService.isUserMemberOfGroup(MS_USER_ID_WITH_GROUP_ACCESS, MS_AD_GROUP_ID)).thenReturn(true);
+			when(azureAdGraphService.isUserMemberOfGroup(MS_USER_ID_WITHOUT_GROUP_ACCESS, MS_AD_GROUP_ID)).thenReturn(false);
 
 			return azureAdGraphService;
 		}

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.FIL;
+import static no.nav.dokarkiv.arkivervariant.util.TestUtils.FIL2;
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.opprettHoveddokumentForIT;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FILUUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
@@ -128,8 +129,6 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
-		byte[] FIL2 = "NEW FILE".getBytes();
-
 		request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
 				.fil(encodeBase64String(FIL2))
@@ -167,7 +166,6 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 	public void skalReturnereUnauthorizedHvisKallendeAppIkkeErJoarkadmin() {
 		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		var AZP_NAME_DOKMET = "dev-fss:teamdokumenthandtering:dokmet";
 
 		var headers = createAuthorizationHeaders(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
 
@@ -197,7 +195,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.filType(PDF).build(), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("NAVIdent må være medlem av gruppen");
+		assertThat(responseEntity.getBody()).contains("NAV-ansatt må være medlem av gruppen");
 	}
 
 }

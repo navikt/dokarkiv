@@ -434,7 +434,6 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisKallendeAppIkkeErJoarkadmin() {
-		var  AZP_NAME_DOKMET = "dev-fss:teamdokumenthandtering:dokmet";
 		var headers = createAuthorizationHeaders(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, new HttpEntity<>(createSkjermarkivenhetRequest(POL, JOURNALPOST, 1L, null, null), headers), String.class);
 
@@ -449,7 +448,17 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, new HttpEntity<>(createSkjermarkivenhetRequest(POL, JOURNALPOST, 1L, null, null), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("NAVIdent må være medlem av gruppen");
+		assertThat(responseEntity.getBody()).contains("NAV-ansatt må være medlem av gruppen");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedHvisTokenErEtSystemTilSystemToken() {
+		var headers = createAuthorizationHeadersClientCredentialGrant();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, new HttpEntity<>(createSkjermarkivenhetRequest(POL, JOURNALPOST, 1L, null, null), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
 	}
 
 	private void assertDokumentInfoIkkeSkjermet(Long dokumentInfoId) {

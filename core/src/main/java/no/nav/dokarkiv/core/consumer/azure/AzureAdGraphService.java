@@ -60,12 +60,12 @@ public class AzureAdGraphService {
 		return user.givenName + " " + user.surname;
 	}
 
-	@Cacheable(value = AZURE_HENT_AD_GRUPPER, key = "#userId")
+	@Cacheable(value = AZURE_HENT_AD_GRUPPER, key = "#userObjectId")
 	@Retryable(exclude = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Boolean userIsMemberOfGroup(String userId, String adGroup) {
-		List<String> groups = getAzureGroupsByPrincipal(userId);
+	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId) {
+		List<String> groups = getGroupsForUserObjectId(userObjectId);
 
-		return groups.contains(adGroup);
+		return groups.contains(groupObjectId);
 	}
 
 	private User getUser(String navIdent) {
@@ -73,7 +73,7 @@ public class AzureAdGraphService {
 		requestOptions.add(new HeaderOption("ConsistencyLevel", "eventual"));
 		requestOptions.add(new QueryOption("$filter", "onPremisesSamAccountName eq '" + navIdent + "'"));
 
-		List<User> res = getGraphClient(getUserToken())
+		List<User> res = getGraphClient(getMsGraphAccessToken())
 				.users()
 				.buildRequest(requestOptions)
 				.count(true)
@@ -88,12 +88,12 @@ public class AzureAdGraphService {
 		return res.get(0);
 	}
 
-	private List<String> getAzureGroupsByPrincipal(String userPrincipal) {
+	private List<String> getGroupsForUserObjectId(String userObjectId) {
 		try {
-			String url = MICROSOFT_GRAPH_SCOPE_V2 + format("v1.0/users/%s/memberOf", userPrincipal);
+			String url = MICROSOFT_GRAPH_SCOPE_V2 + format("v1.0/users/%s/memberOf", userObjectId);
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(APPLICATION_JSON);
-			headers.setBearerAuth(getUserToken());
+			headers.setBearerAuth(getMsGraphAccessToken());
 			headers.setAccept(singletonList(APPLICATION_JSON));
 			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
@@ -112,7 +112,7 @@ public class AzureAdGraphService {
 				.buildClient();
 	}
 
-	private String getUserToken() {
+	private String getMsGraphAccessToken() {
 		return azureToken.clientCredentialAccessToken(MICROSOFT_GRAPH_SCOPE_APP);
 	}
 

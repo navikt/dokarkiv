@@ -72,9 +72,11 @@ public abstract class AbstractRestIT {
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
 	protected static final String DEFAULT_CLAIM_OID = "oid";
+	protected static final String DEFAULT_CLAIM_SUB = "sub";
 	protected static final String CLAIM_AZP_NAME = "azp_name";
 	protected static final String CLAIM_NAME = "name";
 	protected static final String ROLES = "roles";
+	protected static final String APP_CLAIM_SUB = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 
 	@Autowired
 	protected JournalpostTestRepository journalpostTestRepository;
@@ -226,6 +228,16 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
+	protected HttpHeaders createAuthorizationHeadersClientCredentialGrant() {
+		HttpHeaders headers = new HttpHeaders();
+
+		headers.setContentType(APPLICATION_JSON);
+		headers.setBearerAuth(azureTokenForClientCredentialFlow(APP_CLAIM_SUB));
+		headers.add(NAV_CALL_ID, "itest");
+
+		return headers;
+	}
+
 	protected HttpHeaders createHeadersWithServiceUserToken(String serviceUserId) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
@@ -281,6 +293,10 @@ public abstract class AbstractRestIT {
 				DEFAULT_CLAIM_OID, user,
 				CLAIM_NAME,"F_Z991234 E_Z991234")
 		);
+	}
+
+	protected String azureTokenForClientCredentialFlow(String subject) {
+		return token(ISSUER_AZUREV2, subject, Map.of(DEFAULT_CLAIM_SUB, subject, DEFAULT_CLAIM_OID, subject));
 	}
 
 	protected String openAmToken(String subject) {
