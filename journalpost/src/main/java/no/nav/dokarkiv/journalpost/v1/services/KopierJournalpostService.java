@@ -14,10 +14,12 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.KOPIER_JOURNALPOST;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
 @Slf4j
@@ -37,7 +39,35 @@ public class KopierJournalpostService {
 		this.journalpostCopier = new JournalpostCopier();
 	}
 
+	public KopierJournalpostResult kopierJournalpost(Long journalpostId, String eksternReferanseId) {
+		if (journalpostId == null || isBlank(eksternReferanseId)) {
+			throw new IllegalArgumentException("Kan ikke kopiere journalpost. journalpostId eller eksternReferanseId er null/blank. " +
+											   "journalpostId=" + journalpostId + ", eksternReferanseId=" + eksternReferanseId);
+		}
+
+		boolean journalpostExists = journalpostRepository.existsByKanalReferanseId(eksternReferanseId);
+		if (journalpostExists) {
+			Optional<Journalpost> existingJournalpost = journalpostRepository.findByKanalReferanseId(eksternReferanseId);
+			if (existingJournalpost.isPresent()) {
+				final Journalpost journalpost = existingJournalpost.get();
+				Long duplikatJournalpostId = journalpost.getJournalpostId();
+				log.warn("kopierJournalpost - Journalpost med eksternReferanseId={} er allerede kopiert og har journalpostId={}. Kopierer ikke ny journalpost.",
+						eksternReferanseId, duplikatJournalpostId);
+				return new KopierJournalpostResult(duplikatJournalpostId, true);
+			}
+		}
+		Long nyJournalpostId = doKopierJournalpost(journalpostId, eksternReferanseId);
+		return new KopierJournalpostResult(nyJournalpostId, false);
+	}
+
 	public Long kopierJournalpost(Long journalpostId) {
+		if (journalpostId == null) {
+			throw new IllegalArgumentException("Kan ikke kopiere journalpost. journalpostId er null.");
+		}
+		return doKopierJournalpost(journalpostId, null);
+	}
+
+	private Long doKopierJournalpost(Long journalpostId, String eksternReferanseId) {
 		// finn journalpost
 		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
@@ -45,7 +75,7 @@ public class KopierJournalpostService {
 		kopierJournalpostValidator.validate(journalpost);
 
 		// kopier journalpost
-		Journalpost nyJournalpost = journalpostCopier.copy(journalpost);
+		Journalpost nyJournalpost = journalpostCopier.copy(journalpost, eksternReferanseId);
 
 		// Nullstill saksrelasjon på den nye journalposten.
 		nyJournalpost.setSaksrelasjon(null);
@@ -65,7 +95,7 @@ public class KopierJournalpostService {
 
 		aksjonsLoggService.lagreAksjonsLoggForJournalpost(
 				KOPIER_JOURNALPOST, journalpostId, null, "Journalposten ble kopiert. Id til ny journalpost er " + nyJournalpostId,
-				getUtfoertAv(),	Collections.singletonList(endring));
+				getUtfoertAv(), Collections.singletonList(endring));
 
 		// returnere journalpostId til ny journalpost
 		return nyJournalpostId;

@@ -203,6 +203,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "etterlatte-gyldig-soeknad",
+      "namespace": "etterlatte",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "journalfoer-soeknad",
       "namespace": "etterlatte",
       "cluster": "prod-gcp"
@@ -531,6 +536,11 @@
     {
       "app": "orkivar",
       "namespace": "dab",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "amt-distribusjon",
+      "namespace": "amt",
       "cluster": "prod-gcp"
     }
   ]
