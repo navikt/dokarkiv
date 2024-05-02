@@ -210,6 +210,17 @@ public abstract class AbstractRestIT {
 		return createHeadersWithServiceUserToken(SERVICE_USER_ID);
 	}
 
+	protected HttpHeaders createHeadersWithServiceUserAndAksjonslogg(String servicebruker) {
+		var headers = createHeadersWithServiceUserToken(servicebruker);
+
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER, AKSJON_BRUKER);
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER, AKSJON_HJEMMEL);
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER, AKSJON_MELDING);
+		headers.add(AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER, AKSJON_UTFOERT_AV);
+
+		return headers;
+	}
+
 	protected HttpHeaders createHeadersWithServiceUserTokenAndRolesClaim(String role) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);

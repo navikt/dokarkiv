@@ -200,6 +200,68 @@ public class Rjoark102IT extends AbstractAdminIT {
 	}
 
 	@Test
+	public void skalKassereDokumentSomErKnyttetTilEnJournalpostForStsTokenFraJoarkadmin() {
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
+		dokumentInfoSomSkalKasseres.addFilDetaljer(createFildetaljerOgFil(dokumentInfoSomSkalKasseres, ARKIV, FIL_UUID_ARKIV));
+
+		journalpostTestRepository.persist(journalpost);
+		skjermingServiceTest.setDokumentKassert(dokumentInfoSomSkalKasseres, POL);
+
+		reinitTransaction();
+
+		Optional<DokumentInfo> dokumentInfoRep = dokumentInfoTestRepository.findById(dokumentInfoSomSkalKasseres.getDokumentInfoId());
+		assertTrue(dokumentInfoRep.isPresent());
+		assertThat(dokumentInfoRep.get().getFildetaljerListeAdmin().size()).isEqualTo(2);
+		assertThat(journalpostTestRepository.count()).isEqualTo(1); // Feil antall journalposter
+		assertThat(dokumentInfoTestRepository.count()).isEqualTo(1); // Feil antall dokumenter
+		assertFalse(dokumentInfoSomSkalKasseres.isRelatedToMultipleJournalposts());
+		assertFalse(dokumentInfoSomSkalKasseres.getFildetaljerListe().isEmpty());
+
+		var httpHeaders = createHeadersWithServiceUserAndAksjonslogg(SERVICEUSER_JOARKADMIN);
+
+		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(
+				createKasserDokumentRequest(dokumentInfoRep.get().getDokumentInfoId()),
+				httpHeaders), String.class);
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+
+		reinitTransaction();
+
+		Optional<DokumentInfo> dokumentInfoAfter = dokumentInfoTestRepository.findById(dokumentInfoSomSkalKasseres.getDokumentInfoId());
+		assertTrue(dokumentInfoAfter.isPresent());
+		assertThat(dokumentInfoAfter.get().getKassertAvNavn()).isEqualTo(KASSERT_AV_NAVN);
+		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size()).isEqualTo(1);
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid()).isEqualTo(FIL_UUID_ARKIV);
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat()).isEqualTo(ARKIV);
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType()).isNull();
+
+		assertThat(journalpostTestRepository.count()).isEqualTo(1); // Feil antall journalposter etter kall
+		assertThat(dokumentInfoTestRepository.count()).isEqualTo(1); // Feil antall dokumenter etter kall
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedHvisStsTokenIkkeErFraJoarkadmin() {
+		var headers = createHeadersWithServiceUserAndAksjonslogg(SERVICEUSER_IKKE_JOARKADMIN);
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedHvisTokenErEtClientCredentialToken() {
+		var headers = createAuthorizationHeadersClientCredentialGrant();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+	}
+
+	@Test
 	public void skalReturnereUnauthorizedHvisKallendeAppIkkeErJoarkadmin() {
 		var headers = createAuthorizationHeaders(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
 
@@ -217,16 +279,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
 		assertThat(responseEntity.getBody()).contains("NAV-ansatt må være medlem av gruppen");
-	}
-
-	@Test
-	public void skalReturnereUnauthorizedHvisTokenErEtSystemTilSystemToken() {
-		var headers = createAuthorizationHeadersClientCredentialGrant();
-
-		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
-
-		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
 	}
 
 }

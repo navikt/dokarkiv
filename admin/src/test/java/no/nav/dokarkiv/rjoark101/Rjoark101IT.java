@@ -153,6 +153,108 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 * Test med arkivEnhet=JOURNALPOST
 	 */
 	@Test
+	public void skalSletteJournalpostMedHoveddokumentOgEttVedleggForStsTokenFraJoarkadmin() {
+		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
+
+		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
+		saveJournalpost(journalpost);
+		utsendingsInfoTestRepository.persist(createNavNoUtsendingsInfo(journalpost));
+
+		createDokumentInfoVedleggRelasjon(journalpost);
+		saveJournalpost(journalpost1);
+		saveJournalpost(journalpost2);
+		saveJournalpost(journalpost);
+
+		reinitTransaction();
+
+		List<Journalpost> journalpostList = journalpostTestRepository.findAll();
+
+		assertThat(journalpostList.size()).isEqualTo(3);
+		assertThatJournalpostIsNotDeleted(journalpost);
+
+		var httpHeaders = createHeadersWithServiceUserAndAksjonslogg(SERVICEUSER_JOARKADMIN);
+		httpHeaders.remove(AKSJONS_LOGG_MELDING_HEADER);
+
+		var responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
+				new HttpEntity<>(SlettArkivenhetRequest.builder()
+						.arkivenhet(JOURNALPOST)
+						.journalpostId(journalpost.getJournalpostId())
+						.build(), httpHeaders),
+				String.class);
+
+		reinitTransaction();
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+
+		assertThatJournalpostIsDeleted(journalpost.getJournalpostId());
+		for (JournalpostDokumentInfoRelasjon rel : journalpost.getJournalpostDokumentInfoRelasjoner()) {
+			assertThatDokumentInfoIsDeleted(rel.getDokumentInfo());
+		}
+
+		List<Journalpost> journalpostListAfter = journalpostTestRepository.findAll();
+		assertThat(journalpostListAfter.size()).isEqualTo(2);
+		assertThatJournalpostIsNotDeleted(journalpost1);
+		assertThatJournalpostRelasjonerIsNotDeleted(journalpost1);
+
+		assertThatJournalpostIsNotDeleted(journalpost2);
+		assertThatJournalpostRelasjonerIsNotDeleted(journalpost2);
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assertThat(aksjonsLoggList.size()).isEqualTo(2);
+
+		Long dokInfoIdVedlegg = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG)
+				.iterator()
+				.next()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+		Long dokInfoHoveddok = journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo()
+				.getDokumentInfoId();
+		assertAksjonsLoggForSts(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), dokInfoIdVedlegg), SLETTING, journalpost.getJournalpostId(), dokInfoIdVedlegg,
+				format("Journalpost med journalpostId %s knyttet til dokumentInfoId(er) %s, %s er fysisk slettet og kan ikke gjenopprettes lenger.", journalpost.getJournalpostId(), dokInfoHoveddok, dokInfoIdVedlegg),
+				asList(
+						ArkivElementEndring.builder()
+								.arkivElement(JOURNALPOST_JOURNALPOST_ID)
+								.fraVerdi(journalpost.getJournalpostId().toString())
+								.tilVerdi(null)
+								.build(),
+						ArkivElementEndring.builder()
+								.arkivElement(RELASJON_DOKUMENT_INFO_ID)
+								.fraVerdi(dokInfoIdVedlegg.toString())
+								.tilVerdi(null)
+								.build(),
+						ArkivElementEndring.builder()
+								.arkivElement(DOKUMENT_INFO_DOKUMENT_INFO_ID)
+								.fraVerdi(dokInfoIdVedlegg.toString())
+								.tilVerdi(null)
+								.build())
+		);
+
+		assertAksjonsLoggForSts(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost.getJournalpostId(), dokInfoHoveddok), SLETTING, journalpost.getJournalpostId(), dokInfoHoveddok,
+				format("Journalpost med journalpostId %s knyttet til dokumentInfoId(er) %s, %s er fysisk slettet og kan ikke gjenopprettes lenger.", journalpost.getJournalpostId(), dokInfoHoveddok, dokInfoIdVedlegg),
+				asList(
+						ArkivElementEndring.builder()
+								.arkivElement(JOURNALPOST_JOURNALPOST_ID)
+								.fraVerdi(journalpost.getJournalpostId().toString())
+								.tilVerdi(null)
+								.build(),
+						ArkivElementEndring.builder()
+								.arkivElement(RELASJON_DOKUMENT_INFO_ID)
+								.fraVerdi(dokInfoHoveddok.toString())
+								.tilVerdi(null)
+								.build(),
+						ArkivElementEndring.builder()
+								.arkivElement(DOKUMENT_INFO_DOKUMENT_INFO_ID)
+								.fraVerdi(dokInfoHoveddok.toString())
+								.tilVerdi(null)
+								.build())
+		);
+	}
+
+	/**
+	 * Test med arkivEnhet=JOURNALPOST
+	 */
+	@Test
 	public void skalSletteJournalpostMedHoveddokumentOgVedleggSomErGjenbruktFraEnAnnenJournalpost() {
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
@@ -976,6 +1078,33 @@ public class Rjoark101IT extends AbstractAdminIT {
 	}
 
 	@Test
+	public void skalReturnereUnauthorizedHvisStsTokenIkkeErFraJoarkadmin() {
+		var headers = createHeadersWithServiceUserAndAksjonslogg(SERVICEUSER_IKKE_JOARKADMIN);
+		headers.remove(AKSJONS_LOGG_MELDING_HEADER);
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE, new HttpEntity<>(SlettArkivenhetRequest.builder()
+				.arkivenhet(JOURNALPOST)
+				.journalpostId(Long.valueOf("123"))
+				.build(), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedHvisTokenErEtClientCredentialToken() {
+		var headers = createAuthorizationHeadersClientCredentialGrant();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE, new HttpEntity<>(SlettArkivenhetRequest.builder()
+				.arkivenhet(JOURNALPOST)
+				.journalpostId(Long.valueOf("123"))
+				.build(), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+	}
+
+	@Test
 	public void skalReturnereUnauthorizedHvisKallendeAppIkkeErJoarkadmin() {
 		var headers = createAuthorizationHeaders(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
 
@@ -999,19 +1128,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
 		assertThat(responseEntity.getBody()).contains("NAV-ansatt må være medlem av gruppen");
-	}
-
-	@Test
-	public void skalReturnereUnauthorizedHvisTokenErEtSystemTilSystemToken() {
-		var headers = createAuthorizationHeadersClientCredentialGrant();
-
-		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE, new HttpEntity<>(SlettArkivenhetRequest.builder()
-				.arkivenhet(JOURNALPOST)
-				.journalpostId(Long.valueOf("123"))
-				.build(), headers), String.class);
-
-		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
 	}
 
 }

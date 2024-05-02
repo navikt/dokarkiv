@@ -17,7 +17,8 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 @Slf4j
 public class ValidateAdminConsumerAccessInterceptor implements HandlerInterceptor {
 
-	private static final Set<String> VALID_CALLERS = Set.of("joarkadmin");
+	private static final Set<String> VALID_AZURE_OBO_CALLERS = Set.of("joarkadmin");
+	private static final Set<String> VALID_STS_CALLERS = Set.of("srvjoarkadmin");
 
 	private final AzureAdGraphService azureAdGraphService;
 	private final String joarkVedlikeholdGroupObjectId;
@@ -30,17 +31,23 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+		// Som hovedregel skal validatoren sjekke on behalf of-token
+		// Unntak for dette er automatiske jobber på joarkadmin som kaller admin-endepunkt med STS-token
 		if (MDC.get(MDC_USER_ID).equals(MDC.get(MDC_CONSUMER_ID))) {
-			log.warn("OIDC-token på Authorization-header kan ikke være et server-til-server-token");
+			if (VALID_STS_CALLERS.contains(MDC.get(MDC_CONSUMER_ID))) {
+				return true;
+			} else {
+				log.warn("OIDC-token på Authorization-header kan ikke være et client credential-token");
 
-			response.sendError(SC_UNAUTHORIZED, "OIDC-token på Authorization-header må være et on behalf of-token");
-			return false;
+				response.sendError(SC_UNAUTHORIZED, "OIDC-token på Authorization-header må være et on behalf of-token");
+				return false;
+			}
 		}
 
 		if (!consumerAppIsAllowed()) {
-			log.warn(format("OIDC-token på Authorization-header tilhører ikke en av følgende apper=%s", VALID_CALLERS));
+			log.warn(format("OIDC-token på Authorization-header tilhører ikke en av følgende apper=%s", VALID_AZURE_OBO_CALLERS));
 
-			response.sendError(SC_UNAUTHORIZED, format("OIDC-token på Authorization-header må tilhøre en av følgende apper=%s", VALID_CALLERS));
+			response.sendError(SC_UNAUTHORIZED, format("OIDC-token på Authorization-header må tilhøre en av følgende apper=%s", VALID_AZURE_OBO_CALLERS));
 			return false;
 		}
 
@@ -61,7 +68,7 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 			return false;
 		}
 
-		return VALID_CALLERS.stream()
+		return VALID_AZURE_OBO_CALLERS.stream()
 				.anyMatch(appWithNamespace::contains);
 	}
 

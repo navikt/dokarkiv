@@ -72,6 +72,49 @@ public class Rjoark102SIT extends AbstractAdminIT {
 	}
 
 	@Test
+	public void skalSkjermeDokumentForKasseringForStsTokenFraJoarkadmin() {
+		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
+		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo();
+
+		reinitTransaction();
+
+		var httpHeaders = createHeadersWithServiceUserAndAksjonslogg(SERVICEUSER_JOARKADMIN);
+
+		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(), POST,
+				new HttpEntity<>(httpHeaders), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+
+		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findById(dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId());
+		assertTrue(dokInfoEtterKall.isPresent());
+		assertThatAllFildetaljerIsSkjermet(dokInfoEtterKall.get(), POL);
+		assertThat(dokInfoEtterKall.get().isKassert()).isTrue();
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assertThat(aksjonsLoggList.size()).isEqualTo(1);
+		assertAksjonsLoggSts(aksjonsLoggList.get(0), ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(),
+				asList(
+						ArkivElementEndring.builder()
+								.arkivElement(fildetaljerSkjermingTypeVariant(ARKIV))
+								.fraVerdi(null)
+								.tilVerdi(POL.name())
+								.build(),
+						ArkivElementEndring.builder()
+								.arkivElement(fildetaljerSkjermingTypeVariant(PRODUKSJON))
+								.fraVerdi(null)
+								.tilVerdi(POL.name())
+								.build(),
+						ArkivElementEndring.builder()
+								.arkivElement(DOKUMENT_INFO_KASSERT)
+								.fraVerdi("false")
+								.tilVerdi("true")
+								.build()
+				)
+		);
+	}
+
+	@Test
 	public void skalOppheveSkjermingDokumentForKassering() {
 		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -126,6 +169,26 @@ public class Rjoark102SIT extends AbstractAdminIT {
 	}
 
 	@Test
+	public void skalReturnereUnauthorizedHvisStsTokenIkkeErFraJoarkadmin() {
+		var headers = createHeadersWithServiceUserAndAksjonslogg(SERVICEUSER_IKKE_JOARKADMIN);
+
+		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + 1, POST, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedHvisTokenErEtClientCredentialToken() {
+		var headers = createAuthorizationHeadersClientCredentialGrant();
+
+		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + 1, POST, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+	}
+
+	@Test
 	public void skalReturnereUnauthorizedHvisKallendeAppIkkeErJoarkadmin() {
 		var headers = createAuthorizationHeaders(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
 
@@ -143,16 +206,6 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
 		assertThat(responseEntity.getBody()).contains("NAV-ansatt må være medlem av gruppen");
-	}
-
-	@Test
-	public void skalReturnereUnauthorizedHvisTokenErEtSystemTilSystemToken() {
-		var headers = createAuthorizationHeadersClientCredentialGrant();
-
-		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + 1, POST, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
-
-		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
 	}
 
 	private void assertThatAllFildetaljerIsSkjermet(DokumentInfo dokInfoEtterKall, SkjermingTypeCode skjermingTypeCode) {
