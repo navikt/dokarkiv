@@ -34,8 +34,6 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-		String authorizationToken = headerTokenExtractor.getIdToken(request);
-
 		// Som hovedregel skal validatoren sjekke on behalf of-token
 		// Unntak for dette er automatiske jobber på joarkadmin som kaller admin-endepunkt med STS-token
 		if (MDC.get(MDC_USER_ID).equals(MDC.get(MDC_CONSUMER_ID))) {
@@ -56,6 +54,7 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 			return false;
 		}
 
+		String authorizationToken = headerTokenExtractor.getIdToken(request);
 		if (!isMemberOfGroupJoarkVedlikehold(authorizationToken, joarkVedlikeholdGroupObjectId)) {
 			log.error(format("NAV-ansatt er ikke medlem av gruppen med objectId=\"%s\" i Entra ID", joarkVedlikeholdGroupObjectId));
 
