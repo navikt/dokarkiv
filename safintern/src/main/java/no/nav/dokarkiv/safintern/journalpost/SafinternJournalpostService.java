@@ -41,7 +41,7 @@ public class SafinternJournalpostService {
 				.orElseThrow(() -> new JournalpostIkkeFunnetException("Journalpost med eksternReferanseId=" + eksternReferanseId + " ikke funnet"));
 	}
 
-	private EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> fetch(Set<String> fields) {
+	private static EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> fetch(Set<String> fields) {
 		if (fields == null || fields.isEmpty()) {
 			return EntityViewSetting.create(JournalpostView.class);
 		}

@@ -40,7 +40,7 @@ public class SafinternTilknyttetJournalpostService {
 		}
 	}
 
-	private EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> fetchDokument(Set<String> fields) {
+	private static EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> fetchDokument(Set<String> fields) {
 		if (fields == null || fields.isEmpty()) {
 			return EntityViewSetting.create(JournalpostView.class);
 		}
