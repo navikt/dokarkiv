@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.security;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import org.slf4j.MDC;
@@ -20,6 +22,7 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 	private static final Set<String> VALID_AZURE_OBO_CALLERS = Set.of("joarkadmin");
 	private static final Set<String> VALID_STS_CALLERS = Set.of("srvjoarkadmin");
 
+	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
 	private final AzureAdGraphService azureAdGraphService;
 	private final String joarkVedlikeholdGroupObjectId;
 
@@ -30,6 +33,8 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+		String authorizationToken = headerTokenExtractor.getIdToken(request);
 
 		// Som hovedregel skal validatoren sjekke on behalf of-token
 		// Unntak for dette er automatiske jobber på joarkadmin som kaller admin-endepunkt med STS-token
@@ -51,7 +56,7 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 			return false;
 		}
 
-		if (!isMemberOfGroupJoarkVedlikehold(joarkVedlikeholdGroupObjectId)) {
+		if (!isMemberOfGroupJoarkVedlikehold(authorizationToken, joarkVedlikeholdGroupObjectId)) {
 			log.error(format("NAV-ansatt er ikke medlem av gruppen med objectId=\"%s\" i Entra ID", joarkVedlikeholdGroupObjectId));
 
 			response.sendError(SC_UNAUTHORIZED, format("NAV-ansatt må være medlem av gruppen med objectId=\"%s\" i Entra ID", joarkVedlikeholdGroupObjectId));
@@ -72,8 +77,9 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 				.anyMatch(appWithNamespace::contains);
 	}
 
-	public boolean isMemberOfGroupJoarkVedlikehold(String entraIdGroup) {
-		final String userObjectId = MDC.get(MDC_USER_ID);
+	public boolean isMemberOfGroupJoarkVedlikehold(String token, String entraIdGroup) {
+		DecodedJWT decode = JWT.decode(token);
+		String userObjectId = decode.getClaim("oid").asString();
 
 		return azureAdGraphService.isUserMemberOfGroup(userObjectId, entraIdGroup);
 	}
