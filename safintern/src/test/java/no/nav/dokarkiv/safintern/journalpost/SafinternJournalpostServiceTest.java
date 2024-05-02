@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
+import no.nav.dokarkiv.core.exceptions.InvalidFieldRequestedException;
 import no.nav.dokarkiv.core.repository.FagomradeTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
@@ -125,6 +126,6 @@ public class SafinternJournalpostServiceTest {
 		assertThatThrownBy(() ->
 						safinternJournalpostService.hentJournalpostById(123L, Set.of("utsendingsinfo")),
 				"fetch verdier må være godkjent av FetchPaths")
-				.isInstanceOf(IllegalArgumentException.class);
+				.isInstanceOf(InvalidFieldRequestedException.class);
 	}
 }

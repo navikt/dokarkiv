@@ -163,6 +163,18 @@ public class TestdataFactory {
 		return journalpostDokumentInfoRelasjon;
 	}
 
+	static JournalpostDokumentInfoRelasjon createHoveddokumentRelasjonGjenbruktDokumentInfo(Journalpost journalpost, DokumentInfo dokumentInfo) {
+		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
+				.journalpost(journalpost)
+				.dokumentInfo(dokumentInfo)
+				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+				.build();
+
+		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(OPPRETTET_KILDE_NAVN);
+		return journalpostDokumentInfoRelasjon;
+	}
+
 	static JournalpostDokumentInfoRelasjon createDokumentInfoVedleggRelasjon(Journalpost journalpost) {
 		DokumentInfo dokumentInfo = createDokumentInfo(FIL_UUID_ARKIV_VEDLEGG, FIL_UUID_PRODUKSJON_VEDLEGG);
 		dokumentInfo.setOriginalJournalpost(journalpost);

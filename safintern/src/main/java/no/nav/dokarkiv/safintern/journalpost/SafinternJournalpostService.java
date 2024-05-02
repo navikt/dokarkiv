@@ -3,10 +3,10 @@ package no.nav.dokarkiv.safintern.journalpost;
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.view.EntityViewSetting;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.exceptions.InvalidFieldRequestedException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.safintern.views.FetchPaths;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +41,6 @@ public class SafinternJournalpostService {
 				.orElseThrow(() -> new JournalpostIkkeFunnetException("Journalpost med eksternReferanseId=" + eksternReferanseId + " ikke funnet"));
 	}
 
-	@NotNull
 	private static EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> fetch(Set<String> fields) {
 		if (fields == null || fields.isEmpty()) {
 			return EntityViewSetting.create(JournalpostView.class);
@@ -53,7 +52,7 @@ public class SafinternJournalpostService {
 			} else {
 				String feilmelding = "safintern/journalpost forsøker fetch på ugyldig path=" + path;
 				log.error(feilmelding);
-				throw new IllegalArgumentException(feilmelding);
+				throw new InvalidFieldRequestedException(feilmelding);
 			}
 		}
 		return evs;
