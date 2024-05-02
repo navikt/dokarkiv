@@ -26,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
-import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_HENT_AD_GRUPPER;
 import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -60,7 +59,6 @@ public class AzureAdGraphService {
 		return user.givenName + " " + user.surname;
 	}
 
-	@Cacheable(value = AZURE_HENT_AD_GRUPPER, key = "#userObjectId")
 	@Retryable(exclude = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId) {
 		List<String> groups = getGroupsForUserObjectId(userObjectId);
