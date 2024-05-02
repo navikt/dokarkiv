@@ -4,10 +4,10 @@ import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.view.EntityViewSetting;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.InvalidFieldRequestedException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.safintern.views.FetchPaths;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
-import org.slf4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +29,7 @@ public class SafinternTilknyttetJournalpostService {
 
 	public List<JournalpostView> hentJournalposterTilknyttetGjenbruk(long dokumentInfoId, Set<String> fields) {
 		try {
-			var evs = fetchDokument(fields, log);
+			var evs = fetchDokument(fields);
 			List<JournalpostView> journalpostViews = repository.hentTilknyttedeJournalposterGjenbruk(dokumentInfoId, evs);
 			if (journalpostViews.isEmpty()) {
 				throw new JournalpostIkkeFunnetException("Fant ingen Journalpost tilknyttet dokumentInfoId=" + dokumentInfoId);
@@ -40,7 +40,7 @@ public class SafinternTilknyttetJournalpostService {
 		}
 	}
 
-	public static EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> fetchDokument(Set<String> fields, Logger callingClassLogger) {
+	private EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> fetchDokument(Set<String> fields) {
 		if (fields == null || fields.isEmpty()) {
 			return EntityViewSetting.create(JournalpostView.class);
 		}
@@ -50,8 +50,8 @@ public class SafinternTilknyttetJournalpostService {
 				evs.fetch(path);
 			} else {
 				String feilmelding = "safintern/tilknyttetJournalpost forsøker fetch på ugyldig path=" + path;
-				callingClassLogger.error(feilmelding);
-				throw new IllegalArgumentException(feilmelding);
+				log.error(feilmelding);
+				throw new InvalidFieldRequestedException(feilmelding);
 			}
 		}
 		return evs;

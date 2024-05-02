@@ -15,8 +15,10 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
+import static java.util.Collections.emptySet;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createDokumentInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
@@ -24,6 +26,7 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createHoveddokumentRelasjonGjenbruktDokumentInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.formattedDate;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -68,9 +71,56 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 		assertThat(responseEntity.getBody()).containsIgnoringCase("Fant ingen Journalpost tilknyttet dokumentInfoId=" + dokumentInfoId);
 	}
 
+	@Test
+	void shouldGetJournalposterTilknyttetDokumentInfoIdWithOnlySelectedFields() {
+		Sak persistedSak = sakTestRepository.persist(createGsak());
+		Long sakId = persistedSak.getSakId();
+		Journalpost opprinneligJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost gjenbrukendeJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		gjenbrukendeJournalpost.setKanalReferanseId("En annen referanseId");
+		gjenbrukendeJournalpost.getJournalpostDokumentInfoRelasjoner().forEach(gjenbrukendeJournalpost::removeJournalpostDokumentInfoRelasjon);
+		gjenbrukendeJournalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjonGjenbruktDokumentInfo(gjenbrukendeJournalpost, opprinneligJournalpost.getDokumentInfoFromJpDokInfoRelasjoner(0)));
+		opprinneligJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		gjenbrukendeJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		Journalpost persistedJournalpost = journalpostTestRepository.persist(opprinneligJournalpost);
+		journalpostTestRepository.persist(gjenbrukendeJournalpost);
+		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(opprinneligJournalpost);
+		utsendingsInfoTestRepository.persist(utsendingsInfo);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Set<String> fields = Set.of("journalpostId", "saksrelasjon");
+		Long dokumentInfoId = persistedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+		ResponseEntity<String> responseEntity = restTemplate.exchange(tilknyttedeJournalposterPath(dokumentInfoId, fields), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(persistedJournalpost, gjenbrukendeJournalpost, classpathResourceToString("/tilknyttetjournalpost/journalpost-dokumenter-jpid-og-saksrelasjon-response.json")));
+	}
+
+	@Test
+	void shouldGet400WhenRequestingNoinExistentFieldValue() {
+		DokumentInfo dokumentInfo = createDokumentInfo(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+		DokumentInfo persistedDokumentInfo = dokumentInfoTestRepository.persist(dokumentInfo);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long dokumentInfoId = persistedDokumentInfo.getDokumentInfoId();
+		Set<String> fields = Set.of("journalpostIdentifikasmultiplikasjon", "saksrelasjon");
+		ResponseEntity<String> responseEntity = restTemplate.exchange(tilknyttedeJournalposterPath(dokumentInfoId, fields), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(responseEntity.getBody()).containsIgnoringCase("forsøker fetch på ugyldig path=journalpostIdentifikasmultiplikasjon");
+	}
 
 	String tilknyttedeJournalposterPath(long dokumentInfoId) {
-		return SafinternConstants.BASE_PATH + "/tilknyttedeJournalposter/gjenbruk/dokumentInfoId/%s".formatted(dokumentInfoId);
+		return tilknyttedeJournalposterPath(dokumentInfoId, emptySet());
+	}
+
+	String tilknyttedeJournalposterPath(long dokumentInfoId, Set<String> fields) {
+		if (fields.isEmpty()) {
+			return SafinternConstants.BASE_PATH + "/tilknyttedeJournalposter/gjenbruk/dokumentInfoId/%s".formatted(dokumentInfoId);
+		}
+		return SafinternConstants.BASE_PATH + "/tilknyttedeJournalposter/gjenbruk/dokumentInfoId/%d?fields=%s".formatted(dokumentInfoId, String.join(",", fields));
 	}
 
 	private static String mapStringResponse(Journalpost originalJournalpost, Journalpost gjenbrukendeJournalpost, String responseTemplate) {
