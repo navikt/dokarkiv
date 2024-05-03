@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkivervariant.util;
 
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-
 import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
@@ -22,6 +20,8 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 import java.util.Date;
 
+import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+
 public class TestUtils {
 
 
@@ -38,8 +38,8 @@ public class TestUtils {
 
 	public static final Long JOURNALPOST_ID = 42L;
 	public static final Long DOKUMENTINFO_ID = 1L;
-	public static byte[] FIL = "TEEEST".getBytes();
-
+	public static final byte[] FIL = "TEEEST".getBytes();
+	public static final byte[] FIL2 = "NEW FILE".getBytes();
 
 	public static Journalpost opprettHoveddokumentForIT() {
 		return getBaseJournalpostBuilder()

@@ -56,7 +56,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, JOURNALPOST, journalpost.getJournalpostId(), null, null),
-				createHeadersWithAksjon()
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)
 		);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, httpEntity, String.class);
@@ -71,6 +71,44 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size()).isEqualTo(1);
 		assertAksjonsLogg(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost.getJournalpostId()), ENDRE_SKJERMING, journalpost
+						.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
+				singletonList(ArkivElementEndring.builder()
+						.arkivElement(JOURNALPOST_SKJERMING_TYPE)
+						.fraVerdi(POL.name())
+						.tilVerdi(null)
+						.build()
+				));
+	}
+
+	@Test
+	public void skalOppheveSkjermingJournalpostForStsTokenFraJoarkadmin() {
+		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
+		skjermingService.setJournalpostSkjerming(journalpost.getJournalpostId(), POL);
+		skjermingServiceTest.skjermAllFildetaljer(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo(), POL);
+
+		reinitTransaction();
+
+		assertThat(journalpostTestRepository.findById(journalpost.getJournalpostId()).get().getSkjermingType()).isEqualTo(POL);
+
+		var httpHeaders = createHeadersWithServiceUserAndAksjonslogg(SERVICEUSER_JOARKADMIN);
+
+		var httpEntity = new HttpEntity<>(
+				createSkjermarkivenhetRequest(POL, JOURNALPOST, journalpost.getJournalpostId(), null, null),
+				httpHeaders
+		);
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, httpEntity, String.class);
+
+		reinitTransaction();
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+
+		Optional<Journalpost> jpEtterKall = journalpostTestRepository.findById(journalpost.getJournalpostId());
+		assertTrue(jpEtterKall.isPresent());
+		assertThat(jpEtterKall.get().getSkjermingType()).isNull();
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assertThat(aksjonsLoggList.size()).isEqualTo(1);
+		assertAksjonsLoggSts(getAksjonsLoggByJournalpostId(aksjonsLoggList, journalpost.getJournalpostId()), ENDRE_SKJERMING, journalpost
 						.getJournalpostId(), journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId(),
 				singletonList(ArkivElementEndring.builder()
 						.arkivElement(JOURNALPOST_SKJERMING_TYPE)
@@ -101,7 +139,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE,
 				new HttpEntity<>(
 						createSkjermarkivenhetRequest(POL, DOKUMENT_INFO, null, dokumentInfoSomErSkjermet.getDokumentInfoId(), null),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
@@ -141,7 +179,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE,
 				new HttpEntity<>(
 						createSkjermarkivenhetRequest(POL, DOKUMENT_INFO, null, dokumentInfoSomErSkjermet.getDokumentInfoId(), null),
-						createHeadersWithAksjon()),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
@@ -191,7 +229,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_INFO, null, dokumentInfo.getDokumentInfoId(), null),
-				createHeadersWithAksjon()
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)
 		);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, httpEntity, String.class);
@@ -254,7 +292,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_FIL, null, dokumentInfo.getDokumentInfoId(), ARKIV),
-				createHeadersWithAksjon()
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)
 		);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, httpEntity, String.class);
@@ -287,7 +325,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_FIL, null, dokumentInfo.getDokumentInfoId(), null),
-				createHeadersWithAksjon()
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)
 		);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, httpEntity, String.class);
@@ -331,7 +369,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_FIL, null, dokumentInfo.getDokumentInfoId(), null),
-				createHeadersWithAksjon()
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)
 		);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, httpEntity, String.class);
@@ -372,7 +410,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_INFO, null, dokumentInfo.getDokumentInfoId(), null),
-				createHeadersWithAksjon()
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)
 		);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, httpEntity, String.class);
@@ -397,7 +435,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, JOURNALPOST, journalpost.getJournalpostId(), null, null),
-				createHeadersWithAksjon());
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, httpEntity, String.class);
 
@@ -419,7 +457,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_FIL, null, dokumentInfo.getDokumentInfoId(), ARKIV),
-				createHeadersWithAksjon()
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)
 		);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, httpEntity, String.class);
@@ -433,16 +471,42 @@ public class Rjoark100bIT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void skalIkkeFåTilgangHvisServiceBrukerIkkeErSrvJoarkadmin() {
+	public void skalReturnereUnauthorizedHvisStsTokenIkkeErFraJoarkadmin() {
+		var headers = createHeadersWithServiceUserAndAksjonslogg(SERVICEUSER_IKKE_JOARKADMIN);
 
-		var httpEntity = new HttpEntity<>(
-				createSkjermarkivenhetRequest(POL, JOURNALPOST, 1L, null, null),
-				createHeadersWithServiceUserToken(NO_ACCESS_SERVICE_USER_ID)
-		);
-
-		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, httpEntity, String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, new HttpEntity<>(createSkjermarkivenhetRequest(POL, JOURNALPOST, 1L, null, null), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedHvisTokenErEtClientCredentialToken() {
+		var headers = createAuthorizationHeadersClientCredentialGrant();
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, new HttpEntity<>(createSkjermarkivenhetRequest(POL, JOURNALPOST, 1L, null, null), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedHvisKallendeAppIkkeErJoarkadmin() {
+		var headers = createAuthorizationHeaders(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, new HttpEntity<>(createSkjermarkivenhetRequest(POL, JOURNALPOST, 1L, null, null), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må tilhøre en av følgende apper=[joarkadmin]");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
+		var headers = createAuthorizationHeaders(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS);
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, DELETE, new HttpEntity<>(createSkjermarkivenhetRequest(POL, JOURNALPOST, 1L, null, null), headers), String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(responseEntity.getBody()).contains("NAV-ansatt må være medlem av gruppen");
 	}
 
 	private void assertDokumentInfoIkkeSkjermet(Long dokumentInfoId) {

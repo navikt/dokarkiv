@@ -37,8 +37,9 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = {CoreConfig.class, AdminConfig.class, AbstractAdminIT.Config.class})
 @ActiveProfiles({"itest", "wiremock"})
 @EnableMockOAuth2Server
@@ -50,17 +51,22 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected static final String URL_SKJERMARKIVENHET = "/rest/admin/skjermarkivenhet/";
 	protected static final String URL_SLETTARKIVENHET = "/rest/admin/slettarkivenhet";
 
-	protected static final String NO_ACCESS_PERSON_USER_ID = "Z111111";
+	protected static final String SERVICEUSER_JOARKADMIN = "srvjoarkadmin";
+	protected static final String SERVICEUSER_IKKE_JOARKADMIN = "srvikkejoarkadmin";
+	protected static final String AZP_NAME_DOKMET = "dev-fss:teamdokumenthandtering:dokmet";
+	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
+	protected static final String MS_AD_GROUP_ID = "abcd163a-9821-4637-a23d-b706e5b24809";
+	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
+	protected static final String MS_USER_ID_WITHOUT_GROUP_ACCESS = "b999c63a-9821-4637-a23d-b706e5b24809";
 
 	public static class Config {
 		@Bean
 		AzureAdGraphService azureAdGraphService() {
 			AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);
-			when(azureAdGraphService.hentFulltNavn(PERSON_USER_ID)).thenReturn(PERSON_USER_NAME);
-			when(azureAdGraphService.userInGroup(PERSON_USER_ID, "0000-GA-joark-vedlikehold")).thenReturn(true);
 
-			when(azureAdGraphService.hentFulltNavn(NO_ACCESS_PERSON_USER_ID)).thenReturn(NO_ACCESS_PERSON_USER_ID);
-			when(azureAdGraphService.userInGroup(NO_ACCESS_PERSON_USER_ID, "0000-GA-joark-vedlikehold")).thenReturn(false);
+			when(azureAdGraphService.isUserMemberOfGroup(MS_USER_ID_WITH_GROUP_ACCESS, MS_AD_GROUP_ID)).thenReturn(true);
+			when(azureAdGraphService.isUserMemberOfGroup(MS_USER_ID_WITHOUT_GROUP_ACCESS, MS_AD_GROUP_ID)).thenReturn(false);
+
 			return azureAdGraphService;
 		}
 	}
@@ -73,15 +79,16 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected AksjonsLogg getAksjonsLoggByJournalpostId(List<AksjonsLogg> aksjonsLoggList, Long journalpostId) {
 		return aksjonsLoggList.stream()
-				.filter(aksjonsLogg -> journalpostId.equals(aksjonsLogg.getJournalpostId())).findAny().get();
+				.filter(aksjonsLogg -> journalpostId.equals(aksjonsLogg.getJournalpostId()))
+				.findAny()
+				.get();
 	}
 
 	protected AksjonsLogg getAksjonsLoggByJournalpostIdAndDokumentInfoId(List<AksjonsLogg> aksjonsLoggList, Long journalpostId, Long dokumentInfoId) {
 		return aksjonsLoggList.stream()
 				.filter(aksjonsLogg -> (journalpostId == null ? aksjonsLogg.getJournalpostId() == null : journalpostId.equals(aksjonsLogg
 						.getJournalpostId())) && (dokumentInfoId == null ? aksjonsLogg.getDokumentInfoId() == null : dokumentInfoId
-						.equals(aksjonsLogg
-								.getDokumentInfoId())))
+						.equals(aksjonsLogg.getDokumentInfoId())))
 				.findAny()
 				.get();
 	}
@@ -103,8 +110,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 		assertCommongAksjonsLoggValues(aksjonsLogg, expectedAksjonsTypeCode, expectedMelding);
 		assertThat("journalpostId", aksjonsLogg.getJournalpostId(), is(journalpostId));
 		assertThat("dokumentInfoId", aksjonsLogg.getDokumentInfoId(), is(dokumentInfoId));
-		assertThat("arkivElementEndring.size()", aksjonsLogg.getArkivElementEndringer()
-				.size(), is(expectedArkivElementEndringList.size()));
+		assertThat("arkivElementEndring.size()", aksjonsLogg.getArkivElementEndringer().size(), is(expectedArkivElementEndringList.size()));
 
 		List<ArkivElementEndring> arkivElementEndringList = new ArrayList<>(aksjonsLogg.getArkivElementEndringer());
 
@@ -122,10 +128,40 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 		assertThat("ufoertAv", aksjonsLogg.getUtfoertAv(), is(AKSJON_UTFOERT_AV));
 		assertThat("hjemmel", aksjonsLogg.getHjemmel(), is(AKSJON_HJEMMEL));
 		assertThat("melding", aksjonsLogg.getMelding(), is(expectedMelding == null ? AKSJON_MELDING : expectedMelding));
-		assertThat("applikasjon", aksjonsLogg.getApplikasjon(), is(SERVICE_USER_ID));
+		assertThat("applikasjon", aksjonsLogg.getApplikasjon(), is(APP_NAME_WITH_NAMESPACE));
 		assertThat("bruker", aksjonsLogg.getBruker(), is(BRUKER_ID));
 	}
 
+	protected void assertAksjonsLoggSts(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode, Long journalpostId, Long dokumentInfoId, List<ArkivElementEndring> expectedArkivElementEndringList) {
+		assertAksjonsLoggForSts(aksjonsLogg, expectedAksjonsTypeCode, journalpostId, dokumentInfoId, null, expectedArkivElementEndringList);
+	}
+
+	protected void assertAksjonsLoggForSts(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode, Long journalpostId, Long dokumentInfoId, String expectedMelding, List<ArkivElementEndring> expectedArkivElementEndringList) {
+
+		assertCommongAksjonsLoggValuesForSts(aksjonsLogg, expectedAksjonsTypeCode, expectedMelding);
+		assertThat("journalpostId", aksjonsLogg.getJournalpostId(), is(journalpostId));
+		assertThat("dokumentInfoId", aksjonsLogg.getDokumentInfoId(), is(dokumentInfoId));
+		assertThat("arkivElementEndring.size()", aksjonsLogg.getArkivElementEndringer().size(), is(expectedArkivElementEndringList.size()));
+
+		List<ArkivElementEndring> arkivElementEndringList = new ArrayList<>(aksjonsLogg.getArkivElementEndringer());
+
+		assertThat(arkivElementEndringList.stream()
+						.map(ArkivElementEndring::toStringElementFraTil)
+						.collect(Collectors.toList()),
+				hasItems(expectedArkivElementEndringList.stream()
+						.map(ArkivElementEndring::toStringElementFraTil)
+						.distinct()
+						.toArray()));
+	}
+
+	protected void assertCommongAksjonsLoggValuesForSts(AksjonsLogg aksjonsLogg, AksjonsTypeCode expectedAksjonsTypeCode, String expectedMelding) {
+		assertThat("aksjon", aksjonsLogg.getAksjon(), is(expectedAksjonsTypeCode));
+		assertThat("ufoertAv", aksjonsLogg.getUtfoertAv(), is(AKSJON_UTFOERT_AV));
+		assertThat("hjemmel", aksjonsLogg.getHjemmel(), is(AKSJON_HJEMMEL));
+		assertThat("melding", aksjonsLogg.getMelding(), is(expectedMelding == null ? AKSJON_MELDING : expectedMelding));
+		assertThat("applikasjon", aksjonsLogg.getApplikasjon(), is(SERVICEUSER_JOARKADMIN));
+		assertThat("bruker", aksjonsLogg.getBruker(), is(BRUKER_ID));
+	}
 
 	protected void assertThatJournalpostIsDeleted(Long journalpostId) {
 		assertThat(journalpostTestRepository.findById(journalpostId).isPresent(), is(false));

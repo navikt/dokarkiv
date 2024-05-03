@@ -26,13 +26,12 @@ import java.util.concurrent.CompletableFuture;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
-import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_HENT_AD_GRUPPER;
 import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-@Component
 @Slf4j
+@Component
 @Profile({"nais", "local"})
 public class AzureAdGraphService {
 
@@ -60,35 +59,19 @@ public class AzureAdGraphService {
 		return user.givenName + " " + user.surname;
 	}
 
-	@Cacheable(value = AZURE_HENT_AD_GRUPPER, key = "#navIdent")
 	@Retryable(exclude = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Boolean userInGroup(String navIdent, String adGroup) {
-		User user = getUser(navIdent);
+	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId) {
+		List<String> groups = getGroupsForUserObjectId(userObjectId);
 
-		if (user == null) {
-			return false;
-		}
-
-		List<String> groups = getAzureGroupsByPrincipal(user.id);
-		return groups.contains(adGroup);
-	}
-
-	private String getUserToken() {
-		return azureToken.clientCredentialAccessToken(MICROSOFT_GRAPH_SCOPE_APP);
-	}
-
-	GraphServiceClient<Request> getGraphClient(String accessToken) {
-		return GraphServiceClient.builder()
-				.authenticationProvider(url -> CompletableFuture.completedFuture(accessToken))
-				.buildClient();
+		return groups.contains(groupObjectId);
 	}
 
 	private User getUser(String navIdent) {
-		LinkedList<Option> requestOptions = new LinkedList<Option>();
+		LinkedList<Option> requestOptions = new LinkedList<>();
 		requestOptions.add(new HeaderOption("ConsistencyLevel", "eventual"));
 		requestOptions.add(new QueryOption("$filter", "onPremisesSamAccountName eq '" + navIdent + "'"));
 
-		List<User> res = getGraphClient(getUserToken())
+		List<User> res = getGraphClient(getMsGraphAccessToken())
 				.users()
 				.buildRequest(requestOptions)
 				.count(true)
@@ -103,22 +86,32 @@ public class AzureAdGraphService {
 		return res.get(0);
 	}
 
-	private List<String> getAzureGroupsByPrincipal(String userPrincipal) {
+	private List<String> getGroupsForUserObjectId(String userObjectId) {
 		try {
-			String url = MICROSOFT_GRAPH_SCOPE_V2 + format("v1.0/users/%s/memberOf", userPrincipal);
+			String url = MICROSOFT_GRAPH_SCOPE_V2 + format("v1.0/users/%s/memberOf", userObjectId);
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(APPLICATION_JSON);
-			headers.setBearerAuth(getUserToken());
+			headers.setBearerAuth(getMsGraphAccessToken());
 			headers.setAccept(singletonList(APPLICATION_JSON));
 			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-			ResponseEntity<AzureGroupResponse> response = restTemplate.exchange(url, POST, requestEntity, AzureGroupResponse.class);
+			ResponseEntity<AzureGroupResponse> response = restTemplate.exchange(url, GET, requestEntity, AzureGroupResponse.class);
 
 			List<AzureGroup> azureGroups = response.getBody().value();
 			return azureGroups.stream().map(AzureGroup::id).toList();
 		} catch (Exception e) {
 			throw new DokarkivTechnicalException(format("Kunne ikke hente gruppeinformasjon fra Azure, Feilmelding=%s", e.getMessage()));
 		}
+	}
+
+	GraphServiceClient<Request> getGraphClient(String accessToken) {
+		return GraphServiceClient.builder()
+				.authenticationProvider(url -> CompletableFuture.completedFuture(accessToken))
+				.buildClient();
+	}
+
+	private String getMsGraphAccessToken() {
+		return azureToken.clientCredentialAccessToken(MICROSOFT_GRAPH_SCOPE_APP);
 	}
 
 }

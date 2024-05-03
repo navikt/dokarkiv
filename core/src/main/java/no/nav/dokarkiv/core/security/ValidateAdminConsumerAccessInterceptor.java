@@ -4,98 +4,83 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
+import org.slf4j.MDC;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.springframework.http.HttpStatus.OK;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 
 @Slf4j
 public class ValidateAdminConsumerAccessInterceptor implements HandlerInterceptor {
 
-	private static final String ADMIN_SERVICE_USER = "srvjoarkadmin";
+	private static final Set<String> VALID_AZURE_OBO_CALLERS = Set.of("joarkadmin");
+	private static final Set<String> VALID_STS_CALLERS = Set.of("srvjoarkadmin");
 
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
 	private final AzureAdGraphService azureAdGraphService;
-	private final String adminServiceUserAdRole;
+	private final String joarkVedlikeholdGroupObjectId;
 
-	public ValidateAdminConsumerAccessInterceptor(AzureAdGraphService azureAdGraphService, String adminServiceUserAdRole) {
+	public ValidateAdminConsumerAccessInterceptor(AzureAdGraphService azureAdGraphService, String joarkVedlikeholdGroupObjectId) {
 		this.azureAdGraphService = azureAdGraphService;
-		this.adminServiceUserAdRole = adminServiceUserAdRole;
+		this.joarkVedlikeholdGroupObjectId = joarkVedlikeholdGroupObjectId;
 	}
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-		if (response.getStatus() != OK.value()) {
-			//This means that the validation of oidc tokens failed in IdTokenAuthenticationFilter and we should let the handler go through
-			return true;
+		// Som hovedregel skal validatoren sjekke on behalf of-token
+		// Unntak for dette er automatiske jobber på joarkadmin som kaller admin-endepunkt med STS-token
+		if (MDC.get(MDC_USER_ID).equals(MDC.get(MDC_CONSUMER_ID))) {
+			if (VALID_STS_CALLERS.contains(MDC.get(MDC_CONSUMER_ID))) {
+				return true;
+			} else {
+				log.warn("OIDC-token på Authorization-header kan ikke være et client credential-token");
+
+				response.sendError(SC_UNAUTHORIZED, "OIDC-token på Authorization-header må være et on behalf of-token");
+				return false;
+			}
 		}
 
-		String navConsumerToken = headerTokenExtractor.getConsumerToken(request);
-		String authorizationToken = headerTokenExtractor.getIdToken(request);
+		if (!consumerAppIsAllowed()) {
+			log.warn(format("OIDC-token på Authorization-header tilhører ikke en av følgende apper=%s", VALID_AZURE_OBO_CALLERS));
 
-		if (isEmpty(navConsumerToken)) {
-			if (isFalse(isTokenBelongsToUser(authorizationToken, ADMIN_SERVICE_USER))) {
-				String message = format("OIDC token på Authorization-header må tilhøre servicebruker på %s", ADMIN_SERVICE_USER);
-				log.warn(message);
-				response.sendError(SC_UNAUTHORIZED, message);
-				return false;
-			}
-		} else if (isNotEmpty(navConsumerToken)) {
-			if (isFalse(isTokenBelongsToUser(navConsumerToken, ADMIN_SERVICE_USER))) {
-				String message = format("OIDC token på Nav-Consumer-Token header må tilhøre serviceuser på %s", ADMIN_SERVICE_USER);
-				log.warn(message);
-				response.sendError(SC_UNAUTHORIZED, message);
-				return false;
-			} else if (isFalse(isUserInTokenHasRole(authorizationToken, adminServiceUserAdRole))) {
-				String message = format("NAVIdent må være medlem av gruppen guid=\"%s\" i Azure AD", adminServiceUserAdRole);
-				log.error(message);
-				response.sendError(SC_UNAUTHORIZED, message);
-				return false;
-			}
-		} else {
-			String message = "Token header må være satt";
-			log.warn(message);
-			response.sendError(SC_UNAUTHORIZED, message);
+			response.sendError(SC_UNAUTHORIZED, format("OIDC-token på Authorization-header må tilhøre en av følgende apper=%s", VALID_AZURE_OBO_CALLERS));
 			return false;
 		}
+
+		String authorizationToken = headerTokenExtractor.getIdToken(request);
+		if (!isMemberOfGroupJoarkVedlikehold(authorizationToken, joarkVedlikeholdGroupObjectId)) {
+			log.error(format("NAV-ansatt er ikke medlem av gruppen med objectId=\"%s\" i Entra ID", joarkVedlikeholdGroupObjectId));
+
+			response.sendError(SC_UNAUTHORIZED, format("NAV-ansatt må være medlem av gruppen med objectId=\"%s\" i Entra ID", joarkVedlikeholdGroupObjectId));
+			return false;
+		}
+
 		return true;
 	}
 
-	public boolean isUserInTokenHasRole(String token, String ldapGroup) {
-		String userId = getSubjectFromToken(token);
-		return azureAdGraphService.userInGroup(userId, ldapGroup);
-	}
+	private static boolean consumerAppIsAllowed() {
+		final String appWithNamespace = MDC.get(MDC_CONSUMER_ID); // formatted as teamdokumenthandtering:joarkadmin
 
-	public boolean isTokenBelongsToUser(String token, String subject) {
-		if (isNotEmpty(token)) {
-			String consumerID = getSubjectFromToken(token);
-			return subject.equalsIgnoreCase(consumerID) || azureClaimWorkaround(token);
-		}
-		return false;
-	}
-
-	private boolean azureClaimWorkaround(String token) {
-		DecodedJWT decode = JWT.decode(token);
-		String azpName = decode.getClaim("azp_name").asString();
-		if (azpName == null) {
+		if (appWithNamespace == null) {
 			return false;
-		} else {
-			return azpName.contains("joarkadmin");
 		}
+
+		return VALID_AZURE_OBO_CALLERS.stream()
+				.anyMatch(appWithNamespace::contains);
 	}
 
-	private String getSubjectFromToken(String token) {
-		if (isEmpty(token)) {
-			return null;
-		}
-		return JWT.decode(token).getSubject();
+	public boolean isMemberOfGroupJoarkVedlikehold(String token, String entraIdGroup) {
+		DecodedJWT decode = JWT.decode(token);
+		String userObjectId = decode.getClaim("oid").asString();
+
+		return azureAdGraphService.isUserMemberOfGroup(userObjectId, entraIdGroup);
 	}
+
 }

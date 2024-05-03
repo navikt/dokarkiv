@@ -11,8 +11,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+@SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = {CoreConfig.class, ArkiverVariantConfig.class, AbstractArkiverVariantIT.Config.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles({"itest", "wiremock"})
@@ -21,20 +22,23 @@ import static org.mockito.Mockito.when;
 public abstract class AbstractArkiverVariantIT extends AbstractRestIT {
 
 	protected static final String URL_ARKIVERVARIANT = "/rest/admin/arkivervariant/";
-	protected static final String NO_ACCESS_PERSON_USER_ID = "Z111111";
+
+	protected static final String AZP_NAME_DOKMET = "dev-fss:teamdokumenthandtering:dokmet";
+	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
+	protected static final String MS_AD_GROUP_ID = "abcd163a-9821-4637-a23d-b706e5b24809";
+	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
+	protected static final String MS_USER_ID_WITHOUT_GROUP_ACCESS = "b999c63a-9821-4637-a23d-b706e5b24809";
 
 	public static class Config {
 		@Bean
 		AzureAdGraphService azureAdGraphService() {
 			AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);
-			when(azureAdGraphService.hentFulltNavn(PERSON_USER_ID)).thenReturn(PERSON_USER_NAME);
-			when(azureAdGraphService.userInGroup(PERSON_USER_ID, "0000-GA-joark-vedlikehold")).thenReturn(true);
 
-			when(azureAdGraphService.hentFulltNavn(NO_ACCESS_PERSON_USER_ID)).thenReturn(NO_ACCESS_PERSON_USER_ID);
-			when(azureAdGraphService.userInGroup(NO_ACCESS_PERSON_USER_ID, "0000-GA-joark-vedlikehold")).thenReturn(false);
+			when(azureAdGraphService.isUserMemberOfGroup(MS_USER_ID_WITH_GROUP_ACCESS, MS_AD_GROUP_ID)).thenReturn(true);
+			when(azureAdGraphService.isUserMemberOfGroup(MS_USER_ID_WITHOUT_GROUP_ACCESS, MS_AD_GROUP_ID)).thenReturn(false);
+
 			return azureAdGraphService;
 		}
-
 	}
 
 }
