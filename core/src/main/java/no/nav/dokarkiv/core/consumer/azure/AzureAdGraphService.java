@@ -27,7 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
@@ -95,7 +95,7 @@ public class AzureAdGraphService {
 			headers.setAccept(singletonList(APPLICATION_JSON));
 			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-			ResponseEntity<AzureGroupResponse> response = restTemplate.exchange(url, POST, requestEntity, AzureGroupResponse.class);
+			ResponseEntity<AzureGroupResponse> response = restTemplate.exchange(url, GET, requestEntity, AzureGroupResponse.class);
 
 			List<AzureGroup> azureGroups = response.getBody().value();
 			return azureGroups.stream().map(AzureGroup::id).toList();
