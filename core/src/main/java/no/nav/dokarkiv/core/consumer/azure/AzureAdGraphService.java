@@ -60,8 +60,8 @@ public class AzureAdGraphService {
 	}
 
 	@Retryable(exclude = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId) {
-		List<String> groups = getGroupsForUserObjectId(userObjectId);
+	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId, String token, String subClaim) {
+		List<String> groups = getGroupsForUserObjectId(userObjectId, token, subClaim);
 
 		return groups.contains(groupObjectId);
 	}
@@ -71,7 +71,7 @@ public class AzureAdGraphService {
 		requestOptions.add(new HeaderOption("ConsistencyLevel", "eventual"));
 		requestOptions.add(new QueryOption("$filter", "onPremisesSamAccountName eq '" + navIdent + "'"));
 
-		List<User> res = getGraphClient(getMsGraphAccessToken())
+		List<User> res = getGraphClient(azureToken.clientCredentialAccessToken(MICROSOFT_GRAPH_SCOPE_APP))
 				.users()
 				.buildRequest(requestOptions)
 				.count(true)
@@ -86,12 +86,12 @@ public class AzureAdGraphService {
 		return res.get(0);
 	}
 
-	private List<String> getGroupsForUserObjectId(String userObjectId) {
+	private List<String> getGroupsForUserObjectId(String userObjectId, String token, String subClaim) {
 		try {
 			String url = MICROSOFT_GRAPH_SCOPE_V2 + format("v1.0/users/%s/memberOf", userObjectId);
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(APPLICATION_JSON);
-			headers.setBearerAuth(getMsGraphAccessToken());
+			headers.setBearerAuth(azureToken.getAndCacheAzureOnBehalfOfAndClientCredentialToken(token, MICROSOFT_GRAPH_SCOPE_APP, subClaim));
 			headers.setAccept(singletonList(APPLICATION_JSON));
 			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
@@ -108,10 +108,6 @@ public class AzureAdGraphService {
 		return GraphServiceClient.builder()
 				.authenticationProvider(url -> CompletableFuture.completedFuture(accessToken))
 				.buildClient();
-	}
-
-	private String getMsGraphAccessToken() {
-		return azureToken.clientCredentialAccessToken(MICROSOFT_GRAPH_SCOPE_APP);
 	}
 
 }

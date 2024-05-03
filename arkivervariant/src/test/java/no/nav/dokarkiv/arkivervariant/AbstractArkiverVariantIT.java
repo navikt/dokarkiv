@@ -9,6 +9,8 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -34,8 +36,8 @@ public abstract class AbstractArkiverVariantIT extends AbstractRestIT {
 		AzureAdGraphService azureAdGraphService() {
 			AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);
 
-			when(azureAdGraphService.isUserMemberOfGroup(MS_USER_ID_WITH_GROUP_ACCESS, MS_AD_GROUP_ID)).thenReturn(true);
-			when(azureAdGraphService.isUserMemberOfGroup(MS_USER_ID_WITHOUT_GROUP_ACCESS, MS_AD_GROUP_ID)).thenReturn(false);
+			when(azureAdGraphService.isUserMemberOfGroup(eq(MS_USER_ID_WITH_GROUP_ACCESS), eq(MS_AD_GROUP_ID), anyString(), anyString())).thenReturn(true);
+			when(azureAdGraphService.isUserMemberOfGroup(eq(MS_USER_ID_WITHOUT_GROUP_ACCESS), eq(MS_AD_GROUP_ID), anyString(), anyString())).thenReturn(false);
 
 			return azureAdGraphService;
 		}
