@@ -542,6 +542,11 @@
       "app": "amt-distribusjon",
       "namespace": "amt",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "dokumentfordeling",
+      "namespace": "arbeidsgiver",
+      "cluster": "prod-fss"
     }
   ]
 }
