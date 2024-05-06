@@ -49,9 +49,13 @@ public class AzureAdGraphService {
 
 	@Retryable(exclude = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId, String token, String subClaim) {
+		log.info("Sjekk isUserMemberOfGroup for userObjectId={} på groupObjectId={}", userObjectId, groupObjectId);
 		List<String> groups = getGroupsForUserObjectId(userObjectId, token, subClaim);
 
-		return groups.contains(groupObjectId);
+		var containsCorrectGroup = groups.contains(groupObjectId);
+		log.info("Inni isUserMemberOfGroup der containsCorrectGroup={}", containsCorrectGroup);
+
+		return containsCorrectGroup;
 	}
 
 	private User getUser(String navIdent) {
