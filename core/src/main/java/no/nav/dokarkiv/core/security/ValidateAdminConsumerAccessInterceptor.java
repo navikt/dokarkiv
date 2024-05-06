@@ -19,7 +19,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 @Slf4j
 public class ValidateAdminConsumerAccessInterceptor implements HandlerInterceptor {
 
-	private static final Set<String> VALID_AZURE_OBO_CALLERS = Set.of("joarkadmin");
+	private static final Set<String> VALID_AZURE_OBO_CALLERS = Set.of("joarkadmin", "gosys");
 	private static final Set<String> VALID_STS_CALLERS = Set.of("srvjoarkadmin");
 
 	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();

@@ -177,7 +177,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.filType(PDF).build(), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må tilhøre en av følgende apper=[joarkadmin]");
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må tilhøre en av følgende apper");
 	}
 
 	@Test

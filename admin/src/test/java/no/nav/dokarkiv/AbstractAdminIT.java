@@ -55,11 +55,6 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected static final String SERVICEUSER_JOARKADMIN = "srvjoarkadmin";
 	protected static final String SERVICEUSER_IKKE_JOARKADMIN = "srvikkejoarkadmin";
-	protected static final String AZP_NAME_DOKMET = "dev-fss:teamdokumenthandtering:dokmet";
-	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
-	protected static final String MS_AD_GROUP_ID = "abcd163a-9821-4637-a23d-b706e5b24809";
-	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
-	protected static final String MS_USER_ID_WITHOUT_GROUP_ACCESS = "b999c63a-9821-4637-a23d-b706e5b24809";
 
 	public static class Config {
 		@Bean

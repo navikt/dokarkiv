@@ -57,7 +57,11 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/rest/**");
 
         registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(azureAdGraphService, azureAdAdminRole))
-                .addPathPatterns("/rest/admin/**");
+                .addPathPatterns(
+                        "/rest/admin/**",
+                        "/rest/journalpostapi/v1/journalpost/*/feilregistrer/settUkjentBruker",
+                        "/rest/journalpostapi/v1/journalpost/*/feilregistrer/settStatusUtgår"
+                );
 
         registry.addInterceptor(new PopulateMDCHandler())
                 .addPathPatterns("/rest/**", "/hentjournalsakinfo/**");

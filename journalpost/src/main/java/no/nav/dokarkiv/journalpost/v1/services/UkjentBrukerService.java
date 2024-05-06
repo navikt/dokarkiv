@@ -12,32 +12,40 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Long.parseLong;
+import static java.lang.String.format;
+import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 
 @Component
 public class UkjentBrukerService {
-    private final JournalpostRepository journalpostRepository;
-    private static final List<JournalStatusCode> validJournalStatusList = Arrays.asList(JournalStatusCode.U, JournalStatusCode.OD, JournalStatusCode.M, JournalStatusCode.MO);
 
-    public UkjentBrukerService(final JournalpostRepository journalpostRepository) {
-        this.journalpostRepository = journalpostRepository;
-    }
+	private final JournalpostRepository journalpostRepository;
+	private static final List<JournalStatusCode> validJournalStatusList = Arrays.asList(U, OD, M, MO);
 
-    public List<ArkivElementEndringTO> settUkjentBruker(String journalpostId) {
-        Journalpost journalpost = journalpostRepository.findById(parseLong(journalpostId))
-                .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+	public UkjentBrukerService(final JournalpostRepository journalpostRepository) {
+		this.journalpostRepository = journalpostRepository;
+	}
 
-        JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
-        if (validJournalStatusList.contains(oldJournalStatus)) {
-            journalpost.setJournalstatus(JournalStatusCode.UB);
-        } else {
-            throw new UgyldigJournalStatusException("Journalpost kan ikke settes til UB (ukjent bruker)");
-        }
+	public List<ArkivElementEndringTO> settUkjentBruker(String journalpostId) {
+		Journalpost journalpost = journalpostRepository.findById(parseLong(journalpostId))
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
-        return Arrays.asList(ArkivElementEndringTO.builder()
-                .arkivElement(JOURNALPOST_JOURNALSTATUS)
-                .fraVerdi(oldJournalStatus.name())
-                .tilVerdi(journalpost.getJournalstatus().name())
-                .build());
-    }
+		JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
+		if (validJournalStatusList.contains(oldJournalStatus)) {
+			journalpost.setJournalstatus(UB);
+		} else {
+			throw new UgyldigJournalStatusException("Journalpost kan ikke settes til UB (ukjent bruker)");
+		}
+
+		return singletonList(ArkivElementEndringTO.builder()
+				.arkivElement(JOURNALPOST_JOURNALSTATUS)
+				.fraVerdi(oldJournalStatus.name())
+				.tilVerdi(journalpost.getJournalstatus().name())
+				.build());
+	}
 }

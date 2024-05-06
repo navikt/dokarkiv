@@ -74,9 +74,18 @@ public abstract class AbstractRestIT {
 	protected static final String DEFAULT_CLAIM_OID = "oid";
 	protected static final String DEFAULT_CLAIM_SUB = "sub";
 	protected static final String CLAIM_AZP_NAME = "azp_name";
+	protected static final String CLAIM_NAVIDENT = "NAVident";
 	protected static final String CLAIM_NAME = "name";
 	protected static final String ROLES = "roles";
 	protected static final String APP_CLAIM_SUB = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
+
+	protected static final String AZP_NAME_DOKMET = "dev-fss:teamdokumenthandtering:dokmet";
+	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
+	protected static final String AZP_NAME_GOSYS = "dev-fss:isa:gosys-q2";
+	protected static final String NAV_USER_ID = "Z991234";
+	protected static final String MS_AD_GROUP_ID = "abcd163a-9821-4637-a23d-b706e5b24809";
+	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
+	protected static final String MS_USER_ID_WITHOUT_GROUP_ACCESS = "b999c63a-9821-4637-a23d-b706e5b24809";
 
 	@Autowired
 	protected JournalpostTestRepository journalpostTestRepository;
@@ -301,6 +310,7 @@ public abstract class AbstractRestIT {
 	protected String azureTokenWithAzpKey(String callingApp, String user) {
 		return token(Map.of(
 				CLAIM_AZP_NAME, callingApp,
+				CLAIM_NAVIDENT, NAV_USER_ID,
 				DEFAULT_CLAIM_OID, user,
 				CLAIM_NAME,"F_Z991234 E_Z991234")
 		);
@@ -321,7 +331,7 @@ public abstract class AbstractRestIT {
 				"dokarkiv-itest",
 				new DefaultOAuth2TokenCallback(
 						ISSUER_AZUREV2,
-						"Z991234",
+						NAV_USER_ID,
 						"JWT",
 						List.of(audience),
 						claims,

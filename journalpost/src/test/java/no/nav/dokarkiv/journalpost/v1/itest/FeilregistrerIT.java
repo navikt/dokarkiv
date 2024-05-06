@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class FeilregistrerIT extends AbstractJournalpostIT {
 
@@ -128,7 +129,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(createAuthorizationHeaders(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -145,7 +146,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
 		assertEquals(journalpostId, aksjonsLogg.getJournalpostId());
-		assertEquals(SERVICE_USER_ID, aksjonsLogg.getUtfoertAv());
+		assertEquals(NAV_USER_ID, aksjonsLogg.getUtfoertAv());
 		assertEquals(UKJENT_BRUKER, aksjonsLogg.getAksjon());
 		assertEquals(HJEMMEL, aksjonsLogg.getHjemmel());
 		assertEquals(1, aksjonsLogg.getArkivElementEndringer().size());
@@ -174,7 +175,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(createAuthorizationHeaders(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -191,7 +192,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
 		assertEquals(journalpostId, aksjonsLogg.getJournalpostId());
-		assertEquals(SERVICE_USER_ID, aksjonsLogg.getUtfoertAv());
+		assertEquals(NAV_USER_ID, aksjonsLogg.getUtfoertAv());
 		assertEquals(UTGAAR, aksjonsLogg.getAksjon());
 		assertEquals(HJEMMEL, aksjonsLogg.getHjemmel());
 		assertEquals(1, aksjonsLogg.getArkivElementEndringer().size());
@@ -221,5 +222,25 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 				.extracting(AksjonsLogg::getAksjon, AksjonsLogg::getUtfoertAv)
 				.contains(tuple(AksjonsTypeCode.FEILREGISTRER_SAKSTILKNYTNING, PERSON_USER_ID),
 						tuple(OPPHEV_FEILREGISTRERING, PERSON_USER_ID));
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedForUkjentBrukerHvisTokenIkkeErOnBehalfOf() {
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken("srvgosys"));
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(response.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedForStatusUtgaarHvisTokenIkkeErOnBehalfOf() {
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken("srvgosys"));
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(response.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
 	}
 }
