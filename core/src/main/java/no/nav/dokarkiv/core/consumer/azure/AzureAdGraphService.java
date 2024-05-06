@@ -1,34 +1,25 @@
 package no.nav.dokarkiv.core.consumer.azure;
 
+import com.microsoft.graph.models.DirectoryObject;
 import com.microsoft.graph.models.User;
 import com.microsoft.graph.options.HeaderOption;
 import com.microsoft.graph.options.Option;
 import com.microsoft.graph.options.QueryOption;
 import com.microsoft.graph.requests.GraphServiceClient;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.consumer.azure.AzureGroupResponse.AzureGroup;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
-import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import okhttp3.Request;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static java.lang.String.format;
-import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
 @Component
@@ -36,15 +27,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class AzureAdGraphService {
 
 	private static final String BRUKER_IKKE_FUNNET = "Azure AD - Bruker ikke funnet";
-	private static final String MICROSOFT_GRAPH_SCOPE_V2 = "https://graph.microsoft.com/";
-	private static final String MICROSOFT_GRAPH_SCOPE_APP = MICROSOFT_GRAPH_SCOPE_V2 + ".default";
+	private static final String MICROSOFT_GRAPH_SCOPE = "https://graph.microsoft.com/.default";
 
 	private final AzureToken azureToken;
-	private final RestTemplate restTemplate;
 
-	public AzureAdGraphService(AzureToken azureToken, RestTemplate restTemplate) {
+	public AzureAdGraphService(AzureToken azureToken) {
 		this.azureToken = azureToken;
-		this.restTemplate = restTemplate;
 	}
 
 	@Cacheable(value = NAVUSER_CACHE, key = "#navIdent")
@@ -71,7 +59,7 @@ public class AzureAdGraphService {
 		requestOptions.add(new HeaderOption("ConsistencyLevel", "eventual"));
 		requestOptions.add(new QueryOption("$filter", "onPremisesSamAccountName eq '" + navIdent + "'"));
 
-		List<User> res = getGraphClient(azureToken.clientCredentialAccessToken(MICROSOFT_GRAPH_SCOPE_APP))
+		List<User> res = getGraphClient(azureToken.clientCredentialAccessToken(MICROSOFT_GRAPH_SCOPE))
 				.users()
 				.buildRequest(requestOptions)
 				.count(true)
@@ -87,21 +75,18 @@ public class AzureAdGraphService {
 	}
 
 	private List<String> getGroupsForUserObjectId(String userObjectId, String token, String subClaim) {
-		try {
-			String url = MICROSOFT_GRAPH_SCOPE_V2 + format("v1.0/users/%s/memberOf", userObjectId);
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(APPLICATION_JSON);
-			headers.setBearerAuth(azureToken.getAndCacheAzureOnBehalfOfAndClientCredentialToken(token, MICROSOFT_GRAPH_SCOPE_APP, subClaim));
-			headers.setAccept(singletonList(APPLICATION_JSON));
-			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+		String onBehalfOfOrClientCredentialToken = azureToken.getAndCacheAzureOnBehalfOfAndClientCredentialToken(token, MICROSOFT_GRAPH_SCOPE, subClaim);
 
-			ResponseEntity<AzureGroupResponse> response = restTemplate.exchange(url, GET, requestEntity, AzureGroupResponse.class);
+		List<DirectoryObject> result = getGraphClient(onBehalfOfOrClientCredentialToken)
+				.users()
+				.byId(userObjectId)
+				.memberOf()
+				.buildRequest()
+				.get().getCurrentPage();
 
-			List<AzureGroup> azureGroups = response.getBody().value();
-			return azureGroups.stream().map(AzureGroup::id).toList();
-		} catch (Exception e) {
-			throw new DokarkivTechnicalException(format("Kunne ikke hente gruppeinformasjon fra Azure, Feilmelding=%s", e.getMessage()));
-		}
+		return result.stream()
+				.map(group -> group.id)
+				.toList();
 	}
 
 	GraphServiceClient<Request> getGraphClient(String accessToken) {
