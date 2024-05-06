@@ -522,6 +522,11 @@
       "app": "spinosaurus",
       "namespace": "helsearbeidsgiver",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "dokumentfordeling",
+      "namespace": "arbeidsgiver",
+      "cluster": "dev-fss"
     }
   ]
 }
