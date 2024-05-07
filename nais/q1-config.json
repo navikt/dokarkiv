@@ -349,6 +349,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "eessi-pensjon-journalforing-q1",
+      "namespace": "eessipensjon",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "syfosmsak",
       "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
