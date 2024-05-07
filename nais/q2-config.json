@@ -504,6 +504,11 @@
       "app": "amt-distribusjon",
       "namespace": "amt",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "su-se-bakover",
+      "namespace": "supstonad",
+      "cluster": "dev-fss"
     }
   ]
 }
