@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 import static java.lang.Long.parseLong;
@@ -25,7 +25,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 public class UkjentBrukerService {
 
 	private final JournalpostRepository journalpostRepository;
-	private static final List<JournalStatusCode> validJournalStatusList = Arrays.asList(U, OD, M, MO);
+	private static final EnumSet<JournalStatusCode> validJournalStatuses = EnumSet.of(U, OD, M, MO);
 
 	public UkjentBrukerService(final JournalpostRepository journalpostRepository) {
 		this.journalpostRepository = journalpostRepository;
@@ -36,7 +36,7 @@ public class UkjentBrukerService {
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
-		if (validJournalStatusList.contains(oldJournalStatus)) {
+		if (validJournalStatuses.contains(oldJournalStatus)) {
 			journalpost.setJournalstatus(UB);
 		} else {
 			throw new UgyldigJournalStatusException("Journalpost kan ikke settes til UB (ukjent bruker)");
