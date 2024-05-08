@@ -1093,7 +1093,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisTokenErEtClientCredentialToken() {
-		var headers = createAuthorizationHeadersClientCredentialGrant();
+		var headers = createHeadersWithClientCredentialToken();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE, new HttpEntity<>(SlettArkivenhetRequest.builder()
 				.arkivenhet(JOURNALPOST)
@@ -1106,7 +1106,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisKallendeAppIkkeErJoarkadmin() {
-		var headers = createAuthorizationHeaders(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
+		var headers = createHeadersWithOboToken(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE, new HttpEntity<>(SlettArkivenhetRequest.builder()
 				.arkivenhet(JOURNALPOST)
@@ -1119,7 +1119,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
-		var headers = createAuthorizationHeaders(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS);
+		var headers = createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE, new HttpEntity<>(SlettArkivenhetRequest.builder()
 				.arkivenhet(JOURNALPOST)

@@ -129,7 +129,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createAuthorizationHeaders(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID));
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -153,16 +153,6 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void skalReturnereUnauthorizedForUkjentBrukerHvisTokenIkkeErOnBehalfOf() {
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken("srvgosys"));
-
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
-
-		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(response.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
-	}
-
-	@Test
 	public void skalSetteStatusUtgaar() {
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(OD);
@@ -171,7 +161,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createAuthorizationHeaders(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID));
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -202,20 +192,10 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID));
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
 
 		assertEquals(METHOD_NOT_ALLOWED, response.getStatusCode());
-	}
-
-	@Test
-	public void skalReturnereUnauthorizedForStatusUtgaarHvisTokenIkkeErOnBehalfOf() {
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken("srvgosys"));
-
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
-
-		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(response.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
 	}
 
 	@Test

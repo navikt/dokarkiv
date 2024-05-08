@@ -62,7 +62,6 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 			AzureAdGraphService azureAdGraphServiceMock = mock(AzureAdGraphService.class);
 
 			when(azureAdGraphServiceMock.hentFulltNavn(any())).thenReturn(PERSON_USER_NAME);
-			when(azureAdGraphServiceMock.isUserMemberOfGroup(eq(MS_USER_ID_WITH_GROUP_ACCESS), eq(MS_AD_GROUP_ID), anyString(), anyString())).thenReturn(true);
 
 			return azureAdGraphServiceMock;
 		}

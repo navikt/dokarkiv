@@ -83,9 +83,7 @@ public abstract class AbstractRestIT {
 	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
 	protected static final String AZP_NAME_GOSYS = "dev-fss:isa:gosys-q2";
 	protected static final String NAV_USER_ID = "Z991234";
-	protected static final String MS_AD_GROUP_ID = "abcd163a-9821-4637-a23d-b706e5b24809";
-	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
-	protected static final String MS_USER_ID_WITHOUT_GROUP_ACCESS = "b999c63a-9821-4637-a23d-b706e5b24809";
+	protected static final String MS_USER_ID = "a222c63a-9821-4637-a23d-b706e5b24809";
 
 	@Autowired
 	protected JournalpostTestRepository journalpostTestRepository;
@@ -238,7 +236,7 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
-	protected HttpHeaders createAuthorizationHeaders(String azpName, String msUserId) {
+	protected HttpHeaders createHeadersWithOboToken(String azpName, String msUserId) {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
@@ -248,7 +246,7 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
-	protected HttpHeaders createAuthorizationHeadersClientCredentialGrant() {
+	protected HttpHeaders createHeadersWithClientCredentialToken() {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
@@ -276,7 +274,7 @@ public abstract class AbstractRestIT {
 	}
 
 	protected HttpHeaders createHeadersWithAksjonslogg(String azpName, String msUserId) {
-		HttpHeaders httpHeaders = createAuthorizationHeaders(azpName, msUserId);
+		HttpHeaders httpHeaders = createHeadersWithOboToken(azpName, msUserId);
 
 		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER, AKSJON_BRUKER);
 		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER, AKSJON_HJEMMEL);

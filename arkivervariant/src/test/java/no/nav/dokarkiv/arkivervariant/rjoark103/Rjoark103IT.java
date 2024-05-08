@@ -167,7 +167,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
-		var headers = createAuthorizationHeaders(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
+		var headers = createHeadersWithOboToken(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
 
 		ResponseEntity<String> responseEntity =  restTemplate.exchange(URL_ARKIVERVARIANT, POST, new HttpEntity<>(ArkiverVariantRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
@@ -182,7 +182,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
-		var headers = createAuthorizationHeaders(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS);
+		var headers = createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS);
 
 		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
