@@ -129,7 +129,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID));
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -153,6 +153,26 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void skalReturnereUnauthorizedForUkjentBrukerHvisTokenIkkeErEtOboToken() {
+		var requestEntity = new HttpEntity<>(createHeadersWithClientCredentialToken());
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(response.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedForUkjentBrukerHvisSaksbehandlerManglerJoarkVedlikeholdGruppe() {
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS));
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(response.getBody()).contains("NAV-ansatt må være medlem av gruppen med objectId");
+	}
+
+	@Test
 	public void skalSetteStatusUtgaar() {
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(OD);
@@ -161,7 +181,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID));
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -185,6 +205,26 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void skalReturnereUnauthorizedForStatusUtgaarHvisTokenIkkeErEtOboToken() {
+		var requestEntity = new HttpEntity<>(createHeadersWithClientCredentialToken());
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(response.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedForStatusUtgaarHvisSaksbehandlerManglerJoarkVedlikeholdGruppe() {
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS));
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(response.getBody()).contains("NAV-ansatt må være medlem av gruppen med objectId");
+	}
+
+	@Test
 	public void skalReturnere405ForSettStatusUtgaarHvisJournalpostHarStatusUtgaaende() {
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(U);
@@ -192,7 +232,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID));
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
 
 		assertEquals(METHOD_NOT_ALLOWED, response.getStatusCode());

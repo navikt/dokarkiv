@@ -1088,11 +1088,11 @@ public class Rjoark101IT extends AbstractAdminIT {
 				.build(), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et STS-token som tilhører servicebruker=" + SERVICEUSER_JOARKADMIN);
 	}
 
 	@Test
-	public void skalReturnereUnauthorizedHvisTokenErEtClientCredentialToken() {
+	public void skalReturnereUnauthorizedHvisClientCredentialToken() {
 		var headers = createHeadersWithClientCredentialToken();
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE, new HttpEntity<>(SlettArkivenhetRequest.builder()
@@ -1101,20 +1101,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 				.build(), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
-	}
-
-	@Test
-	public void skalReturnereUnauthorizedHvisKallendeAppIkkeErJoarkadmin() {
-		var headers = createHeadersWithOboToken(AZP_NAME_DOKMET, MS_USER_ID_WITH_GROUP_ACCESS);
-
-		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE, new HttpEntity<>(SlettArkivenhetRequest.builder()
-				.arkivenhet(JOURNALPOST)
-				.journalpostId(Long.valueOf("123"))
-				.build(), headers), String.class);
-
-		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må tilhøre en av følgende apper");
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et STS-token som tilhører servicebruker=" + SERVICEUSER_JOARKADMIN);
 	}
 
 	@Test
