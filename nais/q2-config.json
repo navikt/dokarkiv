@@ -509,6 +509,11 @@
       "app": "su-se-bakover",
       "namespace": "supstonad",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "tilbakemeldingsmottak-api",
+      "namespace": "teamserviceklage",
+      "cluster": "dev-gcp"
     }
   ]
 }
