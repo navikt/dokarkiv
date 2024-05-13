@@ -9,15 +9,14 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static java.lang.Long.parseLong;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static java.lang.String.format;
+import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.UTGAAR;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
@@ -30,6 +29,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
 @Component
 @Slf4j
 public class UtgaarService {
+
 	private final JournalpostRepository journalpostRepository;
 	private final LagreAksjonsLoggService aksjonsLoggService;
 
@@ -44,7 +44,7 @@ public class UtgaarService {
 
 	public String settStatusUtgaar(String journalpostId) {
 		Journalpost journalpost = journalpostRepository.findById(parseLong(journalpostId))
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
 		JournalpostTypeCode journalposttype = journalpost.getJournalposttype();
@@ -71,10 +71,8 @@ public class UtgaarService {
 				"ARKL",
 				FIKK_UTGAAR,
 				null,
-				Collections.singletonList(endring)
+				singletonList(endring)
 		);
-
-		log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til utgår for journalpost med journalpostId={}", journalpostId);
 
 		return FIKK_UTGAAR;
 	}

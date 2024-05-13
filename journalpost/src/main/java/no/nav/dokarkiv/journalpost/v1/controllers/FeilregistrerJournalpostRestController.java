@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.UKJENT_BRUKER;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.FEILREGISTRER_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_AVBRYT;
@@ -50,6 +51,7 @@ public class FeilregistrerJournalpostRestController {
 	public static final String FEILREGISTRERT_CONFLICT_MESSAGE = "Saksrelasjon kan være feilregistrert fra før. Forsøk på nytt";
 	public static final String FEILREGISTRERING_OPPHEVET_MESSAGE = "Feilregistreringen ble opphevet";
 	public static final String FEILREGISTRERING_OPPHEVET_CONFLICT_MESSAGE = "Saksrelasjon feilregistrering kan være opphevet fra før. Forsøk på nytt";
+
 	private final FeilregistrerSakstilknytningService feilregistrerSakstilknytningService;
 	private final UkjentBrukerService ukjentBrukerService;
 	private final AvbrytService avbrytService;
@@ -106,9 +108,11 @@ public class FeilregistrerJournalpostRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark403"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> settUkjentBruker(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+
 		List<ArkivElementEndringTO> arkivElementEndringTOList = ukjentBrukerService.settUkjentBruker(journalpostId);
-		populerAksjonslogg(journalpostId, AksjonsTypeCode.UKJENT_BRUKER, arkivElementEndringTOList, FIKK_UKJENT_BRUKER);
+		populerAksjonslogg(journalpostId, UKJENT_BRUKER, arkivElementEndringTOList, FIKK_UKJENT_BRUKER);
 		log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til Ukjent Bruker for journalpost med journalpostId={}", journalpostId);
+
 		return ResponseEntity.ok().body(FIKK_UKJENT_BRUKER);
 	}
 
@@ -127,9 +131,11 @@ public class FeilregistrerJournalpostRestController {
 	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_STATUS_UTGAAR)
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark405"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> utgaar(
-			@PathVariable @Parameter(description = "IDen til journalposten som skal settes til utgått", required = true, example = "77778888") String journalpostId
-	) {
+			@PathVariable @Parameter(description = "IDen til journalposten som skal settes til utgått", required = true, example = "77778888") String journalpostId) {
+
 		String response = utgaarService.settStatusUtgaar(journalpostId);
+		log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til utgår for journalpost med journalpostId={}", journalpostId);
+
 		return ResponseEntity.ok().body(response);
 	}
 

@@ -22,52 +22,58 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Configuration
 public class RestWebMvcConfig implements WebMvcConfigurer {
 
-    private final TokenValidationContextHolder tokenValidationContextHolder;
-    private final MultiIssuerConfiguration multiIssuerConfiguration;
-    private final AzureAdGraphService azureAdGraphService;
-    private final HandlerInterceptor basicAuthReadAccessRestInterceptor;
-    private final MeterRegistry meterRegistry;
-    private final String azureAdAdminRole;
+	private final TokenValidationContextHolder tokenValidationContextHolder;
+	private final MultiIssuerConfiguration multiIssuerConfiguration;
+	private final AzureAdGraphService azureAdGraphService;
+	private final HandlerInterceptor basicAuthReadAccessRestInterceptor;
+	private final MeterRegistry meterRegistry;
+	private final String azureAdAdminRole;
 
 
-    public RestWebMvcConfig(TokenValidationContextHolder tokenValidationContextHolder,
-                            MultiIssuerConfiguration multiIssuerConfiguration,
-                            AzureAdGraphService azureAdGraphService,
-                            @Value("${azure.ad.admin.role}") String azureAdAdminRole,
-                            @Lazy HandlerInterceptor basicAuthReadAccessRestInterceptor,
-                            MeterRegistry meterRegistry) {
-        this.tokenValidationContextHolder = tokenValidationContextHolder;
-        this.multiIssuerConfiguration = multiIssuerConfiguration;
-        this.azureAdGraphService = azureAdGraphService;
-        this.basicAuthReadAccessRestInterceptor = basicAuthReadAccessRestInterceptor;
-        this.meterRegistry = meterRegistry;
-        this.azureAdAdminRole = azureAdAdminRole;
-    }
+	public RestWebMvcConfig(TokenValidationContextHolder tokenValidationContextHolder,
+							MultiIssuerConfiguration multiIssuerConfiguration,
+							AzureAdGraphService azureAdGraphService,
+							@Value("${azure.ad.admin.role}") String azureAdAdminRole,
+							@Lazy HandlerInterceptor basicAuthReadAccessRestInterceptor,
+							MeterRegistry meterRegistry) {
+		this.tokenValidationContextHolder = tokenValidationContextHolder;
+		this.multiIssuerConfiguration = multiIssuerConfiguration;
+		this.azureAdGraphService = azureAdGraphService;
+		this.basicAuthReadAccessRestInterceptor = basicAuthReadAccessRestInterceptor;
+		this.meterRegistry = meterRegistry;
+		this.azureAdAdminRole = azureAdAdminRole;
+	}
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
 
-        registry.addInterceptor(new ClearMDCHandler())
-                .addPathPatterns("/rest/**", "/hentjournalsakinfo/**");
+		registry.addInterceptor(new ClearMDCHandler())
+				.addPathPatterns("/rest/**", "/hentjournalsakinfo/**");
 
-        registry.addInterceptor(basicAuthReadAccessRestInterceptor)
-                .addPathPatterns("/hentjournalsakinfo/**");
+		registry.addInterceptor(basicAuthReadAccessRestInterceptor)
+				.addPathPatterns("/hentjournalsakinfo/**");
 
-        registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, meterRegistry, azureAdGraphService))
-                .addPathPatterns("/rest/**");
+		registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, meterRegistry, azureAdGraphService))
+				.addPathPatterns("/rest/**");
 
-        registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(azureAdGraphService, azureAdAdminRole))
-                .addPathPatterns("/rest/admin/**");
+		registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(azureAdGraphService, azureAdAdminRole))
+				.addPathPatterns("/rest/admin/**");
 
-        registry.addInterceptor(new PopulateMDCHandler())
-                .addPathPatterns("/rest/**", "/hentjournalsakinfo/**");
-    }
+		registry.addInterceptor(new JoarkVedlikeholdInterceptor(azureAdGraphService, azureAdAdminRole))
+				.addPathPatterns(
+						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settUkjentBruker",
+						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settStatusUtgår"
+				);
 
-    @Override
-    public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
-        LoggingExceptionResolver loggingExceptionResolver = new LoggingExceptionResolver();
-        loggingExceptionResolver.setOrder(HIGHEST_PRECEDENCE + 1);
-        resolvers.add(loggingExceptionResolver);
-        AnnotationAwareOrderComparator.sort(resolvers);
-    }
+		registry.addInterceptor(new PopulateMDCHandler())
+				.addPathPatterns("/rest/**", "/hentjournalsakinfo/**");
+	}
+
+	@Override
+	public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+		LoggingExceptionResolver loggingExceptionResolver = new LoggingExceptionResolver();
+		loggingExceptionResolver.setOrder(HIGHEST_PRECEDENCE + 1);
+		resolvers.add(loggingExceptionResolver);
+		AnnotationAwareOrderComparator.sort(resolvers);
+	}
 }

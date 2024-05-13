@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class FeilregistrerIT extends AbstractJournalpostIT {
 
@@ -35,7 +36,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	private static final String HJEMMEL = "ARKL";
 
 	@Test
-	public void happyPathFeilregistrer() {
+	public void skalFeilregistrereSakstilknytning() {
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
@@ -68,7 +69,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathFeilregistrerWithSaksbehandlerToken() {
+	public void skalFeilregistrereSakstilknytningMedSaksbehandlertoken() {
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
@@ -90,7 +91,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathOpphevFeilregistrering() {
+	public void skalOppheveFeilregistrertSakstilknytning() {
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.getSaksrelasjon().setFeilregistrert(true);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
@@ -121,14 +122,14 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void happyPathUkjentBruker() {
+	public void skalSetteUkjentBruker() {
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(U);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -145,28 +146,34 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
 		assertEquals(journalpostId, aksjonsLogg.getJournalpostId());
-		assertEquals(SERVICE_USER_ID, aksjonsLogg.getUtfoertAv());
+		assertEquals(NAV_USER_ID, aksjonsLogg.getUtfoertAv());
 		assertEquals(UKJENT_BRUKER, aksjonsLogg.getAksjon());
 		assertEquals(HJEMMEL, aksjonsLogg.getHjemmel());
 		assertEquals(1, aksjonsLogg.getArkivElementEndringer().size());
 	}
 
 	@Test
-	public void shouldGet405WhenJournalPostHaveStatusUtgaaende() {
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-		journalpost.setJournalstatus(U);
-		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
+	public void skalReturnereUnauthorizedForUkjentBrukerHvisTokenIkkeErEtOboToken() {
+		var requestEntity = new HttpEntity<>(createHeadersWithClientCredentialToken());
 
-		commitAndStartNewTransaction();
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
 
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
-
-		assertEquals(METHOD_NOT_ALLOWED, response.getStatusCode());
+		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(response.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
 	}
 
 	@Test
-	public void shouldSetUtgaarJournalstatusWhenValidatedOk() {
+	public void skalReturnereUnauthorizedForUkjentBrukerHvisSaksbehandlerManglerJoarkVedlikeholdGruppe() {
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS));
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(response.getBody()).contains("NAV-ansatt må være medlem av gruppen med objectId");
+	}
+
+	@Test
+	public void skalSetteStatusUtgaar() {
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(OD);
 		journalpost.setJournalposttype(I);
@@ -174,7 +181,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -191,14 +198,48 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
 		assertEquals(journalpostId, aksjonsLogg.getJournalpostId());
-		assertEquals(SERVICE_USER_ID, aksjonsLogg.getUtfoertAv());
+		assertEquals(NAV_USER_ID, aksjonsLogg.getUtfoertAv());
 		assertEquals(UTGAAR, aksjonsLogg.getAksjon());
 		assertEquals(HJEMMEL, aksjonsLogg.getHjemmel());
 		assertEquals(1, aksjonsLogg.getArkivElementEndringer().size());
 	}
 
 	@Test
-	public void shouldSetNavIdentInUtfoertAvWhenSaksbehandlerTokenSupplied() {
+	public void skalReturnereUnauthorizedForStatusUtgaarHvisTokenIkkeErEtOboToken() {
+		var requestEntity = new HttpEntity<>(createHeadersWithClientCredentialToken());
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(response.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedForStatusUtgaarHvisSaksbehandlerManglerJoarkVedlikeholdGruppe() {
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS));
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(response.getBody()).contains("NAV-ansatt må være medlem av gruppen med objectId");
+	}
+
+	@Test
+	public void skalReturnere405ForSettStatusUtgaarHvisJournalpostHarStatusUtgaaende() {
+		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		journalpost.setJournalstatus(U);
+		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
+
+		commitAndStartNewTransaction();
+
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
+
+		assertEquals(METHOD_NOT_ALLOWED, response.getStatusCode());
+	}
+
+	@Test
+	public void skalSetteNavIdentIUtfoertAvHvisSaksbehandlertokenErBrukt() {
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
@@ -222,4 +263,5 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 				.contains(tuple(AksjonsTypeCode.FEILREGISTRER_SAKSTILKNYTNING, PERSON_USER_ID),
 						tuple(OPPHEV_FEILREGISTRERING, PERSON_USER_ID));
 	}
+
 }
