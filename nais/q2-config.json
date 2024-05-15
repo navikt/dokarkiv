@@ -514,6 +514,11 @@
       "app": "tilbakemeldingsmottak-api",
       "namespace": "teamserviceklage",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "lydia-api",
+      "namespace": "pia",
+      "cluster": "dev-gcp"
     }
   ]
 }
