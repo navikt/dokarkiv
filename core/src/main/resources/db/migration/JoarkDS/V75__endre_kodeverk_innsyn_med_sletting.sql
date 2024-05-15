@@ -1,0 +1,1 @@
+DELETE FROM t_k_innsyn WHERE k_innsyn = 'SKJULES_BRUKERS_ØNSKE';
