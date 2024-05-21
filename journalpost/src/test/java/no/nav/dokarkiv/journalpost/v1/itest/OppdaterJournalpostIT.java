@@ -2,15 +2,10 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
-import no.nav.dokarkiv.core.datautil.BrukerTestDataProvider;
-import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
-import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
-import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -30,18 +25,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -49,11 +39,27 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.lang.Long.parseLong;
+import static no.nav.dokarkiv.core.datautil.BrukerTestDataProvider.createBruker;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.INNHOLD;
+import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.buildJournalpost;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
+import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.ORGANISASJON;
+import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
-import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.PEN;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
+import static no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem.GSAK;
+import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
+import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.DAGPENGER;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.KELVIN;
+import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AKTOER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
@@ -68,16 +74,16 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
@@ -108,7 +114,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	 */
 	@Test
 	public void shouldFerdigstillJournalpostVedOppdateringUserTokenAndServiceUserToken() {
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner()
@@ -118,72 +124,67 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.getDokumentInfoId();
 
 		OppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
-
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
-		TestTransaction.start();
 		Journalpost oppdatertJP = journalpostTestRepository.findById(journalpostId).get();
 
-		assertThat(oppdatertJP.getEndretAvNavn(), is(PERSON_USER_NAME));
-		assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
-		assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
-		assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
-		assertThat(oppdatertJP.getBehandlingstema(), is(request.getBehandlingstema()));
-		assertThat(oppdatertJP.getJournalForendeEnhetId(), is(request.getJournalfoerendeEnhet()));
-		assertThat(oppdatertJP.getLand(), is(request.getAvsenderMottaker().getLand()));
-		assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsenderMottaker().getId()));
-		assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsenderMottaker().getNavn()));
-		assertThat(oppdatertJP.getAvsenderMottakerIdType(), is(AvsenderMottakerIdTypeCode.FNR));
-		assertThat(oppdatertJP.getBrukere().size(), is(1));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getId()));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType(), is(BrukerTypeCode.PERSON));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(parseLong(ARKIVSAKSNUMMER)));
-		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
+		assertThat(oppdatertJP.getEndretAvNavn()).isEqualTo(PERSON_USER_NAME);
+		assertThat(oppdatertJP.getEndretKildeNavn()).isEqualTo(SERVICE_USER_ID);
+		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy()).isEqualTo(PERSON_USER_ID);
+		assertThat(oppdatertJP.getInnhold()).isEqualTo(request.getTittel());
+		assertThat(oppdatertJP.getFagomrade().name()).isEqualTo(request.getTema());
+		assertThat(oppdatertJP.getBehandlingstema()).isEqualTo(request.getBehandlingstema());
+		assertThat(oppdatertJP.getJournalForendeEnhetId()).isEqualTo(request.getJournalfoerendeEnhet());
+		assertThat(oppdatertJP.getLand()).isEqualTo(request.getAvsenderMottaker().getLand());
+		assertThat(oppdatertJP.getAvsenderMottakerId()).isEqualTo(request.getAvsenderMottaker().getId());
+		assertThat(oppdatertJP.getAvsenderMottaker()).isEqualTo(request.getAvsenderMottaker().getNavn());
+		assertThat(oppdatertJP.getAvsenderMottakerIdType()).isEqualTo(AvsenderMottakerIdTypeCode.FNR);
+		assertThat(oppdatertJP.getBrukere().size()).isEqualTo(1);
+		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId()).isEqualTo(request.getBruker().getId());
+		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType()).isEqualTo(PERSON);
+		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn()).isEqualTo(SERVICE_USER_ID);
+		assertThat(oppdatertJP.getSaksrelasjon().getSakId()).isEqualTo(parseLong(ARKIVSAKSNUMMER));
+		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name()).isEqualTo("FS22");
 		assertTrue(oppdatertJP.getDokumentDato().before(Date.from(LocalDateTime.now().minusDays(2).atZone(ZoneId.systemDefault()).toInstant())));
-		assertThat(oppdatertJP.getTilleggsopplysninger().size(), is(1));
-		assert (oppdatertJP.getTilleggsopplysninger().containsKey(request.getTilleggsopplysninger().get(0).getNokkel()));
-		assert (oppdatertJP.getTilleggsopplysninger().containsValue(request.getTilleggsopplysninger().get(0).getVerdi()));
-		no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = oppdatertJP.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(parseLong(request.getDokumenter()
-				.get(0)
-				.getDokumentInfoId()));
-		assertThat(dokumentInfo.getTittel(), is(request.getDokumenter().get(0).getTittel()));
-		assertThat(dokumentInfo.getBrevkode(), is(request.getDokumenter().get(0).getBrevkode()));
-		assertThat(dokumentInfo.getSensitivt(), nullValue());
+		assertThat(oppdatertJP.getTilleggsopplysninger()).hasSize(1);
+
+		assertThat(oppdatertJP.getTilleggsopplysninger().containsKey(request.getTilleggsopplysninger().get(0).getNokkel())).isNotNull();
+		assertThat(oppdatertJP.getTilleggsopplysninger().containsValue(request.getTilleggsopplysninger().get(0).getVerdi())).isNotNull();
+
+		no.nav.dokarkiv.core.domain.entities.DokumentInfo dokumentInfo = oppdatertJP.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(parseLong(request.getDokumenter().get(0).getDokumentInfoId()));
+		assertThat(dokumentInfo.getTittel()).isEqualTo(request.getDokumenter().get(0).getTittel());
+		assertThat(dokumentInfo.getBrevkode()).isEqualTo(request.getDokumenter().get(0).getBrevkode());
+		assertThat(dokumentInfo.getSensitivt()).isNull();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assertThat(aksjonsLoggList).hasSize(3);
 
-		assertEquals(3, aksjonsLoggList.size());
+		assertThat(aksjonsLoggList.get(0).getUtfoertAv()).isEqualTo(PERSON_USER_ID);
+		assertThat(aksjonsLoggList.get(0).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
+		assertThat(aksjonsLoggList.get(0).getAksjon()).isEqualTo(SAKSTILKNYTNING);
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(3);
 
-		assertEquals(PERSON_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getApplikasjon());
-		assertEquals(AksjonsTypeCode.SAKSTILKNYTNING, aksjonsLoggList.get(0).getAksjon());
-		assertEquals(3, aksjonsLoggList.get(0).getArkivElementEndringer().size());
+		assertThat(aksjonsLoggList.get(1).getUtfoertAv()).isEqualTo(PERSON_USER_ID);
+		assertThat(aksjonsLoggList.get(1).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
+		assertThat(aksjonsLoggList.get(1).getAksjon()).isEqualTo(AksjonsTypeCode.ENDRE_METADATA);
+		assertThat(aksjonsLoggList.get(1).getArkivElementEndringer()).hasSize(6);
 
-		assertEquals(PERSON_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getApplikasjon());
-		assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(1).getAksjon());
-		assertEquals(6, aksjonsLoggList.get(1).getArkivElementEndringer().size());
-
-		assertEquals(PERSON_USER_ID, aksjonsLoggList.get(2).getUtfoertAv());
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(2).getApplikasjon());
-		assertEquals(AksjonsTypeCode.ENDRE_METADATA, aksjonsLoggList.get(2).getAksjon());
-		assertEquals(2, aksjonsLoggList.get(2).getArkivElementEndringer().size());
-
-		TestTransaction.end();
+		assertThat(aksjonsLoggList.get(2).getUtfoertAv()).isEqualTo(PERSON_USER_ID);
+		assertThat(aksjonsLoggList.get(2).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
+		assertThat(aksjonsLoggList.get(2).getAksjon()).isEqualTo(AksjonsTypeCode.ENDRE_METADATA);
+		assertThat(aksjonsLoggList.get(2).getArkivElementEndringer()).hasSize(2);
 	}
 
 	@Test
 	public void shouldFjerneSaksrelasjonWhenOppdaterJournalpostEndrerTema() {
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen"));
+
 		Long journalpostId = journalpost.getJournalpostId();
 		String nyttTema = TEMA_UFO;
 
@@ -191,31 +192,24 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.tema(nyttTema)
 				.build();
 
-		TestTransaction.start();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-
-		TestTransaction.flagForCommit();
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
 		Journalpost oppdatertJP = journalpostTestRepository.findById(journalpostId).get();
-
-		assertThat(oppdatertJP.getFagomrade().name(), is(nyttTema));
-		assertNull(oppdatertJP.getSaksrelasjon());
+		assertThat(oppdatertJP.getFagomrade().name()).isEqualTo(nyttTema);
+		assertThat(oppdatertJP.getSaksrelasjon()).isNull();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assert (!aksjonsLoggList.isEmpty());
-
-		TestTransaction.end();
+		assertThat(aksjonsLoggList).isNotEmpty();
 	}
 
 	@Test
 	public void shouldFjerneSaksrelasjonWhenOppdaterJournalpostEndrerBruker() {
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
@@ -225,33 +219,27 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.bruker(nyBruker)
 				.build();
 
-		TestTransaction.start();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-
-		TestTransaction.flagForCommit();
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
 		Journalpost oppdatertJP = journalpostTestRepository.findById(journalpostId).get();
 
-		assertThat(oppdatertJP.getBrukere().size(), is(1));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getId()));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType(), is(BrukerTypeCode.PERSON));
+		assertThat(oppdatertJP.getBrukere()).hasSize(1);
+		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId()).isEqualTo(request.getBruker().getId());
+		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType()).isEqualTo(PERSON);
 		assertNull(oppdatertJP.getSaksrelasjon());
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assert (!aksjonsLoggList.isEmpty());
-
-		TestTransaction.end();
+		assertThat(aksjonsLoggList).isNotEmpty();
 	}
 
 	@Test
 	public void shouldNotProduceAksjonsLoggForEmptyRequest() {
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
@@ -259,78 +247,67 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
-		TestTransaction.start();
-		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assert (aksjonsLoggList.isEmpty());
-		TestTransaction.end();
+		var aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assertThat(aksjonsLoggList).isEmpty();
 	}
 
 	@Test
 	public void shouldUpdateJournalpostWithSaksrelasjonIsNull() {
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen")
-				.saksrelasjon(null);
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+				.saksrelasjon(null));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.sak(Sak.builder()
-						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.arkivsaksystem(GSAK)
 						.arkivsaksnummer(ARKIVSAKSNUMMER)
 						.build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
-		TestTransaction.start();
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId(), is(parseLong(ARKIVSAKSNUMMER)));
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId()).isEqualTo(parseLong(ARKIVSAKSNUMMER));
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem()).isEqualTo(FS22);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList, hasSize(1));
-		assertThat(aksjonsLoggList.get(0).getAksjon(), is(AksjonsTypeCode.SAKSTILKNYTNING));
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer(), hasSize(3));
-		TestTransaction.end();
+		assertThat(aksjonsLoggList).hasSize(1);
+		assertThat(aksjonsLoggList.get(0).getAksjon()).isEqualTo(SAKSTILKNYTNING);
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(3);
 	}
 
 	@Test
 	public void shouldNotProduceAksjonsLoggForUnchangedFields() {
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
-				.tema("PEN")
+				.tema(TEMA_PEN)
 				.tittel(INNHOLD)
 				.build();
-
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
-		TestTransaction.start();
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assert (aksjonsLoggList.isEmpty());
-		TestTransaction.end();
+		assertThat(aksjonsLoggList).isEmpty();
 	}
 
 	@Test
 	public void shouldFerdigstillJournalpostVedOppdateringOnlyServiceUserToken() {
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner()
@@ -342,40 +319,37 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		OppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + OIDC_TOKEN_SERVICE_USER_TEST);
+		headers.setContentType(APPLICATION_JSON);
+		headers.add(AUTHORIZATION, BEARER + OIDC_TOKEN_SERVICE_USER_TEST);
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
-		TestTransaction.start();
 		Journalpost oppdatertJP = journalpostTestRepository.findById(journalpostId).get();
 
-		assertThat(oppdatertJP.getEndretAvNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getInnhold(), is(request.getTittel()));
-		assertThat(oppdatertJP.getFagomrade().name(), is(request.getTema()));
-		assertThat(oppdatertJP.getAvsenderMottakerId(), is(request.getAvsenderMottaker().getId()));
-		assertThat(oppdatertJP.getAvsenderMottaker(), is(request.getAvsenderMottaker().getNavn()));
-		assertThat(oppdatertJP.getAvsenderMottakerIdType(), is(AvsenderMottakerIdTypeCode.FNR));
-		assertThat(oppdatertJP.getBrukere().size(), is(1));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId(), is(request.getBruker().getId()));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType(), is(BrukerTypeCode.PERSON));
-		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getSaksrelasjon().getSakId(), is(parseLong(ARKIVSAKSNUMMER)));
-		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name(), is("FS22"));
-		TestTransaction.end();
+		assertThat(oppdatertJP.getEndretAvNavn()).isEqualTo(SERVICE_USER_ID);
+		assertThat(oppdatertJP.getEndretKildeNavn()).isEqualTo(SERVICE_USER_ID);
+		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy()).isEqualTo(SERVICE_USER_ID);
+		assertThat(oppdatertJP.getInnhold()).isEqualTo(request.getTittel());
+		assertThat(oppdatertJP.getFagomrade().name()).isEqualTo(request.getTema());
+		assertThat(oppdatertJP.getAvsenderMottakerId()).isEqualTo(request.getAvsenderMottaker().getId());
+		assertThat(oppdatertJP.getAvsenderMottaker()).isEqualTo(request.getAvsenderMottaker().getNavn());
+		assertThat(oppdatertJP.getAvsenderMottakerIdType()).isEqualTo(AvsenderMottakerIdTypeCode.FNR);
+		assertThat(oppdatertJP.getBrukere()).hasSize(1);
+		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId()).isEqualTo(request.getBruker().getId());
+		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType()).isEqualTo(PERSON);
+		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn()).isEqualTo(SERVICE_USER_ID);
+		assertThat(oppdatertJP.getSaksrelasjon().getSakId()).isEqualTo(parseLong(ARKIVSAKSNUMMER));
+		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name()).isEqualTo("FS22");
 	}
 
 	@Test
 	public void shouldSetNavUserIdHeaderSporingWhenServiceUserTokenAndNavUserIdHeaderIsSet() {
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner()
@@ -387,30 +361,27 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		OppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, BEARER + OIDC_TOKEN_SERVICE_USER_TEST);
+		headers.setContentType(APPLICATION_JSON);
+		headers.add(AUTHORIZATION, BEARER + OIDC_TOKEN_SERVICE_USER_TEST);
 		headers.add(NavHeaders.NAV_USER_ID, PERSON_USER_ID);
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
-		TestTransaction.start();
 		Journalpost oppdatertJP = journalpostTestRepository.findById(journalpostId).get();
 
-		assertThat(oppdatertJP.getEndretAvNavn(), is(PERSON_USER_NAME));
-		assertThat(oppdatertJP.getEndretKildeNavn(), is(SERVICE_USER_ID));
-		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy(), is(PERSON_USER_ID));
-		TestTransaction.end();
+		assertThat(oppdatertJP.getEndretAvNavn()).isEqualTo(PERSON_USER_NAME);
+		assertThat(oppdatertJP.getEndretKildeNavn()).isEqualTo(SERVICE_USER_ID);
+		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy()).isEqualTo(PERSON_USER_ID);
 	}
 
 	@Test
-	public void shouldFailOnlyPersonUserToken() {
-		Journalpost journalpost = buildAndCommit(JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+	public void shouldReturnUnauthorizedIfBearerPrefixIsMissing() {
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner()
@@ -422,27 +393,25 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		OppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
+		headers.setContentType(APPLICATION_JSON);
+		headers.add(AUTHORIZATION, OIDC_TOKEN_PERSON_USER_TEST);
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
 	}
 
 	@Test
 	public void happyPathGsakArkivsak() {
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.sak(Sak.builder()
-						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.arkivsaksystem(GSAK)
 						.arkivsaksnummer(ARKIVSAKSNUMMER)
 						.sakstype(Sakstype.ARKIVSAK)
 						.build())
@@ -450,53 +419,45 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
-		TestTransaction.start();
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId(), is(parseLong(ARKIVSAKSNUMMER)));
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
-		TestTransaction.end();
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId()).isEqualTo(parseLong(ARKIVSAKSNUMMER));
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem()).isEqualTo(FS22);
 	}
 
 	@Test
 	public void happyPathGsakArkivsakSakstypeIkkeAngitt() {
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.sak(Sak.builder()
-						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.arkivsaksystem(GSAK)
 						.arkivsaksnummer(ARKIVSAKSNUMMER)
 						.build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
-		TestTransaction.start();
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId(), is(parseLong(ARKIVSAKSNUMMER)));
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
-		TestTransaction.end();
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId()).isEqualTo(parseLong(ARKIVSAKSNUMMER));
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem()).isEqualTo(FS22);
 	}
 
 	@Test
 	public void happyPathPsakArkivsak() {
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
@@ -509,17 +470,14 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
-		TestTransaction.start();
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId(), is(parseLong(ARKIVSAKSNUMMER)));
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(PEN));
-		TestTransaction.end();
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId()).isEqualTo(parseLong(ARKIVSAKSNUMMER));
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem()).isEqualTo(FagsystemCode.PEN);
 	}
 
 	@Test
@@ -529,41 +487,37 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		stubAzure();
 		happyAktoerIdStub();
 
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.GENERELL_SAK)
+						.sakstype(GENERELL_SAK)
 						.build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-		assertEquals(sakTestRepository.count(), 1);
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
+		assertThat(sakTestRepository.count()).isEqualTo(1);
 
-		TestTransaction.start();
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
 
-		assertEquals(sak.getAktoerId(), AKTOER_ID);
-		assertTrue(isBlank(sak.getOrgnr()));
-		assertEquals(sak.getTema(), TEMA);
-		assertTrue(isBlank(sak.getFagsakNr()));
-		assertEquals(sak.getApplikasjon(), FS22.name());
+		assertThat(sak.getAktoerId()).isEqualTo(AKTOER_ID);
+		assertThat(sak.getOrgnr()).isBlank();
+		assertThat(sak.getTema()).isEqualTo(TEMA);
+		assertThat(sak.getFagsakNr()).isBlank();
+		assertThat(sak.getApplikasjon()).isEqualTo(FS22.name());
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertEquals(oppdatertJournalpost.getSaksrelasjon().getSakId(), sak.getSakId());
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
-		TestTransaction.end();
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId()).isEqualTo(sak.getSakId());
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem()).isEqualTo(FS22);
 	}
 
 	@Test
@@ -577,34 +531,29 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		sakTestRepository.persist(sak);
 		commitAndStartNewTransaction();
 
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
-		assertEquals(sakTestRepository.count(), 1);
+		assertThat(sakTestRepository.count()).isEqualTo(1);
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.GENERELL_SAK)
+						.sakstype(GENERELL_SAK)
 						.build())
 				.build();
-
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		TestTransaction.start();
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
+
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
-		assertEquals(saksrelasjon.getSakId(), sak.getSakId());
-		assertEquals(saksrelasjon.getFagsystem(), FS22);
-		TestTransaction.end();
+		assertThat(saksrelasjon.getSakId()).isEqualTo(sak.getSakId());
+		assertThat(saksrelasjon.getFagsystem()).isEqualTo(FS22);
 	}
 
 	@Test
@@ -622,34 +571,29 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		sakTestRepository.persist(nyesteSak);
 		commitAndStartNewTransaction();
 
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
-		assertEquals(sakTestRepository.count(), 2);
+		assertThat(sakTestRepository.count()).isEqualTo(2);
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.GENERELL_SAK)
+						.sakstype(GENERELL_SAK)
 						.build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
-		TestTransaction.start();
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
-		assertEquals(saksrelasjon.getSakId(), eldsteSak.getSakId());
-		assertEquals(saksrelasjon.getFagsystem(), FS22);
-		TestTransaction.end();
+		assertThat(saksrelasjon.getSakId()).isEqualTo(eldsteSak.getSakId());
+		assertThat(saksrelasjon.getFagsystem()).isEqualTo(FS22);
 	}
 
 	@Test
@@ -659,43 +603,38 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		stubAzure();
 		happyAktoerIdStub();
 
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.FAGSAK)
+						.sakstype(FAGSAK)
 						.fagsakId(FAGSAK_ID)
-						.fagsaksystem(Fagsaksystem.AO01)
+						.fagsaksystem(AO01)
 						.build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-		assertEquals(sakTestRepository.count(), 1);
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
+		assertThat(sakTestRepository.count()).isEqualTo(1);
 
-		TestTransaction.start();
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
-		assertEquals(sak.getAktoerId(), AKTOER_ID);
-		assertTrue(isBlank(sak.getOrgnr()));
-		assertEquals(sak.getTema(), TEMA);
-		assertEquals(sak.getFagsakNr(), FAGSAK_ID);
-		assertEquals(sak.getApplikasjon(), Fagsaksystem.AO01.name());
+		assertThat(sak.getAktoerId()).isEqualTo(AKTOER_ID);
+		assertThat(sak.getOrgnr()).isBlank();
+		assertThat(sak.getTema()).isEqualTo(TEMA);
+		assertThat(sak.getFagsakNr()).isEqualTo(FAGSAK_ID);
+		assertThat(sak.getApplikasjon()).isEqualTo(AO01.name());
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertEquals(oppdatertJournalpost.getSaksrelasjon().getSakId(), sak.getSakId());
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
-		TestTransaction.end();
-
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId()).isEqualTo(sak.getSakId());
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem()).isEqualTo(FS22);
 	}
 
 	@Test
@@ -705,32 +644,29 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		stubAzure();
 		happyFnrIdentStub();
 
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA)
-				.bruker(Bruker.builder().idType(BrukerIdType.AKTOERID).id(AKTOER_ID).build())
+				.bruker(Bruker.builder().idType(AKTOERID).id(AKTOER_ID).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.FAGSAK)
+						.sakstype(FAGSAK)
 						.fagsakId(FAGSAK_ID)
-						.fagsaksystem(Fagsaksystem.AO01)
+						.fagsaksystem(AO01)
 						.build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertEquals(sakTestRepository.count(), 1);
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(sakTestRepository.count()).isEqualTo(1);
 
-		TestTransaction.start();
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
-		assertEquals(sak.getAktoerId(), AKTOER_ID);
+		assertThat(sak.getAktoerId()).isEqualTo(AKTOER_ID);
 
 		no.nav.dokarkiv.core.domain.entities.Bruker bruker = journalpostTestRepository.findAll()
 				.iterator()
@@ -738,14 +674,12 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.getBrukere()
 				.iterator()
 				.next();
-		assertEquals(bruker.getBrukerId(), FNR);
-		assertEquals(bruker.getBrukerType(), BrukerTypeCode.PERSON);
+		assertThat(bruker.getBrukerId()).isEqualTo(FNR);
+		assertThat(bruker.getBrukerType()).isEqualTo(PERSON);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertEquals(2, aksjonsLoggList.size());
-		assertEquals(PERSON_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
-		TestTransaction.end();
-
+		assertThat(aksjonsLoggList).hasSize(2);
+		assertThat(aksjonsLoggList.get(1).getUtfoertAv()).isEqualTo(PERSON_USER_ID);
 	}
 
 	@Test
@@ -755,71 +689,63 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		stubAzure();
 		identNotFoundStub();
 
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA)
-				.bruker(Bruker.builder().idType(BrukerIdType.AKTOERID).id(FAIL_AKTOER_ID).build())
+				.bruker(Bruker.builder().idType(AKTOERID).id(FAIL_AKTOER_ID).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.FAGSAK)
+						.sakstype(FAGSAK)
 						.fagsakId(FAGSAK_ID)
-						.fagsaksystem(Fagsaksystem.AO01)
+						.fagsaksystem(AO01)
 						.build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertEquals(sakTestRepository.count(), 1);
-		TestTransaction.start();
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(sakTestRepository.count()).isEqualTo(1);
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
-		assertEquals(sak.getAktoerId(), FAIL_AKTOER_ID);
+		assertThat(sak.getAktoerId()).isEqualTo(FAIL_AKTOER_ID);
 
-		assertEquals(journalpostTestRepository.findAll().iterator().next().getBrukere().size(), 0);
+		assertThat(journalpostTestRepository.findAll().iterator().next().getBrukere()).hasSize(0);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertEquals(2, aksjonsLoggList.size());
-		TestTransaction.end();
+		assertThat(aksjonsLoggList).hasSize(2);
 	}
-
 
 	@Test
 	public void happyPathNyFagsakOrgnr() {
 		clearSakRepository();
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen")
-				.brukere(BrukerTestDataProvider.createBruker("11111111111", BrukerTypeCode.PERSON));
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+				.brukere(createBruker("11111111111", PERSON)));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA)
-				.bruker(Bruker.builder().idType(BrukerIdType.ORGNR).id(BRUKER_ID_ORGANISASJON).build())
+				.bruker(Bruker.builder().idType(ORGNR).id(BRUKER_ID_ORGANISASJON).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.FAGSAK)
+						.sakstype(FAGSAK)
 						.fagsakId(FAGSAK_ID)
-						.fagsaksystem(Fagsaksystem.AO01)
+						.fagsaksystem(AO01)
 						.build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-		assertEquals(sakTestRepository.count(), 1);
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
+		assertThat(sakTestRepository.count()).isEqualTo(1);
 
-		TestTransaction.start();
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
-		assertEquals(sak.getOrgnr(), BRUKER_ID_ORGANISASJON);
+		assertThat(sak.getOrgnr()).isEqualTo(BRUKER_ID_ORGANISASJON);
 
 		no.nav.dokarkiv.core.domain.entities.Bruker bruker = journalpostTestRepository.findAll()
 				.iterator()
@@ -827,10 +753,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.getBrukere()
 				.iterator()
 				.next();
-		assertEquals(bruker.getBrukerId(), BRUKER_ID_ORGANISASJON);
-		assertEquals(bruker.getBrukerType(), BrukerTypeCode.ORGANISASJON);
-
-		TestTransaction.end();
+		assertThat(bruker.getBrukerId()).isEqualTo(BRUKER_ID_ORGANISASJON);
+		assertThat(bruker.getBrukerType()).isEqualTo(ORGANISASJON);
 	}
 
 	@Test
@@ -846,76 +770,61 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(sakTestRepository.count(), 1);
 
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_TIL)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.FAGSAK)
+						.sakstype(FAGSAK)
 						.fagsakId(FAGSAK_ID)
-						.fagsaksystem(Fagsaksystem.AO01)
+						.fagsaksystem(AO01)
 						.build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-		assertEquals(sakTestRepository.count(), 1);
-
-		TestTransaction.start();
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
+		assertThat(sakTestRepository.count()).isEqualTo(1);
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertEquals(oppdatertJournalpost.getSaksrelasjon().getSakId(), sak.getSakId());
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
-
-		TestTransaction.end();
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getSakId()).isEqualTo(sak.getSakId());
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem()).isEqualTo(FS22);
 	}
-
 
 	@Test
 	public void happyPathFagsakPesys() {
 		clearSakRepository();
-		long sakRepositoryCount = sakTestRepository.count();
 
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_PEN)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.FAGSAK)
+						.sakstype(FAGSAK)
 						.fagsakId(PENSJON_FAGSAK_ID)
-						.fagsaksystem(Fagsaksystem.PP01)
+						.fagsaksystem(PP01)
 						.build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
-
-		TestTransaction.start();
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(PEN));
-		assertEquals(sakTestRepository.count(), sakRepositoryCount);
-
-		TestTransaction.end();
-
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem()).isEqualTo(FagsystemCode.PEN);
+		assertThat(sakTestRepository.count()).isEqualTo(0);
 	}
 
 	@Test
@@ -925,29 +834,27 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		stubAzure();
 		happyAktoerIdStub();
 
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_PEN)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.GENERELL_SAK)
+						.sakstype(GENERELL_SAK)
 						.build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem()).isEqualTo(FS22);
 	}
 
 	@Test
@@ -957,29 +864,27 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		stubAzure();
 		happyAktoerIdStub();
 
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_UFO)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.GENERELL_SAK)
+						.sakstype(GENERELL_SAK)
 						.build())
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody().getJournalpostId(), is(String.valueOf(journalpostId)));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem(), is(FS22));
+		assertThat(oppdatertJournalpost.getSaksrelasjon().getFagsystem()).isEqualTo(FS22);
 	}
 
 	@Test
@@ -989,23 +894,22 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		stubAzure();
 		happyAktoerIdStub();
 
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.FAGSAK)
+						.sakstype(FAGSAK)
 						.fagsakId(FAGSAK_ID)
 						.fagsaksystem(KELVIN)
 						.build())
 				.build();
-
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")).withRequestBody(containing("AKTORID")));
 	}
@@ -1017,23 +921,22 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		stubAzure();
 		happyFnrIdentStub();
 
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
-				.bruker(Bruker.builder().idType(BrukerIdType.AKTOERID).id(AKTOER_ID).build())
+				.bruker(Bruker.builder().idType(AKTOERID).id(AKTOER_ID).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.FAGSAK)
+						.sakstype(FAGSAK)
 						.fagsakId(FAGSAK_ID)
 						.fagsaksystem(DAGPENGER)
 						.build())
 				.build();
-
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")).withRequestBody(containing("AKTORID")));
 	}
@@ -1041,18 +944,17 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldNotCallAktoerServiceWithoutSakstype() {
 		clearSakRepository();
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
 				.build();
-
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")).withRequestBody(containing("AKTORID")));
 	}
@@ -1060,23 +962,22 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldNotCallAktoerServiceWithSAKFagsystemPP01() {
 		clearSakRepository();
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_PEN)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
 				.sak(Sak.builder()
-						.sakstype(Sakstype.FAGSAK)
+						.sakstype(FAGSAK)
 						.fagsakId(PENSJON_FAGSAK_ID)
-						.fagsaksystem(Fagsaksystem.PP01)
+						.fagsaksystem(PP01)
 						.build())
 				.build();
-
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")));
 	}
@@ -1084,9 +985,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldDeleteAvsenderMottaker() {
 		clearSakRepository();
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
@@ -1094,20 +994,20 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder().id("").build())
 				.build();
-
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
-		assertEquals("", journalpostOppdatert.getAvsenderMottakerId());
+		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isBlank();
 	}
 
 	@Test
 	public void shouldNotUpdateAvsenderMottakerOnJournalpostOlderThanOneYear() {
 		clearSakRepository();
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.J)
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, J)
 				.endretAvNavn("saksbehandlersen")
-				.journalDato(java.sql.Date.valueOf(LOCAL_DATE_TIME.toLocalDate()));
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+				.journalDato(java.sql.Date.valueOf(LOCAL_DATE_TIME.toLocalDate())));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
@@ -1115,15 +1015,15 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder().id("5").navn("Max Mekker").build())
 				.build();
-
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(BAD_REQUEST));
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
-		assertEquals("1", journalpostOppdatert.getAvsenderMottakerId());
-		assertEquals("Bjarne Betjent", journalpostOppdatert.getAvsenderMottaker());
+		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
+		assertThat(journalpostOppdatert.getAvsenderMottaker()).isEqualTo("Bjarne Betjent");
 	}
 
 	@Test
@@ -1132,8 +1032,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		Journalpost journalpostDraft = Journalpost.builder()
 				.avsenderMottakerId("1")
-				.journalposttype(JournalpostTypeCode.N)
-				.journalstatus(JournalStatusCode.FL)
+				.journalposttype(N)
+				.journalstatus(FL)
 				.endretAvNavn("saksbehandlersen")
 				.innhold("Gammel tittel")
 				.journalDato(java.sql.Date.valueOf(LOCAL_DATE_TIME.toLocalDate()))
@@ -1152,16 +1052,16 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
 				.tittel("Ny tittel")
 				.build();
-
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
 
-		assertThat(responseEntity.getStatusCode(), is(BAD_REQUEST));
-		assertThat(Objects.requireNonNull(responseEntity.getBody()).getMessage(), containsString("Tittel kan ikke oppdateres for journalpost med journalpoststatus=FL og journalposttype=N"));
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(responseEntity.getBody().getMessage()).contains("Tittel kan ikke oppdateres for journalpost med journalpoststatus=FL og journalposttype=N");
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).orElse(null);
-		assert journalpostOppdatert != null;
-		assertEquals("Gammel tittel", journalpostOppdatert.getInnhold());
+		assertThat(journalpostOppdatert).isNotNull();
+		assertThat(journalpostOppdatert.getInnhold()).isEqualTo("Gammel tittel");
 	}
 
 	@Test
@@ -1170,9 +1070,9 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		restStsToken();
 		stubAzure();
 		happyPersonIdentStub();
-		JournalpostBuilder journalpostBuilder = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M)
-				.endretAvNavn("saksbehandlersen");
-		Journalpost journalpost = buildAndCommit(journalpostBuilder);
+
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
@@ -1180,25 +1080,26 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder().id("01234567891").idType(AvsenderMottakerIdType.FNR).build())
 				.build();
-
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, HttpMethod.PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
-		assertEquals("TESTFORNAVN TESTFAMILIEN", journalpostOppdatert.getAvsenderMottaker());
+		assertThat(journalpostOppdatert.getAvsenderMottaker()).isEqualTo("TESTFORNAVN TESTFAMILIEN");
 		verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")));
 	}
 
 	@Test
 	void shouldReturnBadRequestWithErrorMessageOnInvalidFagsaksystem() {
-
 		var requestString = classpathToString("__files/oppdaterJournalpostBodyMedUgyldigFagsaksystem.json");
 		HttpEntity<String> stringHttpEntity = new HttpEntity<>(requestString, oidcHeaders());
-		var responseEntity = restTemplate.exchange(URL_JOURNALPOST + "123123123", HttpMethod.PUT, stringHttpEntity, String.class);
+
+		var responseEntity = restTemplate.exchange(URL_JOURNALPOST + "123123123", PUT, stringHttpEntity, String.class);
 
 		String forventetFeilmelding = "Feltet sak.fagsaksystem=UGYLDIG må være en av %s".formatted(Arrays.toString(Fagsaksystem.values()));
 
-		assertThat(responseEntity.getStatusCode(), is(BAD_REQUEST));
-		assertThat(responseEntity.getBody(), containsString(forventetFeilmelding));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(responseEntity.getBody()).contains(forventetFeilmelding);
 	}
 
 	private OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {
@@ -1214,7 +1115,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 						.id(IDENTIFIKATOR)
 						.build())
 				.sak(Sak.builder()
-						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.arkivsaksystem(GSAK)
 						.arkivsaksnummer(ARKIVSAKSNUMMER)
 						.build())
 				.tema(TEMA)
@@ -1234,5 +1135,3 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 	}
 }
-
-
