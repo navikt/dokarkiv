@@ -14,7 +14,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
@@ -37,7 +36,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
-import static java.util.Comparator.comparing;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER;
@@ -45,9 +43,9 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALFORENDE_ENHET;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_OVERSTYR_INNSYN;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO.arkivElementEndringNew;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
-import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OVERSTYR_INNSYN;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
@@ -198,26 +196,19 @@ public class OpprettJournalpostService {
 				.orElse(null);
 
 		populerAksjonslogg(journalpostId, OPPRETT, brukerId, Stream.of(
-						arkivElementEndringNew(JOURNALPOST_FAGOMRADE,
-								journalpost.getFagomrade() != null ? journalpost.getFagomrade().name() : null),
+						arkivElementEndringNew(JOURNALPOST_FAGOMRADE, journalpost.getFagomrade() != null ? journalpost.getFagomrade().name() : null),
 						arkivElementEndringNew(JOURNALPOST_INNHOLD, journalpost.getInnhold()),
 						arkivElementEndringNew(JOURNALPOST_AVSENDER_MOTTAKER, journalpost.getAvsenderMottaker()),
 						arkivElementEndringNew(JOURNALPOST_AVSENDER_MOTTAKER_ID, journalpost.getAvsenderMottakerId()),
 						arkivElementEndringNew(JOURNALPOST_JOURNALFORENDE_ENHET, journalpost.getJournalForendeEnhetId()),
-						arkivElementEndringNew("Bruker.bruker_id", brukerId)
+						arkivElementEndringNew("Bruker.bruker_id", brukerId),
+						arkivElementEndringNew(JOURNALPOST_OVERSTYR_INNSYN, journalpost.getInnsyn() != null ? journalpost.getInnsyn().name() : null)
 				).filter(elementEndring -> Objects.nonNull(elementEndring.getTilVerdi()))
 				.toList());
 
-		if (journalpost.getInnsyn() != null) {
-			populerAksjonslogg(journalpostId, OVERSTYR_INNSYN, brukerId, singletonList(
-					arkivElementEndringNew("Journalpost.k_innsyn", journalpost.getInnsyn().toString())
-			));
-		}
-
 		sakOptional.ifPresent(sak -> populerAksjonslogg(journalpostId, SAKSTILKNYTNING, brukerId, Stream.of(
 						arkivElementEndringNew("Saksrelasjon.sakId", journalpost.getSaksrelasjon().getSakId().toString()),
-						arkivElementEndringNew("Saksrelasjon.fagsystem",
-								journalpost.getSaksrelasjon().getFagsystem() != null ? journalpost.getSaksrelasjon().getFagsystem().name() : null),
+						arkivElementEndringNew("Saksrelasjon.fagsystem", journalpost.getSaksrelasjon().getFagsystem() != null ? journalpost.getSaksrelasjon().getFagsystem().name() : null),
 						arkivElementEndringNew("Sak.fagsaknr", sak.getFagsakNr()),
 						arkivElementEndringNew("Sak.applikasjon", sak.getApplikasjon())
 				).filter(elementEndring -> Objects.nonNull(elementEndring.getTilVerdi()))
@@ -229,21 +220,13 @@ public class OpprettJournalpostService {
 				.aksjon(aksjon)
 				.journalpostId(journalpostId)
 				.bruker(isNotBlank(bruker) ? bruker : UKJENT)
-				.melding(mapAksjonsloggmelding(aksjon))
+				.melding("Journalpost " + aksjon)
 				.build();
 
 		try {
 			aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLoggTo, aksjonsloggendringer);
 		} catch (UgyldigAksjonsLoggException e) {
 			log.warn("Kunne ikke skrive til AksjonsLogg: " + e.getMessage());
-		}
-	}
-
-	private static String mapAksjonsloggmelding(AksjonsTypeCode aksjon) {
-		if (OVERSTYR_INNSYN.equals(aksjon)) {
-			return "Innsynsreglene ble overstyrt ved opprettelse av journalpost";
-		} else {
-			return "Journalpost " + aksjon;
 		}
 	}
 

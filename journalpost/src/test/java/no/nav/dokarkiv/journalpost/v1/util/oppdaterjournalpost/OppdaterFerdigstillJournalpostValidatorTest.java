@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
@@ -14,6 +15,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.Date;
@@ -57,10 +59,14 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEnkelJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createSak;
+import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.LOVLIGE_INNSYNSKODER;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.INCLUDE;
 
 public class OppdaterFerdigstillJournalpostValidatorTest {
 
@@ -393,6 +399,37 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 		assertThat(exception.getMessage()).contains(
 				format("%s er ugyldig verdi for datoDokument. Feltet kan ikke settes frem i tid. Nåtid er ", datoDokument));
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = InnsynCode.class, mode = INCLUDE, names = {
+			"BRUK_STANDARDREGLER", "VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT",
+			"SKJULES_FEILSENDT", "SKJULES_BRUKERS_SIKKERHET", "SKJULES_BRUKERS_ONSKE"
+	})
+	@NullSource
+	public void shouldNotFailIfOverstyrInnsynsreglerIsValid(InnsynCode overstyrInnsynsregler) {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.overstyrInnsynsregler(overstyrInnsynsregler != null ? overstyrInnsynsregler.name() : null)
+				.build();
+		journalpost = createEnkelJournalpost(M, I);
+
+		assertDoesNotThrow(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = InnsynCode.class, mode = EXCLUDE, names = {
+			"BRUK_STANDARDREGLER", "VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT",
+			"SKJULES_FEILSENDT", "SKJULES_BRUKERS_SIKKERHET", "SKJULES_BRUKERS_ONSKE"
+	})
+	public void shouldFailIfOverstyrInnsynsreglerIsInvalid(InnsynCode overstyrInnsynsregler) {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.overstyrInnsynsregler(overstyrInnsynsregler.name())
+				.build();
+		journalpost = createEnkelJournalpost(M, I);
+
+		var exception = assertThrows(InputValideringFeiletException.class, () -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
+
+		assertThat(exception.getMessage()).contains(format("OverstyrInnsynsregler må være en av følgende verdier %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler));
 	}
 
 	@Test

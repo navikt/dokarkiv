@@ -102,6 +102,22 @@ public class OppdaterJournalpostRequest {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date datoMottatt;
 
+	@Schema(
+			description = """
+					Gjør at journalposten med dokumenter vises til pålogget bruker på nav.no selv om standardregelsettet sier at journalposten og/eller dokumentene skal skjules.
+					Dersom flagget ikke settes, er det standard-regelsettet som styrer innsyn.
+					
+					* VISES_MASKINELT_GODKJENT brukes når en maskinell prosess har avgjort at dokumentene kan vises til bruker på nav.no.
+					* VISES_MANUELT_GODKJENT brukes når en NAV-ansatt har sett over og godkjent at dokumentet kan vises til bruker på nav.no.
+					* SKJULES_FEILSENDT brukes når et dokument er sendt til feil bruker og derfor skal skjules på nav.no
+					* SKJULES_BRUKERS_SIKKERHET brukes når et dokument skal skjules på nav.no av hensyn til brukers sikkerhet
+					* SKJULES_BRUKERS_ONSKE brukes når et dokument skal skjules på nav.no fordi brukeren selv ønsker dette
+					* BRUK_STANDARDREGLER brukes ved behov for å oppheve overstyringen av innsynsregler
+					""",
+			nullable = true
+	)
+	private String overstyrInnsynsregler;
+
 	@ArraySchema(arraySchema = @Schema(
 			description = """
 					Fagsystemene som arkiverer kan legge til egne fagspesifikke attributter per journalpost. Disse er representert

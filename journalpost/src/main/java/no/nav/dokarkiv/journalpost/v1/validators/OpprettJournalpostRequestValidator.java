@@ -318,7 +318,7 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateOverstyrInnsynsregler(String overstyrInnsynsregler) {
 		if (!LOVLIGE_INNSYNSKODER.contains(overstyrInnsynsregler)) {
-			throw new InputValideringFeiletException(format("Sak.overstyrInnsynsregler må være en av følgende verdier %s. Mottatt: %s",
+			throw new InputValideringFeiletException(format("OverstyrInnsynsregler må være en av følgende verdier %s. Mottatt: %s",
 					LOVLIGE_INNSYNSKODER,
 					overstyrInnsynsregler));
 		}
