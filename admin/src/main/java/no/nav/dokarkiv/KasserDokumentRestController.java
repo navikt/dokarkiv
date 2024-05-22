@@ -6,6 +6,7 @@ import no.nav.dokarkiv.dto.KasserDokumentRequest;
 import no.nav.dokarkiv.rjoark102.KasserDokumentOrchestrator;
 import no.nav.dokarkiv.rjoark102.KasserDokumentValidator;
 import no.nav.security.token.support.core.api.Protected;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,18 +18,21 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static no.nav.dokarkiv.SlettArkivenhetController.API_ADMIN_ROLE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
+import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUsername;
 
 @Slf4j
 @Protected
 @RestController
 @RequestMapping("rest/admin")
+@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + API_ADMIN_ROLE})
 public class KasserDokumentRestController {
 
 	private final KasserDokumentValidator validator;

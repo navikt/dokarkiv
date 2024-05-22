@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.dto.SkjermArkivenhetRequest;
 import no.nav.dokarkiv.rjoark100.SkjermArkivEnhetOrchestrator;
 import no.nav.security.token.support.core.api.Protected;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,12 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.NotNull;
 
 import static java.util.Objects.isNull;
+import static no.nav.dokarkiv.SlettArkivenhetController.API_ADMIN_ROLE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
+import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUsername;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -34,6 +37,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Protected
 @RestController
 @RequestMapping("rest/admin")
+@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + API_ADMIN_ROLE})
 public class SkjermArkivenhetRestController {
 
 	private final SkjermArkivEnhetOrchestrator skjermArkivEnhetOrchestrator;

@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,14 +33,14 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
-	public void skalSkjermeDokumentForKassering() {
+	public void skalSkjermeDokumentForKassering() throws ParseException {
 		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 
 		reinitTransaction();
 
-		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(), POST, new HttpEntity<>(createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)), String.class);
+		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(), POST, new HttpEntity<>(createHeadersWithClientCredentialAndAksjonslogg(API_ADMIN_ROLE)), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
@@ -79,7 +80,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		var httpHeaders = createHeadersWithServiceUserAndAksjonslogg(SERVICEUSER_JOARKADMIN);
+		var httpHeaders = createHeadersWithClientCredentialAndAksjonslogg(API_ADMIN_ROLE);
 
 		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(), POST,
 				new HttpEntity<>(httpHeaders), String.class);
@@ -175,7 +176,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + 1, POST, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et STS-token som tilhører servicebruker=" + SERVICEUSER_JOARKADMIN);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et client credential token som tilhører " + APP_NAME_WITH_NAMESPACE);
 	}
 
 	@Test
@@ -185,7 +186,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + 1, POST, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et STS-token som tilhører servicebruker=" + SERVICEUSER_JOARKADMIN);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et client credential token som tilhører " + APP_NAME_WITH_NAMESPACE);
 	}
 
 	@Test

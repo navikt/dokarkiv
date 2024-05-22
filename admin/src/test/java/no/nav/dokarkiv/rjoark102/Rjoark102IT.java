@@ -200,7 +200,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void skalKassereDokumentSomErKnyttetTilEnJournalpostForStsTokenFraJoarkadmin() {
+	public void skalKassereDokumentSomErKnyttetTilEnJournalpostMedClientCredentialTokenFraJoarkadmin() {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
@@ -219,7 +219,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertFalse(dokumentInfoSomSkalKasseres.isRelatedToMultipleJournalposts());
 		assertFalse(dokumentInfoSomSkalKasseres.getFildetaljerListe().isEmpty());
 
-		var httpHeaders = createHeadersWithServiceUserAndAksjonslogg(SERVICEUSER_JOARKADMIN);
+		var httpHeaders = createHeadersWithClientCredentialAndAksjonslogg(API_ADMIN_ROLE);
 
 		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(
 				createKasserDokumentRequest(dokumentInfoRep.get().getDokumentInfoId()),
@@ -248,7 +248,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et STS-token som tilhører servicebruker=" + SERVICEUSER_JOARKADMIN);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et client credential token som tilhører " + APP_NAME_WITH_NAMESPACE);
 	}
 
 	@Test
@@ -258,7 +258,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et STS-token som tilhører servicebruker=" + SERVICEUSER_JOARKADMIN);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et client credential token som tilhører " + APP_NAME_WITH_NAMESPACE);
 	}
 
 	@Test

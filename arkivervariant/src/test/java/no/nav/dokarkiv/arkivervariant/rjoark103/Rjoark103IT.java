@@ -177,7 +177,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.filType(PDF).build(), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et STS-token som tilhører servicebruker=" + SERVICEUSER_JOARKADMIN);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et client credential token som tilhører " + APP_NAME_WITH_NAMESPACE);
 	}
 
 	@Test
@@ -195,7 +195,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.filType(PDF).build(), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et STS-token som tilhører servicebruker=" + SERVICEUSER_JOARKADMIN);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et client credential token som tilhører " + APP_NAME_WITH_NAMESPACE);
 	}
 
 	@Test

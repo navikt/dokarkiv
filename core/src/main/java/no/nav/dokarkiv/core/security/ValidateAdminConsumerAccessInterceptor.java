@@ -8,7 +8,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static java.lang.String.format;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -16,7 +15,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 @Slf4j
 public class ValidateAdminConsumerAccessInterceptor implements HandlerInterceptor {
 
-	private static final String SERVICEBRUKER_JOARKADMIN = "srvjoarkadmin";
+	public static final String APP_NAME_WITH_NAMESPACE = "teamdokumenthandtering:joarkadmin";
 
 	private final JoarkVedlikeholdInterceptor joarkVedlikeholdInterceptor;
 
@@ -33,9 +32,9 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 			if (erStsTokenFraJoarkadmin()) {
 				return true;
 			} else {
-				log.warn("OIDC-token på Authorization-header inneholder et system-til-system-token som ikke tilhører servicebruker={}", SERVICEBRUKER_JOARKADMIN);
+				log.warn("OIDC-token på Authorization-header inneholder et system-til-system-token som ikke tilhører {}", APP_NAME_WITH_NAMESPACE);
 
-				response.sendError(SC_UNAUTHORIZED, format("OIDC-token på Authorization-header må være et STS-token som tilhører servicebruker=%s", SERVICEBRUKER_JOARKADMIN));
+				response.sendError(SC_UNAUTHORIZED, "OIDC-token på Authorization-header må være et client credential token som tilhører " + APP_NAME_WITH_NAMESPACE);
 				return false;
 			}
 		}
@@ -44,7 +43,7 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 	}
 
 	private boolean erStsTokenFraJoarkadmin() {
-		return SERVICEBRUKER_JOARKADMIN.equals(MDC.get(MDC_CONSUMER_ID));
+		return MDC.get(MDC_CONSUMER_ID).contains(APP_NAME_WITH_NAMESPACE);
 	}
 
 	private boolean erIkkeEtOboToken() {

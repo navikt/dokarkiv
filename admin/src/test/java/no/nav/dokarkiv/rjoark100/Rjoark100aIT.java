@@ -84,7 +84,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		assertNull(journalpost.getSkjermingType());
 
-		var headers = createHeadersWithServiceUserAndAksjonslogg(SERVICEUSER_JOARKADMIN);
+		var headers = createHeadersWithClientCredentialAndAksjonslogg(API_ADMIN_ROLE);
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, JOURNALPOST, journalpost.getJournalpostId(), null, null),
@@ -451,7 +451,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 				new HttpEntity<>(createSkjermarkivenhetRequest(POL, JOURNALPOST, 1L, null, null), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et STS-token som tilhører servicebruker=" + SERVICEUSER_JOARKADMIN);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et client credential token som tilhører " + APP_NAME_WITH_NAMESPACE);
 	}
 
 	@Test
@@ -462,7 +462,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 				new HttpEntity<>(createSkjermarkivenhetRequest(POL, JOURNALPOST, 1L, null, null), headers), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et STS-token som tilhører servicebruker=" + SERVICEUSER_JOARKADMIN);
+		assertThat(responseEntity.getBody()).contains("OIDC-token på Authorization-header må være et client credential token som tilhører " + APP_NAME_WITH_NAMESPACE);
 	}
 
 	@Test

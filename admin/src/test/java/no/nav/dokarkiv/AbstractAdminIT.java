@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -155,7 +156,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 		assertThat("ufoertAv", aksjonsLogg.getUtfoertAv(), is(AKSJON_UTFOERT_AV));
 		assertThat("hjemmel", aksjonsLogg.getHjemmel(), is(AKSJON_HJEMMEL));
 		assertThat("melding", aksjonsLogg.getMelding(), is(expectedMelding == null ? AKSJON_MELDING : expectedMelding));
-		assertThat("applikasjon", aksjonsLogg.getApplikasjon(), is(SERVICEUSER_JOARKADMIN));
+		assertThat("applikasjon", aksjonsLogg.getApplikasjon(), is(ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE));
 		assertThat("bruker", aksjonsLogg.getBruker(), is(BRUKER_ID));
 	}
 

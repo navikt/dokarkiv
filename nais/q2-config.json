@@ -407,7 +407,8 @@
     {
       "app": "joarkadmin",
       "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss"
+      "cluster": "dev-fss",
+      "roles" : ["api_admin"]
     },
     {
       "app": "soknad-api",
