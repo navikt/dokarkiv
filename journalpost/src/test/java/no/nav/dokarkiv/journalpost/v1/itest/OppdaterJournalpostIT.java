@@ -77,7 +77,6 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -144,15 +143,17 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJP.getAvsenderMottakerId()).isEqualTo(request.getAvsenderMottaker().getId());
 		assertThat(oppdatertJP.getAvsenderMottaker()).isEqualTo(request.getAvsenderMottaker().getNavn());
 		assertThat(oppdatertJP.getAvsenderMottakerIdType()).isEqualTo(AvsenderMottakerIdTypeCode.FNR);
-		assertThat(oppdatertJP.getBrukere().size()).isEqualTo(1);
+		assertThat(oppdatertJP.getBrukere()).hasSize(1);
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerId()).isEqualTo(request.getBruker().getId());
 		assertThat(oppdatertJP.getBrukere().iterator().next().getBrukerType()).isEqualTo(PERSON);
 		assertThat(oppdatertJP.getBrukere().iterator().next().getOpprettetKildeNavn()).isEqualTo(SERVICE_USER_ID);
 		assertThat(oppdatertJP.getSaksrelasjon().getSakId()).isEqualTo(parseLong(ARKIVSAKSNUMMER));
 		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name()).isEqualTo("FS22");
-		assertTrue(oppdatertJP.getDokumentDato().before(Date.from(LocalDateTime.now().minusDays(2).atZone(ZoneId.systemDefault()).toInstant())));
-		assertThat(oppdatertJP.getTilleggsopplysninger()).hasSize(1);
 
+		LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
+		assertThat(toLocalDateTime(oppdatertJP.getDokumentDato())).isBefore(twoDaysAgo);
+
+		assertThat(oppdatertJP.getTilleggsopplysninger()).hasSize(1);
 		assertThat(oppdatertJP.getTilleggsopplysninger().containsKey(request.getTilleggsopplysninger().get(0).getNokkel())).isNotNull();
 		assertThat(oppdatertJP.getTilleggsopplysninger().containsValue(request.getTilleggsopplysninger().get(0).getVerdi())).isNotNull();
 
@@ -178,6 +179,12 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(aksjonsLoggList.get(2).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
 		assertThat(aksjonsLoggList.get(2).getAksjon()).isEqualTo(AksjonsTypeCode.ENDRE_METADATA);
 		assertThat(aksjonsLoggList.get(2).getArkivElementEndringer()).hasSize(2);
+	}
+
+	private LocalDateTime toLocalDateTime(Date date){
+		return date.toInstant()
+				.atZone(ZoneId.systemDefault())
+				.toLocalDateTime();
 	}
 
 	@Test
