@@ -41,5 +41,9 @@ public enum Fagsaksystem {
     NEESSI,
     TILLEGGSSTONADER,
     ARBEIDSOPPFOLGING,
-    TILTAKSPENGER
+    TILTAKSPENGER,
+    /**
+     * Inkluderende arbeidsliv
+     */
+    FIA
 }
