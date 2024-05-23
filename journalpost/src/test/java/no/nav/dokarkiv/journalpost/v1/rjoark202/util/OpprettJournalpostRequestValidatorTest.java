@@ -655,7 +655,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		assertThat(exception.getMessage()).contains("Sak.arkivsaksnummer");
 	}
 
- 	@Test
+	@Test
 	public void shouldThrowExceptionIfDokumentkategoriIsInvalid() {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
@@ -981,17 +981,14 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@ParameterizedTest
-	@EnumSource(
-			value = InnsynCode.class,
-			names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT"},
-			mode = EXCLUDE)
+	@EnumSource(value = InnsynCode.class, mode = EXCLUDE, names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT"})
 	void shouldThrowExceptionIfOverstyrInnsynsreglerIsInvalid(InnsynCode overstyrInnsynsregler) {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
 				.sak(Sak.builder()
 						.sakstype(Sakstype.GENERELL_SAK)
 						.build())
-				.overstyrInnsynsregler(overstyrInnsynsregler.toString())
+				.overstyrInnsynsregler(overstyrInnsynsregler.name())
 				.build();
 
 		Exception e = assertThrows(InputValideringFeiletException.class, () ->
@@ -1009,7 +1006,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.sak(Sak.builder()
 						.sakstype(Sakstype.GENERELL_SAK)
 						.build())
-				.overstyrInnsynsregler(overstyrInnsynsregler != null ? overstyrInnsynsregler.toString() : null)
+				.overstyrInnsynsregler(overstyrInnsynsregler != null ? overstyrInnsynsregler.name() : null)
 				.build();
 
 		assertDoesNotThrow(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL));

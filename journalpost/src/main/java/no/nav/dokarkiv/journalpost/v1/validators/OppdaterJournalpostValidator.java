@@ -58,8 +58,8 @@ public final class OppdaterJournalpostValidator {
 	private static final EnumSet<JournalStatusCode> UTGAAENDE_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
 	private static final EnumSet<JournalStatusCode> NOTAT_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
 	public static final Set<String> LOVLIGE_INNSYNSKODER = Set.of(
-			BRUK_STANDARDREGLER.toString(), VISES_MASKINELT_GODKJENT.toString(), VISES_MANUELT_GODKJENT.toString(),
-			SKJULES_FEILSENDT.toString(), SKJULES_BRUKERS_SIKKERHET.toString(), SKJULES_BRUKERS_ONSKE.toString()
+			BRUK_STANDARDREGLER.name(), VISES_MASKINELT_GODKJENT.name(), VISES_MANUELT_GODKJENT.name(),
+			SKJULES_FEILSENDT.name(), SKJULES_BRUKERS_SIKKERHET.name(), SKJULES_BRUKERS_ONSKE.name()
 	);
 
 	private static final Pattern BEHANDLINGSTEMA_PATTERN = Pattern.compile("ab\\d{4}");

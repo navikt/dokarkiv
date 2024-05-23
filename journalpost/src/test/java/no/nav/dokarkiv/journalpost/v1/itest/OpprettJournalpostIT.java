@@ -164,7 +164,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
-				.overstyrInnsynsregler(overstyrInnsynsregler.toString())
+				.overstyrInnsynsregler(overstyrInnsynsregler.name())
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
