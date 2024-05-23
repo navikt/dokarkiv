@@ -429,7 +429,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 
-		assertThat(exception.getMessage()).contains(format("OverstyrInnsynsregler må være en av følgende verdier %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler));
+		assertThat(exception.getMessage()).contains(format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler));
 	}
 
 	@Test

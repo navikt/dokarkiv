@@ -1216,7 +1216,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		var responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(responseEntity.getBody()).contains(format("OverstyrInnsynsregler må være en av følgende verdier %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, innsynCode));
+		assertThat(responseEntity.getBody()).contains(format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, innsynCode));
 	}
 
 	private OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {

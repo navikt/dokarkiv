@@ -351,7 +351,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static String validateOverstyrInnsynsregler(String overstyrInnsynsregler) {
 		if (!LOVLIGE_INNSYNSKODER.contains(overstyrInnsynsregler)) {
-			return format("OverstyrInnsynsregler må være en av følgende verdier %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler);
+			return format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler);
 		}
 		return null;
 	}

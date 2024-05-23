@@ -994,7 +994,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		Exception e = assertThrows(InputValideringFeiletException.class, () ->
 				validator.validateRequest(request, FORSOEKFERDIGSTILL)
 		);
-		assertThat(e.getMessage()).contains(String.format("OverstyrInnsynsregler må være en av følgende verdier %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler));
+		assertThat(e.getMessage()).contains(String.format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler));
 	}
 
 	@ParameterizedTest
