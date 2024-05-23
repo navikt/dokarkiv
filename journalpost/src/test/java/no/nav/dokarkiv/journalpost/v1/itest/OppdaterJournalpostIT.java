@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -1165,6 +1166,32 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertThat(journalpostOppdatert.getInnsyn()).isEqualTo(null);
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assertThat(aksjonsLoggList).isEmpty();
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = InnsynCode.class, names = {"BRUK_STANDARDREGLER"})
+	@NullSource
+	public void shouldNotUpdateOverstyrInnsynsreglerIfTheValueIsUnchanged(InnsynCode innsynCode) {
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.innsyn(innsynCode)
+				.endretAvNavn("saksbehandlersen"));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.overstyrInnsynsregler(innsynCode != null ? innsynCode.name() : null)
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getInnsyn()).isEqualTo(innsynCode);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).isEmpty();

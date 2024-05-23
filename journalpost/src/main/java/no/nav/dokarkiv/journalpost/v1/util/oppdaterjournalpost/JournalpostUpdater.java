@@ -172,8 +172,6 @@ public class JournalpostUpdater {
 			var nyInnsynskode = InnsynCode.valueOf(oppdaterJournalpostRequest.getOverstyrInnsynsregler());
 
 			endret.add(JOURNALPOST_OVERSTYR_INNSYN, gammelInnsynskode, nyInnsynskode.name());
-			endret.setEndretFlagg(true);
-
 			journalpost.setInnsyn(nyInnsynskode);
 		}
 	}
