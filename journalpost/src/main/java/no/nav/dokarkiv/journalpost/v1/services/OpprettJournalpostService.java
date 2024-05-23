@@ -38,12 +38,17 @@ import java.util.stream.Stream;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.BRUKER_BRUKER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALFORENDE_ENHET;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_OVERSTYR_INNSYN;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_FAGSYSTEM;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_SAKID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_APPLIKASJON;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_FAGSAKNR;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO.arkivElementEndringNew;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
@@ -201,16 +206,16 @@ public class OpprettJournalpostService {
 						arkivElementEndringNew(JOURNALPOST_AVSENDER_MOTTAKER, journalpost.getAvsenderMottaker()),
 						arkivElementEndringNew(JOURNALPOST_AVSENDER_MOTTAKER_ID, journalpost.getAvsenderMottakerId()),
 						arkivElementEndringNew(JOURNALPOST_JOURNALFORENDE_ENHET, journalpost.getJournalForendeEnhetId()),
-						arkivElementEndringNew("Bruker.bruker_id", brukerId),
+						arkivElementEndringNew(BRUKER_BRUKER_ID, brukerId),
 						arkivElementEndringNew(JOURNALPOST_OVERSTYR_INNSYN, journalpost.getInnsyn() != null ? journalpost.getInnsyn().name() : null)
 				).filter(elementEndring -> Objects.nonNull(elementEndring.getTilVerdi()))
 				.toList());
 
 		sakOptional.ifPresent(sak -> populerAksjonslogg(journalpostId, SAKSTILKNYTNING, brukerId, Stream.of(
-						arkivElementEndringNew("Saksrelasjon.sakId", journalpost.getSaksrelasjon().getSakId().toString()),
-						arkivElementEndringNew("Saksrelasjon.fagsystem", journalpost.getSaksrelasjon().getFagsystem() != null ? journalpost.getSaksrelasjon().getFagsystem().name() : null),
-						arkivElementEndringNew("Sak.fagsaknr", sak.getFagsakNr()),
-						arkivElementEndringNew("Sak.applikasjon", sak.getApplikasjon())
+						arkivElementEndringNew(SAKSRELASJON_SAKID, journalpost.getSaksrelasjon().getSakId().toString()),
+						arkivElementEndringNew(SAKSRELASJON_FAGSYSTEM, journalpost.getSaksrelasjon().getFagsystem() != null ? journalpost.getSaksrelasjon().getFagsystem().name() : null),
+						arkivElementEndringNew(SAK_FAGSAKNR, sak.getFagsakNr()),
+						arkivElementEndringNew(SAK_APPLIKASJON, sak.getApplikasjon())
 				).filter(elementEndring -> Objects.nonNull(elementEndring.getTilVerdi()))
 				.toList()));
 	}
