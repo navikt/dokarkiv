@@ -2,10 +2,10 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -23,6 +23,9 @@ import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -39,9 +42,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.lang.Long.parseLong;
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.datautil.BrukerTestDataProvider.createBruker;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.INNHOLD;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.buildJournalpost;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_METADATA;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.ORGANISASJON;
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
@@ -74,9 +79,12 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
+import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.LOVLIGE_INNSYNSKODER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.INCLUDE;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -172,12 +180,12 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertThat(aksjonsLoggList.get(1).getUtfoertAv()).isEqualTo(PERSON_USER_ID);
 		assertThat(aksjonsLoggList.get(1).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
-		assertThat(aksjonsLoggList.get(1).getAksjon()).isEqualTo(AksjonsTypeCode.ENDRE_METADATA);
+		assertThat(aksjonsLoggList.get(1).getAksjon()).isEqualTo(ENDRE_METADATA);
 		assertThat(aksjonsLoggList.get(1).getArkivElementEndringer()).hasSize(6);
 
 		assertThat(aksjonsLoggList.get(2).getUtfoertAv()).isEqualTo(PERSON_USER_ID);
 		assertThat(aksjonsLoggList.get(2).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
-		assertThat(aksjonsLoggList.get(2).getAksjon()).isEqualTo(AksjonsTypeCode.ENDRE_METADATA);
+		assertThat(aksjonsLoggList.get(2).getAksjon()).isEqualTo(ENDRE_METADATA);
 		assertThat(aksjonsLoggList.get(2).getArkivElementEndringer()).hasSize(2);
 	}
 
@@ -1107,6 +1115,108 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
 		assertThat(responseEntity.getBody()).contains(forventetFeilmelding);
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = InnsynCode.class, mode = INCLUDE, names = {
+			"BRUK_STANDARDREGLER", "VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT",
+			"SKJULES_FEILSENDT", "SKJULES_BRUKERS_SIKKERHET", "SKJULES_BRUKERS_ONSKE"
+	})
+	public void shouldUpdateJournalpostWithOverstyrInnsynsregler(InnsynCode innsynCode) {
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.overstyrInnsynsregler(innsynCode.name())
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getInnsyn()).isEqualTo(innsynCode);
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assertThat(aksjonsLoggList).hasSize(1);
+		assertThat(aksjonsLoggList.get(0).getUtfoertAv()).isEqualTo(PERSON_USER_ID);
+		assertThat(aksjonsLoggList.get(0).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
+		assertThat(aksjonsLoggList.get(0).getAksjon()).isEqualTo(ENDRE_METADATA);
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(1);
+	}
+
+	@Test
+	public void shouldAllowNullForOverstyrInnsynsregler() {
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.overstyrInnsynsregler(null)
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getInnsyn()).isEqualTo(null);
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assertThat(aksjonsLoggList).isEmpty();
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = InnsynCode.class, names = {"BRUK_STANDARDREGLER"})
+	@NullSource
+	public void shouldNotUpdateOverstyrInnsynsreglerIfTheValueIsUnchanged(InnsynCode innsynCode) {
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.innsyn(innsynCode)
+				.endretAvNavn("saksbehandlersen"));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.overstyrInnsynsregler(innsynCode != null ? innsynCode.name() : null)
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getInnsyn()).isEqualTo(innsynCode);
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assertThat(aksjonsLoggList).isEmpty();
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = InnsynCode.class, mode = EXCLUDE, names = {
+			"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT", "SKJULES_FEILSENDT",
+			"SKJULES_BRUKERS_SIKKERHET", "SKJULES_BRUKERS_ONSKE", "BRUK_STANDARDREGLER"
+	})
+	public void shouldReturnBadRequestWithErrorMessageOnInvalidOverstyrInnsynsregler(InnsynCode innsynCode) {
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen"));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.overstyrInnsynsregler(innsynCode.toString())
+				.build();
+
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		var responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(responseEntity.getBody()).contains(format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, innsynCode));
 	}
 
 	private OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {

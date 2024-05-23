@@ -206,10 +206,12 @@ public class ArkiverOgJournalfoerRestController {
 			MDC.put(MDC_REQUEST_ID, "oppdaterjournalpost");
 			MDC.put(MDC_JOURNALPOST_ID, journalpostId);
 			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å oppdatere journalpost med journalpostId={}", journalpostId);
-			validateId(journalpostId, "journalpostId");
-			oppdaterJournalpostService.oppdaterJournalpost(parseLong(journalpostId), request);
 
+			validateId(journalpostId, "journalpostId");
+
+			oppdaterJournalpostService.oppdaterJournalpost(parseLong(journalpostId), request);
 			log.info("oppdaterjournalpost har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
+
 			return OppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
 		} catch (InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST,

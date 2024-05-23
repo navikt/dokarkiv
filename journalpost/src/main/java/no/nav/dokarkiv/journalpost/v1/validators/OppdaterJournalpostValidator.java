@@ -17,10 +17,17 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_ONSKE;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_SIKKERHET;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_FEILSENDT;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
@@ -50,6 +57,10 @@ public final class OppdaterJournalpostValidator {
 	private static final EnumSet<JournalStatusCode> INNGAAENDE_RESTRICTED_JOURNALSTATUS = EnumSet.of(J);
 	private static final EnumSet<JournalStatusCode> UTGAAENDE_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
 	private static final EnumSet<JournalStatusCode> NOTAT_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
+	public static final Set<String> LOVLIGE_INNSYNSKODER = Set.of(
+			BRUK_STANDARDREGLER.name(), VISES_MASKINELT_GODKJENT.name(), VISES_MANUELT_GODKJENT.name(),
+			SKJULES_FEILSENDT.name(), SKJULES_BRUKERS_SIKKERHET.name(), SKJULES_BRUKERS_ONSKE.name()
+	);
 
 	private static final Pattern BEHANDLINGSTEMA_PATTERN = Pattern.compile("ab\\d{4}");
 
@@ -68,11 +79,17 @@ public final class OppdaterJournalpostValidator {
 		} else if (N.equals(journalpostType)) {
 			feilmeldinger.addAll(validateNotat(request, journalpostStatus, journalpostType));
 		}
+
 		if (isNotBlank(request.getBehandlingstema())) {
 			feilmeldinger.add(validateBehandlingstema(request.getBehandlingstema()));
 		}
+
 		if (request.getDatoDokument() != null) {
 			feilmeldinger.add(validateDatoKanIkkeVaereIFremtid(request.getDatoDokument(), "datoDokument"));
+		}
+
+		if (request.getOverstyrInnsynsregler() != null) {
+			feilmeldinger.add(validateOverstyrInnsynsregler(request.getOverstyrInnsynsregler()));
 		}
 
 		String feilmelding = feilmeldinger.stream()
@@ -330,5 +347,12 @@ public final class OppdaterJournalpostValidator {
 			return null;
 		}
 		return s.substring(0, s.length() / 2) + "*".repeat(s.length() / 2);
+	}
+
+	private static String validateOverstyrInnsynsregler(String overstyrInnsynsregler) {
+		if (!LOVLIGE_INNSYNSKODER.contains(overstyrInnsynsregler)) {
+			return format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler);
+		}
+		return null;
 	}
 }

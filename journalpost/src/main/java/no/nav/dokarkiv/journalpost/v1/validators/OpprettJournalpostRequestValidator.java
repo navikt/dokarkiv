@@ -50,7 +50,7 @@ public class OpprettJournalpostRequestValidator {
 	private static final int AKTOERID_LENGTH = 13;
 	private static final int ORGNR_LENGTH = 9;
 	public static final String MASKINELL_JOURNALFOERENDE_ENHET = "9999";
-	public static final Set<String> LOVLIGE_INNSYNSKODER = Set.of(VISES_MASKINELT_GODKJENT.toString(), VISES_MANUELT_GODKJENT.toString());
+	public static final Set<String> LOVLIGE_INNSYNSKODER = Set.of(VISES_MASKINELT_GODKJENT.name(), VISES_MANUELT_GODKJENT.name());
 
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
 	private static final Pattern JOURNALFOERENDE_ENHET_PATTERN = Pattern.compile("^\\d{4}$");
@@ -318,7 +318,7 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateOverstyrInnsynsregler(String overstyrInnsynsregler) {
 		if (!LOVLIGE_INNSYNSKODER.contains(overstyrInnsynsregler)) {
-			throw new InputValideringFeiletException(format("Sak.overstyrInnsynsregler må være en av følgende verdier %s. Mottatt: %s",
+			throw new InputValideringFeiletException(format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s",
 					LOVLIGE_INNSYNSKODER,
 					overstyrInnsynsregler));
 		}

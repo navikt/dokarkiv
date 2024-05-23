@@ -23,6 +23,9 @@ public class ArkivElementConstants {
 	public static final String JOURNALPOST_AVSENDER_MOTTAKER = "Journalpost.avsend_mottaker";
 	public static final String JOURNALPOST_AVSENDER_MOTTAKER_ID = "Journalpost.avsend_mottak_id";
 	public static final String JOURNALPOST_JOURNALFORENDE_ENHET = "Journalpost.journalf_enhet";
+	public static final String JOURNALPOST_OVERSTYR_INNSYN = "Journalpost.k_innsyn";
+
+	public static final String BRUKER_BRUKER_ID = "Bruker.bruker_id";
 
 	public static final String RELASJON_DOKUMENT_INFO_ID = "JournalpostDokumentInfoRelasjon.dokumentInfoId";
 

@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.domain.builder;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FaktiskDistribusjonskanalCode;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -68,6 +69,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	private Boolean signatur;
 	private OffsetDateTime ekspedertDato;
 	private OffsetDateTime lestDato;
+	private InnsynCode innsyn;
 	private String opprettetKildeNavn;
 	private String endretKildeNavn;
 	private JournalpostTypeCode journalpostType;
@@ -108,6 +110,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	public JournalpostBuilder elektroniskDistribusjon(Boolean value) { this.elektroniskDistribusjon = value; return this; }
 	public JournalpostBuilder ekspedertDato(OffsetDateTime value) { this.ekspedertDato = value; return this; }
 	public JournalpostBuilder lestDato(OffsetDateTime value) { this.lestDato = value; return this; }
+	public JournalpostBuilder innsyn(InnsynCode value) { this.innsyn = value; return this; }
 	public JournalpostBuilder opprettetKildeNavn(String value) { this.opprettetKildeNavn = value; return this; }
 	public JournalpostBuilder endretKildeNavn(String value) { this.endretKildeNavn = value; return this; }
 	public JournalpostBuilder journalpostType(JournalpostTypeCode value) { this.journalpostType = value; return this; }
@@ -161,6 +164,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 		journalpost.setElektroniskDistribusjon(elektroniskDistribusjon);
 		journalpost.setEkspedertDato(ekspedertDato);
 		journalpost.setLestDato(lestDato);
+		journalpost.setInnsyn(innsyn);
 		journalpost.setOpprettetKildeNavn(opprettetKildeNavn);
 		journalpost.setEndretKildeNavn(endretKildeNavn);
 		journalpost.setJournalposttype(journalpostType);
