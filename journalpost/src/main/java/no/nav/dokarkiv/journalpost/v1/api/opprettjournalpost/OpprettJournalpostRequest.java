@@ -156,7 +156,7 @@ public class OpprettJournalpostRequest {
 					  
 					Det første dokument i meldingen blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke nødvendigvis ved uthenting av journalpost.
 					""",
-			required = true)
+			requiredMode = REQUIRED)
 	)
 	private List<Dokument> dokumenter = new ArrayList<>();
 
@@ -168,6 +168,7 @@ public class OpprettJournalpostRequest {
 					* VISES_MASKINELT_GODKJENT brukes når en maskinell prosess har besluttet at journalposten og underliggende dokumenter kan vises til bruker på nav.no.
 					* VISES_MANUELT_GODKJENT brukes når en NAV-ansatt har sett over og godkjent at journalposten og underliggende dokumenter kan vises til bruker på nav.no.
 					""",
+			example = "VISES_MANUELT_GODKJENT",
 			nullable = true
 	)
 	private String overstyrInnsynsregler;

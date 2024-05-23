@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -114,6 +113,7 @@ public class OppdaterJournalpostRequest {
 					* SKJULES_BRUKERS_ONSKE brukes når et dokument skal skjules på nav.no fordi brukeren selv ønsker dette
 					* BRUK_STANDARDREGLER brukes ved behov for å oppheve overstyringen av innsynsregler
 					""",
+			example = "BRUK_STANDARDREGLER",
 			nullable = true
 	)
 	private String overstyrInnsynsregler;
