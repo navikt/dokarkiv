@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static no.nav.dokarkiv.SlettArkivenhetController.API_ADMIN_ROLE;
+import static no.nav.dokarkiv.AdminConstants.JOARKADMIN_ROLE_CLAIM_TILGANG;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -29,10 +29,8 @@ import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUserna
 @Protected
 @RestController
 @RequestMapping("rest/admin")
-@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + API_ADMIN_ROLE})
+@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + JOARKADMIN_ROLE_CLAIM_TILGANG})
 public class SlettArkivenhetController {
-
-	public static final String API_ADMIN_ROLE = "api_admin";
 	private final SlettArkivenhetOrchestrator slettArkivenhetOrchestrator;
 
 	public SlettArkivenhetController(SlettArkivenhetOrchestrator slettArkivenhetOrchestrator) {

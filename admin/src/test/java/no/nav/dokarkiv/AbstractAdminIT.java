@@ -11,7 +11,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -25,6 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
@@ -53,8 +53,6 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected static final String URL_KASSERDOKUMENT_SKJERM = "/rest/admin/kasserdokument/skjerm";
 	protected static final String URL_SKJERMARKIVENHET = "/rest/admin/skjermarkivenhet/";
 	protected static final String URL_SLETTARKIVENHET = "/rest/admin/slettarkivenhet";
-
-	protected static final String SERVICEUSER_JOARKADMIN = "srvjoarkadmin";
 
 	public static class Config {
 		@Bean
@@ -156,7 +154,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 		assertThat("ufoertAv", aksjonsLogg.getUtfoertAv(), is(AKSJON_UTFOERT_AV));
 		assertThat("hjemmel", aksjonsLogg.getHjemmel(), is(AKSJON_HJEMMEL));
 		assertThat("melding", aksjonsLogg.getMelding(), is(expectedMelding == null ? AKSJON_MELDING : expectedMelding));
-		assertThat("applikasjon", aksjonsLogg.getApplikasjon(), is(ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE));
+		assertThat("applikasjon", aksjonsLogg.getApplikasjon(), is(APP_NAME_WITH_NAMESPACE));
 		assertThat("bruker", aksjonsLogg.getBruker(), is(BRUKER_ID));
 	}
 

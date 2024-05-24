@@ -73,7 +73,6 @@ public abstract class AbstractRestIT {
 	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	protected static final String SERVICE_USER_ID = "srvjoarkadmin";
 	protected static final String SERVICEUSER_IKKE_JOARKADMIN = "srvikkejoarkadmin";
-	protected static final String APP_NAME_WITH_NAMESPACE = "teamdokumenthandtering:joarkadmin";
 	protected static final String PERSON_USER_ID = "Z990782";
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
@@ -86,7 +85,6 @@ public abstract class AbstractRestIT {
 	protected static final String APP_CLAIM_SUB = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 
 	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
-	static final String NAV_CUSTOM_CLAIM_AZP_NAME = "azp_name";
 	protected static final String AZP_NAME_GOSYS = "dev-fss:isa:gosys-q2";
 	protected static final String NAV_USER_ID = "Z991234";
 	protected static final String MS_AD_GROUP_ID = "abcd163a-9821-4637-a23d-b706e5b24809";
@@ -319,7 +317,7 @@ public abstract class AbstractRestIT {
 	}
 
 	protected String azureTokenWithRolesClaim(String subject, String role) {
-		return token(ISSUER_AZUREV2, subject, Map.of(ROLES, role, DEFAULT_CLAIM_OID, subject, NAV_CUSTOM_CLAIM_AZP_NAME, AZP_NAME_JOARKADMIN));
+		return token(ISSUER_AZUREV2, subject, Map.of(ROLES, role, DEFAULT_CLAIM_OID, subject, CLAIM_AZP_NAME, AZP_NAME_JOARKADMIN));
 	}
 
 	protected String azureTokenWithAzpKey(String callingApp, String user) {

@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +19,7 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_SKJERMING;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
+import static no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.util.TestUtil.createKasserDokumentRequest;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -33,7 +33,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
-	public void skalSkjermeDokumentForKassering() throws ParseException {
+	public void skalSkjermeDokumentForKassering() {
 		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();

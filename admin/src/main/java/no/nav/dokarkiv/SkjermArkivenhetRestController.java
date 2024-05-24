@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.NotNull;
 
 import static java.util.Objects.isNull;
-import static no.nav.dokarkiv.SlettArkivenhetController.API_ADMIN_ROLE;
+import static no.nav.dokarkiv.AdminConstants.JOARKADMIN_ROLE_CLAIM_TILGANG;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -37,7 +37,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Protected
 @RestController
 @RequestMapping("rest/admin")
-@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + API_ADMIN_ROLE})
+@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + JOARKADMIN_ROLE_CLAIM_TILGANG})
 public class SkjermArkivenhetRestController {
 
 	private final SkjermArkivEnhetOrchestrator skjermArkivEnhetOrchestrator;

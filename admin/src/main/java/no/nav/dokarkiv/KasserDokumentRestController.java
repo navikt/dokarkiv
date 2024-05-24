@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static no.nav.dokarkiv.SlettArkivenhetController.API_ADMIN_ROLE;
+import static no.nav.dokarkiv.AdminConstants.JOARKADMIN_ROLE_CLAIM_TILGANG;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -32,7 +32,7 @@ import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUserna
 @Protected
 @RestController
 @RequestMapping("rest/admin")
-@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + API_ADMIN_ROLE})
+@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + JOARKADMIN_ROLE_CLAIM_TILGANG})
 public class KasserDokumentRestController {
 
 	private final KasserDokumentValidator validator;
@@ -59,7 +59,7 @@ public class KasserDokumentRestController {
 
 		createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
-		kasserDokumentOrchestrator.kasserDokument(request.getDokumentInfoId(), request.getKassertAvNavn(), hjemmel, melding,utfoertAv);
+		kasserDokumentOrchestrator.kasserDokument(request.getDokumentInfoId(), request.getKassertAvNavn(), hjemmel, melding, utfoertAv);
 		log.info("{} har kassert dokument med dokumentInfoId={}", MDC.get(MDC_REQUEST_ID), request.getDokumentInfoId());
 
 		return ResponseEntity.ok().build();
@@ -97,7 +97,7 @@ public class KasserDokumentRestController {
 		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall med dokumentInfoId={}", dokumentInfoId);
 		createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
-		kasserDokumentOrchestrator.opphevKasserSkjermDokument(dokumentInfoId, hjemmel, melding,utfoertAv);
+		kasserDokumentOrchestrator.opphevKasserSkjermDokument(dokumentInfoId, hjemmel, melding, utfoertAv);
 		log.info("{} har opphevet skjerming for dokument som var skjermet som kassert med dokumentInfoId={}", MDC.get(MDC_REQUEST_ID), dokumentInfoId);
 
 		return ResponseEntity.ok().build();
