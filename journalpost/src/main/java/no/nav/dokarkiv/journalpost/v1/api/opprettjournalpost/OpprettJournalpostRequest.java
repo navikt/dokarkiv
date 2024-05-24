@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -156,11 +155,10 @@ public class OpprettJournalpostRequest {
 					  
 					Det første dokument i meldingen blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke nødvendigvis ved uthenting av journalpost.
 					""",
-			required = true)
+			requiredMode = REQUIRED)
 	)
 	private List<Dokument> dokumenter = new ArrayList<>();
 
-	@Hidden
 	@Schema(
 			description = """
 					Gjør at journalposten med dokumenter vises til pålogget bruker på nav.no til tross for at standardregelsettet sier at journalposten og/eller dokumentene skal skjules.
@@ -168,6 +166,7 @@ public class OpprettJournalpostRequest {
 					* VISES_MASKINELT_GODKJENT brukes når en maskinell prosess har besluttet at journalposten og underliggende dokumenter kan vises til bruker på nav.no.
 					* VISES_MANUELT_GODKJENT brukes når en NAV-ansatt har sett over og godkjent at journalposten og underliggende dokumenter kan vises til bruker på nav.no.
 					""",
+			example = "VISES_MANUELT_GODKJENT",
 			nullable = true
 	)
 	private String overstyrInnsynsregler;

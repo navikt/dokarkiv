@@ -45,7 +45,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.lang.Long.parseLong;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
-import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OVERSTYR_INNSYN;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.ALTINN;
@@ -165,7 +164,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(JournalpostType.INNGAAENDE)
-				.overstyrInnsynsregler(overstyrInnsynsregler.toString())
+				.overstyrInnsynsregler(overstyrInnsynsregler.name())
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
@@ -177,14 +176,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(overstyrInnsynsregler, journalpost.getInnsyn());
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList).hasSize(2);
+		assertThat(aksjonsLoggList).hasSize(1);
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
 
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(3);
-
-		assertEquals(OVERSTYR_INNSYN, aksjonsLoggList.get(1).getAksjon());
-		assertEquals(1, aksjonsLoggList.get(1).getArkivElementEndringer().size());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(4);
 	}
 
 	@Test

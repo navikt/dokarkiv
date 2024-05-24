@@ -8,15 +8,18 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class OppdaterJournalpostResponse {
+
     @NotNull(message = "OppdaterJournalpostResponse mangler journalpostId")
     @Schema(
             description = "JournalpostId som har blitt oppdatert (og forsøkt endelig journalført)",
-            required = true,
+            requiredMode = REQUIRED,
             example = "467011764"
     )
     private String journalpostId;

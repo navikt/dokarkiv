@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.consumer.pdl.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
@@ -38,6 +39,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALFORENDE_ENHET;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_OVERSTYR_INNSYN;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
@@ -56,6 +58,7 @@ public class JournalpostUpdater {
 
 	public ChangeTracker updateFields(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 		ChangeTracker tracker = new ChangeTracker();
+
 		updateTittel(journalpost, oppdaterJournalpostRequest, tracker);
 		updateTema(journalpost, oppdaterJournalpostRequest, tracker);
 		updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, tracker);
@@ -66,11 +69,13 @@ public class JournalpostUpdater {
 		updateBruker(journalpost, oppdaterJournalpostRequest, tracker);
 		updateDatoMottatt(journalpost, oppdaterJournalpostRequest, tracker);
 		updateDatoDokument(journalpost, oppdaterJournalpostRequest, tracker);
+		updateOverstyrInnsynsregler(journalpost, oppdaterJournalpostRequest, tracker);
 
 		if (tracker.isEndretFlagg()) {
 			journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		}
+
 		return tracker;
 	}
 
@@ -158,6 +163,16 @@ public class JournalpostUpdater {
 		if (isNotBlank(oppdaterJournalpostRequest.getBehandlingstema())) {
 			journalpost.setBehandlingstema(oppdaterJournalpostRequest.getBehandlingstema());
 			endret.setEndretFlagg(true);
+		}
+	}
+
+	private void updateOverstyrInnsynsregler(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
+		if (isNotBlank(oppdaterJournalpostRequest.getOverstyrInnsynsregler())) {
+			var gammelInnsynskode = journalpost.getInnsyn() != null ? journalpost.getInnsyn().name() : null;
+			var nyInnsynskode = InnsynCode.valueOf(oppdaterJournalpostRequest.getOverstyrInnsynsregler());
+
+			endret.add(JOURNALPOST_OVERSTYR_INNSYN, gammelInnsynskode, nyInnsynskode.name());
+			journalpost.setInnsyn(nyInnsynskode);
 		}
 	}
 
