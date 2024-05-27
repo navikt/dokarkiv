@@ -121,6 +121,10 @@ spec:
               {{#each roles}}
               - "{{this}}"
               {{/each}}
+            scopes:
+              {{#each roles}}
+              - "{{this}}"
+              {{/each}}
           {{/if}}
     {{/each}}
 {{/if}}

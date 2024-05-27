@@ -37,7 +37,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Protected
 @RestController
 @RequestMapping("rest/admin")
-@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + JOARKADMIN_ROLE_CLAIM_TILGANG})
+@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + JOARKADMIN_ROLE_CLAIM_TILGANG, "scp=" + JOARKADMIN_ROLE_CLAIM_TILGANG}, combineWithOr=true)
 public class SkjermArkivenhetRestController {
 
 	private final SkjermArkivEnhetOrchestrator skjermArkivEnhetOrchestrator;

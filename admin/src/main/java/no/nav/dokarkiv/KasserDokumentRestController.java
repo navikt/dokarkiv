@@ -32,7 +32,7 @@ import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUserna
 @Protected
 @RestController
 @RequestMapping("rest/admin")
-@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + JOARKADMIN_ROLE_CLAIM_TILGANG})
+@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + JOARKADMIN_ROLE_CLAIM_TILGANG, "scp=" + JOARKADMIN_ROLE_CLAIM_TILGANG}, combineWithOr=true)
 public class KasserDokumentRestController {
 
 	private final KasserDokumentValidator validator;
