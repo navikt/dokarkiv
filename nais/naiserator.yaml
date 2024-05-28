@@ -115,14 +115,14 @@ spec:
         - application: {{app}}
           namespace: {{namespace}}
           cluster: {{cluster}}
-          {{#if roles}}
+          {{#if or(roles,scopes)}}
           permissions:
             roles:
               {{#each roles}}
               - "{{this}}"
               {{/each}}
             scopes:
-              {{#each roles}}
+              {{#each scopes}}
               - "{{this}}"
               {{/each}}
           {{/if}}
