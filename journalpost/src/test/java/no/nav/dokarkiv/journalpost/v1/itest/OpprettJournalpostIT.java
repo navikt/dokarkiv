@@ -930,7 +930,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void ShouldFailWhenNullEksternReferanseId() {
+	public void shouldFailWhenNullEksternReferanseId() {
 		restStsToken();
 
 		OpprettJournalpostRequest request = OpprettJournalpostRequest.builder()

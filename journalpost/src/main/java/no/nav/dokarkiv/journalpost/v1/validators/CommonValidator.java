@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.entities.Journalpost.KANAL_REFERANSE_ID_LENGTH;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public final class CommonValidator {
 	private static final Pattern EKSTERN_REFERANSE_ID_PATTERN = Pattern.compile("[a-zA-Z0-9-._~!$&\"\\\\*+,;=:@]+");
@@ -42,13 +42,13 @@ public final class CommonValidator {
 	}
 
 	public static void hasText(String input, String feltnavn) {
-		if (StringUtils.isBlank(input)) {
+		if (isBlank(input)) {
 			throw new IllegalArgumentException(format("Feltet %s kan ikke være null eller tomt", feltnavn));
 		}
 	}
 
 	public static void validateEksternReferanseId(String eksternReferanseId) {
-		if(isEmpty(eksternReferanseId)){
+		if (isBlank(eksternReferanseId)) {
 			throw new InputValideringFeiletException("eksternReferanseId kan ikke være null eller tomt");
 		} else {
 			if (eksternReferanseId.length() > KANAL_REFERANSE_ID_LENGTH) {

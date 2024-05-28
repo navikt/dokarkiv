@@ -104,7 +104,6 @@ public class OpprettJournalpostRequest {
 	)
 	private String journalfoerendeEnhet;
 
-	@NotEmpty(message = "eksternReferanseId kan ikke være null eller tomt")
 	@Schema(
 			requiredMode = REQUIRED,
 			description = """

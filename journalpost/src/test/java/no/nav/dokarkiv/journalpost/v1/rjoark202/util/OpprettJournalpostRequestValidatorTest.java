@@ -927,6 +927,8 @@ public class OpprettJournalpostRequestValidatorTest {
 						"eksternReferanseId kan bare inneholde alfanumeriske tegn og følgende spesialtegn :;,.=-_~$&+*\"\\@! Mottatt eksternReferanseId=ØÆÅhører og mellomrom hører ikke hjemme i url og dermed i eksternReferanseId"),
 				Arguments.of("",
 						"eksternReferanseId kan ikke være null eller tomt"),
+				Arguments.of(" ",
+						"eksternReferanseId kan ikke være null eller tomt"),
 				Arguments.of(null,
 						"eksternReferanseId kan ikke være null eller tomt")
 		);
