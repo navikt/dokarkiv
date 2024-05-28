@@ -27,6 +27,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import javax.validation.constraints.Null;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -60,6 +61,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithoutEksternReferanseId;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.LOVLIGE_INNSYNSKODER;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.MASKINELL_JOURNALFOERENDE_ENHET;
@@ -884,6 +886,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	@Test
 	public void shoudThrowExeceptionIfNotAtleastOneDocumentIsPresent() {
 		OpprettJournalpostRequest request = OpprettJournalpostRequest.builder()
+				.eksternReferanseId("eksternReferanseId")
 				.journalposttype(INNGAAENDE)
 				.tema(FagomradeCode.FOR.name())
 				.kanal("NAV_NO")
@@ -905,14 +908,15 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@ParameterizedTest
 	@MethodSource("feilEksternReferanseId")
-	void shouldThrowExceptionWhenEksternReferanseIdIsMalformed(String eksternReferanseId, String forventetFeilmelding) {
-		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+	void shouldThrowExceptionWhenEksternReferanseIdIsMalformedOrEmpty(String eksternReferanseId, String forventetFeilmelding) {
+		OpprettJournalpostRequest request = createMinimalRequestWithoutEksternReferanseId(JournalpostType.INNGAAENDE)
 				.eksternReferanseId(eksternReferanseId)
 				.build();
 
-		assertThrows(InputValideringFeiletException.class,
-				() -> validator.validateRequest(request, FORSOEKFERDIGSTILL),
-				forventetFeilmelding);
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
+				.withMessageContaining(forventetFeilmelding);
+
 	}
 
 	private static Stream<Arguments> feilEksternReferanseId() {
@@ -920,7 +924,11 @@ public class OpprettJournalpostRequestValidatorTest {
 				Arguments.of("bj5bzAng3tvvY7ao0A15Kj8lq3RuN78rPTDYQp9lz416At7egwxVKw3klqZngX39eYdwqDIs6KUbGurS97R78Mz25WO3r7ththg8QVf2HY1col7713VLSSFHvQKHzftl2aKIXF48pnftmwbNX201aX2msQDb8G8nd31gyzfvzZvYX0hcPeU9g5nm5NeV43RLRaKyR1BLG",
 						"eksternReferanseId kan ikke være over 200 tegn. Mottatt eksternReferanseId=bj5bzAng3tvvY7ao0A15Kj8lq3RuN78rPTDYQp9lz416At7egwxVKw3klqZngX39eYdwqDIs6KUbGurS97R78Mz25WO3r7ththg8QVf2HY1col7713VLSSFHvQKHzftl2aKIXF48pnftmwbNX201aX2msQDb8G8nd31gyzfvzZvYX0hcPeU9g5nm5NeV43RLRaKyR1BLG"),
 				Arguments.of("ØÆÅhører og mellomrom hører ikke hjemme i url og dermed i eksternReferanseId",
-						"eksternReferanseId kan bare inneholde alfanumeriske tegn og følgende spesialtegn :;,.=-_~$&+*\"\\@! Mottatt eksternReferanseId=ØÆÅhører og mellomrom hører ikke hjemme i url og dermed i eksternReferanseId")
+						"eksternReferanseId kan bare inneholde alfanumeriske tegn og følgende spesialtegn :;,.=-_~$&+*\"\\@! Mottatt eksternReferanseId=ØÆÅhører og mellomrom hører ikke hjemme i url og dermed i eksternReferanseId"),
+				Arguments.of("",
+						"eksternReferanseId kan ikke være null eller tomt"),
+				Arguments.of(null,
+						"eksternReferanseId kan ikke være null eller tomt")
 		);
 	}
 

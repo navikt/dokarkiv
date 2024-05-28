@@ -560,6 +560,26 @@ public class TestUtils {
 				.journalposttype(journalpostType)
 				.tema(FagomradeCode.FOR.name())
 				.kanal(journalpostType == INNGAAENDE ? "NAV_NO" : null)
+				.eksternReferanseId("eksternReferanseId")
+				.dokumenter(Collections.singletonList(
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL1)
+								.brevkode(BREVKODE1)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(List.of(
+										DokumentVariant.builder()
+												.filtype(FILTYPE_PDF)
+												.fysiskDokument(FYSISK_DOKUMENT)
+												.variantformat(VARIANTFORMAT_ARKIV)
+												.build()))
+								.build()));
+	}
+
+	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createMinimalRequestWithoutEksternReferanseId(JournalpostType journalpostType) {
+		return OpprettJournalpostRequest.builder()
+				.journalposttype(journalpostType)
+				.tema(FagomradeCode.FOR.name())
+				.kanal(journalpostType == INNGAAENDE ? "NAV_NO" : null)
 				.dokumenter(Collections.singletonList(
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)
