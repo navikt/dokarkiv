@@ -115,7 +115,7 @@ spec:
         - application: {{app}}
           namespace: {{namespace}}
           cluster: {{cluster}}
-          {{#if or(roles,scopes)}}
+          {{#if roles,scopes}}
           permissions:
             roles:
               {{#each roles}}
