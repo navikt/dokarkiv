@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 
 import static java.util.Objects.isNull;
 import static no.nav.dokarkiv.AdminConstants.JOARKADMIN_ROLE_CLAIM_TILGANG;
+import static no.nav.dokarkiv.AdminConstants.JOARKADMIN_SCOPES_CLAIM_TILGANG;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -37,7 +38,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Protected
 @RestController
 @RequestMapping("rest/admin")
-@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + JOARKADMIN_ROLE_CLAIM_TILGANG, "scp=defaultaccess " + JOARKADMIN_ROLE_CLAIM_TILGANG}, combineWithOr=true)
+@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + JOARKADMIN_ROLE_CLAIM_TILGANG, "scp=" + JOARKADMIN_SCOPES_CLAIM_TILGANG}, combineWithOr=true)
 public class SkjermArkivenhetRestController {
 
 	private final SkjermArkivEnhetOrchestrator skjermArkivEnhetOrchestrator;

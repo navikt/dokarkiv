@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static no.nav.dokarkiv.AdminConstants.JOARKADMIN_ROLE_CLAIM_TILGANG;
+import static no.nav.dokarkiv.AdminConstants.JOARKADMIN_SCOPES_CLAIM_TILGANG;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -32,7 +33,7 @@ import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUserna
 @Protected
 @RestController
 @RequestMapping("rest/admin")
-@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + JOARKADMIN_ROLE_CLAIM_TILGANG, "scp=defaultaccess " + JOARKADMIN_ROLE_CLAIM_TILGANG}, combineWithOr=true)
+@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + JOARKADMIN_ROLE_CLAIM_TILGANG, "scp=" + JOARKADMIN_SCOPES_CLAIM_TILGANG}, combineWithOr=true)
 public class KasserDokumentRestController {
 
 	private final KasserDokumentValidator validator;

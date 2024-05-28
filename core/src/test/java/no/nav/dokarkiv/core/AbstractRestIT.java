@@ -82,6 +82,7 @@ public abstract class AbstractRestIT {
 	protected static final String CLAIM_NAVIDENT = "NAVident";
 	protected static final String CLAIM_NAME = "name";
 	protected static final String ROLES = "roles";
+	protected static final String SCOPES = "scp";
 	protected static final String APP_CLAIM_SUB = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 
 	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
@@ -326,7 +327,7 @@ public abstract class AbstractRestIT {
 						CLAIM_NAVIDENT, NAV_USER_ID,
 						DEFAULT_CLAIM_OID, user,
 						CLAIM_NAME, "F_Z991234 E_Z991234",
-						ROLES, API_ADMIN_ROLE
+						SCOPES, "api_admin defaultaccess"
 				)
 		);
 	}
