@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -35,6 +36,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -872,11 +874,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertNull(response.getBody().getMelding());
+		assertThat(response.getBody()).contains("fysiskDokument magicNumber={FF D8 FF E0 00} matcher ikke angitt filtype=PDF");
 	}
 
 	@Test
@@ -925,6 +927,22 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNull(journalpost.getJournalfortAvNavn());
 		assertNull(journalpost.getEndretAvNavn());
 		assertNull(journalpost.getEndretKildeNavn());
+	}
+
+	@Test
+	public void shouldFailWhenNullEksternReferanseId() {
+		restStsToken();
+
+		OpprettJournalpostRequest request = OpprettJournalpostRequest.builder()
+				.tema(FagomradeCode.FOR.name())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, String.class);
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertThat(response.getBody()).contains("eksternReferanseId kan ikke være null eller tomt");
 	}
 
 	@Test

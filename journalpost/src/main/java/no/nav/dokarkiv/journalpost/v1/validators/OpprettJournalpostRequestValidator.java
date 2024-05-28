@@ -58,6 +58,7 @@ public class OpprettJournalpostRequestValidator {
 	public void validateRequest(OpprettJournalpostRequest request, String journalpostFerdigstilt) {
 
 		validateTema(request.getTema());
+		validateEksternReferanseId(request.getEksternReferanseId());
 
 		if (request.getAvsenderMottaker() != null) {
 			validateAvsenderMottaker(request.getAvsenderMottaker());
@@ -74,9 +75,6 @@ public class OpprettJournalpostRequestValidator {
 		}
 		if (isNotBlank(request.getJournalfoerendeEnhet())) {
 			validateJournalfoerendeEnhet(journalpostFerdigstilt, request.getJournalfoerendeEnhet(), request.getJournalposttype());
-		}
-		if (isNotBlank(request.getEksternReferanseId())) {
-			validateEksternReferanseId(request.getEksternReferanseId());
 		}
 		if (request.getDatoDokument() != null) {
 			validateDato(request.getDatoDokument(), "DatoDokument");
