@@ -115,8 +115,7 @@ spec:
         - application: {{app}}
           namespace: {{namespace}}
           cluster: {{cluster}}
-          {{#if roles}}
-          {{#if scopes}}
+          {{#if roles scopes}}
           permissions:
             roles:
               {{#each roles}}
@@ -126,7 +125,6 @@ spec:
               {{#each scopes}}
               - "{{this}}"
               {{/each}}
-          {{/if}}
           {{/if}}
     {{/each}}
 {{/if}}
