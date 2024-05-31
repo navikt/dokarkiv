@@ -1,6 +1,7 @@
 {
   "journalposttype": "INNGAAENDE",
   "kanal": "NAV_NO",
+  "eksternReferanseId": "eksternReferanseId",
   "avsenderMottaker": {
     "navn": "Ola Normann"
   },

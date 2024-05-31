@@ -14,6 +14,7 @@ import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -104,6 +105,7 @@ public class OpprettJournalpostRequest {
 	private String journalfoerendeEnhet;
 
 	@Schema(
+			requiredMode = REQUIRED,
 			description = """
 					Unik id for forsendelsen som kan brukes til sporing gjennom verdikjeden. Eksempler på eksternReferanseId kan være en GUID, sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.
 					                                                                                                                                                                      
