@@ -19,5 +19,5 @@ public class AzureConfig {
 	@NotEmpty
 	private String appClientSecret;
 	@NotEmpty
-	private String appTenant;
+	private String appTenantId;
 }

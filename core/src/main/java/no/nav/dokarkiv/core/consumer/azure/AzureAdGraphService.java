@@ -90,7 +90,7 @@ public class AzureAdGraphService {
 		TokenCachePersistenceOptions tokenCachePersistenceOptions = new TokenCachePersistenceOptions()
 				.setName(AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE);
 		ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
-				.tenantId(azureConfig.getAppTenant())
+				.tenantId(azureConfig.getAppTenantId())
 				.clientId(azureConfig.getAppClientId())
 				.clientSecret(azureConfig.getAppClientSecret())
 				.tokenCachePersistenceOptions(tokenCachePersistenceOptions)
@@ -105,7 +105,7 @@ public class AzureAdGraphService {
 				.userAssertion(accessToken)
 				.clientId(azureConfig.getAppClientId())
 				.clientSecret(azureConfig.getAppClientSecret())
-				.tenantId(azureConfig.getAppTenant())
+				.tenantId(azureConfig.getAppTenantId())
 				.tokenCachePersistenceOptions(tokenCachePersistenceOptions)
 				.build();
 		return new GraphServiceClient(onBehalfOfCredential);
