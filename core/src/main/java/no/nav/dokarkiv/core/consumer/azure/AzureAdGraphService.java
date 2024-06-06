@@ -93,7 +93,6 @@ public class AzureAdGraphService {
 				.tenantId(azureConfig.getAppTenantId())
 				.clientId(azureConfig.getAppClientId())
 				.clientSecret(azureConfig.getAppClientSecret())
-				.tokenCachePersistenceOptions(tokenCachePersistenceOptions)
 				.build();
 		return new GraphServiceClient(clientSecretCredential);
 	}
@@ -106,7 +105,6 @@ public class AzureAdGraphService {
 				.clientId(azureConfig.getAppClientId())
 				.clientSecret(azureConfig.getAppClientSecret())
 				.tenantId(azureConfig.getAppTenantId())
-				.tokenCachePersistenceOptions(tokenCachePersistenceOptions)
 				.build();
 		return new GraphServiceClient(onBehalfOfCredential);
 	}
