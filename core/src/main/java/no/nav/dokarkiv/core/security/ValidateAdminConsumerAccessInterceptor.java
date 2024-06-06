@@ -27,9 +27,9 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-		// To automatiske jobber på joarkadmin kaller admin-endepunktene med STS-token
+		// To automatiske jobber på joarkadmin kaller admin-endepunktene med client credential token
 		if (erIkkeEtOboToken()) {
-			if (erStsTokenFraJoarkadmin()) {
+			if (erClientCredentialToken()) {
 				return true;
 			} else {
 				log.warn("OIDC-token på Authorization-header inneholder et system-til-system-token som ikke tilhører {}", APP_NAME_WITH_NAMESPACE);
@@ -42,7 +42,7 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 		return joarkVedlikeholdInterceptor.preHandle(request, response, handler);
 	}
 
-	private boolean erStsTokenFraJoarkadmin() {
+	private boolean erClientCredentialToken() {
 		return MDC.get(MDC_CONSUMER_ID).contains(APP_NAME_WITH_NAMESPACE);
 	}
 

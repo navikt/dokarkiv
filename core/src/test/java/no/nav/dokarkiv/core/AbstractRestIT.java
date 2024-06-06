@@ -252,7 +252,7 @@ public abstract class AbstractRestIT {
 	protected HttpHeaders createHeadersWithServiceUserTokenAndRolesClaim(String role) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(azureTokenWithRolesClaim(APP_CLAIM_SUB, role));
+		headers.setBearerAuth(azureTokenForClientCredentialFlow(APP_CLAIM_SUB, Map.of(ROLES, role, DEFAULT_CLAIM_OID, APP_CLAIM_SUB, CLAIM_AZP_NAME, AZP_NAME_JOARKADMIN)));
 		headers.add(NAV_CALL_ID, "itest");
 		return headers;
 	}
@@ -261,7 +261,13 @@ public abstract class AbstractRestIT {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(azureTokenWithAzpKey(azpName, msUserId));
+		headers.setBearerAuth(azureTokenForClientCredentialFlow(NAV_USER_ID, Map.of(
+				CLAIM_AZP_NAME, azpName,
+				CLAIM_NAVIDENT, NAV_USER_ID,
+				DEFAULT_CLAIM_OID, msUserId,
+				CLAIM_NAME, "F_Z991234 E_Z991234",
+				SCOPES, "api_admin defaultaccess"
+		)));
 		headers.add(NAV_CALL_ID, "itest");
 
 		return headers;
@@ -271,7 +277,7 @@ public abstract class AbstractRestIT {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(azureTokenForClientCredentialFlow(APP_CLAIM_SUB));
+		headers.setBearerAuth(azureTokenForClientCredentialFlow(APP_CLAIM_SUB, Map.of(DEFAULT_CLAIM_SUB, APP_CLAIM_SUB, DEFAULT_CLAIM_OID, APP_CLAIM_SUB)));
 		headers.add(NAV_CALL_ID, "itest");
 
 		return headers;
@@ -317,23 +323,8 @@ public abstract class AbstractRestIT {
 		return token("reststs", subject, Map.of());
 	}
 
-	protected String azureTokenWithRolesClaim(String subject, String role) {
-		return token(ISSUER_AZUREV2, subject, Map.of(ROLES, role, DEFAULT_CLAIM_OID, subject, CLAIM_AZP_NAME, AZP_NAME_JOARKADMIN));
-	}
-
-	protected String azureTokenWithAzpKey(String callingApp, String user) {
-		return token(Map.of(
-						CLAIM_AZP_NAME, callingApp,
-						CLAIM_NAVIDENT, NAV_USER_ID,
-						DEFAULT_CLAIM_OID, user,
-						CLAIM_NAME, "F_Z991234 E_Z991234",
-						SCOPES, "api_admin defaultaccess"
-				)
-		);
-	}
-
-	protected String azureTokenForClientCredentialFlow(String subject) {
-		return token(ISSUER_AZUREV2, subject, Map.of(DEFAULT_CLAIM_SUB, subject, DEFAULT_CLAIM_OID, subject));
+	protected String azureTokenForClientCredentialFlow(String subject, Map<String, Object> claims) {
+		return token(ISSUER_AZUREV2, subject, claims);
 	}
 
 	protected String openAmToken(String subject) {
