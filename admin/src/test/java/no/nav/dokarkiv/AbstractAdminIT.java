@@ -59,8 +59,8 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 		AzureAdGraphService azureAdGraphService() {
 			AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);
 
-			when(azureAdGraphService.isUserMemberOfGroup(eq(MS_USER_ID_WITH_GROUP_ACCESS), eq(MS_AD_GROUP_ID), anyString(), anyString())).thenReturn(true);
-			when(azureAdGraphService.isUserMemberOfGroup(eq(MS_USER_ID_WITHOUT_GROUP_ACCESS), eq(MS_AD_GROUP_ID), anyString(), anyString())).thenReturn(false);
+			when(azureAdGraphService.isUserMemberOfGroup(eq(MS_USER_ID_WITH_GROUP_ACCESS), eq(MS_AD_GROUP_ID), anyString())).thenReturn(true);
+			when(azureAdGraphService.isUserMemberOfGroup(eq(MS_USER_ID_WITHOUT_GROUP_ACCESS), eq(MS_AD_GROUP_ID), anyString())).thenReturn(false);
 
 			return azureAdGraphService;
 		}

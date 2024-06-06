@@ -1,24 +1,26 @@
 package no.nav.dokarkiv.core.consumer.azure;
 
+import com.azure.identity.ClientSecretCredential;
+import com.azure.identity.ClientSecretCredentialBuilder;
+import com.azure.identity.OnBehalfOfCredential;
+import com.azure.identity.OnBehalfOfCredentialBuilder;
+import com.azure.identity.TokenCachePersistenceOptions;
 import com.microsoft.graph.models.DirectoryObject;
 import com.microsoft.graph.models.User;
-import com.microsoft.graph.options.HeaderOption;
-import com.microsoft.graph.options.Option;
-import com.microsoft.graph.options.QueryOption;
-import com.microsoft.graph.requests.GraphServiceClient;
+import com.microsoft.graph.serviceclient.GraphServiceClient;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
-import okhttp3.Request;
+import no.nav.dokarkiv.core.security.azure.AzureConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
+import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE;
+import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_ON_BEHALF_OF_TOKEN_CACHE;
 import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
 
 @Slf4j
@@ -27,12 +29,10 @@ import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
 public class AzureAdGraphService {
 
 	private static final String BRUKER_IKKE_FUNNET = "Azure AD - Bruker ikke funnet";
-	private static final String MICROSOFT_GRAPH_SCOPE = "https://graph.microsoft.com/.default";
+	private final AzureConfig azureConfig;
 
-	private final AzureToken azureToken;
-
-	public AzureAdGraphService(AzureToken azureToken) {
-		this.azureToken = azureToken;
+	public AzureAdGraphService(AzureConfig azureConfig) {
+		this.azureConfig = azureConfig;
 	}
 
 	@Cacheable(value = NAVUSER_CACHE, key = "#navIdent")
@@ -44,13 +44,13 @@ public class AzureAdGraphService {
 			return null;
 		}
 
-		return user.givenName + " " + user.surname;
+		return user.getGivenName() + " " + user.getSurname();
 	}
 
 	@Retryable(exclude = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId, String token, String subClaim) {
+	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId, String token) {
 		log.info("Sjekk isUserMemberOfGroup for userObjectId={} på groupObjectId={}", userObjectId, groupObjectId);
-		List<String> groups = getGroupsForUserObjectId(userObjectId, token, subClaim);
+		List<String> groups = getGroupsForUserObjectId(userObjectId, token);
 
 		var containsCorrectGroup = groups.contains(groupObjectId);
 		log.info("Inni isUserMemberOfGroup der containsCorrectGroup={}", containsCorrectGroup);
@@ -59,44 +59,55 @@ public class AzureAdGraphService {
 	}
 
 	private User getUser(String navIdent) {
-		LinkedList<Option> requestOptions = new LinkedList<>();
-		requestOptions.add(new HeaderOption("ConsistencyLevel", "eventual"));
-		requestOptions.add(new QueryOption("$filter", "onPremisesSamAccountName eq '" + navIdent + "'"));
+		List<User> users = clientCredentialgetGraphClient().users()
+				.get(requestConfig -> {
+					requestConfig.headers.add("ConsistencyLevel", "eventual");
+					requestConfig.queryParameters.filter = "onPremisesSamAccountName eq '" + navIdent + "'";
+					requestConfig.queryParameters.count = true;
+					requestConfig.queryParameters.select = new String[]{"givenname", "surname"};
+				}).getValue();
 
-		List<User> res = getGraphClient(azureToken.clientCredentialAccessToken(MICROSOFT_GRAPH_SCOPE))
-				.users()
-				.buildRequest(requestOptions)
-				.count(true)
-				.select("givenname, surname")
-				.get().getCurrentPage();
-
-		if (res.size() != 1) {
+		if (users.size() != 1) {
 			log.warn("Azure AD finner ikke bruker med ident={}. {}", navIdent, BRUKER_IKKE_FUNNET);
 			return null;
 		}
-
-		return res.get(0);
+		return users.get(0);
 	}
 
-	private List<String> getGroupsForUserObjectId(String userObjectId, String token, String subClaim) {
-		String onBehalfOfOrClientCredentialToken = azureToken.getAndCacheAzureOnBehalfOfAndClientCredentialToken(token, MICROSOFT_GRAPH_SCOPE, subClaim);
-
-		List<DirectoryObject> result = getGraphClient(onBehalfOfOrClientCredentialToken)
+	private List<String> getGroupsForUserObjectId(String userObjectId, String token) {
+		List<DirectoryObject> result = onBehalfOfTokenGraphServiceClient(token)
 				.users()
-				.byId(userObjectId)
+				.byUserId(userObjectId)
 				.memberOf()
-				.buildRequest()
-				.get().getCurrentPage();
+				.get().getValue();
 
 		return result.stream()
-				.map(group -> group.id)
+				.map(group -> group.getId())
 				.toList();
 	}
 
-	GraphServiceClient<Request> getGraphClient(String accessToken) {
-		return GraphServiceClient.builder()
-				.authenticationProvider(url -> CompletableFuture.completedFuture(accessToken))
-				.buildClient();
+	GraphServiceClient clientCredentialgetGraphClient() {
+		TokenCachePersistenceOptions tokenCachePersistenceOptions = new TokenCachePersistenceOptions()
+				.setName(AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE);
+		ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
+				.tenantId(azureConfig.getAppTenant())
+				.clientId(azureConfig.getAppClientId())
+				.clientSecret(azureConfig.getAppClientSecret())
+				.tokenCachePersistenceOptions(tokenCachePersistenceOptions)
+				.build();
+		return new GraphServiceClient(clientSecretCredential);
 	}
 
+	GraphServiceClient onBehalfOfTokenGraphServiceClient(String accessToken) {
+		TokenCachePersistenceOptions tokenCachePersistenceOptions = new TokenCachePersistenceOptions()
+				.setName(AZURE_ON_BEHALF_OF_TOKEN_CACHE);
+		OnBehalfOfCredential onBehalfOfCredential = new OnBehalfOfCredentialBuilder()
+				.userAssertion(accessToken)
+				.clientId(azureConfig.getAppClientId())
+				.clientSecret(azureConfig.getAppClientSecret())
+				.tenantId(azureConfig.getAppTenant())
+				.tokenCachePersistenceOptions(tokenCachePersistenceOptions)
+				.build();
+		return new GraphServiceClient(onBehalfOfCredential);
+	}
 }
