@@ -436,7 +436,9 @@
     {
       "app": "joarkadmin-q1",
       "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss"
+      "cluster": "dev-fss",
+      "roles": ["api_admin"],
+      "scopes": ["api_admin"]
     },
     {
       "app": "soknad-api",

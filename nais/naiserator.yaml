@@ -115,12 +115,18 @@ spec:
         - application: {{app}}
           namespace: {{namespace}}
           cluster: {{cluster}}
-          {{#if roles}}
           permissions:
+            {{#if roles}}
             roles:
               {{#each roles}}
               - "{{this}}"
               {{/each}}
-          {{/if}}
+            {{/if}}
+            {{#if scopes}}
+            scopes:
+              {{#each scopes}}
+              - "{{this}}"
+              {{/each}}
+            {{/if}}
     {{/each}}
 {{/if}}

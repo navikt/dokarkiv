@@ -420,7 +420,9 @@
     {
       "app": "joarkadmin",
       "namespace": "teamdokumenthandtering",
-      "cluster": "prod-fss"
+      "cluster": "prod-fss",
+      "roles": ["api_admin"],
+      "scopes": ["api_admin"]
     },
     {
       "app": "soknad-api",

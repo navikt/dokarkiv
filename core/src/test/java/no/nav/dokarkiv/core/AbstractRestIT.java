@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core;
 
-import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -35,6 +34,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import javax.persistence.EntityManager;
 import java.io.IOException;
@@ -46,6 +47,10 @@ import java.util.Objects;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
+import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
@@ -68,7 +73,6 @@ public abstract class AbstractRestIT {
 	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	protected static final String SERVICE_USER_ID = "srvjoarkadmin";
 	protected static final String SERVICEUSER_IKKE_JOARKADMIN = "srvikkejoarkadmin";
-	protected static final String APP_NAME_WITH_NAMESPACE = "teamdokumenthandtering:joarkadmin";
 	protected static final String PERSON_USER_ID = "Z990782";
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
@@ -78,6 +82,7 @@ public abstract class AbstractRestIT {
 	protected static final String CLAIM_NAVIDENT = "NAVident";
 	protected static final String CLAIM_NAME = "name";
 	protected static final String ROLES = "roles";
+	protected static final String SCOPES = "scp";
 	protected static final String APP_CLAIM_SUB = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 
 	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
@@ -86,6 +91,7 @@ public abstract class AbstractRestIT {
 	protected static final String MS_AD_GROUP_ID = "abcd163a-9821-4637-a23d-b706e5b24809";
 	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
 	protected static final String MS_USER_ID_WITHOUT_GROUP_ACCESS = "b999c63a-9821-4637-a23d-b706e5b24809";
+	public static final String API_ADMIN_ROLE = "api_admin";
 
 	@Autowired
 	protected JournalpostTestRepository journalpostTestRepository;
@@ -222,18 +228,31 @@ public abstract class AbstractRestIT {
 	protected HttpHeaders createHeadersWithServiceUserAndAksjonslogg(String servicebruker) {
 		var headers = createHeadersWithServiceUserToken(servicebruker);
 
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER, AKSJON_BRUKER);
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER, AKSJON_HJEMMEL);
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER, AKSJON_MELDING);
-		headers.add(AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER, AKSJON_UTFOERT_AV);
+		headers.addAll(createAksjonslogg());
 
 		return headers;
+	}
+
+	protected HttpHeaders createHeadersWithClientCredentialAndAksjonslogg(String role) {
+		var headers = createHeadersWithServiceUserTokenAndRolesClaim(role);
+		headers.addAll(createAksjonslogg());
+		return headers;
+	}
+
+	protected MultiValueMap<String, String> createAksjonslogg() {
+		MultiValueMap<String, String> valueMap = new LinkedMultiValueMap<>();
+		valueMap.add(AKSJONS_LOGG_BRUKER_HEADER, AKSJON_BRUKER);
+		valueMap.add(AKSJONS_LOGG_HJEMMEL_HEADER, AKSJON_HJEMMEL);
+		valueMap.add(AKSJONS_LOGG_MELDING_HEADER, AKSJON_MELDING);
+		valueMap.add(AKSJONS_LOGG_UTFOERT_AV_HEADER, AKSJON_UTFOERT_AV);
+
+		return valueMap;
 	}
 
 	protected HttpHeaders createHeadersWithServiceUserTokenAndRolesClaim(String role) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(azureTokenWithRolesClaim(SERVICE_USER_ID, role));
+		headers.setBearerAuth(azureTokenForClientCredentialFlow(APP_CLAIM_SUB, Map.of(ROLES, role, DEFAULT_CLAIM_OID, APP_CLAIM_SUB, CLAIM_AZP_NAME, AZP_NAME_JOARKADMIN)));
 		headers.add(NAV_CALL_ID, "itest");
 		return headers;
 	}
@@ -242,7 +261,13 @@ public abstract class AbstractRestIT {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(azureTokenWithAzpKey(azpName, msUserId));
+		headers.setBearerAuth(azureTokenForClientCredentialFlow(NAV_USER_ID, Map.of(
+				CLAIM_AZP_NAME, azpName,
+				CLAIM_NAVIDENT, NAV_USER_ID,
+				DEFAULT_CLAIM_OID, msUserId,
+				CLAIM_NAME, "F_Z991234 E_Z991234",
+				SCOPES, "api_admin defaultaccess"
+		)));
 		headers.add(NAV_CALL_ID, "itest");
 
 		return headers;
@@ -252,7 +277,7 @@ public abstract class AbstractRestIT {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(azureTokenForClientCredentialFlow(APP_CLAIM_SUB));
+		headers.setBearerAuth(azureTokenForClientCredentialFlow(APP_CLAIM_SUB, Map.of(DEFAULT_CLAIM_SUB, APP_CLAIM_SUB, DEFAULT_CLAIM_OID, APP_CLAIM_SUB)));
 		headers.add(NAV_CALL_ID, "itest");
 
 		return headers;
@@ -277,12 +302,7 @@ public abstract class AbstractRestIT {
 
 	protected HttpHeaders createHeadersWithAksjonslogg(String azpName, String msUserId) {
 		HttpHeaders httpHeaders = createHeadersWithOboToken(azpName, msUserId);
-
-		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_BRUKER_HEADER, AKSJON_BRUKER);
-		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_HJEMMEL_HEADER, AKSJON_HJEMMEL);
-		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER, AKSJON_MELDING);
-		httpHeaders.add(AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER, AKSJON_UTFOERT_AV);
-
+		httpHeaders.addAll(createAksjonslogg());
 		return httpHeaders;
 	}
 
@@ -303,21 +323,8 @@ public abstract class AbstractRestIT {
 		return token("reststs", subject, Map.of());
 	}
 
-	protected String azureTokenWithRolesClaim(String subject, String role) {
-		return token(ISSUER_AZUREV2, subject, Map.of(ROLES, role, DEFAULT_CLAIM_OID, subject));
-	}
-
-	protected String azureTokenWithAzpKey(String callingApp, String user) {
-		return token(Map.of(
-				CLAIM_AZP_NAME, callingApp,
-				CLAIM_NAVIDENT, NAV_USER_ID,
-				DEFAULT_CLAIM_OID, user,
-				CLAIM_NAME,"F_Z991234 E_Z991234")
-		);
-	}
-
-	protected String azureTokenForClientCredentialFlow(String subject) {
-		return token(ISSUER_AZUREV2, subject, Map.of(DEFAULT_CLAIM_SUB, subject, DEFAULT_CLAIM_OID, subject));
+	protected String azureTokenForClientCredentialFlow(String subject, Map<String, Object> claims) {
+		return token(ISSUER_AZUREV2, subject, claims);
 	}
 
 	protected String openAmToken(String subject) {
