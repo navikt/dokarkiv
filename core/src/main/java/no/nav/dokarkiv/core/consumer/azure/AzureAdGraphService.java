@@ -4,7 +4,6 @@ import com.azure.identity.ClientSecretCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.identity.OnBehalfOfCredential;
 import com.azure.identity.OnBehalfOfCredentialBuilder;
-import com.azure.identity.TokenCachePersistenceOptions;
 import com.microsoft.graph.models.DirectoryObject;
 import com.microsoft.graph.models.User;
 import com.microsoft.graph.serviceclient.GraphServiceClient;
@@ -19,8 +18,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE;
-import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_ON_BEHALF_OF_TOKEN_CACHE;
 import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
 
 @Slf4j
@@ -87,8 +84,6 @@ public class AzureAdGraphService {
 	}
 
 	GraphServiceClient clientCredentialgetGraphClient() {
-		TokenCachePersistenceOptions tokenCachePersistenceOptions = new TokenCachePersistenceOptions()
-				.setName(AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE);
 		ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
 				.tenantId(azureConfig.getAppTenantId())
 				.clientId(azureConfig.getAppClientId())
@@ -98,8 +93,6 @@ public class AzureAdGraphService {
 	}
 
 	GraphServiceClient onBehalfOfTokenGraphServiceClient(String accessToken) {
-		TokenCachePersistenceOptions tokenCachePersistenceOptions = new TokenCachePersistenceOptions()
-				.setName(AZURE_ON_BEHALF_OF_TOKEN_CACHE);
 		OnBehalfOfCredential onBehalfOfCredential = new OnBehalfOfCredentialBuilder()
 				.userAssertion(accessToken)
 				.clientId(azureConfig.getAppClientId())
