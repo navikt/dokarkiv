@@ -88,11 +88,12 @@ public class JournalpostInternProtectedRestController {
 		try {
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 			MDC.put(MDC_REQUEST_ID, "mottaDokumentUtgaaendeSkanning");
-			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall med journalpostId={}", journalpostId);
+			log.info("mottaDokumentUtgaaendeSkanning har mottatt kall med journalpostId={}", journalpostId);
 
 			validateId(journalpostId, "journalpostId");
-
 			mottaDokumentUtgaaendeSkanningService.mottaDokumentUtgaaendeSkanning(Long.parseLong(journalpostId), request);
+
+			log.info("mottaDokumentUtgaaendeSkanning har lagt fildetaljer på journalpostId={}", journalpostId);
 
 			return ResponseEntity.ok().build();
 		} catch (DokarkivFunctionalException e) {

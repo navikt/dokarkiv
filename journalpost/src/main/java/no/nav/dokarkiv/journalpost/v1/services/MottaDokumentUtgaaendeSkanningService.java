@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.util.DateProvider;
@@ -22,6 +23,7 @@ import no.nav.dokarkiv.journalpost.v1.validators.MottaDokumentUtgaaendeSkanningV
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static org.slf4j.MDC.get;
@@ -47,13 +49,14 @@ public class MottaDokumentUtgaaendeSkanningService {
 		try {
 			validateRequest(journalpostId, request);
 
-			Journalpost journalpost = journalpostRepository.findById(journalpostId)
+			Journalpost journalpost = journalpostRepository.fetchByIdWithJournalpostDokumentInfoRelasjoner(journalpostId)
 					.orElseThrow(() -> new JournalpostIkkeFunnetException(get(MDC_REQUEST_ID) + " journalpostId=" + journalpostId + " ikke funnet i databasen"));
 			validateJournalpost(journalpostId, request, journalpost);
 
 			journalpost.setJournalstatus(JournalStatusCode.FL);
 
-			request.getTilleggsopplysninger().forEach(tilleggsopplysning -> journalpost.getTilleggsopplysninger().put(tilleggsopplysning.getNokkel(), tilleggsopplysning.getVerdi()));
+			Map<String, String> tilleggsopplysninger = journalpost.getTilleggsopplysninger();
+			request.getTilleggsopplysninger().forEach(tilleggsopplysning -> tilleggsopplysninger.put(tilleggsopplysning.getNokkel(), tilleggsopplysning.getVerdi()));
 
 			journalpost.setMottakskanal(MottaksKanalCode.valueOf(request.getMottakskanal()));
 
@@ -68,12 +71,12 @@ public class MottaDokumentUtgaaendeSkanningService {
 					.map(dokumentVariant -> mapDokumentVariantToFildetaljer(dokumentVariant, request.getBatchnavn()))
 					.toList();
 
+			DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 			filDetaljerList.forEach(filDetaljer -> {
+				dokumentInfo.addFilDetaljer(filDetaljer);
 				DokumentFil dokumentFil = filDetaljer.createDokumentFil();
 				dokumentFilRepository.persist(dokumentFil);
 			});
-			filDetaljerList.forEach(filDetaljer -> journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().addFilDetaljer(filDetaljer));
-
 		} catch (Exception e) {
 			if (!(e instanceof DokarkivFunctionalException || e instanceof DokarkivTechnicalException)) {
 				log.error("{} mottaDokumentUtgaaendeSkanning feilet med ukjent feil på journalpost. journalpostId={}, mottakskanal={}, batchnavn={}, feilmelding={}",
