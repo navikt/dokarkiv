@@ -20,7 +20,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE;
 import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_ON_BEHALF_OF_TOKEN_CACHE;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
@@ -49,16 +48,9 @@ public class AzureToken {
 				.build();
 	}
 
-	public String getAndCacheAzureOnBehalfOfAndClientCredentialToken(String accessToken, String scope, String tokenClaimSub) {
-		if (isNotBlank(accessToken) && isOnBehalfOfAzureToken(accessToken)) {
-			return onBehalfOfAccessToken(accessToken, scope, tokenClaimSub);
-		}
-		return clientCredentialAccessToken(scope);
-	}
-
 	@Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
-	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN_CACHE, key = "#tokenClaimSub")
-	public String onBehalfOfAccessToken(String token, String scope, String tokenClaimSub) {
+	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN_CACHE, key = "DigestUtils.sha256Hex(#token)")
+	public String onBehalfOfAccessToken(String token, String scope) {
 		return fetchAccessToken(token, scope);
 	}
 
@@ -112,7 +104,7 @@ public class AzureToken {
 		}
 	}
 
-	private boolean isOnBehalfOfAzureToken(String accessToken) {
+	public static boolean isOnBehalfOfAzureToken(String accessToken) {
 		JwtToken jwtToken = new JwtToken(accessToken);
 		JwtTokenClaims jwtTokenClaims = jwtToken.getJwtTokenClaims();
 		return jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_SUB) != null && jwtTokenClaims.getStringClaim(DEFAULT_CLAIM_OID) != null

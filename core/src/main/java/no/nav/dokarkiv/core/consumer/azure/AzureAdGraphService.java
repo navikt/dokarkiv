@@ -1,15 +1,10 @@
 package no.nav.dokarkiv.core.consumer.azure;
 
-import com.azure.identity.ClientSecretCredential;
-import com.azure.identity.ClientSecretCredentialBuilder;
-import com.azure.identity.OnBehalfOfCredential;
-import com.azure.identity.OnBehalfOfCredentialBuilder;
 import com.microsoft.graph.models.DirectoryObject;
 import com.microsoft.graph.models.User;
 import com.microsoft.graph.serviceclient.GraphServiceClient;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
-import no.nav.dokarkiv.core.security.azure.AzureConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.retry.annotation.Backoff;
@@ -26,10 +21,10 @@ import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
 public class AzureAdGraphService {
 
 	private static final String BRUKER_IKKE_FUNNET = "Azure AD - Bruker ikke funnet";
-	private final AzureConfig azureConfig;
+	private final GraphServiceClient graphServiceClient;
 
-	public AzureAdGraphService(AzureConfig azureConfig) {
-		this.azureConfig = azureConfig;
+	public AzureAdGraphService(GraphServiceAuthenticationProvider dokarkivAuthenticationProvider) {
+		this.graphServiceClient = new GraphServiceClient(dokarkivAuthenticationProvider);
 	}
 
 	@Cacheable(value = NAVUSER_CACHE, key = "#navIdent")
@@ -56,7 +51,7 @@ public class AzureAdGraphService {
 	}
 
 	private User getUser(String navIdent) {
-		List<User> users = clientCredentialgetGraphClient().users()
+		List<User> users = graphServiceClient.users()
 				.get(requestConfig -> {
 					requestConfig.headers.add("ConsistencyLevel", "eventual");
 					requestConfig.queryParameters.filter = "onPremisesSamAccountName eq '" + navIdent + "'";
@@ -72,7 +67,7 @@ public class AzureAdGraphService {
 	}
 
 	private List<String> getGroupsForUserObjectId(String userObjectId, String token) {
-		List<DirectoryObject> result = onBehalfOfTokenGraphServiceClient(token)
+		List<DirectoryObject> result = graphServiceClient
 				.users()
 				.byUserId(userObjectId)
 				.memberOf()
@@ -81,24 +76,5 @@ public class AzureAdGraphService {
 		return result.stream()
 				.map(group -> group.getId())
 				.toList();
-	}
-
-	GraphServiceClient clientCredentialgetGraphClient() {
-		ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
-				.tenantId(azureConfig.getAppTenantId())
-				.clientId(azureConfig.getAppClientId())
-				.clientSecret(azureConfig.getAppClientSecret())
-				.build();
-		return new GraphServiceClient(clientSecretCredential);
-	}
-
-	GraphServiceClient onBehalfOfTokenGraphServiceClient(String accessToken) {
-		OnBehalfOfCredential onBehalfOfCredential = new OnBehalfOfCredentialBuilder()
-				.userAssertion(accessToken)
-				.clientId(azureConfig.getAppClientId())
-				.clientSecret(azureConfig.getAppClientSecret())
-				.tenantId(azureConfig.getAppTenantId())
-				.build();
-		return new GraphServiceClient(onBehalfOfCredential);
 	}
 }
