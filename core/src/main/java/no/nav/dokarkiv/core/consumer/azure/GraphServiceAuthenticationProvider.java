@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.core.consumer.azure;
 
 import com.microsoft.kiota.RequestInformation;
-import com.microsoft.kiota.ResponseHandlerOption;
 import com.microsoft.kiota.authentication.AuthenticationProvider;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Objects;
 
 import static no.nav.dokarkiv.core.NavHeaders.BEARER_TOKEN_PREFIX;
 import static no.nav.dokarkiv.core.consumer.azure.AzureToken.isOnBehalfOfAzureToken;
@@ -14,7 +14,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
 public class GraphServiceAuthenticationProvider implements AuthenticationProvider {
-
 	private static final String MICROSOFT_GRAPH_SCOPE = "https://graph.microsoft.com/.default";
 	private final AzureToken azureToken;
 
@@ -24,11 +23,15 @@ public class GraphServiceAuthenticationProvider implements AuthenticationProvide
 
 	@Override
 	public void authenticateRequest(RequestInformation request, Map<String, Object> additionalAuthenticationContext) {
-		String token = accessTokenFromRequest(request);
-		if (isNotBlank(token) && isOnBehalfOfAzureToken(token)) {
-			request.headers.add("Authorization", "Bearer " + azureToken.onBehalfOfAccessToken(token, MICROSOFT_GRAPH_SCOPE));
+		Objects.requireNonNull(request);
+		if (request.headers.containsKey(AUTHORIZATION)) {
+			String token = accessTokenFromRequest(request);
+			if (isNotBlank(token) && isOnBehalfOfAzureToken(token)) {
+				request.headers.add("Authorization", "Bearer " + azureToken.onBehalfOfAccessToken(token, MICROSOFT_GRAPH_SCOPE));
+			}
+		} else {
+			request.headers.add("Authorization", "Bearer " + azureToken.clientCredentialAccessToken(MICROSOFT_GRAPH_SCOPE));
 		}
-		request.headers.add("Authorization", "Bearer " + azureToken.clientCredentialAccessToken(MICROSOFT_GRAPH_SCOPE));
 	}
 
 	private String accessTokenFromRequest(RequestInformation request) {
