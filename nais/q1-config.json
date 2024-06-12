@@ -4,7 +4,7 @@
   "MAX_REPLICAS": 2,
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration",
-  "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvbdarkiv,srvfritakagp,srvalf-mottak,srvondemandtojoark,srvhelseabgproxy,srvdolly,srvsyfomock,srvtestnorge-inntekt,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvimvarsel,srvjfr-arena,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvklage-saksbeh,srvmelosys,srvmelosys-eessi,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmotovrig,srvskanmotreferanse,srvsporenstreks,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen,srvsoknadarkiverer,srvsupstonad,srvregpapirsm,srvBrevBestilling,srvpadm2,srvveilarbvedtakss,srv-digihotProxy,srvk9-fordel,srvtiltakrefusjon,srvbarnepensjon,srvdp-proxy,srv-oms-proxy,srvccmarkivogdist,srvmeldekortservice,srvbdarkivering,srvfarskapsportal,srvpensjon,srvgsak-henv-migr,srvspberegning,srvk9-tilbake,SrvOppgRobotNOP",
+  "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvbdarkiv,srvalf-mottak,srvondemandtojoark,srvdolly,srvsyfomock,srvtestnorge-inntekt,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvjfr-arena,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvklage-saksbeh,srvmelosys,srvmelosys-eessi,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmotovrig,srvskanmotreferanse,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen,srvsoknadarkiverer,srvsupstonad,srvregpapirsm,srvBrevBestilling,srvpadm2,srvveilarbvedtakss,srv-digihotProxy,srvk9-fordel,srvtiltakrefusjon,srvbarnepensjon,srvdp-proxy,srv-oms-proxy,srvccmarkivogdist,srvmeldekortservice,srvbdarkivering,srvfarskapsportal,srvpensjon,srvgsak-henv-migr,srvspberegning,srvk9-tilbake,SrvOppgRobotNOP",
   "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@dmv12-scan.adeo.no:1521/joark_q1_ha",
   "SPRING_LDAP_URLS": "ldaps://ldapgw.preprod.local",
   "LDAP_NAVUSER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=preprod,dc=local",
@@ -322,7 +322,7 @@
       "app": "eux-neessi-q1",
       "namespace": "eessibasis",
       "cluster": "dev-gcp"
-    }, 
+    },
     {
       "app": "eux-fagmodul-journalfoering-q1",
       "namespace": "eessibasis",
