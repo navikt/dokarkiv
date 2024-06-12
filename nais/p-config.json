@@ -554,6 +554,11 @@
       "app": "su-se-bakover",
       "namespace": "supstonad",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "lydia-api",
+      "namespace": "pia",
+      "cluster": "prod-gcp"
     }
   ]
 }
