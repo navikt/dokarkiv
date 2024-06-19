@@ -488,6 +488,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "fpinntektsmelding",
+      "namespace": "teamforeldrepenger",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "innsending",
       "namespace": "aap",
       "cluster": "dev-gcp"

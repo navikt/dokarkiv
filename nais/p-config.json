@@ -521,6 +521,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "fpinntektsmelding",
+      "namespace": "teamforeldrepenger",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "tilleggsstonader-integrasjoner",
       "namespace": "tilleggsstonader",
       "cluster": "prod-gcp"
