@@ -55,7 +55,16 @@ public class AzureAdGraphService {
 	@Retryable(exclude = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId) {
 		log.info("Sjekk isUserMemberOfGroup for userObjectId={} på groupObjectId={}", userObjectId, groupObjectId);
-		List<String> groups = getGroupsForUserObjectId(userObjectId);
+		List<DirectoryObject> result = graphServiceClient
+				.users()
+				.byUserId(userObjectId)
+				.memberOf()
+				.get()
+				.getValue();
+
+		List<String> groups = result.stream()
+				.map(group -> group.getId())
+				.toList();
 
 		var containsCorrectGroup = groups.contains(groupObjectId);
 		log.info("Inni isUserMemberOfGroup der containsCorrectGroup={}", containsCorrectGroup);
@@ -77,18 +86,5 @@ public class AzureAdGraphService {
 			return null;
 		}
 		return users.get(0);
-	}
-
-	private List<String> getGroupsForUserObjectId(String userObjectId) {
-		List<DirectoryObject> result = graphServiceClient
-				.users()
-				.byUserId(userObjectId)
-				.memberOf()
-				.get()
-				.getValue();
-
-		return result.stream()
-				.map(group -> group.getId())
-				.toList();
 	}
 }
