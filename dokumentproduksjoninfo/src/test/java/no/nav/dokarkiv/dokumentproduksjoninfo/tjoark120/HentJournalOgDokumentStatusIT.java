@@ -37,10 +37,10 @@ public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninf
 	private static final long METAFORCE_INSTANCE_ID = 555L;
 	private static final DokumentStatusCode DOKUMENT_INFO_STATUS = DokumentStatusCode.UNDER_REDIGERING;
 	private static final JournalStatusCode JOURNAL_STATUS = JournalStatusCode.D;
-	
+
 	private Long journalpostId;
 	private Long dokumentInfoId;
-	
+
 	private HentJournalOgDokumentStatusRequest request;
 
 	@BeforeEach
@@ -49,6 +49,7 @@ public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninf
 		journalpostId = journalpost.getId();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
 		createRequest();
+		stubMsGraphMemberOfEgenAnsatt(MS_ID_SAKSBEHANDLER);
 	}
 
 	@Test
@@ -104,32 +105,32 @@ public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninf
 
 	private Journalpost buildAndPersistJournalpost() {
 		return JournalpostBuilder.getJournalpostBuilder()
-			.journalStatus(JOURNAL_STATUS)
-			.journalpostType(JournalpostTypeCode.U)
-			.opprettetAvNavn("testuser")
-			.opprettetKildeNavn("test")
-			.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder
-					.getJournalpostDokumentInfoRelasjonBuilder()
-					.tilknyttetAvNavn("testuser")
-					.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-					.opprettetKildeNavn("test")
-					.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
-							.opprettetKildeNavn("test")
-							.dokumentstatus(DOKUMENT_INFO_STATUS)
-							.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
-									.filtype(FilTypeCode.PDF)
-									.variantFormat(VariantFormatCode.PRODUKSJON)
-									.opprettetKildeNavn("test")
-									.metaforceInstanceId(METAFORCE_INSTANCE_ID)
-									.build())
-							.build())
-					.build()).build();
+				.journalStatus(JOURNAL_STATUS)
+				.journalpostType(JournalpostTypeCode.U)
+				.opprettetAvNavn("testuser")
+				.opprettetKildeNavn("test")
+				.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder
+						.getJournalpostDokumentInfoRelasjonBuilder()
+						.tilknyttetAvNavn("testuser")
+						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+						.opprettetKildeNavn("test")
+						.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
+								.opprettetKildeNavn("test")
+								.dokumentstatus(DOKUMENT_INFO_STATUS)
+								.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
+										.filtype(FilTypeCode.PDF)
+										.variantFormat(VariantFormatCode.PRODUKSJON)
+										.opprettetKildeNavn("test")
+										.metaforceInstanceId(METAFORCE_INSTANCE_ID)
+										.build())
+								.build())
+						.build()).build();
 	}
-	
+
 	private void createRequest() {
 		request = new HentJournalOgDokumentStatusRequest();
 		request.setJournalpostId(journalpostId);
 		request.setDokumentInfoId(dokumentInfoId);
 	}
-	
+
 }

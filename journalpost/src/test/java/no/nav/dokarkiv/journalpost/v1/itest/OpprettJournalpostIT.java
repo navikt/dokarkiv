@@ -1230,6 +1230,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldOppretteUtgaaendeJournalpostAndSetSporingmetadataWhenUserAndServiceuserToken() {
+		stubMsGraphMemberOfEgenAnsatt(MS_ID_SAKSBEHANDLER);
+
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE);
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithUserAndServiceUserToken());
@@ -1248,6 +1250,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFerdigstilleUtgaaendeAndSetSporingmetadataWhenUserAndServiceuserToken() {
+		stubMsGraphMemberOfEgenAnsatt(MS_ID_SAKSBEHANDLER);
+
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithUserAndServiceUserToken());
@@ -1266,6 +1270,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldOpprettJournalpostWithNavUserIdFromHeaderWhenNavUserIdHeaderSet() {
+		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
+
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE);
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, PERSON_USER_ID));
@@ -1284,6 +1290,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldOpprettAndFerdigstillJournalpostWithNavUserIdFromHeaderWhenNavUserIdHeaderSet() {
+		stubMsGraphMemberOfEgenAnsatt(MS_ID_SAKSBEHANDLER);
+
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, PERSON_USER_ID));

@@ -1,12 +1,16 @@
 package no.nav.dokarkiv.core.consumer.azure;
 
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.ClientSecretCredentialBuilder;
 import com.microsoft.graph.models.DirectoryObject;
 import com.microsoft.graph.models.User;
 import com.microsoft.graph.serviceclient.GraphServiceClient;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
+import no.nav.dokarkiv.core.properties.DokarkivProperties;
+import no.nav.dokarkiv.core.security.azure.AzureConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Profile;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -17,14 +21,23 @@ import static no.nav.dokarkiv.core.cache.CacheConfig.NAVUSER_CACHE;
 
 @Slf4j
 @Component
-@Profile({"nais", "local"})
 public class AzureAdGraphService {
 
 	private static final String BRUKER_IKKE_FUNNET = "Azure AD - Bruker ikke funnet";
 	private final GraphServiceClient graphServiceClient;
 
-	public AzureAdGraphService(GraphServiceAuthenticationProvider dokarkivAuthenticationProvider) {
-		this.graphServiceClient = new GraphServiceClient(dokarkivAuthenticationProvider);
+	public AzureAdGraphService(DokarkivProperties dokarkivProperties,
+							   AzureConfig azureConfig) {
+		TokenCredential tokenCredential = new ClientSecretCredentialBuilder()
+				.tenantId(azureConfig.getAppTenantId())
+				.clientSecret(azureConfig.getAppClientSecret())
+				.clientId(azureConfig.getAppClientId())
+				.build();
+		this.graphServiceClient = new GraphServiceClient(tokenCredential, "https://graph.microsoft.com/.default");
+		String overrideMsGraphService = dokarkivProperties.getEndpoints().getOverrideMsGraphServiceRoot();
+		if (StringUtils.isNotBlank(overrideMsGraphService)) {
+			graphServiceClient.getRequestAdapter().setBaseUrl(overrideMsGraphService);
+		}
 	}
 
 	@Cacheable(value = NAVUSER_CACHE, key = "#navIdent")
@@ -40,9 +53,9 @@ public class AzureAdGraphService {
 	}
 
 	@Retryable(exclude = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
-	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId, String token) {
+	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId) {
 		log.info("Sjekk isUserMemberOfGroup for userObjectId={} på groupObjectId={}", userObjectId, groupObjectId);
-		List<String> groups = getGroupsForUserObjectId(userObjectId, token);
+		List<String> groups = getGroupsForUserObjectId(userObjectId);
 
 		var containsCorrectGroup = groups.contains(groupObjectId);
 		log.info("Inni isUserMemberOfGroup der containsCorrectGroup={}", containsCorrectGroup);
@@ -66,12 +79,13 @@ public class AzureAdGraphService {
 		return users.get(0);
 	}
 
-	private List<String> getGroupsForUserObjectId(String userObjectId, String token) {
+	private List<String> getGroupsForUserObjectId(String userObjectId) {
 		List<DirectoryObject> result = graphServiceClient
 				.users()
 				.byUserId(userObjectId)
 				.memberOf()
-				.get().getValue();
+				.get()
+				.getValue();
 
 		return result.stream()
 				.map(group -> group.getId())

@@ -41,6 +41,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 	@Test
 	public void shouldSaveFileAsSladdetVariant() {
+		stubMsGraphMemberOfEgenAnsatt(MS_USER_ID_WITH_GROUP_ACCESS);
 		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -110,6 +111,8 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 	@Test
 	public void shouldFailWithBadRequestWhenVariantAlreadyExists() {
+		stubMsGraphMemberOfEgenAnsatt(MS_USER_ID_WITH_GROUP_ACCESS);
+
 		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -149,6 +152,8 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 	@Test
 	public void shouldFailWithNotFoundWhenDokumentInfoIsNotFound() {
+		stubMsGraphMemberOfEgenAnsatt(MS_USER_ID_WITH_GROUP_ACCESS);
+
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(123456L)
 				.fil(encodeBase64String(FIL))
@@ -201,6 +206,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
+		stubMsGraphMemberOfNotEgenAnsatt(MS_USER_ID_WITHOUT_GROUP_ACCESS);
 		var headers = createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS);
 
 		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());

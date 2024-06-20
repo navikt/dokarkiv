@@ -49,7 +49,7 @@ public class AzureToken {
 	}
 
 	@Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
-	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN_CACHE, key = "DigestUtils.sha256Hex(#token)")
+	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN_CACHE, keyGenerator = "cacheKeyGenerator")
 	public String onBehalfOfAccessToken(String token, String scope) {
 		return fetchAccessToken(token, scope);
 	}
@@ -61,7 +61,6 @@ public class AzureToken {
 	}
 
 	private String fetchAccessToken(String token, String scope) {
-
 		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
 		formData.add("client_id", azureConfig.getAppClientId());
 		formData.add("client_secret", azureConfig.getAppClientSecret());
