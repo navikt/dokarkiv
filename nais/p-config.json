@@ -4,7 +4,7 @@
   "MAX_REPLICAS": 12,
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL": "https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.nais.adeo.no/rest/v1/sts/.well-known/openid-configuration",
-  "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvbdarkiv,srvhelseabgproxy,srvondemandtojoark,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvimvarsel,srvjfr-arena,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvklage-saksbeh,srvmelosys,srvmelosys-eessi,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmothelse,srvskanmotovrig,srvskanmotreferanse,srvsporenstreks,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen,srvsoknadarkiverer,srvsupstonad,srvregpapirsm,srvBrevBestilling,srvpadm2,srvmaa,srv-digihotProxy,srvveilarbvedtakss,srvk9-fordel,srvtiltakrefusjon,srvdp-proxy,srv-oms-proxy,srvccmarkivogdist,srvmeldekortservice,srvpselv,srvbdarkivering,srvfarskapsportal,srvbarnepensjon,srvpensjon,srvgsak-henv-migr,srvspberegning,srvk9-tilbake,srvEessiPensjonPdlP",
+  "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvbdarkiv,srvondemandtojoark,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvjfr-arena,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvklage-saksbeh,srvmelosys,srvmelosys-eessi,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmothelse,srvskanmotovrig,srvskanmotreferanse,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen,srvsoknadarkiverer,srvsupstonad,srvregpapirsm,srvBrevBestilling,srvpadm2,srvmaa,srv-digihotProxy,srvveilarbvedtakss,srvk9-fordel,srvtiltakrefusjon,srvdp-proxy,srv-oms-proxy,srvccmarkivogdist,srvmeldekortservice,srvpselv,srvbdarkivering,srvfarskapsportal,srvbarnepensjon,srvpensjon,srvgsak-henv-migr,srvspberegning,srvk9-tilbake,srvEessiPensjonPdlP",
   "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@dm09-scan.adeo.no:1521/joark_ha",
   "SPRING_LDAP_URLS": "ldaps://ldapgw.adeo.no",
   "LDAP_NAVUSER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=adeo,dc=no",
@@ -253,6 +253,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "k9-inntektsmelding",
+      "namespace": "k9saksbehandling",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "yrkesskade-melding-mottak",
       "namespace": "yrkesskade",
       "cluster": "prod-gcp"
@@ -281,7 +286,7 @@
       "app": "eux-neessi",
       "namespace": "eessibasis",
       "cluster": "prod-gcp"
-    }, 
+    },
     {
       "app": "eux-fagmodul-journalfoering",
       "namespace": "eessibasis",
@@ -344,6 +349,11 @@
     },
     {
       "app": "dp-mottak",
+      "namespace": "teamdagpenger",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "dp-rapportering",
       "namespace": "teamdagpenger",
       "cluster": "prod-gcp"
     },
@@ -511,6 +521,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "fpinntektsmelding",
+      "namespace": "teamforeldrepenger",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "tilleggsstonader-integrasjoner",
       "namespace": "tilleggsstonader",
       "cluster": "prod-gcp"
@@ -554,6 +569,11 @@
       "app": "su-se-bakover",
       "namespace": "supstonad",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "lydia-api",
+      "namespace": "pia",
+      "cluster": "prod-gcp"
     }
   ]
 }
