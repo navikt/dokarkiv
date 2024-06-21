@@ -33,7 +33,7 @@ public class AzureAdGraphService {
 				.clientSecret(azureConfig.getAppClientSecret())
 				.clientId(azureConfig.getAppClientId())
 				.build();
-		this.graphServiceClient = new GraphServiceClient(tokenCredential, "https://graph.microsoft.com/.default");
+		this.graphServiceClient = new GraphServiceClient(tokenCredential);
 		String overrideMsGraphService = dokarkivProperties.getEndpoints().getOverrideMsGraphServiceRoot();
 		if (StringUtils.isNotBlank(overrideMsGraphService)) {
 			graphServiceClient.getRequestAdapter().setBaseUrl(overrideMsGraphService);

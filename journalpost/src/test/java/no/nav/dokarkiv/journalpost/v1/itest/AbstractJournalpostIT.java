@@ -3,10 +3,14 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import no.nav.dokarkiv.JournalpostConfig;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
+import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -16,11 +20,15 @@ import java.io.IOException;
 import java.net.URL;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -44,11 +52,23 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 	static final String FERDIGSTILL = "/ferdigstill";
 	static final String KOPIER_QUERY = "kopierJournalpost?kildeJournalpostId={kildeJournalpostId}";
 	static final String FERDIGSTILL_QUERY = "?forsoekFerdigstill=true";
-	protected static final String MS_ID_SAKSBEHANDLER = "a123c63a-9821-4637-a23d-b706e5b24809";
-	protected static final String NAV_IDENT_SAKSBEHANDLER = "Z990782";
 
 	protected String OIDC_TOKEN_PERSON_USER_TEST;
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;
+
+	@Configuration
+	@Profile("itest")
+	public static class Config {
+		@Bean
+		public AzureAdGraphService azureAdGraphService() {
+			AzureAdGraphService azureAdGraphServiceMock = mock(AzureAdGraphService.class);
+
+			when(azureAdGraphServiceMock.hentFulltNavn(any())).thenReturn(PERSON_USER_NAME);
+			when(azureAdGraphServiceMock.isUserMemberOfGroup(eq(MS_USER_ID_WITH_GROUP_ACCESS), anyString())).thenReturn(true);
+
+			return azureAdGraphServiceMock;
+		}
+	}
 
 	void restStsToken() {
 		stubFor(post(urlEqualTo("/reststs"))
@@ -143,25 +163,4 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 		return headers;
 	}
 
-	protected static void stubMsGraphGetUser(String navIdent) {
-		stubFor(get("/msgraph/users?$count=true&$filter=onPremisesSamAccountName%20eq%20%27" + navIdent + "%27&$select=givenname,surname")
-				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile("nav/msgraph-users.json")));
-	}
-
-	protected static void stubMsGraphMemberOfEgenAnsatt(String msUserId) {
-		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-egenansatt.json");
-	}
-
-	protected static void stubMsGraphMemberOfNotEgenAnsatt(String msUserId) {
-		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-not-egenansatt.json");
-	}
-
-	protected static void stubMsGraphMemberOf(String msUserId, String bodyFile) {
-		stubFor(get("/msgraph/users/" + msUserId + "/memberOf")
-				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile(bodyFile)));
-	}
 }

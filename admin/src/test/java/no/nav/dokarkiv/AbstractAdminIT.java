@@ -295,12 +295,12 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 						.withBodyFile("nav/msgraph-users.json")));
 	}
 
-	protected static void stubMsGraphMemberOfEgenAnsatt(String msUserId) {
-		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-egenansatt.json");
+	protected static void stubMsGraphMemberOfJoarkVelikehold(String msUserId) {
+		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-joark-admin.json");
 	}
 
-	protected static void stubMsGraphMemberOfNotEgenAnsatt(String msUserId) {
-		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-not-egenansatt.json");
+	protected static void stubMsGraphMemberOfNotJoarkVelikeholdAdmin(String msUserId) {
+		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-not-joark-admin.json");
 	}
 
 	protected static void stubMsGraphMemberOf(String msUserId, String bodyFile) {

@@ -79,8 +79,6 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 	
 	@Test
 	void shouldLastOppVedlegg() {
-		stubMsGraphMemberOfEgenAnsatt(MS_USER_ID_WITH_GROUP_ACCESS);
-
 		Journalpost journalpost = createJournalpostUnderArbeid();
 		Long journalpostId = saveJournalpost(journalpost).getJournalpostId();
 
@@ -152,8 +150,6 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldLastOppVedleggWhenMultipleDokumentvarianter() {
-		stubMsGraphMemberOfEgenAnsatt(MS_USER_ID_WITH_GROUP_ACCESS);
-
 		Journalpost journalpost = createJournalpostUnderArbeid();
 		Long journalpostId = saveJournalpost(journalpost).getJournalpostId();
 
@@ -222,8 +218,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 	@ParameterizedTest
 	@ValueSource(strings = {" ", "abc", "123.45"})
 	void shouldReturnBadRequestWhenInvalidJournalpostId(String journalpostId) {
-		stubMsGraphMemberOfEgenAnsatt(MS_USER_ID_WITH_GROUP_ACCESS);
-
+		
 		var request = new HttpEntity<>(LAST_OPP_VEDLEGG_REQUEST, headers);
 		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(journalpostId), PATCH, request, String.class);
 
@@ -247,7 +242,6 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnBadRequestWhenInvalidRequest() {
-		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 
 		var request = new HttpEntity<>(new LastOppVedleggRequest(null), headers);
 		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted("123"), PATCH, request, String.class);
@@ -260,7 +254,6 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnBadRequestWhenRequestBodyIsMissing() {
-		stubMsGraphMemberOfEgenAnsatt(MS_USER_ID_WITH_GROUP_ACCESS);
 
 		var request = new HttpEntity<>(null, headers);
 		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted("123"), PATCH, request, String.class);
@@ -288,8 +281,6 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnConflictWhenJournalpostDoesNotHaveHoveddokument() {
-		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-
 		Journalpost journalpost = createJournalpostUnderArbeid();
 		journalpost.removeJournalpostDokumentInfoRelasjon(journalpost.findHoveddokumentDokumentInfoRelasjon());
 		Long journalpostId = saveJournalpost(journalpost).getJournalpostId();

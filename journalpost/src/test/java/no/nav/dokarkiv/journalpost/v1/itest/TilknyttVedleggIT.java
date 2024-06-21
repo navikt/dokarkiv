@@ -75,8 +75,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	@BeforeEach
 	public void setUp() {
 		super.setUp();
-		stubMsGraphGetUser(NAV_USER_ID);
-		stubMsGraphMemberOfEgenAnsatt(MS_USER_ID_WITH_GROUP_ACCESS);
 		stubAzure();
 	}
 

@@ -18,13 +18,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.transaction.Transactional;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class, DokumentproduksjonInfoConfig.class})
 @ActiveProfiles("itest")
@@ -34,8 +27,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Transactional
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractDokumentproduksjoninfoItest {
-
-	protected static final String MS_ID_SAKSBEHANDLER = "a123c63a-9821-4637-a23d-b706e5b24809";
 
 	@Autowired
 	protected DokumentproduksjonInfoV1 dokumentproduksjonInfoProvider;
@@ -54,16 +45,5 @@ public abstract class AbstractDokumentproduksjoninfoItest {
 				.userId("testuser")
 				.componentId("itest")
 				.build());
-	}
-
-	protected static void stubMsGraphMemberOfEgenAnsatt(String msUserId) {
-		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-egenansatt.json");
-	}
-
-	protected static void stubMsGraphMemberOf(String msUserId, String bodyFile) {
-		stubFor(get("/msgraph/users/" + msUserId + "/memberOf")
-				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile(bodyFile)));
 	}
 }

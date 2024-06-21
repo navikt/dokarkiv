@@ -2,13 +2,9 @@
   "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users",
   "value": [
     {
-      "displayName": "Adele Vance",
-      "givenName": "Adele",
-      "mail": "AdeleV@M365x214355.onmicrosoft.com",
-      "mobilePhone": null,
-      "officeLocation": "18/2111",
-      "preferredLanguage": "NO",
-      "surname": "Vance",
+      "displayName": "Joark",
+      "givenName": "Joark",
+      "surname": "Admin",
       "userPrincipalName": "AdeleV@M365x214355.onmicrosoft.com",
       "id": "87d349ed-44d7-43e1-9a83-5f2406dee5bd"
     }

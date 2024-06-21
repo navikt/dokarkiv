@@ -49,7 +49,6 @@ public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninf
 		journalpostId = journalpost.getId();
 		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
 		createRequest();
-		stubMsGraphMemberOfEgenAnsatt(MS_ID_SAKSBEHANDLER);
 	}
 
 	@Test

@@ -364,8 +364,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSetNavUserIdHeaderSporingWhenServiceUserTokenAndNavUserIdHeaderIsSet() {
-		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
 		journalpostTestRepository.persist(journalpost);
 

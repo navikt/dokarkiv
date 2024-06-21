@@ -65,8 +65,6 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 			GENERELL_SAK + ",," // ved generell_sak skal hverken fagsak eller fagsakID være satt
 	})
 	public void knyttTilAnnenSakHappyPath(String sakstype, String fagsakId, String fagsaksystem) {
-		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-
 		stubAzure();
 		restStsToken();
 		happyAktoerIdStub();
@@ -130,8 +128,6 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 
 	@Test
 	public void knyttTilAnnenSakJournalpostNotFound() {
-		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-
 		stubAzure();
 		restStsToken();
 		happyAktoerIdStub();
