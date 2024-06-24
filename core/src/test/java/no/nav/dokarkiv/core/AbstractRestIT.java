@@ -44,6 +44,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
@@ -57,7 +60,10 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureDataJpa
@@ -73,7 +79,6 @@ public abstract class AbstractRestIT {
 	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	protected static final String SERVICE_USER_ID = "srvjoarkadmin";
 	protected static final String SERVICEUSER_IKKE_JOARKADMIN = "srvikkejoarkadmin";
-	protected static final String PERSON_USER_ID = "Z990782";
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
 	protected static final String DEFAULT_CLAIM_OID = "oid";
@@ -91,6 +96,8 @@ public abstract class AbstractRestIT {
 	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
 	protected static final String MS_USER_ID_WITHOUT_GROUP_ACCESS = "b999c63a-9821-4637-a23d-b706e5b24809";
 	public static final String API_ADMIN_ROLE = "api_admin";
+	protected static final String NAV_IDENT_SAKSBEHANDLER = "Z990782";
+	protected static final String MS_ID_SAKSBEHANDLER = "a123c63a-9821-4637-a23d-b706e5b24809";
 
 	@Autowired
 	protected JournalpostTestRepository journalpostTestRepository;
@@ -214,7 +221,7 @@ public abstract class AbstractRestIT {
 	protected HttpHeaders createHeadersWithUserAndServiceUserToken() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(openAmToken(PERSON_USER_ID));
+		headers.setBearerAuth(openAmToken(NAV_USER_ID));
 		headers.add(NAV_CONSUMER_TOKEN, BEARER + restStsToken(SERVICE_USER_ID));
 		headers.add(NAV_CALL_ID, "itest");
 		return headers;
@@ -368,5 +375,27 @@ public abstract class AbstractRestIT {
 		} catch (IOException e) {
 			return null;
 		}
+	}
+
+	protected static void stubMsGraphGetUser(String navIdent) {
+		stubFor(get("/msgraph/users?$count=true&$filter=onPremisesSamAccountName%20eq%20%27" + navIdent + "%27&$select=givenname,surname")
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("nav/msgraph-users.json")));
+	}
+
+	protected static void stubMsGraphMemberOfJoarkVedlikehold(String msUserId) {
+		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-joark-admin.json");
+	}
+
+	protected static void stubMsGraphMemberOfNotJoarkVedlikehold(String msUserId) {
+		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-not-joark-admin.json");
+	}
+
+	protected static void stubMsGraphMemberOf(String msUserId, String bodyFile) {
+		stubFor(get("/msgraph/users/" + msUserId + "/memberOf")
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile(bodyFile)));
 	}
 }

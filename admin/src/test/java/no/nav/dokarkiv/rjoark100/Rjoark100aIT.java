@@ -47,7 +47,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeJournalpost() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 		reinitTransaction();
@@ -83,7 +83,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	@Test
 	public void skalSkjermeJournalpostForStsTokenFraJoarkadmin() {
 		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 		reinitTransaction();
@@ -120,7 +120,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentInfoSomErHoveddokumentPåJournalpostSomHarVedleggRelasjoner() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
@@ -173,7 +173,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSkjermeDokumentInfoSomErGjenbruktSomHoveddokumentPåEnJournalpostOgSomVedleggPåEnAnnen() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost originalJournalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSkjermes = originalJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -246,7 +246,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentFil() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -281,7 +281,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeAlleFildetaljerHvisVariantIkkeErSatt() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -327,7 +327,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentFilHvisDokumentHarSladdetFildetaljer() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, SLADDET));
@@ -366,7 +366,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalLageAksjonsLoggHvisDokumentInfoErAlleredeSkjermet() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost originalJournalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfo = originalJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -407,7 +407,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalLageAksjonsLoggHvisJournalpostErAlleredeSkjermet() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 
 		journalpostTestRepository.persist(journalpost);
@@ -435,7 +435,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalLageAksjonsLoggHvisJDokumentFilErAlleredeSkjermet() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		skjermingServiceTest.setVariantSkjermet(dokumentInfo.getDokumentInfoId(), ARKIV, POL);
@@ -481,7 +481,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
-		stubMsGraphMemberOfNotJoarkVelikeholdAdmin(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfNotJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		var headers = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
 
 

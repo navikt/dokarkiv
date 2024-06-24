@@ -49,7 +49,7 @@ public class AzureToken {
 	}
 
 	@Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
-	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN_CACHE, keyGenerator = "cacheKeyGenerator")
+	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN_CACHE, keyGenerator = "onBehalfOfTokenKeyGenerator")
 	public String onBehalfOfAccessToken(String token, String scope) {
 		return fetchAccessToken(token, scope);
 	}

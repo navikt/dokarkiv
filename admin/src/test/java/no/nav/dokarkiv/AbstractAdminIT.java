@@ -22,9 +22,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
@@ -38,9 +35,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT,
 		classes = {CoreConfig.class, AdminConfig.class})
@@ -53,8 +47,6 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected static final String URL_KASSERDOKUMENT_SKJERM = "/rest/admin/kasserdokument/skjerm";
 	protected static final String URL_SKJERMARKIVENHET = "/rest/admin/skjermarkivenhet/";
 	protected static final String URL_SLETTARKIVENHET = "/rest/admin/slettarkivenhet";
-	protected static final String NAV_IDENT_SAKSBEHANDLER = "Z123456";
-	protected static final String MS_ID_SAKSBEHANDLER = "a123c63a-9821-4637-a23d-b706e5b24809";
 
 	protected void reinitTransaction() {
 		TestTransaction.flagForCommit();
@@ -287,27 +279,4 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 		journalpostWithHoveddokument.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
 		return journalpostWithHoveddokument;
 	}
-
-	protected static void stubMsGraphGetUser(String navIdent) {
-		stubFor(get("/msgraph/users?$count=true&$filter=onPremisesSamAccountName%20eq%20%27" + navIdent + "%27&$select=id")
-				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile("nav/msgraph-users.json")));
-	}
-
-	protected static void stubMsGraphMemberOfJoarkVelikehold(String msUserId) {
-		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-joark-admin.json");
-	}
-
-	protected static void stubMsGraphMemberOfNotJoarkVelikeholdAdmin(String msUserId) {
-		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-not-joark-admin.json");
-	}
-
-	protected static void stubMsGraphMemberOf(String msUserId, String bodyFile) {
-		stubFor(get("/msgraph/users/" + msUserId + "/memberOf")
-				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile(bodyFile)));
-	}
-
 }

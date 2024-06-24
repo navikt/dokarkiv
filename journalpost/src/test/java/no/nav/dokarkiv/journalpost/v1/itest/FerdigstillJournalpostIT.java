@@ -364,6 +364,8 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSetNavUserIdHeaderSporingWhenServiceUserTokenAndNavUserIdHeaderIsSet() {
+		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
+
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
 		journalpostTestRepository.persist(journalpost);
 
@@ -375,7 +377,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 				.journalfoerendeEnhet("9999")
 				.build();
 
-		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, PERSON_USER_ID));
+		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, NAV_USER_ID));
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -386,7 +388,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(PERSON_USER_NAME, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
 		assertEquals(PERSON_USER_NAME, ferdigstiltJournalpost.getJournalfortAvNavn());
-		assertEquals(PERSON_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
+		assertEquals(NAV_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		TestTransaction.end();
 	}
 }

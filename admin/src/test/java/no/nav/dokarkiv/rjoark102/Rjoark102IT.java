@@ -45,7 +45,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalIkkeKassereDokumentNårDokmentInfoIkkeFinnes() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Long dokumentInfoId = 13L;
 
@@ -58,7 +58,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentSomErKnyttetTilFlereJournalposter() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
@@ -166,7 +166,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentMedSomErKnyttetTilEnJournalpost() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -208,7 +208,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentSomErKnyttetTilEnJournalpostMedClientCredentialTokenFraJoarkadmin() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -272,7 +272,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
-		stubMsGraphMemberOfNotJoarkVelikeholdAdmin(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfNotJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		var headers = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);

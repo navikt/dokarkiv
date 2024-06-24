@@ -75,6 +75,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 	@BeforeEach
 	public void setUp() {
 		headers = createHeadersWithUserAndServiceUserToken();
+		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 	}
 	
 	@Test
@@ -138,7 +139,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 				.satisfies(aksjonsLogg -> {
 					assertThat(aksjonsLogg.getDokumentInfoId()).isEqualTo(dokumentInfo.getDokumentInfoId());
 					assertThat(aksjonsLogg.getAksjon()).isEqualTo(TILKNYTT_NYTT_DOKUMENT);
-					assertThat(aksjonsLogg.getUtfoertAv()).isEqualTo(PERSON_USER_ID);
+					assertThat(aksjonsLogg.getUtfoertAv()).isEqualTo(NAV_USER_ID);
 				});
 
 		//Response
@@ -218,7 +219,6 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 	@ParameterizedTest
 	@ValueSource(strings = {" ", "abc", "123.45"})
 	void shouldReturnBadRequestWhenInvalidJournalpostId(String journalpostId) {
-		
 		var request = new HttpEntity<>(LAST_OPP_VEDLEGG_REQUEST, headers);
 		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(journalpostId), PATCH, request, String.class);
 
@@ -242,7 +242,6 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnBadRequestWhenInvalidRequest() {
-
 		var request = new HttpEntity<>(new LastOppVedleggRequest(null), headers);
 		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted("123"), PATCH, request, String.class);
 
@@ -254,7 +253,6 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnBadRequestWhenRequestBodyIsMissing() {
-
 		var request = new HttpEntity<>(null, headers);
 		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted("123"), PATCH, request, String.class);
 

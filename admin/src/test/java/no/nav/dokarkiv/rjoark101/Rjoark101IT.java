@@ -54,7 +54,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteJournalpostMedHoveddokumentOgEttVedlegg() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
@@ -260,7 +260,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteJournalpostMedHoveddokumentOgVedleggSomErGjenbruktFraEnAnnenJournalpost() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
@@ -369,7 +369,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileVedSlettingAvJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedlegg() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
@@ -423,7 +423,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalIkkeSletteJournalpostSomErSplittet() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpostOriginal = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpostSplit1 = createJournalpostWithSplittetHoveddokument(journalpostOriginal);
@@ -488,7 +488,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedleggEtterSlettingAvRelasjonene() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpostMedDokumentSomVedlegg = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
@@ -557,7 +557,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileHvisJournalpostIkkeFinnes() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
 		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
@@ -578,7 +578,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteDokumentInfoSomErBareTilknyttetEnJournalpost() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
@@ -659,7 +659,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteHoveddokumentOgBytteVedleggRelasjonTilHoveddokumentForJournalpostMedFlereRelasjoner() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
@@ -750,7 +750,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteVedleggOgDeretterHoveddokumentForJournalpostMedEnHoveddokumentOgEnVedlegg() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpostMedDokumentSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSlettes = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -858,7 +858,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteDokumentInfoSomErEnesteDokumentPåEnJournalpostOgVedleggPåEnAnnenJournalpost() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpostSomHarDokumentSomVedlegg = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
@@ -950,7 +950,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileVedSlettingAvDokumentInfoSomErSplittet() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost origJournalpost = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost = createJournalpostWithSplittetHoveddokument(origJournalpost);
@@ -996,7 +996,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileHvisDokumentInfoIkkeFinnes() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
 				new HttpEntity<>(SlettArkivenhetRequest.builder()
@@ -1018,7 +1018,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteFilOgFildetaljer() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoMedVariantSomSkalSlettes = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -1075,7 +1075,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileHvisVariantSomSkalSlettesIkkeFinnes() {
-		stubMsGraphMemberOfJoarkVelikehold(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		saveJournalpost(journalpost);
@@ -1136,7 +1136,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
-		stubMsGraphMemberOfNotJoarkVelikeholdAdmin(MS_ID_SAKSBEHANDLER);
+		stubMsGraphMemberOfNotJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		var headers = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE, new HttpEntity<>(SlettArkivenhetRequest.builder()

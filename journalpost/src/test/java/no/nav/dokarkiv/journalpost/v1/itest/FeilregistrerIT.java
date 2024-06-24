@@ -70,6 +70,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalFeilregistrereSakstilknytningMedSaksbehandlertoken() {
+		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
@@ -123,6 +124,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalSetteUkjentBruker() {
+		stubMsGraphMemberOfJoarkVedlikehold(MS_USER_ID_WITH_GROUP_ACCESS);
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(U);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
@@ -164,6 +166,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalReturnereUnauthorizedForUkjentBrukerHvisSaksbehandlerManglerJoarkVedlikeholdGruppe() {
+		stubMsGraphMemberOfNotJoarkVedlikehold(MS_USER_ID_WITHOUT_GROUP_ACCESS);
 		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS));
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_UKJENT_BRUKER, PATCH, requestEntity, String.class);
@@ -174,6 +177,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalSetteStatusUtgaar() {
+		stubMsGraphMemberOfJoarkVedlikehold(MS_USER_ID_WITH_GROUP_ACCESS);
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(OD);
 		journalpost.setJournalposttype(I);
@@ -216,6 +220,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalReturnereUnauthorizedForStatusUtgaarHvisSaksbehandlerManglerJoarkVedlikeholdGruppe() {
+		stubMsGraphMemberOfNotJoarkVedlikehold(MS_USER_ID_WITHOUT_GROUP_ACCESS);
 		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS));
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "1" + FEILREGISTRER + SETT_STATUS_UTGAAR, PATCH, requestEntity, String.class);
@@ -226,6 +231,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalReturnere405ForSettStatusUtgaarHvisJournalpostHarStatusUtgaaende() {
+		stubMsGraphMemberOfJoarkVedlikehold(MS_USER_ID_WITH_GROUP_ACCESS);
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(U);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
@@ -240,6 +246,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalSetteNavIdentIUtfoertAvHvisSaksbehandlertokenErBrukt() {
+		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
@@ -260,8 +267,8 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		assertThat(aksjonsLoggList).hasSize(2)
 				.extracting(AksjonsLogg::getAksjon, AksjonsLogg::getUtfoertAv)
-				.contains(tuple(AksjonsTypeCode.FEILREGISTRER_SAKSTILKNYTNING, PERSON_USER_ID),
-						tuple(OPPHEV_FEILREGISTRERING, PERSON_USER_ID));
+				.contains(tuple(AksjonsTypeCode.FEILREGISTRER_SAKSTILKNYTNING, NAV_USER_ID),
+						tuple(OPPHEV_FEILREGISTRERING, NAV_USER_ID));
 	}
 
 }
