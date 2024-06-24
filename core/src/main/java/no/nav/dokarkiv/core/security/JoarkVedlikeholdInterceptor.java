@@ -56,9 +56,8 @@ public class JoarkVedlikeholdInterceptor implements HandlerInterceptor {
 	public boolean isMemberOfGroupJoarkVedlikehold(String token, String entraIdGroup) {
 		DecodedJWT decode = JWT.decode(token);
 		String userObjectId = decode.getClaim("oid").asString();
-		String subClaim = decode.getClaim("sub").asString();
 
-		return azureAdGraphService.isUserMemberOfGroup(userObjectId, entraIdGroup, token, subClaim);
+		return azureAdGraphService.isUserMemberOfGroup(userObjectId, entraIdGroup);
 	}
 
 }

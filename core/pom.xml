@@ -135,8 +135,18 @@
 			<groupId>com.microsoft.graph</groupId>
 			<artifactId>microsoft-graph</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.azure</groupId>
+			<artifactId>azure-identity</artifactId>
+		</dependency>
+
 
 		<!-- Test -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-contract-wiremock</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.github.gavlyukovskiy</groupId>
 			<artifactId>datasource-proxy-spring-boot-starter</artifactId>

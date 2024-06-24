@@ -111,8 +111,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@BeforeEach
 	public void setUp() {
 		super.setUp();
-
-		OIDC_TOKEN_PERSON_USER_TEST = openAmToken(PERSON_USER_ID);
+		stubMsGraphGetUser(NAV_USER_ID);
+		OIDC_TOKEN_PERSON_USER_TEST = openAmToken(NAV_USER_ID);
 		OIDC_TOKEN_SERVICE_USER_TEST = restStsToken(SERVICE_USER_ID);
 	}
 
@@ -142,7 +142,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertThat(oppdatertJP.getEndretAvNavn()).isEqualTo(PERSON_USER_NAME);
 		assertThat(oppdatertJP.getEndretKildeNavn()).isEqualTo(SERVICE_USER_ID);
-		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy()).isEqualTo(PERSON_USER_ID);
+		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy()).isEqualTo(NAV_USER_ID);
 		assertThat(oppdatertJP.getInnhold()).isEqualTo(request.getTittel());
 		assertThat(oppdatertJP.getFagomrade().name()).isEqualTo(request.getTema());
 		assertThat(oppdatertJP.getBehandlingstema()).isEqualTo(request.getBehandlingstema());
@@ -173,17 +173,17 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(3);
 
-		assertThat(aksjonsLoggList.get(0).getUtfoertAv()).isEqualTo(PERSON_USER_ID);
+		assertThat(aksjonsLoggList.get(0).getUtfoertAv()).isEqualTo(NAV_USER_ID);
 		assertThat(aksjonsLoggList.get(0).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
 		assertThat(aksjonsLoggList.get(0).getAksjon()).isEqualTo(SAKSTILKNYTNING);
 		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(3);
 
-		assertThat(aksjonsLoggList.get(1).getUtfoertAv()).isEqualTo(PERSON_USER_ID);
+		assertThat(aksjonsLoggList.get(1).getUtfoertAv()).isEqualTo(NAV_USER_ID);
 		assertThat(aksjonsLoggList.get(1).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
 		assertThat(aksjonsLoggList.get(1).getAksjon()).isEqualTo(ENDRE_METADATA);
 		assertThat(aksjonsLoggList.get(1).getArkivElementEndringer()).hasSize(6);
 
-		assertThat(aksjonsLoggList.get(2).getUtfoertAv()).isEqualTo(PERSON_USER_ID);
+		assertThat(aksjonsLoggList.get(2).getUtfoertAv()).isEqualTo(NAV_USER_ID);
 		assertThat(aksjonsLoggList.get(2).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
 		assertThat(aksjonsLoggList.get(2).getAksjon()).isEqualTo(ENDRE_METADATA);
 		assertThat(aksjonsLoggList.get(2).getArkivElementEndringer()).hasSize(2);
@@ -378,7 +378,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
 		headers.add(AUTHORIZATION, BEARER + OIDC_TOKEN_SERVICE_USER_TEST);
-		headers.add(NavHeaders.NAV_USER_ID, PERSON_USER_ID);
+		headers.add(NavHeaders.NAV_USER_ID, NAV_USER_ID);
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
@@ -391,7 +391,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertThat(oppdatertJP.getEndretAvNavn()).isEqualTo(PERSON_USER_NAME);
 		assertThat(oppdatertJP.getEndretKildeNavn()).isEqualTo(SERVICE_USER_ID);
-		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy()).isEqualTo(PERSON_USER_ID);
+		assertThat(oppdatertJP.getChangeStamp().getUpdatedBy()).isEqualTo(NAV_USER_ID);
 	}
 
 	@Test
@@ -694,7 +694,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(2);
-		assertThat(aksjonsLoggList.get(1).getUtfoertAv()).isEqualTo(PERSON_USER_ID);
+		assertThat(aksjonsLoggList.get(1).getUtfoertAv()).isEqualTo(NAV_USER_ID);
 	}
 
 	@Test
@@ -1142,7 +1142,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(1);
-		assertThat(aksjonsLoggList.get(0).getUtfoertAv()).isEqualTo(PERSON_USER_ID);
+		assertThat(aksjonsLoggList.get(0).getUtfoertAv()).isEqualTo(NAV_USER_ID);
 		assertThat(aksjonsLoggList.get(0).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
 		assertThat(aksjonsLoggList.get(0).getAksjon()).isEqualTo(ENDRE_METADATA);
 		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(1);

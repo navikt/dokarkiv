@@ -2,7 +2,6 @@ package no.nav.dokarkiv;
 
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -14,7 +13,6 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
 
@@ -36,14 +34,10 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT,
-		classes = {CoreConfig.class, AdminConfig.class, AbstractAdminIT.Config.class})
+		classes = {CoreConfig.class, AdminConfig.class})
 @ActiveProfiles({"itest", "wiremock"})
 @EnableMockOAuth2Server
 @AutoConfigureWireMock(port = 0)
@@ -53,18 +47,6 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	protected static final String URL_KASSERDOKUMENT_SKJERM = "/rest/admin/kasserdokument/skjerm";
 	protected static final String URL_SKJERMARKIVENHET = "/rest/admin/skjermarkivenhet/";
 	protected static final String URL_SLETTARKIVENHET = "/rest/admin/slettarkivenhet";
-
-	public static class Config {
-		@Bean
-		AzureAdGraphService azureAdGraphService() {
-			AzureAdGraphService azureAdGraphService = mock(AzureAdGraphService.class);
-
-			when(azureAdGraphService.isUserMemberOfGroup(eq(MS_USER_ID_WITH_GROUP_ACCESS), eq(MS_AD_GROUP_ID), anyString(), anyString())).thenReturn(true);
-			when(azureAdGraphService.isUserMemberOfGroup(eq(MS_USER_ID_WITHOUT_GROUP_ACCESS), eq(MS_AD_GROUP_ID), anyString(), anyString())).thenReturn(false);
-
-			return azureAdGraphService;
-		}
-	}
 
 	protected void reinitTransaction() {
 		TestTransaction.flagForCommit();

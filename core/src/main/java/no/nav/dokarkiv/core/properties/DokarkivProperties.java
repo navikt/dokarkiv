@@ -55,6 +55,8 @@ public class DokarkivProperties {
 	@Data
 	@Validated
 	public static class Endpoints {
+		private String overrideMsGraphServiceRoot;
+
 		/**
 		 * URL til PDL (Persondataløsningen).
 		 */

@@ -45,6 +45,8 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalIkkeKassereDokumentNårDokmentInfoIkkeFinnes() {
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+
 		Long dokumentInfoId = 13L;
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(
@@ -56,6 +58,8 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentSomErKnyttetTilFlereJournalposter() {
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -162,6 +166,8 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentMedSomErKnyttetTilEnJournalpost() {
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
@@ -202,6 +208,8 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentSomErKnyttetTilEnJournalpostMedClientCredentialTokenFraJoarkadmin() {
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
@@ -264,7 +272,8 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
-		var headers = createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS);
+		stubMsGraphMemberOfNotJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+		var headers = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
 

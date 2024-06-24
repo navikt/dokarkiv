@@ -34,6 +34,8 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentForKassering() {
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+
 		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
@@ -74,6 +76,8 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentForKasseringForStsTokenFraJoarkadmin() {
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+
 		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
@@ -117,6 +121,8 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalOppheveSkjermingDokumentForKassering() {
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+
 		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -160,6 +166,8 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalFeileHvisDokumentIkkeFinnes() {
+		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+
 		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + 1, POST, new HttpEntity<>(createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
@@ -191,7 +199,8 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
-		var headers = createHeadersWithOboToken(AZP_NAME_JOARKADMIN, APP_CLAIM_SUB);
+		stubMsGraphMemberOfNotJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+		var headers = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
 
 		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + 1, POST, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
 

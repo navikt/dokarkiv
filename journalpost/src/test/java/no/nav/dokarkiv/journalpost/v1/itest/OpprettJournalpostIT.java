@@ -36,7 +36,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -1230,6 +1229,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldOppretteUtgaaendeJournalpostAndSetSporingmetadataWhenUserAndServiceuserToken() {
+		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE);
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithUserAndServiceUserToken());
@@ -1243,11 +1243,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNull(journalpost.getEndretKildeNavn());
 		assertEquals(SERVICE_USER_ID, journalpost.getOpprettetKildeNavn());
 		assertNull(journalpost.getChangeStamp().getUpdatedBy());
-		assertEquals(PERSON_USER_ID, journalpost.getChangeStamp().getCreatedBy());
+		assertEquals(NAV_USER_ID, journalpost.getChangeStamp().getCreatedBy());
 	}
 
 	@Test
 	public void shouldFerdigstilleUtgaaendeAndSetSporingmetadataWhenUserAndServiceuserToken() {
+		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithUserAndServiceUserToken());
@@ -1260,15 +1261,16 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(PERSON_USER_NAME, journalpost.getOpprettetAvNavn());
 		assertEquals(SERVICE_USER_ID, journalpost.getEndretKildeNavn());
 		assertEquals(SERVICE_USER_ID, journalpost.getOpprettetKildeNavn());
-		assertEquals(PERSON_USER_ID, journalpost.getChangeStamp().getUpdatedBy());
-		assertEquals(PERSON_USER_ID, journalpost.getChangeStamp().getCreatedBy());
+		assertEquals(NAV_USER_ID, journalpost.getChangeStamp().getUpdatedBy());
+		assertEquals(NAV_USER_ID, journalpost.getChangeStamp().getCreatedBy());
 	}
 
 	@Test
 	public void shouldOpprettJournalpostWithNavUserIdFromHeaderWhenNavUserIdHeaderSet() {
+		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE);
 
-		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, PERSON_USER_ID));
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, NAV_USER_ID));
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST, POST, requestEntity, OpprettJournalpostResponse.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -1279,14 +1281,15 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNull(journalpost.getEndretKildeNavn());
 		assertEquals(SERVICE_USER_ID, journalpost.getOpprettetKildeNavn());
 		assertNull(journalpost.getChangeStamp().getUpdatedBy());
-		assertEquals(PERSON_USER_ID, journalpost.getChangeStamp().getCreatedBy());
+		assertEquals(NAV_USER_ID, journalpost.getChangeStamp().getCreatedBy());
 	}
 
 	@Test
 	public void shouldOpprettAndFerdigstillJournalpostWithNavUserIdFromHeaderWhenNavUserIdHeaderSet() {
+		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
 
-		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, PERSON_USER_ID));
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, NAV_USER_ID));
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -1296,8 +1299,8 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(PERSON_USER_NAME, journalpost.getOpprettetAvNavn());
 		assertEquals(SERVICE_USER_ID, journalpost.getEndretKildeNavn());
 		assertEquals(SERVICE_USER_ID, journalpost.getOpprettetKildeNavn());
-		assertEquals(PERSON_USER_ID, journalpost.getChangeStamp().getUpdatedBy());
-		assertEquals(PERSON_USER_ID, journalpost.getChangeStamp().getCreatedBy());
+		assertEquals(NAV_USER_ID, journalpost.getChangeStamp().getUpdatedBy());
+		assertEquals(NAV_USER_ID, journalpost.getChangeStamp().getCreatedBy());
 	}
 
 	@Test

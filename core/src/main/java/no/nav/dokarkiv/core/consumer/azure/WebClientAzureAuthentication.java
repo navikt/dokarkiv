@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.consumer.azure;
 
+import org.slf4j.MDC;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -8,21 +9,23 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_SCOPE;
 import static no.nav.dokarkiv.core.NavHeaders.BEARER_TOKEN_PREFIX;
-import static no.nav.dokarkiv.core.util.ConverterUtils.getSubJwtTokenClaim;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static no.nav.dokarkiv.core.consumer.azure.AzureToken.isOnBehalfOfAzureToken;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 public record WebClientAzureAuthentication(AzureToken azureToken, String scope) implements ExchangeFilterFunction {
 
 	@Override
 	public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
-
+		MDC.put(MDC_SCOPE, scope);
 		String tokenValue = accessTokenFromRequest(request);
-		String sub = isBlank(tokenValue) ? null : getSubJwtTokenClaim(tokenValue);
+		String accessToken = isNotBlank(tokenValue) && isOnBehalfOfAzureToken(tokenValue) ? azureToken.onBehalfOfAccessToken(tokenValue, scope) : azureToken.clientCredentialAccessToken(scope);
 
 		return next.exchange(ClientRequest.from(request).headers((headers) ->
-				headers.setBearerAuth(azureToken.getAndCacheAzureOnBehalfOfAndClientCredentialToken(tokenValue, scope, sub))).build());
+						headers.setBearerAuth(accessToken))
+				.build());
 	}
 
 	private String accessTokenFromRequest(ClientRequest request) {

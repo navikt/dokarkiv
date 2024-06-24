@@ -57,7 +57,6 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -75,7 +74,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	@BeforeEach
 	public void setUp() {
 		super.setUp();
-
+		stubMsGraphGetUser(NAV_USER_ID);
 		stubAzure();
 	}
 
