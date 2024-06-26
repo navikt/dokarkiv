@@ -149,6 +149,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "ondemandtojoark-q1",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "padm2",
       "namespace": "teamsykefravr",
       "cluster": "dev-fss"
