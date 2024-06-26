@@ -128,9 +128,12 @@ public class TestdataFactory {
 		journalpost.addBruker(createBruker());
 		journalpost.addBruker(createBruker());
 		journalpost.addKryssReferanse(createKryssreferanse());
-		journalpost.setSaksrelasjon(createSaksrelasjon(journalpost, sakId));
 		journalpost.setTilleggsopplysninger(createTilleggsopplysninger());
 		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+
+		if (sakId != null) {
+			journalpost.setSaksrelasjon(createSaksrelasjon(journalpost, sakId));
+		}
 
 		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost));
 		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjon(journalpost));
