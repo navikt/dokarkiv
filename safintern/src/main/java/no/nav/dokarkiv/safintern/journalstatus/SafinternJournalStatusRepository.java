@@ -34,7 +34,7 @@ public class SafinternJournalStatusRepository {
 												  Long forrigeJournalpostId, Integer antallRader, EntityViewSetting<JournalpostView,
 												  CriteriaBuilder<JournalpostView>> evs) {
 		try {
-			var rader = ( antallRader == null || antallRader < 1 ) ? 200 : antallRader;
+			int rader = ( antallRader == null || antallRader < 1 ) ? 200 : antallRader;
 			CriteriaBuilder<Journalpost> cb = forrigeJournalpostId == null ?
 					createJournalpostCriteriaBuilderFirstPage(journalStatus, typer, fraDato, rader) :
 					createJournalpostCriteriaBuilder(journalStatus, typer, fraDato, rader, forrigeJournalpostId);

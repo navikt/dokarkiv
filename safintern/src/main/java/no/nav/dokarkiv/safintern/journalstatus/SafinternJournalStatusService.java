@@ -4,13 +4,10 @@ import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.view.EntityViewSetting;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.InvalidFieldRequestedException;
-import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.safintern.views.FetchPaths;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +32,7 @@ public class SafinternJournalStatusService {
 		this.repository = repository;
 	}
 
-	public List<JournalpostView> finnJournalposterStatus(FinnJournalposterStatusRequest	finnJournalposterStatusRequest, Set<String> fields) {
+	public List<JournalpostView> finnJournalposterStatus(FinnJournalposterStatusRequest finnJournalposterStatusRequest, Set<String> fields) {
 		JournalStatusCode journalstatus = finnJournalposterStatusRequest.journalstatus();
 		validateJournalstatus(journalstatus);
 		try {
@@ -43,22 +40,25 @@ public class SafinternJournalStatusService {
 			List<JournalpostView> journalpostViews = repository.finnJournalposterStatus(
 					journalstatus,
 					finnJournalposterStatusRequest.journalposttyper(),
-					parseDate(finnJournalposterStatusRequest),
+					validateAndParseDate(finnJournalposterStatusRequest),
 					finnJournalposterStatusRequest.etterPeker(),
 					finnJournalposterStatusRequest.foerste(),
 					evs);
 			return journalpostViews;
-		} catch (EmptyResultDataAccessException|NoResultException e) {
+		} catch (EmptyResultDataAccessException | NoResultException e) {
 			throw new DokumentInfoIkkeFunnetException("Fant ingen Journalposter med status=" + journalstatus);
 		}
 	}
 
-	private static  Date parseDate(FinnJournalposterStatusRequest finnJournalposterStatusRequest) {
-		return new Date(LocalDate.parse(finnJournalposterStatusRequest.fraDato())
-				.atStartOfDay()
-				.atZone(ZoneId.systemDefault())
-				.toEpochSecond()
-		);
+	private static Date validateAndParseDate(FinnJournalposterStatusRequest finnJournalposterStatusRequest) {
+		if (finnJournalposterStatusRequest.fraDato() != null) {
+			return new Date(LocalDate.parse(finnJournalposterStatusRequest.fraDato())
+					.atStartOfDay()
+					.atZone(ZoneId.systemDefault())
+					.toEpochSecond()
+			);
+		}
+		throw new UgyldigJournalstatusQueryStartDatoException();
 	}
 
 	private static void validateJournalstatus(JournalStatusCode journalstatus) {
@@ -76,7 +76,7 @@ public class SafinternJournalStatusService {
 			if (FetchPaths.erGyldig(path)) {
 				evs.fetch(path);
 			} else {
-				String feilmelding = "safintern/tilknyttetJournalpost forsøker fetch på ugyldig path=" + path;
+				String feilmelding = "safintern/finnjournalposterstatus forsøker fetch på ugyldig path=" + path;
 				log.error(feilmelding);
 				throw new InvalidFieldRequestedException(feilmelding);
 			}

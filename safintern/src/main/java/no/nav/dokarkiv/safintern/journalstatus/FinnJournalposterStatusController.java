@@ -36,9 +36,9 @@ public class FinnJournalposterStatusController {
 														 @RequestParam(required = false) Set<String> fields) {
 		JournalStatusCode journalstatus = finnJournalposterStatusRequest.journalstatus();
 		List<JournalpostTypeCode> journalposttyper = finnJournalposterStatusRequest.journalposttyper();
-		log.info("safintern/finnjournalposterstatus har mottatt kall om journalposter med status={} typer={}, fields={}", journalstatus, journalposttyper, fields);
+		log.info("safintern/finnjournalposterstatus har mottatt kall om journalposter med status={}, typer={}, fields={}", journalstatus, journalposttyper, fields);
 		List<JournalpostView> journalpostsView = safinternJournalStatusService.finnJournalposterStatus(finnJournalposterStatusRequest, fields);
-		log.info("safintern/finnjournalposterstatus hentet journalposter tilknyttet status={} typer={}", journalstatus, journalposttyper);
+		log.info("safintern/finnjournalposterstatus hentet journalposter med status={}. typer={}", journalstatus, journalposttyper);
 		return journalpostsView;
 	}
 }

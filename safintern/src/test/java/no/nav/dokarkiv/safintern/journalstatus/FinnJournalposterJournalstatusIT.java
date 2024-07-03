@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.safintern.journalpost;
+package no.nav.dokarkiv.safintern.journalstatus;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -7,8 +7,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
-import no.nav.dokarkiv.safintern.journalstatus.FinnJournalposterStatusRequest;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -29,7 +27,7 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.formattedDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class FinnJournalpostJournalstatusIT extends AbstractSafinternTest {
+public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	private static final String FINNJOURNALPOSTER_STATUS = "/rest/internal/safintern/finnjournalposterstatus";
 
 	@Test
@@ -174,38 +172,12 @@ public class FinnJournalpostJournalstatusIT extends AbstractSafinternTest {
 		assertThat(hoved).isNotNull();
 		assertThat(vedlegg).isNotNull();
 
-		if (andre != null) {
-			DokumentInfo andreHoved = getDokumentInfo(andre, JournalpostDokumentInfoRelasjon::isHoveddokument);
-			DokumentInfo andreVedlegg = getDokumentInfo(andre, JournalpostDokumentInfoRelasjon::isVedlegg);
-			assertThat(andreHoved).isNotNull();
-			assertThat(andreVedlegg).isNotNull();
-
-			Date createdDateGjenbrukt = andre.getChangeStamp().getCreatedDate();
-			String gjenbruktNowIso = formattedDate().toFormatter().format(createdDateGjenbrukt.toInstant().atZone(ZoneId.of("UTC"))) + "+00:00";
-			return responseTemplate
-					.replace("opprettet_replace", nowIso)
-					.replace("opprettet_b_replace", gjenbruktNowIso)
-					.replace("status_replace", foerste.getJournalstatus().toString())
-					.replace("referanseId_replace", foerste.getKanalReferanseId())
-					.replace("referanseId_b_replace", andre.getKanalReferanseId())
-					.replace("journalpostId_replace", foerste.getJournalpostId().toString())
-					.replace("journalpostId_b_replace", andre.getJournalpostId().toString())
-					.replace("dokumentInfoId_hoveddokument_replace", hoved.getDokumentInfoId().toString())
-					.replace("dokumentInfoId_hoveddokument_b_replace", andreHoved.getDokumentInfoId().toString())
-					.replace("dokumentInfoId_vedlegg_replace", vedlegg.getDokumentInfoId().toString())
-					.replace("dokumentInfoId_vedlegg_b_replace", andreVedlegg.getDokumentInfoId().toString())
-					.replace("sakId_replace", foerste.getSaksrelasjon().getSakId().toString())
-					.replace("logiskVedleggId_hoveddokument_replace", hoved.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString())
-					.replace("logiskVedleggId_vedlegg_replace", vedlegg.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString())
-					.replace("logiskVedleggId_hoveddokument_b_replace", andreHoved.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString())
-					.replace("logiskVedleggId_vedlegg_b_replace", andreVedlegg.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString());
-		}
 		Optional<DokumentInfo> vedlegg2 = foerste.getJournalpostDokumentInfoRelasjonerAdmin().stream()
 				.filter(JournalpostDokumentInfoRelasjon::isVedlegg)
 				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
 				.filter(dok -> !dok.getDokumentInfoId().equals(vedlegg.getDokumentInfoId()))
 				.findFirst();
-		return responseTemplate
+		String replace = responseTemplate
 				.replace("dokumentInfoId_vedleggb_replace", vedlegg2.map(DokumentInfo::getDokumentInfoId).map(String::valueOf).orElse(""))
 				.replace("logiskVedleggId_vedleggb_replace", vedlegg2.map(x -> x.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString()).orElse(""))
 				.replace("opprettet_replace", nowIso)
@@ -217,9 +189,32 @@ public class FinnJournalpostJournalstatusIT extends AbstractSafinternTest {
 				.replace("sakId_replace", foerste.getSaksrelasjon() != null ? foerste.getSaksrelasjon().getSakId().toString() : "")
 				.replace("logiskVedleggId_hoveddokument_replace", hoved.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString())
 				.replace("logiskVedleggId_vedlegg_replace", vedlegg.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString());
+
+		if (andre != null) {
+			return mapStringResponseSecondJournalpost(andre, replace);
+		}
+		return replace;
 	}
 
-	private static @NotNull DokumentInfo getDokumentInfo(Journalpost foerste, Predicate<JournalpostDokumentInfoRelasjon> isHoveddokument) {
+	private static String mapStringResponseSecondJournalpost(Journalpost andre, String responseTemplate) {
+		DokumentInfo andreHoved = getDokumentInfo(andre, JournalpostDokumentInfoRelasjon::isHoveddokument);
+		DokumentInfo andreVedlegg = getDokumentInfo(andre, JournalpostDokumentInfoRelasjon::isVedlegg);
+		assertThat(andreHoved).isNotNull();
+		assertThat(andreVedlegg).isNotNull();
+
+		Date createdDateGjenbrukt = andre.getChangeStamp().getCreatedDate();
+		String gjenbruktNowIso = formattedDate().toFormatter().format(createdDateGjenbrukt.toInstant().atZone(ZoneId.of("UTC"))) + "+00:00";
+		return responseTemplate
+				.replace("opprettet_b_replace", gjenbruktNowIso)
+				.replace("referanseId_b_replace", andre.getKanalReferanseId())
+				.replace("journalpostId_b_replace", andre.getJournalpostId().toString())
+				.replace("dokumentInfoId_hoveddokument_b_replace", andreHoved.getDokumentInfoId().toString())
+				.replace("dokumentInfoId_vedlegg_b_replace", andreVedlegg.getDokumentInfoId().toString())
+				.replace("logiskVedleggId_hoveddokument_b_replace", andreHoved.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_vedlegg_b_replace", andreVedlegg.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString());
+	}
+
+	private static DokumentInfo getDokumentInfo(Journalpost foerste, Predicate<JournalpostDokumentInfoRelasjon> isHoveddokument) {
 		return foerste.getJournalpostDokumentInfoRelasjonerAdmin().stream()
 				.filter(isHoveddokument)
 				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo).findFirst().get();
