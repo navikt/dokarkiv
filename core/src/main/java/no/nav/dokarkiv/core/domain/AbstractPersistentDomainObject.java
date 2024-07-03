@@ -18,5 +18,5 @@ import java.io.Serializable;
 @ToString
 public abstract class AbstractPersistentDomainObject implements Serializable {
 	@Embedded
-	protected ChangeStamp changeStamp;
+	private ChangeStamp changeStamp;
 }
