@@ -549,6 +549,11 @@
       "app": "dokumentfordeling",
       "namespace": "arbeidsgiver",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "saas-proxy",
+      "namespace": "teamcrm",
+      "cluster": "dev-gcp"
     }
   ]
 }
