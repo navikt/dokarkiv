@@ -1,6 +1,9 @@
 package no.nav.dokarkiv.safintern.journalstatus;
 
-import com.blazebit.persistence.CriteriaBuilder;
+import com.blazebit.persistence.DefaultKeysetPage;
+import com.blazebit.persistence.KeysetPage;
+import com.blazebit.persistence.PagedList;
+import com.blazebit.persistence.PaginatedCriteriaBuilder;
 import com.blazebit.persistence.view.EntityViewSetting;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -13,11 +16,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -25,6 +29,7 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class SafinternJournalStatusService {
 	private static final EnumSet<JournalStatusCode> GYLDIGE_JOURNALSTATUSER = EnumSet.of(JournalStatusCode.U, JournalStatusCode.UB);
+	public static final int MAX_PAGE_SIZE = 1000;
 
 	private final SafinternJournalStatusRepository repository;
 
@@ -32,21 +37,31 @@ public class SafinternJournalStatusService {
 		this.repository = repository;
 	}
 
-	public List<JournalpostView> finnJournalposterStatus(FinnJournalposterStatusRequest finnJournalposterStatusRequest, Set<String> fields) {
+	public PaginatedJournalpostView finnJournalposterStatus(FinnJournalposterStatusRequest finnJournalposterStatusRequest, Set<String> fields) {
 		JournalStatusCode journalstatus = finnJournalposterStatusRequest.journalstatus();
 		validateJournalstatus(journalstatus);
+		Integer antallRader = finnJournalposterStatusRequest.antallRader();
+		int rader = validateAndParseAntallRader(antallRader);
+		KeysetPage keysetPage = parseKeysetPage(finnJournalposterStatusRequest.etterPeker());
 		try {
-			var evs = fetchDokument(fields);
-			List<JournalpostView> journalpostViews = repository.finnJournalposterStatus(
+			PagedList<JournalpostView> journalpostViews = repository.finnJournalposterStatus(
 					journalstatus,
 					finnJournalposterStatusRequest.journalposttyper(),
 					validateAndParseDate(finnJournalposterStatusRequest),
-					finnJournalposterStatusRequest.etterPeker(),
-					finnJournalposterStatusRequest.foerste(),
-					evs);
-			return journalpostViews;
+					fetchDokument(fields, rader, keysetPage));
+			return new PaginatedJournalpostView(journalpostViews, journalpostViews.getSize(), journalpostViews.getTotalSize(), serializeKeysetPage(journalpostViews.getKeysetPage()));
 		} catch (EmptyResultDataAccessException | NoResultException e) {
 			throw new DokumentInfoIkkeFunnetException("Fant ingen Journalposter med status=" + journalstatus);
+		}
+	}
+
+	private static int validateAndParseAntallRader(Integer antallRader) {
+		if (antallRader == null || antallRader < 1) {
+			return MAX_PAGE_SIZE;
+		} else if (antallRader > MAX_PAGE_SIZE) {
+			throw new UgyldigJournalstatusQueryPageSizeException(antallRader);
+		} else {
+			return antallRader;
 		}
 	}
 
@@ -67,11 +82,31 @@ public class SafinternJournalStatusService {
 		}
 	}
 
-	private static EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> fetchDokument(Set<String> fields) {
-		if (fields == null || fields.isEmpty()) {
-			return EntityViewSetting.create(JournalpostView.class);
+	private KeysetPage parseKeysetPage(String nextPage) {
+		if (nextPage == null || nextPage.isEmpty()) {
+			return null;
 		}
-		var evs = EntityViewSetting.create(JournalpostView.class);
+		var s = new String(Base64.getDecoder().decode(nextPage));
+		Long[] lowestJPID = new Long[]{Long.parseLong(s.split(":")[0])};
+		Long[] highestJPID = new Long[]{Long.parseLong(s.split(":")[1])};
+		return new DefaultKeysetPage(0, 1, lowestJPID, highestJPID, null);
+	}
+
+	private String serializeKeysetPage(KeysetPage keysetPage) {
+		if (keysetPage == null) {
+			return "";
+		}
+		return Base64.getEncoder().encodeToString(
+				(keysetPage.getLowest().getTuple()[0] + ":" + keysetPage.getHighest().getTuple()[0]).getBytes(StandardCharsets.UTF_8)
+		);
+	}
+
+	private static EntityViewSetting<JournalpostView, PaginatedCriteriaBuilder<JournalpostView>> fetchDokument(Set<String> fields, int maxResults, KeysetPage keysetPage) {
+		if (fields == null || fields.isEmpty()) {
+			return EntityViewSetting.create(JournalpostView.class, keysetPage != null ? 1 : 0, maxResults).withKeysetPage(keysetPage);
+		}
+		var evs = EntityViewSetting.create(JournalpostView.class, keysetPage != null ? 1 : 0, maxResults).withKeysetPage(keysetPage);
+
 		for (String path : fields) {
 			if (FetchPaths.erGyldig(path)) {
 				evs.fetch(path);

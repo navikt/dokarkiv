@@ -9,6 +9,7 @@ public record FinnJournalposterStatusRequest(
 		JournalStatusCode journalstatus,
 		String fraDato,
 		List<JournalpostTypeCode> journalposttyper,
-		Integer foerste,
-		Long etterPeker
-) { }
+		Integer antallRader,
+		String etterPeker
+) {
+}
