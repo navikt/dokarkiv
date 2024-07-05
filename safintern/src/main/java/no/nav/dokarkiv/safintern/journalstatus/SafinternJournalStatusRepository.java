@@ -13,7 +13,8 @@ import no.nav.dokarkiv.safintern.views.JournalpostView;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -28,12 +29,12 @@ public class SafinternJournalStatusRepository {
 		this.evm = evm;
 	}
 
-	PagedList<JournalpostView> finnJournalposterStatus(JournalStatusCode journalStatus, List<JournalpostTypeCode> typer, Date fraDato,
+	PagedList<JournalpostView> finnJournalposterStatus(JournalStatusCode journalStatus, List<JournalpostTypeCode> typer, Instant fraDato,
 													   EntityViewSetting<JournalpostView, PaginatedCriteriaBuilder<JournalpostView>> evs) {
 		CriteriaBuilder<Journalpost> cb = cbf.create(em, Journalpost.class, "j")
 				.where("j.journalstatus").eq(journalStatus)
 				.where("j.journalposttype").in(typer)
-				.where("j.changeStamp.createdDate").gt(fraDato)
+				.where("j.changeStamp.createdDate").gt(Timestamp.from(fraDato))
 				.orderByDesc("j.journalpostId");
 
 		PaginatedCriteriaBuilder<JournalpostView> journalpostBuilder = evm.applySetting(evs, cb);
