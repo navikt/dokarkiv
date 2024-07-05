@@ -38,7 +38,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		FinnJournalposterStatusRequest finnJournalposterStatusRequestTo = createRequest(JournalStatusCode.U);
 		String responseTo = finnJournalposterStatusRest(finnJournalposterStatusRequestTo).getBody();
 
-		assertThat(responseTo).isEqualToIgnoringWhitespace("{\"journalposter\":[],\"count\":0,\"totalCount\":0,\"nextPage\":\"\"}");
+		assertThat(responseTo).isEqualToIgnoringWhitespace("{\"journalposter\":[],\"antallRader\":0,\"totaltAntallRader\":0,\"page\":1,\"totalPages\":0,\"nextPage\":\"\"}");
 	}
 
 	@Test
@@ -59,25 +59,25 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		ResponseEntity<String> responseAll = finnJournalposterStatusRest(finnJournalposterAllStatusRequest);
 
 		assertThat(responseAll.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(responseAll.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost1, utgaattJournalpost2, classpathResourceToString("/journalstatus/journalpost-journalstatus-response-2-journalposter.json"), 2, 2, generateNextPage(utgaattJournalpost2, utgaattJournalpost1)));
+		assertThat(responseAll.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost1, utgaattJournalpost2, classpathResourceToString("/journalstatus/journalpost-journalstatus-response-2-journalposter.json"), 2, 2, 1, 1, generateNextPage(1, utgaattJournalpost2, utgaattJournalpost1)));
 
 		FinnJournalposterStatusRequest finnJournalposterStatusPage1Request = createRequest(JournalStatusCode.U, 1, null);
 		ResponseEntity<String> responsePage1 = finnJournalposterStatusRest(finnJournalposterStatusPage1Request);
 
 		assertThat(responsePage1.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(responsePage1.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost2, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2));
+		assertThat(responsePage1.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost2, null, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2, 1, 2, null));
 
-		FinnJournalposterStatusRequest finnJournalposterStatusPage2Request = createRequest(JournalStatusCode.U, 1, generateNextPage(utgaattJournalpost2));
+		FinnJournalposterStatusRequest finnJournalposterStatusPage2Request = createRequest(JournalStatusCode.U, 1, generateNextPage(1, utgaattJournalpost2));
 		ResponseEntity<String> responsePage2 = finnJournalposterStatusRest(finnJournalposterStatusPage2Request);
 
 		assertThat(responsePage2.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(responsePage2.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost1, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2));
+		assertThat(responsePage2.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost1, null, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2, 2, 2, null));
 
-		FinnJournalposterStatusRequest finnJournalposterStatusPage3Request = createRequest(JournalStatusCode.U, 1, generateNextPage(utgaattJournalpost2, utgaattJournalpost1));
+		FinnJournalposterStatusRequest finnJournalposterStatusPage3Request = createRequest(JournalStatusCode.U, 1, generateNextPage(2, utgaattJournalpost2, utgaattJournalpost1));
 		ResponseEntity<String> responsePage3 = finnJournalposterStatusRest(finnJournalposterStatusPage3Request);
 
 		assertThat(responsePage3.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(responsePage3.getBody()).isEqualToIgnoringWhitespace("{\"journalposter\":[],\"count\":0,\"totalCount\":2,\"nextPage\":\"" + generateNextPage(utgaattJournalpost2, utgaattJournalpost1) + "\"}");
+		assertThat(responsePage3.getBody()).isEqualToIgnoringWhitespace("{\"journalposter\":[],\"antallRader\":0,\"totaltAntallRader\":2,\"page\":3,\"totalPages\":2,\"nextPage\":\"" + generateNextPage(3, utgaattJournalpost2, utgaattJournalpost1) + "\"}");
 	}
 
 	@Test
@@ -97,20 +97,26 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 			String lastSeen = null;
 			int countReturned = 0;
 			MinimalViableJournalpostForTest previousJournalpost = null;
+			int totalPages, currentPage;
 			do {
 				FinnJournalposterStatusRequest finnJournalposterAllStatusRequest = createRequest(JournalStatusCode.U, pageSize, lastSeen);
 				ResponseEntity<PaginatedAnyViewForTest> response = finnJournalposterStatusRest(finnJournalposterAllStatusRequest, PaginatedAnyViewForTest.class);
 				assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 				PaginatedAnyViewForTest body = response.getBody();
 
-				if (countReturned > 0 && body.count > 0) {
+				if (countReturned > 0 && body.antallRader > 0) {
 					assertThat(body.journalposter.get(0).journalpostId).isEqualTo(previousJournalpost.journalpostId - 1);
 				}
 
-				previousJournalpost = body.count > 0 ? body.journalposter.get(body.journalposter.size() - 1) : null;
+				previousJournalpost = body.antallRader > 0 ? body.journalposter.get(body.journalposter.size() - 1) : null;
 				lastSeen = body.nextPage;
-				countReturned = body.count;
+				countReturned = body.antallRader;
+				totalPages = body.totalPages;
+				currentPage = body.page;
 			} while (countReturned > 0);
+			assertThat(currentPage)
+					.as("Sjekk at vi har iterert forbi siste side når vi får tomt resultat")
+					.isEqualTo(totalPages + 1);
 		}
 	}
 
@@ -213,10 +219,10 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	}
 
 	private static String mapStringResponse(Journalpost originalJournalpost, String responseTemplate, int count, int totalcount) {
-		return mapStringResponse(originalJournalpost, null, responseTemplate, count, totalcount, null);
+		return mapStringResponse(originalJournalpost, null, responseTemplate, count, totalcount, 1, 1, null);
 	}
 
-	private static String mapStringResponse(Journalpost foerste, Journalpost andre, String responseTemplate, int count, int totalcount, String nextPage) {
+	private static String mapStringResponse(Journalpost foerste, Journalpost andre, String responseTemplate, int count, int totalcount, int currentPage, int totalPages, String nextPage) {
 		Date createdDate = foerste.getChangeStamp().getCreatedDate();
 		String nowIso = formattedDate().toFormatter().format(createdDate.toInstant().atZone(ZoneId.of("UTC"))) + "+00:00";
 
@@ -231,11 +237,13 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 				.filter(dok -> !dok.getDokumentInfoId().equals(vedlegg.getDokumentInfoId()))
 				.findFirst();
 		String replace = responseTemplate
-				.replace("nextpage_replace", nextPage != null ? nextPage : generateNextPage(foerste))
+				.replace("nextpage_replace", nextPage != null ? nextPage : generateNextPage(currentPage, foerste))
 				.replace("dokumentInfoId_vedleggb_replace", vedlegg2.map(DokumentInfo::getDokumentInfoId).map(String::valueOf).orElse(""))
 				.replace("logiskVedleggId_vedleggb_replace", vedlegg2.map(x -> x.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString()).orElse(""))
 				.replace("count_total_replace", "" + totalcount)
 				.replace("count_replace", "" + count)
+				.replace("current_page_replace", "" + currentPage)
+				.replace("total_pages_replace", "" + totalPages)
 				.replace("opprettet_replace", nowIso)
 				.replace("status_replace", foerste.getJournalstatus().toString())
 				.replace("referanseId_replace", foerste.getKanalReferanseId())
@@ -252,10 +260,10 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		return replace;
 	}
 
-	private static String generateNextPage(Journalpost... journalposter) {
+	private static String generateNextPage(int currentpage, Journalpost... journalposter) {
 		return
 				Base64.getEncoder().encodeToString(
-						(journalposter[0].getJournalpostId() + ":" + journalposter[journalposter.length - 1].getJournalpostId()).getBytes(StandardCharsets.UTF_8));
+						(journalposter[0].getJournalpostId() + ":" + journalposter[journalposter.length - 1].getJournalpostId() + ":" + currentpage).getBytes(StandardCharsets.UTF_8));
 	}
 
 	private static String mapStringResponseSecondJournalpost(Journalpost andre, String responseTemplate) {
@@ -284,8 +292,10 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 
 	record PaginatedAnyViewForTest(
 			List<MinimalViableJournalpostForTest> journalposter,
-			int count,
-			long totalCount,
+			int page,
+			int totalPages,
+			int antallRader,
+			long totaltAntallRader,
 			String nextPage) {
 	}
 

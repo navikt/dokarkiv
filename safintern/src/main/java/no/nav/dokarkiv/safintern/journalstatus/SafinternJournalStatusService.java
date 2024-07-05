@@ -43,13 +43,16 @@ public class SafinternJournalStatusService {
 		Integer antallRader = finnJournalposterStatusRequest.antallRader();
 		int rader = validateAndParseAntallRader(antallRader);
 		KeysetPage keysetPage = parseKeysetPage(finnJournalposterStatusRequest.etterPeker());
+		int currentPage = parsePreviousPageNo(finnJournalposterStatusRequest.etterPeker()) + 1;
 		try {
 			PagedList<JournalpostView> journalpostViews = repository.finnJournalposterStatus(
 					journalstatus,
 					finnJournalposterStatusRequest.journalposttyper(),
 					validateAndParseDate(finnJournalposterStatusRequest),
 					fetchDokument(fields, rader, keysetPage));
-			return new PaginatedJournalpostView(journalpostViews, journalpostViews.getSize(), journalpostViews.getTotalSize(), serializeKeysetPage(journalpostViews.getKeysetPage()));
+			return new PaginatedJournalpostView(journalpostViews, journalpostViews.getSize(), journalpostViews.getTotalSize(),
+					currentPage, journalpostViews.getTotalPages(),
+					serializeKeysetPage(journalpostViews.getKeysetPage(), currentPage));
 		} catch (EmptyResultDataAccessException | NoResultException e) {
 			throw new DokumentInfoIkkeFunnetException("Fant ingen Journalposter med status=" + journalstatus);
 		}
@@ -82,6 +85,14 @@ public class SafinternJournalStatusService {
 		}
 	}
 
+	private int parsePreviousPageNo(String nextPage) {
+		if (nextPage == null || nextPage.isEmpty()) {
+			return 0;
+		}
+		var s = new String(Base64.getDecoder().decode(nextPage));
+		return Integer.parseInt(s.split(":")[2]);
+	}
+
 	private KeysetPage parseKeysetPage(String nextPage) {
 		if (nextPage == null || nextPage.isEmpty()) {
 			return null;
@@ -92,12 +103,12 @@ public class SafinternJournalStatusService {
 		return new DefaultKeysetPage(0, 1, lowestJPID, highestJPID, null);
 	}
 
-	private String serializeKeysetPage(KeysetPage keysetPage) {
+	private String serializeKeysetPage(KeysetPage keysetPage, int currentPage) {
 		if (keysetPage == null) {
 			return "";
 		}
 		return Base64.getEncoder().encodeToString(
-				(keysetPage.getLowest().getTuple()[0] + ":" + keysetPage.getHighest().getTuple()[0]).getBytes(StandardCharsets.UTF_8)
+				(keysetPage.getLowest().getTuple()[0] + ":" + keysetPage.getHighest().getTuple()[0] + ":" + currentPage).getBytes(StandardCharsets.UTF_8)
 		);
 	}
 

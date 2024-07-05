@@ -6,7 +6,9 @@ import java.util.List;
 
 public record PaginatedJournalpostView(
 		List<JournalpostView> journalposter,
-		int count,
-		long totalCount,
+		int antallRader,
+		long totaltAntallRader,
+		int page,
+		int totalPages,
 		String nextPage) {
 }

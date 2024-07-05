@@ -135,7 +135,9 @@
       "utsendingskanal": "NAV_NO"
     }
   ],
-  "count": count_replace,
-  "totalCount": count_total_replace,
+  "antallRader": count_replace,
+  "totaltAntallRader": count_total_replace,
+  "page": current_page_replace,
+  "totalPages": total_pages_replace,
   "nextPage": "nextpage_replace"
 }
