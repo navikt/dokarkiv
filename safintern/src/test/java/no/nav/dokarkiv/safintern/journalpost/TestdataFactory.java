@@ -96,7 +96,7 @@ public class TestdataFactory {
 	static final String GSAK_ORGNR = "812345678";
 	private static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2023-08-11T12:01:01.001Z"), ZoneId.of("Europe/Oslo"));
 
-	static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(Long sakId) {
+	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(Long sakId) {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
 				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
@@ -128,9 +128,12 @@ public class TestdataFactory {
 		journalpost.addBruker(createBruker());
 		journalpost.addBruker(createBruker());
 		journalpost.addKryssReferanse(createKryssreferanse());
-		journalpost.setSaksrelasjon(createSaksrelasjon(journalpost, sakId));
 		journalpost.setTilleggsopplysninger(createTilleggsopplysninger());
 		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+
+		if (sakId != null) {
+			journalpost.setSaksrelasjon(createSaksrelasjon(journalpost, sakId));
+		}
 
 		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost));
 		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjon(journalpost));
@@ -175,7 +178,7 @@ public class TestdataFactory {
 		return journalpostDokumentInfoRelasjon;
 	}
 
-	static JournalpostDokumentInfoRelasjon createDokumentInfoVedleggRelasjon(Journalpost journalpost) {
+	public static JournalpostDokumentInfoRelasjon createDokumentInfoVedleggRelasjon(Journalpost journalpost) {
 		DokumentInfo dokumentInfo = createDokumentInfo(FIL_UUID_ARKIV_VEDLEGG, FIL_UUID_PRODUKSJON_VEDLEGG);
 		dokumentInfo.setOriginalJournalpost(journalpost);
 
@@ -267,7 +270,7 @@ public class TestdataFactory {
 		return filDetaljer;
 	}
 
-	static Sak createGsak() {
+	public static Sak createGsak() {
 		// sakId = 1 when persisted.
 		return Sak.builder()
 				.aktoerId(AKTOER_ID)
@@ -299,7 +302,7 @@ public class TestdataFactory {
 		return new UtsendingsInfo(journalpost, digitalPostadresse, epostvarsel, smsvarsel);
 	}
 
-	static DateTimeFormatterBuilder formattedDate() {
+	public static DateTimeFormatterBuilder formattedDate() {
 		return new DateTimeFormatterBuilder()
 				.parseCaseInsensitive()
 				.append(ISO_LOCAL_DATE)
