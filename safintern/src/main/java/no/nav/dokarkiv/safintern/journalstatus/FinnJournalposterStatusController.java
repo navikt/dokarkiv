@@ -37,7 +37,7 @@ public class FinnJournalposterStatusController {
 		List<JournalpostTypeCode> journalposttyper = finnJournalposterStatusRequest.journalposttyper();
 		log.info("safintern/finnjournalposterstatus har mottatt kall om journalposter med status={}, typer={}, fields={}", journalstatus, journalposttyper, fields);
 		var journalpostsView = safinternJournalStatusService.finnJournalposterStatus(finnJournalposterStatusRequest, fields);
-		log.info("safintern/finnjournalposterstatus hentet journalposter med status={}. typer={}", journalstatus, journalposttyper);
+		log.info("safintern/finnjournalposterstatus hentet journalposter med status={}. typer={}, side {} av {}", journalstatus, journalposttyper, journalpostsView.page(), journalpostsView.totalPages());
 		return journalpostsView;
 	}
 }
