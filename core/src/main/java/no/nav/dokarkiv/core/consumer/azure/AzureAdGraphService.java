@@ -59,7 +59,9 @@ public class AzureAdGraphService {
 				.users()
 				.byUserId(userObjectId)
 				.memberOf()
-				.get()
+				.get(requestConfig -> {
+					requestConfig.queryParameters.filter = "id eq " + groupObjectId;
+				})
 				.getValue();
 
 		List<String> groups = result.stream()
