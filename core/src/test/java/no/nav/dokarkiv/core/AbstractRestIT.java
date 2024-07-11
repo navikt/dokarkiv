@@ -394,7 +394,7 @@ public abstract class AbstractRestIT {
 	}
 
 	protected static void stubMsGraphMemberOf(String msUserId, String bodyFile) {
-		stubFor(get(urlMatching("/msgraph/users/" + msUserId + "/memberOf\\?\\$filter=id.*"))
+		stubFor(get(urlMatching("/msgraph/users/" + msUserId + "/memberOf\\?.*"))
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile(bodyFile)));

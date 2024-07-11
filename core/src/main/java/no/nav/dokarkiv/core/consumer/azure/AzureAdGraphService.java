@@ -60,7 +60,7 @@ public class AzureAdGraphService {
 				.byUserId(userObjectId)
 				.memberOf()
 				.get(requestConfig -> {
-					requestConfig.queryParameters.filter = "id eq " + groupObjectId;
+					requestConfig.queryParameters.filter = "id eq '" + groupObjectId + "'";
 				})
 				.getValue();
 
