@@ -47,6 +47,7 @@ import java.util.Objects;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 import static no.nav.dokarkiv.core.NavHeaders.NAV_CALL_ID;
@@ -393,7 +394,7 @@ public abstract class AbstractRestIT {
 	}
 
 	protected static void stubMsGraphMemberOf(String msUserId, String bodyFile) {
-		stubFor(get("/msgraph/users/" + msUserId + "/memberOf")
+		stubFor(get(urlMatching("/msgraph/users/" + msUserId + "/memberOf\\?.*"))
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile(bodyFile)));

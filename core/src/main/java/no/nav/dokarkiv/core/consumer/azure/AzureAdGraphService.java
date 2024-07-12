@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.consumer.azure;
 import com.azure.core.credential.TokenCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
 import com.microsoft.graph.models.DirectoryObject;
+import com.microsoft.graph.models.Entity;
 import com.microsoft.graph.models.User;
 import com.microsoft.graph.serviceclient.GraphServiceClient;
 import lombok.extern.slf4j.Slf4j;
@@ -54,22 +55,18 @@ public class AzureAdGraphService {
 
 	@Retryable(exclude = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId) {
-		log.info("Sjekk isUserMemberOfGroup for userObjectId={} på groupObjectId={}", userObjectId, groupObjectId);
 		List<DirectoryObject> result = graphServiceClient
 				.users()
 				.byUserId(userObjectId)
 				.memberOf()
-				.get()
+				.get(requestConfig -> {
+					requestConfig.queryParameters.filter = "id eq '" + groupObjectId + "'";
+				})
 				.getValue();
 
-		List<String> groups = result.stream()
-				.map(group -> group.getId())
-				.toList();
-
-		var containsCorrectGroup = groups.contains(groupObjectId);
-		log.info("Inni isUserMemberOfGroup der containsCorrectGroup={}", containsCorrectGroup);
-
-		return containsCorrectGroup;
+		return result != null && result.stream()
+				.map(Entity::getId)
+				.anyMatch(groupObjectId::equalsIgnoreCase);
 	}
 
 	private User getUser(String navIdent) {
