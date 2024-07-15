@@ -35,6 +35,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
     private final String mockBatchnavn = "mockBatchnavn";
     private final byte[] mockData = "mockData".getBytes();
     private final String mockFilnavn = "mockFilnavn";
+    private final String mockEksternReferanse = "mockEksternReferanse";
     private final JournalpostTypeCode VALID_JOURNALPOSTTYPECODE = JournalpostTypeCode.U;
     private final JournalpostTypeCode INVALID_JOURNALPOSTTYPECODE = JournalpostTypeCode.I;
     private final JournalStatusCode VALID_JOURNALSTATUSCODE = JournalStatusCode.R;
@@ -266,7 +267,8 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
                 mottaksKanal,
                 mockTilleggsopplysninger,
                 mockBatchnavn,
-                dokumentVarianter
+                dokumentVarianter,
+                mockEksternReferanse
         );
     }
 

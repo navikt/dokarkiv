@@ -41,4 +41,9 @@ public class MottaDokumentUtgaaendeSkanningRequest {
             description = "Liste av skannede dokumenter"
     )
     private List<DokumentVariant> dokumentvarianter;
+
+    @Schema(
+            description = "Ekstern referanse for journalpost"
+    )
+    private String eksternReferanseId;
 }
