@@ -350,6 +350,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "dp-rapportering",
+      "namespace": "teamdagpenger",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "bidrag-dokument-arkiv",
       "namespace": "bidrag",
       "cluster": "dev-fss"
