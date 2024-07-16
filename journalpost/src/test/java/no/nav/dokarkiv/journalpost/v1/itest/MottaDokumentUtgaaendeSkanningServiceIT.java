@@ -54,6 +54,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 	private final String mockBatchnavn = "mockBatchnavn";
 	private final byte[] mockData = "mockData".getBytes();
 	private final String mockFilnavn = "mockFilnavn";
+	private final String mockEksternReferanse = "mockEksternReferanse";
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
@@ -92,7 +93,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		assertEquals(VariantFormatCode.ORIGINAL, filDetaljer.getVariantFormat());
 		assertArrayEquals(mockData, dokumentfil.getFil());
 		assertEquals(mockBatchnavn, filDetaljer.getBatchNavn());
-
+		assertEquals(mockEksternReferanse, oppdatertJP.getKanalReferanseId());
 	}
 
 	@Test
@@ -305,7 +306,8 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 				mockMottaksKanal,
 				mockTilleggsopplysninger,
 				mockBatchnavn,
-				dokumentVarianter
+				dokumentVarianter,
+				mockEksternReferanse
 		);
 	}
 

@@ -66,6 +66,10 @@ public class MottaDokumentUtgaaendeSkanningService {
 			}
 			journalpost.setJournalDato(DateProvider.getToday());
 
+			if (request.getEksternReferanseId() != null) {
+				journalpost.setKanalReferanseId(request.getEksternReferanseId());
+			}
+
 			List<FilDetaljer> filDetaljerList = request.getDokumentvarianter()
 					.stream()
 					.map(dokumentVariant -> mapDokumentVariantToFildetaljer(dokumentVariant, request.getBatchnavn()))
