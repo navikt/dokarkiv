@@ -1,5 +1,9 @@
 package no.nav.dokarkiv.safintern.views;
 
+import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
+import no.nav.dokarkiv.core.domain.codes.InnsynCode;
+
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public record PaginatedAnyViewForTest(
@@ -10,6 +14,20 @@ public record PaginatedAnyViewForTest(
 		long totaltAntallRader,
 		String nextPage) {
 
-	public record MinimalViableJournalpostForTest(long journalpostId) {
+	public record MinimalViableJournalpostForTest(
+			long journalpostId,
+			List<MinimalViableDokumentinfoForTest> dokumenter,
+			InnsynCode innsyn,
+			String innsynsbeskrivelse,
+			MinimalRelevanteDatoer relevanteDatoer
+	) {
 	}
+
+	public record MinimalViableDokumentinfoForTest(
+			long dokumentInfoId,
+			DokumentKategoriCode kategori,
+			Boolean sensitivt) {
+	}
+
+	public record MinimalRelevanteDatoer(String lest) {}
 }
