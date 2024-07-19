@@ -9,8 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.InvalidFieldRequestedException;
+import no.nav.dokarkiv.safintern.UgyldigJournalpostQueryStartDatoException;
+import no.nav.dokarkiv.safintern.UgyldigQueryPageSizeException;
 import no.nav.dokarkiv.safintern.views.FetchPaths;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
+import no.nav.dokarkiv.safintern.views.PaginatedJournalpostView;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +66,7 @@ public class SafinternJournalStatusService {
 		if (antallRader == null || antallRader < 1) {
 			return MAX_PAGE_SIZE;
 		} else if (antallRader > MAX_PAGE_SIZE) {
-			throw new UgyldigJournalstatusQueryPageSizeException(antallRader);
+			throw new UgyldigQueryPageSizeException(antallRader);
 		} else {
 			return antallRader;
 		}
@@ -76,7 +79,7 @@ public class SafinternJournalStatusService {
 					.atZone(NORGE_ZONE)
 					.toInstant();
 		}
-		throw new UgyldigJournalstatusQueryStartDatoException();
+		throw new UgyldigJournalpostQueryStartDatoException();
 	}
 
 	private static void validateJournalstatus(JournalStatusCode journalstatus) {

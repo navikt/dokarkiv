@@ -23,6 +23,7 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyP
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.formattedDate;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -35,6 +36,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 		Long sakId = persistedSak.getSakId();
 		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		setSkjermingVedlegg(actualJournalpost);
 		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
 		utsendingsInfoTestRepository.persist(utsendingsInfo);
@@ -69,6 +71,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 		Long sakId = persistedSak.getSakId();
 		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		setSkjermingVedlegg(actualJournalpost);
 		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
 		utsendingsInfoTestRepository.persist(utsendingsInfo);

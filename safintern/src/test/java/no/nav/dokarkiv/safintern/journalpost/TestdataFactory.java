@@ -23,6 +23,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.Sak;
+import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 
@@ -94,9 +95,13 @@ public class TestdataFactory {
 	static final String FIL_UUID_ARKIV_VEDLEGG = "filUuidVedleggArkiv";
 	static final String FIL_UUID_PRODUKSJON_VEDLEGG = "filUuidVedleggProduksjon";
 	static final String GSAK_ORGNR = "812345678";
-	private static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2023-08-11T12:01:01.001Z"), ZoneId.of("Europe/Oslo"));
+	public static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2023-08-11T12:01:01.001Z"), ZoneId.of("Europe/Oslo"));
 
 	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(Long sakId) {
+		return createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(createSaksrelasjon(sakId));
+	}
+
+	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(Saksrelasjon saksrelasjon) {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
 				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
@@ -131,8 +136,9 @@ public class TestdataFactory {
 		journalpost.setTilleggsopplysninger(createTilleggsopplysninger());
 		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 
-		if (sakId != null) {
-			journalpost.setSaksrelasjon(createSaksrelasjon(journalpost, sakId));
+		if (saksrelasjon != null) {
+			journalpost.setSaksrelasjon(saksrelasjon);
+			saksrelasjon.setJournalpost(journalpost);
 		}
 
 		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost));
@@ -186,7 +192,7 @@ public class TestdataFactory {
 				.journalpost(journalpost)
 				.dokumentInfo(dokumentInfo)
 				.tilknyttetJournalpostSom(VEDLEGG)
-				.skjermingType(POL)
+				.skjermingType(null)
 				.build();
 
 		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
@@ -195,13 +201,16 @@ public class TestdataFactory {
 		return journalpostDokumentInfoRelasjon;
 	}
 
-	static no.nav.dokarkiv.core.domain.entities.Saksrelasjon createSaksrelasjon(Journalpost journalpost, Long sakId) {
+	static no.nav.dokarkiv.core.domain.entities.Saksrelasjon createSaksrelasjon(Long sakId, Journalpost... journalpost) {
 		no.nav.dokarkiv.core.domain.entities.Saksrelasjon saksrelasjon = no.nav.dokarkiv.core.domain.entities.Saksrelasjon.builder()
 				.fagsystem(FagsystemCode.FS22)
 				.sakId(sakId)
-				.journalpost(journalpost)
 				.feilregistrert(false)
 				.build();
+
+		if (journalpost.length > 0) {
+			saksrelasjon.setJournalpost(journalpost[0]);
+		}
 		saksrelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return saksrelasjon;
 	}
@@ -315,6 +324,14 @@ public class TestdataFactory {
 				.appendValue(SECOND_OF_MINUTE, 2)
 				// ikke avrunding i millis
 				.appendFraction(MILLI_OF_SECOND, 3, 3, true);
+	}
+
+	public static void setSkjermingVedlegg(Journalpost actualJournalpost) {
+		actualJournalpost.getJournalpostDokumentInfoRelasjoner().stream()
+				.filter(JournalpostDokumentInfoRelasjon::isVedlegg)
+				.forEach(vedlegg ->
+						vedlegg.setSkjermingType(POL)
+				);
 	}
 }
 

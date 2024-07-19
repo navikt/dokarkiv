@@ -25,6 +25,7 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysisk
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createHoveddokumentRelasjonGjenbruktDokumentInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.formattedDate;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -42,6 +43,7 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 		gjenbrukendeJournalpost.getJournalpostDokumentInfoRelasjoner().forEach(gjenbrukendeJournalpost::removeJournalpostDokumentInfoRelasjon);
 		gjenbrukendeJournalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjonGjenbruktDokumentInfo(gjenbrukendeJournalpost, opprinneligJournalpost.getDokumentInfoFromJpDokInfoRelasjoner(0)));
 		opprinneligJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		setSkjermingVedlegg(opprinneligJournalpost);
 		gjenbrukendeJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		Journalpost persistedJournalpost = journalpostTestRepository.persist(opprinneligJournalpost);
 		journalpostTestRepository.persist(gjenbrukendeJournalpost);
