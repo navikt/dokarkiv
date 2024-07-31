@@ -30,10 +30,15 @@ public class FinnJournalposterController {
 
 	@PostMapping(value = "finnjournalposter", produces = APPLICATION_JSON_VALUE)
 	public PaginatedJournalpostView finnJournalposter(@RequestBody FinnJournalposterRequest finnJournalposterRequest,
-															@RequestParam(required = false) Set<String> fields) {
-		log.info("safintern/finnjournalposter har mottatt kall om journalposter med fields={}", fields);
+													  @RequestParam(required = false) Set<String> fields) {
+		log.info("safintern/finnjournalposter har mottatt kall om journalposter med statuser={}, typer={}," +
+						" fraDato={}, tilDato={}, visFeilregistrerte={}, psakSakIds={}, gsakSakIds={}, fields={}",
+				finnJournalposterRequest.journalstatuser(), finnJournalposterRequest.journalposttyper(),
+				finnJournalposterRequest.fraDato(), finnJournalposterRequest.tilDato(), finnJournalposterRequest.visFeilregistrerte(),
+				finnJournalposterRequest.psakSakIds(), finnJournalposterRequest.gsakSakIds(), fields);
+		
 		var journalpostsView = safinternFinnJournalposterService.finnJournalposter(finnJournalposterRequest, fields);
-		log.info("safintern/finnjournalposter hentet journalposter med  side {} av {}", journalpostsView.page(), journalpostsView.totalPages());
+		log.info("safintern/finnjournalposter hentet journalposter med side {} av {}", journalpostsView.page(), journalpostsView.totalPages());
 		return journalpostsView;
 	}
 }

@@ -11,7 +11,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.InvalidFieldRequestedException;
 import no.nav.dokarkiv.safintern.UgyldigJournalpostQueryStartDatoException;
-import no.nav.dokarkiv.safintern.UgyldigQueryPageSizeException;
 import no.nav.dokarkiv.safintern.views.FetchPaths;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
 import no.nav.dokarkiv.safintern.views.PaginatedJournalpostView;
@@ -26,7 +25,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,8 +37,7 @@ import static java.util.function.Predicate.not;
 @Component
 @Transactional(readOnly = true)
 public class SafinternFinnJournalposterService {
-	private static final EnumSet<JournalStatusCode> GYLDIGE_JOURNALSTATUSER = EnumSet.of(JournalStatusCode.U, JournalStatusCode.UB);
-	public static final int MAX_PAGE_SIZE = 1000;
+	public static final int DEFAULT_PAGE_SIZE = 200;
 	public static final ZoneId NORGE_ZONE = ZoneId.of("Europe/Oslo");
 
 	private final SafinternFinnJournalposterRepository repository;
@@ -56,7 +53,7 @@ public class SafinternFinnJournalposterService {
 		boolean visKunFeilregistrerte = visFeilregistrerte && journalstatuser.isEmpty();
 
 		Integer antallRader = finnJournalposterRequest.antallRader();
-		int rader = validateAndParseAntallRader(antallRader);
+		int rader = parseAntallRader(antallRader);
 		KeysetPage keysetPage = parseKeysetPage(finnJournalposterRequest.etterPeker());
 		int currentPage = parsePreviousPageNo(finnJournalposterRequest.etterPeker()) + 1;
 		try {
@@ -78,30 +75,22 @@ public class SafinternFinnJournalposterService {
 		}
 	}
 
-	private static int validateAndParseAntallRader(Integer antallRader) {
+	private static int parseAntallRader(Integer antallRader) {
 		if (antallRader == null || antallRader < 1) {
-			return MAX_PAGE_SIZE;
-		} else if (antallRader > MAX_PAGE_SIZE) {
-			throw new UgyldigQueryPageSizeException(antallRader);
+			return DEFAULT_PAGE_SIZE;
 		} else {
 			return antallRader;
 		}
 	}
 
 	private static Optional<Instant> validateAndParseDate(String dateString) {
-			return Optional.ofNullable(dateString)
-					.filter(not(String::isBlank))
-					.map(date ->
-							LocalDate.parse(date)
-									.atStartOfDay()
-									.atZone(NORGE_ZONE)
-									.toInstant());
-	}
-
-	private void validateJournalstatuserAndVisFeilregistrerte(boolean visKunFeilregistrerte, List<JournalStatusCode> journalstatuser) {
-		if (visKunFeilregistrerte && !journalstatuser.isEmpty()) {
-			throw new RuntimeException("Naughty naughty!");
-		}
+		return Optional.ofNullable(dateString)
+				.filter(not(String::isBlank))
+				.map(date ->
+						LocalDate.parse(date)
+								.atStartOfDay()
+								.atZone(NORGE_ZONE)
+								.toInstant());
 	}
 
 	private int parsePreviousPageNo(String nextPage) {
@@ -149,10 +138,10 @@ public class SafinternFinnJournalposterService {
 		return evs;
 	}
 
-	public static boolean isUgyldigJournalstatus(JournalStatusCode journalstatus) {
-		return !GYLDIGE_JOURNALSTATUSER.contains(journalstatus);
-	}
-
+	// i T_BRUKER er kolonnen BRUKER_ID av typen CHAR(11). I motsetning til en vanlig VARCHAR-kolonne blir verdiene
+	// i denne kolonnen paddet til 11 tegn med space av databasen om verdien er kortere enn 11 tegn (dvs, et orgnr.).
+	// Vi må padde ut alle verdiene som er kortere enn 11 tegn i queryet for at vi skal få treff på disse verdiene i
+	// queryet vårt når vi gjør spørringen T_BRUKER.BRUKER_ID IN (identer fra queryparametre)
 	private List<String> padUserIdents(List<String> strings) {
 		if (strings == null) {
 			return emptyList();
@@ -164,7 +153,7 @@ public class SafinternFinnJournalposterService {
 	}
 
 	private static String padToEleven(String s) {
-		if(s.length() < 11) {
+		if (s.length() < 11) {
 			char[] newString = new char[11];
 			Arrays.fill(newString, s.length(), 11, ' ');
 			System.arraycopy(s.toCharArray(), 0, newString, 0, s.length());

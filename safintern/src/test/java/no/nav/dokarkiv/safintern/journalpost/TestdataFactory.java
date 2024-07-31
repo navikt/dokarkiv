@@ -138,7 +138,6 @@ public class TestdataFactory {
 
 		if (saksrelasjon != null) {
 			journalpost.setSaksrelasjon(saksrelasjon);
-			saksrelasjon.setJournalpost(journalpost);
 		}
 
 		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost));
