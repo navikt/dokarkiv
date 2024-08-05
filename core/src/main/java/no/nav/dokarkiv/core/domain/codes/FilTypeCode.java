@@ -19,7 +19,8 @@ public enum FilTypeCode implements CtiRelationship<FilTypeCode, String> {
 	AXML,
 	DXML,
 	JSON,
-	PNG;
+	PNG,
+	XLSX;
 	
 	/** {@inheritDoc} */
 	@Override
