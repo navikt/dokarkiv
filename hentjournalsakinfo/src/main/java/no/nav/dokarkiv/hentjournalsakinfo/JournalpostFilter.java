@@ -2,10 +2,8 @@ package no.nav.dokarkiv.hentjournalsakinfo;
 
 import lombok.Value;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterRequestTo;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusRequestTo;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -56,19 +54,6 @@ public class JournalpostFilter {
 		this.journalpostIdPeker = getPeker(finnJournalposterRequestTo.getEtterPeker());
 	}
 
-	public JournalpostFilter(FinnJournalposterStatusRequestTo finnJournalposterStatusRequestTo) {
-		this.fraDato = LocalDate.parse(finnJournalposterStatusRequestTo.getFraDato());
-		// Ikke brukt i denne
-		this.tilDato = null;
-		this.inkluderJournalStatus = Collections.singletonList(finnJournalposterStatusRequestTo.getJournalstatus().toString());
-		this.inkluderJournalpostType = finnJournalposterStatusRequestTo.getJournalposttyper().stream().map(Enum::name).collect(Collectors.toList());
-		// Kun tillatt å paginere forover
-		this.antallRader = finnJournalposterStatusRequestTo.getFoerste();
-		this.journalpostIdPeker = getPeker(finnJournalposterStatusRequestTo.getEtterPeker());
-		// Ikke brukt
-		this.alleIdenter = new ArrayList<>();
-		this.visFeilregistrerte = false;
-	}
 
 	private boolean isOrganisasjon(String ident) {
 		if (ident == null) {

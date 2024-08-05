@@ -5,9 +5,6 @@ import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterService;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusRequestTo;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusResponseTo;
-import no.nav.dokarkiv.hentjournalsakinfo.rjoark904.FinnJournalposterStatusService;
 import no.nav.security.token.support.core.api.Unprotected;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -26,12 +23,9 @@ import java.util.List;
 public class HentJournalsakinfoController {
 
 	private final FinnJournalposterService finnJournalposterService;
-	private final FinnJournalposterStatusService finnJournalposterStatusService;
 
-	public HentJournalsakinfoController(FinnJournalposterService finnJournalposterService,
-										FinnJournalposterStatusService finnJournalposterStatusService) {
+	public HentJournalsakinfoController(FinnJournalposterService finnJournalposterService) {
 		this.finnJournalposterService = finnJournalposterService;
-		this.finnJournalposterStatusService = finnJournalposterStatusService;
 	}
 
 	@Transactional(readOnly = true)
@@ -50,18 +44,5 @@ public class HentJournalsakinfoController {
 		log.info("rjoark900 fant og returnerer {} journalposter med request={}.", finnJournalposterResponseTo.getTilgangJournalposter().size(), finnJournalposterRequestTo);
 
 		return finnJournalposterResponseTo;
-	}
-
-	@Transactional(readOnly = true)
-	@PostMapping(value = "/finnjournalposterstatus")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark904"}, percentiles = {0.5, 0.95})
-	public FinnJournalposterStatusResponseTo finnJournalposterStatus(@RequestBody FinnJournalposterStatusRequestTo finnJournalposterStatusRequestTo) {
-
-		log.info("rjoark904 finner journalposter med request={}.", finnJournalposterStatusRequestTo);
-
-		FinnJournalposterStatusResponseTo finnJournalposterStatusResponseTo = finnJournalposterStatusService.finnJournalposterStatus(finnJournalposterStatusRequestTo);
-		log.info("rjoark904 fant og returnerer {} journalposter med request={}.", finnJournalposterStatusResponseTo.getTilgangJournalposter().size(), finnJournalposterStatusRequestTo);
-
-		return finnJournalposterStatusResponseTo;
 	}
 }
