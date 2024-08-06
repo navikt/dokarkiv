@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.JPEG;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PNG;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.XLSX;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.XML;
 import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
 import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileContentContainsValidMagicNumber;
@@ -38,11 +39,13 @@ class FilMagicNumberValidatorTest {
 		byte[] pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf");
 		byte[] jpegFile = classpathToInputStream("jpeg/2021_01_06_nasjonale_tiltak_16_9.jpg");
 		byte[] pngFile = classpathToInputStream("png/2021_01_06_nasjonale_tiltak.png");
+		byte[] xlsxFile = classpathToInputStream("ooxml/test.xlsx");
 		return Stream.of(
 				Arguments.of(pdfFile, PDF),
 				Arguments.of(jpegFile, JPEG),
 				Arguments.of(HexFormat.of().parseHex("0000000C6A5020200D0A870AFFD8FFEE"), JPEG),
 				Arguments.of(pngFile, PNG),
+				Arguments.of(xlsxFile, XLSX),
 				Arguments.of(null, XML)
 		);
 	}
@@ -55,7 +58,8 @@ class FilMagicNumberValidatorTest {
 				Arguments.of(pdfFile, PDF),
 				Arguments.of(jpegFile, JPEG),
 				Arguments.of(HexFormat.of().parseHex("230000000C6A5020200D0A870AFFD8FFEE"), JPEG),
-				Arguments.of(pngFile, PNG)
+				Arguments.of(pngFile, PNG),
+				Arguments.of(pdfFile, XLSX)
 		);
 	}
 
