@@ -10,14 +10,13 @@ import javax.validation.constraints.Positive;
 
 /**
  * Konfigurasjon for dokarkiv
- *
- * @author Joakim Bjørnstad, Jbit AS
  */
 @Data
 @ConfigurationProperties("dokarkiv")
 @Validated
 public class DokarkivProperties {
 
+	public static final String FAGSYSTEM_ARGUS_APP_NAME = "dsop-kontroll";
 	private final Database database = new Database();
 	private final Endpoints endpoints = new Endpoints();
 

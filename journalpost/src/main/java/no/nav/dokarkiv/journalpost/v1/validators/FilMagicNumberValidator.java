@@ -20,6 +20,8 @@ public class FilMagicNumberValidator {
 			of().parseHex("FF4FFF51")
 	);
 	public static final byte[] PNG_MAGIC_NUMBER = HexFormat.of().parseHex("89504E470D0A1A0A");
+	// OOXML er et arkiv-format (zip)
+	public static final byte[] OOXML_MAGIC_NUMBER = HexFormat.of().parseHex("504B0304");
 
 	public static boolean isFileContentContainsValidMagicNumber(String fileType, final byte[] fileContent) {
 		FilTypeCode filTypeCode = valueOf(FilTypeCode.class, fileType);
@@ -27,6 +29,7 @@ public class FilMagicNumberValidator {
 			case PDF, PDFA -> isValidPdfMagicNumber(fileContent);
 			case JPEG -> isValidJpegMagicNumber(fileContent);
 			case PNG -> isValidPngMagicNumber(fileContent);
+			case XLSX -> isValidOoxmlMagicNumber(fileContent);
 			default -> true;
 		};
 	}
@@ -41,6 +44,10 @@ public class FilMagicNumberValidator {
 
 	private static boolean isValidPngMagicNumber(final byte[] fileContent) {
 		return Arrays.equals(copyOf(fileContent, PNG_MAGIC_NUMBER.length), PNG_MAGIC_NUMBER);
+	}
+
+	private static boolean isValidOoxmlMagicNumber(byte[] fileContent) {
+		return Arrays.equals(copyOf(fileContent, OOXML_MAGIC_NUMBER.length), OOXML_MAGIC_NUMBER);
 	}
 
 	private static boolean isValidPdfMagicNumber(final byte[] fileContent) {

@@ -1,7 +1,9 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -25,10 +27,12 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.isConsumerFagsystemArgus;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+@Slf4j
 public class FerdigstillJournalpostValidator {
 
 	private static final EnumSet<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = EnumSet.of(M, MO, UB, D, R, OD, FL, FS, A);
@@ -105,7 +109,11 @@ public class FerdigstillJournalpostValidator {
 
 	private void verifyFildetaljerVariantFormat(Journalpost jp) {
 		try {
-			jp.verifyArkivVariantOfAllDocuments();
+			if (isConsumerFagsystemArgus()) {
+				verifyVarianterFagsystemArgus(jp);
+			} else {
+				jp.verifyArkivVariantOfAllDocuments();
+			}
 		} catch (InvalidJournalpostStructureException e) {
 			throw new KanIkkeFerdigstilleException("Journalposten mangler arkivvariant");
 		}
@@ -116,6 +124,18 @@ public class FerdigstillJournalpostValidator {
 				throw new KanIkkeFerdigstilleException("Journalposten inneholder flere dokumentvarianter med samme variantformat. Følgende duplikate varianter ble funnet: " + e.getMessage());
 			}
 		});
+	}
+
+	// For å støtte arkivering av Excel-filer fra Argus uten ARKIV-variant
+	private void verifyVarianterFagsystemArgus(Journalpost journalpost) {
+		try {
+			journalpost.verifyArkivVariantOfAllDocuments();
+		} catch (InvalidJournalpostStructureException e) {
+			if (journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getFildetaljerListe()
+						.stream().filter(filDetaljer -> filDetaljer.getVariantFormat() == VariantFormatCode.ORIGINAL).count() != 1) {
+				throw new KanIkkeFerdigstilleException("Argus-arkivering må ha hoveddokument med minst en original-variant");
+			}
+		}
 	}
 
 	private void verifyAtLeastOneBrukerExists(Journalpost jp) {
