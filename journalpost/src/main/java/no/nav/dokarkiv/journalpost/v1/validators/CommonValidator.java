@@ -86,6 +86,6 @@ public final class CommonValidator {
 	}
 
 	static boolean isConsumerFagsystemArgus() {
-		return MDC.get(MDC_CONSUMER_ID) != null && (MDC.get(MDC_CONSUMER_ID).contains(FAGSYSTEM_ARGUS_APP_NAME) || MDC.get(MDC_CONSUMER_ID).contains("srvskanmotreferanse"));
+		return MDC.get(MDC_CONSUMER_ID) != null && MDC.get(MDC_CONSUMER_ID).contains(FAGSYSTEM_ARGUS_APP_NAME);
 	}
 }
