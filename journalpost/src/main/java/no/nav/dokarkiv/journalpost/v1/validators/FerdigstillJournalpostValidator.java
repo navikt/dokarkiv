@@ -12,14 +12,12 @@ import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
-import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 import static java.lang.String.format;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
@@ -29,7 +27,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
-import static no.nav.dokarkiv.core.properties.DokarkivProperties.FAGSYSTEM_ARGUS_APP_NAME;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.isConsumerFagsystemArgus;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -111,7 +109,7 @@ public class FerdigstillJournalpostValidator {
 
 	private void verifyFildetaljerVariantFormat(Journalpost jp) {
 		try {
-			if (MDC.get(MDC_CONSUMER_ID) != null && MDC.get(MDC_CONSUMER_ID).contains(FAGSYSTEM_ARGUS_APP_NAME)) {
+			if (isConsumerFagsystemArgus()) {
 				verifyVarianterFagsystemArgus(jp);
 			} else {
 				jp.verifyArkivVariantOfAllDocuments();

@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
-import org.slf4j.MDC;
 
 import java.util.Arrays;
 import java.util.HexFormat;
@@ -17,13 +16,12 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.copyOf;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDFA;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.valueOf;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ORIGINAL;
-import static no.nav.dokarkiv.core.properties.DokarkivProperties.FAGSYSTEM_ARGUS_APP_NAME;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.isConsumerFagsystemArgus;
 import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
 import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileContentContainsValidMagicNumber;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -66,7 +64,7 @@ public final class DokumentValidator {
 			dokument.getDokumentvarianter().forEach(dokumentVariant -> validateDokumentvariant(dokumentIdx, dokumentVariant));
 			validateUniqueDokumentvariant(dokument.getDokumentvarianter(), dokument);
 			// Spesialhåndtering for Argus (dsop-kontroll) slik at de kan ferdigstille Excel-filer som ORIGINAL variant
-			if(MDC.get(MDC_CONSUMER_ID) != null && MDC.get(MDC_CONSUMER_ID).contains(FAGSYSTEM_ARGUS_APP_NAME)) {
+			if(isConsumerFagsystemArgus()) {
 				validateDokumentvarianterFagsystemArgus(dokument);
 			} else {
 				validateOneArkivVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
