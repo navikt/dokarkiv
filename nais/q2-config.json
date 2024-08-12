@@ -541,6 +541,11 @@
       "app": "tiltak-vedtaksbrev",
       "namespace": "arbeidsgiver",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "dsop-kontroll",
+      "namespace": "dsopkontroll",
+      "cluster": "dev-fss"
     }
   ]
 }
