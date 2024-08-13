@@ -3,7 +3,6 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -128,11 +127,8 @@ public class FerdigstillJournalpostValidator {
 
 	// For å støtte arkivering av Excel-filer fra Argus uten ARKIV-variant
 	private void verifyVarianterFagsystemArgus(Journalpost journalpost) {
-		try {
-			journalpost.verifyArkivVariantOfAllDocuments();
-		} catch (InvalidJournalpostStructureException e) {
-			if (journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getFildetaljerListe()
-						.stream().filter(filDetaljer -> filDetaljer.getVariantFormat() == VariantFormatCode.ORIGINAL).count() != 1) {
+		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfos()) {
+			if (!dokumentInfo.hasArkivFormat() && !dokumentInfo.hasOriginalFormat()) {
 				throw new KanIkkeFerdigstilleException("Argus-arkivering må ha hoveddokument med minst en original-variant");
 			}
 		}
@@ -161,7 +157,8 @@ public class FerdigstillJournalpostValidator {
 		}
 	}
 
-	private void verifyPaakrevdeFelterDokumentInfo(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {
+	private void verifyPaakrevdeFelterDokumentInfo(Journalpost
+														   journalpost, List<String> manglendePaakrevdeFelter) {
 		journalpost.getJournalpostDokumentInfoRelasjoner()
 				.forEach(journalpostDokumentInfoRelasjon -> verifyMandatoryFelterDokumentinfo(journalpostDokumentInfoRelasjon.getDokumentInfo(), manglendePaakrevdeFelter));
 	}
@@ -173,14 +170,16 @@ public class FerdigstillJournalpostValidator {
 		});
 	}
 
-	private void verifyPaakrevdeFelterSaksrelasjon(Saksrelasjon saksrelasjon, List<String> manglendePaakrevdeFelter) {
+	private void verifyPaakrevdeFelterSaksrelasjon(Saksrelasjon
+														   saksrelasjon, List<String> manglendePaakrevdeFelter) {
 		if (saksrelasjon != null) {
 			verifyFieldNotNull(saksrelasjon.getSakId(), "Saksrelasjon.sakId", manglendePaakrevdeFelter);
 			verifyFieldNotNull(saksrelasjon.getFagsystem(), "Saksrelasjon.fagsystem", manglendePaakrevdeFelter);
 		}
 	}
 
-	private void verifyMandatoryFelterDokumentinfo(DokumentInfo dokumentInfo, List<String> manglendePaakrevdeFelter) {
+	private void verifyMandatoryFelterDokumentinfo(DokumentInfo
+														   dokumentInfo, List<String> manglendePaakrevdeFelter) {
 		verifyStringNotBlank(dokumentInfo.getTittel(), "DokumentInfo.tittel", manglendePaakrevdeFelter);
 	}
 
