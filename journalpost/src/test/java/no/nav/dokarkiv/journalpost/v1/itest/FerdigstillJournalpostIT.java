@@ -440,4 +440,29 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(response.getBody());
 		assertTrue(response.getBody().getMessage().contains("Journalposten kan ikke ferdigstilles som generell sak med sakstatus=%s. Sakstatus må være=AAPEN eller null".formatted(AVSLUTTET)));
 	}
+
+	@Test
+	public void happyPathWhenSakStatusIsNull() {
+		Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
+		sakTestRepository.persist(sak);
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.FS, sak)
+				.saksrelasjon(SaksrelasjonTestDataProvider.createSaksrelasjonWithSak(sak.getSakId()).build())
+				.build();
+		journalpostTestRepository.persist(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long journalpostId = journalpost.getJournalpostId();
+		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
+				.journalfoerendeEnhet("9999")
+				.build();
+
+		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<String> response =
+				restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
+						requestEntity, String.class);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+	}
 }
