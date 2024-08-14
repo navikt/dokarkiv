@@ -438,6 +438,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertThat(response.getBody().getMessage().contains("Journalposten kan ikke ferdigstilles som generell sak med sakstatus=%s. Sakstatus må være=AAPEN eller null".formatted(AVSLUTTET)));
+		assertTrue(response.getBody().getMessage().contains("Journalposten kan ikke ferdigstilles som generell sak med sakstatus=%s. Sakstatus må være=AAPEN eller null".formatted(AVSLUTTET)));
 	}
 }
