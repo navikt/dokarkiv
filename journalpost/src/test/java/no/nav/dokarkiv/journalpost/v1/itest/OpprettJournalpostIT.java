@@ -821,6 +821,74 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void happyPathKunOriginalFerdigstillingWhenArgusIsConsumerIdMedFlereDokumenter() {
+		clearSakRepository();
+		restStsToken();
+		stubAzure();
+		happyAktoerIdStub();
+
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.navn("NAV Sparebank Oslo")
+						.build())
+				.tema(TEMA_KTR)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(ARGUS).build())
+				.kanal(KANAL_ALTINN)
+				.tittel("Kontoopplysninger")
+				.journalfoerendeEnhet("9999")
+				.dokumenter(List.of(
+						Dokument.builder()
+								.tittel("Kontoopplysninger")
+								.brevkode("KONTOOPPLYSNINGER")
+								.dokumentvarianter(singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.build()))
+								.build(),
+						Dokument.builder()
+								.tittel("Kontoopplysninger")
+								.brevkode("KONTOOPPLYSNINGER")
+								.dokumentvarianter(singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_XLSX)
+										.variantformat(VARIANTFORMAT_ORIGINAL)
+										.fysiskDokument(XLSX_DOKUMENT)
+										.build()))
+								.build(),
+						Dokument.builder()
+								.tittel("Kontoopplysninger")
+								.brevkode("KONTOOPPLYSNINGER")
+								.dokumentvarianter(singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_XLSX)
+										.variantformat(VARIANTFORMAT_ORIGINAL)
+										.fysiskDokument(XLSX_DOKUMENT)
+										.build()))
+								.build()
+				))
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndRolesClaim(FAGSYSTEM_ARGUS_AZP_NAME, ""));
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(sakTestRepository.count(), 1);
+
+		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
+		assertEquals(sak.getAktoerId(), AKTOER_ID);
+		assertTrue(isBlank(sak.getOrgnr()));
+		assertEquals(sak.getTema(), TEMA_KTR);
+		assertEquals(sak.getFagsakNr(), FAGSAK_ID);
+		assertEquals(sak.getApplikasjon(), ARGUS.name());
+
+		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
+		assertEquals(journalpost.getJournalstatus(), J);
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assertThat(aksjonsLoggList).hasSize(3);
+	}
+
+	@Test
 	public void happyPathKunArkivFerdigstillingWhenArgusIsConsumerId() {
 		clearSakRepository();
 		restStsToken();

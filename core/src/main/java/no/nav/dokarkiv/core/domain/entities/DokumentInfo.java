@@ -257,6 +257,20 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	/**
+	 * Check if this DokumentInfo has a document with VariantFormatCode ORIGINAL.
+	 *
+	 * @return true if there is a document with variant ORIGINAL, false otherwise.
+	 */
+	public boolean hasOriginalFormat() {
+		for (FilDetaljer filDetaljer : getFildetaljerListe()) {
+			if (filDetaljer.getVariantFormat() == VariantFormatCode.ORIGINAL) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Checks if this DokumentInfo is under redigering.
 	 *
 	 * @return true if under redigering, false otherwise.
