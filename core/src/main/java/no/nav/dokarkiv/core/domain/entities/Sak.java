@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
@@ -55,4 +56,7 @@ public class Sak {
 
 	@Column(name = "opprettet_tidspunkt", nullable = false)
 	private LocalDateTime opprettetTidspunkt;
+
+	@Column(name = "k_sak_status", length = 40)
+	private SakStatusCode sakStatus;
 }

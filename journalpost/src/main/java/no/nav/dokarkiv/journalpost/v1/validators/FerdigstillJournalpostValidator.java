@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
@@ -17,6 +18,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
@@ -26,6 +28,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
+import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.isConsumerFagsystemArgus;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -46,6 +49,16 @@ public class FerdigstillJournalpostValidator {
 	public void validateJournalpostTilstand(Journalpost journalpost) {
 		verifyMidlertidigJournalfoert(journalpost);
 		verifyDokumenttilstand(journalpost);
+	}
+
+	public void validateSak(final Journalpost journalpost, final Sak sak) {
+		if (FS22.equals(journalpost.getSaksrelasjon().getFagsystem())){
+			var sakStatus = sak.getSakStatus();
+			if(sakStatus != null && sakStatus != AAPEN){
+				throw new KanIkkeFerdigstilleException(format(
+						"Journalposten kan ikke ferdigstilles som generell sak med sakstatus=%s. Sakstatus må være=%S eller null".formatted(sakStatus, AAPEN)));
+			}
+		}
 	}
 
 	public void validateJournalpostStruktur(Journalpost journalpost) {
