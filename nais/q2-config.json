@@ -546,6 +546,11 @@
       "app": "dsop-kontroll",
       "namespace": "dsopkontroll",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "tilleggsstonader-integrasjoner",
+      "namespace": "tilleggsstonader",
+      "cluster": "dev-gcp"
     }
   ]
 }
