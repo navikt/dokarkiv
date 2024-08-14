@@ -34,7 +34,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	public void happyPathInngaaende() {
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M,sak).build();
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M, sak).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -78,7 +78,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M,sak).build();
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M, sak).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -124,7 +124,9 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathUtgaaende() {
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
+		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
+		sakTestRepository.persist(sak);
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M, sak).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -155,7 +157,9 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathUtgaaendeUtsendingsKanalL() {
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
+		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
+		sakTestRepository.persist(sak);
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M, sak).build();
 		journalpost.setUtsendingskanal(L);
 		journalpostTestRepository.persist(journalpost);
 
@@ -187,7 +191,9 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathJournalstatusFSKanFerdigstilles() {
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS).build();
+		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
+		sakTestRepository.persist(sak);
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS, sak).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -218,7 +224,9 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathNotat() {
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.N, JournalStatusCode.M).build();
+		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
+		sakTestRepository.persist(sak);
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.N, JournalStatusCode.M, sak).build();
 		journalpost.setAvsenderMottaker(null);
 		journalpostTestRepository.persist(journalpost);
 
@@ -294,6 +302,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH, requestEntity, String.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertThat(response.getBody().contains("Feltet journalfoerendeEnhet må ha lengde=4, men har lengde=3. journalfoerendeEnhet=abc"));
 	}
 
 	@Test
@@ -366,14 +375,16 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertTrue(response.getBody().getMessage().contains(String.format("Tema=%s på journalposten er ikke gyldig for ferdigstilling. " +
-																		  "For å unngå dette i fremtiden bør du fjerne muligheten til å ferdigstille på ugyldige tema", inaktivtFagomrade)));
+				"For å unngå dette i fremtiden bør du fjerne muligheten til å ferdigstille på ugyldige tema", inaktivtFagomrade)));
 	}
 
 	@Test
 	public void shouldSetNavUserIdHeaderSporingWhenServiceUserTokenAndNavUserIdHeaderIsSet() {
 		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M).build();
+		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
+		sakTestRepository.persist(sak);
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M, sak).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
