@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.datautil.SakTestDataProvider;
+import no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
+import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVSLUTTET;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -408,5 +410,34 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(PERSON_USER_NAME, ferdigstiltJournalpost.getJournalfortAvNavn());
 		assertEquals(NAV_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		TestTransaction.end();
+	}
+
+
+	@Test
+	public void shouldFailWhenSakIsAvsluttetAndJournalpostIsBeingFerdigstilt() {
+		Sak sak = SakTestDataProvider.createSakWithStatus(AVSLUTTET).build();
+		sakTestRepository.persist(sak);
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.FS, sak)
+				.saksrelasjon(SaksrelasjonTestDataProvider.createSaksrelasjonWithSak(sak.getSakId()).build())
+				.build();
+		journalpostTestRepository.persist(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long journalpostId = journalpost.getJournalpostId();
+		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
+				.journalfoerendeEnhet("9999")
+				.build();
+
+		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<RestConsumerExceptionResponse> response =
+				restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
+						requestEntity, RestConsumerExceptionResponse.class);
+
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertThat(response.getBody().getMessage().contains("Journalposten kan ikke ferdigstilles som generell sak med sakstatus=%s. Sakstatus må være=AAPEN eller null".formatted(AVSLUTTET)));
 	}
 }

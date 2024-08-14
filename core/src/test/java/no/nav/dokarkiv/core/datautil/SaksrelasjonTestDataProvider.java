@@ -48,6 +48,14 @@ public final class SaksrelasjonTestDataProvider {
 				.build();
 	}
 
+	public static SaksrelasjonBuilder createSaksrelasjonWithSak(Long sakId) {
+		return SaksrelasjonBuilder
+				.getSaksrelasjonBuilder()
+				.sakId(sakId)
+				.fagsystem(SAK_FAGSYSTEM)
+				.feilregistrert(false)
+				.opprettetKildeNavn(SAK_KILDE_NAVN);
+	}
 	public static Saksrelasjon createPENSaksrelasjonWithSak(Long sakId) {
 		return getSaksrelasjonBuilder()
 				.sakId(sakId)
