@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.Sak;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -106,6 +107,39 @@ public final class JournalpostTestDataProvider {
 				.journalStatus(journalStatus)
 				.journalpostType(journalpostType)
 				.saksrelasjon(SaksrelasjonTestDataProvider.createPENSaksrelasjon())
+				.brukere(BrukerTestDataProvider.createBruker("11111111111", BrukerTypeCode.PERSON), BrukerTestDataProvider.createBruker("999999999", BrukerTypeCode.ORGANISASJON))
+				.innhold(INNHOLD)
+				.journalForendeEnhetId("SesamStasjon")
+				.avsenderMottaker("Bjarne Betjent")
+				.opprettetAvNavn("Leonora Dorothea Dahl")
+				.opprettetKildeNavn("itest")
+				.dokumentDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
+				.dokumentInfoRelasjoner(
+						getJournalpostDokumentInfoRelasjonBuilder()
+								.opprettetKildeNavn("itest")
+								.tilknyttetAvNavn("itest")
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+								.dokumentInfo(createHovedDokumentInfoFP().build())
+								.build(),
+						getJournalpostDokumentInfoRelasjonBuilder()
+								.opprettetKildeNavn("itest")
+								.tilknyttetAvNavn("itest")
+								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
+								.dokumentInfo(createVedleggDokumentInfo().build())
+								.build());
+	}
+
+	public static JournalpostBuilder buildJournalpost(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus, Sak sak) {
+		return getJournalpostBuilder()
+				.addOriginalJournalpost(true)
+				.avsenderMottakerId("1")
+				.kanalReferanseId("kanalreferanseId-" + UUID.randomUUID())
+				.mottattDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
+				.mottakskanal(NAV_NO)
+				.fagomrade(FagomradeCode.PEN)
+				.journalStatus(journalStatus)
+				.journalpostType(journalpostType)
+				.saksrelasjon(SaksrelasjonTestDataProvider.createPENSaksrelasjonWithSak(sak.getSakId()))
 				.brukere(BrukerTestDataProvider.createBruker("11111111111", BrukerTypeCode.PERSON), BrukerTestDataProvider.createBruker("999999999", BrukerTypeCode.ORGANISASJON))
 				.innhold(INNHOLD)
 				.journalForendeEnhetId("SesamStasjon")

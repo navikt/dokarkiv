@@ -2,12 +2,14 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
+import no.nav.dokarkiv.core.datautil.SakTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -19,6 +21,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.util.Date;
 import java.util.List;
 
+import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,7 +32,9 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathInngaaende() {
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
+		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
+		sakTestRepository.persist(sak);
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M,sak).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -71,7 +76,9 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		Date datoJournal = new Date(System.currentTimeMillis() - 50000L);
 		Date datoSendtPrint = new Date(System.currentTimeMillis() - 20000L);
 
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M).build();
+		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
+		sakTestRepository.persist(sak);
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M,sak).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
