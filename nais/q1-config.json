@@ -444,6 +444,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "meroppfolging-backend",
+      "namespace": "team-esyfo",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "testnav-dokarkiv-proxy-trygdeetaten",
       "namespace": "dolly",
       "cluster": "dev-fss"
