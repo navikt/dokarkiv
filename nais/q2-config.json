@@ -400,6 +400,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "meroppfolging-backend",
+      "namespace": "team-esyfo",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "syfosmsak",
       "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
@@ -540,6 +545,16 @@
     {
       "app": "tiltak-vedtaksbrev",
       "namespace": "arbeidsgiver",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "dsop-kontroll",
+      "namespace": "dsopkontroll",
+      "cluster": "dev-fss"
+    },
+    {
+      "app": "tilleggsstonader-integrasjoner",
+      "namespace": "tilleggsstonader",
       "cluster": "dev-gcp"
     }
   ]

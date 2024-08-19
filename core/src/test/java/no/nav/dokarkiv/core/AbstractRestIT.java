@@ -190,6 +190,12 @@ public abstract class AbstractRestIT {
 						.build());
 		fagomradeTestRepository.persist(
 				Fagomrade.builder()
+						.kode("KTR")
+						.dekode("Kontroll")
+						.erGyldig(true)
+						.build());
+		fagomradeTestRepository.persist(
+				Fagomrade.builder()
 						.kode("RPO")
 						.dekode("Retting av personopplysninger")
 						.erGyldig(false)
@@ -262,9 +268,13 @@ public abstract class AbstractRestIT {
 	}
 
 	protected HttpHeaders createHeadersWithServiceUserTokenAndRolesClaim(String role) {
+		return createHeadersWithServiceUserTokenAndRolesClaim(AZP_NAME_JOARKADMIN, role);
+	}
+
+	protected HttpHeaders createHeadersWithServiceUserTokenAndRolesClaim(String azpname, String role) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(azureTokenForClientCredentialFlow(APP_CLAIM_SUB, Map.of(ROLES, role, DEFAULT_CLAIM_OID, APP_CLAIM_SUB, CLAIM_AZP_NAME, AZP_NAME_JOARKADMIN)));
+		headers.setBearerAuth(azureTokenForClientCredentialFlow(APP_CLAIM_SUB, Map.of(ROLES, role, DEFAULT_CLAIM_OID, APP_CLAIM_SUB, CLAIM_AZP_NAME, azpname)));
 		headers.add(NAV_CALL_ID, "itest");
 		return headers;
 	}

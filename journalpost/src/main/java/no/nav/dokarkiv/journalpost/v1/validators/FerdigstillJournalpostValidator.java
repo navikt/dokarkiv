@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -25,10 +26,12 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.isConsumerFagsystemArgus;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+@Slf4j
 public class FerdigstillJournalpostValidator {
 
 	private static final EnumSet<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = EnumSet.of(M, MO, UB, D, R, OD, FL, FS, A);
@@ -105,7 +108,11 @@ public class FerdigstillJournalpostValidator {
 
 	private void verifyFildetaljerVariantFormat(Journalpost jp) {
 		try {
-			jp.verifyArkivVariantOfAllDocuments();
+			if (isConsumerFagsystemArgus()) {
+				verifyVarianterFagsystemArgus(jp);
+			} else {
+				jp.verifyArkivVariantOfAllDocuments();
+			}
 		} catch (InvalidJournalpostStructureException e) {
 			throw new KanIkkeFerdigstilleException("Journalposten mangler arkivvariant");
 		}
@@ -116,6 +123,15 @@ public class FerdigstillJournalpostValidator {
 				throw new KanIkkeFerdigstilleException("Journalposten inneholder flere dokumentvarianter med samme variantformat. Følgende duplikate varianter ble funnet: " + e.getMessage());
 			}
 		});
+	}
+
+	// For å støtte arkivering av Excel-filer fra Argus uten ARKIV-variant
+	private void verifyVarianterFagsystemArgus(Journalpost journalpost) {
+		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfos()) {
+			if (!dokumentInfo.hasArkivFormat() && !dokumentInfo.hasOriginalFormat()) {
+				throw new KanIkkeFerdigstilleException("Argus-arkivering må ha hoveddokument med minst en original-variant");
+			}
+		}
 	}
 
 	private void verifyAtLeastOneBrukerExists(Journalpost jp) {
@@ -141,7 +157,8 @@ public class FerdigstillJournalpostValidator {
 		}
 	}
 
-	private void verifyPaakrevdeFelterDokumentInfo(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {
+	private void verifyPaakrevdeFelterDokumentInfo(Journalpost
+														   journalpost, List<String> manglendePaakrevdeFelter) {
 		journalpost.getJournalpostDokumentInfoRelasjoner()
 				.forEach(journalpostDokumentInfoRelasjon -> verifyMandatoryFelterDokumentinfo(journalpostDokumentInfoRelasjon.getDokumentInfo(), manglendePaakrevdeFelter));
 	}
@@ -153,14 +170,16 @@ public class FerdigstillJournalpostValidator {
 		});
 	}
 
-	private void verifyPaakrevdeFelterSaksrelasjon(Saksrelasjon saksrelasjon, List<String> manglendePaakrevdeFelter) {
+	private void verifyPaakrevdeFelterSaksrelasjon(Saksrelasjon
+														   saksrelasjon, List<String> manglendePaakrevdeFelter) {
 		if (saksrelasjon != null) {
 			verifyFieldNotNull(saksrelasjon.getSakId(), "Saksrelasjon.sakId", manglendePaakrevdeFelter);
 			verifyFieldNotNull(saksrelasjon.getFagsystem(), "Saksrelasjon.fagsystem", manglendePaakrevdeFelter);
 		}
 	}
 
-	private void verifyMandatoryFelterDokumentinfo(DokumentInfo dokumentInfo, List<String> manglendePaakrevdeFelter) {
+	private void verifyMandatoryFelterDokumentinfo(DokumentInfo
+														   dokumentInfo, List<String> manglendePaakrevdeFelter) {
 		verifyStringNotBlank(dokumentInfo.getTittel(), "DokumentInfo.tittel", manglendePaakrevdeFelter);
 	}
 

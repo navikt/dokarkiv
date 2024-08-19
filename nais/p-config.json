@@ -423,6 +423,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "meroppfolging-backend",
+      "namespace": "team-esyfo",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "syk-dig-backend",
       "namespace": "teamsykmelding",
       "cluster": "prod-gcp"
@@ -584,6 +589,11 @@
       "app": "tiltak-vedtaksbrev",
       "namespace": "arbeidsgiver",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "dsop-kontroll",
+      "namespace": "dsopkontroll",
+      "cluster": "prod-fss"
     }
   ]
 }

@@ -384,7 +384,7 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "teamsykmelding-mock-backend",
+      "app": "teamsykmelding-mock",
       "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
     },
@@ -442,6 +442,11 @@
       "app": "esyfovarsel",
       "namespace": "team-esyfo",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "meroppfolging-backend",
+      "namespace": "team-esyfo",
+      "cluster": "dev-gcp"
     },
     {
       "app": "testnav-dokarkiv-proxy-trygdeetaten",
