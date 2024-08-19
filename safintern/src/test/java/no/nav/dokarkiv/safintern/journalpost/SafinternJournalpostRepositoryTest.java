@@ -102,6 +102,7 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyP
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createNavNoUtsendingsInfo;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
@@ -137,6 +138,7 @@ class SafinternJournalpostRepositoryTest {
 		Long sakId = persistedSak.getSakId();
 		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		setSkjermingVedlegg(actualJournalpost);
 		journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
 		utsendingsInfoTestRepository.persist(utsendingsInfo);
@@ -169,6 +171,7 @@ class SafinternJournalpostRepositoryTest {
 		Long sakId = persistedSak.getSakId();
 		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
+		setSkjermingVedlegg(actualJournalpost);
 		journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
 		utsendingsInfoTestRepository.persist(utsendingsInfo);

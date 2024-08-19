@@ -3,6 +3,7 @@ package no.nav.dokarkiv.safintern.journalstatus;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.safintern.views.PaginatedJournalpostView;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -2,6 +2,7 @@ package no.nav.dokarkiv.safintern.journalpost;
 
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
@@ -41,6 +42,7 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.SKJERMING_TY
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -106,6 +108,7 @@ public class SafinternJournalpostServiceTest {
 		Long sakId = persistedSak.getSakId();
 		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		actualJournalpost.setUtsendingskanal(S);
+		setSkjermingVedlegg(actualJournalpost);
 		journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
 		utsendingsInfoTestRepository.persist(utsendingsInfo);

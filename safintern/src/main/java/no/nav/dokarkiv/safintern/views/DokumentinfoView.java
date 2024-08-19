@@ -67,7 +67,7 @@ public interface DokumentinfoView {
 			 "no.nav.dokarkiv.core.domain.codes.VariantFormatCode.FULLVERSJON," +
 			 "no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ORIGINAL" +
 			 "))]")
-	@CollectionMapping
+	@CollectionMapping(ordered = true)
 	Set<FildetaljerView> getFildetaljer();
 
 	@Mapping("dokumentInfo.skannetInnholdListe")

@@ -6,7 +6,9 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Sak;
+import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
+import no.nav.dokarkiv.safintern.views.PaginatedAnyViewForTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -28,6 +30,7 @@ import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createDokume
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.formattedDate;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
@@ -47,9 +50,11 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		Long sakId = persistedSak.getSakId();
 		Journalpost utgaattJournalpost1 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		utgaattJournalpost1.setJournalstatus(JournalStatusCode.U);
+		setSkjermingVedlegg(utgaattJournalpost1);
 		Journalpost utgaattJournalpost2 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		utgaattJournalpost2.setJournalstatus(JournalStatusCode.U);
 		utgaattJournalpost2.setKanalReferanseId("REFERANSE_ID_2");
+		setSkjermingVedlegg(utgaattJournalpost2);
 		journalpostTestRepository.persist(utgaattJournalpost1);
 		journalpostTestRepository.persist(utgaattJournalpost2);
 		TestTransaction.flagForCommit();
@@ -84,7 +89,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	public void shouldPaginateResultsCorrectlyForVariousPagesizes() {
 
 		IntStream.range(0, 400).mapToObj(i -> {
-			var jp = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(null);
+			var jp = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg((Saksrelasjon) null);
 			jp.setKanalReferanseId("kanalref" + i);
 			jp.setJournalstatus(JournalStatusCode.U);
 			return jp;
@@ -96,7 +101,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		for (int pageSize : new int[]{1, 2, 10, 15, 100}) {
 			String lastSeen = null;
 			int countReturned = 0;
-			MinimalViableJournalpostForTest previousJournalpost = null;
+			PaginatedAnyViewForTest.MinimalViableJournalpostForTest previousJournalpost = null;
 			int totalPages, currentPage;
 			do {
 				FinnJournalposterStatusRequest finnJournalposterAllStatusRequest = createRequest(JournalStatusCode.U, pageSize, lastSeen);
@@ -104,15 +109,15 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 				assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 				PaginatedAnyViewForTest body = response.getBody();
 
-				if (countReturned > 0 && body.antallRader > 0) {
-					assertThat(body.journalposter.get(0).journalpostId).isEqualTo(previousJournalpost.journalpostId - 1);
+				if (countReturned > 0 && body.antallRader() > 0) {
+					assertThat(body.journalposter().get(0).journalpostId()).isEqualTo(previousJournalpost.journalpostId() - 1);
 				}
 
-				previousJournalpost = body.antallRader > 0 ? body.journalposter.get(body.journalposter.size() - 1) : null;
-				lastSeen = body.nextPage;
-				countReturned = body.antallRader;
-				totalPages = body.totalPages;
-				currentPage = body.page;
+				previousJournalpost = body.antallRader() > 0 ? body.journalposter().get(body.journalposter().size() - 1) : null;
+				lastSeen = body.nextPage();
+				countReturned = body.antallRader();
+				totalPages = body.totalPages();
+				currentPage = body.page();
 			} while (countReturned > 0);
 			assertThat(currentPage)
 					.as("Sjekk at vi har iterert forbi siste side når vi får tomt resultat")
@@ -139,6 +144,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		Long sakId = persistedSak.getSakId();
 		Journalpost utgaattJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		utgaattJournalpost.setJournalstatus(JournalStatusCode.U);
+		setSkjermingVedlegg(utgaattJournalpost);
 		Journalpost ferdigstiltJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		ferdigstiltJournalpost.setKanalReferanseId("REFERANSE_ID_2");
 		journalpostTestRepository.persist(utgaattJournalpost);
@@ -159,6 +165,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		Long sakId = persistedSak.getSakId();
 		Journalpost ukjentbrukerJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		ukjentbrukerJournalpost.setJournalstatus(JournalStatusCode.UB);
+		setSkjermingVedlegg(ukjentbrukerJournalpost);
 		Journalpost ferdigstiltJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		ferdigstiltJournalpost.setKanalReferanseId("REFERANSE_ID_2");
 		journalpostTestRepository.persist(ukjentbrukerJournalpost);
@@ -180,6 +187,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		journalpost.setJournalstatus(JournalStatusCode.U);
 		createDokumentInfoVedleggRelasjon(journalpost);
+		setSkjermingVedlegg(journalpost);
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -290,15 +298,4 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo).findFirst().get();
 	}
 
-	record PaginatedAnyViewForTest(
-			List<MinimalViableJournalpostForTest> journalposter,
-			int page,
-			int totalPages,
-			int antallRader,
-			long totaltAntallRader,
-			String nextPage) {
-	}
-
-	record MinimalViableJournalpostForTest(long journalpostId) {
-	}
 }

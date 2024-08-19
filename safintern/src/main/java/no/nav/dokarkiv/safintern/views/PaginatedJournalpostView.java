@@ -1,6 +1,4 @@
-package no.nav.dokarkiv.safintern.journalstatus;
-
-import no.nav.dokarkiv.safintern.views.JournalpostView;
+package no.nav.dokarkiv.safintern.views;
 
 import java.util.List;
 

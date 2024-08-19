@@ -103,6 +103,10 @@
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.blazebit</groupId>
+			<artifactId>blaze-persistence-core-api</artifactId>
+		</dependency>
 
 		<!-- Google Cloud Storage og dekryptering med Tink -->
 		<dependency>
