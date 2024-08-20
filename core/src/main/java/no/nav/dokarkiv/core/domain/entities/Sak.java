@@ -11,6 +11,8 @@ import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -58,5 +60,6 @@ public class Sak {
 	private LocalDateTime opprettetTidspunkt;
 
 	@Column(name = "k_sak_status", length = 40)
+	@Enumerated(EnumType.STRING)
 	private SakStatusCode sakStatus;
 }
