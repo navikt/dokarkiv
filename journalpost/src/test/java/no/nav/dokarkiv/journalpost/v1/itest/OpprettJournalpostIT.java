@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import no.nav.dokarkiv.core.datautil.SakTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -51,6 +52,7 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.ALTINN;
+import static no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem.GSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.ARGUS;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.DAGPENGER;
@@ -70,11 +72,13 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SOK;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAIL_AKTOER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILNAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDFA;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XLSX;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FNR;
@@ -86,6 +90,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANAL_ALTINN;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANAL_NAVNO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.PENSJON_FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
@@ -266,7 +271,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void happyPathOpprettOgFerdigstillInngaaende() {
 		restStsToken();
 
-		OpprettJournalpostRequest request = createRequest(INNGAAENDE, "9999");
+		no.nav.dokarkiv.core.domain.entities.Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
+		sakTestRepository.persist(sak);
+		commitAndStartNewTransaction();
+
+		OpprettJournalpostRequest request = createRequest(INNGAAENDE, "9999", sak.getSakId().toString());
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);
@@ -301,7 +310,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	public void happyPathOpprettOgFerdigstillUtgaaende() {
 		restStsToken();
 
-		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "0123");
+		no.nav.dokarkiv.core.domain.entities.Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
+		sakTestRepository.persist(sak);
+		commitAndStartNewTransaction();
+
+		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "0123", sak.getSakId().toString());
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);
@@ -339,7 +352,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.sak(Sak.builder()
 						.sakstype(Sakstype.ARKIVSAK)
 						.arkivsaksnummer(ARKIVSAKSNUMMER)
-						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.arkivsaksystem(GSAK)
 						.build())
 				.build();
 
@@ -359,7 +372,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		restStsToken();
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
-				.sak(Sak.builder().arkivsaksnummer(ARKIVSAKSNUMMER).arkivsaksystem(Arkivsaksystem.GSAK).build())
+				.sak(Sak.builder().arkivsaksnummer(ARKIVSAKSNUMMER).arkivsaksystem(GSAK).build())
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
@@ -977,7 +990,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 						.build())
 				.sak(Sak.builder()
 						.arkivsaksnummer(SAK_ID.toString())
-						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.arkivsaksystem(GSAK)
 						.build())
 				.dokumenter(singletonList(
 						Dokument.builder()
@@ -1067,7 +1080,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 						.build())
 				.sak(Sak.builder()
 						.arkivsaksnummer(SAK_ID.toString())
-						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.arkivsaksystem(GSAK)
 						.build())
 				.dokumenter(singletonList(
 						Dokument.builder()
@@ -1195,9 +1208,39 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldEndeligJournalfoereSoeknadOmForeldrepengerVedFoedsel() throws IOException {
+		no.nav.dokarkiv.core.domain.entities.Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
+		sakTestRepository.persist(sak);
+		commitAndStartNewTransaction();
+
 		restStsToken();
 
-		OpprettJournalpostRequest request = mapper.readValue(classpathToString("__files/soeknadOmForeldrepengerVedFoedsel.json"), OpprettJournalpostRequest.class);
+		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
+				.behandlingstema("ab0001")
+				.bruker(Bruker.builder()
+						.id(FNR)
+						.idType(BrukerIdType.FNR)
+						.build())
+				.dokumenter(singletonList(
+						Dokument.builder()
+								.tittel("Søknad om foreldrepenger ved fødsel")
+								.brevkode("NAV 14-05.09")
+								.dokumentKategori(DOKUMENTKATEGORI_SOK)
+								.dokumentvarianter(singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_PDFA)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.build()))
+								.build()))
+				.eksternReferanseId("eksrefid")
+				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
+				.kanal(KANAL_NAVNO)
+				.sak(Sak.builder()
+						.arkivsaksnummer(sak.getSakId().toString())
+						.arkivsaksystem(GSAK)
+						.build())
+				.tema(TEMA_FOR)
+				.tittel("Ettersendelse til søknad om foreldrepenger")
+				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);
@@ -1299,7 +1342,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldNotOpprettIfReferanseIdAlreadyInDBAndEndeligJournalfortFirstTime() {
-		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
+
+		no.nav.dokarkiv.core.domain.entities.Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
+		sakTestRepository.persist(sak);
+		commitAndStartNewTransaction();
+
+		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE, sak.getSakId().toString())
 				.eksternReferanseId(KANALREFERANSE_ID)
 				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
 				.dokumenter(singletonList(
@@ -1382,7 +1430,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFerdigstilleUtgaaendeAndSetSporingmetadataWhenServiceuserToken() {
-		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
+		no.nav.dokarkiv.core.domain.entities.Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
+		sakTestRepository.persist(sak);
+		commitAndStartNewTransaction();
+
+		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999", sak.getSakId().toString());
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);
@@ -1419,8 +1471,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldFerdigstilleUtgaaendeAndSetSporingmetadataWhenUserAndServiceuserToken() {
+		no.nav.dokarkiv.core.domain.entities.Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
+		sakTestRepository.persist(sak);
+		commitAndStartNewTransaction();
+
 		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
+		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999", sak.getSakId().toString());
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithUserAndServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);
@@ -1457,8 +1513,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldOpprettAndFerdigstillJournalpostWithNavUserIdFromHeaderWhenNavUserIdHeaderSet() {
+		no.nav.dokarkiv.core.domain.entities.Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
+		sakTestRepository.persist(sak);
+		commitAndStartNewTransaction();
+
 		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999");
+		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "9999", sak.getSakId().toString());
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, NAV_USER_ID));
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);

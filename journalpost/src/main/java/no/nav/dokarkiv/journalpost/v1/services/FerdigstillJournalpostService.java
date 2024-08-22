@@ -108,6 +108,12 @@ public class FerdigstillJournalpostService {
 
 		validerJournalpost(journalpost);
 
+		Long sakId = journalpost.getSaksrelasjon().getSakId();
+		Sak sak = sakRepository.findById(sakId)
+				.orElseThrow(() -> new SakIkkeFunnetException("Kunne ikke finne sak med sakId=%s".formatted(sakId)));
+
+		validerSak(journalpost, sak);
+
 		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
 		String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
 		String prevJournalfortAvNavn = journalpost.getJournalfortAvNavn();
