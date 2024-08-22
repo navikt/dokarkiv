@@ -36,7 +36,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	public void happyPathInngaaende() {
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M, sak).build();
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M, sak.getSakId()).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -80,7 +80,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M, sak).build();
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.M, sak.getSakId()).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -128,7 +128,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	public void happyPathUtgaaende() {
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M, sak).build();
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M, sak.getSakId()).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -161,7 +161,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	public void happyPathUtgaaendeUtsendingsKanalL() {
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M, sak).build();
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M, sak.getSakId()).build();
 		journalpost.setUtsendingskanal(L);
 		journalpostTestRepository.persist(journalpost);
 
@@ -195,7 +195,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	public void happyPathJournalstatusFSKanFerdigstilles() {
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS, sak).build();
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS, sak.getSakId()).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -228,7 +228,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	public void happyPathNotat() {
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.N, JournalStatusCode.M, sak).build();
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.N, JournalStatusCode.M, sak.getSakId()).build();
 		journalpost.setAvsenderMottaker(null);
 		journalpostTestRepository.persist(journalpost);
 
@@ -386,7 +386,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M, sak).build();
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.M, sak.getSakId()).build();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -417,7 +417,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	public void shouldFailWhenSakIsAvsluttetAndJournalpostIsBeingFerdigstilt() {
 		Sak sak = SakTestDataProvider.createSakWithStatus(AVSLUTTET).build();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.FS, sak)
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.FS, sak.getSakId())
 				.saksrelasjon(SaksrelasjonTestDataProvider.createSaksrelasjonWithSak(sak.getSakId()).build())
 				.build();
 		journalpostTestRepository.persist(journalpost);
@@ -445,7 +445,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	public void happyPathWhenSakStatusIsNull() {
 		Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.FS, sak)
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.FS, sak.getSakId())
 				.saksrelasjon(SaksrelasjonTestDataProvider.createSaksrelasjonWithSak(sak.getSakId()).build())
 				.build();
 		journalpostTestRepository.persist(journalpost);

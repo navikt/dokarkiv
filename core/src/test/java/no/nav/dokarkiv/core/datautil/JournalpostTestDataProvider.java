@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.domain.entities.Sak;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +22,7 @@ import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createD
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createHovedDokumentInfoFP;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
 import static no.nav.dokarkiv.core.datautil.JournalpostDokumentInfoRelasjonTestDataProvider.createHoveddokumentRelasjon;
+import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.PEN_SAK_ID;
 import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createSaksrelasjon;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
@@ -97,39 +97,10 @@ public final class JournalpostTestDataProvider {
 	}
 
 	public static JournalpostBuilder buildJournalpost(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus) {
-		return getJournalpostBuilder()
-				.addOriginalJournalpost(true)
-				.avsenderMottakerId("1")
-				.kanalReferanseId("kanalreferanseId-" + UUID.randomUUID())
-				.mottattDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
-				.mottakskanal(NAV_NO)
-				.fagomrade(FagomradeCode.PEN)
-				.journalStatus(journalStatus)
-				.journalpostType(journalpostType)
-				.saksrelasjon(SaksrelasjonTestDataProvider.createPENSaksrelasjon())
-				.brukere(BrukerTestDataProvider.createBruker("11111111111", BrukerTypeCode.PERSON), BrukerTestDataProvider.createBruker("999999999", BrukerTypeCode.ORGANISASJON))
-				.innhold(INNHOLD)
-				.journalForendeEnhetId("SesamStasjon")
-				.avsenderMottaker("Bjarne Betjent")
-				.opprettetAvNavn("Leonora Dorothea Dahl")
-				.opprettetKildeNavn("itest")
-				.dokumentDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
-				.dokumentInfoRelasjoner(
-						getJournalpostDokumentInfoRelasjonBuilder()
-								.opprettetKildeNavn("itest")
-								.tilknyttetAvNavn("itest")
-								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-								.dokumentInfo(createHovedDokumentInfoFP().build())
-								.build(),
-						getJournalpostDokumentInfoRelasjonBuilder()
-								.opprettetKildeNavn("itest")
-								.tilknyttetAvNavn("itest")
-								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-								.dokumentInfo(createVedleggDokumentInfo().build())
-								.build());
+		return buildJournalpost(journalpostType, journalStatus, PEN_SAK_ID);
 	}
 
-	public static JournalpostBuilder buildJournalpost(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus, Sak sak) {
+	public static JournalpostBuilder buildJournalpost(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus, Long sakId) {
 		return getJournalpostBuilder()
 				.addOriginalJournalpost(true)
 				.avsenderMottakerId("1")
@@ -139,7 +110,7 @@ public final class JournalpostTestDataProvider {
 				.fagomrade(FagomradeCode.PEN)
 				.journalStatus(journalStatus)
 				.journalpostType(journalpostType)
-				.saksrelasjon(SaksrelasjonTestDataProvider.createPENSaksrelasjonWithSak(sak.getSakId()))
+				.saksrelasjon(SaksrelasjonTestDataProvider.createPENSaksrelasjonWithSak(sakId))
 				.brukere(BrukerTestDataProvider.createBruker("11111111111", BrukerTypeCode.PERSON), BrukerTestDataProvider.createBruker("999999999", BrukerTypeCode.ORGANISASJON))
 				.innhold(INNHOLD)
 				.journalForendeEnhetId("SesamStasjon")

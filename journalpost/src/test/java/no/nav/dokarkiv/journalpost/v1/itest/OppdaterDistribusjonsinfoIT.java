@@ -445,7 +445,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 	private Journalpost createJournalpost(JournalStatusCode statusCode) {
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, statusCode, sak).build();
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, statusCode, sak.getSakId()).build();
 		journalpostTestRepository.persist(journalpost);
 		return journalpost;
 	}
