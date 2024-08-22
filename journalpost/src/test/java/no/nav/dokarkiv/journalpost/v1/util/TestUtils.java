@@ -478,10 +478,6 @@ public class TestUtils {
 		);
 	}
 
-	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType) {
-		return createRequest(journalpostType, null);
-	}
-
 	public static KnyttTilAnnenSakRequest createKnyttTilAnnenSakRequest(String sakstype, String fagsakId, String fagsaksystem, String tema, BrukerIdType brukerIdType, String brukerId, String journalfoerendeEnhet) {
 		no.nav.dokarkiv.journalpost.v1.api.Bruker bruker = no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
 				.idType(brukerIdType)
@@ -497,40 +493,12 @@ public class TestUtils {
 				.build();
 	}
 
+	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType) {
+		return createRequest(journalpostType, null);
+	}
+
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet) {
-		return createBaseRequest(journalpostType)
-				.journalfoerendeEnhet(journalfoerendeEnhet)
-				.dokumenter(Arrays.asList(
-						Dokument.builder()
-								.tittel(DOKUMENT_TITTEL1)
-								.brevkode(BREVKODE1)
-								.dokumentKategori(DOKUMENTKATEGORI_SED)
-								.dokumentvarianter(Arrays.asList(DokumentVariant.builder()
-												.filtype(FILTYPE_PDF)
-												.variantformat(VARIANTFORMAT_ARKIV)
-												.fysiskDokument(FYSISK_DOKUMENT)
-												.batchnavn(BATCHNAVN)
-												.build(),
-										DokumentVariant.builder()
-												.filtype(FILTYPE_XML)
-												.variantformat(VARIANTFORMAT_ORIGINAL)
-												.filnavn(FILNAVN)
-												.fysiskDokument(FYSISK_DOKUMENT_2)
-												.batchnavn(BATCHNAVN)
-												.build()))
-								.build(),
-						Dokument.builder()
-								.tittel(DOKUMENT_TITTEL2)
-								.brevkode(BREVKODE2)
-								.dokumentKategori(DOKUMENTKATEGORI_SED)
-								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
-										.filtype(FILTYPE_PDF)
-										.variantformat(VARIANTFORMAT_ARKIV)
-										.fysiskDokument(FYSISK_DOKUMENT)
-										.batchnavn(BATCHNAVN)
-										.build()))
-								.build()))
-				.build();
+		return createRequest(journalpostType, journalfoerendeEnhet, SAK_ID.toString());
 	}
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet, String sakId) {
 		return createBaseRequest(journalpostType, sakId)
