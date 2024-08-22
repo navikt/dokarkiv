@@ -594,6 +594,11 @@
       "app": "dsop-kontroll",
       "namespace": "dsopkontroll",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "saas-proxy",
+      "namespace": "teamcrm",
+      "cluster": "prod-gcp"
     }
   ]
 }
