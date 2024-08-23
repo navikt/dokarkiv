@@ -12,8 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.util.Optional;
 
-import static no.nav.dokarkiv.safintern.views.FetchPaths.DOKUMENTER;
-
 @Repository
 class SafinternJournalpostRepository {
 	private final EntityManager em;
@@ -64,7 +62,7 @@ class SafinternJournalpostRepository {
 	}
 
 	private static CriteriaBuilder<Journalpost> dokumenterOrder(EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs, CriteriaBuilder<Journalpost> cb) {
-		if (evs.getFetches().isEmpty() || evs.getFetches().stream().anyMatch(f -> f.contains(DOKUMENTER))) {
+		if (evs.getFetches().isEmpty() || evs.getFetches().stream().anyMatch(f -> f.contains("dokumenter"))) {
 			return cb.orderByAsc("journalpostDokumentInfoRelasjoner.tilknyttetJournalpostSom")
 					.orderByAsc("journalpostDokumentInfoRelasjoner.journalpostDokumentInfoRelasjonId");
 		}

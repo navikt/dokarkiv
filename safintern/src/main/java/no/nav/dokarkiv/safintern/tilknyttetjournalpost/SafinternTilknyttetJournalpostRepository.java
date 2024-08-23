@@ -13,7 +13,6 @@ import javax.persistence.NoResultException;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
-import static no.nav.dokarkiv.safintern.views.FetchPaths.DOKUMENTER;
 
 @Repository
 public class SafinternTilknyttetJournalpostRepository {
@@ -41,7 +40,7 @@ public class SafinternTilknyttetJournalpostRepository {
 	}
 
 	private static CriteriaBuilder<Journalpost> dokumenterOrder(EntityViewSetting<JournalpostView, CriteriaBuilder<JournalpostView>> evs, CriteriaBuilder<Journalpost> cb) {
-		if (evs.getFetches().isEmpty() || evs.getFetches().stream().anyMatch(f -> f.contains(DOKUMENTER))) {
+		if (evs.getFetches().isEmpty() || evs.getFetches().stream().anyMatch(f -> f.contains("dokumenter"))) {
 			return cb.orderByAsc("journalpostDokumentInfoRelasjoner.tilknyttetJournalpostSom")
 					.orderByAsc("journalpostDokumentInfoRelasjoner.journalpostDokumentInfoRelasjonId");
 		}

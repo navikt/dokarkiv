@@ -42,8 +42,8 @@ public class FeilregistrerSakstilknytningService {
     }
 
     @Transactional
-    public void feilregistrerSakstilknytning(String journalpostId) {
-        Saksrelasjon saksrelasjon = hentSaksRelasjonForJournalpost(parseLong(journalpostId));
+    public void feilregistrerSakstilknytning(long journalpostId) {
+        Saksrelasjon saksrelasjon = hentSaksRelasjonForJournalpost(journalpostId);
 
         if (saksrelasjon.getFeilregistrert() == null || !saksrelasjon.getFeilregistrert()) {
             saksrelasjon.setFeilregistrert(true);
@@ -62,8 +62,8 @@ public class FeilregistrerSakstilknytningService {
     }
 
     @Transactional
-    public void opphevFeilregistrertSakstilknytning(String journalpostId) {
-        Saksrelasjon saksrelasjon = hentSaksRelasjonForJournalpost(parseLong(journalpostId));
+    public void opphevFeilregistrertSakstilknytning(long journalpostId) {
+        Saksrelasjon saksrelasjon = hentSaksRelasjonForJournalpost(journalpostId);
 
         if (saksrelasjon.getFeilregistrert() == null || !saksrelasjon.getFeilregistrert()) {
             throw new FeilregistreringAlleredeOpphevetException("Feilregistreringen er allerede opphevet");
@@ -91,11 +91,11 @@ public class FeilregistrerSakstilknytningService {
         }
     }
 
-    private void populerAksjonslogg(String journalpostId, AksjonsTypeCode aksjon, List<ArkivElementEndringTO> arkivElementEndringTOList, String melding) {
+    private void populerAksjonslogg(long journalpostId, AksjonsTypeCode aksjon, List<ArkivElementEndringTO> arkivElementEndringTOList, String melding) {
         AksjonsLoggTO aksjonsLoggTo;
         aksjonsLoggTo = AksjonsLoggTO.builder()
                 .aksjon(aksjon)
-                .journalpostId(Long.parseLong(journalpostId))
+                .journalpostId(journalpostId)
                 .hjemmel("ARKL")
                 .melding(melding)
                 .build();

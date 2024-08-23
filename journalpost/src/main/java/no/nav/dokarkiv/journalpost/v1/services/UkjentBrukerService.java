@@ -31,9 +31,9 @@ public class UkjentBrukerService {
 		this.journalpostRepository = journalpostRepository;
 	}
 
-	public List<ArkivElementEndringTO> settUkjentBruker(String journalpostId) {
-		Journalpost journalpost = journalpostRepository.findById(parseLong(journalpostId))
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+	public List<ArkivElementEndringTO> settUkjentBruker(long journalpostId) {
+		Journalpost journalpost = journalpostRepository.findById(journalpostId)
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med journalpostId=%d i joark", journalpostId)));
 
 		JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
 		if (validJournalStatuses.contains(oldJournalStatus)) {

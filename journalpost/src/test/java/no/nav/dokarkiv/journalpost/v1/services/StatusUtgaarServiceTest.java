@@ -40,7 +40,7 @@ public class StatusUtgaarServiceTest {
 				.build();
 		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
-		String response = utgaarService.settStatusUtgaar("38");
+		String response = utgaarService.settStatusUtgaar(38);
 
 		assertEquals(FIKK_UTGAAR, response);
 	}
@@ -51,7 +51,7 @@ public class StatusUtgaarServiceTest {
 
 		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
-		assertThrows(UgyldigJournalStatusException.class, () -> utgaarService.settStatusUtgaar("38"));
+		assertThrows(UgyldigJournalStatusException.class, () -> utgaarService.settStatusUtgaar(38));
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class StatusUtgaarServiceTest {
 
 		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
-		assertThrows(UgyldigJournalStatusException.class, () -> utgaarService.settStatusUtgaar("38"));
+		assertThrows(UgyldigJournalStatusException.class, () -> utgaarService.settStatusUtgaar(38));
 	}
 
 	@Test
@@ -73,6 +73,6 @@ public class StatusUtgaarServiceTest {
 
 		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
-		assertThrows(UgyldigJournalStatusException.class, () -> utgaarService.settStatusUtgaar("38"));
+		assertThrows(UgyldigJournalStatusException.class, () -> utgaarService.settStatusUtgaar(38));
 	}
 }

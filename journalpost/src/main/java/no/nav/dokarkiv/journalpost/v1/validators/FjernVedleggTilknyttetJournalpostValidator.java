@@ -41,7 +41,7 @@ public class FjernVedleggTilknyttetJournalpostValidator {
 		}
 	}
 
-	public void validateInput(String journalpostId, String dokumentId){
+	public static void validateInput(String journalpostId, String dokumentId){
 		validateId(journalpostId,"journalpostId");
 		validateId(dokumentId,"dokumentinfoId");
 	}

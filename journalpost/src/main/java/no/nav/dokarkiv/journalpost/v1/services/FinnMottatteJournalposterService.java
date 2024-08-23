@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.KanIkkeHenteMottatteJournalposterException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
+import no.nav.dokarkiv.core.util.SafeLoggingUtil;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletBruker;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletJournalpost;
@@ -40,19 +41,18 @@ public class FinnMottatteJournalposterService {
 					.findUbehandledeJournalposts(DateTime.now().minusWeeks(1).toDate());
 			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::createResponseObject).collect(Collectors.toList()));
 		} catch(DataAccessException e){
-			log.error(get(MDC_REQUEST_ID) + " finnMottatteJournalposter fikk DataAccessException ved kall mot journalpostRepository", e);
+			log.error("{} finnMottatteJournalposter fikk DataAccessException ved kall mot journalpostRepository", get(MDC_REQUEST_ID), e);
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
 		}
 	}
 
-	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedTemaEldreEnn(List<String> temaer, int eldreEnn) throws KanIkkeHenteMottatteJournalposterException {
+	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedTemaEldreEnn(Set<FagomradeCode> fagomrader, int eldreEnn) throws KanIkkeHenteMottatteJournalposterException {
 		try {
-			Set<FagomradeCode> fagomrader = temaer.stream().map(this::mapEnum).filter(Objects::nonNull).collect(Collectors.toSet());
 			List<Journalpost> ubehandledeJournalposter = journalpostRepository
 					.findUbehandledeJournalpostsWithTemaIn(DateTime.now().minusDays(eldreEnn).toDate(), fagomrader);
 			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::createResponseObject).collect(Collectors.toList()));
 		} catch(DataAccessException e){
-			log.error(get(MDC_REQUEST_ID) + " finnMottatteJournalposterMedTemaer fikk DataAccessException ved kall mot journalpostRepository.", e);
+			log.error("{} finnMottatteJournalposterMedTemaer fikk DataAccessException ved kall mot journalpostRepository.", get(MDC_REQUEST_ID), e);
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
 		}
 	}
@@ -85,20 +85,11 @@ public class FinnMottatteJournalposterService {
 					datoOpprettet
 			);
 		} catch(NullPointerException npe) {
-			log.error(get(MDC_REQUEST_ID) + " createResponseObject feilet i å generere UbehandletJournalpost objekt for journalpostId: " + journalpost.getJournalpostId(), npe);
+			log.error("{} createResponseObject feilet i å generere UbehandletJournalpost objekt for journalpostId: {}", get(MDC_REQUEST_ID), journalpost.getJournalpostId(), npe);
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
 		} catch(Exception e) {
-			log.error(get(MDC_REQUEST_ID) + " createResponseObject, det oppstod en feil. Journalpostid: " + journalpost.getJournalpostId());
+			log.error("{} createResponseObject, det oppstod en feil. Journalpostid: {}", get(MDC_REQUEST_ID), journalpost.getJournalpostId());
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
-		}
-	}
-
-	private FagomradeCode mapEnum(String tema) {
-		try {
-			return valueOf(tema);
-		} catch(IllegalArgumentException e) {
-			log.error(get(MDC_REQUEST_ID) + " tema={} kan ikke mappes til FagomradeCode", tema, e);
-			return null;
 		}
 	}
 }

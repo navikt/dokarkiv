@@ -41,8 +41,8 @@ public class AvbrytService {
         this.aksjonsLoggService = aksjonsLoggService;
     }
 
-    public String avbryt(String journalpostId) {
-        Journalpost journalpost = journalpostRepository.findById(parseLong(journalpostId))
+    public String avbryt(long journalpostId) {
+        Journalpost journalpost = journalpostRepository.findById(journalpostId)
                 .orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
         JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
@@ -68,7 +68,7 @@ public class AvbrytService {
                 AVBRYT, journalpost.getJournalpostId(), "ARKL", FIKK_AVBRUTT,
                 null, Collections.singletonList(endring));
 
-        log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til avbrutt for journalpost med journalpostId={}", journalpostId);
+		log.info("{} har satt status til avbrutt for journalpost med journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostId);
 
         return FIKK_AVBRUTT;
     }

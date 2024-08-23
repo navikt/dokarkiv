@@ -115,8 +115,8 @@ public class TilknyttVedleggService {
 	}
 
 	private void tilknyttDokumentInfoCopySomVedleggPaaJournalpost(String tilKnyttetAvNavn, Long targetJournalpostId, DokumentInfo sourceDokumentInfo, FilDetaljer filDetaljerSladdet, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiledeDokumenter> feiledeDokumenterList) {
-		log.info(MDC.get(MDC_REQUEST_ID) + " legger til en kopi av dokumentinfo med dokumentInfoId={} på journalpost journalpostId={} da variant=SLADDET. Kopi av dokumentinfo vil få variant=ARKIV", dokumentVedlegg
-				.getDokumentInfoId(), targetJournalpostId);
+		log.info("{} legger til en kopi av dokumentinfo med dokumentInfoId={} på journalpost journalpostId={} da variant=SLADDET. Kopi av dokumentinfo vil få variant=ARKIV",
+				MDC.get(MDC_REQUEST_ID), sourceDokumentInfo.getDokumentInfoId(), targetJournalpostId);
 		String consumerId = MDC.get(MDC_CONSUMER_ID);
 		DokumentInfo dokumentInfoCopy = createDokumentInfoCopy(sourceDokumentInfo, consumerId);
 
@@ -253,8 +253,7 @@ public class TilknyttVedleggService {
 			addToFeiletDokumentList(feiledeDokumenterList, IKKE_FUNNET, dokumentVedlegg);
 			valid = false;
 		} else if (checkDuplicate(targetJournalpostId, sourceDokumentInfo)) {
-			log.info(MDC.get(MDC_REQUEST_ID) + " kan ikke knytte dokumentinfo med dokumentInfoId={} til journalpost med journalpostId={} fordi den allerede er tilknyttet journalposten", dokumentVedlegg
-					.getDokumentInfoId(), targetJournalpostId);
+			log.info("{} kan ikke knytte dokumentinfo med dokumentInfoId={} til journalpost med journalpostId={} fordi den allerede er tilknyttet journalposten", MDC.get(MDC_REQUEST_ID), sourceDokumentInfo.getDokumentInfoId(), targetJournalpostId);
 			valid = false;
 		} else if (!tilknyttVedleggValidator.validateSourceDokumentInfo(sourceDokumentInfo)) {
 			addToFeiletDokumentList(feiledeDokumenterList, DOKUMENT_TILLATES_IKKE_GJENBRUKT, dokumentVedlegg);

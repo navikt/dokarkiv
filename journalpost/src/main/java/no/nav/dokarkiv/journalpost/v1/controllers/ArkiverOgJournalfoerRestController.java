@@ -73,17 +73,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.lang.Long.parseLong;
-import static java.lang.Long.valueOf;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateEksternReferanseId;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.MASKINELL_JOURNALFOERENDE_ENHET;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -137,15 +134,17 @@ public class ArkiverOgJournalfoerRestController {
 			@PathVariable @Parameter(description = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
 			@RequestBody FerdigstillJournalpostRequest request
 	) {
+		MDC.put(MDC_REQUEST_ID, "rjoark201");
+		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
+		log.info("{} har mottatt kall for ferdigstilling av journalpost med journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostIdParsed);
+		MDC.put(MDC_JOURNALPOST_ID, String.valueOf(journalpostIdParsed));
+
 		try {
-			MDC.put(MDC_REQUEST_ID, "rjoark201");
-			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for ferdigstilling av journalpost med journalpostId={}", journalpostId);
-			MDC.put(MDC_JOURNALPOST_ID, journalpostId);
-			ferdigstillJournalpostValidator.validateRequest(journalpostId, request);
+			ferdigstillJournalpostValidator.validateRequest(request);
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-			ferdigstillJournalpostService.ferdigstill(parseLong(journalpostId), request);
-			log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost med journalpostId={}", journalpostId);
+			ferdigstillJournalpostService.ferdigstill(journalpostIdParsed, request);
+			log.info("{} har ferdigstilt journalpost med journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostIdParsed);
 
 			return ResponseEntity.ok()
 					.contentType(APPLICATION_JSON)
@@ -154,7 +153,7 @@ public class ArkiverOgJournalfoerRestController {
 		} catch (KanIkkeFerdigstilleException | JournalpostIkkeMidlertidigException |
 				 DokumentUnderRedigeringException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					format("Kunne ikke ferdigstille journalpost med journalpostId=%s. %s", journalpostId, e.getMessage()));
+					format("Kunne ikke ferdigstille journalpost med journalpostId=%s. %s", journalpostIdParsed, e.getMessage()));
 		}
 	}
 
@@ -165,17 +164,18 @@ public class ArkiverOgJournalfoerRestController {
 	public ResponseEntity<String> oppdaterDistribusjonsinfo(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal oppdateres", required = true, example = "77778888") String journalpostId,
 			@RequestBody OppdaterDistribusjonsinfoRequest request) {
+		MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
+		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
+		log.info("{} har mottatt kall for oppdatering av distribusjonsinfo for journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostIdParsed);
+		MDC.put(MDC_JOURNALPOST_ID, String.valueOf(journalpostIdParsed));
+
 		try {
-			MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
-			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for oppdatering av distribusjonsinfo for journalpostId={}", journalpostId);
-			MDC.put(MDC_JOURNALPOST_ID, journalpostId);
-			validateId(journalpostId, "journalpostId");
-			OppdaterDistribusjonsinfoValidator.validateRequest(journalpostId, request);
+			OppdaterDistribusjonsinfoValidator.validateRequest(request);
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 
-			oppdaterDistribusjonsinfoService.oppdaterDistribusjonsinfo(parseLong(journalpostId), request);
+			oppdaterDistribusjonsinfoService.oppdaterDistribusjonsinfo(journalpostIdParsed, request);
 
-			log.info(MDC.get(MDC_REQUEST_ID) + " har oppdatert distribusjonsinfo på journalpost med journalpostId={}", journalpostId);
+			log.info("{} har oppdatert distribusjonsinfo på journalpost med journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostIdParsed);
 
 			return ResponseEntity.ok()
 					.contentType(APPLICATION_JSON)
@@ -183,7 +183,7 @@ public class ArkiverOgJournalfoerRestController {
 
 		} catch (InputValideringFeiletException | KanIkkeOppdatereDistribusjonsinfoException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					format("Kunne ikke oppdatere distribusjonsinfo for journalpost med journalpostId=%s. %s", journalpostId, e.getMessage()));
+					format("Kunne ikke oppdatere distribusjonsinfo for journalpost med journalpostId=%s. %s", journalpostIdParsed, e.getMessage()));
 		}
 	}
 
@@ -201,21 +201,20 @@ public class ArkiverOgJournalfoerRestController {
 			)
 			@PathVariable String journalpostId,
 			@RequestBody OppdaterJournalpostRequest request) {
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		MDC.put(MDC_REQUEST_ID, "oppdaterjournalpost");
+		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
+		MDC.put(MDC_JOURNALPOST_ID, String.valueOf(journalpostIdParsed));
+		log.info("{} har mottatt kall om å oppdatere journalpost med journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostIdParsed);
+
 		try {
-			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-			MDC.put(MDC_REQUEST_ID, "oppdaterjournalpost");
-			MDC.put(MDC_JOURNALPOST_ID, journalpostId);
-			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall om å oppdatere journalpost med journalpostId={}", journalpostId);
+			oppdaterJournalpostService.oppdaterJournalpost(journalpostIdParsed, request);
+			log.info("oppdaterjournalpost har oppdatert journalpost med journalpostId={} i Joark.", journalpostIdParsed);
 
-			validateId(journalpostId, "journalpostId");
-
-			oppdaterJournalpostService.oppdaterJournalpost(parseLong(journalpostId), request);
-			log.info("oppdaterjournalpost har oppdatert journalpost med journalpostId={} i Joark.", journalpostId);
-
-			return OppdaterJournalpostResponse.builder().journalpostId(journalpostId).build();
+			return OppdaterJournalpostResponse.builder().journalpostId(String.valueOf(journalpostIdParsed)).build();
 		} catch (InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					format("Kunne ikke oppdatere journalpost med journalpostId=%s. %s", journalpostId, e.getMessage()));
+					format("Kunne ikke oppdatere journalpost med journalpostId=%s. %s", journalpostIdParsed, e.getMessage()));
 		}
 	}
 
@@ -229,9 +228,9 @@ public class ArkiverOgJournalfoerRestController {
 					name = "forsoekFerdigstill",
 					description = """
 							Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Når journalposten ferdigstilles, blir den låst for senere endringer.
-
+							
 							Dersom ferdigstilling ikke lykkes, returnerer tjenesten journalpostFerdigstilt=false
-											   
+							
 							Journalposten blir opprettet i alle tilfeller, men kan bare ferdigstilles dersom (minst) følgende er satt på input:
 							* bruker
 							* sak
@@ -241,7 +240,7 @@ public class ArkiverOgJournalfoerRestController {
 							* avsenderMottaker.navn
 							* tittel på journalpostnivå
 							* tittel på alle dokumentene
-														
+							
 							NB: Dersom dokumentene skal være mulig å distribuere via Dokdist, eller skal kunne vises til brukeren på nav.no, må i tillegg avsenderMottaker.id og avsenderMottaker.idType settes.
 							""",
 					schema = @Schema(type = "boolean", allowableValues = {"true", "false"})
@@ -251,11 +250,11 @@ public class ArkiverOgJournalfoerRestController {
 			MDC.put(MDC_REQUEST_ID, "rjoark202");
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
-			log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for opprettelse av ny journalpost");
+			log.info("{} har mottatt kall for opprettelse av ny journalpost", MDC.get(MDC_REQUEST_ID));
 			try {
 				opprettJournalpostRequestValidator.validateRequest(request, forsoekFerdigstill);
 			} catch (InputValideringFeiletException e) {
-				log.warn("rjoark202 feilet under validering. " + e.getMessage(), e);
+				log.warn("rjoark202 feilet under validering. {}", e.getMessage(), e);
 				throw e;
 			}
 
@@ -307,14 +306,14 @@ public class ArkiverOgJournalfoerRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "fjernVedleggTilknyttetJournalpost"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> fjernVedleggTilknyttetJournalpost(@PathVariable String journalpostId,
 																	@RequestBody FjernVedleggTilknyttetJournalpostRequest request) {
+		MDC.put(MDCConstants.MDC_REQUEST_ID, "fjernVedleggTilknyttetJournalpost");
+		long journalpostIdParsed = validateIdAndParse(journalpostId, "tilknyttJournalpostId");
+		MDC.put(MDC_JOURNALPOST_ID, String.valueOf(journalpostIdParsed));
 		try {
-			MDC.put(MDCConstants.MDC_REQUEST_ID, "fjernVedleggTilknyttetJournalpost");
-			MDC.put(MDC_JOURNALPOST_ID, journalpostId);
-			validateId(journalpostId, "tilknyttJournalpostId");
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-			log.info("Fjerne vedlegg med dokumentinfoId={} som er knyttet til journalpost med journalpostId={}", request.getDokumentId(), journalpostId);
-			fjernVedleggTilknyttJournalpost.fjernVedleggTilknyttetJournalpost(journalpostId, request);
-			log.info("Vedlegg med dokumentinfoId={} som er knyttet til journalpost med journalpostId={} er fjernet", request.getDokumentId(), journalpostId);
+			log.info("Fjerne vedlegg med dokumentinfoId={} som er knyttet til journalpost med journalpostId={}", request.getDokumentId(), journalpostIdParsed);
+			fjernVedleggTilknyttJournalpost.fjernVedleggTilknyttetJournalpost(journalpostIdParsed, request);
+			log.info("Vedlegg med dokumentinfoId={} som er knyttet til journalpost med journalpostId={} er fjernet", request.getDokumentId(), journalpostIdParsed);
 
 			return ResponseEntity.ok()
 					.contentType(APPLICATION_JSON)
@@ -322,12 +321,12 @@ public class ArkiverOgJournalfoerRestController {
 
 		} catch (InputValideringFeiletException | KanIkkeSlettetVedleggKnyttetTilJournalpostException e) {
 			String message = format("Kunne ikke fjerne vedlegg med dokumentinfoId=%s fra journalpost med journalpostId=%s. %s",
-					request.getDokumentId(), journalpostId, e.getMessage());
+					request.getDokumentId(), journalpostIdParsed, e.getMessage());
 			throw new ResponseStatusException(BAD_REQUEST, message);
 		} catch (JournalpostIkkeFunnetException | DokumentIkkeFunnetException |
 				 JournalpostDokumentInfoRelasjonIkkeFunnetException e) {
 			String message = format("Kunne ikke fjerne vedlegg med dokumentinfoId=%s fra journalpost med journalpostId=%s. %s",
-					request.getDokumentId(), journalpostId, e.getMessage());
+					request.getDokumentId(), journalpostIdParsed, e.getMessage());
 			throw new ResponseStatusException(NOT_FOUND, message);
 		}
 	}
@@ -346,17 +345,16 @@ public class ArkiverOgJournalfoerRestController {
 			@RequestParam String kildeJournalpostId,
 			@RequestBody KopierJournalpostRequest request) {
 
+		MDC.put(MDC_REQUEST_ID, "kopierJournalpost");
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+
+		long kildeJournalpostIdParsed = validateIdAndParse(kildeJournalpostId, "kildeJournalpostId");
+		validateEksternReferanseId(request.getEksternReferanseId());
 		try {
-			MDC.put(MDC_REQUEST_ID, "kopierJournalpost");
-			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
-			validateId(kildeJournalpostId, "kildeJournalpostId");
-			hasText(request.getEksternReferanseId(), "eksternReferanseId");
-			validateEksternReferanseId(request.getEksternReferanseId());
+			log.info("kopierJournalpost har mottatt kall for kopiere journalpost med journalpostId={}, eksternReferanseId={}", kildeJournalpostIdParsed, request.getEksternReferanseId());
 
-			log.info("kopierJournalpost har mottatt kall for kopiere journalpost med journalpostId={}, eksternReferanseId={}", kildeJournalpostId, request.getEksternReferanseId());
-
-			KopierJournalpostResult kopierJournalpostResult = kopierJournalpostService.kopierJournalpost(valueOf(kildeJournalpostId), request.getEksternReferanseId());
+			KopierJournalpostResult kopierJournalpostResult = kopierJournalpostService.kopierJournalpost(kildeJournalpostIdParsed, request.getEksternReferanseId());
 
 			if (kopierJournalpostResult.duplikatEksternReferanseId()) {
 				return ResponseEntity.status(CONFLICT)
@@ -373,9 +371,9 @@ public class ArkiverOgJournalfoerRestController {
 			}
 
 		} catch (JournalpostIkkeFunnetException e) {
-			String message = format("Kunne ikke finne journalpost med journalpostId=%s i joark", kildeJournalpostId);
+			String message = format("Kunne ikke finne journalpost med journalpostId=%s i joark", kildeJournalpostIdParsed);
 			throw new ResponseStatusException(NOT_FOUND, message);
-		} catch (KanIkkeKopiereException | IllegalArgumentException | InputValideringFeiletException e) {
+		} catch (KanIkkeKopiereException | IllegalArgumentException e) {
 			throw new ResponseStatusException(BAD_REQUEST, e.getMessage());
 		}
 	}
@@ -395,18 +393,18 @@ public class ArkiverOgJournalfoerRestController {
 	) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		MDC.put(MDC_REQUEST_ID, "lastOppVedlegg");
-		MDC.put(MDC_JOURNALPOST_ID, journalpostId);
+		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
+		MDC.put(MDC_JOURNALPOST_ID, String.valueOf(journalpostIdParsed));
 
-		log.info("lastOppVedlegg har mottatt kall om å legge til vedlegg på journalpost med journalpostId={}", journalpostId);
+		log.info("lastOppVedlegg har mottatt kall om å legge til vedlegg på journalpost med journalpostId={}", journalpostIdParsed);
 
 		try {
-			validateId(journalpostId, "journalpostId");
 			LastOppVedleggValidator.validateRequest(request);
 
-			LastOppVedleggResponse response = lastOppVedleggService.lastOppVedlegg(journalpostId, request);
+			LastOppVedleggResponse response = lastOppVedleggService.lastOppVedlegg(journalpostIdParsed, request);
 
 			log.info("lastOppVedlegg har lagt til vedlegg med dokumentInfoId={} på journalpost med journalpostId={}",
-					response.dokumentInfoId(), journalpostId);
+					response.dokumentInfoId(), journalpostIdParsed);
 
 			return ResponseEntity
 					.status(CREATED)
@@ -415,11 +413,11 @@ public class ArkiverOgJournalfoerRestController {
 		} catch (InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
 					"Kunne ikke legge til vedlegg på journalpost med journalpostId=%s. Validering av input feilet: %s"
-							.formatted(journalpostId, e.getMessage()));
+							.formatted(journalpostIdParsed, e.getMessage()));
 		} catch (KanIkkeLeggeTilVedleggException e) {
 			throw new ResponseStatusException(CONFLICT,
 					"Kunne ikke legge til vedlegg på journalpost med journalpostId=%s. %s"
-							.formatted(journalpostId, e.getMessage()));
+							.formatted(journalpostIdParsed, e.getMessage()));
 		}
 	}
 

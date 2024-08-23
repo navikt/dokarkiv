@@ -22,11 +22,8 @@ public class KnyttTilAnnenSakValidator {
 	private static final String SAKSTYPE_GENERELL = "GENERELL_SAK";
 	private static final int JOURNALFOERENDE_ENHET_LENGTH = 4;
 
-	public void validate(KnyttTilAnnenSakRequest request, String kildeJournalpostId) {
+	public void validate(KnyttTilAnnenSakRequest request, long kildeJournalpostId) {
 		try {
-			if (!isNumeric(kildeJournalpostId)){
-				throw new InputValideringFeiletException("kildeJournalpostId er ikke et tall.");
-			}
 			validateSakstype(request);
 			validateBruker(request.getBruker());
 			validateTema(request.getTema());

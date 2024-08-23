@@ -27,7 +27,6 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.isConsumerFagsystemArgus;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -40,8 +39,7 @@ public class FerdigstillJournalpostValidator {
 		// Vi setter ingenting her
 	}
 
-	public void validateRequest(String journalpostId, FerdigstillJournalpostRequest request) {
-		validateId(journalpostId, "journalpostId");
+	public void validateRequest(FerdigstillJournalpostRequest request) {
 		validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet");
 	}
 

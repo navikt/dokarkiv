@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.security.azure.AzureConfig;
+import no.nav.dokarkiv.core.util.SafeLoggingUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;
@@ -79,7 +80,7 @@ public class AzureAdGraphService {
 				}).getValue();
 
 		if (users.size() != 1) {
-			log.warn("Azure AD finner ikke bruker med ident={}. {}", navIdent, BRUKER_IKKE_FUNNET);
+			log.warn("Azure AD finner ikke bruker med ident={}. {}", SafeLoggingUtil.removeUnsafeChars(navIdent), BRUKER_IKKE_FUNNET);
 			return null;
 		}
 		return users.get(0);

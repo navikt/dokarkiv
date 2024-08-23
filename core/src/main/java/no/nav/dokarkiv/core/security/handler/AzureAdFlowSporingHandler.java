@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.security.handler;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
+import no.nav.dokarkiv.core.util.SafeLoggingUtil;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.core.jwt.JwtTokenClaims;
 import org.slf4j.MDC;
@@ -99,7 +100,7 @@ public class AzureAdFlowSporingHandler {
 			}
 		} else {
 			handleClientCredentialGrantFlowAppContext(appClaim);
-			log.error(ERROR_MELDING_PREFIX + " Ugyldig format på NAVIdent={}. Må matche \"" + NAVIDENT_REGEX + "\". " + ERROR_MELDING_SUFFIX, navUserIdHeader);
+			log.error(ERROR_MELDING_PREFIX + " Ugyldig format på NAVIdent={}. Må matche \"" + NAVIDENT_REGEX + "\". " + ERROR_MELDING_SUFFIX, SafeLoggingUtil.removeUnsafeChars(navUserIdHeader));
 		}
 	}
 

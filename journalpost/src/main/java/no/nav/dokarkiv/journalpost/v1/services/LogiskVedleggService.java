@@ -33,9 +33,9 @@ public class LogiskVedleggService {
 	}
 
 	@Transactional
-	public String leggTilLogiskVedlegg(String dokumentInfoId, LeggTilLogiskVedleggRequest request) {
+	public long leggTilLogiskVedlegg(long dokumentInfoId, LeggTilLogiskVedleggRequest request) {
 		try {
-			DokumentInfo dokumentInfo = dokumentInfoRepository.getReferenceById(parseLong(dokumentInfoId));
+			DokumentInfo dokumentInfo = dokumentInfoRepository.getReferenceById(dokumentInfoId);
 
 			SkannetInnhold skannetInnhold = SkannetInnhold.builder()
 					.vedleggInnhold(request.getTittel())
@@ -43,15 +43,15 @@ public class LogiskVedleggService {
 					.build();
 			skannetInnhold.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 			skannetInnholdRepository.persist(skannetInnhold);
-			return skannetInnhold.getSkannetInnholdId().toString();
+			return skannetInnhold.getSkannetInnholdId();
 		} catch (EntityNotFoundException e) {
 			throw new DokumentInfoIkkeFunnetException(format("Kunne ikke finne dokumentInfo med dokumentInfoId=%s i joark", dokumentInfoId), e);
 		}
 	}
 
 	@Transactional
-	public void endreLogiskVedlegg(String logiskVedleggId, EndreLogiskVedleggRequest request) {
-		SkannetInnhold skannetInnhold = skannetInnholdRepository.findById(parseLong(logiskVedleggId))
+	public void endreLogiskVedlegg(long logiskVedleggId, EndreLogiskVedleggRequest request) {
+		SkannetInnhold skannetInnhold = skannetInnholdRepository.findById(logiskVedleggId)
 				.orElseThrow(() -> new LogiskVedleggIkkeFunnetException(format("Kunne ikke finne logisk vedlegg med logiskVedleggId=%s i joark", logiskVedleggId)));
 
 		skannetInnhold.setVedleggInnhold(request.getTittel());
@@ -59,12 +59,12 @@ public class LogiskVedleggService {
 	}
 
 	@Transactional
-	public void slettLogiskVedlegg(String logiskVedleggId) {
-		skannetInnholdRepository.deleteBySkannetInnholdId(parseLong(logiskVedleggId));
+	public void slettLogiskVedlegg(long logiskVedleggId) {
+		skannetInnholdRepository.deleteBySkannetInnholdId(logiskVedleggId);
 	}
 
 	@Transactional
-	public void bulkOppdaterLogiskVedlegg(String dokumentInfoId, BulkOppdaterLogiskVedleggRequest request) {
+	public void bulkOppdaterLogiskVedlegg(long dokumentInfoId, BulkOppdaterLogiskVedleggRequest request) {
 		var titler = request.getTitler();
 		if (titler.isEmpty()) {
 			DokumentInfo dokumentInfo = findDokumentInfo(dokumentInfoId);
@@ -82,8 +82,8 @@ public class LogiskVedleggService {
 		}
 	}
 
-	private DokumentInfo findDokumentInfo(String dokumentInfoId) {
-		Optional<DokumentInfo> byId = dokumentInfoRepository.findById(parseLong(dokumentInfoId));
+	private DokumentInfo findDokumentInfo(long dokumentInfoId) {
+		Optional<DokumentInfo> byId = dokumentInfoRepository.findById(dokumentInfoId);
 		DokumentInfo dokumentInfo = byId.orElseThrow(() -> new DokumentInfoIkkeFunnetException("Kan ikke bulkOppdaterLogiskVedlegg. Finner ikke dokumentInfoId=" + dokumentInfoId));
 		return dokumentInfo;
 	}

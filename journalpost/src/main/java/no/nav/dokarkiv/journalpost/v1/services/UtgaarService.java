@@ -42,8 +42,8 @@ public class UtgaarService {
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
-	public String settStatusUtgaar(String journalpostId) {
-		Journalpost journalpost = journalpostRepository.findById(parseLong(journalpostId))
+	public String settStatusUtgaar(long journalpostId) {
+		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();

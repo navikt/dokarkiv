@@ -19,6 +19,11 @@ public final class CommonValidator {
 		//no-op
 	}
 
+	public static long validateIdAndParse(String id, String feltnavn) {
+		validateId(id, feltnavn);
+		return Long.parseLong(id);
+	}
+
 	public static void validateId(String id, String feltnavn) {
 		try {
 			hasText(id, feltnavn);

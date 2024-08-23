@@ -37,6 +37,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.OPPHEV_FEI
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_AVBRYT;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_STATUS_UTGAAR;
 import static no.nav.dokarkiv.journalpost.v1.util.AvvikstypeConstants.SETT_UKJENT_BRUKER;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 import static org.springframework.http.HttpStatus.CONFLICT;
 
 @Slf4j
@@ -77,11 +78,12 @@ public class FeilregistrerJournalpostRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark401"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> feilregistrerSakstilkytning(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
 		try {
-			feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId);
-			log.info(MDC.get(MDC_REQUEST_ID) + " har feilregistrert journalpost med journalpostId={}", journalpostId);
+			feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostIdParsed);
+			log.info("{} har feilregistrert journalpost med journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostIdParsed);
 		} catch (ObjectOptimisticLockingFailureException e) {
-			log.warn(MDC.get(MDC_REQUEST_ID) + " feilregistrerte ikke journalpost med journalpostId={}. Flere kall forsøker å endre saksrelasjon samtidig", journalpostId, e);
+			log.warn("{} feilregistrerte ikke journalpost med journalpostId={}. Flere kall forsøker å endre saksrelasjon samtidig", MDC.get(MDC_REQUEST_ID), journalpostIdParsed, e);
 			return ResponseEntity.status(CONFLICT).body(FEILREGISTRERT_CONFLICT_MESSAGE);
 		}
 		return ResponseEntity.ok().body(FEILREGISTRERT_MESSAGE);
@@ -92,11 +94,12 @@ public class FeilregistrerJournalpostRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark402"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> opphevFeilregistrertSakstilknytning(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
+		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
 		try {
-			feilregistrerSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostId);
-			log.info(MDC.get(MDC_REQUEST_ID) + " har opphevet feilregistrering av journalpost med journalpostId={}", journalpostId);
+			feilregistrerSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostIdParsed);
+			log.info("{} har opphevet feilregistrering av journalpost med journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostIdParsed);
 		} catch (ObjectOptimisticLockingFailureException e) {
-			log.warn(MDC.get(MDC_REQUEST_ID) + " opphevet ikke feilregistrering for journalpost med journalpostId={}. Flere kall forsøker å endre saksrelasjon samtidig", journalpostId, e);
+			log.warn("{} opphevet ikke feilregistrering for journalpost med journalpostId={}. Flere kall forsøker å endre saksrelasjon samtidig", MDC.get(MDC_REQUEST_ID), journalpostIdParsed, e);
 			return ResponseEntity.status(CONFLICT).body(FEILREGISTRERING_OPPHEVET_CONFLICT_MESSAGE);
 		}
 		return ResponseEntity.ok().body(FEILREGISTRERING_OPPHEVET_MESSAGE);
@@ -109,9 +112,10 @@ public class FeilregistrerJournalpostRestController {
 	public ResponseEntity<String> settUkjentBruker(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
 
-		List<ArkivElementEndringTO> arkivElementEndringTOList = ukjentBrukerService.settUkjentBruker(journalpostId);
-		populerAksjonslogg(journalpostId, UKJENT_BRUKER, arkivElementEndringTOList, FIKK_UKJENT_BRUKER);
-		log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til Ukjent Bruker for journalpost med journalpostId={}", journalpostId);
+		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
+		List<ArkivElementEndringTO> arkivElementEndringTOList = ukjentBrukerService.settUkjentBruker(journalpostIdParsed);
+		populerAksjonslogg(journalpostIdParsed, UKJENT_BRUKER, arkivElementEndringTOList, FIKK_UKJENT_BRUKER);
+		log.info("{} har satt status til Ukjent Bruker for journalpost med journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostIdParsed);
 
 		return ResponseEntity.ok().body(FIKK_UKJENT_BRUKER);
 	}
@@ -122,7 +126,7 @@ public class FeilregistrerJournalpostRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark404"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<String> avbryt(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal settes til avbryt", required = true, example = "77778888") String journalpostId) {
-		String response = avbrytService.avbryt(journalpostId);
+		String response = avbrytService.avbryt(validateIdAndParse(journalpostId, "journalpostId"));
 		return ResponseEntity.ok().body(response);
 	}
 
@@ -133,17 +137,17 @@ public class FeilregistrerJournalpostRestController {
 	public ResponseEntity<String> utgaar(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal settes til utgått", required = true, example = "77778888") String journalpostId) {
 
-		String response = utgaarService.settStatusUtgaar(journalpostId);
-		log.info(MDC.get(MDC_REQUEST_ID) + " har satt status til utgår for journalpost med journalpostId={}", journalpostId);
+		String response = utgaarService.settStatusUtgaar(validateIdAndParse(journalpostId, "journalpostId"));
+		log.info("{} har satt status til utgår for journalpost med journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostId);
 
 		return ResponseEntity.ok().body(response);
 	}
 
-	private void populerAksjonslogg(String journalpostId, AksjonsTypeCode aksjon, List<ArkivElementEndringTO> arkivElementEndringTOList, String melding) {
+	private void populerAksjonslogg(long journalpostId, AksjonsTypeCode aksjon, List<ArkivElementEndringTO> arkivElementEndringTOList, String melding) {
 		AksjonsLoggTO aksjonsLoggTo;
 		aksjonsLoggTo = AksjonsLoggTO.builder()
 				.aksjon(aksjon)
-				.journalpostId(Long.parseLong(journalpostId))
+				.journalpostId(journalpostId)
 				.hjemmel("ARKL")
 				.melding(melding)
 				.build();
