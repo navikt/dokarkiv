@@ -111,6 +111,6 @@ public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJ
 			return null;
 		}
 
-		return journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId(dokumentinfoIdPreviousJournalforing.toString());
+		return journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId(dokumentinfoIdPreviousJournalforing);
 	}
 }

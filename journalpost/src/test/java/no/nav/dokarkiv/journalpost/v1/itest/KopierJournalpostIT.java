@@ -272,8 +272,8 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
 	private static Stream<Arguments> ugyldigEksternReferanseIdArguments() {
 		return Stream.of(
-				Arguments.of("", "Feltet eksternReferanseId kan ikke være null eller tomt"),
-				Arguments.of(" ", "Feltet eksternReferanseId kan ikke være null eller tomt"),
+				Arguments.of("", "eksternReferanseId kan ikke være null eller tomt"),
+				Arguments.of(" ", "eksternReferanseId kan ikke være null eller tomt"),
 				Arguments.of("a".repeat(KANAL_REFERANSE_ID_LENGTH + 1), "eksternReferanseId kan ikke være over 200 tegn. Mottatt eksternReferanseId=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 		);
 	}

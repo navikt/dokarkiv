@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.lang.Long.parseLong;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 public class JournalpostRepositorySkjermet {
@@ -44,14 +43,14 @@ public class JournalpostRepositorySkjermet {
 
 	public Long findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(String nokkel, String verdi) {
 		IdHolder idHolder = dokumentInfoRepository.findDokumentInfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi(nokkel, verdi);
-		if(idHolder == null) {
+		if (idHolder == null) {
 			return null;
 		}
 		return idHolder.id();
 	}
 
-	public Long findJournalpostIdByDokumentinfoId(String dokumentinfoId) {
-		IdHolder originalJournalpostIdHolder = dokumentInfoRepository.findOriginalJournalpostIdByDokumentInfoId(parseLong(dokumentinfoId));
+	public Long findJournalpostIdByDokumentinfoId(long dokumentinfoId) {
+		IdHolder originalJournalpostIdHolder = dokumentInfoRepository.findOriginalJournalpostIdByDokumentInfoId(dokumentinfoId);
 		if (originalJournalpostIdHolder == null) {
 			return null;
 		}

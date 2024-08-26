@@ -21,8 +21,11 @@ import org.springframework.http.ResponseEntity;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.PEN;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.UFO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -109,7 +112,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 				DateTime.now().minusYears(1).toDate()
 		);
 
-		List<FagomradeCode> temakoder = List.of(FagomradeCode.AAP, FagomradeCode.UFO, FagomradeCode.BAR, FagomradeCode.PEN);
+		List<FagomradeCode> temakoder = List.of(FagomradeCode.AAP, UFO, FagomradeCode.BAR, PEN);
 
 		ArrayList<Long> validJournalpostIds = new ArrayList<>();
 
@@ -124,15 +127,15 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		List<UbehandletJournalpost> ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(List.of(FAGKODE_UFO, FAGKODE_PEN), DEFAULT_DAGER_GAMLE).getJournalposter();
+		List<UbehandletJournalpost> ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(Set.of(UFO, PEN), DEFAULT_DAGER_GAMLE).getJournalposter();
 		List<Long> retrievedIds = ubehandletJournalposts.stream().map(UbehandletJournalpost::getJournalpostId).collect(Collectors.toList());
 
 		assertFalse(ubehandletJournalposts.isEmpty());
 		assertEquals(retrievedIds.size(), validJournalpostIds.size());
 		assertTrue(retrievedIds.containsAll(validJournalpostIds));
 
-		ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(List.of(FAGKODE_UFO, FAGKODE_PEN, "FinnesIkke"), DEFAULT_DAGER_GAMLE).getJournalposter();
-		retrievedIds = ubehandletJournalposts.stream().map(UbehandletJournalpost::getJournalpostId).collect(Collectors.toList());
+		ubehandletJournalposts = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(Set.of(UFO, PEN), DEFAULT_DAGER_GAMLE).getJournalposter();
+		retrievedIds = ubehandletJournalposts.stream().map(UbehandletJournalpost::getJournalpostId).toList();
 
 		assertFalse(ubehandletJournalposts.isEmpty());
 		assertEquals(retrievedIds.size(), validJournalpostIds.size());
@@ -229,6 +232,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		if (createdDate.after(weekAgo)) return false;
 		if (status != JournalStatusCode.M && status != JournalStatusCode.MO) return false;
 		if (!journalpost.isInngaende()) return false;
-		return fagomrade == FagomradeCode.PEN || fagomrade == FagomradeCode.UFO;
+		return fagomrade == PEN || fagomrade == UFO;
 	}
 }

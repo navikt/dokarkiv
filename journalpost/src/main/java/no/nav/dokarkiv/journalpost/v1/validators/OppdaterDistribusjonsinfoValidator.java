@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateBoolean;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateNotNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -38,8 +37,7 @@ public class OppdaterDistribusjonsinfoValidator {
 		this.springSuppliedValidator = validator;
 	}
 
-	public static void validateRequest(String journalpostId, OppdaterDistribusjonsinfoRequest request) {
-		validateId(journalpostId, "journalpostId");
+	public static void validateRequest(OppdaterDistribusjonsinfoRequest request) {
 		validateBoolean(request.getSettStatusEkspedert(), "settStatusEkspedert");
 		validateStatusendringJournalpost(request);
 

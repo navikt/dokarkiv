@@ -223,9 +223,6 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(journalpostId), PATCH, request, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getBody()).containsAnyOf(
-				"Validering av input feilet: Feltet journalpostId kan ikke være null eller tomt",
-				"Validering av input feilet: Feltet journalpostId må være et heltall");
 	}
 
 	@Test

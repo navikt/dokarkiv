@@ -2,10 +2,12 @@ package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.dokarkiv.core.util.SafeLoggingUtil;
 import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
 import no.nav.dokarkiv.journalpost.v1.services.FinnMottatteJournalposterService;
@@ -26,11 +28,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.valueOf;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
+import static org.slf4j.MDC.get;
 
 @Tag(name = "journalpostapi - internt", description = "Interne tjenester mot journalpost")
 @Slf4j
@@ -58,21 +66,22 @@ public class JournalpostInternProtectedRestController {
 			@PathVariable("temaer") List<String> temaer,
 			@PathVariable("eldreEnn") int eldreEnn) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
+		Set<FagomradeCode> fagomrader = temaer.stream().map(JournalpostInternProtectedRestController::mapEnum).filter(Objects::nonNull).collect(Collectors.toSet());
 		try {
-			log.info("finnMottatteJournalposterMedTemaEldreEnn har mottatt kall om å hente ubehandlede journalposter med tema blandt={}", temaer);
-			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(temaer, eldreEnn);
-			log.info("finnMottatteJournalposterMedTemaEldreEnn returnerer {} journalposter for tema={}", ubehandledeJournalposter.getJournalposter().size(), temaer);
+			log.info("finnMottatteJournalposterMedTemaEldreEnn har mottatt kall om å hente ubehandlede journalposter med tema blandt={}", fagomrader);
+			FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedTemaEldreEnn(fagomrader, eldreEnn);
+			log.info("finnMottatteJournalposterMedTemaEldreEnn returnerer {} journalposter for tema={}", ubehandledeJournalposter.getJournalposter().size(), fagomrader);
 
 			return ResponseEntity
 					.ok()
 					.body(ubehandledeJournalposter);
 		} catch (DokarkivFunctionalException e) {
-			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", Arrays.toString(temaer.toArray()), e
-					.getMessage());
+			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}",
+					fagomrader, e.getMessage());
 			throw e;
 		} catch (DokarkivTechnicalException e) {
-			log.error("finnMottatteJournalposter - feilet teknisk ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}", Arrays.toString(temaer.toArray()), e
-					.getMessage());
+			log.error("finnMottatteJournalposter - feilet teknisk ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}",
+					fagomrader, e.getMessage());
 			throw e;
 		}
 	}
@@ -85,25 +94,34 @@ public class JournalpostInternProtectedRestController {
 	public ResponseEntity<Long> mottaDokumentUtgaaendeSkanning(
 			@PathVariable String journalpostId,
 			@RequestBody MottaDokumentUtgaaendeSkanningRequest request) {
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
 		try {
-			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 			MDC.put(MDC_REQUEST_ID, "mottaDokumentUtgaaendeSkanning");
-			log.info("mottaDokumentUtgaaendeSkanning har mottatt kall med journalpostId={}", journalpostId);
+			log.info("mottaDokumentUtgaaendeSkanning har mottatt kall med journalpostId={}", journalpostIdParsed);
 
-			validateId(journalpostId, "journalpostId");
-			mottaDokumentUtgaaendeSkanningService.mottaDokumentUtgaaendeSkanning(Long.parseLong(journalpostId), request);
+			mottaDokumentUtgaaendeSkanningService.mottaDokumentUtgaaendeSkanning(journalpostIdParsed, request);
 
-			log.info("mottaDokumentUtgaaendeSkanning har lagt fildetaljer på journalpostId={}", journalpostId);
+			log.info("mottaDokumentUtgaaendeSkanning har lagt fildetaljer på journalpostId={}", journalpostIdParsed);
 
 			return ResponseEntity.ok().build();
 		} catch (DokarkivFunctionalException e) {
-			log.warn("mottaDokumentUtgaaendeSkanning - feilet funksjonelt ved mottak av utgaaende skanning for journalpostId={}. Feilmelding={}", journalpostId, e
-					.getMessage());
+			log.warn("mottaDokumentUtgaaendeSkanning - feilet funksjonelt ved mottak av utgaaende skanning for journalpostId={}. Feilmelding={}",
+					journalpostIdParsed, e.getMessage());
 			throw e;
 		} catch (DokarkivTechnicalException e) {
-			log.error("mottaDokumentUtgaaendeSkanning - feilet teknisk ved mottak av utgaaende skanning for journalpostId={}. Feilmelding={}", journalpostId, e
-					.getMessage());
+			log.error("mottaDokumentUtgaaendeSkanning - feilet teknisk ved mottak av utgaaende skanning for journalpostId={}. Feilmelding={}",
+					journalpostIdParsed, e.getMessage());
 			throw e;
+		}
+	}
+
+	private static FagomradeCode mapEnum(String tema) {
+		try {
+			return valueOf(tema);
+		} catch(IllegalArgumentException e) {
+			log.error("{} tema={} kan ikke mappes til FagomradeCode", get(MDC_REQUEST_ID), SafeLoggingUtil.removeUnsafeChars(tema));
+			return null;
 		}
 	}
 }

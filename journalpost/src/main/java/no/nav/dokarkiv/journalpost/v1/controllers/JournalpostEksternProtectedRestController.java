@@ -42,6 +42,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
@@ -75,26 +76,26 @@ public class JournalpostEksternProtectedRestController {
 																	 @Parameter(description = "Nav-CallId - teknisk sporingsid") @RequestHeader(value = "Nav-CallId", required = false) String navCallId,
 																	 @Parameter(description = "ID til journalposten som det er ønskelig å kopiere", required = true) @PathVariable String kildeJournalpostId,
 																	 @RequestBody KnyttTilAnnenSakRequest knyttTilAnnenSakRequest) {
-
+		long journalpostId = validateIdAndParse(kildeJournalpostId, "kildeJournalpostId");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		try {
 			log.info("knyttTilAnnenSak har fått har fått kall for å knytte dokumenter til annen sak");
-			knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, kildeJournalpostId);
-			KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, Long.parseLong(kildeJournalpostId));
+			knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, journalpostId);
+			KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, journalpostId);
 
 			log.info("knyttTilAnnenSak har knyttet til dokumenter til ny journalpost med journalpostId={}", knyttTilAnnenSakResponse.getNyJournalpostId());
 
 			return ResponseEntity.ok().body(knyttTilAnnenSakResponse);
 		} catch (KanIkkeFerdigstilleException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					format("knyttTilAnnenSak kunne ikke knytte dokumenter til annen sak for journalpostId=%s. %s", kildeJournalpostId, e.getMessage()),
+					format("knyttTilAnnenSak kunne ikke knytte dokumenter til annen sak for journalpostId=%s. %s", journalpostId, e.getMessage()),
 					e);
 		} catch (DokarkivFunctionalException e) {
-			log.warn("knyttTilAnnenSak - feilet funksjonelt ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", kildeJournalpostId,
+			log.warn("knyttTilAnnenSak - feilet funksjonelt ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", journalpostId,
 					e.getMessage());
 			throw e;
 		} catch (DokarkivTechnicalException e) {
-			log.warn("knyttTilAnnenSak - feilet teknisk ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", kildeJournalpostId, e
+			log.warn("knyttTilAnnenSak - feilet teknisk ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", journalpostId, e
 					.getMessage());
 			throw e;
 		}
@@ -113,13 +114,11 @@ public class JournalpostEksternProtectedRestController {
 			@RequestBody TilknyttVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
+		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
 		try {
-			validateId(journalpostId, "journalpostId");
-			long journalpostIdLong = Long.parseLong(journalpostId);
+			log.info("tilknyttVedlegg har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostIdParsed);
 
-			log.info("tilknyttVedlegg har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostId);
-
-			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(journalpostIdLong, request);
+			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(journalpostIdParsed, request);
 
 			if (feiledeDokumenterList.isEmpty()) {
 				return ResponseEntity
@@ -132,11 +131,11 @@ public class JournalpostEksternProtectedRestController {
 			}
 
 		} catch (DokarkivFunctionalException e) {
-			log.warn("tilknyttVedlegg - feilet funksjonelt ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostId, e
+			log.warn("tilknyttVedlegg - feilet funksjonelt ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostIdParsed, e
 					.getMessage());
 			throw e;
 		} catch (DokarkivTechnicalException e) {
-			log.error("tilknyttVedlegg - feilet teknisk ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostId, e
+			log.error("tilknyttVedlegg - feilet teknisk ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostIdParsed, e
 					.getMessage());
 			throw e;
 		}

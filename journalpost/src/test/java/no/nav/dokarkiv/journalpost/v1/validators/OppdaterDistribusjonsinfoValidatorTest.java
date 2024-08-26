@@ -53,7 +53,7 @@ public class OppdaterDistribusjonsinfoValidatorTest {
 				.tilbakestillJournalpost(true)
 				.build();
 		Throwable exception = assertThrows(InputValideringFeiletException.class, () ->
-				OppdaterDistribusjonsinfoValidator.validateRequest("123", oppdaterDistribusjonsinfoRequest));
+				OppdaterDistribusjonsinfoValidator.validateRequest(oppdaterDistribusjonsinfoRequest));
 		assertEquals("settStatusEkspedert og tilbakestillJournalpost kan ikke være true samtidig", exception.getMessage());
 	}
 }

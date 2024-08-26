@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.security.handler;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
+import no.nav.dokarkiv.core.util.SafeLoggingUtil;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import org.slf4j.MDC;
 
@@ -16,7 +17,6 @@ import static no.nav.dokarkiv.core.security.handler.HandlerConstants.NAVIDENT_RE
  * * Denne handleren dekker case for kall med kun systemtoken fra REST-STS.
  * * * Authorization header - REST-STS token
  *
- * @author Joakim Bjørnstad, Jbit AS
  * @see no.nav.dokarkiv.core.security.SporingHandlerInterceptor
  */
 @Slf4j
@@ -56,11 +56,11 @@ public class NavSystemkontekstHandler {
 				MDC.put(MDCConstants.MDC_USER_NAME, fulltNavn);
 				MDC.put(MDCConstants.MDC_CONSUMER_ID, consumerId);
 			} else {
-				log.error(ERROR_MELDING_PREFIX + " Fant ikke NAVIdent={} i Microsoft Graph. " + ERROR_MELDING_SUFFIX, navUserIdHeader);
+				log.error("{} Fant ikke NAVIdent={} i Microsoft Graph. {}", ERROR_MELDING_PREFIX, navUserIdHeader, ERROR_MELDING_SUFFIX);
 				handleServiceUserContext(consumerId);
 			}
 		} else {
-			log.error(ERROR_MELDING_PREFIX + " Ugyldig format på NAVIdent={}. Må matche \"" + NAVIDENT_REGEX + "\". " + ERROR_MELDING_SUFFIX, navUserIdHeader);
+			log.error("{} Ugyldig format på NAVIdent={}. Må matche \"{}\". {}", ERROR_MELDING_PREFIX, SafeLoggingUtil.removeUnsafeChars(navUserIdHeader), NAVIDENT_REGEX, ERROR_MELDING_SUFFIX);
 			handleServiceUserContext(consumerId);
 		}
 	}

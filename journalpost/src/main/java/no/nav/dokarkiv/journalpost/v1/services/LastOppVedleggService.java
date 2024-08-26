@@ -44,11 +44,11 @@ public class LastOppVedleggService {
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
-	public LastOppVedleggResponse lastOppVedlegg(String journalpostId, LastOppVedleggRequest request) {
+	public LastOppVedleggResponse lastOppVedlegg(long journalpostId, LastOppVedleggRequest request) {
 
 		DokumentValidator.validateDokument(request.dokument());
 
-		var journalpost = journalpostRepository.fetchByIdWithJournalpostDokumentInfoRelasjoner(Long.valueOf(journalpostId))
+		var journalpost = journalpostRepository.fetchByIdWithJournalpostDokumentInfoRelasjoner(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException("Kunne ikke finne journalpost med journalpostId=%s i joark"
 						.formatted(journalpostId)));
 

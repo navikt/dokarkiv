@@ -47,33 +47,33 @@ public class FeilregistrerSakstilknytningServiceTest {
 
 	@Test
 	public void feilregistrerSakstilknytningKanIkkeFinneJournalpost() {
-		Long journalpostId = 1L;
+		long journalpostId = 1L;
 		when(journalpostRepository.existsById(journalpostId)).thenThrow(
 				new JournalpostIkkeFunnetException("Kunne ikke finne journalpost med journalpostId=1 i joark"));
 
 		assertThrows(JournalpostIkkeFunnetException.class,
-				() -> feilregistrerSakstilknytningService.feilregistrerSakstilknytning(String.valueOf(journalpostId)),
+				() -> feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId),
 				"Kunne ikke finne journalpost med journalpostId=1 i joark");
 	}
 
 	@Test
 	public void feilregistrerSakstilknytningKanIkkeFinneSakstilknytning() {
-		Long journalpostId = 1L;
+		long journalpostId = 1L;
 		when(journalpostRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
 
 		assertThrows(JournalpostIkkeKnyttetTilSakException.class,
-				() -> feilregistrerSakstilknytningService.feilregistrerSakstilknytning(String.valueOf(journalpostId)),
+				() -> feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId),
 				"Feilregistrering er ikke mulig fordi journalposten ikke er knyttet til sak");
 	}
 
 	@Test
 	public void feilregistrerSakstilknytning() {
-		Long journalpostId = 1L;
+		long journalpostId = 1L;
 		when(journalpostRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
 		when(saksrelasjonRepository.findByJournalpostId(eq(1L))).thenReturn(
 				Optional.of(Saksrelasjon.builder().build()));
 
-		feilregistrerSakstilknytningService.feilregistrerSakstilknytning(String.valueOf(journalpostId));
+		feilregistrerSakstilknytningService.feilregistrerSakstilknytning(journalpostId);
 		verify(aksjonsLoggService).validateAndSaveAksjonsLogg(any(AksjonsLoggTO.class), arkivElementEndringCaptor.capture());
 
 		var arkivElementEndringTOS = arkivElementEndringCaptor.getValue();
@@ -85,24 +85,24 @@ public class FeilregistrerSakstilknytningServiceTest {
 
 	@Test
 	public void kanIkkeOpphevFeilregistrertSakstilknytningForJournalpostUtenFeilregistrering() {
-		Long journalpostId = 1L;
+		long journalpostId = 1L;
 		when(journalpostRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
 		when(saksrelasjonRepository.findByJournalpostId(eq(1L))).thenReturn(
 				Optional.of(Saksrelasjon.builder().build()));
 
 		assertThrows(FeilregistreringAlleredeOpphevetException.class,
-				() -> feilregistrerSakstilknytningService.opphevFeilregistrertSakstilknytning(String.valueOf(journalpostId)),
+				() -> feilregistrerSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostId),
 				"Feilregistreringen er allerede opphevet");
 	}
 
 	@Test
 	public void opphevFeilregistrertSakstilknytning() {
-		Long journalpostId = 1L;
+		long journalpostId = 1L;
 		when(journalpostRepository.existsById(journalpostId)).thenReturn(Boolean.TRUE);
 		when(saksrelasjonRepository.findByJournalpostId(eq(1L))).thenReturn(
 				Optional.of(Saksrelasjon.builder().feilregistrert(true).build()));
 
-		feilregistrerSakstilknytningService.opphevFeilregistrertSakstilknytning(String.valueOf(journalpostId));
+		feilregistrerSakstilknytningService.opphevFeilregistrertSakstilknytning(journalpostId);
 	}
 
 }

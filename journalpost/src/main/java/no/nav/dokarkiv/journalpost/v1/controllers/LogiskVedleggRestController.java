@@ -35,6 +35,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.domain.entities.SkannetInnhold.VEDLEGG_INNHOLD_LENGTH;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateNotNull;
 
 @Tag(name = "journalpostapi - logiske vedlegg", description = "Tjenester for å oppdatere, slette, endre og legge til logiske vedlegg")
@@ -62,16 +63,16 @@ public class LogiskVedleggRestController {
 			@PathVariable String logiskVedleggId,
 			@RequestBody EndreLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		long dokumentInfoIdParsed = validateIdAndParse(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
+		long logiskVedleggIdParsed = validateIdAndParse(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
 		log.info("endrelogiskvedlegg har mottatt kall om å endre logisk vedlegg med logiskVedleggId={} på dokument med dokumentInfoId={}",
-				logiskVedleggId, dokumentInfoId);
+				logiskVedleggIdParsed, dokumentInfoIdParsed);
 
-		validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
-		validateId(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
 		hasText(request.getTittel(), TITTEL_STRING);
 
-		logiskVedleggService.endreLogiskVedlegg(logiskVedleggId, request);
+		logiskVedleggService.endreLogiskVedlegg(logiskVedleggIdParsed, request);
 
-		log.info("endrelogiskvedlegg har endret logisk vedlegg med logiskVedleggId={}.", logiskVedleggId);
+		log.info("endrelogiskvedlegg har endret logisk vedlegg med logiskVedleggId={}.", logiskVedleggIdParsed);
 		return ResponseEntity.ok("Logisk vedlegg endret");
 	}
 
@@ -82,15 +83,15 @@ public class LogiskVedleggRestController {
 			@PathVariable String dokumentInfoId,
 			@RequestBody LeggTilLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		log.info("leggtillogiskvedlegg har mottatt kall om å legge til logisk vedlegg på dokument med dokumentInfoId={}", dokumentInfoId);
+		long dokumentInfoIdParsed = validateIdAndParse(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
+		log.info("leggtillogiskvedlegg har mottatt kall om å legge til logisk vedlegg på dokument med dokumentInfoId={}", dokumentInfoIdParsed);
 
-		validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
 		hasText(request.getTittel(), TITTEL_STRING);
 
-		String logiskVedleggId = logiskVedleggService.leggTilLogiskVedlegg(dokumentInfoId, request);
-		LeggTilLogiskVedleggResponse response = LeggTilLogiskVedleggResponse.builder().logiskVedleggId(logiskVedleggId).build();
+		long logiskVedleggId = logiskVedleggService.leggTilLogiskVedlegg(dokumentInfoIdParsed, request);
+		LeggTilLogiskVedleggResponse response = LeggTilLogiskVedleggResponse.builder().logiskVedleggId(String.valueOf(logiskVedleggId)).build();
 
-		log.info("leggtillogiskvedlegg har lagt til logisk vedlegg med logiskVedleggId={}, dokumentInfoId={}.", logiskVedleggId, dokumentInfoId);
+		log.info("leggtillogiskvedlegg har lagt til logisk vedlegg med logiskVedleggId={}, dokumentInfoId={}.", logiskVedleggId, dokumentInfoIdParsed);
 		return ResponseEntity.ok(response);
 	}
 
@@ -101,14 +102,14 @@ public class LogiskVedleggRestController {
 			@PathVariable String dokumentInfoId,
 			@PathVariable String logiskVedleggId) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		log.info("slettlogiskvedlegg har mottatt kall om å har mottatt kall om å slette logisk vedlegg med logiskVedleggId={}, dokumentInfoId={}", logiskVedleggId, dokumentInfoId);
+		long dokumentInfoIdParsed = validateIdAndParse(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
+		long logiskVedleggIdParsed = validateIdAndParse(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
+		log.info("slettlogiskvedlegg har mottatt kall om å har mottatt kall om å slette logisk vedlegg med logiskVedleggId={}, dokumentInfoId={}", logiskVedleggIdParsed, dokumentInfoIdParsed);
 
-		validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
-		validateId(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
 
-		logiskVedleggService.slettLogiskVedlegg(logiskVedleggId);
+		logiskVedleggService.slettLogiskVedlegg(logiskVedleggIdParsed);
 
-		log.info("slettlogiskvedlegg har slettet logisk vedlegg med logiskVedleggId={}, dokumentInfoId={}.", logiskVedleggId, dokumentInfoId);
+		log.info("slettlogiskvedlegg har slettet logisk vedlegg med logiskVedleggId={}, dokumentInfoId={}.", logiskVedleggIdParsed, dokumentInfoIdParsed);
 		return ResponseEntity.ok("Logisk vedlegg slettet");
 	}
 
@@ -117,19 +118,19 @@ public class LogiskVedleggRestController {
 	@RestMetrics(value = "dok_request", extraTags = {"process_code", "bulkoppdaterlogiskvedlegg"}, percentiles = {0.5, 0.95})
 	public ResponseEntity<Void> bulkOppdaterLogiskVedlegg(@PathVariable String dokumentInfoId, @RequestBody BulkOppdaterLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		log.info("bulkoppdaterlogiskvedlegg har mottatt kall. dokumentInfoId={}", dokumentInfoId);
+		long dokumentInfoIdParsed = validateIdAndParse(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
+		log.info("bulkoppdaterlogiskvedlegg har mottatt kall. dokumentInfoId={}", dokumentInfoIdParsed);
 
-		validateId(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
 		validateNotNull(request.getTitler(), "request.titler");
 		validateTitlerLength(request.getTitler());
 
 		try {
-			logiskVedleggService.bulkOppdaterLogiskVedlegg(dokumentInfoId, request);
+			logiskVedleggService.bulkOppdaterLogiskVedlegg(dokumentInfoIdParsed, request);
 		} catch (ObjectOptimisticLockingFailureException | StaleObjectStateException e) {
-			throw new LogiskVedleggKanIkkeBulkOppdateresException("Kan ikke bulkOppdaterLogiskVedlegg for dokumentInfoId=" + dokumentInfoId + ". Ressursen er sannsynligvis nylig oppdatert av en annen prosess. Forsøk på nytt.", e);
+			throw new LogiskVedleggKanIkkeBulkOppdateresException("Kan ikke bulkOppdaterLogiskVedlegg for dokumentInfoId=" + dokumentInfoIdParsed + ". Ressursen er sannsynligvis nylig oppdatert av en annen prosess. Forsøk på nytt.", e);
 		}
 
-		log.info("bulkoppdaterlogiskvedlegg oppdaterte dokumentInfoId={} til antall_titler={}", dokumentInfoId, request.getTitler().size());
+		log.info("bulkoppdaterlogiskvedlegg oppdaterte dokumentInfoId={} til antall_titler={}", dokumentInfoIdParsed, request.getTitler().size());
 		return ResponseEntity.noContent().build();
 	}
 

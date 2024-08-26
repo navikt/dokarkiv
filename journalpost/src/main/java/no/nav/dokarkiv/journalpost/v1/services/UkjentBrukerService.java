@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import java.util.EnumSet;
 import java.util.List;
 
-import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
@@ -31,9 +30,9 @@ public class UkjentBrukerService {
 		this.journalpostRepository = journalpostRepository;
 	}
 
-	public List<ArkivElementEndringTO> settUkjentBruker(String journalpostId) {
-		Journalpost journalpost = journalpostRepository.findById(parseLong(journalpostId))
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+	public List<ArkivElementEndringTO> settUkjentBruker(long journalpostId) {
+		Journalpost journalpost = journalpostRepository.findById(journalpostId)
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med journalpostId=%d i joark", journalpostId)));
 
 		JournalStatusCode oldJournalStatus = journalpost.getJournalstatus();
 		if (validJournalStatuses.contains(oldJournalStatus)) {

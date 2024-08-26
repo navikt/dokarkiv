@@ -80,7 +80,7 @@ public class JournalpostRepositorySkjermetTest {
 		assertThat(journalpostRepositorySkjermet.findById(123L).isPresent(), is(false));
 		assertThat(journalpostRepositorySkjermet.existsById(123L), is(false));
 		assertThat(journalpostRepositorySkjermet.findJournalpostByKanalReferanseId("test").isPresent(), is(false));
-		assertThat(journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId("213"), nullValue());
+		assertThat(journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId(213), nullValue());
 		assertThat(journalpostRepositorySkjermet.findDokumentinfoIdIdByDokumentinfoTilleggsopplysningerNokkelAndVerdi("213", "313"), nullValue());
 	}
 
@@ -113,9 +113,9 @@ public class JournalpostRepositorySkjermetTest {
 				.getDokumentInfo()
 				.getId()), notNullValue());
 		assertThat(journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
-				.getDokumentInfo()
-				.getId()
-				.toString()), notNullValue());
+						.getDokumentInfo()
+						.getId()),
+				notNullValue());
 
 		assertTrue(journalpostTestRepository.findByKanalReferanseId(KANAL_REFERANSE_ID).isPresent());
 		assertTrue(journalpostRepositorySkjermet.findJournalpostByKanalReferanseId(KANAL_REFERANSE_ID).isPresent());
@@ -168,9 +168,9 @@ public class JournalpostRepositorySkjermetTest {
 				.getDokumentInfo()
 				.getId()), notNullValue());
 		assertThat(journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
-				.getDokumentInfo()
-				.getId()
-				.toString()), nullValue());
+						.getDokumentInfo()
+						.getId()),
+				nullValue());
 	}
 
 	@Test

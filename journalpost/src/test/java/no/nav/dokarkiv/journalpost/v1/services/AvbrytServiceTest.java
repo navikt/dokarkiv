@@ -32,7 +32,7 @@ public class AvbrytServiceTest {
 
 		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
-		String response = avbrytService.avbryt("38");
+		String response = avbrytService.avbryt(38);
 
 		assertEquals(FIKK_AVBRUTT, response);
 	}
@@ -45,7 +45,7 @@ public class AvbrytServiceTest {
 		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
 		assertThrows(UgyldigJournalStatusException.class, () ->
-				avbrytService.avbryt("38")
+				avbrytService.avbryt(38)
 		);
 	}
 
@@ -58,7 +58,7 @@ public class AvbrytServiceTest {
 		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
 		assertThrows(UgyldigJournalStatusException.class, () ->
-				avbrytService.avbryt("38")
+				avbrytService.avbryt(38)
 		);
 	}
 
@@ -71,7 +71,7 @@ public class AvbrytServiceTest {
 		when(journalpostRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(journalpost));
 
 		assertThrows(UgyldigJournalStatusException.class, () ->
-				avbrytService.avbryt("38")
+				avbrytService.avbryt(38)
 		);
 	}
 
