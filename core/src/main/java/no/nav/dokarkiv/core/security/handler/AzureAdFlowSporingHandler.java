@@ -23,7 +23,6 @@ import static org.apache.commons.lang3.StringUtils.left;
  * * Client credential grant flow - system til system. https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow
  * * On-behalf-of flow - fra system med brukerkontekst. https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow
  *
- * @author Joakim Bjørnstad, Jbit AS
  * @see no.nav.dokarkiv.core.security.SporingHandlerInterceptor
  */
 @Slf4j
@@ -96,11 +95,11 @@ public class AzureAdFlowSporingHandler {
 				MDC.put(MDCConstants.MDC_CONSUMER_ID, appClaim);
 			} else {
 				handleClientCredentialGrantFlowAppContext(appClaim);
-				log.error(ERROR_MELDING_PREFIX + " Fant ikke NAVIdent={} i Microsoft Graph. " + ERROR_MELDING_SUFFIX, navUserIdHeader);
+				log.error("{} Fant ikke NAVIdent={} i Microsoft Graph. {}", ERROR_MELDING_PREFIX, navUserIdHeader, ERROR_MELDING_SUFFIX);
 			}
 		} else {
 			handleClientCredentialGrantFlowAppContext(appClaim);
-			log.error(ERROR_MELDING_PREFIX + " Ugyldig format på NAVIdent={}. Må matche \"" + NAVIDENT_REGEX + "\". " + ERROR_MELDING_SUFFIX, SafeLoggingUtil.removeUnsafeChars(navUserIdHeader));
+			log.error("{} Ugyldig format på NAVIdent={}. Må matche \"{}\". {}", ERROR_MELDING_PREFIX, SafeLoggingUtil.removeUnsafeChars(navUserIdHeader), NAVIDENT_REGEX, ERROR_MELDING_SUFFIX);
 		}
 	}
 

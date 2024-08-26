@@ -123,6 +123,6 @@ public class DefaultOpprettJournalpostArkiverDokumenterService implements Oppret
 			return null;
 		}
 
-		return journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId(dokumentinfoIdPreviousJournalforing.toString());
+		return journalpostRepositorySkjermet.findJournalpostIdByDokumentinfoId(dokumentinfoIdPreviousJournalforing);
 	}
 }

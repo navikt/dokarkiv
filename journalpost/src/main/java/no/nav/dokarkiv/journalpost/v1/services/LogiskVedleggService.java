@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
-import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
