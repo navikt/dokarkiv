@@ -52,11 +52,11 @@ public class FerdigstillJournalpostValidator {
 	}
 
 	public void validateSak(final Journalpost journalpost, final Sak sak) {
-		if (FS22.equals(journalpost.getSaksrelasjon().getFagsystem())){
+		if (FS22.equals(journalpost.getSaksrelasjon().getFagsystem())) {
 			var sakStatus = sak.getSakStatus();
-			if(sakStatus != null && sakStatus != AAPEN){
+			if (sakStatus != null && sakStatus != AAPEN) {
 				throw new KanIkkeFerdigstilleException(format(
-						"Journalposten kan ikke ferdigstilles som generell sak med sakstatus=%s. Sakstatus må være=%S eller null".formatted(sakStatus, AAPEN)));
+						"Journalposten kan ikke ferdigstilles som generell sak eller fagsak med sakstatus=%s. Sakstatus må være=%s eller null".formatted(sakStatus, AAPEN)));
 			}
 		}
 	}

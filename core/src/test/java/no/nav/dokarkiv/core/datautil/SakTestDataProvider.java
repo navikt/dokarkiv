@@ -15,7 +15,7 @@ public final class SakTestDataProvider {
 	public static Sak.SakBuilder createSakWithStatus(SakStatusCode sakStatusCode) {
 		return Sak.builder()
 				.sakStatus(sakStatusCode)
-				.tema(FagsystemCode.PEN.name())
+				.tema(FagsystemCode.FS22.name())
 				.opprettetAv("SakTestDataProvider")
 				.opprettetTidspunkt(LocalDateTime.now());
 	}
