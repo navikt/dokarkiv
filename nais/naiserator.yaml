@@ -20,8 +20,6 @@ spec:
     {{/if}}
     - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE }}
-    - name: SPRING_DATASOURCE_URL
-      value: {{ SPRING_DATASOURCE_URL }}
     - name: SPRING_LDAP_URLS
       value: {{ SPRING_LDAP_URLS }}
     - name: LDAP_NAVUSER_BASEDN
@@ -88,8 +86,10 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: {{ DOKARKIV_DS }}
-        mountPath: "/var/run/secrets/nais.io/dokarkivDS"
+      - kvPath: {{ DOKARKIV_DS_CREDS }}
+        mountPath: "/var/run/secrets/nais.io/db_creds"
+      - kvPath: {{ DOKARKIV_DS_CONFIG }}
+        mountPath: "/var/run/secrets/nais.io/db_config"
       - kvPath: {{ SRVDOKARKIV }}
         mountPath: "/secrets/serviceuser/srvdokarkiv"
       - kvPath: {{ DOKARKIV_VAULT }}

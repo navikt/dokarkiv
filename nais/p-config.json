@@ -5,7 +5,6 @@
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL": "https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.nais.adeo.no/rest/v1/sts/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvbdarkiv,srvondemandtojoark,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvjfr-arena,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvklage-saksbeh,srvmelosys,srvmelosys-eessi,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmothelse,srvskanmotovrig,srvskanmotreferanse,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen,srvsoknadarkiverer,srvsupstonad,srvregpapirsm,srvBrevBestilling,srvpadm2,srvmaa,srv-digihotProxy,srvveilarbvedtakss,srvk9-fordel,srvtiltakrefusjon,srvdp-proxy,srv-oms-proxy,srvccmarkivogdist,srvmeldekortservice,srvpselv,srvbdarkivering,srvfarskapsportal,srvbarnepensjon,srvpensjon,srvgsak-henv-migr,srvspberegning,srvk9-tilbake,srvEessiPensjonPdlP",
-  "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@dm09-scan.adeo.no:1521/joark_ha",
   "SPRING_LDAP_URLS": "ldaps://ldapgw.adeo.no",
   "LDAP_NAVUSER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=adeo,dc=no",
   "LDAP_SERVICEUSER_BASEDN": "ou=ServiceAccounts,dc=adeo,dc=no",
@@ -24,7 +23,8 @@
     "https://dokarkiv.prod-fss-pub.nais.io",
     "https://dokarkiv.intern.nav.no"
   ],
-  "DOKARKIV_DS": "/oracle/data/prod/creds/joark-dokarkiv",
+  "DOKARKIV_DS_CREDS": "/oracle/data/prod/creds/joark-dokarkiv",
+  "DOKARKIV_DS_CONFIG": "/oracle/data/prod/config/joark",
   "SRVDOKARKIV": "/serviceuser/data/prod/srvdokarkiv",
   "DOKARKIV_VAULT": "/kv/prod/fss/dokarkiv/teamdokumenthandtering",
   "SRV_LINUX": "/serviceuser/data/prod/srvssolinux",
