@@ -5,7 +5,6 @@
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration",
   "NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE": "srvdolly,srvsyfomock,srvtestnorge-inntekt,srv-digihot,srv-klage-perm-ref,srvPermJournalforing,srvdagpenger-journ,srvdokumentfordeling,srveessi-pensjon-j,srveux-app,srvfamilie-ks-opps,srvgosys,srvgosys-dokument-,srvjfr-automatisk,srvjfr-manuell-opp,srvjoarkadmin,srvk9formidling,srvklage-dittnav,srvklage-saksbeh,srvmelosys,srvpale2sak,srvpensjon-dokdist,srvpermref-journalf,srvpleiepenger-joark,srvprosess-tiltaks,srvskanmotovrig,srvskanmotreferanse,srvspregosys,srvsyfooppfolgings,srvsyfosmpapirmottak,srvsyfosmsak,srvtilbakemeldings,srvtiltak-tilsagns,srvarbeid-og-inntekt,srvarena-dokgen,srvsoknadarkiverer,srvsupstonad,srvregpapirsm,srvBrevBestilling,srvpadm2,srvmeldekortservice,srvpensjon",
-  "SPRING_DATASOURCE_URL": "jdbc:oracle:thin:@dmv12-scan.adeo.no:1521/joark_q0_ha",
   "SPRING_LDAP_URLS": "ldaps://ldapgw.preprod.local",
   "LDAP_NAVUSER_BASEDN": "ou=NAV,ou=BusinessUnits,dc=preprod,dc=local",
   "LDAP_SERVICEUSER_BASEDN": "ou=ServiceAccounts,dc=preprod,dc=local",
@@ -24,7 +23,8 @@
     "https://dokarkiv-q0.dev.adeo.no",
     "https://dokarkiv-q0.dev.intern.nav.no"
   ],
-  "DOKARKIV_DS": "/oracle/data/dev/creds/joark_q0-user",
+  "DOKARKIV_DS_CREDS": "/oracle/data/dev/creds/joark_q0-user",
+  "DOKARKIV_DS_CONFIG": "/oracle/data/dev/config/joark_q0",
   "SRVDOKARKIV": "/serviceuser/data/dev/srvdokarkiv",
   "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv-q0/teamdokumenthandtering",
   "SRV_LINUX": "/serviceuser/data/dev/srvssolinux",
