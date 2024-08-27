@@ -24,10 +24,12 @@ import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
+import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
@@ -110,8 +112,10 @@ public class TestUtils {
 	public static final String KANAL_NAVNO = "NAV_NO";
 	public static final String KANAL_ALTINN = "ALTINN";
 	public static final String DOKUMENTKATEGORI_SED = "SED";
+	public static final String DOKUMENTKATEGORI_SOK = "SOK";
 	public static final String DOKUMENTKATEGORI_UGYLDIG = "UGYLDIG";
 	public static final String FILTYPE_PDF = "PDF";
+	public static final String FILTYPE_PDFA = "PDFA";
 	public static final String FILTYPE_XML = "XML";
 	public static final String FILTYPE_XLSX = "XLSX";
 	public static final String FILTYPE_UGYLDIG = "UGYLDIG";
@@ -474,10 +478,6 @@ public class TestUtils {
 		);
 	}
 
-	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType) {
-		return createRequest(journalpostType, null);
-	}
-
 	public static KnyttTilAnnenSakRequest createKnyttTilAnnenSakRequest(String sakstype, String fagsakId, String fagsaksystem, String tema, BrukerIdType brukerIdType, String brukerId, String journalfoerendeEnhet) {
 		no.nav.dokarkiv.journalpost.v1.api.Bruker bruker = no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
 				.idType(brukerIdType)
@@ -493,8 +493,15 @@ public class TestUtils {
 				.build();
 	}
 
+	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType) {
+		return createRequest(journalpostType, null);
+	}
+
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet) {
-		return createBaseRequest(journalpostType)
+		return createRequest(journalpostType, journalfoerendeEnhet, SAK_ID.toString());
+	}
+	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet, String sakId) {
+		return createBaseRequest(journalpostType, sakId)
 				.journalfoerendeEnhet(journalfoerendeEnhet)
 				.dokumenter(Arrays.asList(
 						Dokument.builder()
@@ -556,6 +563,37 @@ public class TestUtils {
 				.sak(Sak.builder()
 						.arkivsaksnummer(SAK_ID.toString())
 						.arkivsaksystem(Arkivsaksystem.GSAK)
+						.build());
+	}
+
+	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseRequest(JournalpostType journalpostType, String sakId) {
+		return OpprettJournalpostRequest.builder()
+				.journalposttype(journalpostType)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.id(AVSENDER_ID_PERSON)
+						.idType(AvsenderMottakerIdType.FNR)
+						.navn(AVSENDER_NAVN)
+						.land(AVSENDER_MOTTAKER_LAND)
+						.build())
+				.bruker(no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
+						.idType(BrukerIdType.FNR)
+						.id(BRUKER_ID_PERSON)
+						.build())
+				.tema(TEMA_FOR)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tittel(INNHOLD)
+				.kanal(KANAL_NAVNO)
+				.eksternReferanseId(KANALREFERANSE_ID)
+				.datoDokument(DATO_DOKUMENT)
+				.datoMottatt(DATO_MOTTATT)
+				.tilleggsopplysninger(Collections.singletonList(Tilleggsopplysning.builder()
+						.nokkel(TILLEGGSOPPLYSNING_NOKKEL)
+						.verdi(TILLEGGSOPPLYSNING_VERDI)
+						.build()))
+				.sak(Sak.builder()
+						.fagsakId(sakId)
+						.sakstype(Sakstype.FAGSAK)
+						.fagsaksystem(Fagsaksystem.PP01)
 						.build());
 	}
 

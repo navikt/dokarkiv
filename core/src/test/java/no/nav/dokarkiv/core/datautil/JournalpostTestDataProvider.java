@@ -22,6 +22,7 @@ import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createD
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createHovedDokumentInfoFP;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
 import static no.nav.dokarkiv.core.datautil.JournalpostDokumentInfoRelasjonTestDataProvider.createHoveddokumentRelasjon;
+import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.PEN_SAK_ID;
 import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createSaksrelasjon;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
@@ -96,6 +97,10 @@ public final class JournalpostTestDataProvider {
 	}
 
 	public static JournalpostBuilder buildJournalpost(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus) {
+		return buildJournalpost(journalpostType, journalStatus, PEN_SAK_ID);
+	}
+
+	public static JournalpostBuilder buildJournalpost(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus, Long sakId) {
 		return getJournalpostBuilder()
 				.addOriginalJournalpost(true)
 				.avsenderMottakerId("1")
@@ -105,7 +110,7 @@ public final class JournalpostTestDataProvider {
 				.fagomrade(FagomradeCode.PEN)
 				.journalStatus(journalStatus)
 				.journalpostType(journalpostType)
-				.saksrelasjon(SaksrelasjonTestDataProvider.createPENSaksrelasjon())
+				.saksrelasjon(SaksrelasjonTestDataProvider.createPENSaksrelasjonWithSak(sakId))
 				.brukere(BrukerTestDataProvider.createBruker("11111111111", BrukerTypeCode.PERSON), BrukerTestDataProvider.createBruker("999999999", BrukerTypeCode.ORGANISASJON))
 				.innhold(INNHOLD)
 				.journalForendeEnhetId("SesamStasjon")

@@ -7,13 +7,16 @@ import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
+import no.nav.dokarkiv.core.exceptions.SakIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.fagomrade.FagomradeService;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
+import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
@@ -32,6 +35,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FERDIGSTILL;
+import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
@@ -42,14 +46,17 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class FerdigstillJournalpostService {
 
 	private final JournalpostRepository journalpostRepository;
+	private final SakRepository sakRepository;
 	private final FerdigstillJournalpostValidator ferdigstillJournalpostValidator;
 	private final AksjonsLoggService aksjonsLoggService;
 	private final FagomradeService fagomradeService;
 
 	public FerdigstillJournalpostService(final JournalpostRepository journalpostRepository,
+										 final SakRepository sakRepository,
 										 final AksjonsLoggService aksjonsLoggService,
 										 final FagomradeService fagomradeService) {
 		this.journalpostRepository = journalpostRepository;
+		this.sakRepository = sakRepository;
 		this.fagomradeService = fagomradeService;
 		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
 		this.aksjonsLoggService = aksjonsLoggService;
@@ -68,6 +75,7 @@ public class FerdigstillJournalpostService {
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		validerJournalpost(journalpost);
+		validerSak(journalpost);
 
 		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
 		String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
@@ -95,6 +103,7 @@ public class FerdigstillJournalpostService {
 				orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
 
 		validerJournalpost(journalpost);
+		validerSak(journalpost);
 
 		JournalStatusCode prevJournalstatus = journalpost.getJournalstatus();
 		String prevJournalfoerendeEnhet = journalpost.getJournalForendeEnhetId();
@@ -129,6 +138,15 @@ public class FerdigstillJournalpostService {
 		ferdigstillJournalpostValidator.validateJournalpostStruktur(journalpost);
 		ferdigstillJournalpostValidator.validatePaakrevdeFelter(journalpost);
 		validerFagomradeErAktivt(journalpost);
+	}
+	private void validerSak(Journalpost journalpost) {
+		if(FS22.equals(journalpost.getSaksrelasjon().getFagsystem())) {
+			Long sakId = journalpost.getSaksrelasjon().getSakId();
+			Sak sak = sakRepository.findById(sakId)
+					.orElseThrow(() -> new SakIkkeFunnetException("Kunne ikke finne sak med sakId=%s".formatted(sakId)));
+
+			ferdigstillJournalpostValidator.validateSak(journalpost, sak);
+		}
 	}
 
 	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.

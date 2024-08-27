@@ -39,10 +39,18 @@ public final class SaksrelasjonTestDataProvider {
 				.feilregistrert(feilregistrert)
 				.opprettetKildeNavn(SAK_KILDE_NAVN);
 	}
+	public static SaksrelasjonBuilder createSaksrelasjonWithSak(Long sakId) {
+		return SaksrelasjonBuilder
+				.getSaksrelasjonBuilder()
+				.sakId(sakId)
+				.fagsystem(SAK_FAGSYSTEM)
+				.feilregistrert(false)
+				.opprettetKildeNavn(SAK_KILDE_NAVN);
+	}
 
-	public static Saksrelasjon createPENSaksrelasjon() {
+	public static Saksrelasjon createPENSaksrelasjonWithSak(Long sakId) {
 		return getSaksrelasjonBuilder()
-				.sakId(PEN_SAK_ID)
+				.sakId(sakId)
 				.fagsystem(FagsystemCode.PEN)
 				.opprettetKildeNavn("itest")
 				.build();
