@@ -139,6 +139,7 @@ public class TestUtils {
 	public static final String FAIL_AKTOER_ID = "9343877893406";
 	public static final String FNR = "01010199999";
 	public static final String FNR_2 = "01010188888";
+	public static final String FNR_UGYLDIG = "12345678901";
 
 	public static Journalpost createEnkelJournalpost() {
 		Journalpost journalpost = Journalpost.builder()
