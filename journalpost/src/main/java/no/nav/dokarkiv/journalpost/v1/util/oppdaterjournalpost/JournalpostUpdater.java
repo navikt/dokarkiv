@@ -34,6 +34,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_BRUKER;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
@@ -47,7 +48,6 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 @Component
 public class JournalpostUpdater {
 
-	private static final String DELETE_MARKER = " ";
 	private final BrukerRepository brukerRepository;
 	private final IdentConsumer identConsumer;
 
@@ -194,11 +194,7 @@ public class JournalpostUpdater {
 					journalpost.setAvsenderMottakerId(ny.getId());
 					endret.setEndretFlagg(true);
 				}
-				if (DELETE_MARKER.equalsIgnoreCase(ny.getId())) {
-					journalpost.setAvsenderMottakerId(null);
-					journalpost.setAvsenderMottakerIdType(null);
-					endret.setEndretFlagg(true);
-				}
+				nullUtAvsenderMottakerIdTypeDersomNyAvsenderMottakerIdErBlank(journalpost, endret, ny);
 			}
 
 			if (isNotBlank(ny.getLand())) {
@@ -214,6 +210,18 @@ public class JournalpostUpdater {
 
 				}
 			}
+		}
+	}
+
+	private static void nullUtAvsenderMottakerIdTypeDersomNyAvsenderMottakerIdErBlank(Journalpost journalpost, ChangeTracker endret, AvsenderMottaker ny) {
+		if (ny.getId().isBlank() && journalpost.getAvsenderMottakerIdType() != null) {
+			endret.add(
+					JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE,
+					journalpost.getAvsenderMottakerIdType().toString(),
+					""
+			);
+			journalpost.setAvsenderMottakerIdType(null);
+			endret.setEndretFlagg(true);
 		}
 	}
 

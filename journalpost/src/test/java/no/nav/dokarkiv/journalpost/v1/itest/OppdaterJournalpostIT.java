@@ -1001,13 +1001,14 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	public void shouldDeleteAvsenderMottaker() {
 		clearSakRepository();
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
-				.endretAvNavn("saksbehandlersen"));
+				.endretAvNavn("saksbehandlersen")
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
-				.avsenderMottaker(AvsenderMottaker.builder().id("").build())
+				.avsenderMottaker(AvsenderMottaker.builder().id(" ").build())
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
@@ -1015,6 +1016,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isBlank();
+		assertThat(journalpostOppdatert.getAvsenderMottakerIdType()).isNull();
 	}
 
 	@Test
