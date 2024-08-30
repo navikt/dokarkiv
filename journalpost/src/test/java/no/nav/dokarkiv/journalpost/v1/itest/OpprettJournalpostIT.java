@@ -699,7 +699,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldReturn404WhenFantIkkeAktoridIPDL() {
 		clearSakRepository();
-		restStsToken();
 		stubAzure();
 		identNotFoundStub();
 
