@@ -185,7 +185,7 @@ public class JournalpostUpdater {
 					journalpost.setAvsenderMottakerIdType(oversettAvsenderMottakerIdType(ny.getIdType()));
 					endret.setEndretFlagg(true);
 				}
-				if (!ny.getId().equalsIgnoreCase(journalpost.getAvsenderMottakerId())) {
+				if (!ny.getId().equalsIgnoreCase(journalpost.getAvsenderMottakerId()) && !ny.getId().isBlank()) {
 					endret.add(
 							JOURNALPOST_AVSENDER_MOTTAKER_ID,
 							journalpost.getAvsenderMottakerId(),
@@ -194,7 +194,7 @@ public class JournalpostUpdater {
 					journalpost.setAvsenderMottakerId(ny.getId());
 					endret.setEndretFlagg(true);
 				}
-				nullUtAvsenderMottakerIdTypeDersomNyAvsenderMottakerIdErBlank(journalpost, endret, ny);
+				nullUtAvsenderMottakerIdDersomNyAvsenderMottakerIdErBlank(journalpost, endret, ny);
 			}
 
 			if (isNotBlank(ny.getLand())) {
@@ -213,13 +213,19 @@ public class JournalpostUpdater {
 		}
 	}
 
-	private static void nullUtAvsenderMottakerIdTypeDersomNyAvsenderMottakerIdErBlank(Journalpost journalpost, ChangeTracker endret, AvsenderMottaker ny) {
-		if (ny.getId().isBlank() && journalpost.getAvsenderMottakerIdType() != null) {
+	private static void nullUtAvsenderMottakerIdDersomNyAvsenderMottakerIdErBlank(Journalpost journalpost, ChangeTracker endret, AvsenderMottaker ny) {
+		if (ny.getId().isBlank()) {
+			endret.add(
+					JOURNALPOST_AVSENDER_MOTTAKER_ID,
+					journalpost.getAvsenderMottakerId(),
+					null
+			);
 			endret.add(
 					JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE,
 					journalpost.getAvsenderMottakerIdType().toString(),
-					""
+					null
 			);
+			journalpost.setAvsenderMottakerId(null);
 			journalpost.setAvsenderMottakerIdType(null);
 			endret.setEndretFlagg(true);
 		}
