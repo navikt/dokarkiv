@@ -83,6 +83,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XLSX;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FNR_2;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FNR_UGYLDIG;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_WITH_INVALID_MAGIC_NUMBER;
@@ -693,6 +694,25 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(2);
 		assertEquals(aksjonsLoggList.get(0).getBruker(), UKJENT);
+	}
+
+	@Test
+	public void shouldReturn404WhenFantIkkeAktoridIPDL() {
+		clearSakRepository();
+		stubAzure();
+		identNotFoundStub();
+
+		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
+				.tema(TEMA_TIL)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR_UGYLDIG).build())
+				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(AO01).build())
+				.build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST, POST, requestEntity, String.class);
+
+		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+		assertThat(response.getBody()).contains("Fant ikke aktørid for person i pdl.");
 	}
 
 	@Test

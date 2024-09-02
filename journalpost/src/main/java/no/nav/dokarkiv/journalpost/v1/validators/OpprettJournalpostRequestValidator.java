@@ -173,7 +173,7 @@ public class OpprettJournalpostRequestValidator {
 		} else if (ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != ORGNR_LENGTH) {
 			throw new InputValideringFeiletException("Bruker.id må være 9 siffer for ORGNR.");
 		} else if (AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
-			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for AKTOERID.");
+			throw new InputValideringFeiletException("Bruker.id må være 13 siffer for AKTOERID.");
 		}
 	}
 
