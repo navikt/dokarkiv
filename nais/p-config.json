@@ -393,6 +393,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "brev-administrasjon",
+      "namespace": "isa",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "doksikkerhetsnett",
       "namespace": "teamdokumenthandtering",
       "cluster": "prod-fss"
