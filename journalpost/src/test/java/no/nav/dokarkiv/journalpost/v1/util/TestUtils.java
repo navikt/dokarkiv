@@ -369,6 +369,24 @@ public class TestUtils {
 				.build();
 	}
 
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithoutWrongAvsenderMottakerId() {
+		return OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.idType(AvsenderMottakerIdType.FNR)
+						.id("")
+						.navn(AVSENDER_NAVN)
+						.land(AVSENDER_MOTTAKER_LAND)
+						.build())
+				.bruker(createBrukerPerson())
+				.sak(createSak())
+				.tema(TEMA_FOR)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tittel(DOKUMENT_TITTEL1)
+				.tilleggsopplysninger(createTilleggsopplysninger())
+				.dokumenter(createDokumentInfos())
+				.build();
+	}
+
 	public static OppdaterJournalpostRequest createPutOppdaterJournalpostAvsenderMottakerKunLandRequest() {
 		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(AvsenderMottaker.builder().land(AVSENDER_MOTTAKER_UTLAND).build())

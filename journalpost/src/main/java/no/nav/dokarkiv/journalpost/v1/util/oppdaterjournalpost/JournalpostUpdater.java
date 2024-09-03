@@ -48,6 +48,7 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 @Component
 public class JournalpostUpdater {
 
+	private static final String DELETE_MARKER = " ";
 	private final BrukerRepository brukerRepository;
 	private final IdentConsumer identConsumer;
 
@@ -182,6 +183,12 @@ public class JournalpostUpdater {
 			if (ny.getId() != null) {
 				if (ny.getIdType() != null &&
 						oversettAvsenderMottakerIdType(ny.getIdType()) != journalpost.getAvsenderMottakerIdType()) {
+					String gammelAvsenderMottakerType = journalpost.getAvsenderMottakerIdType() == null ? "" : journalpost.getAvsenderMottakerIdType().toString();
+					endret.add(
+							JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE,
+							gammelAvsenderMottakerType,
+							ny.getIdType().toString()
+					);
 					journalpost.setAvsenderMottakerIdType(oversettAvsenderMottakerIdType(ny.getIdType()));
 					endret.setEndretFlagg(true);
 				}
@@ -194,7 +201,9 @@ public class JournalpostUpdater {
 					journalpost.setAvsenderMottakerId(ny.getId());
 					endret.setEndretFlagg(true);
 				}
-				nullUtAvsenderMottakerIdDersomNyAvsenderMottakerIdErBlank(journalpost, endret, ny);
+				if (DELETE_MARKER.equals(ny.getId())) {
+					nullUtAvsenderMottakerIdOgAvsenderMottakerIdType(journalpost, endret, ny);
+				}
 			}
 
 			if (isNotBlank(ny.getLand())) {
@@ -213,22 +222,20 @@ public class JournalpostUpdater {
 		}
 	}
 
-	private static void nullUtAvsenderMottakerIdDersomNyAvsenderMottakerIdErBlank(Journalpost journalpost, ChangeTracker endret, AvsenderMottaker ny) {
-		if (ny.getId().isBlank()) {
-			endret.add(
-					JOURNALPOST_AVSENDER_MOTTAKER_ID,
-					journalpost.getAvsenderMottakerId(),
-					null
-			);
-			endret.add(
-					JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE,
-					journalpost.getAvsenderMottakerIdType().toString(),
-					null
-			);
-			journalpost.setAvsenderMottakerId(null);
-			journalpost.setAvsenderMottakerIdType(null);
-			endret.setEndretFlagg(true);
-		}
+	private static void nullUtAvsenderMottakerIdOgAvsenderMottakerIdType(Journalpost journalpost, ChangeTracker endret, AvsenderMottaker ny) {
+		endret.add(
+				JOURNALPOST_AVSENDER_MOTTAKER_ID,
+				journalpost.getAvsenderMottakerId(),
+				null
+		);
+		endret.add(
+				JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE,
+				journalpost.getAvsenderMottakerIdType().toString(),
+				null
+		);
+		journalpost.setAvsenderMottakerId(null);
+		journalpost.setAvsenderMottakerIdType(null);
+		endret.setEndretFlagg(true);
 	}
 
 	private void oppdaterAvsenderMottaker(ChangeTracker endret, Journalpost journalpost, String navn) {

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
@@ -27,6 +28,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJou
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithDatoMottat;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutWrongAvsenderMottakerId;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -118,6 +120,19 @@ public class JournalpostUpdaterTest {
 		assertEquals(journalpost.getAvsenderMottaker(), AVSENDER_NAVN);
 	}
 
+	@Test
+	public void shouldNotChangeAvsenderMottakerIdWithWrongDeleteMarker() throws UgyldigAksjonsLoggException {
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithoutWrongAvsenderMottakerId();
+
+		journalpost = TestUtils.createJournalpostForOppdatering();
+		assertNull(journalpost.getAvsenderMottakerIdType());
+
+		updater.updateFields(journalpost, oppdaterJournalpostRequest);
+
+		assertEquals(journalpost.getAvsenderMottakerId(), AVSENDER_ID_PERSON);
+		assertEquals(journalpost.getAvsenderMottaker(), AVSENDER_NAVN);
+		assertEquals(journalpost.getAvsenderMottakerIdType(), AvsenderMottakerIdTypeCode.FNR);
+	}
 	@Test
 	public void shouldUpdateJPMottattDatoWithNullWhenJpErInngaaendeAndRequestMottattDatoNull() throws UgyldigAksjonsLoggException {
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestUtenDatoMottat();
