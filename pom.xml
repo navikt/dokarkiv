@@ -48,7 +48,7 @@
 
 		<!-- NAV -->
 		<token-support.version>2.1.9</token-support.version>
-		<verapdf.version>1.22.2</verapdf.version>
+		<verapdf.version>1.24.2</verapdf.version>
 
 		<!-- Tjenestegrensesnitt -->
 		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>2-b9013e7
