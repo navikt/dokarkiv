@@ -405,6 +405,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "lps-oppfolgingsplan-mottak",
+      "namespace": "team-esyfo",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "syfosmsak",
       "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
