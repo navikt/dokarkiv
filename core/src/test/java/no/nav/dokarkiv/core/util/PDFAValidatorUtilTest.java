@@ -33,7 +33,7 @@ public class PDFAValidatorUtilTest {
 
 	private final String baseString = "2021_01_06_nasjonale_tiltak_16_9_PDF_A_";
 	private final String PDF = ".pdf";
-	private final String faultString = "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2.";
+	private final String faultString = "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2";
 
 	@Test
 	public void validatePdfs() throws Exception {
