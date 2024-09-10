@@ -98,8 +98,8 @@ public class SafinternFinnJournalposterRepository {
 		var partialSubQuery = queryRoot
 				.from(Bruker.class, "b")
 				.innerJoin("b.journalpost", "jp")
-				.innerJoin("jp.saksrelasjon", "s")
-				.bind("journalpostId").select("s.journalpostId")
+				.leftJoin("jp.saksrelasjon", "s")
+				.bind("journalpostId").select("jp.journalpostId")
 				.where("b.brukerId").in(brukerIdenterPadded)
 				.where("jp.journalstatus").in(M, MO, D);
 		return createFeilregistrertClause(partialSubQuery, visFeilregistrerte, visKunFeilregistrerte);

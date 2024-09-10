@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.KANAL_REFERANSE_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;

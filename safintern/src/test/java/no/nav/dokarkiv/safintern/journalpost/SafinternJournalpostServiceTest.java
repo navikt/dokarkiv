@@ -2,7 +2,6 @@ package no.nav.dokarkiv.safintern.journalpost;
 
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
@@ -19,15 +18,12 @@ import no.nav.dokarkiv.safintern.views.DokumentinfoView;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -36,9 +32,9 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.S;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.SKJERMING_TYPE_CODE;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertBruker;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertSak;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.SKJERMING_TYPE_CODE;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;

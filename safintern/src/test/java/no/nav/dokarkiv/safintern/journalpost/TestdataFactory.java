@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.safintern.journalpost;
 
 
-import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -12,7 +11,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -45,21 +43,41 @@ import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.ADRESSELINJE1;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.ADRESSELINJE2;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.ADRESSELINJE3;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.AKTOER_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.ANTALL_RETUR;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID_TYPE;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_LAND;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_NAVN;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.BEHANDLINGSTEMA;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.BREVKODE;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.DOKUMENT_INFO_TITTEL;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.DOKUMENT_TYPE_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.GSAK_APPLIKASJON;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.GSAK_FAGSAKNR;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.GSAK_OPPRETTET_AV;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.GSAK_TEMA;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.INNHOLD;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.JOURNALFOERENDE_ENHET;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.JOURNALFOERT_AV_NAVN;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.KRYSSREFERANSE_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.LANDKODE_NO;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_AV_NAVN;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.POSTNUMMER;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.POSTSTED;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.SKANNET_INNHOLD_TITTEL;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.SKJERMING_TYPE_CODE;
 
 public class TestdataFactory {
 
 	static final String BRUK_STANDARDREGLER_INNSYNSBESKRIVELSE = "Standardreglene avgjør om dokumentet vises";
-	static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
-	static final String OPPRETTET_AV_NAVN = "Opprettet navn";
-	static final String AVSENDER_MOTTAKER_ID = "02016126007";
-	static final String AVSENDER_MOTTAKER_NAVN = "Jim Hopper";
-	static final String AVSENDER_MOTTAKER_LAND = "NO";
-	static final AvsenderMottakerIdTypeCode AVSENDER_MOTTAKER_ID_TYPE = AvsenderMottakerIdTypeCode.FNR;
-	static final String BREVKODE = "Brevkode";
-	static final String BRUKER_ID = "123213";
-	static final String KRYSSREFERANSE_ID = "123213";
-	static final String DOKUMENT_INFO_TITTEL = "TITTEL";
-	static final String DOKUMENT_TYPE_ID = "0000001";
 	static final String FIL_NAVN = "navn";
 	static final String TILLEGGOPPLYSNINGER_KEY_1 = "tillegg1";
 	static final String TILLEGGOPPLYSNINGER_VAL_1 = "tillegg_verdi1";
@@ -69,27 +87,7 @@ public class TestdataFactory {
 	static final String TILLEGGOPPLYSNINGER_VAL_3 = "tillegg_verdi3";
 	static final String TILLEGGOPPLYSNINGER_KEY_4 = "tillegg4";
 	static final String TILLEGGOPPLYSNINGER_VAL_4 = "tillegg_verdi4";
-	static final String INNHOLD = "Innhold";
-	static final byte[] FIL = "Test dokument".getBytes();
-	static final Integer ANTALL_RETUR = 3;
-	static final String KANAL_REFERANSE_ID = "KANAL REFERANSE ID";
-	static final String AKTOER_ID = "111113333333";
-	static final String ADRESSELINJE1 = "adresselinje1";
-	static final String ADRESSELINJE2 = "adresselinje2";
-	static final String ADRESSELINJE3 = "adresselinje3";
-	static final String POSTNUMMER = "postnummer";
-	static final String POSTSTED = "poststed";
-	static final String LANDKODE_NO = "NO";
-	static final String SKANNET_INNHOLD_TITTEL = "Henvendelse fra lege";
-	static final String BEHANDLINGSTEMA = "ab0438";
 	static final String BEHANDLINGSTEMA_DEKODE = "Lønnskompensasjon";
-	static final String JOURNALFOERENDE_ENHET = "9999";
-	static final String JOURNALFOERT_AV_NAVN = "Bjarne Betjent";
-	static final SkjermingTypeCode SKJERMING_TYPE_CODE = POL;
-	static final String GSAK_FAGSAKNR = "1234";
-	static final String GSAK_TEMA = "RPO";
-	static final String GSAK_APPLIKASJON = "AO01";
-	static final String GSAK_OPPRETTET_AV = "itest";
 	static final String FIL_UUID_ARKIV_HOVEDDOKUMENT = "filUuidHoveddokumentArkiv";
 	static final String FIL_UUID_PRODUKSJON_HOVEDDOKUMENT = "filUuidHoveddokumentProduksjon";
 	static final String FIL_UUID_ARKIV_VEDLEGG = "filUuidVedleggArkiv";
@@ -97,7 +95,7 @@ public class TestdataFactory {
 	static final String GSAK_ORGNR = "812345678";
 	public static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2023-08-11T12:01:01.001Z"), ZoneId.of("Europe/Oslo"));
 
-	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(Long sakId) {
+	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(long sakId) {
 		return createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(createSaksrelasjon(sakId));
 	}
 
@@ -200,7 +198,7 @@ public class TestdataFactory {
 		return journalpostDokumentInfoRelasjon;
 	}
 
-	static no.nav.dokarkiv.core.domain.entities.Saksrelasjon createSaksrelasjon(Long sakId, Journalpost... journalpost) {
+	static no.nav.dokarkiv.core.domain.entities.Saksrelasjon createSaksrelasjon(long sakId, Journalpost... journalpost) {
 		no.nav.dokarkiv.core.domain.entities.Saksrelasjon saksrelasjon = no.nav.dokarkiv.core.domain.entities.Saksrelasjon.builder()
 				.fagsystem(FagsystemCode.FS22)
 				.sakId(sakId)
