@@ -24,7 +24,6 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
-import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
@@ -48,17 +47,14 @@ public class TestDataGenerator {
 
 	public static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	public static final String OPPRETTET_AV_NAVN = "Opprettet navn";
-	public static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	public static final String ENDRET_AV_NAVN = "Endret av navn";
 	public static final String AVSENDER_MOTTAKER_ID = "02016126007";
 	public static final String AVSENDER_MOTTAKER_NAVN = "Jim Hopper";
 	public static final String AVSENDER_MOTTAKER_LAND = "NO";
 	public static final AvsenderMottakerIdTypeCode AVSENDER_MOTTAKER_ID_TYPE = AvsenderMottakerIdTypeCode.FNR;
 	public static final String TITTEL = "FysiskSlettDokument";
-	public static final String BREVGRUPPE = "Brevgruppe";
 	public static final String BREVKODE = "Brevkode";
-	public static final String FILNAVN = "filNavn";
-	public static final String BRUKER_ID = "123213";
+	public static final String BRUKER_ID = "12321305432";
 	public static final String KRYSSREFERANSE_ID = "123213";
 	public static final String DOKUMENT_INFO_TITTEL = "TITTEL";
 	public static final String DOKUMENT_TYPE_ID = "0000001";
@@ -68,7 +64,6 @@ public class TestDataGenerator {
 	public static final String TILLEGGOPPLYSNINGER_KEY = "tillegg";
 	public static final String TILLEGGOPPLYSNINGER_VAL = "tillegg_verdi";
 	public static final String FIL_UUID_ARKIV = "filuuid_arkiv";
-	public static final String FIL_UUID_SLADDET = "filuuid_sladdet";
 	public static final String INNHOLD = "Innhold";
 	public static final byte[] FIL = "Test dokument".getBytes();
 	public static final byte[] FIL_DUMMY_KASSERT = "Test kassert dummy dokument dummy".getBytes();
@@ -83,15 +78,10 @@ public class TestDataGenerator {
 	public static final String ADRESSELINJE3 = "adresselinje3";
 	public static final String POSTNUMMER = "postnummer";
 	public static final String POSTSTED = "poststed";
-	public static final String LANDKODE = "landkode";
 	public static final String LANDKODE_NO = "NO";
-	public static final String DIGITALKONTAKT_INFORMASJON = "{\n          \"epost\": \"epostaddress3@nav.no\",\n          \"sms\": \"11111111\"\n        }";
 	public static final String VARSELTEKST = "{\n          \"epost\": \"Du har fått brev fra NAV\",\n          \"sms\": \"Du har fått brev fra NAV\"\n        }";
-	public static final String DIGITALPOSTKASSEADRESSE = "0000487236";
-	public static final String DIGITALPOSTKASSELEVERANDOR = "123456789";
 	public static final String SKANNET_INNHOLD_TITTEL = "Henvendelse fra lege";
 	public static final String BEHANDLINGSTEMA = "ab0438";
-	public static final String BEHANDLINGSTEMA_DEKODE = "Lønnskompensasjon";
 	public static final String JOURNALFOERENDE_ENHET = "9999";
 	public static final String JOURNALFOERT_AV_NAVN = "Bjarne Betjent";
 	public static final SkjermingTypeCode SKJERMING_TYPE_CODE = SkjermingTypeCode.POL;
@@ -131,46 +121,6 @@ public class TestDataGenerator {
 		return journalpost;
 	}
 
-	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(Long sakId) {
-		Journalpost journalpost = Journalpost.builder()
-				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
-				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
-				.avsenderMottakerIdType(AVSENDER_MOTTAKER_ID_TYPE)
-				.land(AVSENDER_MOTTAKER_LAND)
-				.mottattDato(new Date())
-				.journalDato(new Date())
-				.sendtPrintDato(new Date())
-				.ekspedertDato(new Date())
-				.avsendtReturDato(new Date())
-				.dokumentDato(new Date())
-				.lestDato(LESTDATO)
-				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
-				.journalstatus(JournalStatusCode.FS)
-				.journalposttype(JournalpostTypeCode.U)
-				.innhold(INNHOLD)
-				.behandlingstema(BEHANDLINGSTEMA)
-				.opprettetAvNavn(OPPRETTET_AV_NAVN)
-				.fagomrade(FagomradeCode.RPO)
-				.mottakskanal(MottaksKanalCode.NAV_NO)
-				.antallRetur(ANTALL_RETUR)
-				.kanalReferanseId(KANAL_REFERANSE_ID)
-				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
-				.journalfortAvNavn(JOURNALFOERT_AV_NAVN)
-				.innsyn(BRUK_STANDARDREGLER)
-				.skjermingType(SKJERMING_TYPE_CODE)
-				.build();
-
-		journalpost.addBruker(createBruker());
-		journalpost.addBruker(createBruker());
-		journalpost.addKryssReferanse(createKryssreferanse());
-		journalpost.setSaksrelasjon(createSaksrelasjon(journalpost, sakId));
-		journalpost.setTilleggsopplysninger(createTilleggsopplysninger());
-		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-
-		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost));
-		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjon(journalpost));
-		return journalpost;
-	}
 
 	public static Journalpost createJournalpostWithSplittetHoveddokument(Journalpost journalpostOriginal) {
 		Journalpost journalpost = Journalpost.builder()
@@ -418,30 +368,6 @@ public class TestDataGenerator {
 		dokumentFil.setFilUuid(FIL_UUID_DUMMY_DOKUMENT_SKJERMET);
 		dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return dokumentFil;
-	}
-
-	public static DokumentFil createDummyDokument(String filuuid) {
-		DokumentFil dokumentFil = new DokumentFil();
-		dokumentFil.setFil(FIL);
-		dokumentFil.setFilUuid(filuuid);
-		dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		return dokumentFil;
-	}
-
-	public static Sak createGsak() {
-		// sakId = 1 when persisted.
-		return Sak.builder()
-				.aktoerId(AKTOER_ID)
-				.fagsakNr(GSAK_FAGSAKNR)
-				.tema(GSAK_TEMA)
-				.applikasjon(GSAK_APPLIKASJON)
-				.opprettetAv(GSAK_OPPRETTET_AV)
-				.opprettetTidspunkt(LocalDate.now().atStartOfDay())
-				.build();
-	}
-
-	public static UtsendingsInfo.FysiskPostadresse createFysiskPostadresse() {
-		return new UtsendingsInfo.FysiskPostadresse(ADRESSELINJE1, ADRESSELINJE2, ADRESSELINJE3, POSTNUMMER, POSTSTED, LANDKODE);
 	}
 
 	public static UtsendingsInfo createNavNoUtsendingsInfo(Journalpost journalpost) {
