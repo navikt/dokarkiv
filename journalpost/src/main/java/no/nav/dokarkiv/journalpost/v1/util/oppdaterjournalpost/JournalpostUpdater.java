@@ -202,7 +202,7 @@ public class JournalpostUpdater {
 					endret.setEndretFlagg(true);
 				}
 				if (DELETE_MARKER.equals(ny.getId())) {
-					nullUtAvsenderMottakerIdOgAvsenderMottakerIdType(journalpost, endret, ny);
+					nullUtAvsenderMottakerIdOgAvsenderMottakerIdType(journalpost, endret);
 				}
 			}
 
@@ -222,17 +222,19 @@ public class JournalpostUpdater {
 		}
 	}
 
-	private static void nullUtAvsenderMottakerIdOgAvsenderMottakerIdType(Journalpost journalpost, ChangeTracker endret, AvsenderMottaker ny) {
+	private static void nullUtAvsenderMottakerIdOgAvsenderMottakerIdType(Journalpost journalpost, ChangeTracker endret) {
 		endret.add(
 				JOURNALPOST_AVSENDER_MOTTAKER_ID,
 				journalpost.getAvsenderMottakerId(),
 				null
 		);
-		endret.add(
-				JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE,
-				journalpost.getAvsenderMottakerIdType().toString(),
-				null
-		);
+		if (journalpost.getAvsenderMottakerIdType() != null) {
+			endret.add(
+					JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE,
+					journalpost.getAvsenderMottakerIdType().toString(),
+					null
+			);
+		}
 		journalpost.setAvsenderMottakerId(null);
 		journalpost.setAvsenderMottakerIdType(null);
 		endret.setEndretFlagg(true);
