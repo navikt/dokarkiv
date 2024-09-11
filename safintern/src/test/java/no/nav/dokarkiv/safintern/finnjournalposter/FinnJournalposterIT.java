@@ -240,8 +240,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 
 	@Test
 	public void shouldReturnJournalpostsWithNullSaksrelasjon() {
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg((Saksrelasjon) null);
-		// journalpost.setSaksrelasjon(null);
+		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(null);
 		journalpost.setJournalstatus(M);
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
@@ -249,7 +248,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 
 
 		FinnJournalposterRequest safselvbetjeningLikeRequest = new FinnJournalposterRequest(
-				null, //List.of(parseLong(API_GSAK_ID)),
+				null,
 				null,
 				"2016-04-01",
 				null,
