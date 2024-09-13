@@ -425,8 +425,8 @@
     },
     {
       "app": "veilarbvedtaksstotte",
-      "namespace": "pto",
-      "cluster": "dev-fss"
+      "namespace": "obo",
+      "cluster": "dev-gcp"
     },
     {
       "app": "doksikkerhetsnett-q1",
