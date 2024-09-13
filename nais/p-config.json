@@ -388,6 +388,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "veilarbvedtaksstotte",
+      "namespace": "obo",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "notat-administrasjon",
       "namespace": "isa",
       "cluster": "prod-gcp"
