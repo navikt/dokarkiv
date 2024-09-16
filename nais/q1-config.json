@@ -461,11 +461,6 @@
       "scopes": ["api_admin"]
     },
     {
-      "app": "soknad-api",
-      "namespace": "aap",
-      "cluster": "dev-gcp"
-    },
-    {
       "app": "routing",
       "namespace": "aap",
       "cluster": "dev-gcp"
