@@ -181,7 +181,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(aksjonsLoggList.get(1).getUtfoertAv()).isEqualTo(NAV_USER_ID);
 		assertThat(aksjonsLoggList.get(1).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
 		assertThat(aksjonsLoggList.get(1).getAksjon()).isEqualTo(ENDRE_METADATA);
-		assertThat(aksjonsLoggList.get(1).getArkivElementEndringer()).hasSize(6);
+		assertThat(aksjonsLoggList.get(1).getArkivElementEndringer()).hasSize(7);
 
 		assertThat(aksjonsLoggList.get(2).getUtfoertAv()).isEqualTo(NAV_USER_ID);
 		assertThat(aksjonsLoggList.get(2).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
@@ -1001,7 +1001,29 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	public void shouldDeleteAvsenderMottaker() {
 		clearSakRepository();
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
-				.endretAvNavn("saksbehandlersen"));
+				.endretAvNavn("saksbehandlersen")
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder().id(" ").build())
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isNull();
+		assertThat(journalpostOppdatert.getAvsenderMottakerIdType()).isNull();
+	}
+	@Test
+	public void shouldNotDeleteAvsenderMottaker() {
+		clearSakRepository();
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen")
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
@@ -1014,7 +1036,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
-		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isBlank();
+		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
+		assertThat(journalpostOppdatert.getAvsenderMottakerIdType()).isEqualTo(AvsenderMottakerIdTypeCode.FNR);
 	}
 
 	@Test

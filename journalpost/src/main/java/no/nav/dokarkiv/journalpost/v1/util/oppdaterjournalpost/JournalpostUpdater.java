@@ -34,6 +34,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER_ID;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_BRUKER;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_INNHOLD;
@@ -182,10 +183,16 @@ public class JournalpostUpdater {
 			if (ny.getId() != null) {
 				if (ny.getIdType() != null &&
 						oversettAvsenderMottakerIdType(ny.getIdType()) != journalpost.getAvsenderMottakerIdType()) {
+					String gammelAvsenderMottakerType = journalpost.getAvsenderMottakerIdType() == null ? "" : journalpost.getAvsenderMottakerIdType().toString();
+					endret.add(
+							JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE,
+							gammelAvsenderMottakerType,
+							ny.getIdType().toString()
+					);
 					journalpost.setAvsenderMottakerIdType(oversettAvsenderMottakerIdType(ny.getIdType()));
 					endret.setEndretFlagg(true);
 				}
-				if (!ny.getId().equalsIgnoreCase(journalpost.getAvsenderMottakerId())) {
+				if (!ny.getId().equalsIgnoreCase(journalpost.getAvsenderMottakerId()) && !ny.getId().isBlank()) {
 					endret.add(
 							JOURNALPOST_AVSENDER_MOTTAKER_ID,
 							journalpost.getAvsenderMottakerId(),
@@ -194,10 +201,8 @@ public class JournalpostUpdater {
 					journalpost.setAvsenderMottakerId(ny.getId());
 					endret.setEndretFlagg(true);
 				}
-				if (DELETE_MARKER.equalsIgnoreCase(ny.getId())) {
-					journalpost.setAvsenderMottakerId(null);
-					journalpost.setAvsenderMottakerIdType(null);
-					endret.setEndretFlagg(true);
+				if (DELETE_MARKER.equals(ny.getId())) {
+					nullUtAvsenderMottakerIdOgAvsenderMottakerIdType(journalpost, endret);
 				}
 			}
 
@@ -215,6 +220,24 @@ public class JournalpostUpdater {
 				}
 			}
 		}
+	}
+
+	private static void nullUtAvsenderMottakerIdOgAvsenderMottakerIdType(Journalpost journalpost, ChangeTracker endret) {
+		endret.add(
+				JOURNALPOST_AVSENDER_MOTTAKER_ID,
+				journalpost.getAvsenderMottakerId(),
+				null
+		);
+		if (journalpost.getAvsenderMottakerIdType() != null) {
+			endret.add(
+					JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE,
+					journalpost.getAvsenderMottakerIdType().toString(),
+					null
+			);
+		}
+		journalpost.setAvsenderMottakerId(null);
+		journalpost.setAvsenderMottakerIdType(null);
+		endret.setEndretFlagg(true);
 	}
 
 	private void oppdaterAvsenderMottaker(ChangeTracker endret, Journalpost journalpost, String navn) {

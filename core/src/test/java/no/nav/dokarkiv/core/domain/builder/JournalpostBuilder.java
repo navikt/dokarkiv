@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.domain.builder;
 
 import no.nav.dokarkiv.core.domain.ChangeStamp;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FaktiskDistribusjonskanalCode;
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
@@ -32,11 +33,11 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 
 	private JournalpostBuilder() {
 	}
-	
+
 	public static JournalpostBuilder getJournalpostBuilder() {
 		return new JournalpostBuilder();
 	}
-	
+
 	private Long journalpostId;
 	private String journalForendeEnhetId;
 	private Date journalDato;
@@ -59,6 +60,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	private Date dokumentDato;
 	private String avsenderMottaker;
 	private String avsenderMottakerId;
+	private AvsenderMottakerIdTypeCode avsenderMottakerIdType;
 	private String journalfortAvNavn;
 	private Date mottattDato;
 	private MottaksKanalCode mottakskanal;
@@ -93,13 +95,14 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	public JournalpostBuilder tilleggsopplysninger(Map<String, String> value) {	this.tilleggsopplysninger = value; return this; }
 	public JournalpostBuilder brukere(Bruker... value) { this.brukere.addAll(Arrays.asList(value)); return this; }
 	public JournalpostBuilder saksrelasjon(Saksrelasjon value) { this.saksrelasjon = value; return this; }
-	public JournalpostBuilder dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjon... value) { 
+	public JournalpostBuilder dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjon... value) {
 		this.dokumentInfoRelasjoner.addAll(Arrays.asList(value)); return this; }
 	public JournalpostBuilder kryssReferanser(Kryssreferanse... value) {
 		this.kryssreferanser.addAll(Arrays.asList(value)); return this; }
 	public JournalpostBuilder dokumentDato(Date value) { this.dokumentDato = value; return this; }
 	public JournalpostBuilder avsenderMottaker(String value) { this.avsenderMottaker = value; return this; }
 	public JournalpostBuilder avsenderMottakerId(String value) { this.avsenderMottakerId = value; return this; }
+	public JournalpostBuilder avsenderMottakerIdType(AvsenderMottakerIdTypeCode value) { this.avsenderMottakerIdType = value; return this; }
 	public JournalpostBuilder journalfortAvNavn(String value) { this.journalfortAvNavn = value; return this; }
 	public JournalpostBuilder mottattDato(Date value) { this.mottattDato = value; return this; }
 	public JournalpostBuilder mottakskanal(MottaksKanalCode value) { this.mottakskanal = value; return this; }
@@ -155,6 +158,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 		journalpost.setDokumentDato(dokumentDato);
 		journalpost.setAvsenderMottaker(avsenderMottaker);
 		journalpost.setAvsenderMottakerId(avsenderMottakerId);
+		journalpost.setAvsenderMottakerIdType(avsenderMottakerIdType);
 		journalpost.setJournalfortAvNavn(journalfortAvNavn);
 		journalpost.setMottattDato(mottattDato);
 		journalpost.setMottakskanal(mottakskanal);
