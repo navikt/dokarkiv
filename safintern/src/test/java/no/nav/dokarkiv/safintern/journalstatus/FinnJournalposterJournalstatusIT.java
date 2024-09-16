@@ -26,11 +26,11 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createDokumentInfoVedleggRelasjon;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.formattedDate;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.setSkjermingVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.formattedDate;
+import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {

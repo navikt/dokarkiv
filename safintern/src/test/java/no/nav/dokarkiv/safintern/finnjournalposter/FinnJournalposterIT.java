@@ -39,8 +39,8 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoWith
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createPsakSaksrelasjon;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.FIXED_CLOCK;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.FIXED_CLOCK;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FinnJournalposterIT extends AbstractSafinternTest {

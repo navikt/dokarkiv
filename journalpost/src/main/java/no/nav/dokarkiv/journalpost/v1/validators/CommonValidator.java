@@ -13,7 +13,7 @@ import static no.nav.dokarkiv.core.properties.DokarkivProperties.FAGSYSTEM_ARGUS
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public final class CommonValidator {
-	private static final Pattern EKSTERN_REFERANSE_ID_PATTERN = Pattern.compile("[a-zA-Z0-9-._~!$&\"\\\\*+,;=:@]+");
+	private static final Pattern EKSTERN_REFERANSE_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9-._~!$&\"\\\\*+,;=:@]+$");
 
 	private CommonValidator() {
 		//no-op
