@@ -455,16 +455,6 @@
       "scopes": ["api_admin"]
     },
     {
-      "app": "soknad-api",
-      "namespace": "aap",
-      "cluster": "prod-gcp"
-    },
-    {
-      "app": "routing",
-      "namespace": "aap",
-      "cluster": "prod-gcp"
-    },
-    {
       "app": "gosys",
       "namespace": "isa",
       "cluster": "prod-fss"
