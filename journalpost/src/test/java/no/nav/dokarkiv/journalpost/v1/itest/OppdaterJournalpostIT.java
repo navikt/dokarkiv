@@ -1140,6 +1140,20 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getBody()).contains(forventetFeilmelding);
 	}
 
+	@Test
+	void shouldReturnBadRequestWithErrorMessageWhenTittelFemStjerner() {
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M));
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tittel("*****")
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpost.getJournalpostId(), PUT, requestHttpEntity, String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(responseEntity.getBody()).contains("Tittel kan ikke oppdateres til *****");
+	}
+
 	@ParameterizedTest
 	@EnumSource(value = InnsynCode.class, mode = INCLUDE, names = {
 			"BRUK_STANDARDREGLER", "VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT",

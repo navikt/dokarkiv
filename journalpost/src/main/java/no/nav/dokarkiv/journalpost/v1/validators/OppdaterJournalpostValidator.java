@@ -63,6 +63,7 @@ public final class OppdaterJournalpostValidator {
 	);
 
 	private static final Pattern BEHANDLINGSTEMA_PATTERN = Pattern.compile("ab\\d{4}");
+	private static final String SKJULT_TITTEL = "*****";
 
 	private OppdaterJournalpostValidator() {
 	}
@@ -78,6 +79,10 @@ public final class OppdaterJournalpostValidator {
 			feilmeldinger.addAll(validateUtgaaende(request, journalpostStatus, journalpostType));
 		} else if (N.equals(journalpostType)) {
 			feilmeldinger.addAll(validateNotat(request, journalpostStatus, journalpostType));
+		}
+
+		if (request.getTittel() != null) {
+			feilmeldinger.add(validateJournalpostTittel(request.getTittel()));
 		}
 
 		if (isNotBlank(request.getBehandlingstema())) {
@@ -133,7 +138,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static boolean checkIfJournalChangeIsOld(Journalpost journalpost) {
 		return journalpost.getJournalDato() != null &&
-				journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
+			   journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
 	}
 
 	private static String checkIfFieldIsBeingUpdatedAfterLockDate(Object field, String fieldName, Date journalDato) {
@@ -145,7 +150,6 @@ public final class OppdaterJournalpostValidator {
 		}
 		return null;
 	}
-
 
 	private static List<String> validateUtgaaende(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
 		List<String> feilmeldinger = new ArrayList<>();
@@ -190,6 +194,13 @@ public final class OppdaterJournalpostValidator {
 		}
 
 		return feilmeldinger;
+	}
+
+	private static String validateJournalpostTittel(String tittel) {
+		if (tittel.equals(SKJULT_TITTEL)) {
+			return "Tittel kan ikke oppdateres til " + SKJULT_TITTEL;
+		}
+		return null;
 	}
 
 	private static String validateAvsenderMottakerInngaaende(AvsenderMottaker avsenderMottaker) {
