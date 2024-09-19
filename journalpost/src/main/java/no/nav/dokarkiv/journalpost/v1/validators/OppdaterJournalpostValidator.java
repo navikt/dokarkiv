@@ -63,7 +63,7 @@ public final class OppdaterJournalpostValidator {
 	);
 
 	private static final Pattern BEHANDLINGSTEMA_PATTERN = Pattern.compile("ab\\d{4}");
-	static final String SKJULT_TITTEL = "*****";
+	private static final String SKJULT_TITTEL = "*****";
 
 	private OppdaterJournalpostValidator() {
 	}
@@ -81,7 +81,7 @@ public final class OppdaterJournalpostValidator {
 			feilmeldinger.addAll(validateNotat(request, journalpostStatus, journalpostType));
 		}
 
-		if(request.getTittel() != null) {
+		if (request.getTittel() != null) {
 			feilmeldinger.add(validateJournalpostTittel(request.getTittel()));
 		}
 
@@ -138,7 +138,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static boolean checkIfJournalChangeIsOld(Journalpost journalpost) {
 		return journalpost.getJournalDato() != null &&
-				journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
+			   journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
 	}
 
 	private static String checkIfFieldIsBeingUpdatedAfterLockDate(Object field, String fieldName, Date journalDato) {
@@ -197,7 +197,7 @@ public final class OppdaterJournalpostValidator {
 	}
 
 	private static String validateJournalpostTittel(String tittel) {
-		if(tittel.equals(SKJULT_TITTEL)) {
+		if (tittel.equals(SKJULT_TITTEL)) {
 			return "Tittel kan ikke oppdateres til " + SKJULT_TITTEL;
 		}
 		return null;
