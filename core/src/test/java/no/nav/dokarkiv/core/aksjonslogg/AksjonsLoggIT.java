@@ -48,7 +48,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = {RepositoryConfig.class, AksjonsLoggServiceImpl.class, SkjermingService.class})
 @EnableConfigurationProperties

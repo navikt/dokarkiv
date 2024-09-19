@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
@@ -62,7 +62,7 @@ public class AvstemReferanseIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 
 		HttpHeaders headers = createHeadersWithServiceUserTokenAndRolesClaim("skanmothelse", "some_other_role");
-		HttpEntity<AvstemmingReferanser> requestHttpEntity = new HttpEntity<>(new AvstemmingReferanser(List.of(journalpost.getKanalReferanseId())), headers);
+		HttpEntity<AvstemmingReferanser> requestHttpEntity = new HttpEntity<>(new AvstemmingReferanser(Set.of(journalpost.getKanalReferanseId())), headers);
 		ResponseEntity<FeilendeAvstemmingReferanser> response = restTemplate.exchange(
 				URL_JOURNALPOSTAPI + "/avstemReferanser", POST, requestHttpEntity, FeilendeAvstemmingReferanser.class);
 
@@ -72,7 +72,7 @@ public class AvstemReferanseIT extends AbstractJournalpostIT {
 
 	@ParameterizedTest
 	@MethodSource
-	void shouldReturnBadRequestOnBadInput(List<String> input) {
+	void shouldReturnBadRequestOnBadInput(Set<String> input) {
 		ResponseEntity<FeilendeAvstemmingReferanser> response = doRequestWithReferanser(input);
 
 		assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
@@ -81,19 +81,19 @@ public class AvstemReferanseIT extends AbstractJournalpostIT {
 	static Stream<Arguments> shouldReturnBadRequestOnBadInput() {
 		return Stream.of(
 				null,
-				List.of(),
-				List.of(""),
-				List.of("-- drop table users; --"),
-				List.of("aaa___MER_ENN_200_TEGN_____aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+				Set.of(),
+				Set.of(""),
+				Set.of("-- drop table users; --"),
+				Set.of("aaa___MER_ENN_200_TEGN_____aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 		).map(Arguments::of);
 	}
 
 
 	private ResponseEntity<FeilendeAvstemmingReferanser> doRequestWithReferanser(String... referanser) {
-		return doRequestWithReferanser(List.of(referanser));
+		return doRequestWithReferanser(Set.of(referanser));
 	}
 
-	private ResponseEntity<FeilendeAvstemmingReferanser> doRequestWithReferanser(List<String> referanser) {
+	private ResponseEntity<FeilendeAvstemmingReferanser> doRequestWithReferanser(Set<String> referanser) {
 		HttpHeaders headers = createHeadersWithServiceUserTokenAndRolesClaim("skanmothelse", "api_intern_skanning");
 		HttpEntity<AvstemmingReferanser> requestHttpEntity = new HttpEntity<>(new AvstemmingReferanser(referanser), headers);
 		return restTemplate.exchange(

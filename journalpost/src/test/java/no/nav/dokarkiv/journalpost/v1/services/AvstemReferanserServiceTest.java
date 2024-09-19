@@ -9,10 +9,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -30,13 +30,14 @@ class AvstemReferanserServiceTest {
 
 	@BeforeEach
 	void setup() {
-		when(avstemReferanseRepository.findKanalReferanseIdsNotMatchedInDB(any())).thenReturn(Set.of(EKSISTERENDE_EKSTERN_REFERANSE));
+		when(avstemReferanseRepository.findKanalReferanseIdsMatchedInDB(any())).thenReturn(Set.of(EKSISTERENDE_EKSTERN_REFERANSE));
 		avstemReferanserService = new AvstemReferanserService(avstemReferanseRepository);
 	}
 
 	@Test
 	void shouldSubtractEksternReferanseThatExistsFromSubmittedList() {
-		var resultat = avstemReferanserService.avstemReferanser(new AvstemmingReferanser(List.of(EKSISTERENDE_EKSTERN_REFERANSE, MANGLENDE_EKSTERN_REFERANSE)));
+		var resultat = avstemReferanserService.avstemReferanser(new AvstemmingReferanser(Set.of(EKSISTERENDE_EKSTERN_REFERANSE, MANGLENDE_EKSTERN_REFERANSE)));
 		assertThat(resultat, hasSize(1));
+		assertThat(resultat, containsInAnyOrder(MANGLENDE_EKSTERN_REFERANSE));
 	}
 }

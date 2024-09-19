@@ -33,7 +33,6 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class})
 @Transactional

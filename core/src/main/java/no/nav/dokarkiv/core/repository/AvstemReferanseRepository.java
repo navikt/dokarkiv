@@ -18,7 +18,7 @@ public class AvstemReferanseRepository {
 		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
 	}
 
-	public Set<String> findKanalReferanseIdsNotMatchedInDB(List<String> kanalReferanseIds) {
+	public Set<String> findKanalReferanseIdsMatchedInDB(List<String> kanalReferanseIds) {
 		List<String> results = new ArrayList<>();
 		for (int i = 0; i < kanalReferanseIds.size(); i += MAX_PARTITION_SIZE_IN_CLAUSE) {
 			results.addAll(findKanalReferanseIdsNotMatchedInDBPart(

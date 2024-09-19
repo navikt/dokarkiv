@@ -18,7 +18,7 @@ public class AvstemReferanserService {
 	}
 
 	public List<String> avstemReferanser(AvstemmingReferanser referanser) {
-		Set<String> existingReferences = avstemReferanseRepository.findKanalReferanseIdsNotMatchedInDB(referanser.referanser());
+		Set<String> existingReferences = avstemReferanseRepository.findKanalReferanseIdsMatchedInDB(List.copyOf(referanser.referanser()));
 		return referanser.referanser().stream()
 				.filter(not(existingReferences::contains))
 				.toList();

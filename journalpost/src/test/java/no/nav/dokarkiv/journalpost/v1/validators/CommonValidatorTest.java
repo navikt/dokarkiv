@@ -4,7 +4,7 @@ import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertThrows;
 
 class CommonValidatorTest {
 
