@@ -551,6 +551,11 @@
       "app": "tilleggsstonader-integrasjoner",
       "namespace": "tilleggsstonader",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "postmottak-backend",
+      "namespace": "aap",
+      "cluster": "dev-gcp"
     }
   ]
 }
