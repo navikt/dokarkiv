@@ -32,7 +32,7 @@
 		<java.version>17</java.version>
 
 		<cxf.version>3.6.2</cxf.version>
-		<sfm-springjdbc.version>8.2.3</sfm-springjdbc.version>
+		<sfm-springjdbc.version>9.0.2</sfm-springjdbc.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
