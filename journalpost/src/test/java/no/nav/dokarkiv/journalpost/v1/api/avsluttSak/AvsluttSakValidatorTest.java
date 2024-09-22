@@ -16,6 +16,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.avsluttSak.AvsluttSakValidator.validateAvsluttSakRequest;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -30,9 +31,9 @@ public class AvsluttSakValidatorTest {
 	@ParameterizedTest
 	@MethodSource("generateBrukerAndExpectedResult")
 	void validateBruker(Bruker bruker, String expectedExceptionMessage) {
-		Exception thrown = assertThrows(InputValideringFeiletException.class, () ->
-				validateAvsluttSakRequest(createDefaultAvsluttSakRequestBuilder().bruker(bruker).build()));
-		assertThat(thrown.getMessage()).contains(expectedExceptionMessage);
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validateAvsluttSakRequest((createDefaultAvsluttSakRequestBuilder().bruker(bruker).build())))
+				.withMessageContaining(expectedExceptionMessage);
 	}
 
 	private static Stream<Arguments> generateBrukerAndExpectedResult() {
@@ -49,9 +50,9 @@ public class AvsluttSakValidatorTest {
 	@ParameterizedTest
 	@MethodSource("generateTemaAndExpectedResult")
 	void shouldValidateTema(String tema, String expectedExceptionMessage) {
-		Exception thrown = assertThrows(InputValideringFeiletException.class, () ->
-				validateAvsluttSakRequest(createDefaultAvsluttSakRequestBuilder().tema(tema).build()));
-		assertThat(thrown.getMessage()).contains(expectedExceptionMessage);
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validateAvsluttSakRequest(createDefaultAvsluttSakRequestBuilder().tema(tema).build()))
+				.withMessageContaining(expectedExceptionMessage);
 	}
 
 	private static Stream<Arguments> generateTemaAndExpectedResult() {
@@ -86,16 +87,18 @@ public class AvsluttSakValidatorTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("generateTimeTHingy")
+	@MethodSource()
 	void shouldValidateDate(LocalDateTime opprettetTidspunkt, LocalDateTime avsluttetDato, String expectedExceptionMessage) {
 		var avsluttSakRequest = createDefaultAvsluttSakRequestBuilder()
 				.opprettetDato(opprettetTidspunkt)
 				.avsluttetDato(avsluttetDato).build();
-		Exception thrown = assertThrows(InputValideringFeiletException.class, () -> validateAvsluttSakRequest(avsluttSakRequest));
-		assertThat(thrown.getMessage()).contains(expectedExceptionMessage);
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() ->  validateAvsluttSakRequest(avsluttSakRequest))
+				.withMessageContaining(expectedExceptionMessage);
 	}
 
-	private static Stream<Arguments> generateTimeTHingy() {
+	private static Stream<Arguments> shouldValidateDate() {
 		return Stream.of(
 				Arguments.of(LocalDateTime.now().plusSeconds(25), null, "Validering av opprettetDato feilet. Dato kan ikke være frem i tid."),
 				Arguments.of(null, null, "Validering av opprettetDato feilet. Dato kan ikke være null"),

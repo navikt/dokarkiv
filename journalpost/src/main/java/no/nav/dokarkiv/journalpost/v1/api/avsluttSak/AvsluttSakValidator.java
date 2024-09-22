@@ -13,10 +13,13 @@ import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 public class AvsluttSakValidator {
+
+	private static final int FNR_LENGTH = 11;
+	private static final int ORGNR_LENGTH = 9;
+	private static final int AKTOERID_LENGTH = 13;
 
 	public static void validateAvsluttSakRequest(AvsluttSakRequest avsluttSakRequest) throws InputValideringFeiletException {
 		validateTema(avsluttSakRequest.getTema());
@@ -44,7 +47,7 @@ public class AvsluttSakValidator {
 	}
 
 	private static void validateString(String feltnavn, String feltVerdi) {
-		if (StringUtils.isEmpty(feltVerdi)) {
+		if (StringUtils.isBlank(feltVerdi)) {
 			throw new InputValideringFeiletException(format("Mottok ugyldig verdi for feltet %s. Feltet var null/tomt", feltnavn));
 		}
 	}
@@ -53,23 +56,26 @@ public class AvsluttSakValidator {
 		if (bruker == null) {
 			throw new InputValideringFeiletException("Bruker kan ikke være null.");
 		}
+
 		if (isBlank(bruker.getId())) {
 			throw new InputValideringFeiletException("Bruker.id må være satt.");
 		}
+
 		if (!isNumeric(bruker.getId())) {
 			throw new InputValideringFeiletException("Bruker.id må bestå av tall.");
 		}
-		if (FNR.equals(bruker.getIdType()) && bruker.getId().length() != 11) {
+
+		if (FNR.equals(bruker.getIdType()) && bruker.getId().length() != FNR_LENGTH) {
 			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for FNR.");
-		} else if (ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != 9) {
+		} else if (ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != ORGNR_LENGTH) {
 			throw new InputValideringFeiletException("Bruker.id må være 9 siffer for ORGNR.");
-		} else if (AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != 13) {
+		} else if (AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
 			throw new InputValideringFeiletException("Bruker.id må være 13 siffer for AKTOERID.");
 		}
 	}
 
 	private static void validateTema(String tema) {
-		if (StringUtils.isEmpty(tema)) {
+		if (StringUtils.isBlank(tema)) {
 			throw new InputValideringFeiletException(format("Mangler påkrevd felt: Tema. Mottok tema=%s", tema));
 		}
 		try {

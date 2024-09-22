@@ -23,24 +23,20 @@ import static no.nav.dokarkiv.journalpost.v1.api.avsluttSak.AvsluttSakValidator.
 @Slf4j
 @Protected
 @RestController
-//@RequestMapping("/rest/journalpostapi/v1/sak")
+@RequestMapping("/rest/journalpostapi/v1/sak")
 @Tag(name = "journalpostapi - avsluttSak", description = "Tjeneste for å avslutte sak")
 //TODO: Enable endpoint
 public class AvsluttSakRestController {
 
-	@Transactional
 	@SwaggerAvsluttSak
-//	@PatchMapping(value = "/avsluttsak")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "avslutSak"}, percentiles = {0.5, 0.95})
+	@PatchMapping(value = "/avsluttsak")
 	public ResponseEntity<String> avsluttSak(
 			@RequestBody AvsluttSakRequest avsluttSakRequest
 	) {
-		MDC.put(MDC_REQUEST_ID, "avsluttSak");
+		/*MDC.put(MDC_REQUEST_ID, "avsluttSak");
 
-		validateAvsluttSakRequest(avsluttSakRequest);
-
-		//TODO: add avsluttSakService and logic (neste pr)
-		return new ResponseEntity<>(HttpStatus.OK);
+		validateAvsluttSakRequest(avsluttSakRequest);*/
+		throw new UnsupportedOperationException("Denne tjenesten er fremdeles under arbeid og er ikke klar til å tas i bruk.");
 	}
 
 }
