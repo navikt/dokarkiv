@@ -42,7 +42,6 @@ public class Sak {
 					* IT01 (Infotrygd)
 					* OEBS
 					* PP01
-					* PP01
 					* K9
 					* BISYS
 					* BA (Barnetrygd)
