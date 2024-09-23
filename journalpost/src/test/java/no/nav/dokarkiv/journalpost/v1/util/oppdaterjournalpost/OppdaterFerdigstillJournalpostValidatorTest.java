@@ -60,6 +60,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEnkelJournalpo
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createSak;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.LOVLIGE_INNSYNSKODER;
+import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.SKJULT_TITTEL;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -260,7 +261,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	@Test
 	public void shouldFailWhenJournalpostTittelFemStjerner() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.tittel("*****")
+				.tittel(SKJULT_TITTEL)
 				.build();
 		journalpost = createEnkelJournalpost(J, I);
 
@@ -269,6 +270,20 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		assertThat(exception.getMessage()).contains("Tittel kan ikke oppdateres til *****");
 	}
 
+	@Test
+	public void shouldFailWhenDokumentTittelFemStjerner() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.dokumenter(Collections.singletonList(DokumentInfo.builder()
+						.dokumentInfoId(DOKUMENTINFO_ID1)
+								.tittel(SKJULT_TITTEL)
+						.build()))
+				.build();
+		journalpost = createEnkelJournalpost(J, I);
+
+		var exception = assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
+		assertThat(exception.getMessage()).contains("Dokumenter.tittel kan ikke oppdateres til *****");
+	}
 
 	// Det skal alltid være lov til å endre brevkode. Se commit.
 	@Test
