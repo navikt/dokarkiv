@@ -163,6 +163,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "ismanglendemedvirkning",
+      "namespace": "teamsykefravr",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "journalforing-frontend",
       "namespace": "isa",
       "cluster": "prod-gcp"

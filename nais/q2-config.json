@@ -155,6 +155,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "ismanglendemedvirkning",
+      "namespace": "teamsykefravr",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "journalforing-frontend",
       "namespace": "isa",
       "cluster": "dev-fss"
