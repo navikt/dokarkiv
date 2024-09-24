@@ -37,6 +37,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateEksternReferanseId;
 import static no.nav.dokarkiv.journalpost.v1.validators.DokumentValidator.validateDokument;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -68,6 +69,9 @@ public class OpprettJournalpostRequestValidator {
 		}
 		if (isNotBlank(request.getBehandlingstema())) {
 			validateBehandlingstema(request.getBehandlingstema());
+		}
+		if (request.getTittel() != null) {
+			validateJournalpostTittel(request.getTittel());
 		}
 		validateKanal(request);
 		if (request.getSak() != null) {
@@ -207,6 +211,16 @@ public class OpprettJournalpostRequestValidator {
 	private void validateBehandlingstema(String behandlingstema) {
 		if (behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")) {
 			throw new InputValideringFeiletException(format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema));
+		}
+	}
+
+	private void validateJournalpostTittel(String tittel) {
+		validateSkjultTittel(tittel, "Tittel");
+	}
+
+	static void validateSkjultTittel(String tittel, String felt) {
+		if (SKJULT_TITTEL.equals(tittel)) {
+			throw new InputValideringFeiletException(felt + " kan ikke være " + SKJULT_TITTEL);
 		}
 	}
 

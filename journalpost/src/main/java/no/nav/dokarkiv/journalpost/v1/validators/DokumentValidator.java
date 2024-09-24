@@ -24,6 +24,7 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ORIGINAL;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.isConsumerFagsystemArgus;
 import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
 import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileContentContainsValidMagicNumber;
+import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.validateSkjultTittel;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
@@ -41,6 +42,7 @@ public final class DokumentValidator {
 	}
 
 	public static void validateDokument(final Integer dokumentIdx, Dokument dokument) {
+		validateSkjultTittel(dokument.getTittel(), dokumentnummerPrefix(dokumentIdx) + ".tittel");
 		validateDokumentKategori(dokumentIdx, dokument);
 		validateDokumentVarianter(dokumentIdx, dokument);
 	}
@@ -64,7 +66,7 @@ public final class DokumentValidator {
 			dokument.getDokumentvarianter().forEach(dokumentVariant -> validateDokumentvariant(dokumentIdx, dokumentVariant));
 			validateUniqueDokumentvariant(dokument.getDokumentvarianter(), dokument);
 			// Spesialhåndtering for Argus (dsop-kontroll) slik at de kan ferdigstille Excel-filer som ORIGINAL variant
-			if(isConsumerFagsystemArgus()) {
+			if (isConsumerFagsystemArgus()) {
 				validateDokumentvarianterFagsystemArgus(dokument);
 			} else {
 				validateOneArkivVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
@@ -77,7 +79,7 @@ public final class DokumentValidator {
 	private static void validateDokumentvarianterFagsystemArgus(Dokument dokument) {
 		try {
 			validateOneArkivVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
-		} catch(InputValideringFeiletException e) {
+		} catch (InputValideringFeiletException e) {
 			validateOneOriginalVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
 		}
 	}
