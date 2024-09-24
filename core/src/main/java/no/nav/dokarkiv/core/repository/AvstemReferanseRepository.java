@@ -29,10 +29,12 @@ public class AvstemReferanseRepository {
 	}
 
 	public List<String> findKanalReferanseIdsNotMatchedInDBPart(List<String> kanalReferanseIdsSegment) {
-		return (namedParameterJdbcTemplate.query("SELECT kanal_referanse_id " +
-												 "FROM t_journalpost jp " +
-												 "WHERE jp.kanal_referanse_id in (:kanalReferanseIdsSegment)",
-				Map.of("kanalReferanseIdsSegment", kanalReferanseIdsSegment),
-				(rs, i) -> rs.getString(1)));
+		return namedParameterJdbcTemplate
+				.query("""
+								SELECT kanal_referanse_id
+								FROM t_journalpost jp
+								WHERE jp.kanal_referanse_id IN (:kanalReferanseIdsSegment)""",
+						Map.of("kanalReferanseIdsSegment", kanalReferanseIdsSegment),
+						(rs, i) -> rs.getString(1));
 	}
 }
