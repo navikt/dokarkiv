@@ -110,6 +110,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanal;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -1598,6 +1599,20 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertEquals(AVSENDER_NAVN, journalpost.getAvsenderMottaker());
 		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
+	}
+
+	@Test
+	public void shouldFailWhenTittelIsSkjult() {
+		restStsToken();
+
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE).tittel(SKJULT_TITTEL).build();
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + FERDIGSTILL_QUERY, POST, requestEntity, String.class);
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertThat(response.getBody()).contains("Tittel kan ikke være " + SKJULT_TITTEL);
 	}
 
 	private void assertEqualOpprettJournalpostResponses(OpprettJournalpostResponse res1, OpprettJournalpostResponse res2) {

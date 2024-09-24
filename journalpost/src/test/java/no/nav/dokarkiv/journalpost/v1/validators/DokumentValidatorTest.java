@@ -31,6 +31,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_WITH
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_UGYLDIG;
 import static no.nav.dokarkiv.journalpost.v1.util.knyttTilAnnenSak.DokumentUtilsTest.VARIANTFORMAT_ARKIV;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
@@ -65,6 +66,17 @@ class DokumentValidatorTest {
 				.build();
 
 		assertDoesNotThrow(() -> DokumentValidator.validateDokument(0, dokument));
+	}
+
+	@Test
+	void shouldThrowExceptionWhenSkjultTittel() {
+		var dokument = dokumentBuilder
+				.tittel(SKJULT_TITTEL)
+				.build();
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
+				.withMessage("Dokumenter[0].tittel kan ikke være " + SKJULT_TITTEL);
 	}
 
 	@ParameterizedTest
