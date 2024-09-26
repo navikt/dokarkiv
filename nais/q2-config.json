@@ -155,6 +155,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "ismanglendemedvirkning",
+      "namespace": "teamsykefravr",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "journalforing-frontend",
       "namespace": "isa",
       "cluster": "dev-fss"
@@ -432,11 +437,6 @@
       "scopes": ["api_admin"]
     },
     {
-      "app": "soknad-api",
-      "namespace": "aap",
-      "cluster": "dev-gcp"
-    },
-    {
       "app": "pdl-fullmakt",
       "namespace": "pdl",
       "cluster": "dev-fss"
@@ -523,11 +523,6 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "mottak",
-      "namespace": "aap",
-      "cluster": "dev-gcp"
-    },
-    {
       "app": "amt-distribusjon",
       "namespace": "amt",
       "cluster": "dev-gcp"
@@ -560,6 +555,11 @@
     {
       "app": "tilleggsstonader-integrasjoner",
       "namespace": "tilleggsstonader",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "postmottak-backend",
+      "namespace": "aap",
       "cluster": "dev-gcp"
     }
   ]

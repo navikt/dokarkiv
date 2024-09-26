@@ -184,6 +184,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "ismanglendemedvirkning",
+      "namespace": "teamsykefravr",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "journalforing-frontend",
       "namespace": "isa",
       "cluster": "dev-fss"
@@ -459,11 +464,6 @@
       "cluster": "dev-fss",
       "roles": ["api_admin"],
       "scopes": ["api_admin"]
-    },
-    {
-      "app": "soknad-api",
-      "namespace": "aap",
-      "cluster": "dev-gcp"
     },
     {
       "app": "routing",

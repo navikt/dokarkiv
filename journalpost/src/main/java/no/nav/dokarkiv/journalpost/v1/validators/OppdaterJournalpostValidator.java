@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
+import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 
@@ -42,6 +43,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -80,6 +82,10 @@ public final class OppdaterJournalpostValidator {
 			feilmeldinger.addAll(validateNotat(request, journalpostStatus, journalpostType));
 		}
 
+		if (request.getTittel() != null) {
+			feilmeldinger.add(validateJournalpostTittel(request.getTittel()));
+		}
+
 		if (isNotBlank(request.getBehandlingstema())) {
 			feilmeldinger.add(validateBehandlingstema(request.getBehandlingstema()));
 		}
@@ -90,6 +96,10 @@ public final class OppdaterJournalpostValidator {
 
 		if (request.getOverstyrInnsynsregler() != null) {
 			feilmeldinger.add(validateOverstyrInnsynsregler(request.getOverstyrInnsynsregler()));
+		}
+
+		if (request.getDokumenter() != null && !request.getDokumenter().isEmpty()) {
+			request.getDokumenter().forEach(dokumentInfo -> feilmeldinger.add(validateDokument(dokumentInfo)));
 		}
 
 		String feilmelding = feilmeldinger.stream()
@@ -133,7 +143,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static boolean checkIfJournalChangeIsOld(Journalpost journalpost) {
 		return journalpost.getJournalDato() != null &&
-				journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
+			   journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
 	}
 
 	private static String checkIfFieldIsBeingUpdatedAfterLockDate(Object field, String fieldName, Date journalDato) {
@@ -145,7 +155,6 @@ public final class OppdaterJournalpostValidator {
 		}
 		return null;
 	}
-
 
 	private static List<String> validateUtgaaende(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
 		List<String> feilmeldinger = new ArrayList<>();
@@ -190,6 +199,13 @@ public final class OppdaterJournalpostValidator {
 		}
 
 		return feilmeldinger;
+	}
+
+	private static String validateJournalpostTittel(String tittel) {
+		if (SKJULT_TITTEL.equals(tittel)) {
+			return "Tittel kan ikke oppdateres til " + SKJULT_TITTEL;
+		}
+		return null;
 	}
 
 	private static String validateAvsenderMottakerInngaaende(AvsenderMottaker avsenderMottaker) {
@@ -352,6 +368,15 @@ public final class OppdaterJournalpostValidator {
 	private static String validateOverstyrInnsynsregler(String overstyrInnsynsregler) {
 		if (!LOVLIGE_INNSYNSKODER.contains(overstyrInnsynsregler)) {
 			return format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler);
+		}
+		return null;
+	}
+
+	private static String validateDokument(DokumentInfo dokumentInfo) {
+		if (dokumentInfo != null) {
+			if(SKJULT_TITTEL.equals(dokumentInfo.getTittel())) {
+				return "Dokumenter.tittel kan ikke oppdateres til " + SKJULT_TITTEL;
+			}
 		}
 		return null;
 	}

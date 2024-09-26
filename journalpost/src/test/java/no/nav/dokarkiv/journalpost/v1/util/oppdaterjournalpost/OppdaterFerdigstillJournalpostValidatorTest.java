@@ -59,6 +59,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEnkelJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createSak;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.LOVLIGE_INNSYNSKODER;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -255,6 +256,33 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		var exception = assertThrows(InputValideringFeiletException.class,
 				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
 		assertThat(exception.getMessage()).contains(String.format("Tittel kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=N", input));
+	}
+
+	@Test
+	public void shouldFailWhenJournalpostTittelFemStjerner() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.tittel(SKJULT_TITTEL)
+				.build();
+		journalpost = createEnkelJournalpost(J, I);
+
+		var exception = assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
+		assertThat(exception.getMessage()).contains("Tittel kan ikke oppdateres til *****");
+	}
+
+	@Test
+	public void shouldFailWhenDokumentTittelFemStjerner() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.dokumenter(Collections.singletonList(DokumentInfo.builder()
+						.dokumentInfoId(DOKUMENTINFO_ID1)
+								.tittel(SKJULT_TITTEL)
+						.build()))
+				.build();
+		journalpost = createEnkelJournalpost(J, I);
+
+		var exception = assertThrows(InputValideringFeiletException.class,
+				() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost));
+		assertThat(exception.getMessage()).contains("Dokumenter.tittel kan ikke oppdateres til *****");
 	}
 
 	// Det skal alltid være lov til å endre brevkode. Se commit.

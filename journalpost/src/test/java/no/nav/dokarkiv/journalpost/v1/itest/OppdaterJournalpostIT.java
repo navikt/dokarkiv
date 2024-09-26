@@ -79,6 +79,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.LOVLIGE_INNSYNSKODER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -1138,6 +1139,20 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
 		assertThat(responseEntity.getBody()).contains(forventetFeilmelding);
+	}
+
+	@Test
+	void shouldReturnBadRequestWithErrorMessageWhenTittelFemStjerner() {
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M));
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tittel(SKJULT_TITTEL)
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpost.getJournalpostId(), PUT, requestHttpEntity, String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(responseEntity.getBody()).contains("Tittel kan ikke oppdateres til *****");
 	}
 
 	@ParameterizedTest
