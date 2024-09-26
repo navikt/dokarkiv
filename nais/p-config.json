@@ -501,7 +501,7 @@
       "cluster": "prod-gcp"
     },
     {
-      "app": "tiltakspenger-dokument",
+      "app": "tiltakspenger-vedtak",
       "namespace": "tpts",
       "cluster": "prod-gcp"
     },

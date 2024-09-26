@@ -516,7 +516,7 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "tiltakspenger-dokument",
+      "app": "tiltakspenger-vedtak",
       "namespace": "tpts",
       "cluster": "dev-gcp"
     },
