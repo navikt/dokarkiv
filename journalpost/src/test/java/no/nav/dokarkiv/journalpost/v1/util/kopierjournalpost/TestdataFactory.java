@@ -65,7 +65,7 @@ public class TestdataFactory {
 	static final String INNHOLD = "Innhold";
 	static final byte[] FIL = "Test dokument".getBytes();
 	static final Integer ANTALL_RETUR = 3;
-	static final String KANAL_REFERANSE_ID = "KANAL REFERANSE ID";
+	static final String KANAL_REFERANSE_ID = "KANAL_REFERANSE_ID";
 	static final String SKANNET_INNHOLD_TITTEL = "Henvendelse fra lege";
 	static final String BEHANDLINGSTEMA = "ab0438";
 	static final String JOURNALFOERENDE_ENHET = "9999";

@@ -44,7 +44,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
 @DataLdapTest
 @ContextConfiguration(classes = {
 		SporingHandlerInterceptorTest.TestConfig.class,

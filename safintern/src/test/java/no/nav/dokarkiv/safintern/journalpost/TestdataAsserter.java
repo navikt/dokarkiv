@@ -10,7 +10,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.GSAK_APPLIKASJON;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.GSAK_FAGSAKNR;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.GSAK_TEMA;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.GSAK_ORGNR;
+import static no.nav.dokarkiv.core.util.TestdataFactory.GSAK_ORGNR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class TestdataAsserter {

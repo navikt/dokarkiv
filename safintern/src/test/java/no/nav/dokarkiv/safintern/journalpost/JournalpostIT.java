@@ -19,11 +19,11 @@ import java.util.Set;
 
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createFysiskpostUtsendingsInfo;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.createGsak;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.formattedDate;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataFactory.setSkjermingVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendingsInfo;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.formattedDate;
+import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
