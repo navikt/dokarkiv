@@ -164,17 +164,17 @@ public class HentDokumentIT extends AbstractSafinternTest {
 	}
 
 	private void buildAndPersistDokument() {
-		DokumentFilTestRepository.persist(getDokumentFilBuilder()
+		dokumentFilTestRepository.persist(getDokumentFilBuilder()
 				.filUuid(PDF_UUID)
 				.fil(TEST_FILE_CONTENT.getBytes())
 				.opprettetKildeNavn("test")
 				.build());
-		DokumentFilTestRepository.persist(getDokumentFilBuilder()
+		dokumentFilTestRepository.persist(getDokumentFilBuilder()
 				.filUuid(XML_UUID)
 				.fil(TEST_FILE_CONTENT_XML.getBytes())
 				.opprettetKildeNavn("test")
 				.build());
-		DokumentFilTestRepository.persist(getDokumentFilBuilder()
+		dokumentFilTestRepository.persist(getDokumentFilBuilder()
 				.filUuid(JSON_UUID)
 				.fil(TEST_FILE_CONTENT_JSON.getBytes())
 				.opprettetKildeNavn("test")
