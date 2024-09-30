@@ -47,7 +47,7 @@
 		<azure-identity.version>1.13.3</azure-identity.version>
 
 		<!-- NAV -->
-		<token-support.version>2.1.9</token-support.version>
+		<token-support.version>5.0.5</token-support.version>
 		<verapdf.version>1.26.1</verapdf.version>
 
 		<!-- Tjenestegrensesnitt -->
