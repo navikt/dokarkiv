@@ -561,6 +561,11 @@
       "app": "postmottak-backend",
       "namespace": "aap",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "veilarbvedtaksstotte",
+      "namespace": "obo",
+      "cluster": "dev-gcp"
     }
   ]
 }
