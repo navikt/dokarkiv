@@ -16,32 +16,12 @@ public enum SakStatusCode {
 	AVSLUTTET,
 
 	/**
-	 * Kassasjonsregler for saken er oppfylt.
+	 * Saken er avbrutt
 	 */
-	KAN_KASSERES,
-
-	/**
-	 * Dokumenter på journalposter som er knyttet til saken, og som kan kasseres, er kassert (slettet).
-	 */
-	KASSERT,
-
-	/**
-	 * Saken er klar for avlevering.
-	 */
-	KAN_AVLEVERES,
-
-	/**
-	 * Saken er avlevert til arkivverket, og vi venter på godkjenning.
-	 */
-	AVLEVERT_GODKJENNING,
+	AVBRUTT,
 
 	/**
 	 * Saken er avlevert til arkivverket.
 	 */
-	AVLEVERT,
-
-	/**
-	 * Saken kan slettes.
-	 */
-	KAN_SLETTES
+	AVLEVERT
 }
