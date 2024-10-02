@@ -16,7 +16,7 @@ public enum SakStatusCode {
 	AVSLUTTET,
 
 	/**
-	 * Saken er avbrutt
+	 * Saken er avbrutt.
 	 */
 	AVBRUTT,
 
