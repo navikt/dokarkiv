@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.safintern.finnjournalposter;
 
-import com.blazebit.persistence.DefaultKeysetPage;
 import com.blazebit.persistence.KeysetPage;
 import com.blazebit.persistence.PagedList;
 import com.blazebit.persistence.PaginatedCriteriaBuilder;
@@ -10,6 +9,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.InvalidFieldRequestedException;
+import no.nav.dokarkiv.safintern.KeysetPageSerializerDeserializer;
 import no.nav.dokarkiv.safintern.UgyldigJournalpostQueryStartDatoException;
 import no.nav.dokarkiv.safintern.views.FetchPaths;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
@@ -19,12 +19,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -41,9 +39,11 @@ public class SafinternFinnJournalposterService {
 	public static final ZoneId NORGE_ZONE = ZoneId.of("Europe/Oslo");
 
 	private final SafinternFinnJournalposterRepository repository;
+	private final KeysetPageSerializerDeserializer<Long> keysetPageSerializerDeserializer;
 
 	public SafinternFinnJournalposterService(SafinternFinnJournalposterRepository repository) {
 		this.repository = repository;
+		this.keysetPageSerializerDeserializer = new KeysetPageSerializerDeserializer.JournalpostIdKeysetPageSerializerDeserializer();
 	}
 
 	public PaginatedJournalpostView finnJournalposter(FinnJournalposterRequest finnJournalposterRequest, Set<String> fields) {
@@ -54,8 +54,8 @@ public class SafinternFinnJournalposterService {
 
 		Integer antallRader = finnJournalposterRequest.antallRader();
 		int rader = parseAntallRader(antallRader);
-		KeysetPage keysetPage = parseKeysetPage(finnJournalposterRequest.etterPeker());
-		int currentPage = parsePreviousPageNo(finnJournalposterRequest.etterPeker()) + 1;
+		KeysetPage keysetPage = keysetPageSerializerDeserializer.deserializeKeysetPage(finnJournalposterRequest.etterPeker());
+		int currentPage = keysetPageSerializerDeserializer.parsePreviousPageNo(finnJournalposterRequest.etterPeker()) + 1;
 		try {
 			PagedList<JournalpostView> journalpostViews = repository.finnJournalposterStatus(
 					nullSafeList(finnJournalposterRequest.psakSakIds()),
@@ -69,7 +69,7 @@ public class SafinternFinnJournalposterService {
 					fetchDokument(fields, rader, keysetPage));
 			return new PaginatedJournalpostView(journalpostViews, journalpostViews.getSize(), journalpostViews.getTotalSize(),
 					currentPage, journalpostViews.getTotalPages(),
-					serializeKeysetPage(journalpostViews.getKeysetPage(), currentPage));
+					keysetPageSerializerDeserializer.serializeKeysetPage(journalpostViews.getKeysetPage(), journalpostViews.getTotalPages(), currentPage));
 		} catch (EmptyResultDataAccessException | NoResultException e) {
 			throw new DokumentInfoIkkeFunnetException("Fant ingen Journalposter 🤷‍");
 		}
@@ -91,33 +91,6 @@ public class SafinternFinnJournalposterService {
 								.atStartOfDay()
 								.atZone(NORGE_ZONE)
 								.toInstant());
-	}
-
-	private int parsePreviousPageNo(String nextPage) {
-		if (nextPage == null || nextPage.isEmpty()) {
-			return 0;
-		}
-		var s = new String(Base64.getDecoder().decode(nextPage));
-		return Integer.parseInt(s.split(":")[2]);
-	}
-
-	private KeysetPage parseKeysetPage(String nextPage) {
-		if (nextPage == null || nextPage.isEmpty()) {
-			return null;
-		}
-		var s = new String(Base64.getDecoder().decode(nextPage));
-		Long[] lowestJPID = new Long[]{Long.parseLong(s.split(":")[0])};
-		Long[] highestJPID = new Long[]{Long.parseLong(s.split(":")[1])};
-		return new DefaultKeysetPage(0, 1, lowestJPID, highestJPID, null);
-	}
-
-	private String serializeKeysetPage(KeysetPage keysetPage, int currentPage) {
-		if (keysetPage == null) {
-			return "";
-		}
-		return Base64.getEncoder().encodeToString(
-				(keysetPage.getLowest().getTuple()[0] + ":" + keysetPage.getHighest().getTuple()[0] + ":" + currentPage).getBytes(StandardCharsets.UTF_8)
-		);
 	}
 
 	private static EntityViewSetting<JournalpostView, PaginatedCriteriaBuilder<JournalpostView>> fetchDokument(Set<String> fields, int maxResults, KeysetPage keysetPage) {

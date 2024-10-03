@@ -26,9 +26,9 @@ public class AvstemReferanseIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnNoContentWhenAllReferencesMatch() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(null);
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
 		journalpostTestRepository.persist(journalpost);
-		var journalpost2 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(null);
+		var journalpost2 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
 		journalpost2.setKanalReferanseId(journalpost2.getKanalReferanseId() + "2");
 		journalpostTestRepository.persist(journalpost2);
 		TestTransaction.flagForCommit();
@@ -41,7 +41,7 @@ public class AvstemReferanseIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnOkWhenSomeReferencesNotMatched() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(null);
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -56,7 +56,7 @@ public class AvstemReferanseIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldBeRejectedIfNotAuthorizedWithRoleInternSkanning() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(null);
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

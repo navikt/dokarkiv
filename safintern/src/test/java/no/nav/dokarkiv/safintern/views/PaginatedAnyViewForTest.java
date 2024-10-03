@@ -2,8 +2,8 @@ package no.nav.dokarkiv.safintern.views;
 
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 public record PaginatedAnyViewForTest(
@@ -26,6 +26,7 @@ public record PaginatedAnyViewForTest(
 	public record MinimalViableDokumentinfoForTest(
 			long dokumentInfoId,
 			DokumentKategoriCode kategori,
+			TilknyttetJournalpostSomCode tilknyttetSom,
 			Boolean sensitivt) {
 	}
 

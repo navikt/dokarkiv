@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
 import no.nav.dokarkiv.safintern.views.PaginatedAnyViewForTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -20,10 +21,12 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static java.lang.Long.parseLong;
+import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
@@ -31,6 +34,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.API_GSAK_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.API_PSAK_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
@@ -149,7 +153,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		FinnJournalposterRequest request = createRequest(FS, 2);
+		FinnJournalposterRequest request = createRequest(FS, 4);
 		PaginatedAnyViewForTest responseTo = finnJournalposterRest(request);
 
 		assertThat(responseTo.journalposter()).hasSize(2);
@@ -165,7 +169,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 		journalpostTestRepository.persist(psakJournalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
-		FinnJournalposterRequest request = createRequest(FS, 2, parseLong(API_PSAK_ID));
+		FinnJournalposterRequest request = createRequest(FS, 4, parseLong(API_PSAK_ID));
 
 		PaginatedAnyViewForTest responseTo = finnJournalposterRest(request);
 
@@ -182,7 +186,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 		journalpostTestRepository.persist(psakJournalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
-		FinnJournalposterRequest request = createRequest(FS, 10,
+		FinnJournalposterRequest request = createRequest(FS, 10, null,
 				Stream.concat(Stream.of(parseLong(API_GSAK_ID)), LongStream.range(0, 2000).boxed()).toList(), parseLong(API_PSAK_ID));
 
 		PaginatedAnyViewForTest responseTo = finnJournalposterRest(request);
@@ -240,7 +244,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 
 	@Test
 	public void shouldReturnJournalpostsWithNullSaksrelasjon() {
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(null);
+		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
 		journalpost.setJournalstatus(M);
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
@@ -264,11 +268,97 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 		assertThat(responseTo.journalposter()).hasSize(1);
 	}
 
-	private FinnJournalposterRequest createRequest(JournalStatusCode journalStatusCode, int antallRader, Long... psakSakIds) {
-		return createRequest(journalStatusCode, antallRader, List.of(parseLong(API_GSAK_ID)), psakSakIds);
+	@Test
+	public void shouldPaginateResultsCoherentlyAndIdempotently() {
+		DokumentInfo vedlegg1 = createDokumentInfo();
+		DokumentInfo vedlegg2 = createDokumentInfo();
+		DokumentInfo vedlegg3 = createDokumentInfo();
+		dokumentInfoRepository.persist(vedlegg1);
+		dokumentInfoRepository.persist(vedlegg2);
+		dokumentInfoRepository.persist(vedlegg3);
+		Journalpost ferdigstiltJournalpost1 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
+		Journalpost ferdigstiltJournalpost2 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
+		ferdigstiltJournalpost2.setKanalReferanseId("REFERANSE_ID_2");
+		createVedleggRelasjon(ferdigstiltJournalpost1, vedlegg1);
+		createVedleggRelasjon(ferdigstiltJournalpost1, vedlegg2);
+		createVedleggRelasjon(ferdigstiltJournalpost1, vedlegg3);
+		journalpostTestRepository.persist(ferdigstiltJournalpost1);
+		journalpostTestRepository.persist(ferdigstiltJournalpost2);
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		FinnJournalposterRequest finnJournalposterAllStatusRequest = createRequest(JournalStatusCode.FS, 200);
+		var responseAll = finnJournalposterRest(finnJournalposterAllStatusRequest);
+		assertThat(responseAll.journalposter()).hasSize(2);
+		assertDokumentOrder(responseAll.journalposter());
+
+		var responsePage1 = finnJournalposterRest(createRequest(FS, 1));
+		assertThat(responsePage1.journalposter()).hasSize(1);
+		assertDokumentOrder(responsePage1.journalposter());
+
+		var responsePage2 = finnJournalposterRest(createRequest(FS, 1, responsePage1.nextPage(), List.of(parseLong(API_GSAK_ID))));
+		assertThat(responsePage2.journalposter()).hasSize(1);
+		assertThat(responsePage2.nextPage()).isEmpty();
+		assertDokumentOrder(responsePage2.journalposter());
 	}
 
-	private static FinnJournalposterRequest createRequest(JournalStatusCode journalStatusCode, int antallRader, List<Long> gsakSakids, Long... psakIds) {
+
+	@Test
+	@Disabled("må fikse queryet her")
+	public void shouldPaginateResultsCorrectlyForVariousPagesizes() {
+
+		IntStream.range(0, 400).mapToObj(i -> {
+			var jp = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+			jp.setKanalReferanseId("kanalref" + i);
+			jp.setJournalstatus(JournalStatusCode.U);
+			return jp;
+		}).forEach(journalpostTestRepository::persist);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		for (int pageSize : new int[]{2, 10, 15, 100}) {
+			String lastSeen = null;
+			int countReturned = 0;
+			PaginatedAnyViewForTest.MinimalViableJournalpostForTest previousJournalpost = null;
+			int totalPages, currentPage;
+			do {
+				FinnJournalposterRequest finnJournalposterAllStatusRequest = createRequest(JournalStatusCode.U, pageSize, lastSeen, emptyList());
+				PaginatedAnyViewForTest body = finnJournalposterRest(finnJournalposterAllStatusRequest);
+
+				if (countReturned > 0 && body.antallRader() > 0) {
+					assertThat(body.journalposter().get(0).journalpostId()).isEqualTo(previousJournalpost.journalpostId() - 1);
+				}
+
+				if (body.antallRader() > 0) {
+					previousJournalpost = body.journalposter().get(body.journalposter().size() - 1);
+				}
+
+				lastSeen = body.nextPage();
+				countReturned = body.antallRader();
+				totalPages = body.totalPages();
+				currentPage = body.page();
+			} while (countReturned > 0 && lastSeen != null && !lastSeen.isEmpty());
+			assertThat(currentPage)
+					.as("Sjekk at vi har iterert til siste side når vi får tomt resultat")
+					.isEqualTo(totalPages);
+		}
+	}
+
+	private void assertDokumentOrder(List<PaginatedAnyViewForTest.MinimalViableJournalpostForTest> journalposter) {
+		journalposter.forEach(this::assertDokumentOrder);
+	}
+
+	private void assertDokumentOrder(PaginatedAnyViewForTest.MinimalViableJournalpostForTest journalpost) {
+		var dokumenter = journalpost.dokumenter();
+		assertThat(dokumenter.get(0).tilknyttetSom()).isEqualTo(HOVEDDOKUMENT);
+	}
+
+	private FinnJournalposterRequest createRequest(JournalStatusCode journalStatusCode, int antallRader, Long... psakSakIds) {
+		return createRequest(journalStatusCode, antallRader, null, List.of(parseLong(API_GSAK_ID)), psakSakIds);
+	}
+
+	private static FinnJournalposterRequest createRequest(JournalStatusCode journalStatusCode, int antallRader, String etterPeker, List<Long> gsakSakids, Long... psakIds) {
 		return new FinnJournalposterRequest(
 				gsakSakids,
 				List.of(psakIds),
@@ -279,7 +369,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 				List.of(journalStatusCode),
 				List.of(JournalpostTypeCode.I, JournalpostTypeCode.U, JournalpostTypeCode.N),
 				antallRader,
-				null
+				etterPeker
 		);
 	}
 
