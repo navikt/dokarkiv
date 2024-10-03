@@ -150,6 +150,32 @@ public class PdlIdentConsumer implements IdentConsumer {
 			include = HttpServerErrorException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
+	@Cacheable(HISTORISKE_IDENTER)
+	@Override
+	public List<String> hentHistoriskeAktoerIds(String folkeregisterIdent) throws PersonIkkeFunnetException {
+		String ident = this.validateFolkeregisterIdent(folkeregisterIdent);
+
+		PdlResponse pdlResponse = webClient.post()
+				.bodyValue(mapHentHistoriskeAktoerIdsForAktoerId(ident))
+				.retrieve()
+				.bodyToMono(PdlResponse.class)
+				.doOnError(this::handleError)
+				.block();
+
+		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
+			return pdlResponse.getData().getHentIdenter().getIdenter().stream().map(PdlResponse.PdlIdent::getIdent).collect(Collectors.toList());
+		} else {
+			if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
+				throw new PersonIkkeFunnetException("Fant ikke historiske identer for person i pdl.");
+			}
+			throw new PdlFunctionalException("Kunne ikke hente historiske identer for ident." + pdlResponse.getErrors());
+		}
+	}
+
+	@Retryable(
+			include = HttpServerErrorException.class,
+			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
+	)
 	@Override
 	public String hentPersonnavn(String ident, String tema) {
 
@@ -194,6 +220,16 @@ public class PdlIdentConsumer implements IdentConsumer {
 		variables.put("ident", ident);
 		return PdlRequest.builder()
 				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: true) {identer { ident gruppe historisk } } }")
+				.variables(variables)
+				.build();
+	}
+
+
+	private PdlRequest mapHentHistoriskeAktoerIdsForAktoerId(final String aktoerId) {
+		final HashMap<String, Object> variables = new HashMap<>();
+		variables.put("ident", aktoerId);
+		return PdlRequest.builder()
+				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: AKTORID, historikk: true) {identer { ident gruppe historisk } } }")
 				.variables(variables)
 				.build();
 	}

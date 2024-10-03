@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.core;
 
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
+import no.nav.dokarkiv.core.domain.codes.SakStatus;
+import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
@@ -11,6 +13,7 @@ import no.nav.dokarkiv.core.repository.FagomradeTestRepository;
 import no.nav.dokarkiv.core.repository.InnsynTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
+import no.nav.dokarkiv.core.repository.SakStatusTestRepository;
 import no.nav.dokarkiv.core.repository.SakTestRepository;
 import no.nav.dokarkiv.core.repository.UtsendingsInfoTestRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
@@ -130,6 +133,8 @@ public abstract class AbstractRestIT {
 	protected InnsynTestRepository innsynTestRepository;
 	@Autowired
 	private MockOAuth2Server server;
+	@Autowired
+	protected SakStatusTestRepository sakStatusTestRepository;
 
 	@BeforeAll
 	public static void setupRequestContext() {
@@ -142,6 +147,24 @@ public abstract class AbstractRestIT {
 	@BeforeEach
 	public void setUp() {
 		lagreFagomraader();
+		lagreSakStatuser();
+	}
+
+	private void lagreSakStatuser() {
+		for (SakStatusCode sakStatusCode : SakStatusCode.values()) {
+			sakStatusTestRepository.persist(
+					SakStatus.builder()
+							.kode(sakStatusCode.name())
+							.dekode(sakStatusCode.name())
+							.erGyldig(true)
+							.datoOpprettet(LocalDate.of(2020, 5, 1))
+							.datoFraOgMed(LocalDate.of(2020, 5, 1))
+							.opprettetAv("Donald Duck")
+							.build());
+		}
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
 	}
 
 	private void lagreFagomraader() {

@@ -30,6 +30,7 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -148,7 +149,7 @@ public class OpprettJournalpostService {
 	private Sak identifiserEllerOpprettArkivsak(OpprettJournalpostRequest request) {
 		Sak sak = createSak(request);
 		List<Sak> saker = hentSakerRepository.finnSaker(SakSearchCriteria.builder()
-				.aktoerId(sak.getAktoerId())
+				.aktoerId(Collections.singletonList(sak.getAktoerId()))
 				.orgnr(sak.getOrgnr())
 				.tema(singletonList(sak.getTema()))
 				.applikasjon(sak.getApplikasjon())

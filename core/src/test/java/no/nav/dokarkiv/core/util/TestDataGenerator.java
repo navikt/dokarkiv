@@ -13,6 +13,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
@@ -24,11 +25,14 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
+import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
+import org.slf4j.MDC;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,9 +41,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.lang.Long.parseLong;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_ONSKE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_INNSKRENKET_PARTSINNSYN;
+import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
 
@@ -242,6 +248,30 @@ public class TestDataGenerator {
 				.build();
 		saksrelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return saksrelasjon;
+	}
+
+
+	public static Sak createSakForAktoerId(String fagomrade, String aktoerId, String fagsystem, String fagsakNr) {
+		return createBaseSak(fagomrade, fagsystem, fagsakNr)
+				.aktoerId(aktoerId)
+				.build();
+	}
+
+	public static Sak createSakForOrgNr(String fagomrade, String orgnr, String fagsystem, String fagsakNr) {
+		return createBaseSak(fagomrade, fagsystem, fagsakNr)
+				.orgnr(orgnr)
+				.build();
+	}
+
+	public static Sak.SakBuilder createBaseSak(String fagomrade, String fagsystem, String fagsakNr) {
+		return Sak.builder()
+				.tema(fagomrade)
+				.fagsakNr(fagsakNr)
+				.applikasjon(fagsystem)
+				.opprettetAv("Donald Duck")
+				.endretAv("Donald Duck")
+				.sakStatus(SakStatusCode.AAPEN)
+				.opprettetTidspunkt(LocalDateTime.now());
 	}
 
 	public static Saksrelasjon createSaksrelasjon(Journalpost journalpost, Long sakId) {

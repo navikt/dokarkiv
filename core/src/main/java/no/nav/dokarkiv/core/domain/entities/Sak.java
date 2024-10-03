@@ -3,7 +3,10 @@ package no.nav.dokarkiv.core.domain.entities;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
@@ -17,16 +20,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Inneholder metadata om sakstilknytningen til fagsystemet.
  */
 @Entity
 @Table(name = "SAK")
-@Builder
+@Builder(toBuilder = true)
 @Data
-@Immutable
 @NoArgsConstructor
 @AllArgsConstructor
 public class Sak {
@@ -59,7 +64,44 @@ public class Sak {
 	@Column(name = "opprettet_tidspunkt", nullable = false)
 	private LocalDateTime opprettetTidspunkt;
 
-	@Column(name = "k_sak_status", length = 40)
 	@Enumerated(EnumType.STRING)
+	@Column(name = "k_sak_status", length = 40)
 	private SakStatusCode sakStatus;
+
+	@Column(name = "endret_av", nullable = false, length = 40)
+	private String endretAv;
+
+	@Column(name = "dato_endret")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date datoEndret;
+
+	@Column(name = "dato_avsluttet")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date datoAvsluttet;
+
+	@Column(name = "endret_kilde_navn", length = 40)
+	private String endretAvKildeNavn;
+
+	@Column(name = "avsluttet_av", length = 40)
+	private String avsluttetAv;
+
+	@Column(name = "avsluttet_kilde_navn", length = 40)
+	private String avsluttetAvNavn;
+
+	@Column(name = "dato_sak_opprettet", length = 40)
+	private String datoSakOpprettet;
+
+	@Column(name = "administrativ_enhet", length = 40)
+	private String administrativEnhet;
+
+	@Column(name = "sak_ansvarlig", length = 40)
+	private String sakAnsvarlig;
+
+	// Finnes ikke (enda):
+	@Column(name = "k_kassasjon_status", length = 40)
+	private String kassasjonStatus;
+
+	@Column(name = "k_avlevering_status", length = 40)
+	private String avleveringStatus;
+
 }

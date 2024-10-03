@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.codes;
 
+import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
+
 /**
  * Enum for codes in T_K_SAK_STATUS.
  */
@@ -21,7 +23,8 @@ public enum SakStatusCode {
 	AVBRUTT,
 
 	/**
-	 * Saken er avlevert til arkivverket.
+	 * Saken kan slettes.
 	 */
-	AVLEVERT
+	KAN_SLETTES;
+
 }

@@ -1,6 +1,15 @@
 package no.nav.dokarkiv.core.consumer.pdl;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.web.client.HttpServerErrorException;
+
 import java.util.List;
+
+import static no.nav.dokarkiv.core.cache.CacheConfig.HISTORISKE_IDENTER;
+import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
+import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 
 /**
  * Interface for tjenester relatert til henting av identer.
@@ -33,6 +42,13 @@ public interface IdentConsumer {
 	 * @throws PersonIkkeFunnetException Finner ikke person
 	 */
 	List<String> hentHistoriskeFolkeregisterIdenter(final String folkeregisterIdent) throws PersonIkkeFunnetException;
+
+	@Retryable(
+			include = HttpServerErrorException.class,
+			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
+	)
+	@Cacheable(HISTORISKE_IDENTER)
+	List<String> hentHistoriskeAktoerIds(String folkeregisterIdent) throws PersonIkkeFunnetException;
 
 	/**
 	 * Henter personens fulle navn

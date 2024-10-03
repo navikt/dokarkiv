@@ -33,6 +33,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -203,7 +204,7 @@ public class OppdaterJournalpostService {
 	private Long identifiserEllerOpprettArkivsak(OppdaterJournalpostRequest request) {
 		Sak sak = createSak(request);
 		List<Sak> saker = hentSakerRepository.finnSaker(SakSearchCriteria.builder()
-				.aktoerId(sak.getAktoerId())
+				.aktoerId(Collections.singletonList((sak.getAktoerId())))
 				.orgnr(sak.getOrgnr())
 				.tema(singletonList(sak.getTema()))
 				.applikasjon(sak.getApplikasjon())
