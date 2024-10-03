@@ -184,6 +184,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "ismanglendemedvirkning",
+      "namespace": "teamsykefravr",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "journalforing-frontend",
       "namespace": "isa",
       "cluster": "dev-fss"
@@ -424,6 +429,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "k9-brukerdialog-prosessering",
+      "namespace": "dusseldorf",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "veilarbvedtaksstotte",
       "namespace": "obo",
       "cluster": "dev-gcp"
@@ -511,7 +521,7 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "tiltakspenger-dokument",
+      "app": "tiltakspenger-vedtak",
       "namespace": "tpts",
       "cluster": "dev-gcp"
     },

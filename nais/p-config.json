@@ -163,6 +163,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "ismanglendemedvirkning",
+      "namespace": "teamsykefravr",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "journalforing-frontend",
       "namespace": "isa",
       "cluster": "prod-gcp"
@@ -383,6 +388,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "k9-brukerdialog-prosessering",
+      "namespace": "dusseldorf",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "veilarbvedtaksstotte",
       "namespace": "pto",
       "cluster": "prod-fss"
@@ -496,7 +506,7 @@
       "cluster": "prod-gcp"
     },
     {
-      "app": "tiltakspenger-dokument",
+      "app": "tiltakspenger-vedtak",
       "namespace": "tpts",
       "cluster": "prod-gcp"
     },

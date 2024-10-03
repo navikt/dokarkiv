@@ -35,6 +35,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
+	static final String URL_JOURNALPOSTAPI = "/rest/journalpostapi/v1/";
 	static final String URL_JOURNALPOST = "/rest/journalpostapi/v1/journalpost/";
 	static final String URL_BULK_DISTRIBUSJONSINFO_JOURNALPOST = "/rest/journalpostapi/v1/bulkOppdaterDistribusjonsinfo";
 	static final String URL_DOKUMENTINFO = "/rest/journalpostapi/v1/dokumentInfo/";

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.safintern.journalpost;
+package no.nav.dokarkiv.core.util;
 
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -77,22 +77,22 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.SKJERMING_TYPE_CODE;
 
 public class TestdataFactory {
 
-	static final String BRUK_STANDARDREGLER_INNSYNSBESKRIVELSE = "Standardreglene avgjør om dokumentet vises";
-	static final String FIL_NAVN = "navn";
-	static final String TILLEGGOPPLYSNINGER_KEY_1 = "tillegg1";
-	static final String TILLEGGOPPLYSNINGER_VAL_1 = "tillegg_verdi1";
-	static final String TILLEGGOPPLYSNINGER_KEY_2 = "tillegg2";
-	static final String TILLEGGOPPLYSNINGER_VAL_2 = "tillegg_verdi2";
-	static final String TILLEGGOPPLYSNINGER_KEY_3 = "tillegg3";
-	static final String TILLEGGOPPLYSNINGER_VAL_3 = "tillegg_verdi3";
-	static final String TILLEGGOPPLYSNINGER_KEY_4 = "tillegg4";
-	static final String TILLEGGOPPLYSNINGER_VAL_4 = "tillegg_verdi4";
-	static final String BEHANDLINGSTEMA_DEKODE = "Lønnskompensasjon";
-	static final String FIL_UUID_ARKIV_HOVEDDOKUMENT = "filUuidHoveddokumentArkiv";
-	static final String FIL_UUID_PRODUKSJON_HOVEDDOKUMENT = "filUuidHoveddokumentProduksjon";
-	static final String FIL_UUID_ARKIV_VEDLEGG = "filUuidVedleggArkiv";
-	static final String FIL_UUID_PRODUKSJON_VEDLEGG = "filUuidVedleggProduksjon";
-	static final String GSAK_ORGNR = "812345678";
+	public static final String BRUK_STANDARDREGLER_INNSYNSBESKRIVELSE = "Standardreglene avgjør om dokumentet vises";
+	public static final String FIL_NAVN = "navn";
+	public static final String TILLEGGOPPLYSNINGER_KEY_1 = "tillegg1";
+	public static final String TILLEGGOPPLYSNINGER_VAL_1 = "tillegg_verdi1";
+	public static final String TILLEGGOPPLYSNINGER_KEY_2 = "tillegg2";
+	public static final String TILLEGGOPPLYSNINGER_VAL_2 = "tillegg_verdi2";
+	public static final String TILLEGGOPPLYSNINGER_KEY_3 = "tillegg3";
+	public static final String TILLEGGOPPLYSNINGER_VAL_3 = "tillegg_verdi3";
+	public static final String TILLEGGOPPLYSNINGER_KEY_4 = "tillegg4";
+	public static final String TILLEGGOPPLYSNINGER_VAL_4 = "tillegg_verdi4";
+	public static final String BEHANDLINGSTEMA_DEKODE = "Lønnskompensasjon";
+	public static final String FIL_UUID_ARKIV_HOVEDDOKUMENT = "filUuidHoveddokumentArkiv";
+	public static final String FIL_UUID_PRODUKSJON_HOVEDDOKUMENT = "filUuidHoveddokumentProduksjon";
+	public static final String FIL_UUID_ARKIV_VEDLEGG = "filUuidVedleggArkiv";
+	public static final String FIL_UUID_PRODUKSJON_VEDLEGG = "filUuidVedleggProduksjon";
+	public static final String GSAK_ORGNR = "812345678";
 	public static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2023-08-11T12:01:01.001Z"), ZoneId.of("Europe/Oslo"));
 
 	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(long sakId) {
@@ -169,7 +169,7 @@ public class TestdataFactory {
 		return journalpostDokumentInfoRelasjon;
 	}
 
-	static JournalpostDokumentInfoRelasjon createHoveddokumentRelasjonGjenbruktDokumentInfo(Journalpost journalpost, DokumentInfo dokumentInfo) {
+	public static JournalpostDokumentInfoRelasjon createHoveddokumentRelasjonGjenbruktDokumentInfo(Journalpost journalpost, DokumentInfo dokumentInfo) {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
 				.journalpost(journalpost)
 				.dokumentInfo(dokumentInfo)
@@ -232,7 +232,7 @@ public class TestdataFactory {
 	}
 
 
-	static DokumentInfo createDokumentInfo(String filUuidArkiv, String filUuidProduksjon) {
+	public static DokumentInfo createDokumentInfo(String filUuidArkiv, String filUuidProduksjon) {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.tittel(DOKUMENT_INFO_TITTEL)
@@ -261,7 +261,7 @@ public class TestdataFactory {
 	}
 
 
-	static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, FilTypeCode filTypeCode, String filUuid) {
+	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, FilTypeCode filTypeCode, String filUuid) {
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.dokumentInfo(dokumentInfo)
 				.fileContent(FIL)
@@ -289,19 +289,19 @@ public class TestdataFactory {
 				.build();
 	}
 
-	static UtsendingsInfo createFysiskpostUtsendingsInfo(Journalpost journalpost) {
+	public static UtsendingsInfo createFysiskpostUtsendingsInfo(Journalpost journalpost) {
 		var fysiskpostadresse = new UtsendingsInfo.FysiskPostadresse(ADRESSELINJE1, ADRESSELINJE2, ADRESSELINJE3, POSTNUMMER, POSTSTED, LANDKODE_NO);
 		return new UtsendingsInfo(journalpost, fysiskpostadresse);
 	}
 
-	static UtsendingsInfo createNavNoUtsendingsInfo(Journalpost journalpost) {
+	public static UtsendingsInfo createNavNoUtsendingsInfo(Journalpost journalpost) {
 		var utsendingsInfoPart = new UtsendingsInfo.NavNoVarsling("navno-identifikator-for-mottaker", "varslingstekst");
 		var epostvarsel = new UtsendingsInfo.EpostVarsler(List.of(new UtsendingsInfo.EpostVarsel("tittel", "tekst", "homer@epos.gr", "2023-02-27T12:30:00.000")));
 		var smsvarsel = new UtsendingsInfo.SmsVarsler(List.of(new UtsendingsInfo.SmsVarsel("tekst", "+4700000000", "2023-02-27T12:30:00.000")));
 		return new UtsendingsInfo(journalpost, utsendingsInfoPart, epostvarsel, smsvarsel);
 	}
 
-	static UtsendingsInfo createDigitalPostUtsendingsInfo(Journalpost journalpost) {
+	public static UtsendingsInfo createDigitalPostUtsendingsInfo(Journalpost journalpost) {
 		UtsendingsInfo.DigitalPostadresse digitalPostadresse = new UtsendingsInfo.DigitalPostadresse("bjarne.betjent#12AB", "12345678");
 		var epostvarsel = new UtsendingsInfo.EpostVarsler(List.of(new UtsendingsInfo.EpostVarsel("tittel", "tekst", "homer@epos.gr", "2023-02-27T12:30:00.000")));
 		var smsvarsel = new UtsendingsInfo.SmsVarsler(List.of(new UtsendingsInfo.SmsVarsel("tekst", "+4700000000", "2023-02-27T12:30:00.000")));

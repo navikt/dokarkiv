@@ -79,6 +79,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
+import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.LOVLIGE_INNSYNSKODER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -1144,7 +1145,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	void shouldReturnBadRequestWithErrorMessageWhenTittelFemStjerner() {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M));
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
-				.tittel("*****")
+				.tittel(SKJULT_TITTEL)
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 

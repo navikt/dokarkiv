@@ -34,7 +34,6 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithH
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class, SkjermingServiceTest.class})
 @Transactional
