@@ -22,6 +22,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJO
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_SAKID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_APPLIKASJON;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_FAGSAKNR;
+import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -90,7 +91,7 @@ public class SaksrelasjonUpdater {
 				endret.add(SAKSRELASJON_SAKID, sakId, null);
 				journalpost.setSaksrelasjon(null);
 
-				log.info("oppdaterJournalpost - Sletter saksrelasjon (fagsystem={} sakId={}) fordi tema endres fra tema={} til nyTema={}", fagsystem, sakId, tema, nyTema);
+				log.info("oppdaterJournalpost - Sletter saksrelasjon (fagsystem={} sakId={}) fordi tema endres fra tema={} til nyTema={}", fagsystem, sakId, tema, removeUnsafeChars(nyTema));
 			}
 		}
 	}
