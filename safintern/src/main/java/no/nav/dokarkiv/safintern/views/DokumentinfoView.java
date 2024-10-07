@@ -13,6 +13,7 @@ import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Set;
 
@@ -73,4 +74,22 @@ public interface DokumentinfoView {
 	@Mapping("dokumentInfo.skannetInnholdListe")
 	@CollectionMapping
 	Set<LogiskVedleggView> getLogiskVedlegg();
+
+	class DefaultComparator implements Comparator<DokumentinfoView> {
+		@Override
+		public int compare(DokumentinfoView o1, DokumentinfoView o2) {
+			if (o1.getTilknyttetSom() == o2.getTilknyttetSom()) {
+				if(o1.getId() == null && o2.getId() == null) {
+					return 1;
+				} else if (o1.getId() == null) {
+					return -1;
+				} else if (o2.getId() == null) {
+					return 1;
+				}
+				return o1.getId().compareTo(o2.getId());
+			} else {
+				return o1.getTilknyttetSom().compareTo(o2.getTilknyttetSom());
+			}
+		}
+	}
 }

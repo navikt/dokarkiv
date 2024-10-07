@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.InvalidFieldRequestedException;
+import no.nav.dokarkiv.safintern.KeysetPageSerializerDeserializer;
 import no.nav.dokarkiv.safintern.UgyldigJournalpostQueryStartDatoException;
 import no.nav.dokarkiv.safintern.UgyldigQueryPageSizeException;
 import no.nav.dokarkiv.safintern.views.FetchPaths;
@@ -36,9 +37,11 @@ public class SafinternJournalStatusService {
 	public static final ZoneId NORGE_ZONE = ZoneId.of("Europe/Oslo");
 
 	private final SafinternJournalStatusRepository repository;
+	private final KeysetPageSerializerDeserializer<Long> keysetPageSerializerDeserializer;
 
 	public SafinternJournalStatusService(SafinternJournalStatusRepository repository) {
 		this.repository = repository;
+		this.keysetPageSerializerDeserializer = new KeysetPageSerializerDeserializer.JournalpostIdKeysetPageSerializerDeserializer();
 	}
 
 	public PaginatedJournalpostView finnJournalposterStatus(FinnJournalposterStatusRequest finnJournalposterStatusRequest, Set<String> fields) {
@@ -46,8 +49,8 @@ public class SafinternJournalStatusService {
 		validateJournalstatus(journalstatus);
 		Integer antallRader = finnJournalposterStatusRequest.antallRader();
 		int rader = validateAndParseAntallRader(antallRader);
-		KeysetPage keysetPage = parseKeysetPage(finnJournalposterStatusRequest.etterPeker());
-		int currentPage = parsePreviousPageNo(finnJournalposterStatusRequest.etterPeker()) + 1;
+		KeysetPage keysetPage = keysetPageSerializerDeserializer.deserializeKeysetPage(finnJournalposterStatusRequest.etterPeker());
+		int currentPage = keysetPageSerializerDeserializer.parsePreviousPageNo(finnJournalposterStatusRequest.etterPeker()) + 1;
 		try {
 			PagedList<JournalpostView> journalpostViews = repository.finnJournalposterStatus(
 					journalstatus,
@@ -56,7 +59,7 @@ public class SafinternJournalStatusService {
 					fetchDokument(fields, rader, keysetPage));
 			return new PaginatedJournalpostView(journalpostViews, journalpostViews.getSize(), journalpostViews.getTotalSize(),
 					currentPage, journalpostViews.getTotalPages(),
-					serializeKeysetPage(journalpostViews.getKeysetPage(), currentPage));
+					keysetPageSerializerDeserializer.serializeKeysetPage(journalpostViews.getKeysetPage(), journalpostViews.getTotalPages(), currentPage));
 		} catch (EmptyResultDataAccessException | NoResultException e) {
 			throw new DokumentInfoIkkeFunnetException("Fant ingen Journalposter med status=" + journalstatus);
 		}

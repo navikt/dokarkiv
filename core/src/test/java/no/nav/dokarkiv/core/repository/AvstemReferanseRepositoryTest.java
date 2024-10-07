@@ -39,7 +39,7 @@ class AvstemReferanseRepositoryTest {
 
 	@Test
 	void shouldOnlyMatchEksternReferanseThatExists() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(null);
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
