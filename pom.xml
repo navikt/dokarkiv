@@ -57,9 +57,9 @@
 
 		<!-- test -->
 		<datasource-proxy-spring-boot-starter.version>1.9.0</datasource-proxy-spring-boot-starter.version>
-		<spring-cloud-contract-wiremock.version>3.1.8</spring-cloud-contract-wiremock.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
+		<wiremock-jre8-standalone.version>2.33.2</wiremock-jre8-standalone.version>
 
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
@@ -225,13 +225,6 @@
 				<version>${project.version}</version>
 				<type>test-jar</type>
 			</dependency>
-
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-contract-wiremock</artifactId>
-				<version>${spring-cloud-contract-wiremock.version}</version>
-				<scope>test</scope>
-			</dependency>
 			<dependency>
 				<groupId>no.nav.security</groupId>
 				<artifactId>token-validation-spring-test</artifactId>
@@ -242,6 +235,12 @@
 				<groupId>com.github.gavlyukovskiy</groupId>
 				<artifactId>datasource-proxy-spring-boot-starter</artifactId>
 				<version>${datasource-proxy-spring-boot-starter.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.github.tomakehurst</groupId>
+				<artifactId>wiremock-jre8-standalone</artifactId>
+				<version>${wiremock-jre8-standalone.version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
