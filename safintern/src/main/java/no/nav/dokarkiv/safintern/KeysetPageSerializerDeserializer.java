@@ -62,7 +62,7 @@ public abstract class KeysetPageSerializerDeserializer<T extends Serializable> {
 			try {
 				return Long.parseLong(s);
 			} catch (NumberFormatException e) {
-				throw new DokarkivTechnicalException("Ugyldig peker for jounalpostId i keyset page!");
+				throw new UgyldigKeysetPagePaginationException("Ugyldig peker for jounalpostId i keyset page!");
 			}
 		}
 	}
