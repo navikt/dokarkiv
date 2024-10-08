@@ -152,11 +152,9 @@
 			<artifactId>azure-identity</artifactId>
 		</dependency>
 
-
-		<!-- Test -->
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-contract-wiremock</artifactId>
+			<groupId>com.github.tomakehurst</groupId>
+			<artifactId>wiremock-jre8-standalone</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
