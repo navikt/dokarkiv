@@ -2,6 +2,7 @@ package no.nav.dokarkiv.safintern;
 
 import com.blazebit.persistence.DefaultKeysetPage;
 import com.blazebit.persistence.KeysetPage;
+import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
@@ -61,7 +62,7 @@ public abstract class KeysetPageSerializerDeserializer<T extends Serializable> {
 			try {
 				return Long.parseLong(s);
 			} catch (NumberFormatException e) {
-				throw new RuntimeException("unable to deserialize journalpostId from KeySetPage!");
+				throw new DokarkivTechnicalException("Ugyldig peker for jounalpostId i keyset page!");
 			}
 		}
 	}
