@@ -3,13 +3,12 @@ package no.nav.dokarkiv.core.domain.entities;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.codes.AvleveringStatusCode;
+import no.nav.dokarkiv.core.domain.codes.KassasjonStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Column;
@@ -32,6 +31,9 @@ import java.util.Date;
 @Table(name = "SAK")
 @Builder(toBuilder = true)
 @Data
+//@Immutable
+//TODO: Gir fjerning av Immutable noen uforutsette konsekvenser??
+//Hvis en entity er immutable kastes det ingen feil om man prøver å mutere de, det "feiler" bare i det stille ved at de ikke blir oppdatert
 @NoArgsConstructor
 @AllArgsConstructor
 public class Sak {
@@ -80,16 +82,16 @@ public class Sak {
 	private Date datoAvsluttet;
 
 	@Column(name = "endret_kilde_navn", length = 40)
-	private String endretAvKildeNavn;
+	private String endretKildeNavn;
 
 	@Column(name = "avsluttet_av", length = 40)
 	private String avsluttetAv;
 
 	@Column(name = "avsluttet_kilde_navn", length = 40)
-	private String avsluttetAvNavn;
+	private String avsluttetKildeNavn;
 
 	@Column(name = "dato_sak_opprettet", length = 40)
-	private String datoSakOpprettet;
+	private Date datoSakOpprettet;
 
 	@Column(name = "administrativ_enhet", length = 40)
 	private String administrativEnhet;
@@ -97,11 +99,10 @@ public class Sak {
 	@Column(name = "sak_ansvarlig", length = 40)
 	private String sakAnsvarlig;
 
-	// Finnes ikke (enda):
 	@Column(name = "k_kassasjon_status", length = 40)
-	private String kassasjonStatus;
+	private KassasjonStatusCode kassasjonStatus;
 
 	@Column(name = "k_avlevering_status", length = 40)
-	private String avleveringStatus;
+	private AvleveringStatusCode avleveringStatus;
 
 }

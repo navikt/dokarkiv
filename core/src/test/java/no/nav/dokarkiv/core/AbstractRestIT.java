@@ -240,6 +240,7 @@ public abstract class AbstractRestIT {
 		}
 
 		fagomradeTestRepository.deleteAll();
+		sakStatusTestRepository.deleteAll();
 		utsendingsInfoTestRepository.deleteAll();
 		aksjonsLoggTestRepository.deleteAll();
 		dokumentFilTestRepository.deleteAll();
@@ -324,6 +325,7 @@ public abstract class AbstractRestIT {
 		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(azureTokenForClientCredentialFlow(APP_CLAIM_SUB, Map.of(DEFAULT_CLAIM_SUB, APP_CLAIM_SUB, DEFAULT_CLAIM_OID, APP_CLAIM_SUB)));
 		headers.add(NAV_CALL_ID, "itest");
+		headers.add(NavHeaders.NAV_USER_ID, NAV_USER_ID);
 
 		return headers;
 	}

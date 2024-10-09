@@ -271,7 +271,7 @@ public class TestDataGenerator {
 				.opprettetAv("Donald Duck")
 				.endretAv("Donald Duck")
 				.sakStatus(SakStatusCode.AAPEN)
-				.opprettetTidspunkt(LocalDateTime.now());
+				.opprettetTidspunkt(LocalDateTime.of(2023, 8, 20, 15, 15));
 	}
 
 	public static Saksrelasjon createSaksrelasjon(Journalpost journalpost, Long sakId) {
