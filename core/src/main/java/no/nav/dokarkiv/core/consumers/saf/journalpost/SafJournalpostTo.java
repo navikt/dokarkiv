@@ -15,7 +15,7 @@ import java.util.List;
 public class SafJournalpostTo {
 
 	@Builder.Default
-	private final List<DokumentInfo> dokumenter = new ArrayList<>();
+	private final List<DokumentInfo> dokumenter = List.of();
 
 	@Value
 	@Builder
@@ -23,7 +23,7 @@ public class SafJournalpostTo {
 		private final String dokumentInfoId;
 
 		@Builder.Default
-		private final List<Dokumentvariant> dokumentvarianter = new ArrayList<>();
+		private final List<Dokumentvariant> dokumentvarianter = List.of();
 	}
 
 	@Value

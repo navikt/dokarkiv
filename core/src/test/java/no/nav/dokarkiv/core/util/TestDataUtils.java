@@ -179,6 +179,7 @@ public class TestDataUtils {
 				.fagomrade(fagomradeCode)
 				.mottakskanal(MottaksKanalCode.NAV_NO)
 				.behandlingstema("ab0001")
+				.tilleggsopplysninger(tilleggsopplysninger)
 				.build();
 
 		Saksrelasjon saksrelasjon = Saksrelasjon

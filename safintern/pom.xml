@@ -66,5 +66,10 @@
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.github.tomakehurst</groupId>
+			<artifactId>wiremock-jre8-standalone</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

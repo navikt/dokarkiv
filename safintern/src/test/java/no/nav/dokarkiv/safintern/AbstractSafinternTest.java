@@ -3,11 +3,9 @@ package no.nav.dokarkiv.safintern;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
-import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -23,13 +21,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public abstract class AbstractSafinternTest extends AbstractRestIT {
 
 	@Autowired
-	protected TestRestTemplate restTemplate;
-
-	@Autowired
 	protected DokumentInfoRepository dokumentInfoRepository;
-
-	@Autowired
-	protected DokumentFilTestRepository DokumentFilTestRepository;
 
 	@Autowired
 	protected ObjectMapper objectMapper;
