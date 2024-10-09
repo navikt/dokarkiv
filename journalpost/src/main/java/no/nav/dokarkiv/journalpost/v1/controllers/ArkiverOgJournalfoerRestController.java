@@ -69,7 +69,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -260,14 +259,14 @@ public class ArkiverOgJournalfoerRestController {
 
 			OpprettJournalpostResult opprettJournalpostResult = opprettJournalpostService.opprettJournalpost(request);
 
-			List<DokumentInfoId> dokumenter = new ArrayList<>();
-			opprettJournalpostResult.getJournalpost().getJournalpostDokumentInfoRelasjoner().forEach(
-					journalpostDokumentInfoRelasjon -> dokumenter.add(DokumentInfoId.builder()
+			List<DokumentInfoId> dokumenter = opprettJournalpostResult.getJournalpost().getJournalpostDokumentInfoRelasjoner()
+					.stream()
+					.map(journalpostDokumentInfoRelasjon -> DokumentInfoId.builder()
 							.dokumentInfoId(journalpostDokumentInfoRelasjon.getDokumentInfo()
 									.getDokumentInfoId()
 									.toString())
 							.build())
-			);
+					.toList();
 
 			Long journalpostId = opprettJournalpostResult.getJournalpost().getJournalpostId();
 			HttpStatus httpStatus = opprettJournalpostResult.isAlreadyOpprettet() ? CONFLICT : CREATED;

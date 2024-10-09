@@ -123,7 +123,7 @@ public interface JournalpostView {
 	Map<String, String> getTilleggsopplysninger();
 
 	@Mapping("journalpostDokumentInfoRelasjoner")
-	@CollectionMapping(ordered = true)
+	@CollectionMapping(comparator = DokumentinfoView.DefaultComparator.class)
 	Set<DokumentinfoView> getDokumenter();
 
 	class FagomraadenavnSubqueryProvider implements SubqueryProvider {

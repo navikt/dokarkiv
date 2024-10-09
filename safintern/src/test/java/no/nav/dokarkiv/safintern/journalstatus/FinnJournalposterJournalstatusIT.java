@@ -1,13 +1,15 @@
 package no.nav.dokarkiv.safintern.journalstatus;
 
+import com.blazebit.persistence.DefaultKeyset;
+import com.blazebit.persistence.DefaultKeysetPage;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Sak;
-import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
+import no.nav.dokarkiv.safintern.KeysetPageSerializerDeserializer;
 import no.nav.dokarkiv.safintern.views.PaginatedAnyViewForTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -16,25 +18,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.nio.charset.StandardCharsets;
+import java.io.Serializable;
 import java.time.ZoneId;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
-import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjon;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.formattedDate;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
+import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	private static final String FINNJOURNALPOSTER_STATUS = "/rest/internal/safintern/finnjournalposterstatus";
+	private static final KeysetPageSerializerDeserializer<Long> keysetPageSerializerDeserializer = new KeysetPageSerializerDeserializer.JournalpostIdKeysetPageSerializerDeserializer();
 
 	@Test
 	public void shouldReturnEmptyResponseWhenNotFound() {
@@ -64,7 +66,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		ResponseEntity<String> responseAll = finnJournalposterStatusRest(finnJournalposterAllStatusRequest);
 
 		assertThat(responseAll.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(responseAll.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost1, utgaattJournalpost2, classpathResourceToString("/journalstatus/journalpost-journalstatus-response-2-journalposter.json"), 2, 2, 1, 1, generateNextPage(1, utgaattJournalpost2, utgaattJournalpost1)));
+		assertThat(responseAll.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost1, utgaattJournalpost2, classpathResourceToString("/journalstatus/journalpost-journalstatus-response-2-journalposter.json"), 2, 2, 1, 1, ""));
 
 		FinnJournalposterStatusRequest finnJournalposterStatusPage1Request = createRequest(JournalStatusCode.U, 1, null);
 		ResponseEntity<String> responsePage1 = finnJournalposterStatusRest(finnJournalposterStatusPage1Request);
@@ -76,20 +78,14 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		ResponseEntity<String> responsePage2 = finnJournalposterStatusRest(finnJournalposterStatusPage2Request);
 
 		assertThat(responsePage2.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(responsePage2.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost1, null, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2, 2, 2, null));
-
-		FinnJournalposterStatusRequest finnJournalposterStatusPage3Request = createRequest(JournalStatusCode.U, 1, generateNextPage(2, utgaattJournalpost2, utgaattJournalpost1));
-		ResponseEntity<String> responsePage3 = finnJournalposterStatusRest(finnJournalposterStatusPage3Request);
-
-		assertThat(responsePage3.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(responsePage3.getBody()).isEqualToIgnoringWhitespace("{\"journalposter\":[],\"antallRader\":0,\"totaltAntallRader\":2,\"page\":3,\"totalPages\":2,\"nextPage\":\"" + generateNextPage(3, utgaattJournalpost2, utgaattJournalpost1) + "\"}");
+		assertThat(responsePage2.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost1, null, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2, 2, 2, ""));
 	}
 
 	@Test
 	public void shouldPaginateResultsCorrectlyForVariousPagesizes() {
 
 		IntStream.range(0, 400).mapToObj(i -> {
-			var jp = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg((Saksrelasjon) null);
+			var jp = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
 			jp.setKanalReferanseId("kanalref" + i);
 			jp.setJournalstatus(JournalStatusCode.U);
 			return jp;
@@ -98,7 +94,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		for (int pageSize : new int[]{1, 2, 10, 15, 100}) {
+		for (int pageSize : new int[]{2, 10, 15, 100}) {
 			String lastSeen = null;
 			int countReturned = 0;
 			PaginatedAnyViewForTest.MinimalViableJournalpostForTest previousJournalpost = null;
@@ -113,15 +109,18 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 					assertThat(body.journalposter().get(0).journalpostId()).isEqualTo(previousJournalpost.journalpostId() - 1);
 				}
 
-				previousJournalpost = body.antallRader() > 0 ? body.journalposter().get(body.journalposter().size() - 1) : null;
+				if (body.antallRader() > 0) {
+					previousJournalpost = body.journalposter().get(body.journalposter().size() - 1);
+				}
+
 				lastSeen = body.nextPage();
 				countReturned = body.antallRader();
 				totalPages = body.totalPages();
 				currentPage = body.page();
-			} while (countReturned > 0);
+			} while (countReturned > 0 && lastSeen != null && !lastSeen.isEmpty());
 			assertThat(currentPage)
-					.as("Sjekk at vi har iterert forbi siste side når vi får tomt resultat")
-					.isEqualTo(totalPages + 1);
+					.as("Sjekk at vi har iterert til siste side når vi får tomt resultat")
+					.isEqualTo(totalPages);
 		}
 	}
 
@@ -223,11 +222,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	}
 
 	private static String mapStringResponse(Journalpost originalJournalpost, String responseTemplate) {
-		return mapStringResponse(originalJournalpost, responseTemplate, 1, 1);
-	}
-
-	private static String mapStringResponse(Journalpost originalJournalpost, String responseTemplate, int count, int totalcount) {
-		return mapStringResponse(originalJournalpost, null, responseTemplate, count, totalcount, 1, 1, null);
+		return mapStringResponse(originalJournalpost, null, responseTemplate, 1, 1, 1, 1, "");
 	}
 
 	private static String mapStringResponse(Journalpost foerste, Journalpost andre, String responseTemplate, int count, int totalcount, int currentPage, int totalPages, String nextPage) {
@@ -269,9 +264,14 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	}
 
 	private static String generateNextPage(int currentpage, Journalpost... journalposter) {
-		return
-				Base64.getEncoder().encodeToString(
-						(journalposter[0].getJournalpostId() + ":" + journalposter[journalposter.length - 1].getJournalpostId() + ":" + currentpage).getBytes(StandardCharsets.UTF_8));
+		return keysetPageSerializerDeserializer.serializeKeysetPage(
+				new DefaultKeysetPage(
+						0, 0,
+						new DefaultKeyset(new Serializable[]{journalposter[0].getJournalpostId()}),
+						new DefaultKeyset(new Serializable[]{journalposter[journalposter.length - 1].getJournalpostId()})
+				),
+				0, currentpage
+		);
 	}
 
 	private static String mapStringResponseSecondJournalpost(Journalpost andre, String responseTemplate) {

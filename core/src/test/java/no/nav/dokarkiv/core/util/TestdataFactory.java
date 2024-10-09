@@ -99,6 +99,10 @@ public class TestdataFactory {
 		return createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(createSaksrelasjon(sakId));
 	}
 
+	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg() {
+		return createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(null);
+	}
+
 	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(Saksrelasjon saksrelasjon) {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
