@@ -54,7 +54,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 		setupStubs();
 		long sakId = persistSakAndJournalpostForAktoerId(FS);
 
-		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialToken());
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(OK));
 
@@ -68,7 +68,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 		setupStubs();
 		long sakId = persistSakAndJournalpostForOrganisasjon(FS);
 
-		var requestEntity = new HttpEntity<>(createOrganisasjondAvsluttSakRequest(), createHeadersWithClientCredentialToken());
+		var requestEntity = new HttpEntity<>(createOrganisasjondAvsluttSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(OK));
 
@@ -84,7 +84,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 		Long sakId = sakTestRepository.persist(sak).getSakId();
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialToken());
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(OK));
 
@@ -97,7 +97,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 	public void shouldReturnBadRequestWhenNoSakFound() {
 		setupStubs();
 
-		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialToken());
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(NOT_FOUND));
 	}
@@ -108,7 +108,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 		setupStubs();
 		persistSakAndJournalpostForAktoerId(journalStatusCode);
 
-		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialToken());
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(BAD_REQUEST));
 	}
@@ -118,7 +118,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 		setupStubs();
 		long sakId = persistSakAndJournalpostForAktoerId(A);
 
-		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialToken());
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(OK));
 
@@ -137,7 +137,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 				.sakAnsvarlig(null)
 				.build();
 
-		var requestEntity = new HttpEntity<>(avsluttSakRequest, createHeadersWithClientCredentialToken());
+		var requestEntity = new HttpEntity<>(avsluttSakRequest, createHeadersWithClientCredentialTokenAndNavUserId());
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(OK));
 
