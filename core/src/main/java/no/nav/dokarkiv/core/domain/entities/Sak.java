@@ -31,9 +31,6 @@ import java.util.Date;
 @Table(name = "SAK")
 @Builder(toBuilder = true)
 @Data
-//@Immutable
-//TODO: Gir fjerning av Immutable noen uforutsette konsekvenser??
-//Hvis en entity er immutable kastes det ingen feil om man prøver å mutere de, det "feiler" bare i det stille ved at de ikke blir oppdatert
 @NoArgsConstructor
 @AllArgsConstructor
 public class Sak {

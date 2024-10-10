@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.domain.codes.AvleveringStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
-import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.SakHarJournalposterUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.SakIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
@@ -115,7 +114,7 @@ public class AvsluttSakService {
 		});
 	}
 
-	private String determineSaksbehandler(){
+	private String determineSaksbehandler() {
 		String userId = MDC.get(MDC_USER_ID);
 		return userId == null || userId.isBlank() ?
 				MDC.get(MDC_CONSUMER_ID) : userId;
@@ -126,7 +125,7 @@ public class AvsluttSakService {
 				convertLocalDateTimeToDate(avsluttSakRequest.getAvsluttetDato());
 	}
 
-	private Date convertLocalDateTimeToDate(LocalDateTime ldt){
+	private Date convertLocalDateTimeToDate(LocalDateTime ldt) {
 		return Date.from(ldt.toInstant(systemDefault().getRules().getOffset(now())));
 	}
 
@@ -183,6 +182,7 @@ public class AvsluttSakService {
 		return SakSearchCriteria.builder()
 				.tema(singletonList(avsluttSakRequest.getTema()))
 				.statuser(List.of(AAPEN))
+				.sokNullStatus(true)
 				.fagsakNr(avsluttSakRequest.fagsakId)
 				.applikasjon(avsluttSakRequest.getFagsaksystem());
 	}

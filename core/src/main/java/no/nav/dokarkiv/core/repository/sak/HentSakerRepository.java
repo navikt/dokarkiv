@@ -50,8 +50,8 @@ public class HentSakerRepository {
 
 		List<Predicate> predicates = new ArrayList<>();
 
-		if (sakSearchCriteria.getAktoerId().isPresent()) {
-			predicates.add(cb.equal(sak.get("aktoerId"), sakSearchCriteria.getAktoerId().get()));
+		if (!sakSearchCriteria.getAktoerId().isEmpty()) {
+			predicates.add(cb.isTrue(sak.get("aktoerId").in(sakSearchCriteria.getAktoerId())));
 		}
 
 		if (sakSearchCriteria.getApplikasjon().isPresent()) {
@@ -68,6 +68,14 @@ public class HentSakerRepository {
 
 		if (!sakSearchCriteria.getTema().isEmpty()) {
 			predicates.add(cb.isTrue(sak.get("tema").in(sakSearchCriteria.getTema())));
+		}
+
+		if(!sakSearchCriteria.getStatuser().isEmpty()){
+			if(sakSearchCriteria.getSokNullStatus().isPresent() && sakSearchCriteria.getSokNullStatus().get()) {
+				predicates.add(cb.or(cb.isTrue(sak.get("sakStatus").in(sakSearchCriteria.getStatuser())), cb.isTrue(sak.get("sakStatus").isNull())));
+			} else {
+				predicates.add(cb.or(cb.isTrue(sak.get("sakStatus").in(sakSearchCriteria.getStatuser()))));
+			}
 		}
 
 		cq.where(predicates.toArray(new Predicate[0]));

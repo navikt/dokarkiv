@@ -4,8 +4,8 @@ import no.nav.dokarkiv.core.domain.codes.AvleveringStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
-import no.nav.dokarkiv.journalpost.v1.itest.AbstractJournalpostIT;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
+import no.nav.dokarkiv.journalpost.v1.itest.AbstractJournalpostIT;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -23,13 +23,18 @@ import static no.nav.dokarkiv.core.domain.codes.KassasjonStatusCode.KLAR_FOR_KAS
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVBRUTT;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVSLUTTET;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createSakForAktoerId;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.createSakForOrgNr;
+import static no.nav.dokarkiv.core.util.TestdataFactory.GSAK_ORGNR;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggWithJournalstatusCode;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
+import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
 public class AvsluttSakIT extends AbstractJournalpostIT {
 
@@ -41,103 +46,108 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 	private static final LocalDateTime JANUAR_2023 = LocalDateTime.of(2023, 1, 1, 1, 1);
 	private static final LocalDateTime JANUAR_2010 = LocalDateTime.of(2010, 1, 1, 1, 1);
 	private static final String ADMINISTRATIV_ENHET = "9999";
-	private static final String SAKANSVARLIG = "Frankly Frank";
+	private static final String SAKANSVARLIG = "Chandra Nalaar";
 	private static final String KALLENDE_APP = "dokarkiv-itest";
 
 	@Test
-	public void happyPathAvsluttSak() {
-		stubAzure();
-		happyAktoerIdStub();
-		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID, FAGSAK_SYSTEM, FAGSAK_ID);
-		Long sakId = sakTestRepository.persist(sak).getSakId();
+	public void happyPathAvsluttSakBruker() {
+		setupStubs();
+		long sakId = persistSakAndJournalpostForAktoerId(FS);
 
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedleggWithJournalstatusCode(sak.getSakId(), FS);
-		journalpostTestRepository.persist(journalpost);
-		commitAndStartNewTransaction();
-
-		var requestEntity = new HttpEntity<>(createDefaultAvsluttSakRequest(), createHeadersWithClientCredentialToken());
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialToken());
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(OK));
+
 		commitAndStartNewTransaction();
 		Sak updatedSak = sakTestRepository.findById(sakId).get();
 		assertAvsluttetSak(updatedSak);
 	}
 
+	@Test
+	public void happyPathAvsluttSakOrganisasjon() {
+		setupStubs();
+		long sakId = persistSakAndJournalpostForOrganisasjon(FS);
+
+		var requestEntity = new HttpEntity<>(createOrganisasjondAvsluttSakRequest(), createHeadersWithClientCredentialToken());
+		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(OK));
+
+		commitAndStartNewTransaction();
+		Sak updatedSak = sakTestRepository.findById(sakId).get();
+		assertAvsluttetSak(updatedSak);
+	}
 
 	@Test
 	public void shouldAvbryteSakWhenNoTilknyttedeJournalposter() {
-		stubAzure();
-		happyAktoerIdStub();
-		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
+		setupStubs();
 		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID, FAGSAK_SYSTEM, FAGSAK_ID);
 		Long sakId = sakTestRepository.persist(sak).getSakId();
-
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createDefaultAvsluttSakRequest(), createHeadersWithClientCredentialToken());
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialToken());
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
-
+		assertThat(response.getStatusCode(), is(OK));
 
 		commitAndStartNewTransaction();
 		Sak updatedSak = sakTestRepository.findById(sakId).get();
 		assertAvbruttSak(updatedSak);
+	}
+
+	@Test
+	public void shouldReturnBadRequestWhenNoSakFound() {
+		setupStubs();
+
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialToken());
+		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(NOT_FOUND));
 	}
 
 	@ParameterizedTest
 	@EnumSource(value = JournalStatusCode.class, names = {"R", "D", "M", "MO", "OD"})
-	public void shouldReturnBadRequestWhenJournalpostUnderRedigering(JournalStatusCode journalStatusCode){
-		stubAzure();
-		happyAktoerIdStub();
-		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID, FAGSAK_SYSTEM, FAGSAK_ID);
-		sakTestRepository.persist(sak);
+	public void shouldReturnBadRequestWhenJournalpostUnderRedigering(JournalStatusCode journalStatusCode) {
+		setupStubs();
+		persistSakAndJournalpostForAktoerId(journalStatusCode);
 
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedleggWithJournalstatusCode(sak.getSakId(), journalStatusCode);
-		journalpostTestRepository.persist(journalpost);
-		commitAndStartNewTransaction();
-
-		var requestEntity = new HttpEntity<>(createDefaultAvsluttSakRequest(), createHeadersWithClientCredentialToken());
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialToken());
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(BAD_REQUEST));
-
 	}
 
 	@Test
-	public void shouldReturnBadRequestWhenJornalpostDoesNotHaveFerdigstiltJournalpost(){
-		stubAzure();
-		happyAktoerIdStub();
-		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID, FAGSAK_SYSTEM, FAGSAK_ID);
-		Long sakId = sakTestRepository.persist(sak).getSakId();
+	public void shouldAvbryteSakWhenNoFerdigstilteJournalposter() {
+		setupStubs();
+		long sakId = persistSakAndJournalpostForAktoerId(A);
 
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedleggWithJournalstatusCode(sak.getSakId(), A);
-		journalpostTestRepository.persist(journalpost);
-		commitAndStartNewTransaction();
-
-		var requestEntity = new HttpEntity<>(createDefaultAvsluttSakRequest(), createHeadersWithClientCredentialToken());
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialToken());
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(OK));
 
 		commitAndStartNewTransaction();
 		Sak updatedSak = sakTestRepository.findById(sakId).get();
 		assertAvbruttSak(updatedSak);
-
 	}
 
+	@Test
+	public void shouldSetAdministrativEnhetAsSakAnsvarligWhenNoSakAnsvarlig() {
+		setupStubs();
+		long sakId = persistSakAndJournalpostForAktoerId(FS);
 
-	private AvsluttSakRequest createDefaultAvsluttSakRequest(){
-		return AvsluttSakRequest.builder()
-				.avsluttetDato(JANUAR_2023)
-				.sakAnsvarlig(SAKANSVARLIG)
-				.tema(TEMA)
-				.opprettetDato(JANUAR_2010)
-				.fagsakId(FAGSAK_ID)
+		AvsluttSakRequest avsluttSakRequest = createDefaultAvsluttSakRequest()
 				.bruker(new Bruker(AKTOERID, AKTOER_ID))
-				.administrativEnhet(ADMINISTRATIV_ENHET)
-				.fagsaksystem(FAGSAK_SYSTEM)
+				.sakAnsvarlig(null)
 				.build();
+
+		var requestEntity = new HttpEntity<>(avsluttSakRequest, createHeadersWithClientCredentialToken());
+		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(OK));
+
+		commitAndStartNewTransaction();
+		Sak updatedSak = sakTestRepository.findById(sakId).get();
+		assertThat(updatedSak.getSakStatus(), is(AVSLUTTET));
+		assertThat(updatedSak.getSakAnsvarlig(), is(ADMINISTRATIV_ENHET));
 	}
 
-	private void assertAvsluttetSak(Sak updatedSak){
+	private void assertAvsluttetSak(Sak updatedSak) {
 		assertThat(updatedSak.getSakStatus(), is(AVSLUTTET));
 		assertThat(updatedSak.getAvleveringStatus(), is(nullValue()));
 		assertThat(updatedSak.getKassasjonStatus(), is(nullValue()));
@@ -158,6 +168,57 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 		assertThat(updatedSak.getKassasjonStatus(), is(KLAR_FOR_KASSASJON));
 		assertThat(updatedSak.getEndretAv(), is(NAV_IDENT_SAKSBEHANDLER));
 		assertThat(updatedSak.getDatoEndret().getDay(), is(Date.from(now()).getDay()));
+	}
+
+
+	private void setupStubs() {
+		stubAzure();
+		happyAktoerIdStub();
+		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
+	}
+
+	private long persistSakAndJournalpostForAktoerId(JournalStatusCode statusCode) {
+		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID, FAGSAK_SYSTEM, FAGSAK_ID);
+		Long sakId = sakTestRepository.persist(sak).getSakId();
+
+		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedleggWithJournalstatusCode(sak.getSakId(), statusCode);
+		journalpostTestRepository.persist(journalpost);
+		commitAndStartNewTransaction();
+		return sakId;
+	}
+
+	private long persistSakAndJournalpostForOrganisasjon(JournalStatusCode statusCode) {
+		Sak sak = createSakForOrgNr(TEMA, GSAK_ORGNR, FAGSAK_SYSTEM, FAGSAK_ID);
+		Long sakId = sakTestRepository.persist(sak).getSakId();
+
+		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedleggWithJournalstatusCode(sak.getSakId(), statusCode);
+		journalpostTestRepository.persist(journalpost);
+		commitAndStartNewTransaction();
+
+		return sakId;
+	}
+
+	private AvsluttSakRequest.AvsluttSakRequestBuilder createDefaultAvsluttSakRequest() {
+		return AvsluttSakRequest.builder()
+				.avsluttetDato(JANUAR_2023)
+				.sakAnsvarlig(SAKANSVARLIG)
+				.tema(TEMA)
+				.opprettetDato(JANUAR_2010)
+				.fagsakId(FAGSAK_ID)
+				.administrativEnhet(ADMINISTRATIV_ENHET)
+				.fagsaksystem(FAGSAK_SYSTEM);
+	}
+
+	private AvsluttSakRequest createOrganisasjondAvsluttSakRequest() {
+		return createDefaultAvsluttSakRequest()
+				.bruker(new Bruker(ORGNR, GSAK_ORGNR))
+				.build();
+	}
+
+	private AvsluttSakRequest createAktoerIdAvsluttSakRequest() {
+		return createDefaultAvsluttSakRequest()
+				.bruker(new Bruker(AKTOERID, AKTOER_ID))
+				.build();
 	}
 
 	private Date LocalDateTimeToDate(LocalDateTime ldt) {

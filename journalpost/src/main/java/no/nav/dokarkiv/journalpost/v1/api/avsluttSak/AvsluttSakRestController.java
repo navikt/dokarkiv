@@ -2,7 +2,6 @@ package no.nav.dokarkiv.journalpost.v1.api.avsluttSak;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerAvsluttSak;
 import no.nav.security.token.support.core.api.Protected;
@@ -44,9 +43,8 @@ public class AvsluttSakRestController {
 		log.info(format("AvsluttSak har fått kall om å avslutte sak med fagsakId=%s fra fagsaksystem=%s", avsluttSakRequest.getFagsakId(), avsluttSakRequest.getFagsaksystem()));
 
 		validateAvsluttSakRequest(avsluttSakRequest);
-		avsluttSakService.avsluttSak(avsluttSakRequest);
+		avsluttSakService.avsluttSaker(avsluttSakRequest);
 		log.info(format("AvsluttSak har avsluttet saken med fagsakId=%s fra fagsaksystem=%s", avsluttSakRequest.getFagsakId(), avsluttSakRequest.getFagsaksystem()));
-		Sak sak = hentSakerRepository.hentSak(1L).get();
 		//Mer info i response?
 		return ResponseEntity.status(OK).build();
 	}
