@@ -52,17 +52,17 @@ public class AvsluttSakService {
 	private final PdlIdentConsumer pdlIdentConsumer;
 	private final Set<JournalStatusCode> midlertidigeJournalpostStatuser = Set.of(R, D, M, MO, OD);
 	private final Set<JournalStatusCode> ferdigstilteJournalpostStatuser = Set.of(FL, FS, E, J);
-	private final SakRepository sakRepository;
+	private final String AVSLUTTET_STRING = "avsluttet";
+	private final String AVBRUTT_STRING = "avbrutt";
 
-	public AvsluttSakService(HentSakerRepository hentSakerRepository, JournalpostRepository journalpostRepository, PdlIdentConsumer pdlIdentConsumer, SakRepository sakRepository) {
+	public AvsluttSakService(HentSakerRepository hentSakerRepository, JournalpostRepository journalpostRepository, PdlIdentConsumer pdlIdentConsumer) {
 		this.hentSakerRepository = hentSakerRepository;
 		this.journalpostRepository = journalpostRepository;
 		this.pdlIdentConsumer = pdlIdentConsumer;
-		this.sakRepository = sakRepository;
 	}
 
 	@Transactional
-	public void avsluttSaker(AvsluttSakRequest avsluttSakRequest) {
+	public String avsluttSaker(AvsluttSakRequest avsluttSakRequest) {
 		List<Sak> saker = getSakerForRequest(avsluttSakRequest);
 
 		List<Long> saksIds = saker.stream().map(Sak::getSakId).collect(Collectors.toList());
@@ -71,7 +71,7 @@ public class AvsluttSakService {
 		if (journalposts.isEmpty()) {
 			log.info("Saken har ingen tilknyttede journalposter. Avbryter sak.");
 			avbrytSaker(saker);
-			return;
+			return AVBRUTT_STRING;
 		}
 		if (harSakenApneJournalposterUnderRedigering(journalposts)) {
 			throw new SakHarJournalposterUnderRedigeringException("Saken har en eller flere journalposter under redigering og kan ikke avsluttes.");
@@ -79,12 +79,10 @@ public class AvsluttSakService {
 		if (!harSakenFerdigstilteJournalposter(journalposts)) {
 			log.info("Saken har ingen ferdigstilte journalposter. Avbryter sak.");
 			avbrytSaker(saker);
-			return;
+			return AVBRUTT_STRING;
 		}
 		avsluttSaker(saker, avsluttSakRequest);
-		log.info("AvsluttSakService har avsluttet sak");
-
-
+		return AVSLUTTET_STRING;
 	}
 
 	private void avbrytSaker(List<Sak> saker) {

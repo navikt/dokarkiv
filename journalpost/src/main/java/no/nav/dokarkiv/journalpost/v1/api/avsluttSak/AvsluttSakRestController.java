@@ -27,11 +27,9 @@ import static org.springframework.http.HttpStatus.OK;
 public class AvsluttSakRestController {
 
 	private final AvsluttSakService avsluttSakService;
-	private final HentSakerRepository hentSakerRepository;
 
-	public AvsluttSakRestController(AvsluttSakService avsluttSakService, HentSakerRepository hentSakerRepository) {
+	public AvsluttSakRestController(AvsluttSakService avsluttSakService) {
 		this.avsluttSakService = avsluttSakService;
-		this.hentSakerRepository = hentSakerRepository;
 	}
 
 	@SwaggerAvsluttSak
@@ -43,9 +41,8 @@ public class AvsluttSakRestController {
 		log.info(format("AvsluttSak har fått kall om å avslutte sak med fagsakId=%s fra fagsaksystem=%s", avsluttSakRequest.getFagsakId(), avsluttSakRequest.getFagsaksystem()));
 
 		validateAvsluttSakRequest(avsluttSakRequest);
-		avsluttSakService.avsluttSaker(avsluttSakRequest);
-		log.info(format("AvsluttSak har avsluttet saken med fagsakId=%s fra fagsaksystem=%s", avsluttSakRequest.getFagsakId(), avsluttSakRequest.getFagsaksystem()));
-		//Mer info i response?
+		String avsluttetOrAvbrutt = avsluttSakService.avsluttSaker(avsluttSakRequest);
+		log.info(format("AvsluttSak har %s sak med fagsakId=%s fra fagsaksystem=%s", avsluttetOrAvbrutt, avsluttSakRequest.getFagsakId(), avsluttSakRequest.getFagsaksystem()));
 		return ResponseEntity.status(OK).build();
 	}
 
