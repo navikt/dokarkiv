@@ -33,7 +33,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 public class AvsluttSakIT extends AbstractJournalpostIT {
@@ -99,7 +98,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 
 		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
-		assertThat(response.getStatusCode(), is(NOT_FOUND));
+		assertThat(response.getStatusCode(), is(BAD_REQUEST));
 	}
 
 	@ParameterizedTest
