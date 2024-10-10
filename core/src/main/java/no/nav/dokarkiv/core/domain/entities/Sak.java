@@ -67,7 +67,7 @@ public class Sak {
 	@Column(name = "k_sak_status", length = 40)
 	private SakStatusCode sakStatus;
 
-	@Column(name = "endret_av", nullable = false, length = 40)
+	@Column(name = "endret_av", length = 40)
 	private String endretAv;
 
 	@Column(name = "dato_endret")
