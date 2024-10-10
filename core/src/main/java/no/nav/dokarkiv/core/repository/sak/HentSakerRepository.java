@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
@@ -50,7 +52,7 @@ public class HentSakerRepository {
 
 		List<Predicate> predicates = new ArrayList<>();
 
-		if (!sakSearchCriteria.getAktoerId().isEmpty()) {
+		if (!sakSearchCriteria.getAktoerId().isEmpty() && !isBlank(sakSearchCriteria.getAktoerId().get(0))) {
 			predicates.add(cb.isTrue(sak.get("aktoerId").in(sakSearchCriteria.getAktoerId())));
 		}
 

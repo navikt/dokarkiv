@@ -81,7 +81,7 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 						.withBodyFile("pdl/pdl-ident-notfound.json")));
 	}
 
-	protected void happyAktoerIdStub() {
+	public void happyAktoerIdStub() {
 		stubFor(post(urlEqualTo("/pdl"))
 				.willReturn(aResponse()
 						.withStatus(OK.value())
@@ -89,7 +89,7 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 						.withBodyFile("pdl/pdl-aktoerid-happy.json")));
 	}
 
-	protected void stubAzure() {
+	public void stubAzure() {
 		stubFor(post("/azure_token")
 				.willReturn(aResponse()
 						.withStatus(OK.value())

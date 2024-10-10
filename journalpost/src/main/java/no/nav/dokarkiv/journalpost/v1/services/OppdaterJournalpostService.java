@@ -204,7 +204,7 @@ public class OppdaterJournalpostService {
 	private Long identifiserEllerOpprettArkivsak(OppdaterJournalpostRequest request) {
 		Sak sak = createSak(request);
 		List<Sak> saker = hentSakerRepository.finnSaker(SakSearchCriteria.builder()
-				.aktoerId(Collections.singletonList((sak.getAktoerId())))
+				.aktoerId(singletonList(sak.getAktoerId()))
 				.orgnr(sak.getOrgnr())
 				.tema(singletonList(sak.getTema()))
 				.applikasjon(sak.getApplikasjon())
