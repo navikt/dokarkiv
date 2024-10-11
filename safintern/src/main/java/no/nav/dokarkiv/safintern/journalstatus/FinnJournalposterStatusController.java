@@ -3,7 +3,6 @@ package no.nav.dokarkiv.safintern.journalstatus;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.util.SafeLoggingUtil;
 import no.nav.dokarkiv.safintern.views.PaginatedJournalpostView;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
+import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
 import static no.nav.dokarkiv.safintern.SafinternConstants.BASE_PATH;
 import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -38,8 +37,7 @@ public class FinnJournalposterStatusController {
 															@RequestParam(required = false) Set<String> fields) {
 		JournalStatusCode journalstatus = finnJournalposterStatusRequest.journalstatus();
 		List<JournalpostTypeCode> journalposttyper = finnJournalposterStatusRequest.journalposttyper();
-		Set<String> logFields = fields == null ? null :	fields.stream().map(SafeLoggingUtil::removeUnsafeChars).collect(Collectors.toSet());
-		log.info("safintern/finnjournalposterstatus har mottatt kall om journalposter med status={}, typer={}, fields={}",journalstatus , journalposttyper, logFields);
+		log.info("safintern/finnjournalposterstatus har mottatt kall om journalposter med status={}, typer={}, fields={}",journalstatus , journalposttyper, removeUnsafeChars(fields));
 		var journalpostsView = safinternJournalStatusService.finnJournalposterStatus(finnJournalposterStatusRequest, fields);
 		log.info("safintern/finnjournalposterstatus hentet journalposter med status={}. typer={}, side {} av {}", journalstatus, journalposttyper, journalpostsView.page(), journalpostsView.totalPages());
 		return journalpostsView;
