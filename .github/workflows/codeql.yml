@@ -27,10 +27,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK$JAVA_VERSION
+      - name: Set up JDK${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
         with:
-          java-version: $JAVA_VERSION
+          java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
       - name: Generate ~/.m2/repository cache key
         id: m2-cache-key
