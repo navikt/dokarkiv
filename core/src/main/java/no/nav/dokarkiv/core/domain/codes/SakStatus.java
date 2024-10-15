@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.domain.codes;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @Entity
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "T_K_SAK_STATUS")
 public class SakStatus {
@@ -38,6 +40,4 @@ public class SakStatus {
 	@Column(name = "opprettet_av", length = 200, nullable = false)
 	private String opprettetAv;
 
-	public SakStatus() {
-	}
 }

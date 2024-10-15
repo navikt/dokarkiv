@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.core.domain.codes;
 
-import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
-
 /**
  * Enum for codes in T_K_SAK_STATUS.
  */

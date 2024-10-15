@@ -26,7 +26,7 @@ public class CacheConfig {
 	public static final String NAVUSER_CACHE = "navuserCache";
 	public static final String NAVSERVICEUSER_CACHE = "navserviceuserCache";
 	public static final String HISTORISKE_IDENTER = "historiskeIdenterCache";
-	public static final String HISTORISKE_AKTOERIDS = "historiskeAktoerIdsCache";
+	public static final String HISTORISKE_AKTOERIDER = "historiskeAktoerIderCache";
 	public static final String FAGOMRADE_CACHE = "fagomradeCache";
 	public static final String AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE = "azureClientCredentialGraphTokeCache";
 	public static final String AZURE_ON_BEHALF_OF_TOKEN_CACHE = "hentOnBehalfOfCache";
@@ -70,7 +70,7 @@ public class CacheConfig {
 						.expireAfterWrite(10, MINUTES)
 						.maximumSize(25000)
 						.build()),
-				new CaffeineCache(HISTORISKE_AKTOERIDS, Caffeine.newBuilder()
+				new CaffeineCache(HISTORISKE_AKTOERIDER, Caffeine.newBuilder()
 						.expireAfterWrite(10, MINUTES)
 						.maximumSize(25000)
 						.build()),

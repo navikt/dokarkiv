@@ -9,7 +9,6 @@ import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.SakHarJournalposterUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.SakIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
-import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import org.joda.time.DateTime;
@@ -19,9 +18,8 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.time.Instant.now;
 import static java.time.ZoneId.systemDefault;
@@ -50,10 +48,10 @@ public class AvsluttSakService {
 	private final HentSakerRepository hentSakerRepository;
 	private final JournalpostRepository journalpostRepository;
 	private final PdlIdentConsumer pdlIdentConsumer;
-	private final Set<JournalStatusCode> midlertidigeJournalpostStatuser = Set.of(R, D, M, MO, OD);
-	private final Set<JournalStatusCode> ferdigstilteJournalpostStatuser = Set.of(FL, FS, E, J);
-	private final String AVSLUTTET_STRING = "avsluttet";
-	private final String AVBRUTT_STRING = "avbrutt";
+	private final EnumSet<JournalStatusCode> midlertidigeJournalpostStatuser = EnumSet.of(R, D, M, MO, OD);
+	private final EnumSet<JournalStatusCode> ferdigstilteJournalpostStatuser = EnumSet.of(FL, FS, E, J);
+	private static final String AVSLUTTET_STRING = "avsluttet";
+	private static final String AVBRUTT_STRING = "avbrutt";
 
 	public AvsluttSakService(HentSakerRepository hentSakerRepository, JournalpostRepository journalpostRepository, PdlIdentConsumer pdlIdentConsumer) {
 		this.hentSakerRepository = hentSakerRepository;
@@ -65,19 +63,19 @@ public class AvsluttSakService {
 	public String avsluttSaker(AvsluttSakRequest avsluttSakRequest) {
 		List<Sak> saker = getSakerForRequest(avsluttSakRequest);
 
-		List<Long> saksIds = saker.stream().map(Sak::getSakId).collect(Collectors.toList());
-		var journalposts = journalpostRepository.fetchBySakIds(saksIds);
+		List<Long> saksIds = saker.stream().map(Sak::getSakId).toList();
+		var tilknyttedeJournalposter = journalpostRepository.fetchBySakIds(saksIds);
 
-		if (journalposts.isEmpty()) {
-			log.info("Saken har ingen tilknyttede journalposter. Avbryter sak.");
+		if (tilknyttedeJournalposter.isEmpty()) {
+			log.info("Fagsystemsaken har ingen tilknyttede journalposter. Avbryter tilhørende joark-saker.");
 			avbrytSaker(saker);
 			return AVBRUTT_STRING;
 		}
-		if (harSakenApneJournalposterUnderRedigering(journalposts)) {
-			throw new SakHarJournalposterUnderRedigeringException("Saken har en eller flere journalposter under redigering og kan ikke avsluttes.");
+		if (harSakenAapneJournalposterUnderRedigering(tilknyttedeJournalposter)) {
+			throw new SakHarJournalposterUnderRedigeringException("Fagsystemsaken har en eller flere journalposter under redigering og kan ikke avsluttes.");
 		}
-		if (!harSakenFerdigstilteJournalposter(journalposts)) {
-			log.info("Saken har ingen ferdigstilte journalposter. Avbryter sak.");
+		if (manglerSakenFerdigstilteJournalposter(tilknyttedeJournalposter)) {
+			log.info("Fagsystemsaken har ingen ferdigstilte journalposter. Avbryter joark-saker.");
 			avbrytSaker(saker);
 			return AVBRUTT_STRING;
 		}
@@ -134,12 +132,13 @@ public class AvsluttSakService {
 				sakAnsvarlig;
 	}
 
-	private boolean harSakenFerdigstilteJournalposter(List<Journalpost> journalposts) {
+	private boolean manglerSakenFerdigstilteJournalposter(List<Journalpost> journalposts) {
 		return journalposts.stream()
-				.anyMatch(journalpost -> ferdigstilteJournalpostStatuser.contains(journalpost.getJournalstatus()));
+				.noneMatch(journalpost ->
+					ferdigstilteJournalpostStatuser.contains(journalpost.getJournalstatus()));
 	}
 
-	private boolean harSakenApneJournalposterUnderRedigering(List<Journalpost> journalposts) {
+	private boolean harSakenAapneJournalposterUnderRedigering(List<Journalpost> journalposts) {
 		return journalposts.stream()
 				.anyMatch(journalpost ->
 						midlertidigeJournalpostStatuser.contains(journalpost.getJournalstatus())
@@ -180,7 +179,7 @@ public class AvsluttSakService {
 		return SakSearchCriteria.builder()
 				.tema(singletonList(avsluttSakRequest.getTema()))
 				.statuser(List.of(AAPEN))
-				.sokNullStatus(true)
+				.soekNullStatus(true)
 				.fagsakNr(avsluttSakRequest.fagsakId)
 				.applikasjon(avsluttSakRequest.getFagsaksystem());
 	}

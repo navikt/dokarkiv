@@ -43,7 +43,7 @@ public class AvsluttSakRestController {
 		validateAvsluttSakRequest(avsluttSakRequest);
 		String avsluttetOrAvbrutt = avsluttSakService.avsluttSaker(avsluttSakRequest);
 		log.info(format("AvsluttSak har %s sak med fagsakId=%s fra fagsaksystem=%s", avsluttetOrAvbrutt, avsluttSakRequest.getFagsakId(), avsluttSakRequest.getFagsaksystem()));
-		return ResponseEntity.status(OK).build();
+		return ResponseEntity.ok().build();
 	}
 
 }

@@ -250,27 +250,26 @@ public class TestDataGenerator {
 		return saksrelasjon;
 	}
 
-
 	public static Sak createSakForAktoerId(String fagomrade, String aktoerId, String fagsystem, String fagsakNr) {
-		return createBaseSak(fagomrade, fagsystem, fagsakNr)
+		return createBaseSak(fagomrade, fagsystem, fagsakNr, AAPEN)
 				.aktoerId(aktoerId)
 				.build();
 	}
 
 	public static Sak createSakForOrgNr(String fagomrade, String orgnr, String fagsystem, String fagsakNr) {
-		return createBaseSak(fagomrade, fagsystem, fagsakNr)
+		return createBaseSak(fagomrade, fagsystem, fagsakNr, AAPEN)
 				.orgnr(orgnr)
 				.build();
 	}
 
-	public static Sak.SakBuilder createBaseSak(String fagomrade, String fagsystem, String fagsakNr) {
+	public static Sak.SakBuilder createBaseSak(String fagomrade, String fagsystem, String fagsakNr, SakStatusCode sakStatusCode) {
 		return Sak.builder()
 				.tema(fagomrade)
 				.fagsakNr(fagsakNr)
 				.applikasjon(fagsystem)
 				.opprettetAv("Donald Duck")
 				.endretAv("Donald Duck")
-				.sakStatus(SakStatusCode.AAPEN)
+				.sakStatus(sakStatusCode)
 				.opprettetTidspunkt(LocalDateTime.of(2023, 8, 20, 15, 15));
 	}
 

@@ -23,7 +23,7 @@ public class SakSearchCriteria {
 	private String fagsakNr;
 	private String applikasjon;
 	private List<SakStatusCode> statuser;
-	private Boolean sokNullStatus;
+	private Boolean soekNullStatus;
 
 
 	public List<String> getAktoerId() {	return aktoerId == null ? emptyList() : aktoerId;}
@@ -46,7 +46,7 @@ public class SakSearchCriteria {
 
 	List<SakStatusCode> getStatuser() {return statuser == null ? emptyList() : statuser;}
 
-	Optional<Boolean> getSokNullStatus() {return Optional.ofNullable(sokNullStatus);}
+	Optional<Boolean> getSoekNullStatus() {return Optional.ofNullable(soekNullStatus);}
 
 	@Override
 	public String toString() {
@@ -57,7 +57,7 @@ public class SakSearchCriteria {
 				.append("fagsakNr", fagsakNr)
 				.append("applikasjon", applikasjon)
 				.append("SakStatusCode", statuser)
-				.append("sokNullStatus", sokNullStatus)
+				.append("soekNullStatus", soekNullStatus)
 				.toString();
 	}
 }

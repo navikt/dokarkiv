@@ -72,8 +72,8 @@ public class HentSakerRepository {
 			predicates.add(cb.isTrue(sak.get("tema").in(sakSearchCriteria.getTema())));
 		}
 
-		if(!sakSearchCriteria.getStatuser().isEmpty()){
-			if(sakSearchCriteria.getSokNullStatus().isPresent() && sakSearchCriteria.getSokNullStatus().get()) {
+		if (!sakSearchCriteria.getStatuser().isEmpty()) {
+			if (sakSearchCriteria.getSoekNullStatus().isPresent() && sakSearchCriteria.getSoekNullStatus().get()) {
 				predicates.add(cb.or(cb.isTrue(sak.get("sakStatus").in(sakSearchCriteria.getStatuser())), cb.isTrue(sak.get("sakStatus").isNull())));
 			} else {
 				predicates.add(cb.or(cb.isTrue(sak.get("sakStatus").in(sakSearchCriteria.getStatuser()))));
