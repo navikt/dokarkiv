@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.slf4j.MDC.get;
 
 @Service
@@ -84,7 +85,7 @@ public class MottaDokumentUtgaaendeSkanningService {
 		} catch (Exception e) {
 			if (!(e instanceof DokarkivFunctionalException || e instanceof DokarkivTechnicalException)) {
 				log.error("{} mottaDokumentUtgaaendeSkanning feilet med ukjent feil på journalpost. journalpostId={}, mottakskanal={}, batchnavn={}, feilmelding={}",
-						get(MDC_REQUEST_ID), journalpostId, request.getMottakskanal(), request.getBatchnavn(), e.getMessage(), e);
+						get(MDC_REQUEST_ID), journalpostId, removeUnsafeChars(request.getMottakskanal()), removeUnsafeChars(request.getBatchnavn()), e.getMessage(), e);
 			}
 			throw e;
 		}

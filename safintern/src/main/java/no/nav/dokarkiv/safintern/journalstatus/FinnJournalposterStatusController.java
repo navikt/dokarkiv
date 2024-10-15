@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
+import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
 import static no.nav.dokarkiv.safintern.SafinternConstants.BASE_PATH;
 import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -36,7 +37,7 @@ public class FinnJournalposterStatusController {
 															@RequestParam(required = false) Set<String> fields) {
 		JournalStatusCode journalstatus = finnJournalposterStatusRequest.journalstatus();
 		List<JournalpostTypeCode> journalposttyper = finnJournalposterStatusRequest.journalposttyper();
-		log.info("safintern/finnjournalposterstatus har mottatt kall om journalposter med status={}, typer={}, fields={}", journalstatus, journalposttyper, fields);
+		log.info("safintern/finnjournalposterstatus har mottatt kall om journalposter med status={}, typer={}, fields={}",journalstatus , journalposttyper, removeUnsafeChars(fields));
 		var journalpostsView = safinternJournalStatusService.finnJournalposterStatus(finnJournalposterStatusRequest, fields);
 		log.info("safintern/finnjournalposterstatus hentet journalposter med status={}. typer={}, side {} av {}", journalstatus, journalposttyper, journalpostsView.page(), journalpostsView.totalPages());
 		return journalpostsView;

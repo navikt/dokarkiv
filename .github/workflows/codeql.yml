@@ -1,17 +1,85 @@
 name: CodeQL
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '00 16 * * SUN'
 
+env:
+  JAVA_VERSION: '17'
+  CODEQL_VERSION: '2.18.0'
+
 jobs:
-  run-codeql:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
-    uses: navikt/dok-workflows/.github/workflows/codeql.yml@main
-    secrets: inherit
-    with:
-      java-version: '17'
-      codeql-version: '2.18.0'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java' ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+      - name: Generate ~/.m2/repository cache key
+        id: m2-cache-key
+        run: echo "keyname=$(date +'maven-week-%U')" >> $GITHUB_OUTPUT
+      - name: Cache ~/.m2/repository
+        id: cache-m2-repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ steps.m2-cache-key.outputs.keyname }}
+
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          tools: ${{ env.CODEQL_VERSION && format('https://github.com/github/codeql-action/releases/download/codeql-bundle-v{0}/codeql-bundle-linux64.tar.gz', env.CODEQL_VERSION) || null }}
+          # If you wish to specify custom queries, you can do so here or in a config file.
+          # By default, queries listed here will override any specified in a config file.
+          # Prefix the list here with "+" to use these queries and those in the config file.
+
+          # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+          queries: security-and-quality
+      - name: Create m2-settings
+        uses: whelk-io/maven-settings-xml-action@9dc09b23833fa9aa7f27b63db287951856f3433d # v22
+        with:
+          repositories: '[
+            { "id": "central", "url": "https://repo1.maven.org/maven2/", "releases": { "enabled": "true" }, "snapshots": { "enabled": "false" } },
+            { "id": "github", "url": "https://maven.pkg.github.com/navikt/maven-release", "releases": { "enabled": "true" }, "snapshots": { "enabled": "false" } },
+            { "id": "confluent", "url": "https://packages.confluent.io/maven/" },
+            { "id": "jitpack", "url": "https://jitpack.io" },
+            { "id": "shibboleth", "url": "https://build.shibboleth.net/nexus/content/repositories/releases/" }
+          ]'
+          servers: '[
+            { "id": "github", "username": "x-access-token", "password": "${{ secrets.READER_TOKEN }}" }
+          ]'
+          output_file: settings.xml
+
+      - name: Download toolchain file
+        run: |
+          curl https://raw.githubusercontent.com/navikt/dok-workflows/main/resources/toolchains.xml --output toolchains.xml
+
+      - name: Build
+        run: |
+          echo "Run, Build Application using script"
+          mvn --version
+          mvn --batch-mode -s settings.xml --global-toolchains toolchains.xml compile
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"

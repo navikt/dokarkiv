@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
+import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
 import static no.nav.dokarkiv.safintern.SafinternConstants.BASE_PATH;
 import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -35,7 +36,7 @@ public class FinnJournalposterController {
 						" fraDato={}, tilDato={}, visFeilregistrerte={}, psakSakIds={}, gsakSakIds={}, fields={}",
 				finnJournalposterRequest.journalstatuser(), finnJournalposterRequest.journalposttyper(),
 				finnJournalposterRequest.fraDato(), finnJournalposterRequest.tilDato(), finnJournalposterRequest.visFeilregistrerte(),
-				finnJournalposterRequest.psakSakIds(), finnJournalposterRequest.gsakSakIds(), fields);
+				finnJournalposterRequest.psakSakIds(), finnJournalposterRequest.gsakSakIds(), removeUnsafeChars(fields));
 		
 		var journalpostsView = safinternFinnJournalposterService.finnJournalposter(finnJournalposterRequest, fields);
 		log.info("safintern/finnjournalposter hentet journalposter med side {} av {}", journalpostsView.page(), journalpostsView.totalPages());

@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.core.util;
 
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.abbreviate;
 
@@ -13,5 +15,13 @@ public class SafeLoggingUtil {
 			return null;
 		}
 		return abbreviate(EVERYTHING_EXCEPT_SAFE_CHARS_REGEX.matcher(input).replaceAll("_"), STRING_MAXLENGTH);
+	}
+
+	public static Set<String> removeUnsafeChars(Set<String> fields) {
+		if (fields == null)
+			return null;
+		return fields.stream()
+				.map(SafeLoggingUtil::removeUnsafeChars)
+				.collect(Collectors.toSet());
 	}
 }
