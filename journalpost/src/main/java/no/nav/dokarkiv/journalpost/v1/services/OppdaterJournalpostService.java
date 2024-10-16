@@ -54,6 +54,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementOppdateringAvAvsenderMedDigitalMottakskanalCounter;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementSakstypeCounter;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service("oppdaterMetadataJournalpost")
 @Slf4j
@@ -101,10 +102,7 @@ public class OppdaterJournalpostService {
 
 		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
-		if (oppdateringAvAvsenderMedDigitalMottakskanal(oppdaterJournalpostRequest, journalpost)) {
-			log.info("Avsender på digitalt innsendt journalpost med mottakskanal={} ble oppdatert", journalpost.getMottakskanal());
-			incrementOppdateringAvAvsenderMedDigitalMottakskanalCounter(meterRegistry);
-		}
+		logAndCountChangeInAvsenderMottaker(oppdaterJournalpostRequest, journalpost);
 
 		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 
@@ -240,8 +238,26 @@ public class OppdaterJournalpostService {
 		};
 	}
 
-	private static boolean oppdateringAvAvsenderMedDigitalMottakskanal(OppdaterJournalpostRequest oppdaterJournalpostRequest, Journalpost journalpost) {
-		return (DIGITALE_KANALER.contains(journalpost.getMottakskanal()) && oppdaterJournalpostRequest.getAvsenderMottaker() != null) &&
-			   (oppdaterJournalpostRequest.getAvsenderMottaker().getNavn() != null || oppdaterJournalpostRequest.getAvsenderMottaker().getId() != null);
+	private void logAndCountChangeInAvsenderMottaker(OppdaterJournalpostRequest oppdaterJournalpostRequest, Journalpost journalpost) {
+		if (DIGITALE_KANALER.contains(journalpost.getMottakskanal()) && oppdaterJournalpostRequest.getAvsenderMottaker() != null) {
+
+			boolean nameChanged = isChangeAndNotFromEmpty(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn(), journalpost.getAvsenderMottaker());
+			boolean idChanged = isChangeAndNotFromEmpty(oppdaterJournalpostRequest.getAvsenderMottaker().getId(), journalpost.getAvsenderMottakerId());
+			boolean idTypeChanged = oppdaterJournalpostRequest.getAvsenderMottaker().getIdType() != null &&
+					journalpost.getAvsenderMottakerIdType() != null &&
+					!oppdaterJournalpostRequest.getAvsenderMottaker().getIdType().name().equals(journalpost.getAvsenderMottakerIdType().name());
+
+			if (nameChanged || idChanged || idTypeChanged) {
+				log.info("Avsender på digitalt innsendt journalpost med mottakskanal={} ble oppdatert: {}ble endret", journalpost.getMottakskanal(),
+						(nameChanged ? "navn " : "") + (idChanged ? "id " : "") + (idTypeChanged ? "idtype " : ""));
+				incrementOppdateringAvAvsenderMedDigitalMottakskanalCounter(meterRegistry);
+			}
+		}
+	}
+
+	private static boolean isChangeAndNotFromEmpty(String newValueFromUpdateRequest, String existingValue) {
+		return newValueFromUpdateRequest != null &&
+				isNotBlank(existingValue) &&
+				!newValueFromUpdateRequest.equals(existingValue);
 	}
 }
