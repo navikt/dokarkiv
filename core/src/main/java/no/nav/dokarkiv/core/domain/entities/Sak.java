@@ -96,9 +96,11 @@ public class Sak {
 	@Column(name = "sak_ansvarlig", length = 40)
 	private String sakAnsvarlig;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "k_kassasjon_status", length = 40)
 	private KassasjonStatusCode kassasjonStatus;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "k_avlevering_status", length = 40)
 	private AvleveringStatusCode avleveringStatus;
 
