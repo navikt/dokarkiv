@@ -80,9 +80,9 @@ spec:
     cpuThresholdPercentage: 50
   resources:
     limits:
-      memory: 4096Mi
+      memory: 6500Mi
     requests:
-      memory: 3584Mi
+      memory: 4500Mi
   vault:
     enabled: true
     paths:
