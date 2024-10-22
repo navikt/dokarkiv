@@ -156,14 +156,8 @@ public class AvsluttSakService {
 	private SakSearchCriteria generateSakSearchCriteria(AvsluttSakRequest avsluttSakRequest) {
 		return switch (avsluttSakRequest.getBruker().getIdType()) {
 			case ORGNR -> generateOrganisasjonSakCriteria(avsluttSakRequest);
-			case AKTOERID -> {
+			case AKTOERID, FNR -> {
 				var aktoerIds = pdlIdentConsumer.hentHistoriskeAktoerIdsForAktoerId(avsluttSakRequest.getBruker().getId());
-				//TODO: REMOVE!
-				aktoerIds.forEach(id -> log.info("fant: " + id));
-				yield generateAktoerIdCriteria(avsluttSakRequest, aktoerIds);
-			}
-			case FNR -> {
-				var aktoerIds = pdlIdentConsumer.hentHistoriskeAktoerIdsForFnr(avsluttSakRequest.getBruker().getId());
 				//TODO: REMOVE!
 				aktoerIds.forEach(id -> log.info("fant: " + id));
 				yield generateAktoerIdCriteria(avsluttSakRequest, aktoerIds);

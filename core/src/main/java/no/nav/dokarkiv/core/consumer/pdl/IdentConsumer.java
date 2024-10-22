@@ -43,11 +43,6 @@ public interface IdentConsumer {
 
 	List<String> hentHistoriskeAktoerIdsForAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException;
 
-	@Retryable(
-			include = HttpServerErrorException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
-	)
-	List<String> hentHistoriskeAktoerIdsForFnr(String fnr) throws PersonIkkeFunnetException;
 
 	/**
 	 * Henter personens fulle navn

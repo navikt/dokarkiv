@@ -179,32 +179,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Override
-	public List<String> hentHistoriskeAktoerIdsForFnr(String fnr) throws PersonIkkeFunnetException {
-		String ident = validateFolkeregisterIdent(fnr);
-
-		PdlResponse pdlResponse = webClient.post()
-				.bodyValue(mapHentHistoriskeAktoerIdsForFnr(ident))
-				.retrieve()
-				.bodyToMono(PdlResponse.class)
-				.doOnError(this::handleError)
-				.block();
-
-		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-			return pdlResponse.getData().getHentIdenter().getIdenter()
-					.stream().map(PdlResponse.PdlIdent::getIdent).toList();
-		} else {
-			if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
-				throw new PersonIkkeFunnetException("Fant ikke historiske aktørIder for person i pdl.");
-			}
-			throw new PdlFunctionalException("Kunne ikke hente historiske identer for ident." + pdlResponse.getErrors());
-		}
-	}
-
-	@Retryable(
-			include = HttpServerErrorException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
-	)
-	@Override
 	public String hentPersonnavn(String ident, String tema) {
 
 		ResponseEntity<PdlPersonResponse> pdlPersonResponse = webClient.post()
