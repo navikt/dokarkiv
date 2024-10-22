@@ -39,7 +39,6 @@ import static no.nav.dokarkiv.core.domain.codes.KassasjonStatusCode.KLAR_FOR_KAS
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVBRUTT;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVSLUTTET;
-import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 
 @Slf4j
 @Component
@@ -135,7 +134,7 @@ public class AvsluttSakService {
 	private boolean manglerSakenFerdigstilteJournalposter(List<Journalpost> journalposts) {
 		return journalposts.stream()
 				.noneMatch(journalpost ->
-					ferdigstilteJournalpostStatuser.contains(journalpost.getJournalstatus()));
+						ferdigstilteJournalpostStatuser.contains(journalpost.getJournalstatus()));
 	}
 
 	private boolean harSakenAapneJournalposterUnderRedigering(List<Journalpost> journalposts) {
@@ -155,12 +154,15 @@ public class AvsluttSakService {
 	}
 
 	private SakSearchCriteria generateSakSearchCriteria(AvsluttSakRequest avsluttSakRequest) {
-		if (ORGNR.equals(avsluttSakRequest.getBruker().getIdType())) {
-			return generateOrganisasjonSakCriteria(avsluttSakRequest);
-		} else {
-			var aktoerIds = pdlIdentConsumer.hentHistoriskeAktoerIds(avsluttSakRequest.getBruker().getId());
-			return generateAktoerIdCriteria(avsluttSakRequest, aktoerIds);
-		}
+		return switch (avsluttSakRequest.getBruker().getIdType()) {
+			case ORGNR -> generateOrganisasjonSakCriteria(avsluttSakRequest);
+			case FNR, AKTOERID -> {
+				var aktoerIds = pdlIdentConsumer.hentHistoriskeAktoerIds(avsluttSakRequest.getBruker().getId());
+				//TODO: REMOVE!
+				aktoerIds.forEach(id -> log.info("fant: " + id));
+				yield generateAktoerIdCriteria(avsluttSakRequest, aktoerIds);
+			}
+		};
 	}
 
 	private SakSearchCriteria generateAktoerIdCriteria(AvsluttSakRequest avsluttSakRequest, List<String> aktoerIds) {
