@@ -153,11 +153,37 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Cacheable(HISTORISKE_AKTOERIDER)
 	@Override
-	public List<String> hentHistoriskeAktoerIds(String folkeregisterIdent) throws PersonIkkeFunnetException {
+	public List<String> hentHistoriskeAktoerIdsForAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
 		String ident = validateFolkeregisterIdent(folkeregisterIdent);
 
 		PdlResponse pdlResponse = webClient.post()
 				.bodyValue(mapHentHistoriskeAktoerIdsForAktoerId(ident))
+				.retrieve()
+				.bodyToMono(PdlResponse.class)
+				.doOnError(this::handleError)
+				.block();
+
+		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
+			return pdlResponse.getData().getHentIdenter().getIdenter()
+					.stream().map(PdlResponse.PdlIdent::getIdent).toList();
+		} else {
+			if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
+				throw new PersonIkkeFunnetException("Fant ikke historiske aktørIder for person i pdl.");
+			}
+			throw new PdlFunctionalException("Kunne ikke hente historiske identer for ident." + pdlResponse.getErrors());
+		}
+	}
+
+	@Retryable(
+			include = HttpServerErrorException.class,
+			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
+	)
+	@Override
+	public List<String> hentHistoriskeAktoerIdsForFnr(String fnr) throws PersonIkkeFunnetException {
+		String ident = validateFolkeregisterIdent(fnr);
+
+		PdlResponse pdlResponse = webClient.post()
+				.bodyValue(mapHentHistoriskeAktoerIdsForFnr(ident))
 				.retrieve()
 				.bodyToMono(PdlResponse.class)
 				.doOnError(this::handleError)
@@ -237,6 +263,19 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.query("""
 						query hentIdenter($ident: ID!) {
 						hentIdenter(ident: $ident, grupper: AKTORID, historikk: true) {
+						identer { ident gruppe historisk } } }
+						""")
+				.variables(variables)
+				.build();
+	}
+
+	private PdlRequest mapHentHistoriskeAktoerIdsForFnr(final String fnr) {
+		final HashMap<String, Object> variables = new HashMap<>();
+		variables.put("ident", fnr);
+		return PdlRequest.builder()
+				.query("""
+						query hentIdenter($ident: ID!) {
+						hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: true) {
 						identer { ident gruppe historisk } } }
 						""")
 				.variables(variables)
