@@ -59,7 +59,7 @@
 		<datasource-proxy-spring-boot-starter.version>1.9.0</datasource-proxy-spring-boot-starter.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
-		<wiremock-jre8-standalone.version>2.33.2</wiremock-jre8-standalone.version>
+		<wiremock-jre8-standalone.version>2.35.1</wiremock-jre8-standalone.version>
 
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
