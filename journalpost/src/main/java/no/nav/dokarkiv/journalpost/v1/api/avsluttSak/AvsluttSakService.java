@@ -158,8 +158,6 @@ public class AvsluttSakService {
 			case ORGNR -> generateOrganisasjonSakCriteria(avsluttSakRequest);
 			case AKTOERID, FNR -> {
 				var aktoerIds = pdlIdentConsumer.hentHistoriskeAktoerIdsForAktoerId(avsluttSakRequest.getBruker().getId());
-				//TODO: REMOVE!
-				aktoerIds.forEach(id -> log.info("fant: " + id));
 				yield generateAktoerIdCriteria(avsluttSakRequest, aktoerIds);
 			}
 		};
