@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
@@ -50,8 +52,8 @@ public class HentSakerRepository {
 
 		List<Predicate> predicates = new ArrayList<>();
 
-		if (sakSearchCriteria.getAktoerId().isPresent()) {
-			predicates.add(cb.equal(sak.get("aktoerId"), sakSearchCriteria.getAktoerId().get()));
+		if (!sakSearchCriteria.getAktoerId().isEmpty() && !isBlank(sakSearchCriteria.getAktoerId().get(0))) {
+			predicates.add(cb.isTrue(sak.get("aktoerId").in(sakSearchCriteria.getAktoerId())));
 		}
 
 		if (sakSearchCriteria.getApplikasjon().isPresent()) {
@@ -68,6 +70,14 @@ public class HentSakerRepository {
 
 		if (!sakSearchCriteria.getTema().isEmpty()) {
 			predicates.add(cb.isTrue(sak.get("tema").in(sakSearchCriteria.getTema())));
+		}
+
+		if (!sakSearchCriteria.getStatuser().isEmpty()) {
+			if (sakSearchCriteria.getSoekNullStatus().isPresent() && sakSearchCriteria.getSoekNullStatus().get()) {
+				predicates.add(cb.or(cb.isTrue(sak.get("sakStatus").in(sakSearchCriteria.getStatuser())), cb.isTrue(sak.get("sakStatus").isNull())));
+			} else {
+				predicates.add(cb.or(cb.isTrue(sak.get("sakStatus").in(sakSearchCriteria.getStatuser()))));
+			}
 		}
 
 		cq.where(predicates.toArray(new Predicate[0]));

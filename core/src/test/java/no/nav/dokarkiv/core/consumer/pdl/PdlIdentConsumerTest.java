@@ -40,45 +40,45 @@ public class PdlIdentConsumerTest {
 
 	@Test
 	public void shouldValidateFnrWith11Numbers() {
-		String validatedIdent = pdlIdentConsumer.validateFolkeregisterIdent("11111111111");
+		String validatedIdent = pdlIdentConsumer.validateAndTrimIdent("11111111111");
 		assertEquals("11111111111", validatedIdent);
 	}
 
 	@Test
 	public void shouldValidateAktoerIdWith11NumbersWithSpace() {
-		String validatedIdent = pdlIdentConsumer.validateFolkeregisterIdent("    11111111111    ");
+		String validatedIdent = pdlIdentConsumer.validateAndTrimIdent("    11111111111    ");
 		assertEquals("11111111111", validatedIdent);
 	}
 
 	@Test
 	public void shouldValidateAktoerIdWith13Numbers() {
-		String validatedIdent = pdlIdentConsumer.validateFolkeregisterIdent("1111111111111");
+		String validatedIdent = pdlIdentConsumer.validateAndTrimIdent("1111111111111");
 		assertEquals("1111111111111", validatedIdent);
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenFolkeregisterIdentIsCorrectLengthWithCharactersThatIsNotNumeric() {
-		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent("1test11test"));
+		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateAndTrimIdent("1test11test"));
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenFolkeregisterIdentIsNull() {
-		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent(null));
+		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateAndTrimIdent(null));
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenFolkeregisterIdentIsEmpty() {
-		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent(""));
+		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateAndTrimIdent(""));
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenFolkeregisterIdentIsNotNumeric() {
-		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent("abc"));
+		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateAndTrimIdent("abc"));
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenFolkeregisterIdentIsNotValidLength() {
-		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateFolkeregisterIdent("123"));
+		assertThrows(PersonIkkeFunnetException.class, () -> pdlIdentConsumer.validateAndTrimIdent("123"));
 	}
 
 	private DokarkivProperties dokarkivProperties() {

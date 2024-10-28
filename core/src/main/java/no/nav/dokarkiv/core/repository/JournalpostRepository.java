@@ -50,6 +50,14 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 	@Query(value = """
 			select j
 			from Journalpost j
+			left join fetch j.saksrelasjon s
+			where s.sakId in :sakIds
+			""")
+	List<Journalpost> fetchBySakIds(@Param("sakIds") List<Long> sakIds);
+
+	@Query(value = """
+			select j
+			from Journalpost j
 			left join fetch j.journalpostDokumentInfoRelasjoner jdir
 			left join fetch jdir.dokumentInfo d
 			left join fetch d.fildetaljerListe

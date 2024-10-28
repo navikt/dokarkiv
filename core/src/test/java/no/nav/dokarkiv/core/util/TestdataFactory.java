@@ -41,6 +41,7 @@ import static java.time.temporal.ChronoField.MILLI_OF_SECOND;
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.ADRESSELINJE1;
@@ -104,6 +105,14 @@ public class TestdataFactory {
 	}
 
 	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(Saksrelasjon saksrelasjon) {
+		return createJournalpost(saksrelasjon, FS);
+	}
+
+	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedleggWithJournalstatusCode(long sakId, JournalStatusCode statusCode) {
+		return createJournalpost(createSaksrelasjon(sakId), statusCode);
+	}
+
+	private static Journalpost createJournalpost(Saksrelasjon saksrelasjon, JournalStatusCode statusCode){
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
 				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
@@ -117,7 +126,7 @@ public class TestdataFactory {
 				.dokumentDato(Date.from(Instant.now(FIXED_CLOCK)))
 				.lestDato(Date.from(Instant.now(FIXED_CLOCK)))
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
-				.journalstatus(JournalStatusCode.FS)
+				.journalstatus(statusCode)
 				.journalposttype(JournalpostTypeCode.U)
 				.innhold(INNHOLD)
 				.behandlingstema(BEHANDLINGSTEMA)

@@ -21,7 +21,8 @@ public enum SakStatusCode {
 	AVBRUTT,
 
 	/**
-	 * Saken er avlevert til arkivverket.
+	 * Saken kan slettes.
 	 */
-	AVLEVERT
+	KAN_SLETTES;
+
 }

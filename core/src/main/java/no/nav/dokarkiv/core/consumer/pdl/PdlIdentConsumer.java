@@ -17,7 +17,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.cache.CacheConfig.HISTORISKE_IDENTER;
 import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
@@ -59,7 +58,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	@Override
 	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
 
-		String ident = this.validateFolkeregisterIdent(folkeregisterIdent);
+		String ident = validateAndTrimIdent(folkeregisterIdent);
 		PdlResponse pdlResponse = webClient.post()
 				.bodyValue(mapHentAktoerIdForFolkeregisterident(ident))
 				.retrieve()
@@ -93,7 +92,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	@Override
 	public String hentFolkeregisterIdent(String aktoerId) throws PersonIkkeFunnetException {
 
-		String ident = this.validateFolkeregisterIdent(aktoerId);
+		String ident = validateAndTrimIdent(aktoerId);
 		final PdlResponse pdlResponse = webClient.post()
 				.bodyValue(mapHentFolkeregisterIdentForAktoerId(ident))
 				.retrieve()
@@ -127,7 +126,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	@Cacheable(HISTORISKE_IDENTER)
 	@Override
 	public List<String> hentHistoriskeFolkeregisterIdenter(String folkeregisterIdent) throws PersonIkkeFunnetException {
-		String ident = this.validateFolkeregisterIdent(folkeregisterIdent);
+		String ident = validateAndTrimIdent(folkeregisterIdent);
 
 		PdlResponse pdlResponse = webClient.post()
 				.bodyValue(mapHentHistoriskeFolkeregisterIdentForAktoerId(ident))
@@ -137,10 +136,37 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.block();
 
 		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-			return pdlResponse.getData().getHentIdenter().getIdenter().stream().map(PdlResponse.PdlIdent::getIdent).collect(Collectors.toList());
+			return pdlResponse.getData().getHentIdenter().getIdenter()
+					.stream().map(PdlResponse.PdlIdent::getIdent).toList();
 		} else {
 			if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
 				throw new PersonIkkeFunnetException("Fant ikke historiske identer for person i pdl.");
+			}
+			throw new PdlFunctionalException("Kunne ikke hente historiske identer for ident." + pdlResponse.getErrors());
+		}
+	}
+
+	@Retryable(
+			include = HttpServerErrorException.class,
+			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
+	)
+	@Override
+	public List<String> hentHistoriskeAktoerIdsForAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
+		String ident = validateAndTrimIdent(folkeregisterIdent);
+
+		PdlResponse pdlResponse = webClient.post()
+				.bodyValue(mapHentHistoriskeAktoerIdsForIdent(ident))
+				.retrieve()
+				.bodyToMono(PdlResponse.class)
+				.doOnError(this::handleError)
+				.block();
+
+		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
+			return pdlResponse.getData().getHentIdenter().getIdenter()
+					.stream().map(PdlResponse.PdlIdent::getIdent).toList();
+		} else {
+			if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
+				throw new PersonIkkeFunnetException("Fant ikke historiske aktørIder for person i pdl.");
 			}
 			throw new PdlFunctionalException("Kunne ikke hente historiske identer for ident." + pdlResponse.getErrors());
 		}
@@ -155,7 +181,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 
 		ResponseEntity<PdlPersonResponse> pdlPersonResponse = webClient.post()
 				.header(HEADER_PDL_TEMA, tema)
-				.bodyValue(mapHentPersonIdentForId(this.validateFolkeregisterIdent(ident)))
+				.bodyValue(mapHentPersonIdentForId(validateAndTrimIdent(ident)))
 				.retrieve()
 				.toEntity(PdlPersonResponse.class)
 				.doOnError(this::handleError).block();
@@ -193,7 +219,24 @@ public class PdlIdentConsumer implements IdentConsumer {
 		final HashMap<String, Object> variables = new HashMap<>();
 		variables.put("ident", ident);
 		return PdlRequest.builder()
-				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: true) {identer { ident gruppe historisk } } }")
+				.query("""
+						query hentIdenter($ident: ID!) {
+						 hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: true) {
+						 identer { ident gruppe historisk } } }
+						 """)
+				.variables(variables)
+				.build();
+	}
+
+	private PdlRequest mapHentHistoriskeAktoerIdsForIdent(final String aktoerId) {
+		final HashMap<String, Object> variables = new HashMap<>();
+		variables.put("ident", aktoerId);
+		return PdlRequest.builder()
+				.query("""
+						query hentIdenter($ident: ID!) {
+						hentIdenter(ident: $ident, grupper: AKTORID, historikk: true) {
+						identer { ident gruppe historisk } } }
+						""")
 				.variables(variables)
 				.build();
 	}
@@ -204,7 +247,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				pdlResponse.getData().getHentIdenter().getIdenter().isEmpty();
 	}
 
-	String validateFolkeregisterIdent(String ident) {
+	String validateAndTrimIdent(String ident) {
 		if (isBlank(ident)) {
 			throw new PersonIkkeFunnetException("Validering av ident feilet fordi verdien er null eller blank.");
 		}
