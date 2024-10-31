@@ -442,6 +442,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		sakTestRepository.persist(sak);
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, statusCode, sak.getSakId()).build();
 		journalpostTestRepository.persist(journalpost);
+		commitAndStartNewTransaction();
 		return journalpost;
 	}
 
