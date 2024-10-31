@@ -52,6 +52,8 @@ spec:
       value: {{ AZURE_AD_ADMIN_ROLE }}
     - name: DOKARKIV_ENDPOINTS_PDL_SCOPE
       value: {{ DOKARKIV_ENDPOINTS_PDL_SCOPE }}
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "deployment.environment.name={{ ENVIRONMENT }}"
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -103,7 +105,6 @@ spec:
         extra:
           - "NAVident"
           - "azp_name"
-{{#if AZURE_IAC_RULES}}
   accessPolicy:
     inbound:
       rules:
@@ -125,4 +126,9 @@ spec:
               {{/each}}
             {{/if}}
     {{/each}}
-{{/if}}
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+      destinations:
+        - id: "elastic-apm"
