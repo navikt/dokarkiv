@@ -36,8 +36,6 @@ spec:
       value: {{ DOKARKIV_ENDPOINTS_SAF_URL }}
     - name: DOKARKIV_ENDPOINTS_SAF_SCOPE
       value: {{ DOKARKIV_ENDPOINTS_SAF_SCOPE }}
-    - name: APPD_NAME
-      value: {{ APPD_NAME }}
     - name: DOKARKIV_DATABASE_POOLSIZE
       value: "{{ DOKARKIV_DATABASE_POOLSIZE }}"
     - name: DOKPRODMELLOMLAGER_PROJECTID
@@ -96,8 +94,6 @@ spec:
         mountPath: "/var/run/secrets/nais.io/vault"
       - kvPath: {{ SRV_LINUX }}
         mountPath: "/var/run/secrets/nais.io/ldap"
-      - kvPath: {{ APPDYNAMICS }}
-        mountPath: "/var/run/secrets/nais.io/appdynamics"
   webproxy: true
   azure:
     application:
