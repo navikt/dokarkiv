@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.datautil.SakTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -22,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.transaction.TestTransaction;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -36,9 +36,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.time.temporal.ChronoUnit.HOURS;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
-import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.*;
+import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVBRUTT;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.NAV_NO;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.S;
+import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.SDP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -60,38 +66,54 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		performOppdaterDistribusjonsinfo(ferdigstiltJournalpost.getJournalpostId(), true, null);
 
+		commitAndStartNewTransaction();
 		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(ferdigstiltJournalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
-		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
+		assertEquals(E, ekspedertJournalpost.getJournalstatus());
+		assertEquals(SDP, ekspedertJournalpost.getUtsendingskanal());
+		assertNull(ekspedertJournalpost.getLestDato());
+	}
+
+	@Test
+	public void happyPathUpdateDistribusjonsInfoWithFeilregistrertSaksrelasjon() {
+		Journalpost journalpost = createFerdigstiltJournalpost();
+		journalpost.getSaksrelasjon().setFeilregistrert(true);
+		long journalpostId = journalpost.getJournalpostId();
+		commitAndStartNewTransaction();
+
+		performOppdaterDistribusjonsinfo(journalpostId, true, null);
+
+		commitAndStartNewTransaction();
+		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
+
+		assertEquals(E, ekspedertJournalpost.getJournalstatus());
 		assertEquals(SDP, ekspedertJournalpost.getUtsendingskanal());
 		assertNull(ekspedertJournalpost.getLestDato());
 	}
 
 	@Test
 	public void happyPathUpdateDistribusjonsinfoSettLestDato() {
-		var clock = Clock.fixed(Instant.now().minus(1, ChronoUnit.HOURS), ZoneId.systemDefault());
+		var clock = Clock.fixed(Instant.now().minus(1, HOURS), ZoneId.systemDefault());
 		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
 		Long journalpostId = ferdigstiltJournalpost.getJournalpostId();
 
 		performOppdaterDistribusjonsinfo(journalpostId, true, null);
+		commitAndStartNewTransaction();
 
 		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
-
-		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
+		assertEquals(E, ekspedertJournalpost.getJournalstatus());
 
 		OffsetDateTime firstReadAtTimestamp = OffsetDateTime.now(clock);
 		performOppdaterDistribusjonsinfo(journalpostId, false, firstReadAtTimestamp);
 
-		OffsetDateTime secondReadAtTimestamp = OffsetDateTime.now(clock).plus(1, ChronoUnit.HOURS);
+		OffsetDateTime secondReadAtTimestamp = OffsetDateTime.now(clock).plus(1, HOURS);
 		performOppdaterDistribusjonsinfo(journalpostId, false, secondReadAtTimestamp);
+		commitAndStartNewTransaction();
 
-		TestTransaction.start();
 		Journalpost ferdigstiltJournalpost2 = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(SDP, ferdigstiltJournalpost2.getUtsendingskanal());
 		assertTrue(Duration.between(firstReadAtTimestamp.toInstant(), ferdigstiltJournalpost2.getLestDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
-
-		TestTransaction.end();
 	}
 
 	@Test
@@ -107,7 +129,6 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		var oppdaterDistribusjonsinfoEntity = new HttpEntity<>(oppdaterDistribusjonsinfoRequest.build(), createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + "/oppdaterDistribusjonsinfo", PATCH, oppdaterDistribusjonsinfoEntity, String.class);
-
 		assertEquals(OK, response.getStatusCode());
 
 		var ekspedertJournalpost = journalpostTestRepository.findById(journalpostId);
@@ -144,10 +165,10 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 				.settStatusEkspedert(true).ekspedertDato(ekspedertDato)
 				.digitalpostkasse(new DigitalPost(POSTKASSEADRESSE, POSTKASSE_LEVERANDØR)));
 
+		commitAndStartNewTransaction();
 		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
-		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
+		assertEquals(E, ekspedertJournalpost.getJournalstatus());
 
-		TestTransaction.start();
 		Journalpost ferdigstiltJournalpost2 = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(SDP, ferdigstiltJournalpost2.getUtsendingskanal());
@@ -158,18 +179,16 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertNull(utsendingsInfo.getFysiskPostadresse());
 		assertEquals(POSTKASSEADRESSE, utsendingsInfo.getDigitalPostadresse().getAdresse());
 		assertEquals(POSTKASSE_LEVERANDØR, utsendingsInfo.getDigitalPostadresse().getPostkasseLeverandor());
-
-		TestTransaction.end();
 	}
 
 	@Test
 	public void happyPathBulkUpdateDistribusjonsinfoWithVolume() {
 		OffsetDateTime ekspedertDato = OffsetDateTime.now();
 		List<Journalpost> journalposts = IntStream.range(0, 40)
-				.mapToObj(__ -> createJournalpost(JournalStatusCode.M))
+				.mapToObj(__ -> createJournalpost(M))
 				.toList();
 		List<Journalpost> journalpostsEkspedert = IntStream.range(0, 5)
-				.mapToObj(__ -> createJournalpost(JournalStatusCode.E))
+				.mapToObj(__ -> createJournalpost(E))
 				.toList();
 		List<Journalpost> journalpostsAvbrutt = IntStream.range(0, 5)
 				.mapToObj(__ -> createJournalpost(JournalStatusCode.A))
@@ -178,12 +197,10 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 				.mapToObj(__ -> createJournalpost(JournalStatusCode.U))
 				.toList();
 		List<Journalpost> journalpostsM = IntStream.range(0, 5)
-				.mapToObj(__ -> createJournalpost(JournalStatusCode.M))
+				.mapToObj(__ -> createJournalpost(M))
 				.toList();
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
+		commitAndStartNewTransaction();
 
 		List<Journalpost> jpFerdigstill = journalposts.stream()
 				.map(Journalpost::getJournalpostId)
@@ -206,9 +223,8 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertEquals(journalpostsM.size(), distribusjonsinfoResponse.getJournalposter().getFeilet().size());
 
 		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(jpAll.get(0)).orElseThrow(RuntimeException::new);
-		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
+		assertEquals(E, ekspedertJournalpost.getJournalstatus());
 
-		TestTransaction.start();
 		Journalpost ferdigstiltJournalpost2 = journalpostTestRepository.findById(jpAll.get(1)).orElseThrow(RuntimeException::new);
 
 		assertEquals(SDP, ferdigstiltJournalpost2.getUtsendingskanal());
@@ -219,20 +235,15 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertNull(utsendingsInfo.getFysiskPostadresse());
 		assertEquals(POSTKASSEADRESSE, utsendingsInfo.getDigitalPostadresse().getAdresse());
 		assertEquals(POSTKASSE_LEVERANDØR, utsendingsInfo.getDigitalPostadresse().getPostkasseLeverandor());
-
-		TestTransaction.end();
 	}
 
 	@Test
 	public void shouldBulkUpdateDistribusjonsinfoWithEmptyPostadresse() {
 		OffsetDateTime ekspedertDato = OffsetDateTime.now();
 		List<Journalpost> journalposts = IntStream.range(0, 10)
-				.mapToObj(__ -> createJournalpost(JournalStatusCode.M))
+				.mapToObj(__ -> createJournalpost(M))
 				.toList();
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
+		commitAndStartNewTransaction();
 
 		List<Journalpost> ferdigstiltJp = journalposts.stream()
 				.map(Journalpost::getJournalpostId)
@@ -251,9 +262,8 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertEquals(10, distribusjonsinfoResponse.getJournalposter().getOppdatert().size());
 
 		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(jpAll.get(0)).orElseThrow(RuntimeException::new);
-		assertEquals(JournalStatusCode.E, ekspedertJournalpost.getJournalstatus());
+		assertEquals(E, ekspedertJournalpost.getJournalstatus());
 
-		TestTransaction.start();
 		Journalpost ferdigstiltJournalpost2 = journalpostTestRepository.findById(jpAll.get(1)).orElseThrow(RuntimeException::new);
 
 		assertEquals(S, ferdigstiltJournalpost2.getUtsendingskanal());
@@ -263,8 +273,6 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertNull(utsendingsInfo.getNavNoVarsling());
 		assertNull(utsendingsInfo.getFysiskPostadresse());
 		assertNull(utsendingsInfo.getDigitalPostadresse());
-
-		TestTransaction.end();
 	}
 
 
@@ -291,12 +299,9 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, SDP)
 				.digitalpostkasse(null));
 
-		TestTransaction.start();
-
+		commitAndStartNewTransaction();
 		Journalpost journalpostEtterOppdateringsforsok = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 		assertEquals(S, journalpostEtterOppdateringsforsok.getUtsendingskanal());
-
-		TestTransaction.end();
 	}
 
 	@Test
@@ -313,12 +318,9 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		performBulkOppdaterDistribusjonsinfoAssertOkResponse(0, 1, createJournalpostBulkPart(journalpostId, NAV_NO)
 				.varsel(new Varsel(null, "Hei hei, her er en melding.", null, null)));
 
-		TestTransaction.start();
-
+		commitAndStartNewTransaction();
 		Journalpost journalpostEtterOppdateringsforsok = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 		assertNotNull(journalpostEtterOppdateringsforsok.getUtsendingskanal());
-
-		TestTransaction.end();
 	}
 
 	@Test
@@ -332,7 +334,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		performBulkOppdaterDistribusjonsinfoAssertOkResponse(1, 0, createJournalpostBulkPart(journalpostId, S)
 				.postadresse(new Postadresse("gate gate", null, null, "1234", "Oslo", "NO")));
 
-		TestTransaction.start();
+		commitAndStartNewTransaction();
 
 		Journalpost journalpostEtterOppdatering = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 		UtsendingsInfo utsendingsInfo = utsendingsInfoTestRepository.findById(journalpostEtterOppdatering.getJournalpostId()).orElseThrow();
@@ -345,8 +347,6 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		// check that the "old" info is kept
 		assertNotNull(utsendingsInfo.getDigitalPostadresse());
 		assertEquals("adresse", utsendingsInfo.getDigitalPostadresse().getAdresse());
-
-		TestTransaction.end();
 	}
 
 	@Test
@@ -366,12 +366,9 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 				.forsendelseId(null)
 				.varsel(new Varsel(null, "Hei hei, her er en melding.", null, null)));
 
-		TestTransaction.start();
-
+		commitAndStartNewTransaction();
 		Journalpost journalpostEtterOppdateringsforsok = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 		assertNull(journalpostEtterOppdateringsforsok.getUtsendingskanal());
-
-		TestTransaction.end();
 	}
 
 	private JournalpostWithDistribusjonsinfo.JournalpostWithDistribusjonsinfoBuilder createJournalpostBulkPart(
@@ -423,11 +420,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 	}
 
 	private Journalpost createFerdigstiltJournalpost() {
-		Journalpost journalpost = createJournalpost(JournalStatusCode.M);
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
+		Journalpost journalpost = createJournalpost(M);
 		return ferdigstill(journalpost.getJournalpostId());
 	}
 
@@ -438,6 +431,8 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		var finalizeRequestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<String> finalizeResponse = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, PATCH, finalizeRequestEntity, String.class);
 		assertEquals(OK, finalizeResponse.getStatusCode());
+
+		commitAndStartNewTransaction();
 
 		return journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 	}

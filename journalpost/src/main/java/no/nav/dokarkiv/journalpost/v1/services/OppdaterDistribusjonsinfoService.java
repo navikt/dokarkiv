@@ -64,7 +64,7 @@ public class OppdaterDistribusjonsinfoService {
 		Optional<Journalpost> journalpostOptional = journalpostRepository.findById(journalpostWithDistribusjonsinfo.getJournalpostId());
 		return journalpostOptional.map(journalpost -> {
 			try {
-				if (isFeilregistrertOrJournalStatusEorAorU(journalpost)) {
+				if (isJournalStatusEorAorU(journalpost)) {
 					return JournalpostResponse.ok(journalpost.getJournalpostId());
 				}
 
@@ -87,7 +87,7 @@ public class OppdaterDistribusjonsinfoService {
 				String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostWithDistribusjonsinfo.getJournalpostId())));
 	}
 
-	private boolean isFeilregistrertOrJournalStatusEorAorU(Journalpost jp) {
-		return jp.isFeilregistrert() || IKKE_OPPDATER_MED_JOURNALSTATUS.contains(jp.getJournalstatus());
+	private boolean isJournalStatusEorAorU(Journalpost jp) {
+		return IKKE_OPPDATER_MED_JOURNALSTATUS.contains(jp.getJournalstatus());
 	}
 }

@@ -59,7 +59,6 @@ public class OppdaterDistribusjonsinfoValidator {
 				throw new InputValideringFeiletException("settStatusEkspedert og tilbakestillJournalpost kan ikke være true samtidig");
 			}
 		}
-
 	}
 
 	public JournalpostResponse validateRequest(JournalpostWithDistribusjonsinfo request) {
@@ -122,9 +121,6 @@ public class OppdaterDistribusjonsinfoValidator {
 					String.format("Journalposten har journalpoststatus=%s, men må ha en av følgende statuser %s for å kunne ekspederes",
 							journalpost.getJournalstatus(),
 							ALLOWED_STATES_FOR_DISTRIBUTION));
-		}
-		if (journalpost.isFeilregistrert()) {
-			throw new KanIkkeOppdatereDistribusjonsinfoException("Journalposten mangler saksrelasjon eller har feilregistrert saksrelasjon");
 		}
 		if (journalpost.getUtsendingskanal() == null && request.getUtsendingsKanal() == null) {
 			throw new KanIkkeOppdatereDistribusjonsinfoException("Utsendingskanal er ikke satt, hverken på input eller på selve journalposten");
