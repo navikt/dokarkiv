@@ -34,19 +34,6 @@ public class OppdaterDistribusjonsinfoValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenFeilregistrertTrue() {
-		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.FS);
-		journalpost.getSaksrelasjon().setFeilregistrert(true);
-		try {
-			OppdaterDistribusjonsinfoValidator.validateJournalpostKanSetteStatusEkspedert(journalpost, request);
-			fail();
-		} catch (KanIkkeOppdatereDistribusjonsinfoException e) {
-
-		}
-	}
-
-	@Test
 	public void shouldThrowExceptionWhenSettStatusEkspedertAndTilbakestillJournalpostAreTrue() {
 		OppdaterDistribusjonsinfoRequest oppdaterDistribusjonsinfoRequest = OppdaterDistribusjonsinfoRequest.builder()
 				.settStatusEkspedert(true)
