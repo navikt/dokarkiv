@@ -26,7 +26,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinf
 @Service("oppdaterDistribusjonsinfo")
 public class OppdaterDistribusjonsinfoService {
 
-	private static final EnumSet<JournalStatusCode> IKKE_OPPDATER_MED_JOURNALSTATUS = EnumSet.of(E, A, U);
+	private static final EnumSet<JournalStatusCode> JOURNALSTATUSER_SOM_IKKE_SKAL_OPPDATERES = EnumSet.of(E, A, U);
 	private final JournalpostRepository journalpostRepository;
 	private final JournalpostUpdater journalpostUpdater;
 	private final JournalpostUpdaterFromBulk journalpostUpdaterFromBulk;
@@ -64,7 +64,7 @@ public class OppdaterDistribusjonsinfoService {
 		Optional<Journalpost> journalpostOptional = journalpostRepository.findById(journalpostWithDistribusjonsinfo.getJournalpostId());
 		return journalpostOptional.map(journalpost -> {
 			try {
-				if (isFeilregistrertOrJournalStatusEorAorU(journalpost)) {
+				if (JOURNALSTATUSER_SOM_IKKE_SKAL_OPPDATERES.contains(journalpost.getJournalstatus())) {
 					return JournalpostResponse.ok(journalpost.getJournalpostId());
 				}
 
@@ -85,9 +85,5 @@ public class OppdaterDistribusjonsinfoService {
 			}
 		}).orElseGet(() -> JournalpostResponse.error(journalpostWithDistribusjonsinfo.getJournalpostId(),
 				String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostWithDistribusjonsinfo.getJournalpostId())));
-	}
-
-	private boolean isFeilregistrertOrJournalStatusEorAorU(Journalpost jp) {
-		return jp.isFeilregistrert() || IKKE_OPPDATER_MED_JOURNALSTATUS.contains(jp.getJournalstatus());
 	}
 }
