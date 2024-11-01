@@ -5,7 +5,6 @@ import no.nav.dokarkiv.core.datautil.SakTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -41,7 +40,6 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
-import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVBRUTT;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.S;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.SDP;
@@ -226,6 +224,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertEquals(55, distribusjonsinfoResponse.getJournalposter().getOppdatert().size());
 		assertEquals(journalpostsM.size(), distribusjonsinfoResponse.getJournalposter().getFeilet().size());
 
+		commitAndStartNewTransaction();
 		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(jpAll.get(0)).orElseThrow(RuntimeException::new);
 		assertEquals(E, ekspedertJournalpost.getJournalstatus());
 
@@ -265,6 +264,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		assertEquals(10, distribusjonsinfoResponse.getJournalposter().getOppdatert().size());
 
+		commitAndStartNewTransaction();
 		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(jpAll.get(0)).orElseThrow(RuntimeException::new);
 		assertEquals(E, ekspedertJournalpost.getJournalstatus());
 
@@ -435,8 +435,6 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		var finalizeRequestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<String> finalizeResponse = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, PATCH, finalizeRequestEntity, String.class);
 		assertEquals(OK, finalizeResponse.getStatusCode());
-
-		commitAndStartNewTransaction();
 
 		return journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 	}
