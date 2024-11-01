@@ -14,10 +14,6 @@ spec:
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL }}
     - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL }}
-    {{#if NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_ACCEPTED_AUDIENCE}}
-    - name: NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_ACCEPTED_AUDIENCE
-      value: {{ NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_ACCEPTED_AUDIENCE }}
-    {{/if}}
     - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE }}
     - name: SPRING_LDAP_URLS
@@ -36,8 +32,6 @@ spec:
       value: {{ DOKARKIV_ENDPOINTS_SAF_URL }}
     - name: DOKARKIV_ENDPOINTS_SAF_SCOPE
       value: {{ DOKARKIV_ENDPOINTS_SAF_SCOPE }}
-    - name: APPD_NAME
-      value: {{ APPD_NAME }}
     - name: DOKARKIV_DATABASE_POOLSIZE
       value: "{{ DOKARKIV_DATABASE_POOLSIZE }}"
     - name: DOKPRODMELLOMLAGER_PROJECTID
@@ -54,6 +48,8 @@ spec:
       value: {{ AZURE_AD_ADMIN_ROLE }}
     - name: DOKARKIV_ENDPOINTS_PDL_SCOPE
       value: {{ DOKARKIV_ENDPOINTS_PDL_SCOPE }}
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "deployment.environment.name={{ ENVIRONMENT }}"
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -96,8 +92,6 @@ spec:
         mountPath: "/var/run/secrets/nais.io/vault"
       - kvPath: {{ SRV_LINUX }}
         mountPath: "/var/run/secrets/nais.io/ldap"
-      - kvPath: {{ APPDYNAMICS }}
-        mountPath: "/var/run/secrets/nais.io/appdynamics"
   webproxy: true
   azure:
     application:
@@ -107,7 +101,6 @@ spec:
         extra:
           - "NAVident"
           - "azp_name"
-{{#if AZURE_IAC_RULES}}
   accessPolicy:
     inbound:
       rules:
@@ -129,4 +122,9 @@ spec:
               {{/each}}
             {{/if}}
     {{/each}}
-{{/if}}
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+      destinations:
+        - id: "elastic-apm"

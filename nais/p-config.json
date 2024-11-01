@@ -1,5 +1,6 @@
 {
   "APP_NAME": "dokarkiv",
+  "ENVIRONMENT": "p",
   "MIN_REPLICAS": 6,
   "MAX_REPLICAS": 12,
   "NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL": "https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration",
@@ -28,8 +29,6 @@
   "SRVDOKARKIV": "/serviceuser/data/prod/srvdokarkiv",
   "DOKARKIV_VAULT": "/kv/prod/fss/dokarkiv/teamdokumenthandtering",
   "SRV_LINUX": "/serviceuser/data/prod/srvssolinux",
-  "APPDYNAMICS": "/apikey/appdynamics/prod",
-  "APPD_NAME": "dokarkiv",
   "DOKARKIV_DATABASE_POOLSIZE": "60",
   "SPRINGDOC_ENABLED": "false",
   "AZURE_AD_ADMIN_ROLE": "cc9f8c69-9a8b-4cd1-a1c7-d5e993cc7e5a",
