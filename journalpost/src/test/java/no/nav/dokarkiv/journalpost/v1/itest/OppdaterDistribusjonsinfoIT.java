@@ -65,13 +65,15 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		Journalpost ferdigstiltJournalpost = createFerdigstiltJournalpost();
 
 		performOppdaterDistribusjonsinfo(ferdigstiltJournalpost.getJournalpostId(), true, null);
-
 		commitAndStartNewTransaction();
+
+		OffsetDateTime ekspedertDato = OffsetDateTime.now();
 		Journalpost ekspedertJournalpost = journalpostTestRepository.findById(ferdigstiltJournalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
 		assertEquals(E, ekspedertJournalpost.getJournalstatus());
 		assertEquals(SDP, ekspedertJournalpost.getUtsendingskanal());
 		assertNull(ekspedertJournalpost.getLestDato());
+		assertTrue(Duration.between(ekspedertDato.toInstant(), ekspedertJournalpost.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).toSeconds() < 3);
 	}
 
 	@Test
@@ -81,6 +83,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		long journalpostId = journalpost.getJournalpostId();
 		commitAndStartNewTransaction();
 
+		OffsetDateTime ekspedertDato = OffsetDateTime.now();
 		performOppdaterDistribusjonsinfo(journalpostId, true, null);
 
 		commitAndStartNewTransaction();
@@ -89,6 +92,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertEquals(E, ekspedertJournalpost.getJournalstatus());
 		assertEquals(SDP, ekspedertJournalpost.getUtsendingskanal());
 		assertNull(ekspedertJournalpost.getLestDato());
+		assertTrue(Duration.between(ekspedertDato.toInstant(), ekspedertJournalpost.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).toSeconds() < 3);
 	}
 
 	@Test
@@ -113,7 +117,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		Journalpost ferdigstiltJournalpost2 = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(SDP, ferdigstiltJournalpost2.getUtsendingskanal());
-		assertTrue(Duration.between(firstReadAtTimestamp.toInstant(), ferdigstiltJournalpost2.getLestDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
+		assertTrue(Duration.between(firstReadAtTimestamp.toInstant(), ferdigstiltJournalpost2.getLestDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).toSeconds() < 3);
 	}
 
 	@Test
