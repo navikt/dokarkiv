@@ -477,7 +477,7 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "tiltakspenger-vedtak",
+      "app": "tiltakspenger-saksbehandling-api",
       "namespace": "tpts",
       "cluster": "dev-gcp"
     },
