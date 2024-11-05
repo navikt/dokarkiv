@@ -10,7 +10,6 @@ import no.nav.dokarkiv.core.security.BasicAuthRestInterceptor;
 import no.nav.dokarkiv.core.security.LdapConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
-import no.nav.dokarkiv.core.util.TestDataUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +30,7 @@ import java.util.UUID;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.generateInnsynWithDescription;
+import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(
@@ -98,7 +98,7 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 
 	protected Journalpost createUniqueJournalpost() {
 		Journalpost journalpostWithHoveddokument = createJournalpostWithHoveddokument();
-		journalpostWithHoveddokument.setKanalReferanseId(TestDataUtils.KANAL_REFERANSE_ID + UUID.randomUUID());
+		journalpostWithHoveddokument.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
 		return journalpostWithHoveddokument;
 	}
 
