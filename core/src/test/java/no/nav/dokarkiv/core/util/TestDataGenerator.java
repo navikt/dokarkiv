@@ -29,7 +29,6 @@ import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
-import org.slf4j.MDC;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,7 +40,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.lang.Long.parseLong;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_ONSKE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_INNSKRENKET_PARTSINNSYN;
@@ -103,10 +101,13 @@ public class TestDataGenerator {
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
 				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
 				.avsenderMottakerIdType(AVSENDER_MOTTAKER_ID_TYPE)
+				.land(AVSENDER_MOTTAKER_LAND)
 				.dokumentDato(new Date())
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.journalstatus(JournalStatusCode.FS)
 				.journalposttype(JournalpostTypeCode.U)
+				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
+				.journalfortAvNavn(JOURNALFOERT_AV_NAVN)
 				.innhold(INNHOLD)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.fagomrade(FagomradeCode.RPO)
@@ -115,6 +116,10 @@ public class TestDataGenerator {
 				.kanalReferanseId(KANAL_REFERANSE_ID)
 				.innsyn(BRUK_STANDARDREGLER)
 				.lestDato(LESTDATO)
+				.journalDato(new Date())
+				.avsendtReturDato(new Date())
+				.sendtPrintDato(new Date())
+				.ekspedertDato(new Date())
 				.build();
 
 		journalpost.addBruker(createBruker());
