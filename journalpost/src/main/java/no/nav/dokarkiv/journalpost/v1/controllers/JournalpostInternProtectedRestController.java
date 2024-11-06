@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -36,7 +35,6 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.valueOf;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 import static org.slf4j.MDC.get;
 
