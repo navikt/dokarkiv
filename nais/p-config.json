@@ -122,6 +122,12 @@
       "roles": ["api_intern_sikkerhetsnivaa"]
     },
     {
+      "app": "dokprod",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss",
+      "roles": ["api_intern"]
+    },
+    {
       "app": "arenaondemandtojoark",
       "namespace": "teamdokumenthandtering",
       "cluster": "prod-fss"
