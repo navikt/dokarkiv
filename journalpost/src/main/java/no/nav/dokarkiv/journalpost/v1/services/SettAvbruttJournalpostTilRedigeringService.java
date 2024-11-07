@@ -9,6 +9,8 @@ import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.springframework.stereotype.Component;
 
+import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.UNDER_REDIGERING;
+
 @Slf4j
 @Component
 public class SettAvbruttJournalpostTilRedigeringService {
@@ -30,8 +32,7 @@ public class SettAvbruttJournalpostTilRedigeringService {
 
 		log.info(String.format("Journalpost med journalpostId=%s er verifisert med avbrutt status. Endrer status til redigerbar", journalpost.getJournalpostId()));
 		journalpost.setJournalstatus(JournalStatusCode.D);
-		log.info("TESTPUNKT");
-//		hoveddokument.getDokumentInfo().setDokumentstatus(UNDER_REDIGERING);
+		hoveddokument.getDokumentInfo().setDokumentstatus(UNDER_REDIGERING);
 	}
 
 	private static void verifiserHoveddokumentrelasjonFinnes(JournalpostDokumentInfoRelasjon hoveddokument, Journalpost journalpost) {
