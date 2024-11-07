@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import no.nav.dokarkiv.journalpost.v1.services.SettAvbruttJournalpostTilRedigeringService;
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
+import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUsername;
 import static no.nav.dokarkiv.journalpost.v1.controllers.DokVaktmesterController.INTERN_ROLE;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 
@@ -37,21 +41,36 @@ public class DokVaktmesterController {
 	public ResponseEntity<String> settAvbruttJournalpostTilRedigering(
 			@PathVariable String journalpostId
 	) {
-		MDC.put(MDC_REQUEST_ID, "Avbrutt"); //TODO: bedre navn
-		long journalpostIdParsed = validateIdAndParse(journalpostId, "JournalpostId");
-		log.info("{} har mottatt kall for oppdatering av distribusjonsinfo for journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostIdParsed);
+		MDC.put(MDC_REQUEST_ID, "settAvbruttJournalpostTilRedigering"); //TODO: bedre navn
+		createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+
+		long journalpostIdParsed = 0;
 		try {
+			journalpostIdParsed = validateIdAndParse(journalpostId, "JournalpostId");
+			log.info("{} har mottatt kall for oppdatering av distribusjonsinfo for journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostIdParsed);
+
 			settAvbruttJournalpostTilRedigeringService.settAvbruttJournalpostTilRedigering(journalpostIdParsed);
 
+			log.info(String.format("Journalpost med journalpostId=%s har fått endret status og er nå redigerbart", journalpostIdParsed));
 			return ResponseEntity.ok().body(AVBRUTT_JOURNALPOST_SATT_TIL_REDIGERBAR_MESSAGE);
+		}
+		catch (InputValideringFeiletException e){
+			log.warn("SettAvbruttJournalpostTilRedigering kan ikke endre status for journalpost med journalpostId={}. Feilmelding={}", journalpostIdParsed, e.getMessage() );
+			return ResponseEntity
+					.badRequest()
+					.body(e.getMessage());
 		}
 		catch (JournalpostIkkeFunnetException e){
 			log.warn("SettAvbruttJournalpostTilRedigering fant ikke journalpost med journalpostId={}. Feilmelding={}", journalpostIdParsed, e.getMessage() );
-			return ResponseEntity.notFound().build();
+			return ResponseEntity
+					.badRequest()
+					.body(String.format("Journalpost med journalpostId=%s ble ikke funnet, eller mangler Hoveddokumentrelasjon.", journalpostIdParsed));
 		}
 		catch (UgyldigJournalStatusException e){
 			log.warn("SettAvbruttJournalpostTilRedigering kan ikke endre status for journalpost med journalpostId={}. Feilmelding={}", journalpostIdParsed, e.getMessage());
-			return new ResponseEntity<>(HttpStatus.CONFLICT);
+			return ResponseEntity
+					.status(HttpStatus.CONFLICT)
+					.body(String.format("Kan ikke endre status for journalpost med journalpostId=%s. Journalposten har feil status", journalpostIdParsed));
 		}
 
 
