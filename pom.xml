@@ -37,13 +37,13 @@
 		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
 		<jaxb2-basics-runtime.version>0.13.1</jaxb2-basics-runtime.version>
-		<google-cloud-storage.version>2.44.1</google-cloud-storage.version>
+		<google-cloud-storage.version>2.32.1</google-cloud-storage.version>
 		<tink.version>1.15.0</tink.version>
 		<tink-gcpkms.version>1.10.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.10</blaze-persistence.version>
 		<commons-io.version>2.17.0</commons-io.version>
 		<springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
-		<microsoft-graph.version>6.19.0</microsoft-graph.version>
+		<microsoft-graph.version>6.12.0</microsoft-graph.version>
 		<azure-identity.version>1.14.0</azure-identity.version>
 
 		<!-- NAV -->
