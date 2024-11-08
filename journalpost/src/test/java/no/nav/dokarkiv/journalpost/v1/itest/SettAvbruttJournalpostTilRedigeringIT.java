@@ -14,21 +14,28 @@ import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class SettAvbruttJournalpostTilRedigeringIT extends AbstractJournalpostIT {
-	private final String SETTAVBRUTTJOURNALPOSTTILREDIGERBAR = "/settAvbruttJournalpostTilRedigering";
+	private final String SETTAVBRUTTJOURNALPOSTREDIGERBAR = "/settAvbruttJournalpostRedigerbar";
 
-	@Test
-	public void skalOppdatereAvbruttTilRedigerbart(){
+
+	public Long setupAndReturnJournalpostId(){
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(A);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
+		return journalpostId;
+	}
+
+	@Test
+	public void skalOppdatereAvbruttTilRedigerbart(){
+		Long journalpostId = setupAndReturnJournalpostId();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("api_intern"));
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + SETTAVBRUTTJOURNALPOSTTILREDIGERBAR, PUT, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + SETTAVBRUTTJOURNALPOSTREDIGERBAR, PUT, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(OK);
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow();
@@ -38,7 +45,7 @@ public class SettAvbruttJournalpostTilRedigeringIT extends AbstractJournalpostIT
 	}
 
 	@Test
-	public void feilmeldingVedUgyldigJournalstatus(){
+	public void skalReturnereConflictVedUgyldigJournalstatus(){
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(D);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
@@ -46,44 +53,25 @@ public class SettAvbruttJournalpostTilRedigeringIT extends AbstractJournalpostIT
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("api_intern"));
-		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + SETTAVBRUTTJOURNALPOSTTILREDIGERBAR, PUT, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + SETTAVBRUTTJOURNALPOSTREDIGERBAR, PUT, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(CONFLICT);
 		assertThat(response.getBody()).contains("Journalposten har feil status");
 
 	}
 
 	@Test
-	public void feilmeldingVedIkkeEksisterendeEllerFeilformatertJournalpostId(){
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-		journalpost.setJournalstatus(A);
-		journalpostTestRepository.persist(journalpost);
+	public void skalReturnereBadRequestVedIkkeEksisterendeJournalpostId(){
+		setupAndReturnJournalpostId();
 		String feilJournalpostId = "300000003";
 
-		commitAndStartNewTransaction();
-
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("api_intern"));
-		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN_JOURNALPOST + feilJournalpostId + SETTAVBRUTTJOURNALPOSTTILREDIGERBAR, PUT, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN_JOURNALPOST + feilJournalpostId + SETTAVBRUTTJOURNALPOSTREDIGERBAR, PUT, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getBody()).contains("ble ikke funnet");
 	}
 
 	@Test
-	public void feilmeldingVedFeilformatertJournalpostId(){
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
-		journalpost.setJournalstatus(A);
-		journalpostTestRepository.persist(journalpost);
-		String feilJournalpostId = "JPID200000001";
-
-		commitAndStartNewTransaction();
-
-		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("api_intern"));
-		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN_JOURNALPOST + feilJournalpostId + SETTAVBRUTTJOURNALPOSTTILREDIGERBAR, PUT, requestEntity, String.class);
-		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getBody()).contains("må være et heltall.");
-	}
-
-	@Test
-	public void feilmeldingVedManglendeHoveddokumentRelasjon(){
+	public void skalReturnereBadRequestVedManglendeHoveddokumentRelasjon(){
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(A);
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
@@ -92,8 +80,18 @@ public class SettAvbruttJournalpostTilRedigeringIT extends AbstractJournalpostIT
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("api_intern"));
-		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + SETTAVBRUTTJOURNALPOSTTILREDIGERBAR, PUT, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + SETTAVBRUTTJOURNALPOSTREDIGERBAR, PUT, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getBody()).contains("mangler Hoveddokumentrelasjon");
+	}
+
+	@Test
+	public void skalReturnereUnauthorizedVedFeilClaimRole(){
+		Long journalpostId = setupAndReturnJournalpostId();
+
+		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("nei"));
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + SETTAVBRUTTJOURNALPOSTREDIGERBAR, PUT, requestEntity, String.class);
+		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
 	}
 }

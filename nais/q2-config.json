@@ -134,6 +134,12 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "dokprod",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss",
+      "roles": ["api_intern"]
+    },
+    {
       "app": "padm2",
       "namespace": "teamsykefravr",
       "cluster": "dev-fss"
