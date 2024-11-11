@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import no.nav.dokarkiv.journalpost.v1.services.SettAvbruttJournalpostTilRedigeringService;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
@@ -48,11 +47,6 @@ public class DokVaktmesterController {
 
 			log.info("{} har sattt journalpost med journalpostId={} redigerbar", MDC.get(MDC_REQUEST_ID), journalpostId);
 			return ResponseEntity.ok().body(AVBRUTT_JOURNALPOST_SATT_TIL_REDIGERBAR_MESSAGE);
-		} catch (JournalpostIkkeFunnetException e) {
-			log.warn("SettAvbruttJournalpostTilRedigering fant ikke journalpost med journalpostId={}. Feilmelding={}", journalpostId, e.getMessage());
-			return ResponseEntity
-					.badRequest()
-					.body(String.format("Journalpost med journalpostId=%s ble ikke funnet, eller mangler Hoveddokumentrelasjon.", journalpostId));
 		} catch (UgyldigJournalStatusException e) {
 			log.warn("SettAvbruttJournalpostTilRedigering kan ikke endre status for journalpost med journalpostId={}. Feilmelding={}", journalpostId, e.getMessage());
 			return ResponseEntity
