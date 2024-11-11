@@ -58,7 +58,9 @@ class FinnJournalposterSpringJdbcRepository {
 		}
 		boolean parallell = (gsakIds.size() > ORACLE_PARALLELL);
 		String finnJournalposterSql = finnJournalposterSql(journalpostFilter, cteAliases, gsakCte.getCteSql(), parallell);
-		return jdbcTemplate.query(finnJournalposterSql, namedParams, JOURNALPOST_DTO_RESULT_SET_EXTRACTOR);
+		FinnJournalposterRowCallbackHandler finnJournalposterRowCallbackHandler = new FinnJournalposterRowCallbackHandler();
+		jdbcTemplate.query(finnJournalposterSql, namedParams, finnJournalposterRowCallbackHandler);
+		return finnJournalposterRowCallbackHandler.getJournalpostDtos();
 	}
 
 	private MapSqlParameterSource buildNamedParams(final List<String> psakIds, final JournalpostFilter journalpostFilter, final GsakCteMapper.GsakCte gsakCte) {

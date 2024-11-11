@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
-import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 
 import java.time.ZonedDateTime;
 
@@ -15,7 +14,7 @@ public class SaksrelasjonDto {
 
 	private final String sakId;
 	private final boolean feilregistrert;
-	private final FagsystemCode fagsystem;
+	private final String fagsystem;
 	private final String aktoerId;
 	private final String tema;
 	private final String fagsakNr;
