@@ -11,8 +11,8 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.PUT;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
@@ -60,18 +60,18 @@ public class SettAvbruttJournalpostTilRedigeringIT extends AbstractJournalpostIT
 	}
 
 	@Test
-	public void skalReturnereBadRequestVedIkkeEksisterendeJournalpostId(){
+	public void skalReturnereNotFoundVedIkkeEksisterendeJournalpostId(){
 		setupAndReturnJournalpostId();
 		String feilJournalpostId = "300000003";
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("api_intern"));
 		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN_JOURNALPOST + feilJournalpostId + SETTAVBRUTTJOURNALPOSTREDIGERBAR, PUT, requestEntity, String.class);
-		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getBody()).contains("ble ikke funnet");
+		assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
+		assertThat(response.getBody()).contains("Kunne ikke finne journalpost");
 	}
 
 	@Test
-	public void skalReturnereBadRequestVedManglendeHoveddokumentRelasjon(){
+	public void skalReturnereNotFoundVedManglendeHoveddokumentRelasjon(){
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(A);
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
@@ -81,8 +81,7 @@ public class SettAvbruttJournalpostTilRedigeringIT extends AbstractJournalpostIT
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("api_intern"));
 		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + SETTAVBRUTTJOURNALPOSTREDIGERBAR, PUT, requestEntity, String.class);
-		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(response.getBody()).contains("mangler Hoveddokumentrelasjon");
+		assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
 	}
 
 	@Test
