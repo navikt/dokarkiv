@@ -268,7 +268,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 	}
 
 	@Test
-	public void shouldReturnNewDokumenInfoValues() {
+	public void shouldReturnNewDokumentInfoValues() {
 		DokumentInfo vedlegg = createDokumentInfoWithMoreData();
 		Journalpost journalpost = createUniqueJournalpost();
 		createVedleggRelasjon(journalpost, vedlegg);

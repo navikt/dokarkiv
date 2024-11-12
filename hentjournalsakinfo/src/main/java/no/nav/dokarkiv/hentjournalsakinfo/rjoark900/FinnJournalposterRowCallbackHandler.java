@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.BrukerDto;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.DokumentInfoDto;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
@@ -25,15 +26,16 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+@Slf4j
 public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 
-	private static final String OBSERVED_VALUE = "1";
+	private static final Boolean OBSERVED_VALUE = true;
 	private static final String ZONEID_NORGE = "Europe/Oslo";
 	private final Map<Long, JournalpostDto> journalposter = new HashMap<>();
-	private final MultiKeyMap<Object, String> tilleggsopplysninger = new MultiKeyMap<>();
-	private final Map<Long, String> dokumenter = new HashMap<>();
-	private final MultiKeyMap<Object, String> varianter = new MultiKeyMap<>();
-	private final MultiKeyMap<Object, String> logiskeVedlegg = new MultiKeyMap<>();
+	private final MultiKeyMap<Object, Boolean> tilleggsopplysninger = new MultiKeyMap<>();
+	private final MultiKeyMap<Long, Boolean> dokumenter = new MultiKeyMap<>();
+	private final MultiKeyMap<Object, Boolean> varianter = new MultiKeyMap<>();
+	private final MultiKeyMap<Object, Boolean> logiskeVedlegg = new MultiKeyMap<>();
 
 	@Override
 	public void processRow(ResultSet rs) throws SQLException {
@@ -104,8 +106,12 @@ public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 	}
 
 	private static SaksrelasjonDto mapSaksrelasjonDto(ResultSet rs) throws SQLException {
+		String sakId = rs.getString("saksrelasjon_sakid");
+		if(sakId == null) {
+			return null;
+		}
 		return SaksrelasjonDto.builder()
-				.sakId(rs.getString("saksrelasjon_sakid"))
+				.sakId(sakId)
 				.feilregistrert(rs.getBoolean("saksrelasjon_feilregistrert"))
 				.fagsystem(rs.getString("saksrelasjon_fagsystem"))
 				.aktoerId(rs.getString("saksrelasjon_aktoerid"))
@@ -178,7 +184,7 @@ public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 
 	private void addPossibleTilleggsopplysning(long journalpostId, JournalpostDto eksisterendeJournalpostDto, ResultSet rs) throws SQLException {
 		String tilleggsopplysningerNokkel = rs.getString("tilleggsopplysninger_nokkel");
-		if (!tilleggsopplysninger.containsKey(journalpostId, tilleggsopplysningerNokkel)) {
+		if (!tilleggsopplysninger.containsKey(journalpostId, tilleggsopplysningerNokkel) && isNotBlank(tilleggsopplysningerNokkel)) {
 			eksisterendeJournalpostDto.getTilleggsopplysninger().add(mapTilleggsOpplysning(rs));
 			tilleggsopplysninger.put(journalpostId, tilleggsopplysningerNokkel, OBSERVED_VALUE);
 		}
@@ -187,19 +193,24 @@ public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 	private void addPossibleDokument(JournalpostDto journalpostDto, ResultSet rs) throws SQLException {
 		long dokumentInfoId = rs.getLong("dokumenter_dokumentinfoid");
 		if (dokumentInfoId != 0L) {
-			if (dokumenter.containsKey(dokumentInfoId)) {
+			if (dokumenter.containsKey(journalpostDto.getJournalpostId(), dokumentInfoId)) {
 				DokumentInfoDto dokumentInfoDto = journalpostDto.findDokumentInfoDto(dokumentInfoId);
-				addPossibleVariant(dokumentInfoDto, rs);
-				addPossibleLogiskeVedlegg(dokumentInfoDto, rs);
+				if (dokumentInfoDto == null) {
+					log.error("Feil i mapping av dokumentInfo til journalpost. journalpostId={}, dokumentInfoId={}",
+							journalpostDto.getJournalpostId(), dokumentInfoId);
+				} else {
+					addPossibleVariant(journalpostDto.getJournalpostId(), dokumentInfoDto, rs);
+					addPossibleLogiskeVedlegg(journalpostDto.getJournalpostId(), dokumentInfoDto, rs);
+				}
 			} else {
-				DokumentInfoDto dokumentInfoDto = mapDokumentInfoDto(rs);
+				DokumentInfoDto dokumentInfoDto = mapDokumentInfoDto(journalpostDto.getJournalpostId(), rs);
 				journalpostDto.getDokumenter().add(dokumentInfoDto);
-				dokumenter.put(dokumentInfoId, OBSERVED_VALUE);
+				dokumenter.put(journalpostDto.getJournalpostId(), dokumentInfoId, OBSERVED_VALUE);
 			}
 		}
 	}
 
-	private DokumentInfoDto mapDokumentInfoDto(ResultSet rs) throws SQLException {
+	private DokumentInfoDto mapDokumentInfoDto(long journalpostId, ResultSet rs) throws SQLException {
 		DokumentInfoDto dokumentInfoDto = new DokumentInfoDto();
 		dokumentInfoDto.setDokumentInfoId(rs.getLong("dokumenter_dokumentinfoid"));
 		dokumentInfoDto.setTilknyttetSom(rs.getString("dokumenter_tilknyttetsom"));
@@ -216,17 +227,18 @@ public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 		dokumentInfoDto.setSensitivt(rs.getBoolean("dokumenter_sensitivt"));
 		dokumentInfoDto.setVarianter(new ArrayList<>());
 		dokumentInfoDto.setLogiske(new ArrayList<>());
-		addPossibleVariant(dokumentInfoDto, rs);
+		addPossibleVariant(journalpostId, dokumentInfoDto, rs);
+		addPossibleLogiskeVedlegg(journalpostId, dokumentInfoDto, rs);
 		return dokumentInfoDto;
 	}
 
-	private void addPossibleVariant(DokumentInfoDto dokumentInfoDto, ResultSet rs) throws SQLException {
+	private void addPossibleVariant(long journalpostId, DokumentInfoDto dokumentInfoDto, ResultSet rs) throws SQLException {
 		long dokumentInfoId = dokumentInfoDto.getDokumentInfoId();
 		String variantformat = rs.getString("dokumenter_varianter_variantf");
-		if (!varianter.containsKey(dokumentInfoId, variantformat) && variantformat != null) {
+		if (!varianter.containsKey(journalpostId, dokumentInfoId, variantformat) && variantformat != null) {
 			VariantDto variantDto = mapVariantDto(variantformat, rs);
 			dokumentInfoDto.getVarianter().add(variantDto);
-			varianter.put(dokumentInfoId, variantformat, OBSERVED_VALUE);
+			varianter.put(journalpostId, dokumentInfoId, variantformat, OBSERVED_VALUE);
 		}
 	}
 
@@ -240,13 +252,13 @@ public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 		);
 	}
 
-	private void addPossibleLogiskeVedlegg(DokumentInfoDto dokumentInfoDto, ResultSet rs) throws SQLException {
+	private void addPossibleLogiskeVedlegg(long journalpostId, DokumentInfoDto dokumentInfoDto, ResultSet rs) throws SQLException {
 		long dokumentInfoId = dokumentInfoDto.getDokumentInfoId();
 		String vedleggId = rs.getString("dokumenter_logiske_vedleggid");
-		if (!logiskeVedlegg.containsKey(dokumentInfoId, vedleggId) && vedleggId != null) {
+		if (!logiskeVedlegg.containsKey(journalpostId, dokumentInfoId, vedleggId) && vedleggId != null) {
 			LogiskVedleggDto logiskVedleggDto = new LogiskVedleggDto(vedleggId, rs.getString("dokumenter_logiske_tittel"));
 			dokumentInfoDto.getLogiske().add(logiskVedleggDto);
-			logiskeVedlegg.put(dokumentInfoId, vedleggId, OBSERVED_VALUE);
+			logiskeVedlegg.put(journalpostId, dokumentInfoId, vedleggId, OBSERVED_VALUE);
 		}
 	}
 
@@ -258,7 +270,7 @@ public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 	}
 
 	private static Long mapZeroToNull(Long value) {
-		if(value == 0L) {
+		if (value == 0L) {
 			return null;
 		}
 		return value;
