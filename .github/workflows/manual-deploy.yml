@@ -25,6 +25,9 @@ on:
 
 jobs:
   deploy-env:
+    permissions:
+      contents: read
+      id-token: write
     uses: navikt/dok-workflows/.github/workflows/deploy-nais-app-with-custom-checkout-gar.yml@main
     secrets: inherit
     with:
