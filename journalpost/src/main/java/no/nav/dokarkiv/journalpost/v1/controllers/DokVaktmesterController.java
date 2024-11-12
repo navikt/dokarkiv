@@ -1,11 +1,9 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
-import no.nav.dokarkiv.journalpost.v1.services.SettAvbruttJournalpostTilRedigeringService;
+import no.nav.dokarkiv.journalpost.v1.services.dokvaktmester.SettAvbruttJournalpostRedigerbarService;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.MDC;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,33 +23,22 @@ import static no.nav.dokarkiv.journalpost.v1.controllers.DokVaktmesterController
 @ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + INTERN_ROLE})
 public class DokVaktmesterController {
 	public static final String INTERN_ROLE = "api_intern";
-	public static final String AVBRUTT_JOURNALPOST_SATT_TIL_REDIGERBAR_MESSAGE = "Journalpost tilbakestilt til redigerbar tilstand";
 
-	private final SettAvbruttJournalpostTilRedigeringService settAvbruttJournalpostTilRedigeringService;
+	private final SettAvbruttJournalpostRedigerbarService settAvbruttJournalpostRedigerbarService;
 
-	public DokVaktmesterController(SettAvbruttJournalpostTilRedigeringService settAvbruttJournalpostTilRedigeringService) {
-		this.settAvbruttJournalpostTilRedigeringService = settAvbruttJournalpostTilRedigeringService;
+	public DokVaktmesterController(SettAvbruttJournalpostRedigerbarService settAvbruttJournalpostRedigerbarService) {
+		this.settAvbruttJournalpostRedigerbarService = settAvbruttJournalpostRedigerbarService;
 	}
 
 	@PutMapping("/journalpost/{journalpostId}/settAvbruttJournalpostRedigerbar")
-	public ResponseEntity<String> settAvbruttJournalpostTilRedigering(
-			@PathVariable Long journalpostId
-	) {
+	public ResponseEntity<String> settAvbruttJournalpostRedigerbar(@PathVariable Long journalpostId) {
 		MDC.put(MDC_REQUEST_ID, "settAvbruttJournalpostRedigerbar");
 		createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		log.info("{} har mottatt kall for å sette journalpost med journalpostId={} redigerbar", MDC.get(MDC_REQUEST_ID), journalpostId);
 
-		try {
-			log.info("{} har mottatt kall for å sette journalpost med journalpostId={} redigerbar", MDC.get(MDC_REQUEST_ID), journalpostId);
+		settAvbruttJournalpostRedigerbarService.settAvbruttJournalpostRedigerbar(journalpostId);
+		log.info("{} har satt journalpost med journalpostId={} redigerbar", MDC.get(MDC_REQUEST_ID), journalpostId);
 
-			settAvbruttJournalpostTilRedigeringService.settAvbruttJournalpostTilRedigering(journalpostId);
-
-			log.info("{} har sattt journalpost med journalpostId={} redigerbar", MDC.get(MDC_REQUEST_ID), journalpostId);
-			return ResponseEntity.ok().body(AVBRUTT_JOURNALPOST_SATT_TIL_REDIGERBAR_MESSAGE);
-		} catch (UgyldigJournalStatusException e) {
-			log.warn("SettAvbruttJournalpostTilRedigering kan ikke endre status for journalpost med journalpostId={}. Feilmelding={}", journalpostId, e.getMessage());
-			return ResponseEntity
-					.status(HttpStatus.CONFLICT)
-					.body(String.format("Kan ikke endre status for journalpost med journalpostId=%s. Journalposten har feil status", journalpostId));
-		}
+		return ResponseEntity.ok().body("Journalpost med journalpostId=%s tilbakestilt til redigerbar tilstand".formatted(journalpostId));
 	}
 }
