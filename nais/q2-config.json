@@ -66,11 +66,6 @@
       "cluster": "dev-fss"
     },
     {
-      "app": "omsorgspenger-journalforing",
-      "namespace": "omsorgspenger",
-      "cluster": "dev-gcp"
-    },
-    {
       "app": "altinn-meldinger-api",
       "namespace": "permittering-og-nedbemanning",
       "cluster": "dev-gcp"
@@ -104,13 +99,17 @@
       "app": "safselvbetjening",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles": ["api_intern_safintern"]
+      "roles": [
+        "api_intern_safintern"
+      ]
     },
     {
       "app": "saf",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles" : ["api_intern_safintern"]
+      "roles": [
+        "api_intern_safintern"
+      ]
     },
     {
       "app": "dokmotaltinn",
@@ -126,7 +125,9 @@
       "app": "dokdistdpv",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles": ["api_intern_sikkerhetsnivaa"]
+      "roles": [
+        "api_intern_sikkerhetsnivaa"
+      ]
     },
     {
       "app": "dokdistadmin",
@@ -137,7 +138,9 @@
       "app": "dokprod",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles": ["api_intern"]
+      "roles": [
+        "api_intern"
+      ]
     },
     {
       "app": "padm2",
@@ -184,7 +187,7 @@
       "namespace": "isa",
       "cluster": "dev-fss"
     },
-     {
+    {
       "app": "journalforing-frontend-q2",
       "namespace": "isa",
       "cluster": "dev-gcp"
@@ -334,7 +337,6 @@
       "namespace": "omsorgspenger",
       "cluster": "dev-gcp"
     },
-
     {
       "app": "flex-joark-mottak",
       "namespace": "flex",
@@ -464,8 +466,12 @@
       "app": "joarkadmin",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles": ["api_admin"],
-      "scopes": ["api_admin"]
+      "roles": [
+        "api_admin"
+      ],
+      "scopes": [
+        "api_admin"
+      ]
     },
     {
       "app": "pdl-fullmakt",
@@ -486,7 +492,9 @@
       "app": "dokdistavstemming",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles" : ["api_intern_sikkerhetsnivaa"]
+      "roles": [
+        "api_intern_sikkerhetsnivaa"
+      ]
     },
     {
       "app": "meldekort-api-q2",
