@@ -304,6 +304,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "k9-tilbake",
+      "namespace": "k9saksbehandling",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "flex-joark-mottak",
       "namespace": "flex",
       "cluster": "dev-gcp"
