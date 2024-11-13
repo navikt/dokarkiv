@@ -66,11 +66,6 @@
       "cluster": "dev-fss"
     },
     {
-      "app": "omsorgspenger-journalforing",
-      "namespace": "omsorgspenger",
-      "cluster": "dev-gcp"
-    },
-    {
       "app": "altinn-meldinger-api",
       "namespace": "permittering-og-nedbemanning",
       "cluster": "dev-gcp"
