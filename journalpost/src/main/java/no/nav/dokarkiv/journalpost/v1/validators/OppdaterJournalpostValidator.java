@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
@@ -36,6 +37,10 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.ALTINN;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.EESSI;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO_CHAT;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
@@ -59,6 +64,7 @@ public final class OppdaterJournalpostValidator {
 	private static final EnumSet<JournalStatusCode> INNGAAENDE_RESTRICTED_JOURNALSTATUS = EnumSet.of(J);
 	private static final EnumSet<JournalStatusCode> UTGAAENDE_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
 	private static final EnumSet<JournalStatusCode> NOTAT_RESTRICTED_JOURNALSTATUS = EnumSet.of(FS, FL, E);
+	private static final EnumSet<MottaksKanalCode> DIGITALE_KANALER = EnumSet.of(NAV_NO, NAV_NO_CHAT, ALTINN, EESSI);
 	public static final Set<String> LOVLIGE_INNSYNSKODER = Set.of(
 			BRUK_STANDARDREGLER.name(), VISES_MASKINELT_GODKJENT.name(), VISES_MANUELT_GODKJENT.name(),
 			SKJULES_FEILSENDT.name(), SKJULES_BRUKERS_SIKKERHET.name(), SKJULES_BRUKERS_ONSKE.name()
@@ -100,6 +106,10 @@ public final class OppdaterJournalpostValidator {
 
 		if (request.getDokumenter() != null && !request.getDokumenter().isEmpty()) {
 			request.getDokumenter().forEach(dokumentInfo -> feilmeldinger.add(validateDokument(dokumentInfo)));
+		}
+
+		if (DIGITALE_KANALER.contains(journalpost.getMottakskanal()) && request.getAvsenderMottaker() != null) {
+			feilmeldinger.add(validateKanIkkeOppdatereAvsenderPaaDigitaltInnsendteDokumenter(request, journalpost));
 		}
 
 		String feilmelding = feilmeldinger.stream()
@@ -379,5 +389,23 @@ public final class OppdaterJournalpostValidator {
 			}
 		}
 		return null;
+	}
+
+	private static String validateKanIkkeOppdatereAvsenderPaaDigitaltInnsendteDokumenter(OppdaterJournalpostRequest request, Journalpost journalpost) {
+		boolean nameChanged = isChangeAndNotFromEmpty(request.getAvsenderMottaker().getNavn(), journalpost.getAvsenderMottaker());
+		boolean idChanged = isChangeAndNotFromEmpty(request.getAvsenderMottaker().getId(), journalpost.getAvsenderMottakerId());
+		boolean idTypeChanged = request.getAvsenderMottaker().getIdType() != null &&
+				journalpost.getAvsenderMottakerIdType() != null &&
+				!request.getAvsenderMottaker().getIdType().name().equals(journalpost.getAvsenderMottakerIdType().name());
+
+		if (nameChanged || idChanged || idTypeChanged) {
+			return "Avsender på digitalt innsendt journalpost kan ikke endres. %sble forsøkt endret".formatted((nameChanged ? "navn " : "") + (idChanged ? "id " : "") + (idTypeChanged ? "idtype " : ""));
+		}
+		return null;
+	}
+	private static boolean isChangeAndNotFromEmpty(String newValueFromUpdateRequest, String existingValue) {
+		return newValueFromUpdateRequest != null &&
+				isNotBlank(existingValue) &&
+				!newValueFromUpdateRequest.equals(existingValue);
 	}
 }

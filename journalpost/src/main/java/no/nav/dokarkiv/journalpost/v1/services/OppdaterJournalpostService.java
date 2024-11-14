@@ -33,7 +33,6 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -52,10 +51,8 @@ import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
-import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementOppdateringAvAvsenderMedDigitalMottakskanalCounter;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementSakstypeCounter;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service("oppdaterMetadataJournalpost")
 @Slf4j
@@ -103,7 +100,6 @@ public class OppdaterJournalpostService {
 
 		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
-		logAndCountChangeInAvsenderMottaker(oppdaterJournalpostRequest, journalpost);
 
 		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 
@@ -237,28 +233,5 @@ public class OppdaterJournalpostService {
 			case FNR -> identConsumer.hentAktoerId(bruker.getId());
 			default -> null;
 		};
-	}
-
-	private void logAndCountChangeInAvsenderMottaker(OppdaterJournalpostRequest oppdaterJournalpostRequest, Journalpost journalpost) {
-		if (DIGITALE_KANALER.contains(journalpost.getMottakskanal()) && oppdaterJournalpostRequest.getAvsenderMottaker() != null) {
-
-			boolean nameChanged = isChangeAndNotFromEmpty(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn(), journalpost.getAvsenderMottaker());
-			boolean idChanged = isChangeAndNotFromEmpty(oppdaterJournalpostRequest.getAvsenderMottaker().getId(), journalpost.getAvsenderMottakerId());
-			boolean idTypeChanged = oppdaterJournalpostRequest.getAvsenderMottaker().getIdType() != null &&
-					journalpost.getAvsenderMottakerIdType() != null &&
-					!oppdaterJournalpostRequest.getAvsenderMottaker().getIdType().name().equals(journalpost.getAvsenderMottakerIdType().name());
-
-			if (nameChanged || idChanged || idTypeChanged) {
-				log.info("Avsender på digitalt innsendt journalpost med mottakskanal={} ble oppdatert: {}ble endret", journalpost.getMottakskanal(),
-						(nameChanged ? "navn " : "") + (idChanged ? "id " : "") + (idTypeChanged ? "idtype " : ""));
-				incrementOppdateringAvAvsenderMedDigitalMottakskanalCounter(meterRegistry);
-			}
-		}
-	}
-
-	private static boolean isChangeAndNotFromEmpty(String newValueFromUpdateRequest, String existingValue) {
-		return newValueFromUpdateRequest != null &&
-				isNotBlank(existingValue) &&
-				!newValueFromUpdateRequest.equals(existingValue);
 	}
 }
