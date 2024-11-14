@@ -58,6 +58,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.EESSI;
 import static no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem.GSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.HPRNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
@@ -1090,7 +1091,32 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(responseEntity.getBody().getMessage()).contains("Avsender på digitalt innsendt journalpost kan ikke endres. navn id idtype ble forsøkt endret");
+		assertThat(responseEntity.getBody().getMessage()).contains("Avsender på digitalt innsendt journalpost kan ikke endres. navn, id og idtype ble forsøkt endret");
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
+		assertThat(journalpostOppdatert.getAvsenderMottaker()).isEqualTo("Bjarne Betjent");
+	}
+
+	@Test
+	public void shouldNotOppdatereAvsenderMottakerIdAndIdtypeForDigitaltInnsendteDokumenter() {
+		clearSakRepository();
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen")
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR)
+				.mottakskanal(EESSI));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder().id(" ").idType(HPRNR).build())
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
+		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(responseEntity.getBody().getMessage()).contains("Avsender på digitalt innsendt journalpost kan ikke endres. id og idtype ble forsøkt endret");
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");

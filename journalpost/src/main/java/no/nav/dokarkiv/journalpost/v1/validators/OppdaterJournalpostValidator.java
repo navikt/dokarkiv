@@ -153,7 +153,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static boolean checkIfJournalChangeIsOld(Journalpost journalpost) {
 		return journalpost.getJournalDato() != null &&
-			   journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
+				journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
 	}
 
 	private static String checkIfFieldIsBeingUpdatedAfterLockDate(Object field, String fieldName, Date journalDato) {
@@ -384,7 +384,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static String validateDokument(DokumentInfo dokumentInfo) {
 		if (dokumentInfo != null) {
-			if(SKJULT_TITTEL.equals(dokumentInfo.getTittel())) {
+			if (SKJULT_TITTEL.equals(dokumentInfo.getTittel())) {
 				return "Dokumenter.tittel kan ikke oppdateres til " + SKJULT_TITTEL;
 			}
 		}
@@ -397,12 +397,38 @@ public final class OppdaterJournalpostValidator {
 		boolean idTypeChanged = request.getAvsenderMottaker().getIdType() != null &&
 				journalpost.getAvsenderMottakerIdType() != null &&
 				!request.getAvsenderMottaker().getIdType().name().equals(journalpost.getAvsenderMottakerIdType().name());
+		int changeCounter = (nameChanged ? 1 : 0) + (idChanged ? 1 : 0) + (idTypeChanged ? 1 : 0);
 
 		if (nameChanged || idChanged || idTypeChanged) {
-			return "Avsender på digitalt innsendt journalpost kan ikke endres. %sble forsøkt endret".formatted((nameChanged ? "navn " : "") + (idChanged ? "id " : "") + (idTypeChanged ? "idtype " : ""));
+			String changes = "";
+			if (nameChanged) {
+				changes += "navn" + addCommaAndSpaceOrNothing(changeCounter);
+				if (!addCommaAndSpaceOrNothing(changeCounter).isEmpty()) {
+					changeCounter--;
+				}
+			}
+			if (idChanged) {
+				changes += "id" + addCommaAndSpaceOrNothing(changeCounter);
+			}
+			if (idTypeChanged) {
+				changes += "idtype ";
+			}
+			return "Avsender på digitalt innsendt journalpost kan ikke endres. %sble forsøkt endret".formatted(changes);
 		}
 		return null;
 	}
+
+	private static String addCommaAndSpaceOrNothing(int changeCounter) {
+		if (changeCounter > 2)
+			return ", ";
+		else if (changeCounter > 1)
+			return " og ";
+		else if (changeCounter > 0)
+			return " ";
+		else
+			return "";
+	}
+
 	private static boolean isChangeAndNotFromEmpty(String newValueFromUpdateRequest, String existingValue) {
 		return newValueFromUpdateRequest != null &&
 				isNotBlank(existingValue) &&
