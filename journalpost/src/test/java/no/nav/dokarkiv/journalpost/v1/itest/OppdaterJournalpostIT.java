@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +58,9 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.EESSI;
 import static no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem.GSAK;
+import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.HPRNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
@@ -123,7 +127,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldFerdigstillJournalpostVedOppdateringUserTokenAndServiceUserToken() {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
-				.endretAvNavn("saksbehandlersen"));
+				.endretAvNavn("saksbehandlersen")
+				.mottakskanal(MottaksKanalCode.SKAN_IM));
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner()
 				.iterator()
@@ -324,7 +329,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldFerdigstillJournalpostVedOppdateringOnlyServiceUserToken() {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
-				.endretAvNavn("saksbehandlersen"));
+				.endretAvNavn("saksbehandlersen")
+				.mottakskanal(MottaksKanalCode.SKAN_IM));
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner()
 				.iterator()
@@ -366,7 +372,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldSetNavUserIdHeaderSporingWhenServiceUserTokenAndNavUserIdHeaderIsSet() {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
-				.endretAvNavn("saksbehandlersen"));
+				.endretAvNavn("saksbehandlersen")
+				.mottakskanal(MottaksKanalCode.SKAN_IM));
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner()
 				.iterator()
@@ -1003,7 +1010,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen")
-				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR));
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR)
+				.mottakskanal(MottaksKanalCode.SKAN_IM));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
@@ -1064,6 +1072,56 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
 		assertThat(journalpostOppdatert.getAvsenderMottaker()).isEqualTo("Bjarne Betjent");
 	}
+	@ParameterizedTest
+	@ValueSource(strings = {"NAV_NO", "NAV_NO_CHAT", "ALTINN", "EESSI"})
+	public void shouldNotOppdatereAvsenderMottakerNavnForDigitaltInnsendteDokumenter(String mottaksKanalCode) {
+		clearSakRepository();
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen")
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR)
+				.mottakskanal(MottaksKanalCode.valueOf(mottaksKanalCode)));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder().navn("Nytt Navnesen").id(" ").idType(HPRNR).build())
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
+		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(responseEntity.getBody().getMessage()).contains("Avsender på digitalt innsendt journalpost kan ikke endres. navn, id og idtype ble forsøkt endret");
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
+		assertThat(journalpostOppdatert.getAvsenderMottaker()).isEqualTo("Bjarne Betjent");
+	}
+
+	@Test
+	public void shouldNotOppdatereAvsenderMottakerIdAndIdtypeForDigitaltInnsendteDokumenter() {
+		clearSakRepository();
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen")
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR)
+				.mottakskanal(EESSI));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder().id(" ").idType(HPRNR).build())
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
+		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(responseEntity.getBody().getMessage()).contains("Avsender på digitalt innsendt journalpost kan ikke endres. id og idtype ble forsøkt endret");
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
+		assertThat(journalpostOppdatert.getAvsenderMottaker()).isEqualTo("Bjarne Betjent");
+	}
 
 	@Test
 	public void shouldNotUpdateTittelOnFerdigstiltJournalpostNotat() {
@@ -1111,7 +1169,8 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		happyPersonIdentStub();
 
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
-				.endretAvNavn("saksbehandlersen"));
+				.endretAvNavn("saksbehandlersen")
+				.mottakskanal(MottaksKanalCode.SKAN_IM));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
