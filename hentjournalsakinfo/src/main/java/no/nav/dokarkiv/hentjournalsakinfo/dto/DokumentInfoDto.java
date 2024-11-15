@@ -24,8 +24,8 @@ public class DokumentInfoDto {
 	String tittel;
 	SkjermingTypeCode skjerming;
 	Long origJournalpostId;
-	Boolean kassert;
+	boolean kassert;
 	List<LogiskVedleggDto> logiske;
 	DokumentKategoriCode kategori;
-	Boolean sensitivt;
+	boolean sensitivt;
 }

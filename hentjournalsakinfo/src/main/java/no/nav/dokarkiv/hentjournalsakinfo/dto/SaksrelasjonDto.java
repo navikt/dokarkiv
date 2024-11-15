@@ -14,7 +14,7 @@ import java.time.ZonedDateTime;
 public class SaksrelasjonDto {
 
 	private final String sakId;
-	private final Boolean feilregistrert;
+	private final boolean feilregistrert;
 	private final FagsystemCode fagsystem;
 	private final String aktoerId;
 	private final String tema;

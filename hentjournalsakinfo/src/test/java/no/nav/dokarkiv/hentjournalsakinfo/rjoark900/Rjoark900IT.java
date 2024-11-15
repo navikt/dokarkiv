@@ -179,7 +179,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertNull(journalpostDto.getSaksrelasjon().getOrgnr());
 		assertThat(journalpostDto.getSaksrelasjon().getFagsystem(), is(FagsystemCode.FS22));
 		assertThat(journalpostDto.getSaksrelasjon().getTema(), is(FagomradeCode.RPO.name()));
-		assertFalse(journalpostDto.getSaksrelasjon().getFeilregistrert());
+		assertFalse(journalpostDto.getSaksrelasjon().isFeilregistrert());
 		assertThat(journalpostDto.getSaksrelasjon().getSakId(), is(sak.getSakId().toString()));
 		assertThat(journalpostDto.getSaksrelasjon().getOpprettetAv(), is("Donald Duck"));
 		assertThat(journalpostDto.getSaksrelasjon().getFagsakNr(), is(GSAK_FAGSAKNR));
@@ -214,9 +214,9 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertThat(dokumentInfo.getDokumenttypeId(), is(DOKUMENT_TYPE_ID));
 		assertThat(dokumentInfo.getTittel(), is(DOKUMENT_INFO_TITTEL));
 		assertNull(dokumentInfo.getSkjerming());
-		assertFalse(dokumentInfo.getKassert());
+		assertFalse(dokumentInfo.isKassert());
 		assertThat(dokumentInfo.getKategori(), is(DokumentKategoriCode.ES));
-		assertTrue(dokumentInfo.getSensitivt());
+		assertTrue(dokumentInfo.isSensitivt());
 
 		assertNotNull(dokumentInfo.getLogiske().get(0).getVedleggId());
 		assertThat(dokumentInfo.getLogiske().get(0).getTittel(), is(SKANNET_INNHOLD_TITTEL));
@@ -283,7 +283,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		DokumentInfoDto dokumentInfoDto = responseTo.getTilgangJournalposter().get(0).getDokumenter().get(1);
 
 		assertThat(dokumentInfoDto.getKategori(), is(DokumentKategoriCode.B));
-		assertThat(dokumentInfoDto.getSensitivt(), is(true));
+		assertThat(dokumentInfoDto.isSensitivt(), is(true));
 	}
 
 	@Test
