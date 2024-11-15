@@ -14,13 +14,7 @@
     <logger name="org.springframework" level="WARN" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
-    <!--	<logger name="org.simpleflatmapper" level="DEBUG" additivity="false">-->
-    <!--		<appender-ref ref="CONSOLE"/>-->
-    <!--	</logger>-->
 
-    <!--	<logger name="no.nav.freg" level="INFO" additivity="false">-->
-    <!--	<appender-ref ref="CONSOLE"/>-->
-    <!--	</logger>-->
     <!--	<logger name="org.springframework.security" level="INFO" additivity="false">-->
     <!--	<appender-ref ref="CONSOLE"/>-->
     <!--	</logger>-->
@@ -29,5 +23,4 @@
     <!--	<appender-ref ref="CONSOLE"/>-->
     <!--	</logger>-->
     <!--	<logger name="org.hibernate.SQL" level="DEBUG"/>-->
-
 </configuration>

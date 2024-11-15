@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
-import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -25,9 +23,6 @@ import static no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalpostSqlGen
 @Slf4j
 @Repository
 class FinnJournalposterSpringJdbcRepository {
-	private static final ResultSetExtractor<List<JournalpostDto>> JOURNALPOST_DTO_RESULT_SET_EXTRACTOR = JdbcTemplateMapperFactory.newInstance()
-			.addKeys("journalpostid", "saksrelasjon_sakid", "tilleggsopplysninger_nokkel", "dokumenter_dokumentinfoid", "dokumenter_logiske_vedleggid", "dokumenter_varianter_variantf")
-			.newResultSetExtractor(JournalpostDto.class);
 	private static final List<Long> NOT_USED_NUMBER = Collections.singletonList(-999L);
 	private static final List<String> NOT_USED_TEXT = Collections.singletonList("notused");
 	private static final List<String> ALL_JOURNALSTATUS = Stream.of(JournalStatusCode.values()).map(Enum::name).collect(Collectors.toList());
