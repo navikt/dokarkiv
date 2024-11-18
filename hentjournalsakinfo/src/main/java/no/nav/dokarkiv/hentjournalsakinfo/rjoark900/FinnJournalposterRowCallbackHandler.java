@@ -91,7 +91,7 @@ public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 		journalpostDto.setInnsyn(rs.getString("innsyn"));
 		journalpostDto.setInnsynbeskrivelse(rs.getString("innsynbeskrivelse"));
 		journalpostDto.setUtsendingsInfo(mapUtsendingsInfoDto(rs));
-		journalpostDto.setTilleggsopplysninger(mapInitialTilleggsopplysninger(rs));
+		journalpostDto.setTilleggsopplysninger(mapInitialTilleggsopplysninger(journalpostId, rs));
 		journalpostDto.setDokumenter(new ArrayList<>());
 		addPossibleDokument(journalpostDto, rs);
 		return journalpostDto;
@@ -167,12 +167,12 @@ public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 		return new UtsendingsInfoDto.NavNoVarsling(varselsendttil, rs.getString("utsendingsInfo_navnovarsling_varseltekst"));
 	}
 
-	private List<TilleggsopplysningDto> mapInitialTilleggsopplysninger(ResultSet rs) throws SQLException {
+	private List<TilleggsopplysningDto> mapInitialTilleggsopplysninger(long journalpostId, ResultSet rs) throws SQLException {
 		String tilleggsopplysningerNokkel = rs.getString("tilleggsopplysninger_nokkel");
 		if (isNotBlank(tilleggsopplysningerNokkel)) {
 			List<TilleggsopplysningDto> tilleggsopplysningDtos = new ArrayList<>();
 			tilleggsopplysningDtos.add(mapTilleggsOpplysning(rs));
-			tilleggsopplysninger.put(rs.getLong("journalpostid"), tilleggsopplysningerNokkel, OBSERVED_VALUE);
+			tilleggsopplysninger.put(journalpostId, tilleggsopplysningerNokkel, OBSERVED_VALUE);
 			return tilleggsopplysningDtos;
 		}
 		return new ArrayList<>();
