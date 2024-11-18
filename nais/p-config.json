@@ -463,6 +463,30 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "skanmotovrig",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss",
+      "roles": ["api_intern_skanning"]
+    },
+    {
+      "app": "skanmothelse",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss",
+      "roles": ["api_intern_skanning"]
+    },
+    {
+      "app": "skanmotutgaaende",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss",
+      "roles": ["api_intern_skanning"]
+    },
+    {
+      "app": "skanmotreferansenr",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss",
+      "roles": ["api_intern_skanning"]
+    },
+    {
       "app": "joarkadmin",
       "namespace": "teamdokumenthandtering",
       "cluster": "prod-fss",

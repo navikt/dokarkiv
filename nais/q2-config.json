@@ -135,6 +135,30 @@
       "roles": ["api_intern"]
     },
     {
+      "app": "skanmotovrig",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss",
+      "roles": ["api_intern_skanning"]
+    },
+    {
+      "app": "skanmothelse",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss",
+      "roles": ["api_intern_skanning"]
+    },
+    {
+      "app": "skanmotutgaaende",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss",
+      "roles": ["api_intern_skanning"]
+    },
+    {
+      "app": "skanmotreferansenr",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss",
+      "roles": ["api_intern_skanning"]
+    },
+    {
       "app": "padm2",
       "namespace": "teamsykefravr",
       "cluster": "dev-fss"
