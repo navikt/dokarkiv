@@ -445,11 +445,6 @@
       "cluster": "dev-fss"
     },
     {
-      "app": "skanmotutgaaende",
-      "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss"
-    },
-    {
       "app": "esyfovarsel",
       "namespace": "team-esyfo",
       "cluster": "dev-gcp"
