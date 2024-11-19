@@ -146,20 +146,20 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertNull(journalpostDto.getNextJournalpostId());
 		assertThat(journalpostDto.getTotaltAntall(), is(1L));
 		assertThat(journalpostDto.getInnhold(), is(INNHOLD));
-		assertThat(journalpostDto.getFagomrade(), is(FagomradeCode.RPO));
+		assertThat(journalpostDto.getFagomrade(), is(FagomradeCode.RPO.name()));
 		assertNull(journalpostDto.getBehandlingstema());
 		assertNull(journalpostDto.getBehandlingstemanavn());
-		assertThat(journalpostDto.getJournalstatus(), is(JournalStatusCode.FS));
+		assertThat(journalpostDto.getJournalstatus(), is(JournalStatusCode.FS.name()));
 		assertThat(journalpostDto.getAvsenderMottakerId(), is(AVSENDER_MOTTAKER_ID));
-		assertThat(journalpostDto.getAvsenderMottakerIdType(), is(AVSENDER_MOTTAKER_ID_TYPE));
+		assertThat(journalpostDto.getAvsenderMottakerIdType(), is(AVSENDER_MOTTAKER_ID_TYPE.name()));
 		assertThat(journalpostDto.getAvsenderMottakerNavn(), is(AVSENDER_MOTTAKER_NAVN));
 		assertThat(journalpostDto.getAvsenderMottakerLand(), is(AVSENDER_MOTTAKER_LAND));
 		assertThat(journalpostDto.getJournalforendeEnhet(), is(JOURNALFOERENDE_ENHET));
 		assertThat(journalpostDto.getJournalfortAvNavn(), is(JOURNALFOERT_AV_NAVN));
 		assertThat(journalpostDto.getOpprettetAvNavn(), is(TestDataGenerator.OPPRETTET_AV_NAVN));
-		assertThat(journalpostDto.getMottakskanal(), is(MottaksKanalCode.NAV_NO));
-		assertThat(journalpostDto.getUtsendingskanal(), is(UtsendingsKanalCode.NAV_NO));
-		assertThat(journalpostDto.getJournalposttype(), is(JournalpostTypeCode.U));
+		assertThat(journalpostDto.getMottakskanal(), is(MottaksKanalCode.NAV_NO.name()));
+		assertThat(journalpostDto.getUtsendingskanal(), is(UtsendingsKanalCode.NAV_NO.name()));
+		assertThat(journalpostDto.getJournalposttype(), is(JournalpostTypeCode.U.name()));
 		assertNotNull(journalpostDto.getDatoOpprettet());
 		assertNull(journalpostDto.getMottattDato());
 		assertNotNull(journalpostDto.getJournalDato());
@@ -171,13 +171,13 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertNull(journalpostDto.getSkjerming());
 		assertThat(journalpostDto.getAntallRetur(), is(ANTALL_RETUR.toString()));
 		assertThat(journalpostDto.getKanalReferanseId(), startsWith(KANAL_REFERANSE_ID));
-		assertThat(journalpostDto.getInnsyn(), is(BRUK_STANDARDREGLER));
+		assertThat(journalpostDto.getInnsyn(), is(BRUK_STANDARDREGLER.name()));
 		assertThat(journalpostDto.getInnsynbeskrivelse(), is("beskrivelse av " + BRUK_STANDARDREGLER));
 
 		assertThat(journalpostDto.getSaksrelasjon().getAktoerId(), is(AKTOER_ID));
 		assertThat(journalpostDto.getSaksrelasjon().getApplikasjon(), is("AO01"));
 		assertNull(journalpostDto.getSaksrelasjon().getOrgnr());
-		assertThat(journalpostDto.getSaksrelasjon().getFagsystem(), is(FagsystemCode.FS22));
+		assertThat(journalpostDto.getSaksrelasjon().getFagsystem(), is(FagsystemCode.FS22.name()));
 		assertThat(journalpostDto.getSaksrelasjon().getTema(), is(FagomradeCode.RPO.name()));
 		assertFalse(journalpostDto.getSaksrelasjon().isFeilregistrert());
 		assertThat(journalpostDto.getSaksrelasjon().getSakId(), is(sak.getSakId().toString()));
@@ -208,14 +208,14 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 
 	private static void assertDokumentInfo(DokumentInfoDto dokumentInfo) {
 		assertNotNull(dokumentInfo.getDokumentInfoId());
-		assertThat(dokumentInfo.getDokumentstatus(), is(DokumentStatusCode.FERDIGSTILT));
+		assertThat(dokumentInfo.getDokumentstatus(), is(DokumentStatusCode.FERDIGSTILT.name()));
 		assertNotNull(dokumentInfo.getDatoFerdigstilt());
 		assertThat(dokumentInfo.getBrevkode(), is(BREVKODE));
 		assertThat(dokumentInfo.getDokumenttypeId(), is(DOKUMENT_TYPE_ID));
 		assertThat(dokumentInfo.getTittel(), is(DOKUMENT_INFO_TITTEL));
 		assertNull(dokumentInfo.getSkjerming());
 		assertFalse(dokumentInfo.isKassert());
-		assertThat(dokumentInfo.getKategori(), is(DokumentKategoriCode.ES));
+		assertThat(dokumentInfo.getKategori(), is(DokumentKategoriCode.ES.name()));
 		assertTrue(dokumentInfo.isSensitivt());
 
 		assertNotNull(dokumentInfo.getLogiske().get(0).getVedleggId());
@@ -227,8 +227,8 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 	}
 
 	private static void assertVariant(List<VariantDto> varianter, VariantFormatCode variantFormatCode) {
-		VariantDto variant = varianter.stream().filter(h -> h.getVariantf() == variantFormatCode).findFirst().get();
-		assertThat(variant.getVariantf(), is(variantFormatCode));
+		VariantDto variant = varianter.stream().filter(h -> VariantFormatCode.valueOf(h.getVariantf()) == variantFormatCode).findFirst().get();
+		assertThat(variant.getVariantf(), is(variantFormatCode.name()));
 		assertThat(variant.getFilnavn(), is(FIL_NAVN));
 		assertNotNull(variant.getFiluuid());
 		assertThat(variant.getFiltype(), is(FilTypeCode.PDF.name()));
@@ -262,13 +262,13 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertThat(journalpostDto.getDokumenter().get(0).getDokumentInfoId(), is(hoveddokument.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(1).getDokumentInfoId(), is(vedlegg1.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(2).getDokumentInfoId(), is(vedlegg2.getDokumentInfoId()));
-		assertThat(journalpostDto.getInnsyn(), is(BRUK_STANDARDREGLER));
+		assertThat(journalpostDto.getInnsyn(), is(BRUK_STANDARDREGLER.name()));
 		assertThat(journalpostDto.getInnsynbeskrivelse(), is("beskrivelse av " + BRUK_STANDARDREGLER));
 		assertEquals(LESTDATO, journalpostDto.getLestDato());
 	}
 
 	@Test
-	public void shouldReturnNewDokumenInfoValues() {
+	public void shouldReturnNewDokumentInfoValues() {
 		DokumentInfo vedlegg = createDokumentInfoWithMoreData();
 		Journalpost journalpost = createUniqueJournalpost();
 		createVedleggRelasjon(journalpost, vedlegg);
@@ -282,7 +282,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 
 		DokumentInfoDto dokumentInfoDto = responseTo.getTilgangJournalposter().get(0).getDokumenter().get(1);
 
-		assertThat(dokumentInfoDto.getKategori(), is(DokumentKategoriCode.B));
+		assertThat(dokumentInfoDto.getKategori(), is(DokumentKategoriCode.B.name()));
 		assertThat(dokumentInfoDto.isSensitivt(), is(true));
 	}
 
