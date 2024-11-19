@@ -32,7 +32,6 @@
 		<java.version>17</java.version>
 
 		<cxf.version>3.6.2</cxf.version>
-		<sfm-springjdbc.version>9.0.2</sfm-springjdbc.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
@@ -141,11 +140,6 @@
 				</exclusions>
 			</dependency>
 
-			<dependency>
-				<groupId>org.simpleflatmapper</groupId>
-				<artifactId>sfm-springjdbc</artifactId>
-				<version>${sfm-springjdbc.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-bom</artifactId>
