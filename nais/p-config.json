@@ -423,11 +423,6 @@
       "cluster": "prod-fss"
     },
     {
-      "app": "skanmotutgaaende",
-      "namespace": "teamdokumenthandtering",
-      "cluster": "prod-fss"
-    },
-    {
       "app": "pensjon-dokdist",
       "namespace": "pensjonsbrev",
       "cluster": "prod-gcp"
@@ -461,6 +456,30 @@
       "app": "pdl-fullmakt",
       "namespace": "pdl",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "skanmotovrig",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss",
+      "roles": ["api_intern_skanning"]
+    },
+    {
+      "app": "skanmothelse",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss",
+      "roles": ["api_intern_skanning"]
+    },
+    {
+      "app": "skanmotutgaaende",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss",
+      "roles": ["api_intern_skanning"]
+    },
+    {
+      "app": "skanmotreferansenr",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss",
+      "roles": ["api_intern_skanning"]
     },
     {
       "app": "joarkadmin",
