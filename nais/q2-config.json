@@ -621,6 +621,11 @@
       "app": "brev",
       "namespace": "aap",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "mulighetsrommet-api",
+      "namespace": "team-mulighetsrommet",
+      "cluster": "dev-gcp"
     }
   ]
 }
