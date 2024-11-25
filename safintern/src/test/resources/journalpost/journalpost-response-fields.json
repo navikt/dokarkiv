@@ -13,16 +13,6 @@
     },
     "sakId": sakId_replace
   },
-  "dokumenter": [
-    {
-      "fildetaljer": [],
-      "logiskVedlegg": []
-    },
-    {
-      "fildetaljer": [],
-      "logiskVedlegg": []
-    }
-  ],
-  "mottakskanal": "NAV_NO",
+  "dokumenter": [],
   "tilleggsopplysninger": {}
 }

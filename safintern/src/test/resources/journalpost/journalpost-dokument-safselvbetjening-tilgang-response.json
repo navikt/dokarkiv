@@ -62,13 +62,11 @@
       "kassert": false,
       "kategori": "ES",
       "logiskVedlegg": [],
-      "sensitivt": true,
       "skjerming": "POL",
       "tilknyttetSom": "HOVEDDOKUMENT"
     }
   ],
   "mottakskanal": "NAV_NO",
-  "opprettetAvNavn": "Opprettet navn",
   "tilleggsopplysninger": {},
   "utsendingskanal": "S"
 }
