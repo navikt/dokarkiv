@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -19,7 +21,7 @@ public class FinnMottatteJournalposterResponse {
 	@NotNull(message = "FinnMottatteJournalposterResponse mangler Journalposter")
 	@ArraySchema(arraySchema = @Schema(
 			description = "journalposter",
-			required = true
+			requiredMode = REQUIRED
 	))
 	private List<UbehandletJournalpost> journalposter;
 }

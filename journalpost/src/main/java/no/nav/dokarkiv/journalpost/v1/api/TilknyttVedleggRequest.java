@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
@@ -29,7 +31,7 @@ public class TilknyttVedleggRequest {
 	@Builder.Default
 	@ArraySchema(arraySchema = @Schema(
 			description = "Liste med et eller flere dokumenter som skal knyttes til journalpostId som vedlegg",
-			required = true
+			requiredMode = REQUIRED
 		)
 	)
 	private List<DokumentVedlegg> dokument = new ArrayList<>();

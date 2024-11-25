@@ -8,21 +8,23 @@ import no.nav.dokarkiv.journalpost.v1.api.WithUtsendingsKanal;
 
 import java.time.OffsetDateTime;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 
 @Builder
 @Getter
 @AllArgsConstructor
 public class JournalpostWithDistribusjonsinfo implements WithUtsendingsKanal {
-	@Schema(description = "Setter status 'ekspedert' på journalposten. Dvs. at journalposten har blitt distribuert til bruker", required = true)
+	@Schema(description = "Setter status 'ekspedert' på journalposten. Dvs. at journalposten har blitt distribuert til bruker", requiredMode = REQUIRED)
 	private Boolean settStatusEkspedert;
 
-	@Schema(description = "Kanalen som dokumentene på journalpost ble sendt via. Se https://confluence.adeo.no/display/BOA/Utsendingskanal for lovlige verdier", required = true)
+	@Schema(description = "Kanalen som dokumentene på journalpost ble sendt via. Se https://confluence.adeo.no/display/BOA/Utsendingskanal for lovlige verdier", requiredMode = REQUIRED)
 	private String utsendingsKanal;
 
-	@Schema(description = "Unik identifikasjon av forsendelsen som er distribuert", required = true)
+	@Schema(description = "Unik identifikasjon av forsendelsen som er distribuert", requiredMode = REQUIRED)
 	private Long forsendelseId;
 
-	@Schema(description = "Unik identifikasjon av journalposten som skal oppdateres", required = true)
+	@Schema(description = "Unik identifikasjon av journalposten som skal oppdateres", requiredMode = REQUIRED)
 	private Long journalpostId;
 
 	@Schema(description = "Dato/tid når forsendelse ble ekspedert. Påkrevd hvis settEkspedert er true")

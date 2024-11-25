@@ -1,8 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105;
 
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.IllegalDocumentUpdateException;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -12,10 +9,13 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.util.Set;
 import java.util.TreeSet;
+
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * Default implmenentation of ArkiverVedleggValidator
@@ -66,7 +66,7 @@ public class DefaultArkiverVedleggValidator implements ArkiverVedleggValidator {
 		if (arkiverVedleggRequestTo.getJournalpostId() == null || arkiverVedleggRequestTo.getJournalpostId() == 0L) {
 			sb.append("JournalpostId ");
 		}
-		if (StringUtils.isEmpty(arkiverVedleggRequestTo.getEndretAvNavn())) {
+		if (isEmpty(arkiverVedleggRequestTo.getEndretAvNavn())) {
 			sb.append("EndretAvNavn ");
 		}
 		if (arkiverVedleggRequestTo.getFerdigstillDokument() == null) {
@@ -78,13 +78,13 @@ public class DefaultArkiverVedleggValidator implements ArkiverVedleggValidator {
 		if (dokumentInfo.getKategori() == null) {
 			sb.append("Kategori ");
 		}
-		if (StringUtils.isEmpty(dokumentInfo.getTittel())) {
+		if (isEmpty(dokumentInfo.getTittel())) {
 			sb.append("Tittel ");
 		}
-		if (StringUtils.isEmpty(dokumentInfo.getBrevkode())) {
+		if (isEmpty(dokumentInfo.getBrevkode())) {
 			sb.append("Brevkode ");
 		}
-		if (StringUtils.isEmpty(dokumentInfo.getDokumenttypeId())) {
+		if (isEmpty(dokumentInfo.getDokumenttypeId())) {
 			sb.append("DokumenttypeId ");
 		}
 
