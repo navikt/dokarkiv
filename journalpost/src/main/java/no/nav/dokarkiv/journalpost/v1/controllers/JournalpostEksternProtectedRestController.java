@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
@@ -41,7 +40,6 @@ import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -70,8 +68,7 @@ public class JournalpostEksternProtectedRestController {
 	@Operation(summary = "Knytt dokumenter til ny sak.")
 	@PutMapping("/{kildeJournalpostId}/knyttTilAnnenSak")
 	@Tag(name = "journalpostapi - knyttTilAnnenSak", description = "Tjeneste for å endre sakstilknytning på en journalpost")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "knyttTilAnnenSak"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<KnyttTilAnnenSakResponse> knyttTilAnnenSak(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationHeader,
+		public ResponseEntity<KnyttTilAnnenSakResponse> knyttTilAnnenSak(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationHeader,
 																	 @Parameter(description = "Nav-Consumer-Token - Systembrukerens OIDC-token. NB: Oppgis kun dersom den NAV-ansattes token er lagt ved under Authorization") @RequestHeader(value = "Nav-Consumer-Token", required = false) String navConsumerToken,
 																	 @Parameter(description = "Nav-CallId - teknisk sporingsid") @RequestHeader(value = "Nav-CallId", required = false) String navCallId,
 																	 @Parameter(description = "ID til journalposten som det er ønskelig å kopiere", required = true) @PathVariable String kildeJournalpostId,
@@ -107,8 +104,7 @@ public class JournalpostEksternProtectedRestController {
 	@Operation(summary = "Knytt vedlegg til journalpost")
 	@Tag(name = "journalpostapi - tilknyttVedlegg", description = "Tjeneste for å knytte vedlegg til en journalpost")
 	@PutMapping(value = "/{journalpostId}/tilknyttVedlegg")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "tilknyttVedlegg"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
+		public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
 			@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@PathVariable String journalpostId,
 			@RequestBody TilknyttVedleggRequest request) {

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.core.util.SafeLoggingUtil;
 import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
@@ -59,8 +58,7 @@ public class JournalpostInternProtectedRestController {
 	@Transactional(readOnly = true)
 	@SwaggerFinnMottatteJournalposterMedTemaEldreEnn
 	@GetMapping(value = "/finnMottatteJournalposter/{temaer}/{eldreEnn}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "finnMottatteJournalposter"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposterMedTemaEldreEnn(
+		public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposterMedTemaEldreEnn(
 			@PathVariable("temaer") List<String> temaer,
 			@PathVariable("eldreEnn") int eldreEnn) {
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
@@ -88,8 +86,7 @@ public class JournalpostInternProtectedRestController {
 	@Transactional
 	@SwaggerMottaDokumentUtgaaendeSkanning
 	@PutMapping("/journalpost/{journalpostId}/mottaDokumentUtgaaendeSkanning")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "mottaDokumentUtgaaendeSkanning"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<Long> mottaDokumentUtgaaendeSkanning(
+		public ResponseEntity<Long> mottaDokumentUtgaaendeSkanning(
 			@PathVariable String journalpostId,
 			@RequestBody MottaDokumentUtgaaendeSkanningRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));

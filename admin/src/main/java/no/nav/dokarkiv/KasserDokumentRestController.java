@@ -1,7 +1,6 @@
 package no.nav.dokarkiv;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.dto.KasserDokumentRequest;
 import no.nav.dokarkiv.rjoark102.KasserDokumentOrchestrator;
 import no.nav.dokarkiv.rjoark102.KasserDokumentValidator;
@@ -47,8 +46,7 @@ public class KasserDokumentRestController {
 
 	@Transactional(rollbackFor = Exception.class)
 	@DeleteMapping("/kasserdokument")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102"}, percentiles = {0.5, 0.95})
-	public ResponseEntity kasserDokument(
+		public ResponseEntity kasserDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER, required = false) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
@@ -68,8 +66,7 @@ public class KasserDokumentRestController {
 
 	@Transactional(rollbackFor = Exception.class)
 	@PostMapping("/kasserdokument/skjerm/{dokumentInfoId}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102SA"}, percentiles = {0.5, 0.95})
-	public ResponseEntity kasserSkjermDokument(
+		public ResponseEntity kasserSkjermDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
@@ -87,8 +84,7 @@ public class KasserDokumentRestController {
 
 	@Transactional(rollbackFor = Exception.class)
 	@DeleteMapping("/kasserdokument/skjerm/{dokumentInfoId}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark102SB"}, percentiles = {0.5, 0.95})
-	public ResponseEntity opphevKasserSkjermDokument(
+		public ResponseEntity opphevKasserSkjermDokument(
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
