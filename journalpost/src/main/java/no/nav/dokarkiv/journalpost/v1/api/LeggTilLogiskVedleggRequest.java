@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Builder
 @Getter
 @NoArgsConstructor
@@ -18,7 +20,7 @@ public class LeggTilLogiskVedleggRequest {
 			description = """
 					Tittelen som det nye logiske vedlegget skal ha, for eksempel "Kontoutskrift".
 					""",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "Kontoutskrift"
 	)
 	private String tittel;

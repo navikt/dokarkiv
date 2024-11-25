@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 /*
  * Deprecated er midertidlig lagt til for migrering fra ondemand to joark, gjelder sak MMA-5140.
  * */
@@ -22,7 +24,7 @@ public class FerdigstillJournalpostRequest {
 			description = """
 					NAV-enheten som personen som utfører journalføring jobber for. Ved automatisk journalføring uten mennesker involvert, skal enhet settes til "9999".
 					""",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "9999"
 	)
 	private String journalfoerendeEnhet;

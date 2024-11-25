@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Builder
 @Getter
 @NoArgsConstructor
@@ -17,7 +19,7 @@ public class DokumentInfo {
 	@NotNull(message = "DokumentInfo mangler dokumentInfoId")
 	@Schema(
 			description = "ID til dokumentinfo-objektet i Joark",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "485227498")
 	private String dokumentInfoId;
 

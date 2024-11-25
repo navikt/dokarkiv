@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Builder
 @Getter
 @NoArgsConstructor
@@ -16,7 +18,7 @@ public class Bruker {
     @NotNull(message = "Bruker mangler idType")
     @Schema(
             description = "Angir hvilken type identifikator som er benyttet i `bruker.id`",
-            required = true,
+            requiredMode = REQUIRED,
             example = "FNR"
     )
     private BrukerIdType idType;
@@ -24,7 +26,7 @@ public class Bruker {
     @NotNull(message = "Bruker mangler id")
     @Schema(
             description = "Brukerens fødselsnummer (11 siffer), aktørID (13 siffer) eller organisasjonsnummer (9 siffer)",
-            required = true,
+            requiredMode = REQUIRED,
             example = "01117400200"
     )
     private String id;
