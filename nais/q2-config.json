@@ -616,6 +616,11 @@
       "app": "veilarbvedtaksstotte",
       "namespace": "obo",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "brev",
+      "namespace": "aap",
+      "cluster": "dev-gcp"
     }
   ]
 }
