@@ -6,7 +6,6 @@ import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantResponse;
 import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantService;
 import no.nav.dokarkiv.arkivervariant.rjoark103.ArkiverVariantValidator;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
@@ -42,8 +41,7 @@ public class ArkiverVariantRestController {
 	@Transactional
 	@ResponseBody
 	@PostMapping("/arkivervariant")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark103"}, percentiles = {0.5, 0.95})
-	public ArkiverVariantResponse arkiverVariant(
+		public ArkiverVariantResponse arkiverVariant(
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,

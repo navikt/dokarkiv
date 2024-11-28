@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 /**
  * @author Olav Røstvold Thorsen, Visma Consulting.
  */
@@ -21,21 +23,21 @@ public class FeiledeDokumenter {
 	@NotNull(message = "ID til journalpost kilden mangler")
 	@Schema(
 			description = "ID til journalpost kilden i Joark",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "22345678"
 	)
 	private String kildeJournalpostId;
 
 	@Schema(
 			description = "ID til dokumentet som skal legges til som vedlegg",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "12345678"
 	)
 	private String dokumentInfoId;
 
 	@Schema(
 			description = "Årsak til at dokumentet ikke lot seg knytte til journalpostId",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "UGYLDIG_STATUS"
 	)
 	private ArsakKode arsakKode;

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.ArkivenhetCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigSkjermArkivenhetRequestException;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.dto.SkjermArkivenhetRequest;
 import no.nav.dokarkiv.rjoark100.SkjermArkivEnhetOrchestrator;
 import no.nav.security.token.support.core.api.Protected;
@@ -49,8 +48,7 @@ public class SkjermArkivenhetRestController {
 
 	@Transactional(rollbackFor = Exception.class)
 	@PostMapping("/skjermarkivenhet")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100a"}, percentiles = {0.5, 0.95})
-	public ResponseEntity skjermArkivenhet(
+		public ResponseEntity skjermArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,
@@ -71,8 +69,7 @@ public class SkjermArkivenhetRestController {
 
 	@Transactional(rollbackFor = Exception.class)
 	@DeleteMapping("/skjermarkivenhet")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark100b"}, percentiles = {0.5, 0.95})
-	public ResponseEntity opphevSkjermArkivenhet(
+		public ResponseEntity opphevSkjermArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,

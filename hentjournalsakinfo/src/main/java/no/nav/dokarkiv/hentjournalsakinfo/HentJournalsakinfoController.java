@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.hentjournalsakinfo;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterRequestTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterResponseTo;
 import no.nav.dokarkiv.hentjournalsakinfo.rjoark900.FinnJournalposterService;
@@ -30,8 +29,7 @@ public class HentJournalsakinfoController {
 
 	@Transactional(readOnly = true)
 	@PostMapping(value = "/finnjournalposter")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark900"}, percentiles = {0.5, 0.95})
-	public FinnJournalposterResponseTo finnJournalposter(@RequestBody FinnJournalposterRequestTo finnJournalposterRequestTo) {
+		public FinnJournalposterResponseTo finnJournalposter(@RequestBody FinnJournalposterRequestTo finnJournalposterRequestTo) {
 
 		List<String> gsakSakIds = finnJournalposterRequestTo.getGsakSakIds();
 		List<String> psakSakIds = finnJournalposterRequestTo.getPsakSakIds();

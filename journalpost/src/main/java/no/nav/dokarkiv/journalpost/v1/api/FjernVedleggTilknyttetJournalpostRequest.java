@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -15,7 +17,7 @@ public class FjernVedleggTilknyttetJournalpostRequest {
 
 	@Schema(
 			description = "DokumentinfoId som har vedlegg knyttet journalpost.",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "12345678"
 	)
 	private String dokumentId;

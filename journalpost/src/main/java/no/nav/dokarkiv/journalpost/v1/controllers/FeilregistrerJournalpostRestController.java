@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.journalpost.v1.services.AvbrytService;
 import no.nav.dokarkiv.journalpost.v1.services.FeilregistrerSakstilknytningService;
 import no.nav.dokarkiv.journalpost.v1.services.UkjentBrukerService;
@@ -75,8 +74,7 @@ public class FeilregistrerJournalpostRestController {
 
 	@SwaggerFeilregistrerSakstilknytning
 	@PatchMapping("/{journalpostId}/feilregistrer/" + FEILREGISTRER_SAKSTILKNYTNING)
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark401"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> feilregistrerSakstilkytning(
+		public ResponseEntity<String> feilregistrerSakstilkytning(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
 		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
 		try {
@@ -91,8 +89,7 @@ public class FeilregistrerJournalpostRestController {
 
 	@SwaggerOpphevFeilregistrertSakstilknytning
 	@PatchMapping("/{journalpostId}/feilregistrer/" + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING)
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark402"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> opphevFeilregistrertSakstilknytning(
+		public ResponseEntity<String> opphevFeilregistrertSakstilknytning(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
 		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
 		try {
@@ -108,8 +105,7 @@ public class FeilregistrerJournalpostRestController {
 	@Transactional
 	@SwaggerSettUkjentBruker
 	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_UKJENT_BRUKER)
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark403"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> settUkjentBruker(
+		public ResponseEntity<String> settUkjentBruker(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal feilregistreres", required = true, example = "77778888") String journalpostId) {
 
 		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
@@ -123,8 +119,7 @@ public class FeilregistrerJournalpostRestController {
 	@Transactional
 	@SwaggerAvbryt
 	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_STATUS_AVBRYT)
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark404"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> avbryt(
+		public ResponseEntity<String> avbryt(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal settes til avbryt", required = true, example = "77778888") String journalpostId) {
 		String response = avbrytService.avbryt(validateIdAndParse(journalpostId, "journalpostId"));
 		return ResponseEntity.ok().body(response);
@@ -133,8 +128,7 @@ public class FeilregistrerJournalpostRestController {
 	@Transactional
 	@SwaggerSettStatusUtgar
 	@PatchMapping("/{journalpostId}/feilregistrer/" + SETT_STATUS_UTGAAR)
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark405"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> utgaar(
+		public ResponseEntity<String> utgaar(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal settes til utgått", required = true, example = "77778888") String journalpostId) {
 
 		String response = utgaarService.settStatusUtgaar(validateIdAndParse(journalpostId, "journalpostId"));

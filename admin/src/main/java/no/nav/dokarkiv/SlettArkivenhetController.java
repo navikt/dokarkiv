@@ -1,7 +1,6 @@
 package no.nav.dokarkiv;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.dto.SlettArkivenhetRequest;
 import no.nav.dokarkiv.rjoark101.SlettArkivenhetOrchestrator;
 import no.nav.security.token.support.core.api.Protected;
@@ -40,8 +39,7 @@ public class SlettArkivenhetController {
 
 	@Transactional(rollbackFor = Exception.class)
 	@DeleteMapping("/slettarkivenhet")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark101"}, percentiles = {0.5, 0.95})
-	public ResponseEntity slettArkivenhet(
+		public ResponseEntity slettArkivenhet(
 			@RequestHeader(value = AKSJONS_LOGG_HJEMMEL_HEADER) String hjemmel,
 			@RequestHeader(value = AKSJONS_LOGG_MELDING_HEADER, required = false) String melding,
 			@RequestHeader(value = AKSJONS_LOGG_UTFOERT_AV_HEADER, required = false) String utfoertAv,

@@ -4,7 +4,6 @@ import no.nav.dokarkiv.core.consumer.azure.AzureToken;
 import no.nav.dokarkiv.core.consumer.azure.WebClientAzureAuthentication;
 import no.nav.dokarkiv.core.consumers.saf.exceptions.saf.SafJournalpostQueryTechnicalException;
 import no.nav.dokarkiv.core.consumers.saf.exceptions.saf.SafJournalpostUnauthorizedException;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.util.NavHeadersFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +32,7 @@ public class SafGraphqlConsumer {
 				.build();
 	}
 
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "safJournalpostQuery"}, percentiles = {0.5, 0.95})
-	@Retryable(include = SafJournalpostQueryTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT))
+		@Retryable(include = SafJournalpostQueryTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT))
 	public ResponseEntity<String> performQuery(GraphQLRequest graphQLRequest) {
 
 		return webClient

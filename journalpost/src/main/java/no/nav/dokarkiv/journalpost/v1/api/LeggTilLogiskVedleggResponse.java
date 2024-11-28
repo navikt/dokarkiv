@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Schema
 @Builder
 @Getter
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class LeggTilLogiskVedleggResponse {
     @Schema(
             description = "IDen til det logiske vedlegget som har blitt lagt til",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "1234578"
 	)
     private String logiskVedleggId;

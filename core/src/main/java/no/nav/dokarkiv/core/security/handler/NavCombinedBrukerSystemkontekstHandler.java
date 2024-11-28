@@ -19,9 +19,10 @@ import java.io.IOException;
  * * Nav-Consumer-Token header - REST-STS token
  *
  * @see no.nav.dokarkiv.core.security.SporingHandlerInterceptor
- * @author Joakim Bjørnstad, Jbit AS
+ * @deprecated Slettes etter at det er bekreftet at ingen bruker det på denne måten lenger.
  */
 @Slf4j
+@Deprecated
 public class NavCombinedBrukerSystemkontekstHandler {
     private final AzureAdGraphService azureAdGraphService;
     private final JwtTokenValidator restStsTokenValidator;
@@ -32,6 +33,9 @@ public class NavCombinedBrukerSystemkontekstHandler {
     }
 
     public boolean handle(JwtToken openAmToken, String restStsToken, HttpServletResponse response) throws IOException {
+        // Hvis man ikke ser denne logglinjen lenger i prod så kan NavCombinedBrukerSystemkontekstHandler slettes.
+        log.warn("System kaller dokarkiv tjenester med Nav-Consumer-Token. Denne måten å bruke dokarkiv på er deprekert ifbm OpenAM saneringen 2023. " +
+                 "Konsument må informeres at dette ikke er nødvendig lenger.");
         if (handleBrukerkontekst(openAmToken, response)) return true;
         return handleSystemkontekst(restStsToken, response);
     }

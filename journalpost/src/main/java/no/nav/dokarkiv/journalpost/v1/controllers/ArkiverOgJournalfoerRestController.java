@@ -18,7 +18,6 @@ import no.nav.dokarkiv.core.exceptions.KanIkkeLeggeTilVedleggException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeOppdatereDistribusjonsinfoException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeSlettetVedleggKnyttetTilJournalpostException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostRequest;
@@ -128,8 +127,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@SwaggerFerdigstillJournalpost
 	@PatchMapping(value = "/{journalpostId}/ferdigstill")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> ferdigstillJournalpost(
+		public ResponseEntity<String> ferdigstillJournalpost(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
 			@RequestBody FerdigstillJournalpostRequest request
 	) {
@@ -159,8 +157,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@SwaggerOppdaterDistribusjonsinfo
 	@PatchMapping("/{journalpostId}/oppdaterDistribusjonsinfo")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark201"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> oppdaterDistribusjonsinfo(
+		public ResponseEntity<String> oppdaterDistribusjonsinfo(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal oppdateres", required = true, example = "77778888") String journalpostId,
 			@RequestBody OppdaterDistribusjonsinfoRequest request) {
 		MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
@@ -190,8 +187,7 @@ public class ArkiverOgJournalfoerRestController {
 	@SwaggerOppdaterJournalpost
 	@ResponseBody
 	@PutMapping(value = "/{journalpostId}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "oppdaterjournalpost"}, percentiles = {0.5, 0.95})
-	public OppdaterJournalpostResponse oppdaterJournalpost(
+		public OppdaterJournalpostResponse oppdaterJournalpost(
 			@Parameter(
 					name = "journalpostId",
 					description = "Angir JournalpostId som skal oppdatere f.eks. 467011764",
@@ -220,8 +216,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@PostMapping
 	@SwaggerOpprettJournalpost
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "rjoark202"}, percentiles = {0.5, 0.95}, histogram = true)
-	public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(
+		public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(
 			@RequestBody OpprettJournalpostRequest request,
 			@Parameter(
 					name = "forsoekFerdigstill",
@@ -302,8 +297,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@SwaggerFjernVedlegg
 	@PatchMapping("/{journalpostId}/fjernVedlegg")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "fjernVedleggTilknyttetJournalpost"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> fjernVedleggTilknyttetJournalpost(@PathVariable String journalpostId,
+		public ResponseEntity<String> fjernVedleggTilknyttetJournalpost(@PathVariable String journalpostId,
 																	@RequestBody FjernVedleggTilknyttetJournalpostRequest request) {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "fjernVedleggTilknyttetJournalpost");
 		long journalpostIdParsed = validateIdAndParse(journalpostId, "tilknyttJournalpostId");
@@ -333,8 +327,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@PostMapping("/kopierJournalpost")
 	@SwaggerKopierJournalpost
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "kopierJournalpost"}, percentiles = {0.5, 0.95}, histogram = true)
-	public ResponseEntity<KopierJournalpostResponse> kopierJournalpost(
+		public ResponseEntity<KopierJournalpostResponse> kopierJournalpost(
 			@Parameter(
 					name = "kildeJournalpostId",
 					description = "Angir kildeJournalpostId som skal kopieres",

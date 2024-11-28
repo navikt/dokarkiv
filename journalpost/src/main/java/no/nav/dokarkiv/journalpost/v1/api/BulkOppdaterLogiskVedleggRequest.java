@@ -7,13 +7,15 @@ import lombok.Data;
 
 import java.util.List;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Data
 public class BulkOppdaterLogiskVedleggRequest {
 	@Schema(
 			description = """
 					Titlene som skal settes som logiske vedlegg for DokumentInfo.
 					""",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "[\"Kvittering fra legekontor på konsultasjon\", \"Uttalelse fra lege\"]"
 	)
 	private final List<String> titler;

@@ -43,8 +43,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * * endret_av
  * * opprettet_av_navn
  * * endret_av_navn
- *
- * @author Joakim Bjørnstad, Jbit AS
  */
 @Slf4j
 public class SporingHandlerInterceptor implements HandlerInterceptor {

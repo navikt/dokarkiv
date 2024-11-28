@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.storage;
 
+import com.google.cloud.storage.HttpStorageOptions;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.crypto.tink.Aead;
@@ -58,7 +59,7 @@ public class GoogleCloudStorageConfiguration {
 	private Storage configureGcpStorage(String projectId) {
 		return StorageOptions.newBuilder()
 				.setProjectId(projectId)
-				.setTransportOptions(StorageOptions.getDefaultHttpTransportOptions().toBuilder()
+				.setTransportOptions(HttpStorageOptions.defaults().getDefaultTransportOptions().toBuilder()
 						.setConnectTimeout((int) SECONDS.toMillis(5))
 						.setReadTimeout((int) SECONDS.toMillis(20))
 						.build())

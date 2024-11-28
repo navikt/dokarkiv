@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.core;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.dokarkiv.core.metrics.DokTimedAspect;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.properties.ServiceuserAlias;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -19,9 +17,6 @@ import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @ComponentScan
 @Configuration
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
@@ -29,11 +24,6 @@ import java.time.Duration;
 @EnableAspectJAutoProxy
 @EnableRetry
 public class CoreConfig {
-
-	@Bean
-	public DokTimedAspect timedAspect(MeterRegistry meterRegistry) {
-		return new DokTimedAspect(meterRegistry);
-	}
 
 	@Bean
 	WebClient webClient(WebClient.Builder webClientBuilder) {

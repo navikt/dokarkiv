@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.LogiskVedleggKanIkkeBulkOppdateresException;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.BulkOppdaterLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
@@ -34,7 +33,6 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.domain.entities.SkannetInnhold.VEDLEGG_INNHOLD_LENGTH;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.hasText;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateNotNull;
 
@@ -57,8 +55,7 @@ public class LogiskVedleggRestController {
 
 	@SwaggerEndreLogiskVedlegg
 	@PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "endrelogiskvedlegg"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> endreLogiskVedlegg(
+		public ResponseEntity<String> endreLogiskVedlegg(
 			@PathVariable String dokumentInfoId,
 			@PathVariable String logiskVedleggId,
 			@RequestBody EndreLogiskVedleggRequest request) {
@@ -78,8 +75,7 @@ public class LogiskVedleggRestController {
 
 	@SwaggerLeggTilLogiskVedlegg
 	@PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "leggtillogiskvedlegg"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<LeggTilLogiskVedleggResponse> leggTilLogiskVedlegg(
+		public ResponseEntity<LeggTilLogiskVedleggResponse> leggTilLogiskVedlegg(
 			@PathVariable String dokumentInfoId,
 			@RequestBody LeggTilLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
@@ -97,8 +93,7 @@ public class LogiskVedleggRestController {
 
 	@SwaggerSlettLogiskVedlegg
 	@DeleteMapping(value = "/{dokumentInfoId}/logiskVedlegg/{logiskVedleggId}")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "slettlogiskvedlegg"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<String> slettLogiskVedlegg(
+		public ResponseEntity<String> slettLogiskVedlegg(
 			@PathVariable String dokumentInfoId,
 			@PathVariable String logiskVedleggId) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
@@ -115,8 +110,7 @@ public class LogiskVedleggRestController {
 
 	@SwaggerBulkOppdaterLogiskVedlegg
 	@PutMapping("/{dokumentInfoId}/logiskVedlegg")
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "bulkoppdaterlogiskvedlegg"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<Void> bulkOppdaterLogiskVedlegg(@PathVariable String dokumentInfoId, @RequestBody BulkOppdaterLogiskVedleggRequest request) {
+		public ResponseEntity<Void> bulkOppdaterLogiskVedlegg(@PathVariable String dokumentInfoId, @RequestBody BulkOppdaterLogiskVedleggRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		long dokumentInfoIdParsed = validateIdAndParse(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
 		log.info("bulkoppdaterlogiskvedlegg har mottatt kall. dokumentInfoId={}", dokumentInfoIdParsed);

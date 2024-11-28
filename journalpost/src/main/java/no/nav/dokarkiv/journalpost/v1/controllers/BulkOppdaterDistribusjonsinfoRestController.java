@@ -3,7 +3,6 @@ package no.nav.dokarkiv.journalpost.v1.controllers;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
-import no.nav.dokarkiv.core.metrics.RestMetrics;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.BulkOppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.BulkOppdaterDistribusjonsinfoResponse;
@@ -50,8 +49,7 @@ public class BulkOppdaterDistribusjonsinfoRestController {
 	@Transactional
 	@SwaggerBulkOppdaterDistribusjonsinfo
 	@PostMapping
-	@RestMetrics(value = "dok_request", extraTags = {"process_code", "bulkOppdaterDistribusjonsinfo"}, percentiles = {0.5, 0.95})
-	public ResponseEntity<BulkOppdaterDistribusjonsinfoResponse> oppdaterDistribusjonsinfo(@RequestBody BulkOppdaterDistribusjonsinfoRequest request) {
+		public ResponseEntity<BulkOppdaterDistribusjonsinfoResponse> oppdaterDistribusjonsinfo(@RequestBody BulkOppdaterDistribusjonsinfoRequest request) {
 
 		MDC.put(MDC_REQUEST_ID, "bulkOppdaterDistribusjonsinfo");
 		log.info(MDC.get(MDC_REQUEST_ID) + " har mottatt kall for bulk oppdatering av distribusjonsinfo for {} journalposter", request.getJournalposter().size());

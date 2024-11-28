@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
@@ -20,19 +20,20 @@ import org.springframework.web.servlet.HandlerInterceptor;
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityRestConfig extends WebSecurityConfigurerAdapter {
+public class SecurityRestConfig {
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		// Appen er tilstandsløs og får ingen http sessions fra nettleser til bruker.
-		http.csrf().disable();
+		httpSecurity.csrf().disable();
 		// Disse endepunktene er beskyttet av token-support @Protected
 		// Se JwtTokenValidationFilter
-		http.authorizeRequests()
+		httpSecurity.authorizeRequests()
 				.antMatchers("/rest/journalpostapi/**",
 						"/rest/admin/**")
 				.permitAll();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		return httpSecurity.build();
 	}
 
 	@Bean

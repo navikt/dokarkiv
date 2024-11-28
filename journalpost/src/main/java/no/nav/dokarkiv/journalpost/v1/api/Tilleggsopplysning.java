@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Builder
 @Getter
 @NoArgsConstructor
@@ -16,7 +18,7 @@ public class Tilleggsopplysning {
 	@NotNull(message = "Tilleggsopplysning mangler nokkel")
 	@Schema(
 			description = "Nøkkelen til det fagspesifikke attributtet.",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "bucid"
 	)
 	private String nokkel;
@@ -24,7 +26,7 @@ public class Tilleggsopplysning {
 	@NotNull(message = "Tilleggsopplysning mangler verdi")
 	@Schema(
 			description = "Verdien til det fagspesifikke attributtet.",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "12345"
 	)
 	private String verdi;

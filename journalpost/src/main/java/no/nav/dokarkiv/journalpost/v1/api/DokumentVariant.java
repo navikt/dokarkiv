@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Builder
 @Getter
 @NoArgsConstructor
@@ -19,7 +21,7 @@ public class DokumentVariant {
 	@NotNull(message = "Filtype kan ikke være null")
 	@Schema(
 			description = "Filtypen til filen som følger, f.eks. PDF/A, JSON eller XML.",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "PDFA"
 	)
 	private String filtype;
@@ -31,14 +33,14 @@ public class DokumentVariant {
 
 					ORIGINAL skal brukes for dokumentvariant i maskinlesbart format (for eksempel XML og JSON) som brukes for automatisk saksbehandling.
 					""",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "ARKIV"
 	)
 	private String variantformat;
 
 	@ArraySchema(arraySchema = @Schema(
 			description = "Selve dokumentet. Hvis filtype er PDF/XML, ved fysisk dokument brukes bytearray.",
-			required = true,
+			requiredMode = REQUIRED,
 			example = "JVBERi0xLgoxIDAgb2JqPDwvUGFnZXMgMiAwIFI+PmVuZG9iagoyIDAgb2JqPDwvS2lkc1szIDAgUl0vQ291bnQgMT4+ZW5kb2JqCjMgMCBvYmo8PC9QYXJlbnQgMiAwIFI+PmVuZG9iagp0cmFpbGVyIDw8L1Jvb3QgMSAwIFI+Pgo=")
 	)
 	private byte[] fysiskDokument;

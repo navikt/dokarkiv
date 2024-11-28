@@ -14,13 +14,7 @@
       },
       "sakId": sakId_replace
     },
-    "dokumenter": [
-      {
-        "fildetaljer": [],
-        "logiskVedlegg": []
-      }
-    ],
-    "mottakskanal": "NAV_NO",
+    "dokumenter": [],
     "tilleggsopplysninger": {}
   },
   {
@@ -38,13 +32,7 @@
       },
       "sakId": sakId_replace
     },
-    "dokumenter": [
-      {
-        "fildetaljer": [],
-        "logiskVedlegg": []
-      }
-    ],
-    "mottakskanal": "NAV_NO",
+    "dokumenter": [],
     "tilleggsopplysninger": {}
   }
 ]

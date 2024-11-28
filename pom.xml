@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.17</version>
+		<version>2.7.18</version>
 	</parent>
 
 	<groupId>no.nav.dokarkiv</groupId>
@@ -31,19 +31,19 @@
 	<properties>
 		<java.version>17</java.version>
 
-		<cxf.version>3.6.2</cxf.version>
+		<cxf.version>3.6.4</cxf.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
 		<jaxb2-basics-runtime.version>0.13.1</jaxb2-basics-runtime.version>
-		<google-cloud-storage.version>2.32.1</google-cloud-storage.version>
+		<google-cloud-storage.version>2.45.0</google-cloud-storage.version>
 		<tink.version>1.15.0</tink.version>
 		<tink-gcpkms.version>1.10.0</tink-gcpkms.version>
-		<blaze-persistence.version>1.6.10</blaze-persistence.version>
-		<commons-io.version>2.17.0</commons-io.version>
+		<blaze-persistence.version>1.6.14</blaze-persistence.version>
+		<commons-io.version>2.18.0</commons-io.version>
 		<springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
-		<microsoft-graph.version>6.12.0</microsoft-graph.version>
-		<azure-identity.version>1.14.0</azure-identity.version>
+		<microsoft-graph.version>6.21.0</microsoft-graph.version>
+		<azure-identity.version>1.14.2</azure-identity.version>
 
 		<!-- NAV -->
 		<token-support.version>2.1.9</token-support.version>
