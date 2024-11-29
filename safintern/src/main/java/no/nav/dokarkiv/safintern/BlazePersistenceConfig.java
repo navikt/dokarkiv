@@ -6,14 +6,13 @@ import com.blazebit.persistence.integration.view.spring.EnableEntityViews;
 import com.blazebit.persistence.spi.CriteriaBuilderConfiguration;
 import com.blazebit.persistence.view.EntityViewManager;
 import com.blazebit.persistence.view.spi.EntityViewConfiguration;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
-
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
 
 import static com.blazebit.persistence.view.ConfigurationProperties.CREATE_EMPTY_FLAT_VIEWS;
 

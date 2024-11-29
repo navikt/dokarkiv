@@ -23,8 +23,9 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
-import org.joda.time.DateTime;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,7 +44,6 @@ public class TestDataUtils {
 
 	public static final FagsystemCode fagsystem = FagsystemCode.PEN;
 	private static final FagomradeCode fagomrade = FagomradeCode.PEN;
-	private static final DateTime journalDato = new DateTime(2016, 5, 1, 0, 0);
 	private static final BrukerTypeCode brukerType = BrukerTypeCode.PERSON;
 	private static final JournalStatusCode journalStatus = JournalStatusCode.J;
 	private static final String journalfEnhet = "test";
@@ -146,7 +146,7 @@ public class TestDataUtils {
 	}
 
 	public static Journalpost createJournalpost() {
-		return createJournalpost("123", DateTime.now().toDate(), JournalStatusCode.J, FagomradeCode.PEN).build();
+		return createJournalpost("123", Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()), JournalStatusCode.J, FagomradeCode.PEN).build();
 	}
 
 	public static Journalpost createUbehandletJournalpost(

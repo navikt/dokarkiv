@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.journalpost.v1.api.FjernVedleggTilknyttetJournalpostRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,6 +19,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createVedleggRel
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.springframework.http.HttpMethod.PATCH;
 
 
 public class FjernVedleggIT extends AbstractJournalpostIT {
@@ -60,7 +60,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 
 		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId + FJERNVEDLEGG), PATCH, requestEntity, String.class);
 
 		commitAndStartNewTransaction();
 		Optional<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjon = journalpostDokumentInfoRelasjonTestRepository.findById(vedllegJpDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId());
@@ -94,7 +94,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 
 		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId + FJERNVEDLEGG), PATCH, requestEntity, String.class);
 		commitAndStartNewTransaction();
 
 		Optional<JournalpostDokumentInfoRelasjon> jpDokInfoRelasjon = journalpostDokumentInfoRelasjonTestRepository.findById(vedllegJpDokumentInfoRelasjon.getJournalpostDokumentInfoRelasjonId());
@@ -111,7 +111,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 
 		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + JOURNALPOST_ID + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(JOURNALPOST_ID + FJERNVEDLEGG), PATCH, requestEntity, String.class);
 		commitAndStartNewTransaction();
 
 		assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
@@ -126,7 +126,7 @@ public class FjernVedleggIT extends AbstractJournalpostIT {
 
 		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + JOURNALPOST_ID + FJERNVEDLEGG, HttpMethod.PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(JOURNALPOST_ID + FJERNVEDLEGG), PATCH, requestEntity, String.class);
 		commitAndStartNewTransaction();
 
 		assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));

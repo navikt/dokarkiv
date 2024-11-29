@@ -2,6 +2,10 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 import com.google.common.base.Strings;
 import io.micrometer.core.annotation.Timed;
+import jakarta.jws.HandlerChain;
+import jakarta.jws.WebService;
+import jakarta.xml.ws.WebServiceContext;
+import jakarta.xml.ws.soap.Addressing;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AlleredeFerdigstiltException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
@@ -59,10 +63,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.jws.HandlerChain;
-import javax.jws.WebService;
-import javax.xml.ws.WebServiceContext;
-import javax.xml.ws.soap.Addressing;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
 

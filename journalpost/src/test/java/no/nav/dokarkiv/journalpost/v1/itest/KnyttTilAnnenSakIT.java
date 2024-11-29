@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
@@ -41,6 +39,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -48,7 +48,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 
-	public static final String URL_JOURNALPOST = "/rest/journalpostapi/v1/journalpost/";
 	public static final String KNYTT_TIL_ANNEN_SAK = "/knyttTilAnnenSak";
 	public static final String NAV_CALL_ID = "itest";
 	private static final String GYLDIG_FNR = "01018912345";
@@ -72,14 +71,14 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 		happyAktoerIdStub();
 		stubFor(post(urlMatching("/safgraphql"))
 				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("saf/safGraphQlResponseKildeJournalpostId1-happy.json")));
 
 		Long journalpostId = journalpostTestRepository.persist(createJournalpostWithHoveddokument()).getJournalpostId();
 		commitAndStartNewTransaction();
 
 		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserToken());
-		ResponseEntity<KnyttTilAnnenSakResponse> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, KnyttTilAnnenSakResponse.class);
+		ResponseEntity<KnyttTilAnnenSakResponse> response = restTemplate.exchange(apiJournalpostPath(journalpostId + KNYTT_TIL_ANNEN_SAK), PUT, requestEntity, KnyttTilAnnenSakResponse.class);
 		assertEquals(OK, response.getStatusCode());
 
 		TestTransaction.flagForCommit();
@@ -123,7 +122,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 	})
 	public void knyttTilAnnenSakShouldFailWithBadInput(String sakstype, String fagsakId, String fagsaksystem, String feilmelding) {
 		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + "12345678910" + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath("12345678910" + KNYTT_TIL_ANNEN_SAK), PUT, requestEntity, String.class);
 		assertTrue(response.getBody().contains(feilmelding));
 		assertThat(response.getStatusCode(), is(BAD_REQUEST));
 	}
@@ -138,11 +137,11 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 
 		stubFor(post(urlMatching("/safgraphql"))
 				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("saf/safGraphQlResponseJournalpostIkkeFunnet.json")));
 
 		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(), createHeadersWithUserAndServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + JOURNALPOST_ID + KNYTT_TIL_ANNEN_SAK, HttpMethod.PUT, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(JOURNALPOST_ID + KNYTT_TIL_ANNEN_SAK), PUT, requestEntity, String.class);
 		assertEquals(NOT_FOUND, response.getStatusCode());
 
 		verify(exactly(1), postRequestedFor(urlEqualTo("/safgraphql")));

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.repository;
 
+import jakarta.transaction.Transactional;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -10,15 +11,12 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;

@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.18</version>
+		<version>3.3.6</version>
 	</parent>
 
 	<groupId>no.nav.dokarkiv</groupId>
@@ -31,11 +31,10 @@
 	<properties>
 		<java.version>17</java.version>
 
-		<cxf.version>3.6.4</cxf.version>
+		<cxf.version>4.0.5</cxf.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
-		<logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
+		<logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
-		<jaxb2-basics-runtime.version>0.13.1</jaxb2-basics-runtime.version>
 		<google-cloud-storage.version>2.45.0</google-cloud-storage.version>
 		<tink.version>1.15.0</tink.version>
 		<tink-gcpkms.version>1.10.0</tink-gcpkms.version>
@@ -46,20 +45,16 @@
 		<azure-identity.version>1.14.2</azure-identity.version>
 
 		<!-- NAV -->
-		<token-support.version>2.1.9</token-support.version>
+		<token-support.version>3.2.0</token-support.version>
 		<verapdf.version>1.26.1</verapdf.version>
 
 		<!-- Tjenestegrensesnitt -->
-		<arkiverdokumentproduksjon-tjenestespesifikasjon.version>2-b9013e7
-		</arkiverdokumentproduksjon-tjenestespesifikasjon.version>
-		<dokumentproduksjoninfo-tjenestespesifikasjon.version>3-9eba8ba</dokumentproduksjoninfo-tjenestespesifikasjon.version>
-
+		<dok-legacy-tjenestespesifikasjoner.version>32-9d17b57</dok-legacy-tjenestespesifikasjoner.version>
 		<!-- test -->
 		<datasource-proxy-spring-boot-starter.version>1.9.0</datasource-proxy-spring-boot-starter.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
-		<wiremock-jre8-standalone.version>2.35.1</wiremock-jre8-standalone.version>
-
+		<spring-cloud-contract-wiremock.version>4.1.5</spring-cloud-contract-wiremock.version>
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
 	</properties>
@@ -114,14 +109,14 @@
 
 			<!-- Tjenestegrensesnitt -->
 			<dependency>
-				<groupId>no.nav.tjenester.brevogarkiv</groupId>
-				<artifactId>arkiverdokumentproduksjon-tjenestespesifikasjon</artifactId>
-				<version>${arkiverdokumentproduksjon-tjenestespesifikasjon.version}</version>
+				<groupId>no.nav.dok</groupId>
+				<artifactId>dok-domene-arkiverdokumentproduksjon-v1-tjenestespesifikasjon</artifactId>
+				<version>${dok-legacy-tjenestespesifikasjoner.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>no.nav.tjenester.brevogarkiv</groupId>
-				<artifactId>dokumentproduksjoninfo-tjenestespesifikasjon</artifactId>
-				<version>${dokumentproduksjoninfo-tjenestespesifikasjon.version}</version>
+				<groupId>no.nav.dok</groupId>
+				<artifactId>dok-domene-dokumentproduksjoninfo-v1-tjenestespesifikasjon</artifactId>
+				<version>${dok-legacy-tjenestespesifikasjoner.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.security</groupId>
@@ -130,7 +125,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.verapdf</groupId>
-				<artifactId>validation-model</artifactId>
+				<artifactId>validation-model-jakarta</artifactId>
 				<version>${verapdf.version}</version>
 				<exclusions>
 					<exclusion>
@@ -163,11 +158,6 @@
 				<groupId>net.logstash.logback</groupId>
 				<artifactId>logstash-logback-encoder</artifactId>
 				<version>${logstash-logback-encoder.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jvnet.jaxb2_commons</groupId>
-				<artifactId>jaxb2-basics-runtime</artifactId>
-				<version>${jaxb2-basics-runtime.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.auth0</groupId>
@@ -232,9 +222,9 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>com.github.tomakehurst</groupId>
-				<artifactId>wiremock-jre8-standalone</artifactId>
-				<version>${wiremock-jre8-standalone.version}</version>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-contract-wiremock</artifactId>
+				<version>${spring-cloud-contract-wiremock.version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
@@ -256,7 +246,11 @@
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-contract-wiremock</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

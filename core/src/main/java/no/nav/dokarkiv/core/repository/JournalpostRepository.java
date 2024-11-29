@@ -21,11 +21,11 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 			""")
 	List<Journalpost> findUbehandledeJournalposts(@Param("tilOgMedDato") Date tilOgMedDato);
 
+	//FIXME
 	@Query(value = """
 			select j from Journalpost j
 			where j.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I
 			and j.journalstatus in (no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M, no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO)
-			and j.changeStamp.createdDate >= TO_DATE ('2020-01-01', 'yyyy-mm-dd')
 			and j.changeStamp.createdDate <= :tilOgMedDato
 			AND j.fagomrade in :fagomrader
 			""")

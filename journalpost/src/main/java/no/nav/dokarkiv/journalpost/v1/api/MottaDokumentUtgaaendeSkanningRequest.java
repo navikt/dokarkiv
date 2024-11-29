@@ -2,11 +2,11 @@ package no.nav.dokarkiv.journalpost.v1.api;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 

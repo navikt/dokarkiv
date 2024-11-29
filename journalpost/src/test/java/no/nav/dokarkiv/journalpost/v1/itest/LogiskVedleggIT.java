@@ -11,7 +11,6 @@ import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -21,6 +20,9 @@ import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 public class LogiskVedleggIT extends AbstractJournalpostIT {
 
@@ -45,7 +47,7 @@ public class LogiskVedleggIT extends AbstractJournalpostIT {
 				.tittel(NY_TITTEL)
 				.build();
 		HttpEntity<EndreLogiskVedleggRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(URL_DOKUMENTINFO + dokumentInfoId + LOGISK_VEDLEGG + logiskVedleggId, HttpMethod.POST, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiDokumentInfoPath(dokumentInfoId + LOGISK_VEDLEGG + logiskVedleggId), POST, requestEntity, String.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -69,7 +71,9 @@ public class LogiskVedleggIT extends AbstractJournalpostIT {
 				.tittel(NY_TITTEL)
 				.build();
 		HttpEntity<LeggTilLogiskVedleggRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
-		ResponseEntity<LeggTilLogiskVedleggResponse> response = restTemplate.exchange(URL_DOKUMENTINFO + dokumentInfoId + LOGISK_VEDLEGG, HttpMethod.POST, requestEntity, LeggTilLogiskVedleggResponse.class);
+		String url = apiDokumentInfoPath(dokumentInfoId + LOGISK_VEDLEGG);
+		System.out.println(url);
+		ResponseEntity<LeggTilLogiskVedleggResponse> response = restTemplate.exchange(url, POST, requestEntity, LeggTilLogiskVedleggResponse.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -94,7 +98,7 @@ public class LogiskVedleggIT extends AbstractJournalpostIT {
 		assertThat(skannetInnholdTestRepository.findById(logiskVedleggId)).isNotEmpty();
 
 		HttpEntity<String> requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(URL_DOKUMENTINFO + dokumentInfoId + LOGISK_VEDLEGG + logiskVedleggId, HttpMethod.DELETE, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiDokumentInfoPath(dokumentInfoId + LOGISK_VEDLEGG + logiskVedleggId), DELETE, requestEntity, String.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -113,7 +117,7 @@ public class LogiskVedleggIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		var oppdatertLogiskeVedleggRequest = new HttpEntity<>(new BulkOppdaterLogiskVedleggRequest(List.of("Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege")), createHeadersWithServiceUserToken());
-		ResponseEntity<Void> oppdatertLogiskeVedleggResponse = restTemplate.exchange(URL_DOKUMENTINFO + dokumentInfoId + LOGISK_VEDLEGG, HttpMethod.PUT, oppdatertLogiskeVedleggRequest, Void.class);
+		ResponseEntity<Void> oppdatertLogiskeVedleggResponse = restTemplate.exchange(apiDokumentInfoPath(dokumentInfoId + LOGISK_VEDLEGG), PUT, oppdatertLogiskeVedleggRequest, Void.class);
 		assertEquals(HttpStatus.NO_CONTENT, oppdatertLogiskeVedleggResponse.getStatusCode());
 
 		List<SkannetInnhold> oppdatertLogiskeVedlegg = skannetInnholdTestRepository.findAllByDokumentInfo(dokumentInfoTestRepository.getReferenceById(dokumentInfoId));
@@ -122,7 +126,7 @@ public class LogiskVedleggIT extends AbstractJournalpostIT {
 				.containsExactly("Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege");
 
 		var tomLogiskVedleggRequest = new HttpEntity<>(new BulkOppdaterLogiskVedleggRequest(List.of()), createHeadersWithServiceUserToken());
-		ResponseEntity<Void> tomLogiskVedleggResponse = restTemplate.exchange(URL_DOKUMENTINFO + dokumentInfoId + LOGISK_VEDLEGG, HttpMethod.PUT, tomLogiskVedleggRequest, Void.class);
+		ResponseEntity<Void> tomLogiskVedleggResponse = restTemplate.exchange(apiDokumentInfoPath(dokumentInfoId + LOGISK_VEDLEGG), PUT, tomLogiskVedleggRequest, Void.class);
 		assertEquals(HttpStatus.NO_CONTENT, tomLogiskVedleggResponse.getStatusCode());
 
 		List<SkannetInnhold> tomLogiskVedlegg = skannetInnholdTestRepository.findAllByDokumentInfo(dokumentInfoTestRepository.getReferenceById(dokumentInfoId));

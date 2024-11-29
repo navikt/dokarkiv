@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.repository;
 
+import jakarta.persistence.EntityManager;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -8,20 +9,19 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.UUID;
 
 import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
@@ -218,7 +218,7 @@ public class JournalpostRepositorySkjermetTest {
 	}
 
 	static Journalpost createUniqueJournalpost() {
-		return createJournalpost("123", DateTime.now().toDate(), JournalStatusCode.J, FagomradeCode.PEN)
+		return createJournalpost("123", Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()), JournalStatusCode.J, FagomradeCode.PEN)
 				.kanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID())
 				.build();
 	}

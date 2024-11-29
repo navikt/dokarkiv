@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.security;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.Optional;
 
 import static no.nav.dokarkiv.core.NavHeaders.BEARER_TOKEN_PREFIX;

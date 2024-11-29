@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.stelvio;
 
+import jakarta.xml.ws.WebServiceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 
-import javax.xml.ws.WebServiceContext;
 import java.security.Principal;
 
 import static org.hamcrest.MatcherAssert.assertThat;

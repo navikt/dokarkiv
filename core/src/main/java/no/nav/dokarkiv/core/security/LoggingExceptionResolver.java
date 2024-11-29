@@ -1,12 +1,11 @@
 package no.nav.dokarkiv.core.security;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Component
 public class LoggingExceptionResolver extends AbstractHandlerExceptionResolver {

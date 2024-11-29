@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.rjoark102;
 
+import jakarta.persistence.EntityManager;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -9,7 +10,6 @@ import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

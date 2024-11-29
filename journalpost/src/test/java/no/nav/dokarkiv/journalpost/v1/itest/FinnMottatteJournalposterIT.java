@@ -8,16 +8,17 @@ import no.nav.dokarkiv.core.util.TestDataUtils;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletJournalpost;
 import no.nav.dokarkiv.journalpost.v1.services.FinnMottatteJournalposterService;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,13 +31,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.http.HttpMethod.GET;
 
 
 public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	private static final String FINNMOTTATTEJOURNALPOSTER_PENSJON = "finnMottatteJournalposter/PEN/5";
-	private static final String FAGKODE_UFO = "UFO";
-	private static final String FAGKODE_PEN = "PEN";
 	private static final int DEFAULT_DAGER_GAMLE = 5;
 
 	@Autowired
@@ -45,8 +45,8 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldHappyFinnMottatteJournalposter() {
 		List<Journalpost> journalposts = List.of(
-				TestDataUtils.createUbehandletJournalpost(DateTime.now().minusWeeks(2).toDate(), JournalpostTypeCode.I, JournalStatusCode.MO),
-				TestDataUtils.createUbehandletJournalpost(DateTime.now().minusWeeks(2).toDate(), JournalpostTypeCode.I, JournalStatusCode.M)
+				TestDataUtils.createUbehandletJournalpost(toDate(LocalDateTime.now().minusWeeks(2)), JournalpostTypeCode.I, JournalStatusCode.MO),
+				TestDataUtils.createUbehandletJournalpost(toDate(LocalDateTime.now().minusWeeks(2)), JournalpostTypeCode.I, JournalStatusCode.M)
 		);
 
 		List<Long> journalpostIds = journalposts.stream()
@@ -67,15 +67,15 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldOnlyGetUbehandledeJournalposts() {
 		List<Date> journalDateRange = List.of(
-				DateTime.now().plusYears(1).toDate(),
-				DateTime.now().plusMonths(1).toDate(),
-				DateTime.now().plusWeeks(1).toDate(),
-				DateTime.now().plusDays(1).toDate(),
-				DateTime.now().toDate(),
-				DateTime.now().minusDays(1).toDate(),
-				DateTime.now().minusWeeks(1).toDate(),
-				DateTime.now().minusMonths(1).toDate(),
-				DateTime.now().minusYears(1).toDate()
+				toDate(LocalDateTime.now().plusYears(1)),
+				toDate(LocalDateTime.now().plusMonths(1)),
+				toDate(LocalDateTime.now().plusWeeks(1)),
+				toDate(LocalDateTime.now().plusDays(1)),
+				toDate(LocalDateTime.now()),
+				toDate(LocalDateTime.now().minusDays(1)),
+				toDate(LocalDateTime.now().minusWeeks(1)),
+				toDate(LocalDateTime.now().minusMonths(1)),
+				toDate(LocalDateTime.now().minusYears(1))
 		);
 
 		ArrayList<Long> validJournalpostIds = new ArrayList<>();
@@ -101,15 +101,15 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldOnlyGetUbehandledeJournalpostsWithTemaUFOAndPEN() {
 		List<Date> journalDateRange = List.of(
-				DateTime.now().plusYears(1).toDate(),
-				DateTime.now().plusMonths(1).toDate(),
-				DateTime.now().plusWeeks(1).toDate(),
-				DateTime.now().plusDays(1).toDate(),
-				DateTime.now().toDate(),
-				DateTime.now().minusDays(1).toDate(),
-				DateTime.now().minusWeeks(1).toDate(),
-				DateTime.now().minusMonths(1).toDate(),
-				DateTime.now().minusYears(1).toDate()
+				toDate(LocalDateTime.now().plusYears(1)),
+				toDate(LocalDateTime.now().plusMonths(1)),
+				toDate(LocalDateTime.now().plusWeeks(1)),
+				toDate(LocalDateTime.now().plusDays(1)),
+				toDate(LocalDateTime.now()),
+				toDate(LocalDateTime.now().minusDays(1)),
+				toDate(LocalDateTime.now().minusWeeks(1)),
+				toDate(LocalDateTime.now().minusMonths(1)),
+				toDate(LocalDateTime.now().minusYears(1))
 		);
 
 		List<FagomradeCode> temakoder = List.of(FagomradeCode.AAP, UFO, FagomradeCode.BAR, PEN);
@@ -146,9 +146,9 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	@Test
 	public void shouldFailFinnMottatteJournalposter() {
 		List<Journalpost> journalposts = List.of(
-				TestDataUtils.createUbehandletJournalpost(DateTime.now().toDate(), JournalpostTypeCode.I, JournalStatusCode.MO),
-				TestDataUtils.createUbehandletJournalpost(DateTime.now().minusWeeks(2).toDate(), JournalpostTypeCode.U, JournalStatusCode.MO),
-				TestDataUtils.createUbehandletJournalpost(DateTime.now().minusWeeks(2).toDate(), JournalpostTypeCode.I, JournalStatusCode.U)
+				TestDataUtils.createUbehandletJournalpost(toDate(LocalDateTime.now()), JournalpostTypeCode.I, JournalStatusCode.MO),
+				TestDataUtils.createUbehandletJournalpost(toDate(LocalDateTime.now().minusWeeks(2)), JournalpostTypeCode.U, JournalStatusCode.MO),
+				TestDataUtils.createUbehandletJournalpost(toDate(LocalDateTime.now().minusWeeks(2)), JournalpostTypeCode.I, JournalStatusCode.U)
 		);
 
 		List<Long> journalpostIds = journalposts.stream()
@@ -169,8 +169,8 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	@Test
 	public void returnsOKWithResponseJSONifValidRequest() {
 		List<Journalpost> journalposts = List.of(
-				TestDataUtils.createUbehandletJournalpost(DateTime.now().minusWeeks(2).toDate(), JournalpostTypeCode.I, JournalStatusCode.MO),
-				TestDataUtils.createUbehandletJournalpost(DateTime.now().minusWeeks(2).toDate(), JournalpostTypeCode.I, JournalStatusCode.M)
+				TestDataUtils.createUbehandletJournalpost(toDate(LocalDateTime.now().minusWeeks(2)), JournalpostTypeCode.I, JournalStatusCode.MO),
+				TestDataUtils.createUbehandletJournalpost(toDate(LocalDateTime.now().minusWeeks(2)), JournalpostTypeCode.I, JournalStatusCode.M)
 		);
 
 		List<Long> journalpostIds = journalposts.stream()
@@ -180,9 +180,9 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 		var requestEntity = new HttpEntity<>(null, createHeaders(SERVICE_USER_ID));
 
-		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(URL_PROTECTED_INTERN + FINNMOTTATTEJOURNALPOSTER_PENSJON, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class);
+		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(apiInternalPath(FINNMOTTATTEJOURNALPOSTER_PENSJON), GET, requestEntity, FinnMottatteJournalposterResponse.class);
 
-		HttpStatus status = response.getStatusCode();
+		HttpStatusCode status = response.getStatusCode();
 		FinnMottatteJournalposterResponse body = response.getBody();
 
 		assertEquals(HttpStatus.OK, status);
@@ -197,9 +197,9 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	public void returnsUnauthorizedWhenNoAuthorization() {
 		var requestEntity = new HttpEntity<>(null, new HttpHeaders());
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_PROTECTED_INTERN + FINNMOTTATTEJOURNALPOSTER_PENSJON, HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalPath(FINNMOTTATTEJOURNALPOSTER_PENSJON), GET, requestEntity, String.class);
 
-		HttpStatus status = response.getStatusCode();
+		HttpStatusCode status = response.getStatusCode();
 
 		assertEquals(HttpStatus.UNAUTHORIZED, status);
 	}
@@ -214,7 +214,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	private boolean verifyJournalpost(Journalpost journalpost) {
-		Date weekAgo = DateTime.now().minusWeeks(1).toDate();
+		Date weekAgo = toDate(LocalDateTime.now().minusWeeks(1));
 		Date createdDate = journalpost.getChangeStamp().getCreatedDate();
 		JournalStatusCode status = journalpost.getJournalstatus();
 
@@ -224,7 +224,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	private boolean verifyJournalpostWithTema(Journalpost journalpost) {
-		Date weekAgo = DateTime.now().minusWeeks(1).toDate();
+		Date weekAgo = toDate(LocalDateTime.now().minusWeeks(1));
 		Date createdDate = journalpost.getChangeStamp().getCreatedDate();
 		JournalStatusCode status = journalpost.getJournalstatus();
 		FagomradeCode fagomrade = journalpost.getFagomrade();
@@ -233,5 +233,9 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		if (status != JournalStatusCode.M && status != JournalStatusCode.MO) return false;
 		if (!journalpost.isInngaende()) return false;
 		return fagomrade == PEN || fagomrade == UFO;
+	}
+
+	private static Date toDate(LocalDateTime localDateTime) {
+		return Date.from(localDateTime.atZone(ZoneId.of("Europe/Oslo")).toInstant());
 	}
 }

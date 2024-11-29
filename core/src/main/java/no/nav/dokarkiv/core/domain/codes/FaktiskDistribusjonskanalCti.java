@@ -1,14 +1,13 @@
 package no.nav.dokarkiv.core.domain.codes;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 /**
  * CodesTableItem representing the T_K_FAKT_DIS_KANAL DB table.

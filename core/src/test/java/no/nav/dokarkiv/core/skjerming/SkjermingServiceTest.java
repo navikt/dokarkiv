@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.skjerming;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -12,8 +14,6 @@ import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.util.Optional;
 
 import static java.util.Objects.nonNull;
@@ -50,7 +50,7 @@ public class SkjermingServiceTest {
 
 	public void setDokumentKassert(DokumentInfo dokumentInfo, SkjermingTypeCode skjermingTypeCode) {
 		skjermAllFildetaljer(dokumentInfo, skjermingTypeCode);
-		Query q = entityManager.createQuery("update DokumentInfo set kassert=true where dokument_info_id = :dokumentInfoId")
+		Query q = entityManager.createQuery("update DokumentInfo set kassert=true where dokumentInfoId = :dokumentInfoId")
 				.setParameter("dokumentInfoId", dokumentInfo.getDokumentInfoId());
 		q.executeUpdate();
 	}

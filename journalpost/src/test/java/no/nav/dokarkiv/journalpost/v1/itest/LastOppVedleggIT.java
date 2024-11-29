@@ -53,7 +53,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class LastOppVedleggIT extends AbstractJournalpostIT {
 
 	private HttpHeaders headers;
-	private static final String LAST_OPP_VEDLEGG_URL = URL_JOURNALPOST + "%s/lastOppVedlegg";
+	private static final String LAST_OPP_VEDLEGG_URL = apiJournalpostPath("%s/lastOppVedlegg");
 	private static final DokumentVariant DOCUMENT_PDF = DokumentVariant.builder()
 			.filtype(FILTYPE_PDF)
 			.variantformat(VARIANTFORMAT_ARKIV)
@@ -227,14 +227,12 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnNotFoundWhenJournalpostDoesNotExist() {
-		
 		var request = new HttpEntity<>(LAST_OPP_VEDLEGG_REQUEST, headers);
 		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(JOURNALPOST_ID), PATCH, request, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
 		assertThat(response.getBody())
 				.contains("Kunne ikke finne journalpost med journalpostId=%s i joark".formatted(JOURNALPOST_ID));
-
 	}
 
 	@Test
@@ -245,7 +243,6 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
 		assertThat(response.getBody())
 				.contains("Kunne ikke legge til vedlegg på journalpost med journalpostId=123. Validering av input feilet");
-
 	}
 
 	@Test

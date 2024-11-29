@@ -12,6 +12,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -67,6 +68,12 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
 		registry.addInterceptor(new PopulateMDCHandler())
 				.addPathPatterns("/rest/**", "/hentjournalsakinfo/**");
+	}
+
+	@Override
+	public void configurePathMatch(PathMatchConfigurer configurer) {
+		// Fjernes etter at klienter er oppdatert
+		configurer.setUseTrailingSlashMatch(true);
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.core.stelvio;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * Abstract base class for classes representing a codes table's entries, that is, rows in the codes table's corresponding

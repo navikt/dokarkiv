@@ -18,34 +18,34 @@
 		</dependency>
 		<dependency>
 			<groupId>com.blazebit</groupId>
-			<artifactId>blaze-persistence-core-api</artifactId>
+			<artifactId>blaze-persistence-core-api-jakarta</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.blazebit</groupId>
-			<artifactId>blaze-persistence-core-impl</artifactId>
+			<artifactId>blaze-persistence-core-impl-jakarta</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.blazebit</groupId>
-			<artifactId>blaze-persistence-integration-hibernate-5.6</artifactId>
+			<artifactId>blaze-persistence-integration-hibernate-6.2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.blazebit</groupId>
-			<artifactId>blaze-persistence-entity-view-api</artifactId>
+			<artifactId>blaze-persistence-entity-view-api-jakarta</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.blazebit</groupId>
-			<artifactId>blaze-persistence-entity-view-impl</artifactId>
+			<artifactId>blaze-persistence-entity-view-impl-jakarta</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.blazebit</groupId>
-			<artifactId>blaze-persistence-integration-entity-view-spring</artifactId>
+			<artifactId>blaze-persistence-integration-entity-view-spring-6.0</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.blazebit</groupId>
-			<artifactId>blaze-persistence-entity-view-processor</artifactId>
+			<artifactId>blaze-persistence-entity-view-processor-jakarta</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
@@ -64,11 +64,6 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.tomakehurst</groupId>
-			<artifactId>wiremock-jre8-standalone</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

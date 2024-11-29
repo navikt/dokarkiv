@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.security.handler;
 
+import jakarta.servlet.http.HttpServletResponse;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import org.junit.jupiter.api.Test;
@@ -7,8 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import javax.servlet.http.HttpServletResponse;
 
 import static no.nav.dokarkiv.core.security.handler.SelfSignedTokenFactory.createRestStsToken;
 import static no.nav.dokarkiv.core.security.handler.SelfSignedTokenFactory.defaultRestStsClaimsSet;

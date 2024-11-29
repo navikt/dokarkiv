@@ -68,6 +68,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
+	public static final String TILKNYTT_VEDLEGG_PATH = "/tilknyttVedlegg";
 	private static final String UGYLDIG_JOURNALPOST = "12312312312";
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
 
@@ -104,7 +105,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", PUT, requestHttpEntity, String.class);
+				apiJournalpostPath(targetJournalpostId + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, String.class);
 
 		completeCurrentAndStartNewTransaction();
 
@@ -157,7 +158,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				apiJournalpostPath(targetJournalpostId + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		completeCurrentAndStartNewTransaction();
 
@@ -254,7 +255,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				apiJournalpostPath(journalpostIdVedlegg + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		completeCurrentAndStartNewTransaction();
 
@@ -348,7 +349,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		TilknyttVedleggRequest request = createTilknyttVedleggRequest(dokumentVedleggList);
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
-		restTemplate.exchange(URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+		restTemplate.exchange(apiJournalpostPath(journalpostIdVedlegg + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		completeCurrentAndStartNewTransaction();
 
@@ -374,7 +375,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", PUT, requestHttpEntity, String.class);
+				apiJournalpostPath(journalpostIdVedlegg + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, String.class);
 		assertThat(responseEntity.getStatusCode(), is(MULTI_STATUS));
 	}
 
@@ -390,7 +391,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + UGYLDIG_JOURNALPOST + "/tilknyttVedlegg", PUT, requestHttpEntity, String.class);
+				apiJournalpostPath(UGYLDIG_JOURNALPOST + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
 	}
@@ -414,7 +415,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<String> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", PUT, requestHttpEntity, String.class);
+				apiJournalpostPath(journalpostIdVedlegg + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode(), is(CONFLICT));
 	}
@@ -439,7 +440,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				apiJournalpostPath(journalpostIdVedlegg + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 
 		assertThat(responseEntity.getStatusCode(), is(MULTI_STATUS));
@@ -465,7 +466,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(request, headers);
 		ResponseEntity<TilknyttVedleggResponse> responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + journalpostIdVedlegg + "/tilknyttVedlegg", PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				apiJournalpostPath(journalpostIdVedlegg + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter().get(0).getArsakKode(), is(IKKE_FUNNET));
@@ -509,7 +510,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				URL_JOURNALPOST + targetJournalpostId + "/tilknyttVedlegg", PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+				apiJournalpostPath(targetJournalpostId + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		assertThat(responseEntity.getStatusCode(), is(MULTI_STATUS));
 		assertThat(responseEntity.getBody().getFeiledeDokumenter(), hasSize(2));

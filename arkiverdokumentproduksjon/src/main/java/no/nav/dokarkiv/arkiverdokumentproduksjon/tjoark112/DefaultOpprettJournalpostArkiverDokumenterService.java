@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
-import static org.assertj.core.util.Strings.isNullOrEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Component
 @Slf4j
@@ -105,7 +105,7 @@ public class DefaultOpprettJournalpostArkiverDokumenterService implements Oppret
 		// Kan utføres etter at endringen der denne kommentaren ligger har vist seg å være stabil
 		final DokumentInfo dokumentInfo = requestTo.getJournalpost().findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		final String bestillingsId = dokumentInfo.getTilleggsopplysninger().get(BESTILLINGS_ID_KEY);
-		if (isNullOrEmpty(bestillingsId)) {
+		if (isEmpty(bestillingsId)) {
 			return null;
 		}
 

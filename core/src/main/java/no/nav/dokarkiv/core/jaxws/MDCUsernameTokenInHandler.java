@@ -1,18 +1,18 @@
 package no.nav.dokarkiv.core.jaxws;
 
 import com.google.common.collect.Sets;
+import jakarta.xml.soap.Node;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPHeader;
+import jakarta.xml.ws.ProtocolException;
+import jakarta.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.handler.soap.SOAPHandler;
+import jakarta.xml.ws.handler.soap.SOAPMessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import javax.xml.namespace.QName;
-import javax.xml.soap.Node;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.ws.ProtocolException;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.soap.SOAPHandler;
-import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;

@@ -17,18 +17,9 @@
 			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>core</artifactId>
 		</dependency>
-
 		<dependency>
-			<groupId>no.nav.tjenester.brevogarkiv</groupId>
-			<artifactId>arkiverdokumentproduksjon-tjenestespesifikasjon</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jvnet.jaxb2_commons</groupId>
-			<artifactId>jaxb2-basics-runtime</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
+			<groupId>no.nav.dok</groupId>
+			<artifactId>dok-domene-arkiverdokumentproduksjon-v1-tjenestespesifikasjon</artifactId>
 		</dependency>
 
 		<!-- Test -->

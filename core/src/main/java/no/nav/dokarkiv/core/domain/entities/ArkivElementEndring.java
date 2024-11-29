@@ -1,26 +1,30 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import java.time.LocalDateTime;
+
+import static org.hibernate.annotations.CascadeType.DETACH;
+import static org.hibernate.annotations.CascadeType.MERGE;
+import static org.hibernate.annotations.CascadeType.PERSIST;
+import static org.hibernate.annotations.CascadeType.REMOVE;
 
 
 /**
@@ -60,7 +64,7 @@ public class ArkivElementEndring {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "aksjonslogg_id", nullable = false)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
+	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
 	private AksjonsLogg aksjonsLogg;
 
 	/**

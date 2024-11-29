@@ -2,6 +2,7 @@ package no.nav.dokarkiv.safintern.tilknyttetjournalpost;
 
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.view.EntityViewSetting;
+import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.InvalidFieldRequestedException;
@@ -12,7 +13,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Set;
 

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
+import jakarta.xml.ws.WebServiceContext;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggResponse;
@@ -19,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.xml.ws.WebServiceContext;
 import java.security.Principal;
 
 import static org.hamcrest.CoreMatchers.is;

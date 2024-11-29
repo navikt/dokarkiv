@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.security;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.NavHeaders;
@@ -8,8 +10,6 @@ import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;

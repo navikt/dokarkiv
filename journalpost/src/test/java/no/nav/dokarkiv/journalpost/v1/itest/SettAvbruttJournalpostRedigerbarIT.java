@@ -18,7 +18,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class SettAvbruttJournalpostRedigerbarIT extends AbstractJournalpostIT {
-	private static final String SETTREDIGERBAR_URL = URL_PROTECTED_INTERN_JOURNALPOST + "%s/settAvbruttJournalpostRedigerbar";
+	private static final String SETTREDIGERBAR_URL = apiInternalJournalpostPath("%s/settAvbruttJournalpostRedigerbar");
 
 	@Test
 	public void skalOppdatereAvbruttTilRedigerbart() {

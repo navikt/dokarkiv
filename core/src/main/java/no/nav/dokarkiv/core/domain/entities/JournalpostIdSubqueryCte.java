@@ -1,9 +1,8 @@
 package no.nav.dokarkiv.core.domain.entities;
 
 import com.blazebit.persistence.CTE;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @CTE
 @Entity

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
+import jakarta.transaction.Transactional;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
@@ -14,8 +15,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-
-import javax.transaction.Transactional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class,

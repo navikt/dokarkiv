@@ -1,6 +1,18 @@
 package no.nav.dokarkiv.core.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,22 +21,12 @@ import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKi
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import static org.hibernate.annotations.CascadeType.DETACH;
+import static org.hibernate.annotations.CascadeType.MERGE;
+import static org.hibernate.annotations.CascadeType.PERSIST;
 
 /**
  * Mange til mange relasjon mellom {@link Journalpost} og {@link DokumentInfo}
@@ -65,7 +67,7 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dokument_info_id", nullable = false)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
+	@Cascade({PERSIST, MERGE, DETACH})
 	private DokumentInfo dokumentInfo;
 
 	@JsonIgnore

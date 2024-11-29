@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.NavHeaders;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
@@ -17,8 +19,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static no.nav.dokarkiv.core.NavHeaders.NAV_CONSUMER_TOKEN;

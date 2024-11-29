@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.safintern.journalpost;
 
+import jakarta.persistence.EntityManager;
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
@@ -23,7 +24,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -33,12 +33,12 @@ import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.S;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.SKJERMING_TYPE_CODE;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertBruker;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertSak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertBruker;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertSak;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

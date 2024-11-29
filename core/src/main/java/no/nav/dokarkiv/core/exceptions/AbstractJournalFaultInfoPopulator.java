@@ -1,18 +1,14 @@
 package no.nav.dokarkiv.core.exceptions;
 
 import no.nav.dokarkiv.core.domain.util.DateProvider;
-import org.joda.time.DateTime;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
  * Abstract base class for faultinfo populators.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
  */
 public abstract class AbstractJournalFaultInfoPopulator {
 
@@ -61,10 +57,5 @@ public abstract class AbstractJournalFaultInfoPopulator {
 		} catch (DatatypeConfigurationException e) {
 			throw new ApplicationException("Unable to create XMLGregorianCalendar", e);
 		}
-	}
-
-	protected DateTime getTodayJodaTime() {
-		Date today = DateProvider.getToday();
-		return new DateTime(today.getTime());
 	}
 }

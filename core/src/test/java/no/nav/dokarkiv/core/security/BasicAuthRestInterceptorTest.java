@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.security;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import no.nav.dokarkiv.core.cache.CacheConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,8 +11,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.util.Base64Utils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;

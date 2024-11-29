@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.rjoark101;
 
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.JournalpostDokumentInfoPair;
@@ -18,7 +19,6 @@ import no.nav.dokarkiv.exception.ArkivVariantkkeFunnetException;
 import no.nav.dokarkiv.exception.JournalpostKanIkkeSlettesException;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

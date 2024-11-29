@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.security;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.cache.CacheConfig;
 import no.nav.dokarkiv.core.exceptions.CouldNotDecodeBasicAuthToken;
@@ -12,8 +14,6 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.HardcodedFilter;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 import java.util.Optional;
 

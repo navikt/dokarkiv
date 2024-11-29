@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.NavHeaders;
-import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -10,6 +9,7 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.exceptions.ApplicationProblemDetail;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
@@ -139,7 +139,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		OppdaterJournalpostRequest request = createPutOppdaterJournalpostRequestWithDokumentInfoId(dokumentInfoId);
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -215,7 +215,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -242,7 +242,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -268,7 +268,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
@@ -292,7 +292,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
@@ -318,7 +318,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
@@ -346,7 +346,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -390,7 +390,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -421,7 +421,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
+		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, ApplicationProblemDetail.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
 	}
@@ -442,7 +442,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -467,7 +467,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -493,7 +493,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -524,7 +524,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -569,7 +569,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -609,7 +609,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -642,7 +642,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -683,7 +683,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(sakTestRepository.count()).isEqualTo(1);
@@ -728,7 +728,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(sakTestRepository.count()).isEqualTo(1);
@@ -761,7 +761,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -809,7 +809,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -840,7 +840,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -871,7 +871,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -901,7 +901,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -932,7 +932,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")).withRequestBody(containing("AKTORID")));
 	}
@@ -959,7 +959,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")).withRequestBody(containing("AKTORID")));
 	}
@@ -977,7 +977,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")).withRequestBody(containing("AKTORID")));
 	}
@@ -1000,7 +1000,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		verify(exactly(0), postRequestedFor(urlEqualTo("/pdl")));
 	}
@@ -1021,7 +1021,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isNull();
@@ -1042,7 +1042,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
@@ -1064,7 +1064,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
 
@@ -1089,7 +1089,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
+		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, ApplicationProblemDetail.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
 		assertThat(responseEntity.getBody().getMessage()).contains("Avsender på digitalt innsendt journalpost kan ikke endres. navn, id og idtype ble forsøkt endret");
 
@@ -1114,7 +1114,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
+		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, ApplicationProblemDetail.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
 		assertThat(responseEntity.getBody().getMessage()).contains("Avsender på digitalt innsendt journalpost kan ikke endres. id og idtype ble forsøkt endret");
 
@@ -1151,7 +1151,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, RestConsumerExceptionResponse.class);
+		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, ApplicationProblemDetail.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
 		assertThat(responseEntity.getBody().getMessage()).contains("Tittel kan ikke oppdateres for journalpost med journalpoststatus=FL og journalposttype=N");
@@ -1180,7 +1180,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertThat(journalpostOppdatert.getAvsenderMottaker()).isEqualTo("TESTFORNAVN TESTFAMILIEN");
@@ -1192,7 +1192,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		var requestString = classpathToString("__files/oppdaterJournalpostBodyMedUgyldigFagsaksystem.json");
 		HttpEntity<String> stringHttpEntity = new HttpEntity<>(requestString, oidcHeaders());
 
-		var responseEntity = restTemplate.exchange(URL_JOURNALPOST + "123123123", PUT, stringHttpEntity, String.class);
+		var responseEntity = restTemplate.exchange(apiJournalpostPath("123123123"), PUT, stringHttpEntity, String.class);
 
 		String forventetFeilmelding = "Feltet sak.fagsaksystem=UGYLDIG må være en av %s".formatted(Arrays.toString(Fagsaksystem.values()));
 
@@ -1208,7 +1208,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpost.getJournalpostId(), PUT, requestHttpEntity, String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpost.getJournalpostId().toString()), PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
 		assertThat(responseEntity.getBody()).contains("Tittel kan ikke oppdateres til *****");
@@ -1229,7 +1229,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -1256,7 +1256,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -1282,7 +1282,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
@@ -1310,7 +1310,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
-		var responseEntity = restTemplate.exchange(URL_JOURNALPOST + journalpostId, PUT, requestHttpEntity, String.class);
+		var responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
 		assertThat(responseEntity.getBody()).contains(format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, innsynCode));

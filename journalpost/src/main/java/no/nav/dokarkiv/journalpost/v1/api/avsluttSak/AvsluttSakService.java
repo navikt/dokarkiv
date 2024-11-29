@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api.avsluttSak;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.consumer.pdl.PdlIdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AvleveringStatusCode;
@@ -11,12 +12,11 @@ import no.nav.dokarkiv.core.exceptions.SakIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
-import org.joda.time.DateTime;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -87,7 +87,7 @@ public class AvsluttSakService {
 			sak.setSakStatus(AVBRUTT);
 			sak.setKassasjonStatus(KLAR_FOR_KASSASJON);
 			sak.setAvleveringStatus(AvleveringStatusCode.AVBRUTT);
-			sak.setDatoEndret(DateTime.now().toDate());
+			sak.setDatoEndret(Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()));
 			sak.setEndretAv(determineSaksbehandler());
 		});
 	}
@@ -99,7 +99,7 @@ public class AvsluttSakService {
 			sak.setKassasjonStatus(null);
 			sak.setEndretAv(MDC.get(MDC_USER_ID));
 			sak.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-			sak.setDatoEndret(DateTime.now().toDate());
+			sak.setDatoEndret(Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()));
 			sak.setDatoAvsluttet(determineDatoAvsluttet(avsluttSakRequest));
 			sak.setAdministrativEnhet(avsluttSakRequest.getAdministrativEnhet());
 			sak.setDatoSakOpprettet(convertLocalDateTimeToDate(avsluttSakRequest.getOpprettetDato()));
@@ -116,7 +116,7 @@ public class AvsluttSakService {
 	}
 
 	private Date determineDatoAvsluttet(AvsluttSakRequest avsluttSakRequest) {
-		return avsluttSakRequest.getAvsluttetDato() == null ? DateTime.now().toDate() :
+		return avsluttSakRequest.getAvsluttetDato() == null ? Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()) :
 				convertLocalDateTimeToDate(avsluttSakRequest.getAvsluttetDato());
 	}
 
@@ -141,7 +141,7 @@ public class AvsluttSakService {
 		return journalposts.stream()
 				.anyMatch(journalpost ->
 						midlertidigeJournalpostStatuser.contains(journalpost.getJournalstatus())
-								&& !journalpost.isFeilregistrert());
+						&& !journalpost.isFeilregistrert());
 	}
 
 	private List<Sak> getSakerForRequest(AvsluttSakRequest avsluttSakRequest) {
