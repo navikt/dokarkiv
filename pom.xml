@@ -55,7 +55,7 @@
 		<dokumentproduksjoninfo-tjenestespesifikasjon.version>3-9eba8ba</dokumentproduksjoninfo-tjenestespesifikasjon.version>
 
 		<!-- test -->
-		<datasource-proxy-spring-boot-starter.version>1.9.0</datasource-proxy-spring-boot-starter.version>
+		<datasource-proxy-spring-boot-starter.version>1.10.0</datasource-proxy-spring-boot-starter.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
 		<wiremock-jre8-standalone.version>2.35.1</wiremock-jre8-standalone.version>
