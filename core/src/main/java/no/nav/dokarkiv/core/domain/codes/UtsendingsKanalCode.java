@@ -67,7 +67,11 @@ public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, 
 	/**
 	 * Taushetsbelagt Post via Altinn
 	 */
-	DPVT;
+	DPVT,
+	/**
+	 * Digital Post Offentlig
+	 */
+	DPO;
 
 	/**
 	 * {@inheritDoc}
