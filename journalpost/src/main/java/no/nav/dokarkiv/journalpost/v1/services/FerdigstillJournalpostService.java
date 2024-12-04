@@ -139,13 +139,21 @@ public class FerdigstillJournalpostService {
 		ferdigstillJournalpostValidator.validatePaakrevdeFelter(journalpost);
 		validerFagomradeErAktivt(journalpost);
 	}
+
 	private void validerSak(Journalpost journalpost) {
-		if(FS22.equals(journalpost.getSaksrelasjon().getFagsystem())) {
+		if (FS22.equals(journalpost.getSaksrelasjon().getFagsystem())) {
 			Long sakId = journalpost.getSaksrelasjon().getSakId();
 			Sak sak = sakRepository.findById(sakId)
 					.orElseThrow(() -> new SakIkkeFunnetException("Kunne ikke finne sak med sakId=%s".formatted(sakId)));
 
-			ferdigstillJournalpostValidator.validateSak(journalpost, sak);
+			ferdigstillJournalpostValidator.validateSakrelasjon(journalpost, sak);
+			validerSakTema(sak);
+		}
+	}
+
+	public void validerSakTema(Sak sak) {
+		if (fagomradeService.erFagomradetInaktivt(sak.getTema())) {
+			throw new KanIkkeFerdigstilleException(String.format("Sakens tema=%s er ugylid og journalposten kan ikke ferdigstilles", sak.getTema()));
 		}
 	}
 

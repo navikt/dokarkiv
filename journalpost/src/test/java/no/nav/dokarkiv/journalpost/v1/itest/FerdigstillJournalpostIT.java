@@ -22,6 +22,9 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.util.Date;
 import java.util.List;
 
+import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.fagomrade;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.DAG;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.PEN;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVSLUTTET;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
@@ -443,7 +446,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void happyPathWhenSakStatusIsNull() {
-		Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
+		Sak sak = SakTestDataProvider.createSakWithStatus(null).tema(PEN.name()).build();
 		sakTestRepository.persist(sak);
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.FS, sak.getSakId())
 				.saksrelasjon(SaksrelasjonTestDataProvider.createSaksrelasjonWithSak(sak.getSakId()).build())
@@ -464,5 +467,32 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 						requestEntity, String.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
+	}
+
+	@Test
+	public void shouldFeilWhenSakTemaErInaktiveEllerUgyldig() {
+		Sak sak = SakTestDataProvider.createSakWithStatus(null).tema(DAG.name()).build();
+		sakTestRepository.persist(sak);
+
+		fagomradeTestRepository.persist(fagomrade());
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.I, JournalStatusCode.FS, sak.getSakId())
+				.saksrelasjon(SaksrelasjonTestDataProvider.createSaksrelasjonWithSak(sak.getSakId()).build())
+				.build();
+		journalpostTestRepository.persist(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long journalpostId = journalpost.getJournalpostId();
+		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
+				.journalfoerendeEnhet("9999")
+				.build();
+
+		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<String> response =
+				restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, HttpMethod.PATCH,
+						requestEntity, String.class);
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
 }
