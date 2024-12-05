@@ -33,9 +33,8 @@ public class FagomradeService {
 				value -> !value.getErGyldig() && value.getDatoTilOgMed() != null && now().isAfter(value.getDatoTilOgMed())
 		).isPresent();
 
-		// TODO: Nedgrader loggmelding til warn etter 1. juli 2023 for å luke ut feil fra kallende systemer
 		if (fagomradetErInaktivt) {
-			log.error("Fagomrade={} er ikke lenger aktivt etter {}", fagomradekode, fagomrade.get().getDatoTilOgMed());
+			log.warn("Fagomrade={} er ikke lenger aktivt etter {}", fagomradekode, fagomrade.get().getDatoTilOgMed());
 		}
 
 		return fagomradetErInaktivt;
