@@ -4,10 +4,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +15,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+
+import static jakarta.persistence.GenerationType.SEQUENCE;
 
 /**
  * Inneholder metadata om logiske vedlegg relatert til skanning.
@@ -31,12 +31,12 @@ import org.hibernate.annotations.Parameter;
 public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithKilde {
 	public static final int VEDLEGG_INNHOLD_LENGTH = 550;
 	private static final long serialVersionUID = 4377297136994040373L;
+	private static final String SKANNET_INNHOLD_SEQUENCE = "skannet_innhold_seq";
+	public static final String DATABASE_SKANNET_INNHOLD_SEQUENCE = "t_skannet_innhold_seq";
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "skannetInnhold_seq")
-	@GenericGenerator(name = "skannetInnhold_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "T_SKANNET_INNHOLD_SEQ"),
-					@Parameter(name = "initial_value", value = "200000000")})
+	@GeneratedValue(strategy = SEQUENCE, generator = SKANNET_INNHOLD_SEQUENCE)
+	@SequenceGenerator(name = SKANNET_INNHOLD_SEQUENCE, sequenceName = DATABASE_SKANNET_INNHOLD_SEQUENCE, initialValue = 200000000, allocationSize = 1)
 	@Column(name = "skannet_innhold_id", nullable = false)
 	@ToString.Include
 	private Long skannetInnholdId;

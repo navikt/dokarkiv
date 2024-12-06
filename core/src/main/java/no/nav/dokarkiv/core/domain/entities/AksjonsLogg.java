@@ -5,9 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,14 +16,13 @@ import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Parameter;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import static jakarta.persistence.GenerationType.SEQUENCE;
 import static org.hibernate.annotations.CascadeType.DETACH;
 import static org.hibernate.annotations.CascadeType.MERGE;
 import static org.hibernate.annotations.CascadeType.PERSIST;
@@ -43,10 +42,12 @@ import static org.hibernate.annotations.CascadeType.REMOVE;
 @AllArgsConstructor
 public class AksjonsLogg {
 
+	private static final String AKSJONSLOGG_SEQUENCE = "aksjonslogg_seq";
+	private static final String DATABASE_AKSJONSLOGG_SEQ = "t_aksjonslogg_seq";
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "aksjonslogg_seq")
-	@GenericGenerator(name = "aksjonslogg_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "t_aksjonslogg_seq")})
+	@GeneratedValue(strategy = SEQUENCE, generator = AKSJONSLOGG_SEQUENCE)
+	@SequenceGenerator(name = AKSJONSLOGG_SEQUENCE, sequenceName = DATABASE_AKSJONSLOGG_SEQ, allocationSize = 1)
 	@Column(name = "aksjonslogg_id", nullable = false, length = 11)
 	private Long aksjonsloggId;
 

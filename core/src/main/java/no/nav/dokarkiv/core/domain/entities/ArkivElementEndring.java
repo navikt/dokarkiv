@@ -4,10 +4,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,12 +15,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Parameter;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.GenerationType.SEQUENCE;
 import static org.hibernate.annotations.CascadeType.DETACH;
 import static org.hibernate.annotations.CascadeType.MERGE;
 import static org.hibernate.annotations.CascadeType.PERSIST;
@@ -40,13 +39,14 @@ import static org.hibernate.annotations.CascadeType.REMOVE;
 @Immutable
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class ArkivElementEndring {
 
+	private static final String ARKIVELEMENTENDRING_SEQUENCE = "arkivelementendring_seq";
+	private static final String DATABASE_ARKIVELEMENTENDRING_SEQ = "t_arkivelementendring_seq";
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "arkivelementendring_seq")
-	@GenericGenerator(name = "arkivelementendring_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "t_arkivelementendring_seq")})
+	@GeneratedValue(strategy = SEQUENCE, generator = ARKIVELEMENTENDRING_SEQUENCE)
+	@SequenceGenerator(name = ARKIVELEMENTENDRING_SEQUENCE, sequenceName = DATABASE_ARKIVELEMENTENDRING_SEQ, allocationSize = 1)
 	@Column(name = "arkiv_element_endring_id", nullable = false, length = 11)
 	private Long arkivElementEndringId;
 

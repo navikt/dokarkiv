@@ -5,8 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -17,11 +17,11 @@ import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.codes.AvleveringStatusCode;
 import no.nav.dokarkiv.core.domain.codes.KassasjonStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+
+import static jakarta.persistence.GenerationType.SEQUENCE;
 
 /**
  * Inneholder metadata om sakstilknytningen til fagsystemet.
@@ -34,10 +34,12 @@ import java.util.Date;
 @AllArgsConstructor
 public class Sak {
 
+	private static final String SAK_SEQUENCE = "seq_sak";
+	private static final String DATABASE_SAK_SEQUENCE = "seq_sak";
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sak")
-	@GenericGenerator(name = "seq_sak", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "seq_sak")})
+	@GeneratedValue(strategy = SEQUENCE, generator = SAK_SEQUENCE)
+	@SequenceGenerator(name = SAK_SEQUENCE, sequenceName = DATABASE_SAK_SEQUENCE, allocationSize = 1)
 	@Column(name = "id", nullable = false, length = 11)
 	private Long sakId;
 

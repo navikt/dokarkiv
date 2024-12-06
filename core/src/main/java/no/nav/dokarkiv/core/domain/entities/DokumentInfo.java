@@ -8,13 +8,13 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -30,9 +30,8 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
@@ -45,6 +44,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static jakarta.persistence.GenerationType.SEQUENCE;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
@@ -65,21 +65,19 @@ import static org.hibernate.annotations.CascadeType.REMOVE;
 @ToString(onlyExplicitlyIncluded = true)
 public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKilde {
 
-	/**
-	 * ID used for serialization.
-	 */
+	@Serial
 	private static final long serialVersionUID = -2981029229377469184L;
 
 	/**
 	 * DokumentInfo title for deleted documents. These documents point to a dummy dokument.
 	 */
 	public static final String DELETED_DOCUMENT_TITLE = "Slettet dokument";
+	private static final String DOKUMENT_INFO_SEQUENCE = "dokument_info_seq";
+	private static final String DATABASE_DOKUMENT_INFO_SEQUENCE = "t_dokument_info_seq";
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dokumentInfo_seq")
-	@GenericGenerator(name = "dokumentInfo_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "T_DOKUMENT_INFO_SEQ"),
-					@Parameter(name = "initial_value", value = "200000000")})
+	@GeneratedValue(strategy = SEQUENCE, generator = DOKUMENT_INFO_SEQUENCE)
+	@SequenceGenerator(name = DOKUMENT_INFO_SEQUENCE, sequenceName = DATABASE_DOKUMENT_INFO_SEQUENCE, initialValue = 200000000, allocationSize = 1)
 	@Column(name = "dokument_info_id", nullable = false)
 	@ToString.Include
 	private Long dokumentInfoId;

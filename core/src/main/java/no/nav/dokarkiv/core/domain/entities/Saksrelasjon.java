@@ -7,10 +7,10 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,8 +18,10 @@ import lombok.Getter;
 import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+
+import java.io.Serial;
+
+import static jakarta.persistence.GenerationType.SEQUENCE;
 
 /**
  * Inneholder metadata om arkivsaken (internt arkivbegrep).
@@ -33,16 +35,14 @@ import org.hibernate.annotations.Parameter;
 @AllArgsConstructor
 public class Saksrelasjon extends AbstractPersistentVersionedDomainObjectWithKilde {
 
-	/**
-	 * ID used for serialization.
-	 */
+	@Serial
 	private static final long serialVersionUID = 588843673270038569L;
+	private static final String SAKSRELASJON_SEQUENCE = "saksrelasjon_seq";
+	private static final String DATABASE_SAKSRELASJON_SEQUENCE = "t_saksrelasjon_seq";
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "saksrelasjon_seq")
-	@GenericGenerator(name = "saksrelasjon_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "T_SAKSRELASJON_SEQ"),
-					@Parameter(name = "initial_value", value = "200000000")})
+	@GeneratedValue(strategy = SEQUENCE, generator = SAKSRELASJON_SEQUENCE)
+	@SequenceGenerator(name = SAKSRELASJON_SEQUENCE, sequenceName = DATABASE_SAKSRELASJON_SEQUENCE, initialValue = 200000000, allocationSize = 1)
 	@Column(name = "saksrelasjon_id", nullable = false)
 	private Long saksrelasjonId;
 

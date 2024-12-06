@@ -8,13 +8,13 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -39,10 +39,9 @@ import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.type.TrueFalseConverter;
 
+import java.io.Serial;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +58,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.GenerationType.SEQUENCE;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
@@ -82,19 +82,17 @@ import static org.hibernate.annotations.CascadeType.REMOVE;
 @ToString(onlyExplicitlyIncluded = true)
 public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKilde {
 
-	/**
-	 * ID used for serialization.
-	 */
+	@Serial
 	private static final long serialVersionUID = 8744278542606158366L;
 	private static final List<JournalStatusCode> ENDELIG_JOURNALFOERING_STATUS = Arrays.asList(J, JournalStatusCode.FS, JournalStatusCode.FL);
 	private static final List<JournalStatusCode> MIDLERTIDIG_INNGAAENDE_JOURNALFOERING_STATUS = Arrays.asList(MO, M, UB);
+	private static final String JOURNALPOST_SEQUENCE = "journalpost_seq";
+	private static final String DATABASE_JOURNALPOST_SEQUENCE = "t_journalpost_seq";
 	public static final int KANAL_REFERANSE_ID_LENGTH = 200;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "journalpost_seq")
-	@GenericGenerator(name = "journalpost_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-			@Parameter(name = "sequence_name", value = "T_JOURNALPOST_SEQ"),
-			@Parameter(name = "initial_value", value = "200000000")})
+	@GeneratedValue(strategy = SEQUENCE, generator = JOURNALPOST_SEQUENCE)
+	@SequenceGenerator(name = JOURNALPOST_SEQUENCE, sequenceName = DATABASE_JOURNALPOST_SEQUENCE, initialValue = 200000000, allocationSize = 1)
 	@Column(name = "journalpost_id", nullable = false)
 	@ToString.Include
 	private Long journalpostId;
