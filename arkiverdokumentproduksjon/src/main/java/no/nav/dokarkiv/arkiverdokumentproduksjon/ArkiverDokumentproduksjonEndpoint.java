@@ -73,7 +73,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
 @WebService(targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/",
 		serviceName = "ArkiverDokumentproduksjonService_v1",
 		portName = "ArkiverDokumentproduksjonPort_v1",
-		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/arkiverdokumentproduksjon.wsdl",
+		wsdlLocation = "classpath:wsdl/arkiverdokumentproduksjon.wsdl",
 		endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1")
 @Addressing
 @HandlerChain(file = "classpath:arkiverdokumentproduksjon-handler.xml")
