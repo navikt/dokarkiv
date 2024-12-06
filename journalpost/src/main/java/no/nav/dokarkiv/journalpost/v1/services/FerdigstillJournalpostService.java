@@ -146,14 +146,14 @@ public class FerdigstillJournalpostService {
 			Sak sak = sakRepository.findById(sakId)
 					.orElseThrow(() -> new SakIkkeFunnetException("Kunne ikke finne sak med sakId=%s".formatted(sakId)));
 
-			ferdigstillJournalpostValidator.validateSakrelasjon(journalpost, sak);
+			ferdigstillJournalpostValidator.validateSaksrelasjon(journalpost, sak);
 			validerSakTema(sak);
 		}
 	}
 
 	public void validerSakTema(Sak sak) {
 		if (fagomradeService.erFagomradetInaktivt(sak.getTema())) {
-			throw new KanIkkeFerdigstilleException(String.format("Sakens tema=%s er ugylid og journalposten kan ikke ferdigstilles", sak.getTema()));
+			throw new KanIkkeFerdigstilleException(String.format("Sakens tema=%s er ugyldig og journalposten kan ikke ferdigstilles", sak.getTema()));
 		}
 	}
 

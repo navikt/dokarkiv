@@ -134,13 +134,4 @@ public final class JournalpostTestDataProvider {
 								.dokumentInfo(createVedleggDokumentInfo().build())
 								.build());
 	}
-
-	public static Fagomrade fagomrade() {
-		return Fagomrade.builder()
-				.kode(DAG.name())
-				.dekode("Dagpenger")
-				.datoTilOgMed(LocalDate.now().minusDays(2))
-				.erGyldig(false)
-				.build();
-	}
 }
