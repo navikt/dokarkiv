@@ -266,10 +266,10 @@ public class PdlIdentConsumer implements IdentConsumer {
 	}
 
 	private void handleError(Throwable error) {
-		if (error instanceof WebClientResponseException response && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
+		if (error instanceof WebClientResponseException response && response.getStatusCode().is4xxClientError()) {
 			throw new PdlFunctionalException(
 					String.format("Kall mot pdl feilet funksjonelt med statuskode=%s Feilmelding=%s",
-							response.getRawStatusCode(),
+							response.getStatusCode(),
 							response.getMessage()),
 					error);
 		} else {
