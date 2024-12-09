@@ -2,6 +2,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 import com.google.common.base.Strings;
 import io.micrometer.core.annotation.Timed;
+import jakarta.annotation.Resource;
 import jakarta.jws.HandlerChain;
 import jakarta.jws.WebService;
 import jakarta.xml.ws.WebServiceContext;
@@ -61,8 +62,6 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
 
