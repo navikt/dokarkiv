@@ -204,7 +204,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.UNAUTHORIZED, status);
 	}
 
-
 	private HttpHeaders createHeaders(String serviceUser) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);

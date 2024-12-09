@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -123,7 +124,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
-	public static final String FAGSYSTEM_ARGUS_AZP_NAME = "dev-fss:dsopkontroll:dsop-kontroll";
+	private static final String FAGSYSTEM_ARGUS_AZP_NAME = "dev-fss:dsopkontroll:dsop-kontroll";
+	private static final Map<String, List<String>> FERDIGSTILL_QUERY = Map.of("forsoekFerdigstill", List.of("true"));
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Test
@@ -281,7 +283,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		OpprettJournalpostRequest request = createRequest(INNGAAENDE, "9999", sak.getSakId().toString());
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath() + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
@@ -320,7 +322,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		OpprettJournalpostRequest request = createRequest(UTGAAENDE, "0123", sak.getSakId().toString());
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath() + FERDIGSTILL_QUERY, POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
@@ -1118,9 +1120,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.build();
 
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
-		String url = apiJournalpostPath(FERDIGSTILL_QUERY);
-		System.out.println(url);
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(url, POST, requestEntity, OpprettJournalpostResponse.class);
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
@@ -1434,7 +1434,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(responseSecond.getBody());
 		assertEqualOpprettJournalpostResponses(responseFirst.getBody(), responseSecond.getBody());
 	}
-
 
 	@Test
 	public void shouldOppretteUtgaaendeJournalpostAndSetSporingmetadataWhenServiceuserToken() {

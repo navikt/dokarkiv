@@ -10,11 +10,13 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.web.util.UriComponentsBuilder;
 import wiremock.com.google.common.io.Resources;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.function.Function;
+import java.util.List;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -27,7 +29,8 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.util.StringUtils.trimTrailingCharacter;
+import static org.springframework.util.CollectionUtils.toMultiValueMap;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
 @SpringBootTest(
 		webEnvironment = RANDOM_PORT,
@@ -37,92 +40,61 @@ import static org.springframework.util.StringUtils.trimTrailingCharacter;
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
-	static final String JOURNALPOSTAPI_BASE_PATH = "/rest/journalpostapi/v1";
+	static final String JOURNALPOSTAPI_BASE_PATH = "/rest/journalpostapi/v1/";
 	static final String JOURNALPOSTAPI_JOURNALPOST_PATH = "journalpost";
 	static final String JOURNALPOSTAPI_DOKUMENTINFO_PATH = "dokumentInfo";
 	static final String INTERNAL_JOURNALPOSTAPI_BASE_PATH = "/rest/internal/journalpostapi/v1/";
 	static final String INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH = "journalpost";
 	static final String FERDIGSTILL = "/ferdigstill";
-	static final String KOPIER_QUERY = "kopierJournalpost?kildeJournalpostId={kildeJournalpostId}";
-	static final String FERDIGSTILL_QUERY = "?forsoekFerdigstill=true";
 	protected static final String NAV_IDENT_SAKSBEHANDLER = "Z990782";
 
 	protected String OIDC_TOKEN_PERSON_USER_TEST;
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;
 
-	protected static String apiPath() {
-		return apiPath("");
-	}
-
-	protected static String apiPath(String pathWithQuery) {
-		if (pathWithQuery == null || pathWithQuery.isBlank()) {
-			return JOURNALPOSTAPI_BASE_PATH;
-		} else if (pathWithQuery.startsWith("/") || pathWithQuery.startsWith("?")) {
-			return trimTrailingSlash(JOURNALPOSTAPI_BASE_PATH + pathWithQuery);
-		} else {
-			return trimTrailingSlash(JOURNALPOSTAPI_BASE_PATH + "/" + pathWithQuery);
-		}
+	protected static String apiPath(String path) {
+		return apiPathBuilder(path).build().toUriString();
 	}
 
 	protected static String apiJournalpostPath() {
-		return apiJournalpostPath("");
+		return apiJournalpostPath(Map.of(), "");
 	}
 
-	protected static String apiJournalpostPath(String pathWithQuery) {
-		if (pathWithQuery == null || pathWithQuery.isBlank()) {
-			return trimTrailingSlash(apiPath(JOURNALPOSTAPI_JOURNALPOST_PATH));
-		} else if (pathWithQuery.startsWith("/") || pathWithQuery.startsWith("?")) {
-			return trimTrailingSlash(apiPath(JOURNALPOSTAPI_JOURNALPOST_PATH + pathWithQuery));
+	protected static String apiJournalpostPath(String... path) {
+		return apiJournalpostPath(Map.of(), path);
+	}
+
+	protected static String apiJournalpostPath(Map<String, List<String>> queryParams) {
+		return apiJournalpostPath(queryParams, "");
+	}
+
+	protected static String apiJournalpostPath(Map<String, List<String>> queryParams, String... path) {
+		UriComponentsBuilder builder = apiPathBuilder(JOURNALPOSTAPI_JOURNALPOST_PATH).pathSegment(path);
+		if (queryParams.isEmpty()) {
+			return builder.build().toUriString();
 		} else {
-			return trimTrailingSlash(apiPath(JOURNALPOSTAPI_JOURNALPOST_PATH + "/" + pathWithQuery));
+			return builder.queryParams(toMultiValueMap(queryParams)).build().toUriString();
 		}
 	}
 
-	protected static String apiDokumentInfoPath(String pathWithQuery) {
-		if (pathWithQuery == null || pathWithQuery.isBlank()) {
-			return trimTrailingSlash(apiPath(JOURNALPOSTAPI_DOKUMENTINFO_PATH));
-		} else if (pathWithQuery.startsWith("/") || pathWithQuery.startsWith("?")) {
-			return trimTrailingSlash(apiPath(JOURNALPOSTAPI_DOKUMENTINFO_PATH + pathWithQuery));
-		} else {
-			return trimTrailingSlash(apiPath(JOURNALPOSTAPI_DOKUMENTINFO_PATH + "/" + pathWithQuery));
-		}
+	protected static String apiDokumentInfoPath(String... path) {
+		return apiPathBuilder(JOURNALPOSTAPI_DOKUMENTINFO_PATH).pathSegment(path).build().toUriString();
 	}
 
-	protected static String apiInternalPath(String pathWithQuery) {
-		if (pathWithQuery == null || pathWithQuery.isBlank()) {
-			return INTERNAL_JOURNALPOSTAPI_BASE_PATH;
-		} else if (pathWithQuery.startsWith("/") || pathWithQuery.startsWith("?")) {
-			return trimTrailingSlash(INTERNAL_JOURNALPOSTAPI_BASE_PATH + pathWithQuery);
-		} else {
-			return trimTrailingSlash(INTERNAL_JOURNALPOSTAPI_BASE_PATH + "/" + pathWithQuery);
-		}
+	protected static String apiInternalPath(String... path) {
+		return apiInternalPathBuilder(path).build().toUriString();
 	}
 
-	protected static String apiInternalJournalpostPath(String pathWithQuery) {
-		if (pathWithQuery == null || pathWithQuery.isBlank()) {
-			return trimTrailingSlash(apiInternalPath(INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH));
-		} else if (pathWithQuery.startsWith("/") || pathWithQuery.startsWith("?")) {
-			return trimTrailingSlash(apiInternalPath(INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH + pathWithQuery));
-		} else {
-			return trimTrailingSlash(apiInternalPath(INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH + "/" + pathWithQuery));
-		}
+	protected static String apiInternalJournalpostPath(String... path) {
+		return apiInternalPathBuilder(INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH).pathSegment(path).build().toUriString();
 	}
 
-	private static String trimTrailingSlash(String path) {
-		if (path.endsWith("/")) {
-			return trimTrailingCharacter(path, '/');
-		}
-		return path;
+	private static UriComponentsBuilder apiPathBuilder(String path) {
+		return fromPath(JOURNALPOSTAPI_BASE_PATH).path(path);
 	}
 
-	protected static String apiPathMapper(String basePath, Function<String, String> path, String pathWithQuery) {
-		if (pathWithQuery == null || pathWithQuery.isBlank()) {
-			return basePath + path.apply(pathWithQuery);
-		} else if (pathWithQuery.startsWith("/")) {
-			return basePath + path.apply(pathWithQuery);
-		} else {
-			return basePath + path.apply("/" + pathWithQuery);
-		}
+	private static UriComponentsBuilder apiInternalPathBuilder(String... path) {
+		return fromPath(INTERNAL_JOURNALPOSTAPI_BASE_PATH)
+				.pathSegment(path);
 	}
 
 	void restStsToken() {

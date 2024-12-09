@@ -32,7 +32,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class FeilregistrerIT extends AbstractJournalpostIT {
 
-	private static final String FEILREGISTRER = "/feilregistrer/";
+	private static final String FEILREGISTRER = "feilregistrer";
 	private static final String HJEMMEL = "ARKL";
 
 	@Test
@@ -43,7 +43,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId + FEILREGISTRER + FEILREGISTRER_SAKSTILKNYTNING), PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId.toString(), FEILREGISTRER, FEILREGISTRER_SAKSTILKNYTNING), PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
 
@@ -77,7 +77,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithUserAndServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId + FEILREGISTRER + FEILREGISTRER_SAKSTILKNYTNING), PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId.toString(), FEILREGISTRER, FEILREGISTRER_SAKSTILKNYTNING), PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
 
@@ -100,7 +100,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId + FEILREGISTRER + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING), PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId.toString(), FEILREGISTRER, OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING), PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
 
@@ -132,7 +132,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
-		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId + FEILREGISTRER + SETT_UKJENT_BRUKER), PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId.toString(), FEILREGISTRER, SETT_UKJENT_BRUKER), PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
 
@@ -158,7 +158,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	public void skalReturnereUnauthorizedForUkjentBrukerHvisTokenIkkeErEtOboToken() {
 		var requestEntity = new HttpEntity<>(createHeadersWithClientCredentialToken());
 
-		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath("1" + FEILREGISTRER + SETT_UKJENT_BRUKER), PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath("1", FEILREGISTRER, SETT_UKJENT_BRUKER), PATCH, requestEntity, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
 		assertThat(response.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
@@ -169,7 +169,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		stubMsGraphMemberOfNotJoarkVedlikehold(MS_USER_ID_WITHOUT_GROUP_ACCESS);
 		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS));
 
-		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath("1" + FEILREGISTRER + SETT_UKJENT_BRUKER), PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath("1", FEILREGISTRER, SETT_UKJENT_BRUKER), PATCH, requestEntity, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
 		assertThat(response.getBody()).contains("NAV-ansatt må være medlem av gruppen med objectId");
@@ -186,7 +186,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
-		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId + FEILREGISTRER + SETT_STATUS_UTGAAR), PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId.toString(), FEILREGISTRER, SETT_STATUS_UTGAAR), PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
 
@@ -212,7 +212,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	public void skalReturnereUnauthorizedForStatusUtgaarHvisTokenIkkeErEtOboToken() {
 		var requestEntity = new HttpEntity<>(createHeadersWithClientCredentialToken());
 
-		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath("1" + FEILREGISTRER + SETT_STATUS_UTGAAR), PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath("1", FEILREGISTRER, SETT_STATUS_UTGAAR), PATCH, requestEntity, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
 		assertThat(response.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
@@ -223,7 +223,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		stubMsGraphMemberOfNotJoarkVedlikehold(MS_USER_ID_WITHOUT_GROUP_ACCESS);
 		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS));
 
-		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath("1" + FEILREGISTRER + SETT_STATUS_UTGAAR), PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath("1", FEILREGISTRER, SETT_STATUS_UTGAAR), PATCH, requestEntity, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
 		assertThat(response.getBody()).contains("NAV-ansatt må være medlem av gruppen med objectId");
@@ -239,7 +239,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
-		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId + FEILREGISTRER + SETT_STATUS_UTGAAR), PATCH, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId.toString(), FEILREGISTRER, SETT_STATUS_UTGAAR), PATCH, requestEntity, String.class);
 
 		assertEquals(METHOD_NOT_ALLOWED, response.getStatusCode());
 	}
@@ -254,11 +254,11 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		// feilregistrer
 		HttpEntity<String> requestEntity = new HttpEntity<>(createHeadersWithUserAndServiceUserToken());
-		ResponseEntity<String> feilregistrerResponse = restTemplate.exchange(apiJournalpostPath(journalpostId + FEILREGISTRER + FEILREGISTRER_SAKSTILKNYTNING), PATCH, requestEntity, String.class);
+		ResponseEntity<String> feilregistrerResponse = restTemplate.exchange(apiJournalpostPath(journalpostId.toString(), FEILREGISTRER, FEILREGISTRER_SAKSTILKNYTNING), PATCH, requestEntity, String.class);
 		assertEquals(OK, feilregistrerResponse.getStatusCode());
 
 		// opphev feilregistrering
-		ResponseEntity<String> opphevResponse = restTemplate.exchange(apiJournalpostPath(journalpostId + FEILREGISTRER + OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING), PATCH, requestEntity, String.class);
+		ResponseEntity<String> opphevResponse = restTemplate.exchange(apiJournalpostPath(journalpostId.toString(), FEILREGISTRER, OPPHEV_FEILREGISTRERT_SAKSTILKNYTNING), PATCH, requestEntity, String.class);
 		assertEquals(OK, opphevResponse.getStatusCode());
 
 		commitAndStartNewTransaction();

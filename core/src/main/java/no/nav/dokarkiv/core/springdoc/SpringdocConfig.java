@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.springdoc;
 
 import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -9,7 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
+
+import static io.swagger.v3.oas.models.security.SecurityScheme.In.HEADER;
+import static io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @ConditionalOnProperty(
 		value = {"springdoc.enabled"},
@@ -25,19 +29,22 @@ public class SpringdocConfig {
 						.title("Dokarkiv APIer")
 						.description("""
 								REST-grensesnittene til dokarkiv.
-								Vennligst se confluence for utfyllende informasjon. [https://confluence.adeo.no/display/BOA/Arkivering+i+fagarkivet](Arkivering i fagarkivet)
+								Vennligst se confluence for utfyllende informasjon.
 								""")
 						.version(version))
+				.externalDocs(new ExternalDocumentation()
+						.description("Arkivering i fagarkivet")
+						.url("https://confluence.adeo.no/display/BOA/Arkivering+i+fagarkivet"))
 				.components(
 						new Components()
 								.addSecuritySchemes("Authorization",
 										new SecurityScheme()
-												.type(SecurityScheme.Type.HTTP)
+												.type(HTTP)
 												.scheme("bearer")
 												.bearerFormat("JWT")
-												.in(SecurityScheme.In.HEADER)
+												.in(HEADER)
 												.description("Eksempel på verdi som skal inn i Value-feltet (Bearer trengs altså ikke å oppgis): 'eyAidH...'")
-												.name(HttpHeaders.AUTHORIZATION)
+												.name(AUTHORIZATION)
 								)
 				)
 				.addSecurityItem(
