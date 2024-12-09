@@ -50,6 +50,7 @@ import static java.lang.Long.parseLong;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.FOR;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.ALTINN;
@@ -1232,7 +1233,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldEndeligJournalfoereSoeknadOmForeldrepengerVedFoedsel() throws IOException {
-		no.nav.dokarkiv.core.domain.entities.Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
+		no.nav.dokarkiv.core.domain.entities.Sak sak = SakTestDataProvider.createSakWithStatus(null).tema(FOR.name()).build();
 		sakTestRepository.persist(sak);
 		commitAndStartNewTransaction();
 

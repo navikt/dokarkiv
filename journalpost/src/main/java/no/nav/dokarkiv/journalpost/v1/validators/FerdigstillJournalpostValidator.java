@@ -51,7 +51,7 @@ public class FerdigstillJournalpostValidator {
 		verifyDokumenttilstand(journalpost);
 	}
 
-	public void validateSak(final Journalpost journalpost, final Sak sak) {
+	public void validateSaksrelasjon(final Journalpost journalpost, final Sak sak) {
 		if (FS22.equals(journalpost.getSaksrelasjon().getFagsystem())) {
 			var sakStatus = sak.getSakStatus();
 			if (sakStatus != null && sakStatus != AAPEN) {
