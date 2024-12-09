@@ -119,6 +119,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
@@ -1406,6 +1407,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertThat(responseFirst.getBody().getMelding()).isNull();
 		assertThat(responseFirst.getBody().getDokumenter()).hasSize(1);
 		assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
+		assertThat(responseSecond.getHeaders().getContentType()).isEqualTo(APPLICATION_JSON);
 		assertNotNull(responseSecond.getBody());
 		assertEqualOpprettJournalpostResponses(responseFirst.getBody(), responseSecond.getBody());
 	}
@@ -1428,6 +1430,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertThat(responseFirst.getBody().getJournalstatus()).isEqualTo("MIDLERTIDIG");
 		assertThat(responseFirst.getBody().getDokumenter()).hasSize(1);
 		assertEquals(HttpStatus.CONFLICT, responseSecond.getStatusCode());
+		assertThat(responseSecond.getHeaders().getContentType()).isEqualTo(APPLICATION_JSON);
 		assertNotNull(responseSecond.getBody());
 		assertEqualOpprettJournalpostResponses(responseFirst.getBody(), responseSecond.getBody());
 	}

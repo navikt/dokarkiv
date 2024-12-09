@@ -113,8 +113,6 @@
 			<groupId>com.blazebit</groupId>
 			<artifactId>blaze-persistence-core-api-jakarta</artifactId>
 		</dependency>
-
-		<!-- Google Cloud Storage og dekryptering med Tink -->
 		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-storage</artifactId>
@@ -127,10 +125,9 @@
 			<groupId>com.google.crypto.tink</groupId>
 			<artifactId>tink-gcpkms</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-ui</artifactId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.servlet</groupId>

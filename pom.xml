@@ -40,9 +40,10 @@
 		<tink-gcpkms.version>1.10.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.14</blaze-persistence.version>
 		<commons-io.version>2.18.0</commons-io.version>
-		<springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
 		<microsoft-graph.version>6.21.0</microsoft-graph.version>
 		<azure-identity.version>1.14.2</azure-identity.version>
+		<!-- https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot -->
+		<springdoc-openapi-starter-webmvc-ui.version>2.6.0</springdoc-openapi-starter-webmvc-ui.version>
 
 		<!-- NAV -->
 		<token-support.version>3.2.0</token-support.version>
@@ -106,8 +107,6 @@
 				<artifactId>safintern</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-
-			<!-- Tjenestegrensesnitt -->
 			<dependency>
 				<groupId>no.nav.dok</groupId>
 				<artifactId>dok-domene-arkiverdokumentproduksjon-v1-tjenestespesifikasjon</artifactId>
@@ -134,7 +133,6 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-bom</artifactId>
@@ -164,7 +162,6 @@
 				<artifactId>java-jwt</artifactId>
 				<version>${java-jwt.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>com.google.cloud</groupId>
 				<artifactId>google-cloud-storage</artifactId>
@@ -180,7 +177,6 @@
 				<artifactId>tink-gcpkms</artifactId>
 				<version>${tink-gcpkms.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
@@ -188,8 +184,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springdoc</groupId>
-				<artifactId>springdoc-openapi-ui</artifactId>
-				<version>${springdoc-openapi-ui.version}</version>
+				<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+				<version>${springdoc-openapi-starter-webmvc-ui.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.microsoft.graph</groupId>
@@ -201,8 +197,6 @@
 				<artifactId>azure-identity</artifactId>
 				<version>${azure-identity.version}</version>
 			</dependency>
-
-			<!-- Test -->
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>core</artifactId>

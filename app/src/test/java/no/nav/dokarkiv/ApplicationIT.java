@@ -3,6 +3,7 @@ package no.nav.dokarkiv;
 import jakarta.transaction.Transactional;
 import no.nav.dokarkiv.core.exceptions.ApplicationProblemDetail;
 import no.nav.dokarkiv.core.exceptions.ApplicationServletExceptionHandler;
+import no.nav.dokarkiv.core.springdoc.SpringdocConfig;
 import no.nav.security.mock.oauth2.MockOAuth2Server;
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.RequestEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.net.URI;
@@ -21,13 +23,16 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.springframework.http.RequestEntity.patch;
 import static org.springframework.http.RequestEntity.post;
 
-@SpringBootTest(classes = {Application.class}, webEnvironment = RANDOM_PORT)
+@SpringBootTest(classes = {Application.class},
+		webEnvironment = RANDOM_PORT,
+		properties = {"springdoc.enabled=true"})
 @ActiveProfiles("itest")
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
@@ -76,7 +81,7 @@ public class ApplicationIT {
 	 */
 	@Test
 	void shouldSupportApplicationProblemDetail() {
-		var response = testRestTemplate.exchange(patch(JOURNALPOSTAPI_JOURNALPOST_PATH + "/200000000/ferdigstill" )
+		var response = testRestTemplate.exchange(patch(JOURNALPOSTAPI_JOURNALPOST_PATH + "/200000000/ferdigstill")
 				.headers(httpHeaders -> {
 					httpHeaders.setContentType(APPLICATION_JSON);
 					httpHeaders.setBearerAuth(token("azurev2", "itest", Map.of("oid", "itest")));
@@ -94,6 +99,18 @@ public class ApplicationIT {
 		assertThat(applicationProblemDetail.getError()).isEqualTo(BAD_REQUEST.getReasonPhrase());
 		assertThat(applicationProblemDetail.getMessage()).isEqualTo(EXPECTED_DETAIL);
 		assertThat(applicationProblemDetail.getPath()).isEqualTo(EXPECTED_INSTANCE);
+	}
+
+	/**
+	 * Sjekk at SpringDoc er oppe og at den redirecter riktig
+	 *
+	 * @see SpringdocConfig
+	 */
+	@Test
+	void shouldCheckSpringDoc() {
+		var response = testRestTemplate.exchange(RequestEntity.get("/swagger-ui.html").build(), String.class);
+		assertThat(response.getStatusCode()).isEqualTo(FOUND);
+		assertThat(response.getHeaders().getLocation()).isEqualTo(URI.create("/swagger-ui/index.html"));
 	}
 
 	private String token(String issuer, String subject, Map<String, Object> claims) {
