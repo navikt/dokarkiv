@@ -68,7 +68,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
-	public static final String TILKNYTT_VEDLEGG_PATH = "/tilknyttVedlegg";
+	private static final String TILKNYTT_VEDLEGG_PATH = "/tilknyttVedlegg";
 	private static final String UGYLDIG_JOURNALPOST = "12312312312";
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
 

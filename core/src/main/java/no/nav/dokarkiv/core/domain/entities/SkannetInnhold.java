@@ -32,7 +32,7 @@ public class SkannetInnhold extends AbstractPersistentVersionedDomainObjectWithK
 	public static final int VEDLEGG_INNHOLD_LENGTH = 550;
 	private static final long serialVersionUID = 4377297136994040373L;
 	private static final String SKANNET_INNHOLD_SEQUENCE = "skannet_innhold_seq";
-	public static final String DATABASE_SKANNET_INNHOLD_SEQUENCE = "t_skannet_innhold_seq";
+	private static final String DATABASE_SKANNET_INNHOLD_SEQUENCE = "t_skannet_innhold_seq";
 
 	@Id
 	@GeneratedValue(strategy = SEQUENCE, generator = SKANNET_INNHOLD_SEQUENCE)
