@@ -319,6 +319,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "k9-punsj",
+      "namespace": "k9saksbehandling",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "k9-formidling",
       "namespace": "k9saksbehandling",
       "cluster": "dev-fss"
