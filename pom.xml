@@ -46,7 +46,7 @@
 		<springdoc-openapi-starter-webmvc-ui.version>2.6.0</springdoc-openapi-starter-webmvc-ui.version>
 
 		<!-- NAV -->
-		<token-support.version>3.2.0</token-support.version>
+		<token-support.version>5.0.13</token-support.version>
 		<verapdf.version>1.26.1</verapdf.version>
 
 		<!-- Tjenestegrensesnitt -->
