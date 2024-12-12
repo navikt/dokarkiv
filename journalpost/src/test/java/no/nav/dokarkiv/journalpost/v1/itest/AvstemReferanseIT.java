@@ -24,6 +24,8 @@ import static org.springframework.http.HttpMethod.POST;
 
 public class AvstemReferanseIT extends AbstractJournalpostIT {
 
+	private static final String AVSTEM_REFERANSER_PATH = "/avstemReferanser";
+
 	@Test
 	void shouldReturnNoContentWhenAllReferencesMatch() {
 		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
@@ -64,7 +66,7 @@ public class AvstemReferanseIT extends AbstractJournalpostIT {
 		HttpHeaders headers = createHeadersWithServiceUserTokenAndRolesClaim("skanmothelse", "some_other_role");
 		HttpEntity<AvstemmingReferanser> requestHttpEntity = new HttpEntity<>(new AvstemmingReferanser(Set.of(journalpost.getKanalReferanseId())), headers);
 		ResponseEntity<FeilendeAvstemmingReferanser> response = restTemplate.exchange(
-				URL_JOURNALPOSTAPI + "/avstemReferanser", POST, requestHttpEntity, FeilendeAvstemmingReferanser.class);
+				apiPath(AVSTEM_REFERANSER_PATH), POST, requestHttpEntity, FeilendeAvstemmingReferanser.class);
 
 		assertThat(response.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 
@@ -84,7 +86,7 @@ public class AvstemReferanseIT extends AbstractJournalpostIT {
 				Set.of(),
 				Set.of(""),
 				Set.of("-- drop table users; --"),
-				Set.of("aaa___MER_ENN_200_TEGN_____aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+				Set.of("aaa___MER_ENN_200_TEGN_____" + "a".repeat(200))
 		).map(Arguments::of);
 	}
 
@@ -96,7 +98,6 @@ public class AvstemReferanseIT extends AbstractJournalpostIT {
 	private ResponseEntity<FeilendeAvstemmingReferanser> doRequestWithReferanser(Set<String> referanser) {
 		HttpHeaders headers = createHeadersWithServiceUserTokenAndRolesClaim("skanmothelse", "api_intern_skanning");
 		HttpEntity<AvstemmingReferanser> requestHttpEntity = new HttpEntity<>(new AvstemmingReferanser(referanser), headers);
-		return restTemplate.exchange(
-				URL_JOURNALPOSTAPI + "/avstemReferanser", POST, requestHttpEntity, FeilendeAvstemmingReferanser.class);
+		return restTemplate.exchange(apiPath(AVSTEM_REFERANSER_PATH), POST, requestHttpEntity, FeilendeAvstemmingReferanser.class);
 	}
 }

@@ -48,13 +48,13 @@ public class AzureToken {
 				.build();
 	}
 
-	@Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
+	@Retryable(retryFor = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
 	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN_CACHE, keyGenerator = "onBehalfOfTokenKeyGenerator")
 	public String onBehalfOfAccessToken(String token, String scope) {
 		return fetchAccessToken(token, scope);
 	}
 
-	@Retryable(include = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
+	@Retryable(retryFor = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
 	@Cacheable(value = AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE, key = "#scope")
 	public String clientCredentialAccessToken(String scope) {
 		return fetchAccessToken(null, scope);
@@ -90,10 +90,10 @@ public class AzureToken {
 	}
 
 	private void handleError(Throwable error) {
-		if (error instanceof WebClientResponseException response && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
+		if (error instanceof WebClientResponseException response && response.getStatusCode().is4xxClientError()) {
 			throw new AzureTokenException(
 					String.format("Klarte ikke hente token fra Azure. Feilet med statuskode=%s Feilmelding=%s",
-							response.getRawStatusCode(),
+							response.getStatusCode(),
 							response.getMessage()),
 					error);
 		} else {

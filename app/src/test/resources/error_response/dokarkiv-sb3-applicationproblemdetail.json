@@ -1,0 +1,11 @@
+{
+  "type": "about:blank",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Kunne ikke ferdigstille journalpost med journalpostId=200000000. Journalposten er ikke ansett som midlertidig journalført av følgende grunn(er): Den har journalstatus=E (midlertidig journalførte journalposter har en av følgende journalstatuser=[M, D, R, FS, FL, A, MO, UB, OD]), Den er feilregistrert",
+  "instance": "/rest/journalpostapi/v1/journalpost/200000000/ferdigstill",
+  "timestamp": "2024-12-06T11:11:17.8053974+01:00",
+  "message": "Kunne ikke ferdigstille journalpost med journalpostId=200000000. Journalposten er ikke ansett som midlertidig journalført av følgende grunn(er): Den har journalstatus=E (midlertidig journalførte journalposter har en av følgende journalstatuser=[M, D, R, FS, FL, A, MO, UB, OD]), Den er feilregistrert",
+  "error": "Bad Request",
+  "path": "/rest/journalpostapi/v1/journalpost/200000000/ferdigstill"
+}

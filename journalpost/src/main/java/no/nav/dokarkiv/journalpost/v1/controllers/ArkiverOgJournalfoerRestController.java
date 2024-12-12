@@ -147,7 +147,7 @@ public class ArkiverOgJournalfoerRestController {
 					.contentType(APPLICATION_JSON)
 					.body("\"Journalpost ferdigstilt\"");
 
-		} catch (KanIkkeFerdigstilleException | JournalpostIkkeMidlertidigException |
+		} catch (InputValideringFeiletException | KanIkkeFerdigstilleException | JournalpostIkkeMidlertidigException |
 				 DokumentUnderRedigeringException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
 					format("Kunne ikke ferdigstille journalpost med journalpostId=%s. %s", journalpostIdParsed, e.getMessage()));

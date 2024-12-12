@@ -1,5 +1,14 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,23 +16,17 @@ import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import static jakarta.persistence.GenerationType.SEQUENCE;
+import static org.hibernate.annotations.CascadeType.DETACH;
+import static org.hibernate.annotations.CascadeType.MERGE;
+import static org.hibernate.annotations.CascadeType.PERSIST;
+import static org.hibernate.annotations.CascadeType.REMOVE;
 
 /**
  * Inneholder vesentlige endringer på Journalpost eller DokumentInfo.
@@ -39,10 +42,12 @@ import java.util.Set;
 @AllArgsConstructor
 public class AksjonsLogg {
 
+	private static final String AKSJONSLOGG_SEQUENCE = "aksjonslogg_seq";
+	private static final String DATABASE_AKSJONSLOGG_SEQ = "t_aksjonslogg_seq";
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "aksjonslogg_seq")
-	@GenericGenerator(name = "aksjonslogg_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "t_aksjonslogg_seq")})
+	@GeneratedValue(strategy = SEQUENCE, generator = AKSJONSLOGG_SEQUENCE)
+	@SequenceGenerator(name = AKSJONSLOGG_SEQUENCE, sequenceName = DATABASE_AKSJONSLOGG_SEQ, allocationSize = 1)
 	@Column(name = "aksjonslogg_id", nullable = false, length = 11)
 	private Long aksjonsloggId;
 
@@ -82,7 +87,7 @@ public class AksjonsLogg {
 	private String melding;
 
 	@OneToMany(mappedBy = "aksjonsLogg")
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
+	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
 	@Builder.Default
 	private final Set<ArkivElementEndring> arkivElementEndringer = new HashSet<>();
 }

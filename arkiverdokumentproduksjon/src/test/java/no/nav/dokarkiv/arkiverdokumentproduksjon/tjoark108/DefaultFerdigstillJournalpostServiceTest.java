@@ -17,11 +17,9 @@ import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.annotation.Resource;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -36,15 +34,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * Test of {@link DefaultFerdigstillJournalpostService}
- *
- * @author Stig Strøm
  */
 @ExtendWith(MockitoExtension.class)
 public class DefaultFerdigstillJournalpostServiceTest {
@@ -126,7 +121,7 @@ public class DefaultFerdigstillJournalpostServiceTest {
 				() -> service.ferdigstillJournalpost(request));
 	}
 
-	private Journalpost testJournalpost(VariantFormatCode ...variantFormat) {
+	private Journalpost testJournalpost(VariantFormatCode... variantFormat) {
 		return getJournalpostBuilder()
 				.journalpostId(JOURNALPOST_ID)
 				.journalStatus(JournalStatusCode.D)
@@ -145,7 +140,7 @@ public class DefaultFerdigstillJournalpostServiceTest {
 																				.variantFormat(variantFormatCode).build())
 																.toArray(FilDetaljer[]::new))
 												.build())
-				.build()).build();
+								.build()).build();
 	}
 
 }

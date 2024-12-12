@@ -1,12 +1,10 @@
 package no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import javax.validation.constraints.Size;
 
 @Builder
 @Getter

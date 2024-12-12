@@ -1,12 +1,11 @@
 package no.nav.dokarkiv.core.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
-
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 

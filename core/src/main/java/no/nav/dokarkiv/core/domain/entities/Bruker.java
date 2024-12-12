@@ -1,5 +1,16 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,20 +18,10 @@ import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.validator.BrukerValidator;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.io.Serial;
+
+import static jakarta.persistence.GenerationType.SEQUENCE;
 
 /**
  * Holder rede på hvilken bruker Journalposten gjelder.
@@ -33,16 +34,14 @@ import javax.persistence.Table;
 @AllArgsConstructor
 public class Bruker extends AbstractPersistentVersionedDomainObjectWithKilde {
 
-	/**
-	 * ID used for serialization.
-	 */
+	@Serial
 	private static final long serialVersionUID = -7460602621099426224L;
+	private static final String BRUKER_SEQUENCE = "bruker_seq";
+	private static final String DATABASE_BRUKER_SEQUENCE = "t_bruker_seq";
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "brukerInfo_seq")
-	@GenericGenerator(name = "brukerInfo_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "T_BRUKER_SEQ"),
-					@Parameter(name = "initial_value", value = "200000000")})
+	@GeneratedValue(strategy = SEQUENCE, generator = BRUKER_SEQUENCE)
+	@SequenceGenerator(name = BRUKER_SEQUENCE, sequenceName = DATABASE_BRUKER_SEQUENCE, initialValue = 200000000, allocationSize = 1)
 	@Column(name = "brukerinfo_id", nullable = false)
 	private Long brukerInfoId;
 

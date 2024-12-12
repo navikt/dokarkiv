@@ -2,6 +2,11 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
 import com.google.common.base.Strings;
 import io.micrometer.core.annotation.Timed;
+import jakarta.annotation.Resource;
+import jakarta.jws.HandlerChain;
+import jakarta.jws.WebService;
+import jakarta.xml.ws.WebServiceContext;
+import jakarta.xml.ws.soap.Addressing;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AlleredeFerdigstiltException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
@@ -58,12 +63,6 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import javax.jws.HandlerChain;
-import javax.jws.WebService;
-import javax.xml.ws.WebServiceContext;
-import javax.xml.ws.soap.Addressing;
-
 import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
 
 /**
@@ -73,7 +72,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
 @WebService(targetNamespace = "http://nav.no/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/",
 		serviceName = "ArkiverDokumentproduksjonService_v1",
 		portName = "ArkiverDokumentproduksjonPort_v1",
-		wsdlLocation = "classpath:wsdl/no/nav/tjeneste/domene/brevogarkiv/arkiverdokumentproduksjon/v1/arkiverdokumentproduksjon.wsdl",
+		wsdlLocation = "classpath:wsdl/arkiverdokumentproduksjon.wsdl",
 		endpointInterface = "no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1")
 @Addressing
 @HandlerChain(file = "classpath:arkiverdokumentproduksjon-handler.xml")

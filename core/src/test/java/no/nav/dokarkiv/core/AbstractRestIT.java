@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core;
 
+import jakarta.persistence.EntityManager;
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -38,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;

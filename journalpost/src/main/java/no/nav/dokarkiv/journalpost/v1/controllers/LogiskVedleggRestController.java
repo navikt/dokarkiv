@@ -74,7 +74,7 @@ public class LogiskVedleggRestController {
 	}
 
 	@SwaggerLeggTilLogiskVedlegg
-	@PostMapping(value = "/{dokumentInfoId}/logiskVedlegg/")
+	@PostMapping(value = "/{dokumentInfoId}/logiskVedlegg")
 		public ResponseEntity<LeggTilLogiskVedleggResponse> leggTilLogiskVedlegg(
 			@PathVariable String dokumentInfoId,
 			@RequestBody LeggTilLogiskVedleggRequest request) {

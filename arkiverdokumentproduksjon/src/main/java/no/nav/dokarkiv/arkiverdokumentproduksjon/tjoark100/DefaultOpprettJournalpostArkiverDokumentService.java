@@ -14,7 +14,7 @@ import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.springframework.stereotype.Service;
 
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
-import static org.assertj.core.util.Strings.isNullOrEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Service
 public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJournalpostArkiverDokumentService {
@@ -93,7 +93,7 @@ public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJ
 	private Journalpost findPreviousJournalforing(OpprettJournalpostArkiverDokumentRequestTo requestTo) {
 		final DokumentInfo dokumentInfo = requestTo.getJournalpost().findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		final String bestillingsId = dokumentInfo.getTilleggsopplysninger().get(BESTILLINGS_ID_KEY);
-		if (isNullOrEmpty(bestillingsId)) {
+		if (isEmpty(bestillingsId)) {
 			return null;
 		}
 

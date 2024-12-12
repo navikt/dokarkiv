@@ -1,13 +1,13 @@
 package no.nav.dokarkiv.rjoark101;
 
 import no.nav.dokarkiv.AbstractAdminIT;
-import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.exceptions.ApplicationProblemDetail;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.dto.SlettArkivenhetRequest;
 import org.junit.jupiter.api.Test;
@@ -390,13 +390,13 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostIsNotDeleted(journalpost);
 		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoVedlegg.getDokumentInfoId()).size()).isEqualTo(2);
 
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
+		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
 				new HttpEntity<>(SlettArkivenhetRequest.builder()
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpost1.getJournalpostId())
 						.build(),
 						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
-				RestConsumerExceptionResponse.class);
+				ApplicationProblemDetail.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_ACCEPTABLE);
 		assertTrue(responseEntity.getBody().getMessage().contains("Hoveddokument er tilknyttet andre journalposter."));
@@ -443,13 +443,13 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostIsNotDeleted(journalpostSplit2);
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
+		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
 				new HttpEntity<>(SlettArkivenhetRequest.builder()
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostOriginal.getJournalpostId())
 						.build(),
 						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
-				RestConsumerExceptionResponse.class);
+				ApplicationProblemDetail.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_ACCEPTABLE);
 
 		//Journalposter som inneholder splittene skal være mulig å slette
@@ -508,13 +508,13 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThat(journalpostList.size()).isEqualTo(3);
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
+		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
 				new HttpEntity<>(SlettArkivenhetRequest.builder()
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostSomSkalSlettes.getJournalpostId())
 						.build(),
 						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
-				RestConsumerExceptionResponse.class);
+				ApplicationProblemDetail.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_ACCEPTABLE);
 
 		//Slett hoveddokument
@@ -560,13 +560,13 @@ public class Rjoark101IT extends AbstractAdminIT {
 		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
+		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
 				new HttpEntity<>(SlettArkivenhetRequest.builder()
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(1L)
 						.build(),
 						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
-				RestConsumerExceptionResponse.class);
+				ApplicationProblemDetail.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
 	}
@@ -1088,7 +1088,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThat(dokumentInfoList.size()).isEqualTo(1);
 
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
+		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
 				new HttpEntity<>(SlettArkivenhetRequest.builder()
 						.arkivenhet(DOKUMENT_FIL)
 						.dokumentInfoId(journalpost.findHoveddokumentDokumentInfoRelasjon()
@@ -1097,7 +1097,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.variant(VariantFormatCode.SLADDET)
 						.build(),
 						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
-				RestConsumerExceptionResponse.class);
+				ApplicationProblemDetail.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
 
 		reinitTransaction();

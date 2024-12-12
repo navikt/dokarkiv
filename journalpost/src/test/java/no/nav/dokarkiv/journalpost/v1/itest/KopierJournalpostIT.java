@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -49,6 +50,8 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 public class KopierJournalpostIT extends AbstractJournalpostIT {
+	private static final String KOPIER_JOURNALPOST_PATH = "kopierJournalpost";
+	private static final Map<String, List<String>> KOPIER_QUERY = Map.of("kildeJournalpostId", List.of("{kildeJournalpostId}"));
 	private static final String BAD_REQUEST_FEILMELDING = "Kan ikke kopiere journalpost med journalpostId=%s fordi journalpost har ugyldig status=%s";
 	private static final String EKSTERN_REFERANSE_ID = "fagsystemet-sin-referanse";
 
@@ -61,7 +64,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = createJournalpostWithHoveddokumentAndVedlegg(journalpostType, journalStatus);
 		Journalpost originalJournalpost = buildAndCommit(journalpost);
 
-		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(URL_JOURNALPOST + KOPIER_QUERY,
+		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(apiJournalpostPath(KOPIER_QUERY, KOPIER_JOURNALPOST_PATH),
 						originalJournalpost.getJournalpostId())
 				.headers(createHeadersWithServiceUserToken())
 				.body(KopierJournalpostRequest.builder().eksternReferanseId(eksternReferanseId).build());
@@ -192,7 +195,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = createJournalpostWithHoveddokumentAndVedlegg(journalpostType, journalStatus);
 		Journalpost originalJournalpost = buildAndCommit(journalpost);
 
-		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(URL_JOURNALPOST + KOPIER_QUERY,
+		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(apiJournalpostPath(KOPIER_QUERY, KOPIER_JOURNALPOST_PATH),
 						originalJournalpost.getJournalpostId())
 				.headers(createHeadersWithServiceUserToken())
 				.body(KopierJournalpostRequest.builder().eksternReferanseId(EKSTERN_REFERANSE_ID).build());
@@ -217,7 +220,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 	public void shouldThrowNotFoundWhenJournalpostNotFoundInJoark() {
 		restStsToken();
 
-		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(URL_JOURNALPOST + KOPIER_QUERY,
+		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(apiJournalpostPath(KOPIER_QUERY, KOPIER_JOURNALPOST_PATH),
 						"123")
 				.headers(createHeadersWithServiceUserToken())
 				.body(KopierJournalpostRequest.builder().eksternReferanseId(EKSTERN_REFERANSE_ID).build());
@@ -234,7 +237,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		stubAzure();
 		restStsToken();
 
-		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(URL_JOURNALPOST + KOPIER_QUERY,
+		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(apiJournalpostPath(KOPIER_QUERY, KOPIER_JOURNALPOST_PATH),
 						journalpostId)
 				.headers(createHeadersWithServiceUserToken())
 				.body(KopierJournalpostRequest.builder().eksternReferanseId(EKSTERN_REFERANSE_ID).build());
@@ -259,7 +262,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		stubAzure();
 		restStsToken();
 
-		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(URL_JOURNALPOST + KOPIER_QUERY,
+		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(apiJournalpostPath(KOPIER_QUERY, KOPIER_JOURNALPOST_PATH),
 						"123")
 				.headers(createHeadersWithServiceUserToken())
 				.body(KopierJournalpostRequest.builder().eksternReferanseId(eksternReferanseId).build());
@@ -285,7 +288,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = createJournalpostWithHoveddokumentAndVedlegg(I, J);
 		Journalpost originalJournalpost = buildAndCommit(journalpost);
 
-		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(URL_JOURNALPOST + KOPIER_QUERY,
+		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(apiJournalpostPath(KOPIER_QUERY, KOPIER_JOURNALPOST_PATH),
 						originalJournalpost.getJournalpostId())
 				.headers(createHeadersWithServiceUserToken())
 				.body(KopierJournalpostRequest.builder().eksternReferanseId(EKSTERN_REFERANSE_ID).build());

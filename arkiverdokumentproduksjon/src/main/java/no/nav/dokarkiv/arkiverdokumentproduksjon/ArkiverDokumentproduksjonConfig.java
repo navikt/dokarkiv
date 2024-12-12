@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
+import jakarta.xml.ws.Endpoint;
 import no.nav.dokarkiv.core.security.NavLdapUsernameTokenValidator;
 import org.apache.cxf.Bus;
 import org.apache.cxf.jaxws.EndpointImpl;
@@ -11,7 +12,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import javax.xml.ws.Endpoint;
 import java.util.HashMap;
 import java.util.Map;
 

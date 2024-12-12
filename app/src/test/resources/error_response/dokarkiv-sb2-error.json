@@ -1,0 +1,7 @@
+{
+  "timestamp": "2024-12-04T09:19:19.910+00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Kunne ikke ferdigstille journalpost med journalpostId=200000000. Journalposten er ikke ansett som midlertidig journalført av følgende grunn(er): Den har journalstatus=E (midlertidig journalførte journalposter har en av følgende journalstatuser=[M, D, R, FS, FL, A, MO, UB, OD]), Den er feilregistrert",
+  "path": "/rest/journalpostapi/v1/journalpost/200000000/ferdigstill"
+}

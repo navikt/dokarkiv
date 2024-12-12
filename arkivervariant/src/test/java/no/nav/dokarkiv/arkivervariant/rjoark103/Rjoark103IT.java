@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.arkivervariant.rjoark103;
 
 import no.nav.dokarkiv.arkivervariant.AbstractArkiverVariantIT;
-import no.nav.dokarkiv.core.consumer.RestConsumerExceptionResponse;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.ApplicationProblemDetail;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -142,11 +142,11 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		var httpEntity2 = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
 
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity2 = restTemplate.exchange(
+		ResponseEntity<ApplicationProblemDetail> responseEntity2 = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
 				POST,
 				httpEntity2,
-				RestConsumerExceptionResponse.class);
+				ApplicationProblemDetail.class);
 		assertThat(responseEntity2.getStatusCode()).isEqualTo(BAD_REQUEST);
 	}
 
@@ -163,7 +163,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
 
-		ResponseEntity<RestConsumerExceptionResponse> responseEntity = restTemplate.exchange(URL_ARKIVERVARIANT, POST, httpEntity, RestConsumerExceptionResponse.class);
+		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(URL_ARKIVERVARIANT, POST, httpEntity, ApplicationProblemDetail.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
 	}

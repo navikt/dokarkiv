@@ -1,28 +1,27 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.AvleveringStatusCode;
 import no.nav.dokarkiv.core.domain.codes.KassasjonStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import java.time.LocalDateTime;
 import java.util.Date;
+
+import static jakarta.persistence.GenerationType.SEQUENCE;
 
 /**
  * Inneholder metadata om sakstilknytningen til fagsystemet.
@@ -35,10 +34,12 @@ import java.util.Date;
 @AllArgsConstructor
 public class Sak {
 
+	private static final String SAK_SEQUENCE = "seq_sak";
+	private static final String DATABASE_SAK_SEQUENCE = "seq_sak";
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sak")
-	@GenericGenerator(name = "seq_sak", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "seq_sak")})
+	@GeneratedValue(strategy = SEQUENCE, generator = SAK_SEQUENCE)
+	@SequenceGenerator(name = SAK_SEQUENCE, sequenceName = DATABASE_SAK_SEQUENCE, allocationSize = 1)
 	@Column(name = "id", nullable = false, length = 11)
 	private Long sakId;
 

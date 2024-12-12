@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.security;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import no.nav.dokarkiv.core.cache.CacheConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,10 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.util.Base64Utils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.Base64;
 import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -24,9 +24,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @ExtendWith(MockitoExtension.class)
 public class BasicAuthRestInterceptorTest {
 
@@ -46,7 +43,7 @@ public class BasicAuthRestInterceptorTest {
 
 	@Test
 	public void shouldAuthenticateOkNoCache() throws Exception {
-		String basicAuthHeader = "Basic " + Base64Utils.encodeToString(String.format("%s:%s", USERNAME, PASSWORD)
+		String basicAuthHeader = "Basic " + Base64.getEncoder().encodeToString(String.format("%s:%s", USERNAME, PASSWORD)
 				.getBytes());
 		when(httpServletRequestMock.getHeader(AUTHORIZATION)).thenReturn(basicAuthHeader);
 		when(cacheManagerMock.getCache(CacheConfig.USERNAME_TOKEN_CACHE)).thenReturn(cacheMock);
@@ -60,7 +57,7 @@ public class BasicAuthRestInterceptorTest {
 
 	@Test
 	public void shouldAuthenticateOkWithCache() throws Exception {
-		String basicAuthHeader = "Basic " + Base64Utils.encodeToString(String.format("%s:%s", USERNAME, PASSWORD)
+		String basicAuthHeader = "Basic " + Base64.getEncoder().encodeToString(String.format("%s:%s", USERNAME, PASSWORD)
 				.getBytes());
 		when(httpServletRequestMock.getHeader(AUTHORIZATION)).thenReturn(basicAuthHeader);
 		when(cacheManagerMock.getCache(CacheConfig.USERNAME_TOKEN_CACHE)).thenReturn(cacheMock);
@@ -74,7 +71,7 @@ public class BasicAuthRestInterceptorTest {
 
 	@Test
 	public void shouldNotAuthenticateOkNoCache() throws Exception {
-		String basicAuthHeader = "Basic " + Base64Utils.encodeToString(String.format("%s:%s", USERNAME, PASSWORD)
+		String basicAuthHeader = "Basic " + Base64.getEncoder().encodeToString(String.format("%s:%s", USERNAME, PASSWORD)
 				.getBytes());
 		when(httpServletRequestMock.getHeader(AUTHORIZATION)).thenReturn(basicAuthHeader);
 		when(cacheManagerMock.getCache(CacheConfig.USERNAME_TOKEN_CACHE)).thenReturn(cacheMock);
@@ -89,7 +86,7 @@ public class BasicAuthRestInterceptorTest {
 
 	@Test
 	public void shouldNotAuthenticateOkWithCache() throws Exception {
-		String basicAuthHeader = "Basic " + Base64Utils.encodeToString(String.format("%s:%s", USERNAME, PASSWORD)
+		String basicAuthHeader = "Basic " + Base64.getEncoder().encodeToString(String.format("%s:%s", USERNAME, PASSWORD)
 				.getBytes());
 		when(httpServletRequestMock.getHeader(AUTHORIZATION)).thenReturn(basicAuthHeader);
 		when(cacheManagerMock.getCache(CacheConfig.USERNAME_TOKEN_CACHE)).thenReturn(cacheMock);

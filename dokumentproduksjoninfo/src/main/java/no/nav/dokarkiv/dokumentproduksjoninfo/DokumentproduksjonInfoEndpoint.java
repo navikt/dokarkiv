@@ -1,6 +1,10 @@
 package no.nav.dokarkiv.dokumentproduksjoninfo;
 
 import io.micrometer.core.annotation.Timed;
+import jakarta.jws.HandlerChain;
+import jakarta.jws.WebService;
+import jakarta.xml.ws.soap.Addressing;
+import jakarta.xml.ws.soap.MTOM;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.DokumentproduksjonInfoV1;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentJournalOgDokumentStatusDokumentInfoIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.HentJournalOgDokumentStatusJournalpostIkkeFunnet;
@@ -13,11 +17,6 @@ import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.He
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoRequest;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.meldinger.HentJournalpostInfoResponse;
 import org.springframework.stereotype.Service;
-
-import javax.jws.HandlerChain;
-import javax.jws.WebService;
-import javax.xml.ws.soap.Addressing;
-import javax.xml.ws.soap.MTOM;
 
 /**
  * Implementation of JAX-WS-generated service interface DokumentproduksjonInfoV1. Bootstraps the

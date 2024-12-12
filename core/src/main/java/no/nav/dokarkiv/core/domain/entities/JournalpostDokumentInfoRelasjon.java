@@ -1,6 +1,18 @@
 package no.nav.dokarkiv.core.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,22 +21,13 @@ import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKi
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.io.Serial;
+
+import static jakarta.persistence.GenerationType.SEQUENCE;
+import static org.hibernate.annotations.CascadeType.DETACH;
+import static org.hibernate.annotations.CascadeType.MERGE;
+import static org.hibernate.annotations.CascadeType.PERSIST;
 
 /**
  * Mange til mange relasjon mellom {@link Journalpost} og {@link DokumentInfo}
@@ -37,15 +40,15 @@ import javax.persistence.Table;
 @AllArgsConstructor
 public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersionedDomainObjectWithKilde {
 
-	/**
-	 * ID for serialization
-	 */
+	@Serial
 	private static final long serialVersionUID = -2512784564042004318L;
+	private static final String JOURNALPOST_DOKUMENT_INFO_RELASJON_SEQUENCE = "journalpost_dokument_info_relasjon_seq";
+	private static final String DATABASE_JOURNALPOST_DOKUMENT_INFO_RELASJON_SEQUENCE = "t_jp_dok_info_rel_seq";
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "journalpostDokumentInfoRelasjon_seq")
-	@GenericGenerator(name = "journalpostDokumentInfoRelasjon_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "T_JP_DOK_INFO_REL_SEQ")})
+	@GeneratedValue(strategy = SEQUENCE, generator = JOURNALPOST_DOKUMENT_INFO_RELASJON_SEQUENCE)
+	@SequenceGenerator(name = JOURNALPOST_DOKUMENT_INFO_RELASJON_SEQUENCE,
+			sequenceName = DATABASE_JOURNALPOST_DOKUMENT_INFO_RELASJON_SEQUENCE, allocationSize = 1)
 	@Column(name = "jp_dok_info_rel_id", nullable = false)
 	private Long journalpostDokumentInfoRelasjonId;
 
@@ -65,7 +68,7 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dokument_info_id", nullable = false)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
+	@Cascade({PERSIST, MERGE, DETACH})
 	private DokumentInfo dokumentInfo;
 
 	@JsonIgnore
@@ -121,8 +124,8 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	 */
 	public boolean isNewRelasjonToExistingDokumentInfo() {
 		return journalpostDokumentInfoRelasjonId == null
-				&& dokumentInfo != null
-				&& dokumentInfo.getDokumentInfoId() != null;
+			   && dokumentInfo != null
+			   && dokumentInfo.getDokumentInfoId() != null;
 	}
 
 	/**

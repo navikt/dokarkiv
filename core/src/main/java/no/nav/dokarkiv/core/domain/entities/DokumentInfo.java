@@ -1,6 +1,23 @@
 package no.nav.dokarkiv.core.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,28 +30,8 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
@@ -47,9 +44,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static jakarta.persistence.GenerationType.SEQUENCE;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
+import static org.hibernate.annotations.CascadeType.DETACH;
+import static org.hibernate.annotations.CascadeType.MERGE;
+import static org.hibernate.annotations.CascadeType.PERSIST;
+import static org.hibernate.annotations.CascadeType.REMOVE;
 
 /**
  * Holder rede på metadata for et dokument.
@@ -63,21 +65,19 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 @ToString(onlyExplicitlyIncluded = true)
 public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKilde {
 
-	/**
-	 * ID used for serialization.
-	 */
+	@Serial
 	private static final long serialVersionUID = -2981029229377469184L;
 
 	/**
 	 * DokumentInfo title for deleted documents. These documents point to a dummy dokument.
 	 */
 	public static final String DELETED_DOCUMENT_TITLE = "Slettet dokument";
+	private static final String DOKUMENT_INFO_SEQUENCE = "dokument_info_seq";
+	private static final String DATABASE_DOKUMENT_INFO_SEQUENCE = "t_dokument_info_seq";
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dokumentInfo_seq")
-	@GenericGenerator(name = "dokumentInfo_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "T_DOKUMENT_INFO_SEQ"),
-					@Parameter(name = "initial_value", value = "200000000")})
+	@GeneratedValue(strategy = SEQUENCE, generator = DOKUMENT_INFO_SEQUENCE)
+	@SequenceGenerator(name = DOKUMENT_INFO_SEQUENCE, sequenceName = DATABASE_DOKUMENT_INFO_SEQUENCE, initialValue = 200000000, allocationSize = 1)
 	@Column(name = "dokument_info_id", nullable = false)
 	@ToString.Include
 	private Long dokumentInfoId;
@@ -126,7 +126,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	private String kassertAvNavn;
 
 	@Column(name = "kassert", length = 1)
-	@Type(type = "org.hibernate.type.TrueFalseType")
 	private Boolean kassert;
 
 	@ElementCollection
@@ -137,7 +136,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 
 	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
+	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
 	@Builder.Default
 	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<>();
 
@@ -147,7 +146,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	private Set<JournalpostDokumentInfoRelasjon> journalpostRelasjoner = new HashSet<>();
 
 	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DETACH})
+	@Cascade({PERSIST, MERGE, DETACH})
 	@Builder.Default
 	private Set<FilDetaljer> fildetaljerListe = new HashSet<>();
 
@@ -236,8 +235,8 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		for (Entry<VariantFormatCode, Integer> variantCount : variantCounters.entrySet()) {
 			if (variantCount.getValue() > 1) {
 				throw new InvalidJournalpostStructureException(this.getClass().getSimpleName()
-						+ " cannot contain dokumentvariant duplicates, found " + variantCount.getValue()
-						+ " " + variantCount.getKey() + " varianter");
+															   + " cannot contain dokumentvariant duplicates, found " + variantCount.getValue()
+															   + " " + variantCount.getKey() + " varianter");
 			}
 		}
 	}
@@ -408,7 +407,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	public JournalpostDokumentInfoRelasjon findJournalpostRelasjonByJournalpostId(final Long journalpostId) {
 		for (JournalpostDokumentInfoRelasjon journalpostRelasjon : getJournalpostRelasjoner()) {
 			if (journalpostRelasjon.getJournalpost() != null
-					&& journalpostRelasjon.getJournalpost().getJournalpostId().equals(journalpostId)) {
+				&& journalpostRelasjon.getJournalpost().getJournalpostId().equals(journalpostId)) {
 				return journalpostRelasjon;
 			}
 		}

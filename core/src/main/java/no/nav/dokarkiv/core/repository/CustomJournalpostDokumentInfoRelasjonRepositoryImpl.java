@@ -1,12 +1,11 @@
 package no.nav.dokarkiv.core.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import org.hibernate.jpa.QueryHints;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import java.util.Optional;
 
 @Repository
@@ -25,7 +24,6 @@ public class CustomJournalpostDokumentInfoRelasjonRepositoryImpl implements Cust
                     JournalpostDokumentInfoRelasjon.class)
                     .setParameter("journalpostId", journalpostId)
                     .setParameter("dokumentInfoId", dokumentInfoId)
-                    .setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
                     .getSingleResult();
             return Optional.of(journalpostDokumentInfoRelasjon);
         } catch (NonUniqueResultException | NoResultException e) {

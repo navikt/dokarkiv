@@ -18,7 +18,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractArkiverVariantIT extends AbstractRestIT {
 
-	protected static final String URL_ARKIVERVARIANT = "/rest/admin/arkivervariant/";
+	protected static final String URL_ARKIVERVARIANT = "/rest/admin/arkivervariant";
 	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
 	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
 	protected static final String MS_USER_ID_WITHOUT_GROUP_ACCESS = "b999c63a-9821-4637-a23d-b706e5b24809";

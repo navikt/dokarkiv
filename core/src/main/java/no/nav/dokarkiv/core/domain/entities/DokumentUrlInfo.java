@@ -1,30 +1,32 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObject;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import java.util.Date;
+
+import static jakarta.persistence.GenerationType.SEQUENCE;
 
 /**
  * Inneholder metadata om gyldige urler for å hente dokumenter.
+ * Fjernes etter at det er avklart at vi kan slette denne tabellen
+ * <p>
  *
- * Brukes av {@link no.nav.dokarkiv.core.repository.JoarkDeleteRepository} for permanent sletting av journalposter fra joarkadmin
+ * @deprecated Brukes av {@link no.nav.dokarkiv.core.repository.JoarkDeleteRepository} for permanent sletting av journalposter fra joarkadmin
  */
 @Entity
 @Table(name = "T_DOK_URL_INFO")
@@ -34,11 +36,12 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 public class DokumentUrlInfo extends AbstractPersistentVersionedDomainObject {
+	private static final String DOKUMENT_URL_INFO_SEQUENCE = "dokument_url_info_seq";
+	private static final String DATABASE_DOKUMENT_URL_INFO_SEQUENCE = "T_DOK_URL_INFO_SEQ";
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dokumentUrlInfo_seq")
-	@GenericGenerator(name = "dokumentUrlInfo_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "T_DOK_URL_INFO_SEQ"),
-					@Parameter(name = "initial_value", value = "200000000")})
+	@GeneratedValue(strategy = SEQUENCE, generator = DOKUMENT_URL_INFO_SEQUENCE)
+	@SequenceGenerator(name = DOKUMENT_URL_INFO_SEQUENCE, sequenceName = DATABASE_DOKUMENT_URL_INFO_SEQUENCE, initialValue = 200000000, allocationSize = 1)
 	@Column(name = "dok_url_info_id", nullable = false)
 	private Long dokumentUrlInfoId;
 

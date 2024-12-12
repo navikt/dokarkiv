@@ -18,7 +18,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class SettAvbruttJournalpostRedigerbarIT extends AbstractJournalpostIT {
-	private static final String SETTREDIGERBAR_URL = URL_PROTECTED_INTERN_JOURNALPOST + "%s/settAvbruttJournalpostRedigerbar";
+	private static final String SETTREDIGERBAR_PATH = "settAvbruttJournalpostRedigerbar";
 
 	@Test
 	public void skalOppdatereAvbruttTilRedigerbart() {
@@ -26,7 +26,7 @@ public class SettAvbruttJournalpostRedigerbarIT extends AbstractJournalpostIT {
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("api_intern"));
 
-		ResponseEntity<String> response = restTemplate.exchange(SETTREDIGERBAR_URL.formatted(journalpostId), PUT, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath(journalpostId.toString(), SETTREDIGERBAR_PATH), PUT, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(OK);
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow();
@@ -45,7 +45,7 @@ public class SettAvbruttJournalpostRedigerbarIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("api_intern"));
-		ResponseEntity<String> response = restTemplate.exchange(SETTREDIGERBAR_URL.formatted(journalpostId), PUT, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath(journalpostId.toString(), SETTREDIGERBAR_PATH), PUT, requestEntity, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(CONFLICT);
 		assertThat(response.getBody()).contains("kan ikke settes redigerbar. Journalposten må ha status=A");
@@ -58,7 +58,7 @@ public class SettAvbruttJournalpostRedigerbarIT extends AbstractJournalpostIT {
 		String feilJournalpostId = "300000003";
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("api_intern"));
-		ResponseEntity<String> response = restTemplate.exchange(SETTREDIGERBAR_URL.formatted(feilJournalpostId), PUT, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath(feilJournalpostId, SETTREDIGERBAR_PATH), PUT, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
 		assertThat(response.getBody()).contains("Kunne ikke finne journalpost med journalpostId=%s i joark".formatted(feilJournalpostId));
 	}
@@ -74,7 +74,7 @@ public class SettAvbruttJournalpostRedigerbarIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("api_intern"));
-		ResponseEntity<String> response = restTemplate.exchange(SETTREDIGERBAR_URL.formatted(journalpostId), PUT, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath(journalpostId.toString(), SETTREDIGERBAR_PATH), PUT, requestEntity, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
 		assertThat(response.getBody()).contains("Journalpost med journalpostId=%s mangler hoveddokumentrelasjon og kan ikke settes redigerbar.".formatted(journalpostId));
@@ -86,7 +86,7 @@ public class SettAvbruttJournalpostRedigerbarIT extends AbstractJournalpostIT {
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim("nei"));
 
-		ResponseEntity<String> response = restTemplate.exchange(SETTREDIGERBAR_URL.formatted(journalpostId), PUT, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath(journalpostId.toString(), SETTREDIGERBAR_PATH), PUT, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
 	}
 

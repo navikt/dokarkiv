@@ -1,16 +1,16 @@
 package no.nav.dokarkiv.core.stelvio;
 
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
-
+import jakarta.xml.ws.WebServiceContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import javax.xml.ws.WebServiceContext;
 import java.security.Principal;
 import java.util.UUID;
+
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CALL_ID;
 
 /**
  * Class that contains functionality to create and set a RequestContext for the current web service request.

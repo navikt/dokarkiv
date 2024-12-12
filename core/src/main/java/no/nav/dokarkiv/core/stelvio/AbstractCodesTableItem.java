@@ -1,16 +1,16 @@
 package no.nav.dokarkiv.core.stelvio;
 
-import static no.nav.dokarkiv.core.stelvio.Internal.cast;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+
+import static no.nav.dokarkiv.core.stelvio.Internal.cast;
 
 /**
  * Abstract base class for classes representing a codes table's entries, that is, rows in the codes table's corresponding

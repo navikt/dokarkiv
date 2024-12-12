@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.security.handler;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
@@ -8,7 +9,6 @@ import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.core.validation.JwtTokenValidator;
 import org.slf4j.MDC;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**

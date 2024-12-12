@@ -1,20 +1,21 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import org.apache.commons.lang3.ArrayUtils;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import java.io.Serial;
 import java.util.Arrays;
+
+import static jakarta.persistence.GenerationType.SEQUENCE;
 
 /**
  * Seperat tabell for dokumentfiler. Metadata og dokumenter er adskilt.
@@ -26,15 +27,14 @@ import java.util.Arrays;
 @Setter
 public class DokumentFil extends AbstractPersistentVersionedDomainObjectWithKilde {
 
-	/**
-	 * ID used for serialization.
-	 */
+	@Serial
 	private static final long serialVersionUID = 4404983937742760135L;
+	private static final String DOKUMENT_FIL_SEQUENCE = "dokument_fil_seq";
+	private static final String DATABASE_DOKUMENT_FIL_SEQUENCE = "T_DOKUMENT_FIL_SEQ";
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dokumentFil_seq")
-	@GenericGenerator(name = "dokumentFil_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "T_DOKUMENT_FIL_SEQ")})
+	@GeneratedValue(strategy = SEQUENCE, generator = DOKUMENT_FIL_SEQUENCE)
+	@SequenceGenerator(name = DOKUMENT_FIL_SEQUENCE, sequenceName = DATABASE_DOKUMENT_FIL_SEQUENCE, allocationSize = 1)
 	@Column(name = "dokument_fil_id", nullable = false)
 	private Long id;
 

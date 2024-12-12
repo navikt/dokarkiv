@@ -1,5 +1,23 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,28 +39,9 @@ import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
+import org.hibernate.type.TrueFalseConverter;
 
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import java.io.Serial;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,12 +57,18 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.GenerationType.SEQUENCE;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
+import static org.hibernate.annotations.CascadeType.DETACH;
+import static org.hibernate.annotations.CascadeType.MERGE;
+import static org.hibernate.annotations.CascadeType.PERSIST;
+import static org.hibernate.annotations.CascadeType.REMOVE;
 
 /**
  * Inneholder metadata om en samling av dokumenter, hvilken bruker de gjelder og sakstilknytning.
@@ -77,19 +82,17 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 @ToString(onlyExplicitlyIncluded = true)
 public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKilde {
 
-	/**
-	 * ID used for serialization.
-	 */
+	@Serial
 	private static final long serialVersionUID = 8744278542606158366L;
 	private static final List<JournalStatusCode> ENDELIG_JOURNALFOERING_STATUS = Arrays.asList(J, JournalStatusCode.FS, JournalStatusCode.FL);
 	private static final List<JournalStatusCode> MIDLERTIDIG_INNGAAENDE_JOURNALFOERING_STATUS = Arrays.asList(MO, M, UB);
+	private static final String JOURNALPOST_SEQUENCE = "journalpost_seq";
+	private static final String DATABASE_JOURNALPOST_SEQUENCE = "t_journalpost_seq";
 	public static final int KANAL_REFERANSE_ID_LENGTH = 200;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "journalpost_seq")
-	@GenericGenerator(name = "journalpost_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-			@Parameter(name = "sequence_name", value = "T_JOURNALPOST_SEQ"),
-			@Parameter(name = "initial_value", value = "200000000")})
+	@GeneratedValue(strategy = SEQUENCE, generator = JOURNALPOST_SEQUENCE)
+	@SequenceGenerator(name = JOURNALPOST_SEQUENCE, sequenceName = DATABASE_JOURNALPOST_SEQUENCE, initialValue = 200000000, allocationSize = 1)
 	@Column(name = "journalpost_id", nullable = false)
 	@ToString.Include
 	private Long journalpostId;
@@ -174,8 +177,11 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_fakt_dis_kanal", length = 20)
 	private FaktiskDistribusjonskanalCode faktiskDistribusjonskanal;
 
+	/**
+	 * Dette feltet er 'T' / 'F' i produksjon
+	 */
 	@Column(name = "elektronisk_distr", length = 1)
-	@Type(type = "org.hibernate.type.TrueFalseType")
+	@Convert(converter = TrueFalseConverter.class)
 	private Boolean elektroniskDistribusjon;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -190,8 +196,11 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_journalpost_t", nullable = false, length = 20)
 	private JournalpostTypeCode journalposttype;
 
+	/**
+	 * Dette feltet er 'T' / 'F' i produksjon
+	 */
 	@Column(name = "signatur", length = 1)
-	@Type(type = "org.hibernate.type.TrueFalseType")
+	@Convert(converter = TrueFalseConverter.class)
 	private Boolean signatur;
 
 	@Column(name = "k_behandlingstema", length = 20)
@@ -207,15 +216,15 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	private InnsynCode innsyn;
 
 	@OneToMany(mappedBy = "journalpost", fetch = FetchType.LAZY)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
+	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
 	private final Set<Bruker> brukere = new HashSet<>();
 
 	// Bidireksjonelle OneToOne relasjoner blir eager fetched fra Journalpost
-	@OneToOne(mappedBy = "journalpost", cascade = javax.persistence.CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@OneToOne(mappedBy = "journalpost", cascade = ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private Saksrelasjon saksrelasjon;
 
 	@OneToMany(mappedBy = "journalpost")
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
+	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
 	private final Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner = new HashSet<>();
 
 	@ElementCollection
@@ -225,7 +234,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 
 	@OneToMany(mappedBy = "journalpost", fetch = FetchType.LAZY)
-	@Cascade({CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.DETACH})
+	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
 	private final Set<Kryssreferanse> kryssreferanser = new HashSet<>();
 
 	/**
@@ -347,8 +356,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		for (Entry<Long, Integer> dokumentInfoIdCount : dokumentInfoIdsCount.entrySet()) {
 			if (dokumentInfoIdCount.getValue() > 1) {
 				throw new InvalidJournalpostStructureException(this.getClass().getSimpleName() + " has "
-						+ dokumentInfoIdCount.getValue() + " DokumentInfoRelasjoner pointing to the same "
-						+ DokumentInfo.class.getSimpleName() + " with Id " + dokumentInfoIdCount.getKey());
+															   + dokumentInfoIdCount.getValue() + " DokumentInfoRelasjoner pointing to the same "
+															   + DokumentInfo.class.getSimpleName() + " with Id " + dokumentInfoIdCount.getKey());
 			}
 		}
 	}
@@ -650,8 +659,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @param saksrelasjon the saksrelasjon to set
 	 */
 	public void setSaksrelasjon(Saksrelasjon saksrelasjon) {
-		if(saksrelasjon == null) {
-			if(this.saksrelasjon != null) {
+		if (saksrelasjon == null) {
+			if (this.saksrelasjon != null) {
 				this.saksrelasjon.setJournalpost(null);
 			}
 		} else {

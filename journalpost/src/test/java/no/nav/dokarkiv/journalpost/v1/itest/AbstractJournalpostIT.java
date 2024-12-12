@@ -10,10 +10,13 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.web.util.UriComponentsBuilder;
 import wiremock.com.google.common.io.Resources;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -26,6 +29,8 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.util.CollectionUtils.toMultiValueMap;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
 @SpringBootTest(
 		webEnvironment = RANDOM_PORT,
@@ -35,19 +40,62 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @AutoConfigureWireMock(port = 0)
 public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
-	static final String URL_JOURNALPOSTAPI = "/rest/journalpostapi/v1/";
-	static final String URL_JOURNALPOST = "/rest/journalpostapi/v1/journalpost/";
-	static final String URL_BULK_DISTRIBUSJONSINFO_JOURNALPOST = "/rest/journalpostapi/v1/bulkOppdaterDistribusjonsinfo";
-	static final String URL_DOKUMENTINFO = "/rest/journalpostapi/v1/dokumentInfo/";
-	static final String URL_PROTECTED_INTERN = "/rest/internal/journalpostapi/v1/";
-	static final String URL_PROTECTED_INTERN_JOURNALPOST = "/rest/internal/journalpostapi/v1/journalpost/";
+	static final String JOURNALPOSTAPI_BASE_PATH = "/rest/journalpostapi/v1/";
+	static final String JOURNALPOSTAPI_JOURNALPOST_PATH = "journalpost";
+	static final String JOURNALPOSTAPI_DOKUMENTINFO_PATH = "dokumentInfo";
+	static final String INTERNAL_JOURNALPOSTAPI_BASE_PATH = "/rest/internal/journalpostapi/v1/";
+	static final String INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH = "journalpost";
 	static final String FERDIGSTILL = "/ferdigstill";
-	static final String KOPIER_QUERY = "kopierJournalpost?kildeJournalpostId={kildeJournalpostId}";
-	static final String FERDIGSTILL_QUERY = "?forsoekFerdigstill=true";
 	protected static final String NAV_IDENT_SAKSBEHANDLER = "Z990782";
 
 	protected String OIDC_TOKEN_PERSON_USER_TEST;
 	protected String OIDC_TOKEN_SERVICE_USER_TEST;
+
+	protected static String apiPath(String path) {
+		return apiPathBuilder(path).build().toUriString();
+	}
+
+	protected static String apiJournalpostPath() {
+		return apiJournalpostPath(Map.of(), "");
+	}
+
+	protected static String apiJournalpostPath(String... path) {
+		return apiJournalpostPath(Map.of(), path);
+	}
+
+	protected static String apiJournalpostPath(Map<String, List<String>> queryParams) {
+		return apiJournalpostPath(queryParams, "");
+	}
+
+	protected static String apiJournalpostPath(Map<String, List<String>> queryParams, String... path) {
+		UriComponentsBuilder builder = apiPathBuilder(JOURNALPOSTAPI_JOURNALPOST_PATH).pathSegment(path);
+		if (queryParams.isEmpty()) {
+			return builder.build().toUriString();
+		} else {
+			return builder.queryParams(toMultiValueMap(queryParams)).build().toUriString();
+		}
+	}
+
+	protected static String apiDokumentInfoPath(String... path) {
+		return apiPathBuilder(JOURNALPOSTAPI_DOKUMENTINFO_PATH).pathSegment(path).build().toUriString();
+	}
+
+	protected static String apiInternalPath(String... path) {
+		return apiInternalPathBuilder(path).build().toUriString();
+	}
+
+	protected static String apiInternalJournalpostPath(String... path) {
+		return apiInternalPathBuilder(INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH).pathSegment(path).build().toUriString();
+	}
+
+	private static UriComponentsBuilder apiPathBuilder(String path) {
+		return fromPath(JOURNALPOSTAPI_BASE_PATH).path(path);
+	}
+
+	private static UriComponentsBuilder apiInternalPathBuilder(String... path) {
+		return fromPath(INTERNAL_JOURNALPOSTAPI_BASE_PATH)
+				.pathSegment(path);
+	}
 
 	void restStsToken() {
 		stubFor(post(urlEqualTo("/reststs"))

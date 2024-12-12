@@ -1,9 +1,9 @@
 package no.nav.dokarkiv.core.repository;
 
+import jakarta.persistence.EntityManager;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
-import javax.persistence.EntityManager;
 import java.util.Optional;
 
 /**

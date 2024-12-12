@@ -1,12 +1,11 @@
 package no.nav.dokarkiv.core.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 
 /**
  * Denne klassen brukes for å kunne adressere kolonnene i JournalpostDokumentInfoRelasjon uten å si til Hibernate at

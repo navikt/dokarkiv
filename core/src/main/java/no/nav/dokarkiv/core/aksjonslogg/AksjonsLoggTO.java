@@ -1,12 +1,11 @@
 package no.nav.dokarkiv.core.aksjonslogg;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.

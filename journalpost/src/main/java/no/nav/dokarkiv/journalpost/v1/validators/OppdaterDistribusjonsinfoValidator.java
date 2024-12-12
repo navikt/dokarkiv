@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
@@ -13,8 +15,6 @@ import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.Journalp
 import no.nav.dokarkiv.journalpost.v1.api.bulkOppdaterDistribusjonsinfo.JournalpostWithDistribusjonsinfo;
 import org.springframework.stereotype.Service;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;

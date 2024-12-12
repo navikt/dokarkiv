@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.safintern.journalpost;
 
+import jakarta.persistence.EntityManager;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
@@ -39,7 +40,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.Map;
@@ -61,8 +61,6 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON_DLF
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SKANNING_META;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUsername;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertBruker;
-import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertSak;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.ADRESSELINJE1;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.ADRESSELINJE2;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.ADRESSELINJE3;
@@ -72,13 +70,10 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID_T
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_LAND;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BEHANDLINGSTEMA;
-import static no.nav.dokarkiv.core.util.TestdataFactory.BEHANDLINGSTEMA_DEKODE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BREVKODE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.DOKUMENT_INFO_TITTEL;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.DOKUMENT_TYPE_ID;
-import static no.nav.dokarkiv.core.util.TestdataFactory.FIL_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.INNHOLD;
-import static no.nav.dokarkiv.core.util.TestdataFactory.BRUK_STANDARDREGLER_INNSYNSBESKRIVELSE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.JOURNALFOERT_AV_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
@@ -88,6 +83,9 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.POSTNUMMER;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.POSTSTED;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.SKANNET_INNHOLD_TITTEL;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.SKJERMING_TYPE_CODE;
+import static no.nav.dokarkiv.core.util.TestdataFactory.BEHANDLINGSTEMA_DEKODE;
+import static no.nav.dokarkiv.core.util.TestdataFactory.BRUK_STANDARDREGLER_INNSYNSBESKRIVELSE;
+import static no.nav.dokarkiv.core.util.TestdataFactory.FIL_NAVN;
 import static no.nav.dokarkiv.core.util.TestdataFactory.TILLEGGOPPLYSNINGER_KEY_1;
 import static no.nav.dokarkiv.core.util.TestdataFactory.TILLEGGOPPLYSNINGER_KEY_2;
 import static no.nav.dokarkiv.core.util.TestdataFactory.TILLEGGOPPLYSNINGER_KEY_3;
@@ -103,6 +101,8 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendin
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createNavNoUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertBruker;
+import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertSak;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 

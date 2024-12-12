@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.sikkerhetsnivaa;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,8 +42,8 @@ public class JournalpostInternSikkerhetsnivaaController {
 	@SwaggerFinnUlesteJournalposter
 	@GetMapping("/finnUlesteJournalposter/{utsendingskanal}/{ekspedertFra}/{ekspedertTil}")
 	public ResponseEntity<List<Long>> finnUlesteJournalposter(@PathVariable @NotBlank(message = "Sti-parameter utsendingskanal må ha en verdi") String utsendingskanal,
-															  @PathVariable @NotBlank(message = "Sti-parameter ekspedertFra må ha en verdi") @DateTimeFormat(iso = DATE_TIME) LocalDateTime ekspedertFra,
-															  @PathVariable @NotBlank(message = "Sti-parameter ekspedertTil må ha en verdi") @DateTimeFormat(iso = DATE_TIME) LocalDateTime ekspedertTil) {
+															  @PathVariable @NotNull(message = "Sti-parameter ekspedertFra må ha en verdi") @DateTimeFormat(iso = DATE_TIME) LocalDateTime ekspedertFra,
+															  @PathVariable @NotNull(message = "Sti-parameter ekspedertTil må ha en verdi") @DateTimeFormat(iso = DATE_TIME) LocalDateTime ekspedertTil) {
 
 		log.info(format("finnUlesteJournalposter har mottatt kall for å hente alle uleste journalposter i tidsrommet ekspedertFra=%s og ekspedertTil=%s med utsendingskanal=%s", ekspedertFra, ekspedertTil, utsendingskanal));
 

@@ -54,6 +54,8 @@ import static org.springframework.http.HttpStatus.OK;
 
 public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
+	private static final String BULK_OPPDATER_DISTRIBUSJONSINFO_PATH = "/bulkOppdaterDistribusjonsinfo";
+	private static final String OPPDATER_DISTRIBUSJONSINFO_PATH = "/oppdaterDistribusjonsinfo";
 	private static final String POSTKASSEADRESSE = "enadresse#1234";
 	private static final String POSTKASSE_LEVERANDØR = "postkasseleverandør";
 	private static final String LANDKODE = "NO";
@@ -130,7 +132,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 
 		var oppdaterDistribusjonsinfoEntity = new HttpEntity<>(oppdaterDistribusjonsinfoRequest.build(), createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + "/oppdaterDistribusjonsinfo", PATCH, oppdaterDistribusjonsinfoEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId + OPPDATER_DISTRIBUSJONSINFO_PATH), PATCH, oppdaterDistribusjonsinfoEntity, String.class);
 		assertEquals(OK, response.getStatusCode());
 
 		var ekspedertJournalpost = journalpostTestRepository.findById(journalpostId);
@@ -403,7 +405,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 				.collect(Collectors.toList());
 		var bulkOppdaterDistribusjonsinfoEntity = new HttpEntity<>(new BulkOppdaterDistribusjonsinfoRequest(journalposts), createHeadersWithServiceUserToken());
 
-		ResponseEntity<T> response = restTemplate.exchange(URL_BULK_DISTRIBUSJONSINFO_JOURNALPOST, POST, bulkOppdaterDistribusjonsinfoEntity, responseClass);
+		ResponseEntity<T> response = restTemplate.exchange(apiPath(BULK_OPPDATER_DISTRIBUSJONSINFO_PATH), POST, bulkOppdaterDistribusjonsinfoEntity, responseClass);
 		assertEquals(resultStatus, response.getStatusCode());
 
 		return response.getBody();
@@ -418,7 +420,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		}
 		var oppdaterDistribusjonsinfoEntity = new HttpEntity<>(oppdaterDistribusjonsinfoRequest.build(), createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> response = restTemplate.exchange(URL_JOURNALPOST + journalpostId + "/oppdaterDistribusjonsinfo", PATCH, oppdaterDistribusjonsinfoEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId + OPPDATER_DISTRIBUSJONSINFO_PATH), PATCH, oppdaterDistribusjonsinfoEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
 	}
@@ -433,7 +435,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 				.journalfoerendeEnhet("9999")
 				.build();
 		var finalizeRequestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> finalizeResponse = restTemplate.exchange(URL_JOURNALPOST + journalpostId + FERDIGSTILL, PATCH, finalizeRequestEntity, String.class);
+		ResponseEntity<String> finalizeResponse = restTemplate.exchange(apiJournalpostPath(journalpostId + FERDIGSTILL), PATCH, finalizeRequestEntity, String.class);
 		assertEquals(OK, finalizeResponse.getStatusCode());
 
 		return journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);

@@ -1,6 +1,18 @@
 package no.nav.dokarkiv.core.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,25 +25,13 @@ import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.apache.commons.lang3.ArrayUtils;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
+import static jakarta.persistence.GenerationType.SEQUENCE;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -49,15 +49,14 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @ToString(onlyExplicitlyIncluded = true)
 public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKilde {
 
-	/**
-	 * ID used for serialization.
-	 */
+	@Serial
 	private static final long serialVersionUID = -2125839946340061652L;
+	private static final String FIL_DETALJER_SEQUENCE = "fil_detaljer_seq";
+	private static final String DATABASE_FIL_DETALJER_SEQUENCE = "t_fil_detaljer_seq";
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fil_detaljer_seq")
-	@GenericGenerator(name = "fil_detaljer_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-			parameters = {@Parameter(name = "sequence_name", value = "T_FIL_DETALJER_SEQ")})
+	@GeneratedValue(strategy = SEQUENCE, generator = FIL_DETALJER_SEQUENCE)
+	@SequenceGenerator(name = FIL_DETALJER_SEQUENCE, sequenceName = DATABASE_FIL_DETALJER_SEQUENCE, allocationSize = 1)
 	@Column(name = "fil_detaljer_id", nullable = false)
 	@ToString.Include
 	private Long fildetaljerId;

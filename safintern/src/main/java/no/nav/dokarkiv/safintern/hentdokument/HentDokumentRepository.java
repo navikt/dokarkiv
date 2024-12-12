@@ -1,10 +1,10 @@
 package no.nav.dokarkiv.safintern.hentdokument;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Tuple;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Tuple;
 import java.sql.Blob;
 import java.util.Optional;
 

@@ -24,7 +24,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,10 +40,12 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.springframework.http.HttpMethod.PUT;
 
 public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpostIT {
 	private static final String GYLDIG_CONSUMER = "srvskanmotutgaaende";
 	private static final String KILDE = "skanmotutgaaende";
+	public static final String MOTTA_DOKUMENT_UTGAAENDE_SKANNING_PATH = "/mottaDokumentUtgaaendeSkanning";
 
 	private final Date mockDate = new Date(Date.UTC(100, Calendar.NOVEMBER, 10, 0, 0, 0)); // aar 2000
 
@@ -279,7 +280,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		HttpHeaders headers = createHeaders(consumer);
 		HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT,
+				apiInternalJournalpostPath(journalpostId + MOTTA_DOKUMENT_UTGAAENDE_SKANNING_PATH), PUT,
 				requestHttpEntity, String.class);
 
 		endTransaction();
@@ -291,7 +292,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 
 		HttpEntity<MottaDokumentUtgaaendeSkanningRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				URL_PROTECTED_INTERN_JOURNALPOST + journalpostId + "/mottaDokumentUtgaaendeSkanning", HttpMethod.PUT,
+				apiInternalJournalpostPath(journalpostId + MOTTA_DOKUMENT_UTGAAENDE_SKANNING_PATH), PUT,
 				requestHttpEntity, String.class);
 		JsonNode responseBody = mapper.readTree(responseEntity.getBody());
 

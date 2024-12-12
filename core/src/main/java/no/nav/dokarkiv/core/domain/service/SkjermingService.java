@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -7,9 +9,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
@@ -61,7 +60,7 @@ public class SkjermingService {
 	}
 
 	public void setFildetaljerSkjerming(Long dokumentInfoId, VariantFormatCode variantFormatCode, SkjermingTypeCode skjermingTypeCode) {
-		Query q = entityManager.createQuery("update FilDetaljer set skjermingType = :skjermingTypeCode where dokument_info_id = :dokumentInfoId and variantFormat=:variantFormat")
+		Query q = entityManager.createQuery("update FilDetaljer set skjermingType = :skjermingTypeCode where dokumentInfo.dokumentInfoId = :dokumentInfoId and variantFormat=:variantFormat")
 				.setParameter("dokumentInfoId", dokumentInfoId)
 				.setParameter("variantFormat", variantFormatCode)
 				.setParameter("skjermingTypeCode", skjermingTypeCode);
@@ -69,7 +68,7 @@ public class SkjermingService {
 	}
 
 	public void setJpDokInfoRelSkjerming(Long jpId, Long dokInfoId, SkjermingTypeCode skjermingTypeCode) {
-		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :skjermingTypeCode where dokument_info_id = :dokInfoId and journalpost_id=:jpId")
+		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :skjermingTypeCode where embeddedId.dokumentInfoId = :dokInfoId and embeddedId.journalpostId=:jpId")
 				.setParameter("jpId", jpId)
 				.setParameter("dokInfoId", dokInfoId)
 				.setParameter("skjermingTypeCode", skjermingTypeCode);

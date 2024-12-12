@@ -5,23 +5,21 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.KanIkkeHenteMottatteJournalposterException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
-import no.nav.dokarkiv.core.util.SafeLoggingUtil;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletBruker;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletJournalpost;
-import org.joda.time.DateTime;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.valueOf;
 import static org.slf4j.MDC.get;
 
 
@@ -38,9 +36,9 @@ public class FinnMottatteJournalposterService {
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter() throws KanIkkeHenteMottatteJournalposterException {
 		try {
 			List<Journalpost> ubehandledeJournalposter = journalpostRepository
-					.findUbehandledeJournalposts(DateTime.now().minusWeeks(1).toDate());
+					.findUbehandledeJournalposts(Date.from(LocalDateTime.now().minusWeeks(1).atZone(ZoneId.of("Europe/Oslo")).toInstant()));
 			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::createResponseObject).collect(Collectors.toList()));
-		} catch(DataAccessException e){
+		} catch (DataAccessException e) {
 			log.error("{} finnMottatteJournalposter fikk DataAccessException ved kall mot journalpostRepository", get(MDC_REQUEST_ID), e);
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
 		}
@@ -49,9 +47,11 @@ public class FinnMottatteJournalposterService {
 	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedTemaEldreEnn(Set<FagomradeCode> fagomrader, int eldreEnn) throws KanIkkeHenteMottatteJournalposterException {
 		try {
 			List<Journalpost> ubehandledeJournalposter = journalpostRepository
-					.findUbehandledeJournalpostsWithTemaIn(DateTime.now().minusDays(eldreEnn).toDate(), fagomrader);
+					.findUbehandledeJournalpostsWithTemaIn(
+							Date.from(LocalDateTime.now().minusDays(eldreEnn).atZone(ZoneId.of("Europe/Oslo")).toInstant()),
+							fagomrader);
 			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::createResponseObject).collect(Collectors.toList()));
-		} catch(DataAccessException e){
+		} catch (DataAccessException e) {
 			log.error("{} finnMottatteJournalposterMedTemaer fikk DataAccessException ved kall mot journalpostRepository.", get(MDC_REQUEST_ID), e);
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
 		}
@@ -84,10 +84,10 @@ public class FinnMottatteJournalposterService {
 					journalforendeEnhet,
 					datoOpprettet
 			);
-		} catch(NullPointerException npe) {
+		} catch (NullPointerException npe) {
 			log.error("{} createResponseObject feilet i å generere UbehandletJournalpost objekt for journalpostId: {}", get(MDC_REQUEST_ID), journalpost.getJournalpostId(), npe);
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
-		} catch(Exception e) {
+		} catch (Exception e) {
 			log.error("{} createResponseObject, det oppstod en feil. Journalpostid: {}", get(MDC_REQUEST_ID), journalpost.getJournalpostId());
 			throw new KanIkkeHenteMottatteJournalposterException("Internal server error");
 		}

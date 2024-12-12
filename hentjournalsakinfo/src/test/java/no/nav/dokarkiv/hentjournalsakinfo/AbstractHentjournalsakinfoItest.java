@@ -18,14 +18,13 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.Base64;
 import java.util.UUID;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
@@ -83,13 +82,8 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 				.build());
 	}
 
-
-	protected HttpEntity createHeaderEntity() {
-		return new HttpEntity(createDefaultHeaders());
-	}
-
 	protected HttpHeaders createDefaultHeaders() {
-		String basicAuthHeader = "Basic " + Base64Utils.encodeToString(String.format("%s:%s", USERNAME, PASSWORD).getBytes());
+		String basicAuthHeader = "Basic " + Base64.getEncoder().encodeToString(String.format("%s:%s", USERNAME, PASSWORD).getBytes());
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, basicAuthHeader);

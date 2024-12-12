@@ -7,9 +7,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.HandlerInterceptor;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 /**
  * Vi bruker spring-security for standard filtre.
@@ -25,14 +27,16 @@ public class SecurityRestConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		// Appen er tilstandsløs og får ingen http sessions fra nettleser til bruker.
-		httpSecurity.csrf().disable();
+		httpSecurity.csrf(AbstractHttpConfigurer::disable);
 		// Disse endepunktene er beskyttet av token-support @Protected
 		// Se JwtTokenValidationFilter
 		httpSecurity.authorizeRequests()
-				.antMatchers("/rest/journalpostapi/**",
+				.requestMatchers("/rest/journalpostapi/**",
 						"/rest/admin/**")
 				.permitAll();
-		httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		httpSecurity.sessionManagement(configurer -> {
+			configurer.sessionCreationPolicy(STATELESS);
+		});
 		return httpSecurity.build();
 	}
 

@@ -321,8 +321,6 @@ public class OpprettJournalpostApiRequestMapper {
 				.originalJournalpost(jp)
 				//hack for sykepengeberegningsmodulen. ref MMA-6005
 				.dokumenttypeId(BREVKODE_4936.equals(dokument.getBrevkode()) ? "I000067" : null)
-				//FIXME: Kommentert ut pga feil i Gosys
-				//.dokumentFerdigDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
 				.build();
 
 		if (dokument.getDokumentvarianter() != null) {

@@ -7,6 +7,7 @@ import com.blazebit.persistence.PagedList;
 import com.blazebit.persistence.PaginatedCriteriaBuilder;
 import com.blazebit.persistence.view.EntityViewManager;
 import com.blazebit.persistence.view.EntityViewSetting;
+import jakarta.persistence.EntityManager;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -17,7 +18,6 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.Collection;

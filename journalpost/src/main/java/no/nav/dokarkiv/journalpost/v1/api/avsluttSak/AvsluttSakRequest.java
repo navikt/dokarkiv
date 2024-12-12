@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
-import org.joda.time.DateTime;
 
 import java.time.LocalDateTime;
 
