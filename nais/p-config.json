@@ -585,6 +585,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "postmottak-backend",
+      "namespace": "aap",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "lps-oppfolgingsplan-mottak",
       "namespace": "team-esyfo",
       "cluster": "prod-gcp"
