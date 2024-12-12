@@ -470,11 +470,6 @@
       "scopes": ["api_admin"]
     },
     {
-      "app": "routing",
-      "namespace": "aap",
-      "cluster": "dev-gcp"
-    },
-    {
       "app": "syk-dig-backend",
       "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
