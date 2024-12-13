@@ -48,7 +48,7 @@ public class DokumentproduksjonInfoEndpoint implements DokumentproduksjonInfoV1 
 
 	@Override
 	public HentJournalpostInfoResponse hentJournalpostInfo(HentJournalpostInfoRequest hentJournalpostInfoRequest) throws HentJournalpostInfoJournalpostIkkeFunnet, HentJournalpostInfoDokumentInfoIkkeFunnet {
-		throw new UnsupportedOperationException("hentFerdigstilteDokumenter er sanert 2023-02");
+		throw new UnsupportedOperationException("hentJournalpostInfo er sanert 2023-02");
 	}
 
 	@Override
