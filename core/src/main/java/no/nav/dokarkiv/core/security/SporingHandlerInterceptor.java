@@ -93,16 +93,16 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 		if (tokenValidationContext.getJwtTokenAsOptional(ISSUER_AZUREV2).isPresent()) {
 			// Azure AD token (header: Authorization). Oauth 2.0 client credential grant flow og on-behalf-of flow
 			azureAdFlowSporingHandler.handle(tokenValidationContext.getJwtToken(ISSUER_AZUREV2), navUserIdHeader);
-		} else if (tokenValidationContext.getFirstValidToken().isPresent() && isEmpty(navConsumerToken)) {
+		} else if (tokenValidationContext.getFirstValidToken() != null && isEmpty(navConsumerToken)) {
 			// REST-STS (header: Authorization). System til system
-			if (navSystemkontekstHandler.handle(tokenValidationContext.getFirstValidToken().get(), response, navUserIdHeader)) {
+			if (navSystemkontekstHandler.handle(tokenValidationContext.getFirstValidToken(), response, navUserIdHeader)) {
 				return false;
 			}
-		} else if (tokenValidationContext.getFirstValidToken().isPresent() && isNotEmpty(navConsumerToken)) {
+		} else if (tokenValidationContext.getFirstValidToken() != null && isNotEmpty(navConsumerToken)) {
 			// OpenAM (header: Authorization) og REST-STS on premise issuer (header: Nav-Consumer-Token).
 			// Brukerkontekst i header Authorization.
 			// Systemkontekst i header Nav-Consumer-Token.
-			if (navCombinedBrukerSystemkontekstHandler.handle(tokenValidationContext.getFirstValidToken().get(), navConsumerToken, response)) {
+			if (navCombinedBrukerSystemkontekstHandler.handle(tokenValidationContext.getFirstValidToken(), navConsumerToken, response)) {
 				return false;
 			}
 		} else {

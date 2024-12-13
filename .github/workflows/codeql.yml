@@ -6,7 +6,7 @@ on:
     - cron: '00 16 * * SUN'
 
 env:
-  JAVA_VERSION: '17'
+  JAVA_VERSION: '21'
   CODEQL_VERSION: '2.18.0'
 
 jobs:

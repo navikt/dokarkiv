@@ -7,10 +7,13 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Data
 @NoArgsConstructor
 public class FinnJournalposterRequestTo {
+	private static final int MAKS_ELEMENTER_LOGGING = 200;
+
 	private List<String> gsakSakIds;
 	private List<String> psakSakIds;
 	private String fraDato;
@@ -22,16 +25,14 @@ public class FinnJournalposterRequestTo {
 	private List<String> alleIdenter;
 	private Integer foerste;
 	private String etterPeker;
-	/**
-	 * @deprecated Kan fjernes når saf ikke sender denne pga jackson setting: fail-on-unknown-properties=true
-	 * @since 4.10.0
-	 */
-	@Deprecated(since = "4.10.0", forRemoval = true)
-	private Integer siste;
-	/**
-	 * @deprecated Kan fjernes når saf ikke sender denne pga jackson setting: fail-on-unknown-properties=true
-	 * @since 4.10.0
-	 */
-	@Deprecated(since = "4.10.0", forRemoval = true)
-	private String foerPeker;
+
+	@SuppressWarnings("unused")
+	@ToString.Include
+	private String gsakSakIds() {
+		if (gsakSakIds.size() > MAKS_ELEMENTER_LOGGING) {
+			return Stream.concat(gsakSakIds.stream().limit(MAKS_ELEMENTER_LOGGING), Stream.of("trunkert til maks " + MAKS_ELEMENTER_LOGGING + " elementer...")).toList().toString();
+		} else {
+			return gsakSakIds.toString();
+		}
+	}
 }

@@ -29,7 +29,7 @@
 	</modules>
 
 	<properties>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 
 		<cxf.version>4.0.5</cxf.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
@@ -46,13 +46,13 @@
 		<springdoc-openapi-starter-webmvc-ui.version>2.6.0</springdoc-openapi-starter-webmvc-ui.version>
 
 		<!-- NAV -->
-		<token-support.version>3.2.0</token-support.version>
+		<token-support.version>5.0.13</token-support.version>
 		<verapdf.version>1.26.1</verapdf.version>
 
 		<!-- Tjenestegrensesnitt -->
 		<dok-legacy-tjenestespesifikasjoner.version>32-9d17b57</dok-legacy-tjenestespesifikasjoner.version>
 		<!-- test -->
-		<datasource-proxy-spring-boot-starter.version>1.9.0</datasource-proxy-spring-boot-starter.version>
+		<datasource-proxy-spring-boot-starter.version>1.10.0</datasource-proxy-spring-boot-starter.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
 		<spring-cloud-contract-wiremock.version>4.1.5</spring-cloud-contract-wiremock.version>
