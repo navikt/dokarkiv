@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_ONSKE;
-import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_SIKKERHET;
+//import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_SIKKERHET;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_FEILSENDT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
@@ -67,7 +67,7 @@ public final class OppdaterJournalpostValidator {
 	private static final EnumSet<MottaksKanalCode> DIGITALE_KANALER = EnumSet.of(NAV_NO, NAV_NO_CHAT, ALTINN, EESSI);
 	public static final Set<String> LOVLIGE_INNSYNSKODER = Set.of(
 			BRUK_STANDARDREGLER.name(), VISES_MASKINELT_GODKJENT.name(), VISES_MANUELT_GODKJENT.name(),
-			SKJULES_FEILSENDT.name(), SKJULES_BRUKERS_SIKKERHET.name(), SKJULES_BRUKERS_ONSKE.name()
+			SKJULES_FEILSENDT.name(), /*SKJULES_BRUKERS_SIKKERHET.name(),*/ SKJULES_BRUKERS_ONSKE.name()
 	);
 
 	private static final Pattern BEHANDLINGSTEMA_PATTERN = Pattern.compile("ab\\d{4}");

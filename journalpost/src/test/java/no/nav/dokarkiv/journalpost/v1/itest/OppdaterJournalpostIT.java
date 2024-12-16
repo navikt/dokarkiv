@@ -1217,7 +1217,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@ParameterizedTest
 	@EnumSource(value = InnsynCode.class, mode = INCLUDE, names = {
 			"BRUK_STANDARDREGLER", "VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT",
-			"SKJULES_FEILSENDT", "SKJULES_BRUKERS_SIKKERHET", "SKJULES_BRUKERS_ONSKE"
+			"SKJULES_FEILSENDT", /*"SKJULES_BRUKERS_SIKKERHET",*/ "SKJULES_BRUKERS_ONSKE"
 	})
 	public void shouldUpdateJournalpostWithOverstyrInnsynsregler(InnsynCode innsynCode) {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
@@ -1297,7 +1297,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	@ParameterizedTest
 	@EnumSource(value = InnsynCode.class, mode = EXCLUDE, names = {
 			"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT", "SKJULES_FEILSENDT",
-			"SKJULES_BRUKERS_SIKKERHET", "SKJULES_BRUKERS_ONSKE", "BRUK_STANDARDREGLER"
+			/*"SKJULES_BRUKERS_SIKKERHET",*/ "SKJULES_BRUKERS_ONSKE", "BRUK_STANDARDREGLER"
 	})
 	public void shouldReturnBadRequestWithErrorMessageOnInvalidOverstyrInnsynsregler(InnsynCode innsynCode) {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
