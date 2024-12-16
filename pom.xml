@@ -35,12 +35,12 @@
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
-		<google-cloud-storage.version>2.45.0</google-cloud-storage.version>
+		<google-cloud-storage.version>2.46.0</google-cloud-storage.version>
 		<tink.version>1.15.0</tink.version>
 		<tink-gcpkms.version>1.10.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.14</blaze-persistence.version>
 		<commons-io.version>2.18.0</commons-io.version>
-		<microsoft-graph.version>6.21.0</microsoft-graph.version>
+		<microsoft-graph.version>6.23.0</microsoft-graph.version>
 		<azure-identity.version>1.14.2</azure-identity.version>
 		<!-- https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot -->
 		<springdoc-openapi-starter-webmvc-ui.version>2.6.0</springdoc-openapi-starter-webmvc-ui.version>
@@ -55,7 +55,7 @@
 		<datasource-proxy-spring-boot-starter.version>1.10.0</datasource-proxy-spring-boot-starter.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
-		<spring-cloud-contract-wiremock.version>4.1.5</spring-cloud-contract-wiremock.version>
+		<spring-cloud-contract-wiremock.version>4.2.0</spring-cloud-contract-wiremock.version>
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
 	</properties>
