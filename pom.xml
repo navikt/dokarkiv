@@ -55,7 +55,7 @@
 		<datasource-proxy-spring-boot-starter.version>1.10.0</datasource-proxy-spring-boot-starter.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
-		<spring-cloud-contract-wiremock.version>4.1.5</spring-cloud-contract-wiremock.version>
+		<spring-cloud-contract-wiremock.version>4.2.0</spring-cloud-contract-wiremock.version>
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
 	</properties>
