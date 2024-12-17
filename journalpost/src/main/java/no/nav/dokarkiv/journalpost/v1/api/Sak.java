@@ -60,6 +60,7 @@ public class Sak {
 					* TILLEGGSSTONADER
 					* ARBEIDSOPPFOLGING
 					* TILTAKSPENGER
+					* TILTAKSADMINISTRASJON
 					* FIA
 
 					Skal kun settes dersom sakstype = FAGSAK.

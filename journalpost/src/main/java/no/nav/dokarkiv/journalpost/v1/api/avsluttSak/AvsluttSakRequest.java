@@ -59,6 +59,7 @@ public class AvsluttSakRequest {
 					* TILLEGGSSTONADER
 					* ARBEIDSOPPFOLGING
 					* TILTAKSPENGER
+					* TILTAKSADMINISTRASJON
 					* FIA
 
 					Skal kun settes dersom sakstype = FAGSAK.
