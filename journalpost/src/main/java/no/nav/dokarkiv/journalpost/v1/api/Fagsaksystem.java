@@ -42,6 +42,7 @@ public enum Fagsaksystem {
     TILLEGGSSTONADER,
     ARBEIDSOPPFOLGING,
     TILTAKSPENGER,
+    TILTAKSADMINISTRASJON,
     /**
      * Inkluderende arbeidsliv
      */
