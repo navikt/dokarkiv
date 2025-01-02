@@ -324,11 +324,6 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "k9-formidling",
-      "namespace": "k9saksbehandling",
-      "cluster": "dev-fss"
-    },
-    {
       "app": "k9-inntektsmelding",
       "namespace": "k9saksbehandling",
       "cluster": "dev-gcp"
@@ -356,6 +351,11 @@
     {
       "app": "omsorgspenger-journalforing",
       "namespace": "omsorgspenger",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "ung-sak",
+      "namespace": "k9saksbehandling",
       "cluster": "dev-gcp"
     },
 
