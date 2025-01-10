@@ -155,11 +155,6 @@
     {
       "app": "padm2",
       "namespace": "teamsykefravr",
-      "cluster": "dev-fss"
-    },
-    {
-      "app": "padm2",
-      "namespace": "teamsykefravr",
       "cluster": "dev-gcp"
     },
     {
@@ -184,6 +179,11 @@
     },
     {
       "app": "ismanglendemedvirkning",
+      "namespace": "teamsykefravr",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "isoppfolgingsplan",
       "namespace": "teamsykefravr",
       "cluster": "dev-gcp"
     },
