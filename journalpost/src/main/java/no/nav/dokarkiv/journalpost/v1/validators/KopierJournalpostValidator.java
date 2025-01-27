@@ -14,13 +14,13 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 
 public class KopierJournalpostValidator {
 
-	private static final EnumSet<JournalStatusCode> GYLDIGE_JOURNALSTATUSER = EnumSet.of(FS, FL, E, J);
+	private static final EnumSet<JournalStatusCode> GYLDIGE_JOURNALSTATUSER_FOR_KOPIERING = EnumSet.of(FS, FL, E, J);
 
 	public void validate(Journalpost journalpost) {
 		JournalStatusCode status = journalpost.getJournalstatus();
 
 		// Verifisere at journalposten er i en tilstand som kan kopieres (status FL, FS, E eller J)
-		if (!GYLDIGE_JOURNALSTATUSER.contains(status)) {
+		if (!GYLDIGE_JOURNALSTATUSER_FOR_KOPIERING.contains(status)) {
 			throw new KanIkkeKopiereException(format("Kan ikke kopiere journalpost med journalpostId=%s fordi journalpost har ugyldig status=%s", journalpost.getJournalpostId(), journalpost.getJournalstatus()));
 		}
 	}
