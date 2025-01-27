@@ -2,7 +2,6 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
@@ -28,6 +27,8 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.isConsumerFagsystemArgus;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
@@ -160,16 +161,15 @@ public class FerdigstillJournalpostValidator {
 	private void verifyPaakrevdeFelterJournalpost(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {
 		verifyFieldNotNull(journalpost.getFagomrade(), "Journalpost.fagomrade", manglendePaakrevdeFelter);
 		verifyStringNotBlank(journalpost.getInnhold(), "Journalpost.innhold", manglendePaakrevdeFelter);
-		if (!JournalpostTypeCode.N.equals(journalpost.getJournalposttype())) {
+		if (!N.equals(journalpost.getJournalposttype())) {
 			verifyStringNotBlank(journalpost.getAvsenderMottaker(), "Journalpost.avsendMottaker.navn", manglendePaakrevdeFelter);
 		}
-		if (JournalpostTypeCode.I.equals(journalpost.getJournalposttype())) {
+		if (I.equals(journalpost.getJournalposttype())) {
 			verifyFieldNotNull(journalpost.getMottakskanal(), "Journalpost.mottakskanal", manglendePaakrevdeFelter);
 		}
 	}
 
-	private void verifyPaakrevdeFelterDokumentInfo(Journalpost
-														   journalpost, List<String> manglendePaakrevdeFelter) {
+	private void verifyPaakrevdeFelterDokumentInfo(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {
 		journalpost.getJournalpostDokumentInfoRelasjoner()
 				.forEach(journalpostDokumentInfoRelasjon -> verifyMandatoryFelterDokumentinfo(journalpostDokumentInfoRelasjon.getDokumentInfo(), manglendePaakrevdeFelter));
 	}
@@ -181,16 +181,14 @@ public class FerdigstillJournalpostValidator {
 		});
 	}
 
-	private void verifyPaakrevdeFelterSaksrelasjon(Saksrelasjon
-														   saksrelasjon, List<String> manglendePaakrevdeFelter) {
+	private void verifyPaakrevdeFelterSaksrelasjon(Saksrelasjon saksrelasjon, List<String> manglendePaakrevdeFelter) {
 		if (saksrelasjon != null) {
 			verifyFieldNotNull(saksrelasjon.getSakId(), "Saksrelasjon.sakId", manglendePaakrevdeFelter);
 			verifyFieldNotNull(saksrelasjon.getFagsystem(), "Saksrelasjon.fagsystem", manglendePaakrevdeFelter);
 		}
 	}
 
-	private void verifyMandatoryFelterDokumentinfo(DokumentInfo
-														   dokumentInfo, List<String> manglendePaakrevdeFelter) {
+	private void verifyMandatoryFelterDokumentinfo(DokumentInfo dokumentInfo, List<String> manglendePaakrevdeFelter) {
 		verifyStringNotBlank(dokumentInfo.getTittel(), "DokumentInfo.tittel", manglendePaakrevdeFelter);
 	}
 

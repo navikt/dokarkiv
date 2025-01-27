@@ -7,6 +7,7 @@ import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
@@ -29,8 +30,7 @@ public class KnyttTilAnnenSakValidator {
 			validateTema(request.getTema());
 			validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet());
 		} catch (InputValideringFeiletException e) {
-			throw new InputValideringFeiletException(String.format("Validering feilet for journalpostId=%s. Feilmelding=%s", kildeJournalpostId, e
-					.getMessage()));
+			throw new InputValideringFeiletException(format("Validering feilet for journalpostId=%s. Feilmelding=%s", kildeJournalpostId, e.getMessage()));
 		}
 	}
 
@@ -51,34 +51,34 @@ public class KnyttTilAnnenSakValidator {
 				throw new InputValideringFeiletException("FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK");
 			}
 		} else {
-			throw new InputValideringFeiletException(String.format("Ugyldig sakstype: %s", request.getSakstype()));
+			throw new InputValideringFeiletException(format("Ugyldig sakstype: %s", request.getSakstype()));
 		}
 	}
 
 	private void validateBruker(Bruker bruker) {
 		BrukerIdType idtype = bruker.getIdType();
 
-		if (!isNumeric(bruker.getId())){
+		if (!isNumeric(bruker.getId())) {
 			throw new InputValideringFeiletException("Id er ikke et tall.");
 		}
-		if(idtype == null){
+		if (idtype == null) {
 			throw new InputValideringFeiletException("idType kan ikke være null eller tom");
 		}
-		if (idtype.equals(FNR)){
+		if (idtype.equals(FNR)) {
 			if (bruker.getId().length() != FNR_LENGTH) {
 				throw new InputValideringFeiletException("Fnr må ha 11 siffer.");
 			}
-		} else if (idtype.equals(ORGNR)){
+		} else if (idtype.equals(ORGNR)) {
 			if (bruker.getId().length() != ORGNR_LENGTH) {
 				throw new InputValideringFeiletException("Orgnr må ha 9 siffer.");
 			}
-		} else if (!idtype.equals(AKTOERID)){
-			throw new InputValideringFeiletException(String.format("Ukjent idType for bruker: %s.", idtype));
+		} else if (!idtype.equals(AKTOERID)) {
+			throw new InputValideringFeiletException(format("Ukjent idType for bruker: %s.", idtype));
 		}
 	}
 
 	private void validateTema(String tema) {
-		if (isBlank(tema)){
+		if (isBlank(tema)) {
 			throw new InputValideringFeiletException("Tema kan ikke være null eller tom");
 		}
 		if (!StringUtils.isAlpha(tema) || tema.length() != 3) {
@@ -90,7 +90,7 @@ public class KnyttTilAnnenSakValidator {
 		if (isBlank(journalfoerendeEnhet)) {
 			throw new InputValideringFeiletException("JournalfoerendeEnhet kan ikke være null eller tom");
 		}
-		if (journalfoerendeEnhet.length() != JOURNALFOERENDE_ENHET_LENGTH){
+		if (journalfoerendeEnhet.length() != JOURNALFOERENDE_ENHET_LENGTH) {
 			throw new InputValideringFeiletException("JournalfoerendeEnhet må ha 4 siffer");
 		}
 	}

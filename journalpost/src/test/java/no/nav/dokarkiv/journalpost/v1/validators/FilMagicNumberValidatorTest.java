@@ -29,12 +29,6 @@ class FilMagicNumberValidatorTest {
 		assertThat(isFileContentContainsValidMagicNumber(filType.name(), fileContent)).isTrue();
 	}
 
-	@ParameterizedTest
-	@MethodSource
-	public void shouldReturnFalseWhenContainsInvalidMagicNumber(byte[] fileContent, FilTypeCode filType) {
-		assertThat(isFileContentContainsValidMagicNumber(filType.name(), fileContent)).isFalse();
-	}
-
 	private static Stream<Arguments> shouldReturnTrueWhenContainsValidMagicNumber() throws IOException {
 		byte[] pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf");
 		byte[] jpegFile = classpathToInputStream("jpeg/2021_01_06_nasjonale_tiltak_16_9.jpg");
@@ -48,6 +42,12 @@ class FilMagicNumberValidatorTest {
 				Arguments.of(xlsxFile, XLSX),
 				Arguments.of(null, XML)
 		);
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	public void shouldReturnFalseWhenContainsInvalidMagicNumber(byte[] fileContent, FilTypeCode filType) {
+		assertThat(isFileContentContainsValidMagicNumber(filType.name(), fileContent)).isFalse();
 	}
 
 	private static Stream<Arguments> shouldReturnFalseWhenContainsInvalidMagicNumber() throws IOException {

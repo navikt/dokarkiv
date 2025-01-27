@@ -86,6 +86,7 @@ public class OpprettJournalpostRequestValidator {
 		if (request.getDatoMottatt() != null) {
 			softValidateDato(request.getDatoMottatt(), "DatoMottatt");
 		}
+
 		List<Dokument> dokumenter = request.getDokumenter();
 		if (!dokumenter.isEmpty()) {
 			IntStream.range(0, dokumenter.size())
@@ -96,6 +97,7 @@ public class OpprettJournalpostRequestValidator {
 		} else {
 			throw new InputValideringFeiletException("Kan ikke opprette journalpost uten dokumenter.");
 		}
+
 		validatejournalfoerendeEnhet(request.getJournalfoerendeEnhet());
 
 		if (request.getOverstyrInnsynsregler() != null) {
@@ -185,6 +187,7 @@ public class OpprettJournalpostRequestValidator {
 		if (StringUtils.isEmpty(tema)) {
 			throw new InputValideringFeiletException(format("Kan ikke opprette journalpost uten tema. Mottok tema=%s", tema));
 		}
+
 		try {
 			FagomradeCode.valueOf(tema);
 		} catch (IllegalArgumentException e) {

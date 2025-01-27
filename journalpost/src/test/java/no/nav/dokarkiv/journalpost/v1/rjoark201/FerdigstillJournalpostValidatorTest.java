@@ -1,11 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark201;
 
-import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
@@ -16,9 +11,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import static java.lang.Boolean.TRUE;
+import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.UNDER_REDIGERING;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SKANNING_META;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class FerdigstillJournalpostValidatorTest {
 
@@ -27,191 +32,197 @@ public class FerdigstillJournalpostValidatorTest {
 	@Test
 	public void shouldThrowExceptionIfJournalpoststatusIsNotMidlertidig() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.J);
+		journalpost.setJournalstatus(J);
 
-		assertThrows(JournalpostIkkeMidlertidigException.class,
-				() -> validator.validateJournalpostTilstand(journalpost));
+		assertThatExceptionOfType(JournalpostIkkeMidlertidigException.class)
+				.isThrownBy(() -> validator.validateJournalpostTilstand(journalpost))
+				.withMessageContaining("Den har journalstatus=J");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfSaksrelasjonIsFeilregistrert() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
-		journalpost.getSaksrelasjon().setFeilregistrert(Boolean.TRUE);
+		journalpost.setJournalstatus(M);
+		journalpost.getSaksrelasjon().setFeilregistrert(TRUE);
 
-		assertThrows(JournalpostIkkeMidlertidigException.class,
-				() -> validator.validateJournalpostTilstand(journalpost));
+		assertThatExceptionOfType(JournalpostIkkeMidlertidigException.class)
+				.isThrownBy(() -> validator.validateJournalpostTilstand(journalpost))
+				.withMessageContaining("Den er feilregistrert");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfDokumentInfoUnderRedigering() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
-		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setDokumentstatus(DokumentStatusCode.UNDER_REDIGERING);
+		journalpost.setJournalstatus(M);
+		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setDokumentstatus(UNDER_REDIGERING);
 
-		assertThrows(DokumentUnderRedigeringException.class,
-				() -> validator.validateJournalpostTilstand(journalpost));
+		assertThatExceptionOfType(DokumentUnderRedigeringException.class)
+				.isThrownBy(() -> validator.validateJournalpostTilstand(journalpost))
+				.withMessageContaining("Ett eller flere av dokumentene på journalposten er under redigering");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfNotExactlyOneHoveddokument() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
-		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
+		journalpost.setJournalstatus(M);
+		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().setTilknyttetJournalpostSom(VEDLEGG);
 
-		assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validateJournalpostStruktur(journalpost));
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validateJournalpostStruktur(journalpost))
+				.withMessageContaining("Journalposten inneholder ingen eller flere enn ett hoveddokument");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfVariantFormatNotArkiv() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalstatus(M);
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo()
-				.getFildetaljerListe().iterator().next().setVariantFormat(VariantFormatCode.SKANNING_META);
+				.getFildetaljerListe().iterator().next().setVariantFormat(SKANNING_META);
 
-		assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validateJournalpostStruktur(journalpost));
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validateJournalpostStruktur(journalpost))
+				.withMessageContaining("Journalposten mangler arkivvariant");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfDuplicateFilinfoVariantFormat() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalstatus(M);
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo()
 				.addFilDetaljer(FilDetaljer.builder()
-						.filtype(FilTypeCode.PDF)
-						.variantFormat(VariantFormatCode.ARKIV)
+						.filtype(PDF)
+						.variantFormat(ARKIV)
 						.filnavn("hello world")
 						.filUuid("1337")
 						.build());
 
-		assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validateJournalpostStruktur(journalpost));
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validateJournalpostStruktur(journalpost))
+				.withMessageContaining("Journalposten inneholder flere dokumentvarianter med samme variantformat.");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfJournalpostIsMissingInnhold() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalstatus(M);
 		journalpost.setInnhold(null);
 
-		var exception = assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validatePaakrevdeFelter(journalpost));
-		assertTrue(exception.getMessage().contains("Journalpost.innhold"));
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
+				.withMessageContaining("Journalpost.innhold");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfJournalpostIsMissingFagomraade() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalstatus(M);
 		journalpost.setFagomrade(null);
 
-		var exception = assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validatePaakrevdeFelter(journalpost));
-		assertTrue(exception.getMessage().contains("Journalpost.fagomrade"));
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
+				.withMessageContaining("Journalpost.fagomrade");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfJournalpostIsMissingAvsendMottaker() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalstatus(M);
 		journalpost.setAvsenderMottaker(null);
 
-		assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validatePaakrevdeFelter(journalpost),
-				"Journalpost.avsendMottaker");
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
+				.withMessageContaining("Journalpost.avsendMottaker");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfSaksrelasjonIsMissing() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalstatus(M);
 		journalpost.setSaksrelasjon(null);
 
-		assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validateJournalpostStruktur(journalpost),
-				"må ha en saksrelasjon");
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validateJournalpostStruktur(journalpost))
+				.withMessageContaining("må ha en saksrelasjon");
 
 	}
 
 	@Test
 	public void shouldThrowExceptionIfSaksrelasjonIsMissingSaksnummer() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalstatus(M);
 		journalpost.getSaksrelasjon().setSakId(null);
 
-		assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validatePaakrevdeFelter(journalpost),
-				"Saksrelasjon.sakId");
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
+				.withMessageContaining("Saksrelasjon.sakId");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfSaksrelasjonIsMissingFagsystem() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalstatus(M);
 		journalpost.getSaksrelasjon().setFagsystem(null);
 
-		assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validatePaakrevdeFelter(journalpost),
-				"Saksrelasjon.fagsystem");
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
+				.withMessageContaining("Saksrelasjon.fagsystem");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfNoBrukerExists() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalstatus(M);
 		journalpost.clearBrukere();
 
-		assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validateJournalpostStruktur(journalpost),
-				"må knyttes til en bruker");
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validateJournalpostStruktur(journalpost))
+				.withMessageContaining("Journalposten er ikke knyttet til en bruker");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIsMissingBrukerId() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalstatus(M);
 		journalpost.getBrukere().iterator().next().setBrukerId(null);
 
-		assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validatePaakrevdeFelter(journalpost),
-				"Bruker.brukerId");
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
+				.withMessageContaining("Bruker.brukerId");
 
 	}
 
 	@Test
 	public void shouldThrowExceptionIfBrukerIsMissingBrukerType() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalstatus(M);
 		journalpost.getBrukere().iterator().next().setBrukerType(null);
 
-		assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validatePaakrevdeFelter(journalpost),
-				"Bruker.brukerType");
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
+				.withMessageContaining("Bruker.brukerType");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfDokumentInfoIsMissingTittel() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
+		journalpost.setJournalstatus(M);
 		journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().setTittel(null);
 
-		assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validatePaakrevdeFelter(journalpost),
-				"DokumentInfo.tittel");
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
+				.withMessageContaining("DokumentInfo.tittel");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfInngaaendeAndMottakskanalIsMissing() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.M);
-		journalpost.setJournalposttype(JournalpostTypeCode.I);
+		journalpost.setJournalstatus(M);
+		journalpost.setJournalposttype(I);
 		journalpost.setMottakskanal(null);
 
-		assertThrows(KanIkkeFerdigstilleException.class,
-				() -> validator.validatePaakrevdeFelter(journalpost),
-				"Journalpost.mottakskanal");
+		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
+				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
+				.withMessageContaining("Journalpost.mottakskanal");
 	}
 
 
@@ -220,7 +231,7 @@ public class FerdigstillJournalpostValidatorTest {
 	public void shouldValidateJournalStatus(JournalStatusCode journalStatusCode) {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(journalStatusCode);
-		journalpost.setJournalposttype(JournalpostTypeCode.I);
+		journalpost.setJournalposttype(I);
 
 		validator.validateJournalpostTilstand(journalpost);
 	}
@@ -228,8 +239,8 @@ public class FerdigstillJournalpostValidatorTest {
 	@Test
 	public void shouldValidateJournalStatusFL() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.FL);
-		journalpost.setJournalposttype(JournalpostTypeCode.U);
+		journalpost.setJournalstatus(FL);
+		journalpost.setJournalposttype(U);
 
 		validator.validateJournalpostTilstand(journalpost);
 	}

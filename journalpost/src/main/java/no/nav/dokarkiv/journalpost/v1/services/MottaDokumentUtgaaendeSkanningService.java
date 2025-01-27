@@ -2,7 +2,6 @@ package no.nav.dokarkiv.journalpost.v1.services;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
@@ -25,7 +24,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.slf4j.MDC.get;
 
@@ -54,7 +55,7 @@ public class MottaDokumentUtgaaendeSkanningService {
 					.orElseThrow(() -> new JournalpostIkkeFunnetException(get(MDC_REQUEST_ID) + " journalpostId=" + journalpostId + " ikke funnet i databasen"));
 			validateJournalpost(journalpostId, request, journalpost);
 
-			journalpost.setJournalstatus(JournalStatusCode.FL);
+			journalpost.setJournalstatus(FL);
 
 			Map<String, String> tilleggsopplysninger = journalpost.getTilleggsopplysninger();
 			request.getTilleggsopplysninger().forEach(tilleggsopplysning -> tilleggsopplysninger.put(tilleggsopplysning.getNokkel(), tilleggsopplysning.getVerdi()));
@@ -108,7 +109,7 @@ public class MottaDokumentUtgaaendeSkanningService {
 	}
 
 	private String generateErrorMessage(String errors, Long journalpostId, MottaDokumentUtgaaendeSkanningRequest request, String valideringAv) {
-		return String.format("%s feilet ved validering av %s. journalpostId=%d, mottakskanal=%s, batchnavn=%s, feilmelding=%s",
+		return format("%s feilet ved validering av %s. journalpostId=%d, mottakskanal=%s, batchnavn=%s, feilmelding=%s",
 				get(MDC_REQUEST_ID), valideringAv, journalpostId, request.getMottakskanal(), request.getBatchnavn(), errors);
 	}
 

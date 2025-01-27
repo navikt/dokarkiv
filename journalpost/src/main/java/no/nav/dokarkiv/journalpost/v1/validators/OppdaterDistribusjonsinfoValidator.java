@@ -3,7 +3,6 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
@@ -20,8 +19,10 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateBoolean;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateNotNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -46,7 +47,7 @@ public class OppdaterDistribusjonsinfoValidator {
 				UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
 			} catch (IllegalArgumentException e) {
 				throw new KanIkkeOppdatereDistribusjonsinfoException(
-						String.format("Mottatt verdi for feltet utsendingskanal=%s er ugyldig. Gyldige verdier er: %s",
+						format("Mottatt verdi for feltet utsendingskanal=%s er ugyldig. Gyldige verdier er: %s",
 								request.getUtsendingsKanal(),
 								Arrays.toString(UtsendingsKanalCode.values())));
 			}
@@ -89,7 +90,7 @@ public class OppdaterDistribusjonsinfoValidator {
 			}
 			return JournalpostResponse.ok(request.getJournalpostId());
 		} catch (NullPointerException | IllegalArgumentException enumParseException) {
-			return JournalpostResponse.error(request.getJournalpostId(), String.format("Utsendingskanalkode '%s' er ugyldig", request.getUtsendingsKanal()));
+			return JournalpostResponse.error(request.getJournalpostId(), format("Utsendingskanalkode '%s' er ugyldig", request.getUtsendingsKanal()));
 		} catch (DokarkivFunctionalException e) {
 			return JournalpostResponse.error(request.getJournalpostId(), e.getMessage());
 		}
@@ -98,7 +99,7 @@ public class OppdaterDistribusjonsinfoValidator {
 	private <T> String validerFeltOgInnhold(String feltnavn, String ekstraInformasjon, T feltinnhold) {
 		validateNotNull(feltinnhold, feltnavn, ekstraInformasjon);
 		Set<ConstraintViolation<T>> validationErrors = springSuppliedValidator.validate(feltinnhold);
-		if (validationErrors.size() > 0) {
+		if (!validationErrors.isEmpty()) {
 			return "%s er ugyldig: %s".formatted(
 					feltnavn,
 					validationErrors.stream()
@@ -109,16 +110,13 @@ public class OppdaterDistribusjonsinfoValidator {
 	}
 
 	public static void validateJournalpostKanSetteStatusEkspedert(Journalpost journalpost, WithUtsendingsKanal request) {
-		if (!JournalpostTypeCode.U.equals(journalpost.getJournalposttype())) {
+		if (!U.equals(journalpost.getJournalposttype())) {
 			throw new KanIkkeOppdatereDistribusjonsinfoException(
-					String.format("Journalposten har journalposttype=%s, men må ha journalposttype=%s for å kunne ekspederes",
-							journalpost.getJournalposttype(),
-							JournalpostTypeCode.U
-					));
+					format("Journalposten har journalposttype=%s, men må ha journalposttype=%s for å kunne ekspederes", journalpost.getJournalposttype(), U));
 		}
 		if (!ALLOWED_STATES_FOR_DISTRIBUTION.contains(journalpost.getJournalstatus())) {
 			throw new KanIkkeOppdatereDistribusjonsinfoException(
-					String.format("Journalposten har journalpoststatus=%s, men må ha en av følgende statuser %s for å kunne ekspederes",
+					format("Journalposten har journalpoststatus=%s, men må ha en av følgende statuser %s for å kunne ekspederes",
 							journalpost.getJournalstatus(),
 							ALLOWED_STATES_FOR_DISTRIBUTION));
 		}
