@@ -223,7 +223,7 @@
       "cluster": "prod-gcp"
     },
     {
-      "app": "journalfoer-soeknad",
+      "app": "etterlatte-behandling-kafka",
       "namespace": "etterlatte",
       "cluster": "prod-gcp"
     },
