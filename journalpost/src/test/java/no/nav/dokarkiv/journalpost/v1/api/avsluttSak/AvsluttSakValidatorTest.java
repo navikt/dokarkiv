@@ -3,7 +3,6 @@ package no.nav.dokarkiv.journalpost.v1.api.avsluttSak;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
-import no.nav.dokarkiv.journalpost.v1.api.avsluttSak.AvsluttSakRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,11 +16,8 @@ import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.avsluttSak.AvsluttSakValidator.validateAvsluttSakRequest;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AvsluttSakValidatorTest {
-
 
 	@Test
 	void shouldValidateOK() {
@@ -72,8 +68,10 @@ public class AvsluttSakValidatorTest {
 				.fagsaksystem(fagsakSystem)
 				.administrativEnhet(administrativEnhet)
 				.sakAnsvarlig(sakAnsvarlig).build();
-		Exception thrown = assertThrows(InputValideringFeiletException.class, () -> validateAvsluttSakRequest(avsluttSakRequest));
-		assertThat(thrown.getMessage()).contains(expectedExceptionMessage);
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validateAvsluttSakRequest(avsluttSakRequest))
+				.withMessageContaining(expectedExceptionMessage);
 	}
 
 	private static Stream<Arguments> generateStringsAndExpectedResult() {
@@ -107,7 +105,10 @@ public class AvsluttSakValidatorTest {
 	}
 
 	private static Bruker createBruker(String id, BrukerIdType idtype) {
-		return Bruker.builder().id(id).idType(idtype).build();
+		return Bruker.builder()
+				.id(id)
+				.idType(idtype)
+				.build();
 	}
 
 	private AvsluttSakRequest.AvsluttSakRequestBuilder createDefaultAvsluttSakRequestBuilder() {
@@ -119,4 +120,5 @@ public class AvsluttSakValidatorTest {
 				.opprettetDato(LocalDateTime.MIN)
 				.administrativEnhet("AdministrativEnhet");
 	}
+
 }

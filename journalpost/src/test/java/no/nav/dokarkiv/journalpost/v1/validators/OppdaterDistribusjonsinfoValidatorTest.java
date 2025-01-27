@@ -1,17 +1,14 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.core.exceptions.KanIkkeOppdatereDistribusjonsinfoException;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import org.junit.jupiter.api.Test;
 
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.SDP;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class OppdaterDistribusjonsinfoValidatorTest {
 
@@ -20,16 +17,18 @@ public class OppdaterDistribusjonsinfoValidatorTest {
 	@Test
 	public void shouldValidateWhenFeilregistrertNull() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.FS);
+		journalpost.setJournalstatus(FS);
 		journalpost.getSaksrelasjon().setFeilregistrert(null);
+
 		OppdaterDistribusjonsinfoValidator.validateJournalpostKanSetteStatusEkspedert(journalpost, request);
 	}
 
 	@Test
 	public void shouldValidateWhenFeilregistrertFalse() {
 		Journalpost journalpost = createJournalpost();
-		journalpost.setJournalstatus(JournalStatusCode.FS);
+		journalpost.setJournalstatus(FS);
 		journalpost.getSaksrelasjon().setFeilregistrert(false);
+
 		OppdaterDistribusjonsinfoValidator.validateJournalpostKanSetteStatusEkspedert(journalpost, request);
 	}
 
@@ -39,8 +38,9 @@ public class OppdaterDistribusjonsinfoValidatorTest {
 				.settStatusEkspedert(true)
 				.tilbakestillJournalpost(true)
 				.build();
-		Throwable exception = assertThrows(InputValideringFeiletException.class, () ->
-				OppdaterDistribusjonsinfoValidator.validateRequest(oppdaterDistribusjonsinfoRequest));
-		assertEquals("settStatusEkspedert og tilbakestillJournalpost kan ikke være true samtidig", exception.getMessage());
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> OppdaterDistribusjonsinfoValidator.validateRequest(oppdaterDistribusjonsinfoRequest))
+				.withMessage("settStatusEkspedert og tilbakestillJournalpost kan ikke være true samtidig");
 	}
 }

@@ -13,8 +13,11 @@ import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 
 public class MottaDokumentUtgaaendeSkanningValidator {
 
@@ -37,7 +40,7 @@ public class MottaDokumentUtgaaendeSkanningValidator {
                     .mapToObj(i -> validateDokumentVariant(request.getDokumentvarianter().get(i), i))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
-                    .collect(Collectors.toList()));
+                    .toList());
         }
 
         if (errors.isEmpty()) {
@@ -96,11 +99,11 @@ public class MottaDokumentUtgaaendeSkanningValidator {
     }
 
     private boolean hasValidJournalpostStatus(JournalStatusCode journalStatusCode) {
-        return journalStatusCode == JournalStatusCode.R;
+        return journalStatusCode == R;
     }
 
     private boolean hasValidJournalPostType(JournalpostTypeCode journalpostTypeCode) {
-        return journalpostTypeCode == JournalpostTypeCode.U || journalpostTypeCode == JournalpostTypeCode.N;
+        return journalpostTypeCode == U || journalpostTypeCode == N;
     }
 
     private Optional<String> validateDokumentVariant(DokumentVariant dokumentVariant, int index) {

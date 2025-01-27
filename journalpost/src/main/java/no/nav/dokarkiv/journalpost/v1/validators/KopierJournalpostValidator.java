@@ -4,9 +4,9 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.KanIkkeKopiereException;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.EnumSet;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
@@ -14,18 +14,15 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 
 public class KopierJournalpostValidator {
 
-	private static final List<JournalStatusCode> COPYABLE_JOURNALSTATUS_LIST = Arrays.asList(FS, FL, E, J);
+	private static final EnumSet<JournalStatusCode> GYLDIGE_JOURNALSTATUSER = EnumSet.of(FS, FL, E, J);
 
 	public void validate(Journalpost journalpost) {
 		JournalStatusCode status = journalpost.getJournalstatus();
 
 		// Verifisere at journalposten er i en tilstand som kan kopieres (status FL, FS, E eller J)
-		if (!journalpostHasCopyableStatus(status)) {
-			throw new KanIkkeKopiereException(String.format("Kan ikke kopiere journalpost med journalpostId=%s fordi journalpost har ugyldig status=%s", journalpost.getJournalpostId(), journalpost.getJournalstatus()));
+		if (!GYLDIGE_JOURNALSTATUSER.contains(status)) {
+			throw new KanIkkeKopiereException(format("Kan ikke kopiere journalpost med journalpostId=%s fordi journalpost har ugyldig status=%s", journalpost.getJournalpostId(), journalpost.getJournalstatus()));
 		}
 	}
 
-	private boolean journalpostHasCopyableStatus(JournalStatusCode status) {
-		return COPYABLE_JOURNALSTATUS_LIST.contains(status);
-	}
 }

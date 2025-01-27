@@ -13,7 +13,6 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validate
 
 public class FjernVedleggTilknyttetJournalpostValidator {
 
-
 	public void validateJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon) {
 		if (!VEDLEGG.equals(journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom())) {
 			throw new KanIkkeSlettetVedleggKnyttetTilJournalpostException(format(
@@ -24,8 +23,7 @@ public class FjernVedleggTilknyttetJournalpostValidator {
 	}
 
 	public void validateJournalPostStatusOgType(Journalpost utgaaendeJournalpost) {
-		if (!U.equals(utgaaendeJournalpost.getJournalposttype()) &&
-				!D.equals(utgaaendeJournalpost.getJournalstatus())) {
+		if (!U.equals(utgaaendeJournalpost.getJournalposttype()) && !D.equals(utgaaendeJournalpost.getJournalstatus())) {
 			throw new KanIkkeSlettetVedleggKnyttetTilJournalpostException(format(
 					"Kan ikke slette vedlegg fra journalpost med journalpostId=%s. Journalposten må være utgående (journalposttype=U) og under arbeid (journalstatus=D). Den har journalposttype=%s og journalstatus=%s.",
 					utgaaendeJournalpost.getJournalpostId(),
@@ -45,6 +43,5 @@ public class FjernVedleggTilknyttetJournalpostValidator {
 		validateId(journalpostId,"journalpostId");
 		validateId(dokumentId,"dokumentinfoId");
 	}
-
 
 }
