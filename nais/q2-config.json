@@ -523,6 +523,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "tiltakspenger-meldekort-api",
+      "namespace": "tpts",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "tiltakspenger-soknad-api",
       "namespace": "tpts",
       "cluster": "dev-gcp"

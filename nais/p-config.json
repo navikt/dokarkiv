@@ -530,6 +530,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "tiltakspenger-meldekort-api",
+      "namespace": "tpts",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "tiltakspenger-soknad-api",
       "namespace": "tpts",
       "cluster": "prod-gcp"
