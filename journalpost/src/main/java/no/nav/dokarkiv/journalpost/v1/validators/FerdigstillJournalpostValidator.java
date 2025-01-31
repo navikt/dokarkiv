@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
@@ -93,7 +91,7 @@ public class FerdigstillJournalpostValidator {
 					jp.getJournalstatus(), MIDLERTIDIG_JOURNALSTATUS));
 		}
 
-		if (TRUE.equals(jp.getSaksrelasjon() == null ? FALSE : jp.getSaksrelasjon().getFeilregistrert())) {
+		if (jp.isFeilregistrert()) {
 			feilmeldinger.add("Den er feilregistrert");
 		}
 
