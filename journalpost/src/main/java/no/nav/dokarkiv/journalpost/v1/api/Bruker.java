@@ -14,7 +14,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Bruker {
-    @NotNull(message = "Bruker mangler idType")
+    @NotNull(message = "bruker.idType kan ikke være null")
     @Schema(
             description = "Angir hvilken type identifikator som er benyttet i `bruker.id`",
             requiredMode = REQUIRED,
@@ -22,7 +22,7 @@ public class Bruker {
     )
     private BrukerIdType idType;
 
-    @NotNull(message = "Bruker mangler id")
+    @NotNull(message = "bruker.id kan ikke være null")
     @Schema(
             description = "Brukerens fødselsnummer (11 siffer), aktørID (13 siffer) eller organisasjonsnummer (9 siffer)",
             requiredMode = REQUIRED,

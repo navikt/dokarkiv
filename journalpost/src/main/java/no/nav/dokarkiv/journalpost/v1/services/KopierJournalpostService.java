@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.KOPIER_JOURNALPOST;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -41,8 +42,7 @@ public class KopierJournalpostService {
 
 	public KopierJournalpostResult kopierJournalpost(Long journalpostId, String eksternReferanseId) {
 		if (journalpostId == null || isBlank(eksternReferanseId)) {
-			throw new IllegalArgumentException("Kan ikke kopiere journalpost. journalpostId eller eksternReferanseId er null/blank. " +
-											   "journalpostId=" + journalpostId + ", eksternReferanseId=" + eksternReferanseId);
+			throw new IllegalArgumentException("Kan ikke kopiere journalpost. kildeJournalpostId eller eksternReferanseId er null/blank. kildeJournalpostId=%s, eksternReferanseId=%s".formatted(journalpostId, eksternReferanseId) + eksternReferanseId);
 		}
 
 		boolean journalpostExists = journalpostRepository.existsByKanalReferanseId(eksternReferanseId);
@@ -70,7 +70,7 @@ public class KopierJournalpostService {
 	private Long doKopierJournalpost(Long journalpostId, String eksternReferanseId) {
 		// finn journalpost
 		Journalpost journalpost = journalpostRepository.findById(journalpostId)
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med kildeJournalpostId=%s i joark", journalpostId)));
 		// verifiser at journalpost er i tilstand som kan kopieres - dvs status = FL, FS eller J, eller har saksrelasjon feilregistrert
 		kopierJournalpostValidator.validate(journalpost);
 

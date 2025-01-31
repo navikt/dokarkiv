@@ -47,7 +47,7 @@ public class OppdaterDistribusjonsinfoValidator {
 				UtsendingsKanalCode.valueOf(request.getUtsendingsKanal());
 			} catch (IllegalArgumentException e) {
 				throw new KanIkkeOppdatereDistribusjonsinfoException(
-						format("Mottatt verdi for feltet utsendingskanal=%s er ugyldig. Gyldige verdier er: %s",
+						format("Mottatt verdi for feltet utsendingsKanal=%s er ugyldig. Gyldige verdier er: %s",
 								request.getUtsendingsKanal(),
 								Arrays.toString(UtsendingsKanalCode.values())));
 			}
@@ -90,7 +90,7 @@ public class OppdaterDistribusjonsinfoValidator {
 			}
 			return JournalpostResponse.ok(request.getJournalpostId());
 		} catch (NullPointerException | IllegalArgumentException enumParseException) {
-			return JournalpostResponse.error(request.getJournalpostId(), format("Utsendingskanalkode '%s' er ugyldig", request.getUtsendingsKanal()));
+			return JournalpostResponse.error(request.getJournalpostId(), format("utsendingsKanal '%s' er ugyldig", request.getUtsendingsKanal()));
 		} catch (DokarkivFunctionalException e) {
 			return JournalpostResponse.error(request.getJournalpostId(), e.getMessage());
 		}

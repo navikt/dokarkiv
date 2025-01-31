@@ -16,7 +16,6 @@ import no.nav.dokarkiv.journalpost.v1.validators.FjernVedleggTilknyttetJournalpo
 import org.springframework.stereotype.Service;
 
 import static java.lang.String.format;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 
 @Service(value = "fjernVedleggService")
@@ -37,7 +36,7 @@ public class FjernVedleggTilknyttetJournalpost {
 	}
 
 	public void fjernVedleggTilknyttetJournalpost(long journalpostId, FjernVedleggTilknyttetJournalpostRequest request) {
-		long dokumentInfoId = validateIdAndParse(request.getDokumentId(),"dokumentinfoId");
+		long dokumentInfoId = validateIdAndParse(request.getDokumentId(),"dokumentId");
 		Journalpost journalpost = journalpostRepositorySkjermet.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException("Fant ikke journalpost"));
 		fjernVedleggTilknyttetJournalpostValidator.validateJournalPostStatusOgType(journalpost);
@@ -52,7 +51,7 @@ public class FjernVedleggTilknyttetJournalpost {
 		JournalpostDokumentInfoRelasjon jpDokRelasjon = journalpostDokumentInfoRelasjonRepository
 				.findByJournalpostJournalpostIdAndDokumentInfoDokumentInfoId(journalpostId, dokumentId)
 				.orElseThrow(() ->
-						new JournalpostDokumentInfoRelasjonIkkeFunnetException(format("Fant ikke JournalpostDokumentInfoRelasjon med journalpostId=%s og dokumentInfoId=%s",
+						new JournalpostDokumentInfoRelasjonIkkeFunnetException(format("Fant ikke JournalpostDokumentInfoRelasjon med journalpostId=%s og dokumentId=%s",
 								journalpostId,
 								dokumentId)));
 
@@ -63,6 +62,6 @@ public class FjernVedleggTilknyttetJournalpost {
 	private DokumentInfo hentDokumentInfo(long dokumentId, long journalpostId) {
 		return dokumentInfoRepository.findById(dokumentId)
 				.orElseThrow(() -> new DokumentIkkeFunnetException(format(
-						"Fant ikke dokument med dokumentInfoId=%s, og kan ikke fjerne dette som vedlegg fra journalpost med journalpostId=%s", dokumentId, journalpostId)));
+						"Fant ikke dokument med dokumentId=%s, og kan ikke fjerne dette som vedlegg fra journalpost med journalpostId=%s", dokumentId, journalpostId)));
 	}
 }

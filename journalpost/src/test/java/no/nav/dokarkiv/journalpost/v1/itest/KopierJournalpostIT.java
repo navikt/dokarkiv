@@ -52,7 +52,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class KopierJournalpostIT extends AbstractJournalpostIT {
 	private static final String KOPIER_JOURNALPOST_PATH = "kopierJournalpost";
 	private static final Map<String, List<String>> KOPIER_QUERY = Map.of("kildeJournalpostId", List.of("{kildeJournalpostId}"));
-	private static final String BAD_REQUEST_FEILMELDING = "Kan ikke kopiere journalpost med journalpostId=%s fordi journalpost har ugyldig status=%s";
+	private static final String BAD_REQUEST_FEILMELDING = "Kan ikke kopiere journalpost med kildeJournalpostId=%s fordi journalpost har ugyldig status=%s";
 	private static final String EKSTERN_REFERANSE_ID = "fagsystemet-sin-referanse";
 
 	@ParameterizedTest

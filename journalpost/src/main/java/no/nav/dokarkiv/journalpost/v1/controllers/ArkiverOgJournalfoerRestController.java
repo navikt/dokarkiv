@@ -300,7 +300,7 @@ public class ArkiverOgJournalfoerRestController {
 		public ResponseEntity<String> fjernVedleggTilknyttetJournalpost(@PathVariable String journalpostId,
 																	@RequestBody FjernVedleggTilknyttetJournalpostRequest request) {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "fjernVedleggTilknyttetJournalpost");
-		long journalpostIdParsed = validateIdAndParse(journalpostId, "tilknyttJournalpostId");
+		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
 		MDC.put(MDC_JOURNALPOST_ID, String.valueOf(journalpostIdParsed));
 		try {
 			RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));

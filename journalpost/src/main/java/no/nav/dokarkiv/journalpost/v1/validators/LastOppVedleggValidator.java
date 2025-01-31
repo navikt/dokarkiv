@@ -29,7 +29,7 @@ public final class LastOppVedleggValidator {
 		}
 
 		if (request.dokument() == null) {
-			throw new InputValideringFeiletException("LastOppVedleggRequest.dokument kan ikke være null");
+			throw new InputValideringFeiletException("dokument kan ikke være null");
 		}
 
 		validateDokument(request.dokument());
@@ -37,11 +37,11 @@ public final class LastOppVedleggValidator {
 
 	private static void validateDokument(Dokument dokument) {
 		if (isEmpty(dokument.getTittel())) {
-			throw new InputValideringFeiletException("LastOppVedleggRequest.dokument mangler tittel");
+			throw new InputValideringFeiletException("dokument.tittel kan ikke være tom eller null");
 		}
 
 		if (CollectionUtils.isEmpty(dokument.getDokumentvarianter())) {
-			throw new InputValideringFeiletException("LastOppVedleggRequest.dokument mangler dokumentvarianter");
+			throw new InputValideringFeiletException("dokument.dokumentvarianter kan ikke være null eller en tom liste");
 		}
 
 		var dokumentvarianter = dokument.getDokumentvarianter();
@@ -56,33 +56,27 @@ public final class LastOppVedleggValidator {
 				.toList();
 
 		if (!duplikateVarianter.isEmpty()) {
-			throw new InputValideringFeiletException("LastOppVedleggRequest.dokument inneholder mer enn én dokumentvariant av følgende variantformat(er): %s"
+			throw new InputValideringFeiletException("dokument.dokumentvarianter inneholder mer enn én dokumentvariant med følgende variantformat(er): %s"
 					.formatted(duplikateVarianter));
 		}
-
 	}
 
 	private static void validateDokumentvariant(DokumentVariant dokumentvariant) {
 		if (isEmpty(dokumentvariant.getVariantformat())) {
-			throw new InputValideringFeiletException("LastOppVedleggRequest.dokument.dokumentvariant mangler variantformat");
+			throw new InputValideringFeiletException("dokument.dokumentvarianter sin dokumentvariant med filtype=%s mangler variantformat".formatted(dokumentvariant.getFiltype()));
 		}
 
 		if (isEmpty(dokumentvariant.getFiltype())) {
-			throw new InputValideringFeiletException("LastOppVedleggRequest.dokument.dokumentvariant(%s) mangler filtype"
-					.formatted(dokumentvariant.getVariantformat()));
+			throw new InputValideringFeiletException("dokument.dokumentvarianter sin dokumentvariant med variantformat=%s mangler filtype".formatted(dokumentvariant.getVariantformat()));
 		}
 
 		if (ArrayUtils.isEmpty(dokumentvariant.getFysiskDokument())) {
-			throw new InputValideringFeiletException("LastOppVedleggRequest.dokument.dokumentvariant(%s) mangler fysisk dokument"
-					.formatted(dokumentvariant.getVariantformat()));
+			throw new InputValideringFeiletException("dokument.dokumentvarianter sin dokumentvariant med variantformat=%s mangler fysisk dokument".formatted(dokumentvariant.getVariantformat()));
 		}
 
 		if (isEmpty(dokumentvariant.getFilnavn())) {
-			throw new InputValideringFeiletException("LastOppVedleggRequest.dokument.dokumentvariant(%s) mangler filnavn"
-					.formatted(dokumentvariant.getVariantformat()));
+			throw new InputValideringFeiletException("dokument.dokumentvarianter sin dokumentvariant med variantformat=%s mangler filnavn".formatted(dokumentvariant.getVariantformat()));
 		}
-
-
 	}
 
 	public static void validateJournalpostAndDokument(Journalpost journalpost, Dokument dokument) {
@@ -106,7 +100,7 @@ public final class LastOppVedleggValidator {
 
 	private static void validateDuplikatVedlegg(Journalpost journalpost, Dokument dokument) {
 
-		var filnavnForEksisterenseArkivVariant = journalpost.getJournalpostDokumentInfoRelasjoner().stream()
+		var filnavnForEksisterendeArkivVariant = journalpost.getJournalpostDokumentInfoRelasjoner().stream()
 				.filter(it -> it.getDokumentInfo().hasArkivFormat())
 				.flatMap(it -> it.getDokumentInfo().getFildetaljerListe().stream())
 				.filter(FilDetaljer::isArkivVariant)
@@ -115,7 +109,7 @@ public final class LastOppVedleggValidator {
 
 		dokument.getDokumentvarianter().stream()
 				.filter(it -> it.getVariantformat().equals(ARKIV.name()))
-				.filter(it -> filnavnForEksisterenseArkivVariant.contains(it.getFilnavn()))
+				.filter(it -> filnavnForEksisterendeArkivVariant.contains(it.getFilnavn()))
 				.findFirst()
 				.ifPresent(duplikat -> {
 					throw new KanIkkeLeggeTilVedleggException("Dokument med variantformat=%s og filnavn=%s er allerede tilknyttet journalposten"

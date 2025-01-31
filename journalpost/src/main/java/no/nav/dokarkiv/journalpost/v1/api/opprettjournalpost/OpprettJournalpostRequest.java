@@ -29,7 +29,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @AllArgsConstructor
 public class OpprettJournalpostRequest {
 
-	@NotNull(message = "Journalposttype kan ikke være null")
+	@NotNull(message = "journalposttype kan ikke være null")
 	@Schema(
 			requiredMode = REQUIRED,
 			description = """

@@ -101,7 +101,6 @@ public class LogiskVedleggRestController {
 		long logiskVedleggIdParsed = validateIdAndParse(logiskVedleggId, LOGISK_VEDLEGG_ID_STRING);
 		log.info("slettlogiskvedlegg har mottatt kall om å har mottatt kall om å slette logisk vedlegg med logiskVedleggId={}, dokumentInfoId={}", logiskVedleggIdParsed, dokumentInfoIdParsed);
 
-
 		logiskVedleggService.slettLogiskVedlegg(logiskVedleggIdParsed);
 
 		log.info("slettlogiskvedlegg har slettet logisk vedlegg med logiskVedleggId={}, dokumentInfoId={}.", logiskVedleggIdParsed, dokumentInfoIdParsed);
@@ -115,7 +114,7 @@ public class LogiskVedleggRestController {
 		long dokumentInfoIdParsed = validateIdAndParse(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
 		log.info("bulkoppdaterlogiskvedlegg har mottatt kall. dokumentInfoId={}", dokumentInfoIdParsed);
 
-		validateNotNull(request.getTitler(), "request.titler");
+		validateNotNull(request.getTitler(), "titler");
 		validateTitlerLength(request.getTitler());
 
 		try {
@@ -131,7 +130,7 @@ public class LogiskVedleggRestController {
 	private void validateTitlerLength(List<String> titler) {
 		titler.forEach(t -> {
 			if (t.length() > VEDLEGG_INNHOLD_LENGTH) {
-				throw new InputValideringFeiletException("Logisk vedlegg tittel kan ikke være lengre enn " + VEDLEGG_INNHOLD_LENGTH + " tegn. Lengde=" + t.length());
+				throw new InputValideringFeiletException("Hver tittel i titler kan ikke være lengre enn " + VEDLEGG_INNHOLD_LENGTH + " tegn. Lengde på tittel=" + t.length());
 			}
 		});
 	}

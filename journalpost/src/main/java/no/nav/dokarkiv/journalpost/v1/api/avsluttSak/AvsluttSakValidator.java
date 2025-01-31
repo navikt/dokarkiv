@@ -54,29 +54,29 @@ public class AvsluttSakValidator {
 
 	private static void validateBruker(Bruker bruker) {
 		if (bruker == null) {
-			throw new InputValideringFeiletException("Bruker kan ikke være null.");
+			throw new InputValideringFeiletException("bruker kan ikke være null.");
 		}
 
 		if (isBlank(bruker.getId())) {
-			throw new InputValideringFeiletException("Bruker.id må være satt.");
+			throw new InputValideringFeiletException("bruker.id må være satt.");
 		}
 
 		if (!isNumeric(bruker.getId())) {
-			throw new InputValideringFeiletException("Bruker.id må bestå av tall.");
+			throw new InputValideringFeiletException("bruker.id må bestå av tall.");
 		}
 
 		if (FNR.equals(bruker.getIdType()) && bruker.getId().length() != FNR_LENGTH) {
-			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for FNR.");
+			throw new InputValideringFeiletException("bruker.id må være 11 siffer dersom bruker.idType=FNR.");
 		} else if (ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != ORGNR_LENGTH) {
-			throw new InputValideringFeiletException("Bruker.id må være 9 siffer for ORGNR.");
+			throw new InputValideringFeiletException("bruker.id må være 9 siffer dersom bruker.idType=ORGNR.");
 		} else if (AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
-			throw new InputValideringFeiletException("Bruker.id må være 13 siffer for AKTOERID.");
+			throw new InputValideringFeiletException("bruker.id må være 13 siffer dersom bruker.idType=AKTOERID.");
 		}
 	}
 
 	private static void validateTema(String tema) {
 		if (StringUtils.isBlank(tema)) {
-			throw new InputValideringFeiletException(format("Mangler påkrevd felt: Tema. Mottok tema=%s", tema));
+			throw new InputValideringFeiletException(format("Mangler påkrevd felt: tema. Mottok tema=%s", tema));
 		}
 		try {
 			FagomradeCode.valueOf(tema);

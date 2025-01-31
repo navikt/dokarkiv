@@ -33,7 +33,7 @@ class KopierJournalpostValidatorTest {
 
 		assertThatExceptionOfType(KanIkkeKopiereException.class)
 				.isThrownBy(() -> kopierJournalpostValidator.validate(journalpost))
-				.withMessage("Kan ikke kopiere journalpost med journalpostId=%s fordi journalpost har ugyldig status=%s".formatted(journalpost.getJournalpostId(), journalStatusCode));
+				.withMessage("Kan ikke kopiere journalpost med kildeJournalpostId=%s fordi journalpost har ugyldig status=%s".formatted(journalpost.getJournalpostId(), journalStatusCode));
 	}
 
 }

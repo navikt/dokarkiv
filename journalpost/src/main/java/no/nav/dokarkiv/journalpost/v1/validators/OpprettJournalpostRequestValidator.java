@@ -81,10 +81,10 @@ public class OpprettJournalpostRequestValidator {
 			validateJournalfoerendeEnhet(journalpostFerdigstilt, request.getJournalfoerendeEnhet(), request.getJournalposttype());
 		}
 		if (request.getDatoDokument() != null) {
-			validateDato(request.getDatoDokument(), "DatoDokument");
+			validateDato(request.getDatoDokument(), "datoDokument");
 		}
 		if (request.getDatoMottatt() != null) {
-			softValidateDato(request.getDatoMottatt(), "DatoMottatt");
+			softValidateDato(request.getDatoMottatt(), "datoMottatt");
 		}
 
 		List<Dokument> dokumenter = request.getDokumenter();
@@ -107,29 +107,26 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
 		if (isNotBlank(avsenderMottaker.getId()) && avsenderMottaker.getIdType() == null) {
-			throw new InputValideringFeiletException("AvsenderMottaker.idType må være satt når AvsenderMottaker.id er satt.");
+			throw new InputValideringFeiletException("avsenderMottaker.idType må være satt dersom avsenderMottaker.id er satt.");
 		}
 		if (avsenderMottaker.getIdType() != null && isBlank(avsenderMottaker.getId())) {
-			throw new InputValideringFeiletException("AvsenderMottaker.id må være satt når AvsenderMottaker.idType er satt.");
+			throw new InputValideringFeiletException("avsenderMottaker.id må være satt dersom avsenderMottaker.idType er satt.");
 		}
 		if (avsenderMottaker.getIdType() != null) {
 			switch (avsenderMottaker.getIdType()) {
 				case FNR:
 					if (!avsenderMottaker.getId().matches("^\\d{11}$")) {
-						throw new InputValideringFeiletException("AvsenderMottaker.id må være 11 siffer når AvsenderMottaker.idType er " + avsenderMottaker
-								.getIdType() + ".");
+						throw new InputValideringFeiletException("avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR.");
 					}
 					break;
 				case ORGNR:
 					if (!avsenderMottaker.getId().matches("^\\d{9}$")) {
-						throw new InputValideringFeiletException("AvsenderMottaker.id må være 9 siffer når AvsenderMottaker.idType er " + avsenderMottaker
-								.getIdType() + ".");
+						throw new InputValideringFeiletException("avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR.");
 					}
 					break;
 				case HPRNR:
 					if (!avsenderMottaker.getId().matches("^\\d{7,9}$")) {
-						throw new InputValideringFeiletException("AvsenderMottaker.id må være 7-9 siffer når AvsenderMottaker.idType er " + avsenderMottaker
-								.getIdType() + ".");
+						throw new InputValideringFeiletException("avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR.");
 					}
 					break;
 				default:
@@ -169,17 +166,17 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateBruker(Bruker bruker) {
 		if (isBlank(bruker.getId())) {
-			throw new InputValideringFeiletException("Bruker.id må være satt.");
+			throw new InputValideringFeiletException("bruker.id må være satt.");
 		}
 		if (!isNumeric(bruker.getId())) {
-			throw new InputValideringFeiletException("Bruker.id må bestå av tall.");
+			throw new InputValideringFeiletException("bruker.id må bestå av tall.");
 		}
 		if (FNR.equals(bruker.getIdType()) && bruker.getId().length() != FNR_LENGTH) {
-			throw new InputValideringFeiletException("Bruker.id må være 11 siffer for FNR.");
+			throw new InputValideringFeiletException("bruker.id må være 11 siffer dersom bruker.idType er FNR.");
 		} else if (ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != ORGNR_LENGTH) {
-			throw new InputValideringFeiletException("Bruker.id må være 9 siffer for ORGNR.");
+			throw new InputValideringFeiletException("bruker.id må være 9 siffer dersom bruker.idType er ORGNR.");
 		} else if (AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
-			throw new InputValideringFeiletException("Bruker.id må være 13 siffer for AKTOERID.");
+			throw new InputValideringFeiletException("bruker.id må være 13 siffer dersom bruker.idType er AKTOERID.");
 		}
 	}
 
@@ -200,7 +197,7 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validatejournalfoerendeEnhet(String journalfoerendeEnhet) {
 		if (journalfoerendeEnhet != null && !JOURNALFOERENDE_ENHET_PATTERN.matcher(journalfoerendeEnhet).matches()) {
-			throw new InputValideringFeiletException(format("Journalpost.journalfoerendeEnhet må være null eller fire siffer. Mottatt journalfoerendeEnhet=%s", journalfoerendeEnhet));
+			throw new InputValideringFeiletException(format("journalfoerendeEnhet må være null eller fire siffer. Mottatt journalfoerendeEnhet=%s", journalfoerendeEnhet));
 		}
 	}
 
@@ -213,12 +210,12 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateBehandlingstema(String behandlingstema) {
 		if (behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")) {
-			throw new InputValideringFeiletException(format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema));
+			throw new InputValideringFeiletException(format("behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema));
 		}
 	}
 
 	private void validateJournalpostTittel(String tittel) {
-		validateSkjultTittel(tittel, "Tittel");
+		validateSkjultTittel(tittel, "tittel");
 	}
 
 	static void validateSkjultTittel(String tittel, String felt) {
@@ -230,7 +227,7 @@ public class OpprettJournalpostRequestValidator {
 	private void validateKanal(OpprettJournalpostRequest request) {
 		if (request.isInngaaende()) {
 			if (request.getKanal() == null) {
-				throw new InputValideringFeiletException("Kanal er påkrevd for inngående journalposter");
+				throw new InputValideringFeiletException("kanal er påkrevd for inngående journalposter");
 			}
 
 			try {
@@ -274,66 +271,66 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateFagsak(Sak sak, Bruker bruker) {
 		if (bruker == null) {
-			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=FAGSAK");
+			throw new InputValideringFeiletException("bruker må være satt dersom sak.sakstype=FAGSAK");
 		}
 		if (isBlank(sak.getFagsakId())) {
-			throw new InputValideringFeiletException("Sak.fagsakId må være satt dersom sakstype=FAGSAK");
+			throw new InputValideringFeiletException("sak.fagsakId må være satt dersom sak.sakstype=FAGSAK");
 		}
 		if (sak.getFagsaksystem() == null) {
-			throw new InputValideringFeiletException("Sak.fagsaksystem må være satt dersom sakstype=FAGSAK");
+			throw new InputValideringFeiletException("sak.fagsaksystem må være satt dersom sak.sakstype=FAGSAK");
 		}
 		if (isNotBlank(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer kan ikke være satt dersom sakstype=FAGSAK");
+			throw new InputValideringFeiletException("sak.arkivsaksnummer kan ikke være satt dersom sak.sakstype=FAGSAK");
 		}
 		if (sak.getArkivsaksystem() != null) {
-			throw new InputValideringFeiletException("Sak.arkivsaksystem kan ikke være satt dersom sakstype=FAGSAK");
+			throw new InputValideringFeiletException("sak.arkivsaksystem kan ikke være satt dersom sak.sakstype=FAGSAK");
 		}
 		if (FAGSAK == sak.getSakstype() && PP01 == sak.getFagsaksystem()) {
 			if (!isNumeric(sak.getFagsakId())) {
-				throw new InputValideringFeiletException("Sak.fagsakId må være et heltall dersom saken er opprett i PSAK");
+				throw new InputValideringFeiletException("sak.fagsakId må være et heltall dersom saken er opprett i PSAK");
 			}
 		}
 	}
 
 	private void validateGenerellSak(Sak sak, Bruker bruker) {
 		if (bruker == null) {
-			throw new InputValideringFeiletException("Bruker må være satt dersom sakstype=GENERELL_SAK");
+			throw new InputValideringFeiletException("bruker må være satt dersom sak.sakstype=GENERELL_SAK");
 		}
 		if (isNotBlank(sak.getFagsakId())) {
-			throw new InputValideringFeiletException("Sak.fagsakId kan ikke være satt dersom sakstype=GENERELL_SAK");
+			throw new InputValideringFeiletException("sak.fagsakId kan ikke være satt dersom sak.sakstype=GENERELL_SAK");
 		}
 		if (sak.getFagsaksystem() != null) {
-			throw new InputValideringFeiletException("Sak.fagsaksystem kan ikke være satt dersom sakstype=GENERELL_SAK");
+			throw new InputValideringFeiletException("sak.fagsaksystem kan ikke være satt dersom sak.sakstype=GENERELL_SAK");
 		}
 		if (isNotBlank(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer kan ikke være satt dersom sakstype=GENERELL_SAK");
+			throw new InputValideringFeiletException("sak.arkivsaksnummer kan ikke være satt dersom sak.sakstype=GENERELL_SAK");
 		}
 		if (sak.getArkivsaksystem() != null) {
-			throw new InputValideringFeiletException("Sak.arkivsaksystem kan ikke være satt dersom sakstype=GENERELL_SAK");
+			throw new InputValideringFeiletException("sak.arkivsaksystem kan ikke være satt dersom sak.sakstype=GENERELL_SAK");
 		}
 	}
 
 	private void validateArkivsak(Sak sak) {
 		if (isNotBlank(sak.getFagsakId())) {
-			throw new InputValideringFeiletException("Sak.fagsakId kan ikke være satt dersom sakstype=ARKIVSAK");
+			throw new InputValideringFeiletException("sak.fagsakId kan ikke være satt dersom sak.sakstype=ARKIVSAK");
 		}
 		if (sak.getFagsaksystem() != null) {
-			throw new InputValideringFeiletException("Sak.fagsaksystem kan ikke være satt dersom sakstype=ARKIVSAK");
+			throw new InputValideringFeiletException("sak.fagsaksystem kan ikke være satt dersom sak.sakstype=ARKIVSAK");
 		}
 		if (isBlank(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer må være satt dersom sakstype=ARKIVSAK");
+			throw new InputValideringFeiletException("sak.arkivsaksnummer må være satt dersom sak.sakstype=ARKIVSAK");
 		}
 		if (sak.getArkivsaksystem() == null) {
-			throw new InputValideringFeiletException("Sak.arkivsaksystem må være satt dersom sakstype=ARKIVSAK");
+			throw new InputValideringFeiletException("sak.arkivsaksystem må være satt dersom sak.sakstype=ARKIVSAK");
 		}
 		if (!isNumeric(sak.getArkivsaksnummer())) {
-			throw new InputValideringFeiletException("Sak.arkivsaksnummer må være et heltall, og saken må være opprettet i GSAK/PSAK");
+			throw new InputValideringFeiletException("sak.arkivsaksnummer må være et heltall, og saken må være opprettet i GSAK/PSAK");
 		}
 	}
 
 	private void validateOverstyrInnsynsregler(String overstyrInnsynsregler) {
 		if (!LOVLIGE_INNSYNSKODER.contains(overstyrInnsynsregler)) {
-			throw new InputValideringFeiletException(format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s",
+			throw new InputValideringFeiletException(format("overstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s",
 					LOVLIGE_INNSYNSKODER,
 					overstyrInnsynsregler));
 		}

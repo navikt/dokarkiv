@@ -37,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 
 class DokumentValidatorTest {
+
 	private Dokument.DokumentBuilder dokumentBuilder;
 
 	@BeforeEach
@@ -76,7 +77,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("Dokumenter[0].tittel kan ikke være " + SKJULT_TITTEL);
+				.withMessage("dokumenter[0].tittel kan ikke være " + SKJULT_TITTEL);
 	}
 
 	@ParameterizedTest
@@ -92,12 +93,12 @@ class DokumentValidatorTest {
 	}
 
 	private static Stream<Arguments> shouldThrowExceptionWhenDokumentkategoriIsInvalid() {
-		final String feilmelding = "%s.dokumentkategori validerer ikke mot kodeverk. Gyldige verdier for dokumentkategori er %s. Mottatt dokumentkategori=%s";
+		final String feilmelding = "%s.dokumentKategori validerer ikke mot kodeverk. Gyldige verdier for dokumentKategori er %s. Mottatt dokumentKategori=%s";
 		final String dokumentKategoriKoder = Arrays.toString(DokumentKategoriCode.values());
 
 		return Stream.of(
-				Arguments.of(0, feilmelding.formatted("Dokumenter[0]", dokumentKategoriKoder, DOKUMENTKATEGORI_UGYLDIG)),
-				Arguments.of(null, feilmelding.formatted("Dokument", dokumentKategoriKoder, DOKUMENTKATEGORI_UGYLDIG))
+				Arguments.of(0, feilmelding.formatted("dokumenter[0]", dokumentKategoriKoder, DOKUMENTKATEGORI_UGYLDIG)),
+				Arguments.of(null, feilmelding.formatted("dokumenter[0]", dokumentKategoriKoder, DOKUMENTKATEGORI_UGYLDIG))
 		);
 	}
 
@@ -150,7 +151,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("Dokument.dokumentvariant.variantformat må være unik. Fant følgende duplikater for dokument med tittel=%s: Variantformat=%s funnet 2 ganger",
+				.withMessage("dokumenter.dokumentvarianter.variantformat må være unik. Fant følgende duplikater for dokument med tittel=%s: variantformat=%s funnet 2 ganger",
 						DOKUMENT_TITTEL1, VARIANTFORMAT_ORIGINAL);
 	}
 
@@ -165,7 +166,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("Dokumenter[0].dokumentvariant(ARKIV).filtype må være satt");
+				.withMessage("dokumenter[0].dokumentvarianter.filtype må være satt for variantformat=ARKIV");
 	}
 
 	@Test
@@ -179,7 +180,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("Dokumenter[0].dokumentvariant(ARKIV).filtype validerer ikke mot kodeverk. Gyldige verdier for filtype er %s. Mottatt filtype=%s",
+				.withMessage("dokumenter[0].dokumentvarianter.filtype validerer ikke mot kodeverk for variantformat=ARKIV. Gyldige verdier for filtype er %s. Mottatt filtype=%s",
 						Arrays.toString(FilTypeCode.values()), FILTYPE_UGYLDIG);
 	}
 
@@ -194,7 +195,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("Dokumenter[0].dokumentvariant.variantformat må være satt");
+				.withMessage("dokumenter[0].dokumentvarianter.variantformat må være satt");
 	}
 
 	@Test
@@ -208,8 +209,8 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("Dokumenter[0].dokumentvariant(%s).variantformat validerer ikke mot kodeverk. Gyldige verdier for variantformat er %s. Mottatt variantformat=%s",
-						VARIANTFORMAT_UGYLDIG, Arrays.toString(VariantFormatCode.values()), VARIANTFORMAT_UGYLDIG);
+				.withMessage("dokumenter[0].dokumentvarianter.variantformat validerer ikke mot kodeverk. Gyldige verdier for variantformat er %s. Mottatt variantformat=%s",
+						Arrays.toString(VariantFormatCode.values()), VARIANTFORMAT_UGYLDIG, VARIANTFORMAT_UGYLDIG);
 	}
 
 	@ParameterizedTest
@@ -224,7 +225,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("Dokumenter[0].dokumentvariant(ARKIV).filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV. Mottatt filtype=%s",
+				.withMessage("dokumenter[0].dokumentvarianter.filtype må være PDF eller PDFA for variantformat=ARKIV. Mottatt filtype=%s",
 						filTypeCode.name());
 	}
 
@@ -241,7 +242,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument må være en base64 representert fil større enn 0 bytes");
+				.withMessage("dokumenter[0].dokumentvarianter.fysiskDokument for variantformat=ARKIV må være en base64 representert fil større enn 0 bytes");
 	}
 
 	@Test
@@ -256,6 +257,6 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InvalidPdfException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={FF D8 FF E0 00} matcher ikke angitt filtype=PDF");
+				.withMessage("dokumenter[0].dokumentvarianter.fysiskDokument med variantformat=ARKIV kan ikke lagres i fagarkivet. fysiskDokument magicNumber={FF D8 FF E0 00} matcher ikke angitt filtype=PDF");
 	}
 }

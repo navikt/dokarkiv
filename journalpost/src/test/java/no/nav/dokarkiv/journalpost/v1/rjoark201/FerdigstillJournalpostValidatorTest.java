@@ -109,7 +109,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
 				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
-				.withMessageContaining("Journalpost.innhold");
+				.withMessageContaining("tittel");
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
 				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
-				.withMessageContaining("Journalpost.fagomrade");
+				.withMessageContaining("tema");
 	}
 
 	@Test
@@ -131,7 +131,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
 				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
-				.withMessageContaining("Journalpost.avsendMottaker");
+				.withMessageContaining("avsenderMottaker.navn");
 	}
 
 	@Test
@@ -154,7 +154,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
 				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
-				.withMessageContaining("Saksrelasjon.sakId");
+				.withMessageContaining("sak.fagsakId");
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
 				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
-				.withMessageContaining("Saksrelasjon.fagsystem");
+				.withMessageContaining("sak.fagsaksystem");
 	}
 
 	@Test
@@ -187,7 +187,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
 				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
-				.withMessageContaining("Bruker.brukerId");
+				.withMessageContaining("bruker.id");
 
 	}
 
@@ -199,7 +199,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
 				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
-				.withMessageContaining("Bruker.brukerType");
+				.withMessageContaining("bruker.idType");
 	}
 
 	@Test
@@ -210,7 +210,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
 				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
-				.withMessageContaining("DokumentInfo.tittel");
+				.withMessageContaining("dokumenter.tittel");
 	}
 
 	@Test
@@ -222,7 +222,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 		assertThatExceptionOfType(KanIkkeFerdigstilleException.class)
 				.isThrownBy(() -> validator.validatePaakrevdeFelter(journalpost))
-				.withMessageContaining("Journalpost.mottakskanal");
+				.withMessageContaining("kanal");
 	}
 
 

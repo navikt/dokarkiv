@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
@@ -91,7 +93,7 @@ public class FerdigstillJournalpostValidator {
 					jp.getJournalstatus(), MIDLERTIDIG_JOURNALSTATUS));
 		}
 
-		if (Boolean.TRUE.equals(jp.getSaksrelasjon() == null ? Boolean.FALSE : jp.getSaksrelasjon().getFeilregistrert())) {
+		if (TRUE.equals(jp.getSaksrelasjon() == null ? FALSE : jp.getSaksrelasjon().getFeilregistrert())) {
 			feilmeldinger.add("Den er feilregistrert");
 		}
 
@@ -154,18 +156,18 @@ public class FerdigstillJournalpostValidator {
 
 	private void verifySaksrelasjonIsPresent(Journalpost jp) {
 		if (jp.getSaksrelasjon() == null) {
-			throw new KanIkkeFerdigstilleException(String.format("Kunne ikke ferdigstille: Journalpost med journalpostId=%s må ha en saksrelasjon", jp.getJournalpostId()));
+			throw new KanIkkeFerdigstilleException(format("Kunne ikke ferdigstille: Journalpost med journalpostId=%s må ha en saksrelasjon", jp.getJournalpostId()));
 		}
 	}
 
 	private void verifyPaakrevdeFelterJournalpost(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {
-		verifyFieldNotNull(journalpost.getFagomrade(), "Journalpost.fagomrade", manglendePaakrevdeFelter);
-		verifyStringNotBlank(journalpost.getInnhold(), "Journalpost.innhold", manglendePaakrevdeFelter);
+		verifyFieldNotNull(journalpost.getFagomrade(), "tema", manglendePaakrevdeFelter);
+		verifyStringNotBlank(journalpost.getInnhold(), "tittel", manglendePaakrevdeFelter);
 		if (!N.equals(journalpost.getJournalposttype())) {
-			verifyStringNotBlank(journalpost.getAvsenderMottaker(), "Journalpost.avsendMottaker.navn", manglendePaakrevdeFelter);
+			verifyStringNotBlank(journalpost.getAvsenderMottaker(), "avsenderMottaker.navn", manglendePaakrevdeFelter);
 		}
 		if (I.equals(journalpost.getJournalposttype())) {
-			verifyFieldNotNull(journalpost.getMottakskanal(), "Journalpost.mottakskanal", manglendePaakrevdeFelter);
+			verifyFieldNotNull(journalpost.getMottakskanal(), "kanal", manglendePaakrevdeFelter);
 		}
 	}
 
@@ -176,20 +178,20 @@ public class FerdigstillJournalpostValidator {
 
 	private void verifyPaakrevdeFelterBruker(Journalpost journalpost, List<String> manglendePaakrevdeFelter) {
 		journalpost.getBrukere().forEach(bruker -> {
-			verifyStringNotBlank(bruker.getBrukerId(), "Bruker.brukerId", manglendePaakrevdeFelter);
-			verifyFieldNotNull(bruker.getBrukerType(), "Bruker.brukerType", manglendePaakrevdeFelter);
+			verifyStringNotBlank(bruker.getBrukerId(), "bruker.id", manglendePaakrevdeFelter);
+			verifyFieldNotNull(bruker.getBrukerType(), "bruker.idType", manglendePaakrevdeFelter);
 		});
 	}
 
 	private void verifyPaakrevdeFelterSaksrelasjon(Saksrelasjon saksrelasjon, List<String> manglendePaakrevdeFelter) {
 		if (saksrelasjon != null) {
-			verifyFieldNotNull(saksrelasjon.getSakId(), "Saksrelasjon.sakId", manglendePaakrevdeFelter);
-			verifyFieldNotNull(saksrelasjon.getFagsystem(), "Saksrelasjon.fagsystem", manglendePaakrevdeFelter);
+			verifyFieldNotNull(saksrelasjon.getSakId(), "sak.fagsakId", manglendePaakrevdeFelter);
+			verifyFieldNotNull(saksrelasjon.getFagsystem(), "sak.fagsaksystem", manglendePaakrevdeFelter);
 		}
 	}
 
 	private void verifyMandatoryFelterDokumentinfo(DokumentInfo dokumentInfo, List<String> manglendePaakrevdeFelter) {
-		verifyStringNotBlank(dokumentInfo.getTittel(), "DokumentInfo.tittel", manglendePaakrevdeFelter);
+		verifyStringNotBlank(dokumentInfo.getTittel(), "dokumenter.tittel", manglendePaakrevdeFelter);
 	}
 
 	/**

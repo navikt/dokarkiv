@@ -1091,7 +1091,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, ApplicationProblemDetail.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(responseEntity.getBody().getMessage()).contains("Avsender på digitalt innsendt journalpost kan ikke endres. navn, id og idtype ble forsøkt endret");
+		assertThat(responseEntity.getBody().getMessage()).contains("avsenderMottaker på digitalt innsendt journalpost kan ikke endres. Følgende felter ble forsøkt endret: navn, id og idType");
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
@@ -1116,7 +1116,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, ApplicationProblemDetail.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(responseEntity.getBody().getMessage()).contains("Avsender på digitalt innsendt journalpost kan ikke endres. id og idtype ble forsøkt endret");
+		assertThat(responseEntity.getBody().getMessage()).contains("avsenderMottaker på digitalt innsendt journalpost kan ikke endres. Følgende felter ble forsøkt endret: id og idType");
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
@@ -1154,7 +1154,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, ApplicationProblemDetail.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(responseEntity.getBody().getMessage()).contains("Tittel kan ikke oppdateres for journalpost med journalpoststatus=FL og journalposttype=N");
+		assertThat(responseEntity.getBody().getMessage()).contains("tittel kan ikke oppdateres for journalpost med journalpoststatus=FL og journalposttype=N");
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).orElse(null);
 		assertThat(journalpostOppdatert).isNotNull();
@@ -1211,7 +1211,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpost.getJournalpostId().toString()), PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(responseEntity.getBody()).contains("Tittel kan ikke oppdateres til *****");
+		assertThat(responseEntity.getBody()).contains("tittel kan ikke oppdateres til *****");
 	}
 
 	@ParameterizedTest
@@ -1313,7 +1313,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		var responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(responseEntity.getBody()).contains(format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, innsynCode));
+		assertThat(responseEntity.getBody()).contains(format("overstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, innsynCode));
 	}
 
 	private OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDokumentInfoId(Long dokumentInfoId) {

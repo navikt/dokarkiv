@@ -1036,7 +1036,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
-		assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: Journalpost.innhold");
+		assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: tittel");
 		assertFalse(response.getBody().isJournalpostferdigstilt());
 
 		Journalpost journalpost = journalpostTestRepository.findById(parseLong(response.getBody().getJournalpostId())).orElseThrow();
@@ -1126,7 +1126,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
-		assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: Journalpost.innhold");
+		assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: tittel");
 		assertFalse(response.getBody().isJournalpostferdigstilt());
 
 		Journalpost journalpost = journalpostTestRepository.findById(parseLong(response.getBody().getJournalpostId())).orElseThrow();
@@ -1617,7 +1617,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertThat(response.getBody()).contains("Tittel kan ikke være " + SKJULT_TITTEL);
+		assertThat(response.getBody()).contains("tittel kan ikke være " + SKJULT_TITTEL);
 	}
 
 	private void assertEqualOpprettJournalpostResponses(OpprettJournalpostResponse res1, OpprettJournalpostResponse res2) {
