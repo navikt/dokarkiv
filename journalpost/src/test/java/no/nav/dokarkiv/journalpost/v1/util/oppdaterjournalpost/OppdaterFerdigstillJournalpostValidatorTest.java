@@ -633,7 +633,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
-				.withMessage(format("behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema));
+				.withMessage(format("behandlingstema må være på formatet ´ab + 4 siffer´, f.eks. ´ab0256´. Mottatt behandlingstema=%s", behandlingstema));
 	}
 
 	@ParameterizedTest

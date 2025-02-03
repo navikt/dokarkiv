@@ -831,7 +831,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=ab333");
+				.withMessage("behandlingstema må være på formatet ´ab + 4 siffer´, f.eks. ´ab0256´. Mottatt behandlingstema=ab333");
 	}
 
 	@Test

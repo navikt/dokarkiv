@@ -210,7 +210,7 @@ public class OpprettJournalpostRequestValidator {
 
 	private void validateBehandlingstema(String behandlingstema) {
 		if (behandlingstema.length() != 6 || !behandlingstema.startsWith("ab")) {
-			throw new InputValideringFeiletException(format("behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema));
+			throw new InputValideringFeiletException(format("behandlingstema må være på formatet ´ab + 4 siffer´, f.eks. ´ab0256´. Mottatt behandlingstema=%s", behandlingstema));
 		}
 	}
 

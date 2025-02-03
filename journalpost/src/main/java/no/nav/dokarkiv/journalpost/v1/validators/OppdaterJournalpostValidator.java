@@ -337,7 +337,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static String validateBehandlingstema(String behandlingstema) {
 		if (!BEHANDLINGSTEMA_PATTERN.matcher(behandlingstema).matches()) {
-			return format("behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema);
+			return format("behandlingstema må være på formatet ´ab + 4 siffer´, f.eks. ´ab0256´. Mottatt behandlingstema=%s", behandlingstema);
 		}
 		return null;
 	}
