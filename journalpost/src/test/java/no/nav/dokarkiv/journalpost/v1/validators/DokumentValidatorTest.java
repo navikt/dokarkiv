@@ -151,7 +151,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("dokumenter.dokumentvarianter.variantformat må være unik. Fant følgende duplikater for dokument med tittel=%s: variantformat=%s funnet 2 ganger",
+				.withMessage("dokumenter[0].dokumentvarianter[].variantformat må være unik. Fant følgende duplikater for dokument med tittel=%s: variantformat=%s funnet 2 ganger",
 						DOKUMENT_TITTEL1, VARIANTFORMAT_ORIGINAL);
 	}
 
@@ -166,7 +166,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("dokumenter[0].dokumentvarianter.filtype må være satt for variantformat=ARKIV");
+				.withMessage("dokumenter[0].dokumentvarianter[].filtype må være satt for variantformat=ARKIV");
 	}
 
 	@Test
@@ -180,7 +180,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("dokumenter[0].dokumentvarianter.filtype validerer ikke mot kodeverk for variantformat=ARKIV. Gyldige verdier for filtype er %s. Mottatt filtype=%s",
+				.withMessage("dokumenter[0].dokumentvarianter[].filtype validerer ikke mot kodeverk for variantformat=ARKIV. Gyldige verdier for filtype er %s. Mottatt filtype=%s",
 						Arrays.toString(FilTypeCode.values()), FILTYPE_UGYLDIG);
 	}
 
@@ -195,7 +195,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("dokumenter[0].dokumentvarianter.variantformat må være satt");
+				.withMessage("dokumenter[0].dokumentvarianter[].variantformat må være satt");
 	}
 
 	@Test
@@ -209,7 +209,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("dokumenter[0].dokumentvarianter.variantformat validerer ikke mot kodeverk. Gyldige verdier for variantformat er %s. Mottatt variantformat=%s",
+				.withMessage("dokumenter[0].dokumentvarianter[].variantformat validerer ikke mot kodeverk. Gyldige verdier for variantformat er %s. Mottatt variantformat=%s",
 						Arrays.toString(VariantFormatCode.values()), VARIANTFORMAT_UGYLDIG, VARIANTFORMAT_UGYLDIG);
 	}
 
@@ -225,7 +225,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("dokumenter[0].dokumentvarianter.filtype må være PDF eller PDFA for variantformat=ARKIV. Mottatt filtype=%s",
+				.withMessage("dokumenter[0].dokumentvarianter[].filtype må være PDF eller PDFA for variantformat=ARKIV. Mottatt filtype=%s",
 						filTypeCode.name());
 	}
 
@@ -242,7 +242,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("dokumenter[0].dokumentvarianter.fysiskDokument for variantformat=ARKIV må være en base64 representert fil større enn 0 bytes");
+				.withMessage("dokumenter[0].dokumentvarianter[].fysiskDokument for variantformat=ARKIV må være en base64 representert fil større enn 0 bytes");
 	}
 
 	@Test
@@ -257,6 +257,6 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InvalidPdfException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("dokumenter[0].dokumentvarianter.fysiskDokument med variantformat=ARKIV kan ikke lagres i fagarkivet. fysiskDokument magicNumber={FF D8 FF E0 00} matcher ikke angitt filtype=PDF");
+				.withMessage("dokumenter[0].dokumentvarianter[].fysiskDokument med variantformat=ARKIV kan ikke lagres i fagarkivet. fysiskDokument magicNumber={FF D8 FF E0 00} matcher ikke angitt filtype=PDF");
 	}
 }

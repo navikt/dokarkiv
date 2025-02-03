@@ -17,7 +17,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @AllArgsConstructor
 public class DokumentVariant {
 
-	@NotNull(message = "dokumenter.dokumentvarianter kan ikke inneholde en dokumentvariant der filtype er null")
+	@NotNull(message = "dokumenter[].dokumentvarianter[] kan ikke inneholde en dokumentvariant der filtype er null")
 	@Schema(
 			description = "Filtypen til filen som følger, f.eks. PDF/A, JSON eller XML.",
 			requiredMode = REQUIRED,
@@ -25,7 +25,7 @@ public class DokumentVariant {
 	)
 	private String filtype;
 
-	@NotNull(message = "dokumenter.dokumentvarianter kan ikke inneholde en dokumentvariant der variantformat er null")
+	@NotNull(message = "dokumenter[].dokumentvarianter[] kan ikke inneholde en dokumentvariant der variantformat er null")
 	@Schema(
 			description = """
 					Typen variant som arkiveres. ARKIV-varianten vil være den som vises frem til bruker i Gosys og på nav.no. Alle dokumenter som arkiveres må ha én variant med variantformat ARKIV. Variantformat ARKIV skal ha filtype PDF eller (helst) PDFA.

@@ -114,7 +114,7 @@ public class LogiskVedleggRestController {
 		long dokumentInfoIdParsed = validateIdAndParse(dokumentInfoId, DOKUMENT_INFO_ID_STRING);
 		log.info("bulkoppdaterlogiskvedlegg har mottatt kall. dokumentInfoId={}", dokumentInfoIdParsed);
 
-		validateNotNull(request.getTitler(), "titler");
+		validateNotNull(request.getTitler(), "titler[]");
 		validateTitlerLength(request.getTitler());
 
 		try {
@@ -130,7 +130,7 @@ public class LogiskVedleggRestController {
 	private void validateTitlerLength(List<String> titler) {
 		titler.forEach(t -> {
 			if (t.length() > VEDLEGG_INNHOLD_LENGTH) {
-				throw new InputValideringFeiletException("Hver tittel i titler kan ikke være lengre enn " + VEDLEGG_INNHOLD_LENGTH + " tegn. Lengde på tittel=" + t.length());
+				throw new InputValideringFeiletException("titler[] kan ikke inneholde en tittel som er lengre enn " + VEDLEGG_INNHOLD_LENGTH + " tegn. Lengde på tittel=" + t.length());
 			}
 		});
 	}

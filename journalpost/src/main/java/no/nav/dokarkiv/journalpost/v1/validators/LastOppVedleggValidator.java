@@ -41,7 +41,7 @@ public final class LastOppVedleggValidator {
 		}
 
 		if (CollectionUtils.isEmpty(dokument.getDokumentvarianter())) {
-			throw new InputValideringFeiletException("dokument.dokumentvarianter kan ikke være null eller en tom liste");
+			throw new InputValideringFeiletException("dokument.dokumentvarianter[] kan ikke være null eller en tom liste");
 		}
 
 		var dokumentvarianter = dokument.getDokumentvarianter();
@@ -56,26 +56,26 @@ public final class LastOppVedleggValidator {
 				.toList();
 
 		if (!duplikateVarianter.isEmpty()) {
-			throw new InputValideringFeiletException("dokument.dokumentvarianter inneholder mer enn én dokumentvariant med følgende variantformat(er): %s"
+			throw new InputValideringFeiletException("dokument.dokumentvarianter[] inneholder mer enn én dokumentvariant med følgende variantformat(er): %s"
 					.formatted(duplikateVarianter));
 		}
 	}
 
 	private static void validateDokumentvariant(DokumentVariant dokumentvariant) {
 		if (isEmpty(dokumentvariant.getVariantformat())) {
-			throw new InputValideringFeiletException("dokument.dokumentvarianter sin dokumentvariant med filtype=%s mangler variantformat".formatted(dokumentvariant.getFiltype()));
+			throw new InputValideringFeiletException("dokument.dokumentvarianter[] sin dokumentvariant med filtype=%s mangler variantformat".formatted(dokumentvariant.getFiltype()));
 		}
 
 		if (isEmpty(dokumentvariant.getFiltype())) {
-			throw new InputValideringFeiletException("dokument.dokumentvarianter sin dokumentvariant med variantformat=%s mangler filtype".formatted(dokumentvariant.getVariantformat()));
+			throw new InputValideringFeiletException("dokument.dokumentvarianter[] sin dokumentvariant med variantformat=%s mangler filtype".formatted(dokumentvariant.getVariantformat()));
 		}
 
 		if (ArrayUtils.isEmpty(dokumentvariant.getFysiskDokument())) {
-			throw new InputValideringFeiletException("dokument.dokumentvarianter sin dokumentvariant med variantformat=%s mangler fysisk dokument".formatted(dokumentvariant.getVariantformat()));
+			throw new InputValideringFeiletException("dokument.dokumentvarianter[] sin dokumentvariant med variantformat=%s mangler fysisk dokument".formatted(dokumentvariant.getVariantformat()));
 		}
 
 		if (isEmpty(dokumentvariant.getFilnavn())) {
-			throw new InputValideringFeiletException("dokument.dokumentvarianter sin dokumentvariant med variantformat=%s mangler filnavn".formatted(dokumentvariant.getVariantformat()));
+			throw new InputValideringFeiletException("dokument.dokumentvarianter[] sin dokumentvariant med variantformat=%s mangler filnavn".formatted(dokumentvariant.getVariantformat()));
 		}
 	}
 

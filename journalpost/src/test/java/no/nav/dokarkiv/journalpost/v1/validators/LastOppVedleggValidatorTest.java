@@ -96,15 +96,15 @@ class LastOppVedleggValidatorTest {
 
 	private static Stream<Arguments> shouldNotValidateWhenDocumentvariantIsInvalid() {
 		return Stream.of(
-				Arguments.of(null, "dokument.dokumentvarianter kan ikke være null eller en tom liste"),
+				Arguments.of(null, "dokument.dokumentvarianter[] kan ikke være null eller en tom liste"),
 				Arguments.of(List.of(DokumentVariant.builder().filtype(FILTYPE_PDF).build()),
-						"dokument.dokumentvarianter sin dokumentvariant med filtype=PDF mangler variantformat"),
+						"dokument.dokumentvarianter[] sin dokumentvariant med filtype=PDF mangler variantformat"),
 				Arguments.of(List.of(DokumentVariant.builder().variantformat(VARIANTFORMAT_ARKIV).build()),
-						"dokument.dokumentvarianter sin dokumentvariant med variantformat=%s mangler filtype".formatted(VARIANTFORMAT_ARKIV)),
+						"dokument.dokumentvarianter[] sin dokumentvariant med variantformat=%s mangler filtype".formatted(VARIANTFORMAT_ARKIV)),
 				Arguments.of(List.of(DokumentVariant.builder().variantformat(VARIANTFORMAT_ARKIV).filtype(FILTYPE_PDF).build()),
-						"dokument.dokumentvarianter sin dokumentvariant med variantformat=%s mangler fysisk dokument".formatted(VARIANTFORMAT_ARKIV)),
+						"dokument.dokumentvarianter[] sin dokumentvariant med variantformat=%s mangler fysisk dokument".formatted(VARIANTFORMAT_ARKIV)),
 				Arguments.of(List.of(DokumentVariant.builder().variantformat(VARIANTFORMAT_ARKIV).filtype(FILTYPE_PDF).fysiskDokument("fil".getBytes()).build()),
-						"dokument.dokumentvarianter sin dokumentvariant med variantformat=%s mangler filnavn".formatted(VARIANTFORMAT_ARKIV))
+						"dokument.dokumentvarianter[] sin dokumentvariant med variantformat=%s mangler filnavn".formatted(VARIANTFORMAT_ARKIV))
 		);
 	}
 
@@ -130,7 +130,7 @@ class LastOppVedleggValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> LastOppVedleggValidator.validateRequest(request))
-				.withMessage("dokument.dokumentvarianter inneholder mer enn én dokumentvariant med følgende variantformat(er): %s",
+				.withMessage("dokument.dokumentvarianter[] inneholder mer enn én dokumentvariant med følgende variantformat(er): %s",
 						List.of(variantformat.name()));
 	}
 	
