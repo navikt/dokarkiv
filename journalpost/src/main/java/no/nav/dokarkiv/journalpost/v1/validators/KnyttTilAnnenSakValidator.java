@@ -36,19 +36,19 @@ public class KnyttTilAnnenSakValidator {
 
 	private void validateSakstype(KnyttTilAnnenSakRequest request) {
 		if (isBlank(request.getSakstype())) {
-			throw new InputValideringFeiletException("Sakstype kan ikke være null eller tom");
+			throw new InputValideringFeiletException("sakstype kan ikke være null eller tom");
 		}
 
 		if (request.getSakstype().equals(SAKSTYPE_FAGSAK)) {
 			if (isBlank(request.getFagsakId())) {
-				throw new InputValideringFeiletException("FagsakId kan ikke være null eller tom for sakstype FAGSAK");
+				throw new InputValideringFeiletException("fagsakId kan ikke være null eller tom dersom sakstype=FAGSAK");
 			}
 			if (isBlank(request.getFagsaksystem())) {
-				throw new InputValideringFeiletException("Fagsaksystem kan ikke være null eller tom sakstype FAGSAK");
+				throw new InputValideringFeiletException("fagsaksystem kan ikke være null eller tom dersom sakstype=FAGSAK");
 			}
 		} else if (request.getSakstype().equals(SAKSTYPE_GENERELL)) {
 			if (!isBlank(request.getFagsakId()) || !isBlank(request.getFagsaksystem())) {
-				throw new InputValideringFeiletException("FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK");
+				throw new InputValideringFeiletException("fagsakId og fagsaksystem skal ikke oppgis dersom sakstype=GENERELL_SAK");
 			}
 		} else {
 			throw new InputValideringFeiletException(format("Ugyldig sakstype: %s", request.getSakstype()));
@@ -59,39 +59,39 @@ public class KnyttTilAnnenSakValidator {
 		BrukerIdType idtype = bruker.getIdType();
 
 		if (!isNumeric(bruker.getId())) {
-			throw new InputValideringFeiletException("Id er ikke et tall.");
+			throw new InputValideringFeiletException("bruker.id er ikke et tall.");
 		}
 		if (idtype == null) {
-			throw new InputValideringFeiletException("idType kan ikke være null eller tom");
+			throw new InputValideringFeiletException("bruker.idType kan ikke være null eller tom");
 		}
 		if (idtype.equals(FNR)) {
 			if (bruker.getId().length() != FNR_LENGTH) {
-				throw new InputValideringFeiletException("Fnr må ha 11 siffer.");
+				throw new InputValideringFeiletException("bruker.id må ha 11 siffer dersom bruker.idType=FNR.");
 			}
 		} else if (idtype.equals(ORGNR)) {
 			if (bruker.getId().length() != ORGNR_LENGTH) {
-				throw new InputValideringFeiletException("Orgnr må ha 9 siffer.");
+				throw new InputValideringFeiletException("bruker.id må ha 9 siffer dersom bruker.idType=ORGNR.");
 			}
 		} else if (!idtype.equals(AKTOERID)) {
-			throw new InputValideringFeiletException(format("Ukjent idType for bruker: %s.", idtype));
+			throw new InputValideringFeiletException(format("bruker.idType har ukjent verdi: %s.", idtype));
 		}
 	}
 
 	private void validateTema(String tema) {
 		if (isBlank(tema)) {
-			throw new InputValideringFeiletException("Tema kan ikke være null eller tom");
+			throw new InputValideringFeiletException("tema kan ikke være null eller tom");
 		}
 		if (!StringUtils.isAlpha(tema) || tema.length() != 3) {
-			throw new InputValideringFeiletException("Tema må ha 3 tegn");
+			throw new InputValideringFeiletException("tema må ha 3 tegn");
 		}
 	}
 
 	private void validateJournalfoerendeEnhet(String journalfoerendeEnhet) {
 		if (isBlank(journalfoerendeEnhet)) {
-			throw new InputValideringFeiletException("JournalfoerendeEnhet kan ikke være null eller tom");
+			throw new InputValideringFeiletException("journalfoerendeEnhet kan ikke være null eller tom");
 		}
 		if (journalfoerendeEnhet.length() != JOURNALFOERENDE_ENHET_LENGTH) {
-			throw new InputValideringFeiletException("JournalfoerendeEnhet må ha 4 siffer");
+			throw new InputValideringFeiletException("journalfoerendeEnhet må ha 4 siffer");
 		}
 	}
 }

@@ -14,7 +14,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EndreLogiskVedleggRequest {
-	@NotNull(message = "EndreLogiskVedleggRequest mangler tittel")
+	@NotNull(message = "tittel kan ikke være null")
 	@Schema(
 			description = """
 					Den nye tittelen til det logiske vedlegget, for eksempel "Kontoutskrift".

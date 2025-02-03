@@ -9,14 +9,13 @@ import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateId;
 
 public class FjernVedleggTilknyttetJournalpostValidator {
 
 	public void validateJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon) {
 		if (!VEDLEGG.equals(journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom())) {
 			throw new KanIkkeSlettetVedleggKnyttetTilJournalpostException(format(
-					"DokumentInfo med dokmentInfoId=%s er ikke tilknyttet journalpost med journalpostId=%s som vedlegg og kan dermed ikke fjernes.",
+					"DokumentInfo med dokumentId=%s er ikke tilknyttet journalpost med journalpostId=%s som vedlegg og kan dermed ikke fjernes.",
 					journalpostDokumentInfoRelasjon.getDokumentInfo().getDokumentInfoId(),
 					journalpostDokumentInfoRelasjon.getJournalpost().getJournalpostId()));
 		}
@@ -37,11 +36,6 @@ public class FjernVedleggTilknyttetJournalpostValidator {
 			throw new KanIkkeSlettetVedleggKnyttetTilJournalpostException(format(
 					"Kan ikke fjerne vedlegg fra journalpost hvor vedleggets originalJournalpostId er lik mottatt journalpostId=%s", journalpostId));
 		}
-	}
-
-	public static void validateInput(String journalpostId, String dokumentId){
-		validateId(journalpostId,"journalpostId");
-		validateId(dokumentId,"dokumentinfoId");
 	}
 
 }

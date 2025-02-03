@@ -353,8 +353,8 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 		assertEquals(BAD_REQUEST, response.getStatusCode());
 		assertNotNull(response.getBody());
-		assertTrue(response.getBody().getMessage().contains("Journalpost.avsendMottaker"));
-		assertTrue(response.getBody().getMessage().contains("Journalpost.innhold"));
+		assertTrue(response.getBody().getMessage().contains("avsenderMottaker.navn"));
+		assertTrue(response.getBody().getMessage().contains("tittel"));
 	}
 
 	@Test

@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
@@ -182,7 +183,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Journalpost.journalfoerendeEnhet må være null eller fire siffer. Mottatt journalfoerendeEnhet=" + JOURNALFOERENDE_ENHET_UGYLDIG);
+				.withMessageContaining("journalfoerendeEnhet må være null eller fire siffer. Mottatt journalfoerendeEnhet=" + JOURNALFOERENDE_ENHET_UGYLDIG);
 	}
 
 	@Test
@@ -194,7 +195,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Journalpost.journalfoerendeEnhet må være null eller fire siffer. Mottatt journalfoerendeEnhet=" + JOURNALFOERENDE_ENHET_UGYLDIG_WHITESPACES);
+				.withMessageContaining("journalfoerendeEnhet må være null eller fire siffer. Mottatt journalfoerendeEnhet=" + JOURNALFOERENDE_ENHET_UGYLDIG_WHITESPACES);
 	}
 
 	@Test
@@ -230,7 +231,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Bruker");
+				.withMessageContaining("bruker");
 	}
 
 	@Test
@@ -243,7 +244,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.fagsakId");
+				.withMessageContaining("sak.fagsakId");
 	}
 
 	@Test
@@ -256,7 +257,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.fagsaksystem");
+				.withMessageContaining("sak.fagsaksystem");
 	}
 
 	@Test
@@ -269,7 +270,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.arkivsaksnummer");
+				.withMessageContaining("sak.arkivsaksnummer");
 	}
 
 	@Test
@@ -282,7 +283,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.arkivsaksystem");
+				.withMessageContaining("sak.arkivsaksystem");
 	}
 
 	@Test
@@ -295,7 +296,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Bruker");
+				.withMessageContaining("bruker");
 	}
 
 	@Test
@@ -308,7 +309,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.fagsakId");
+				.withMessageContaining("sak.fagsakId");
 	}
 
 	@Test
@@ -321,7 +322,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.fagsaksystem");
+				.withMessageContaining("sak.fagsaksystem");
 	}
 
 	@Test
@@ -334,7 +335,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.arkivsaksnummer");
+				.withMessageContaining("sak.arkivsaksnummer");
 	}
 
 	@Test
@@ -347,7 +348,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.arkivsaksystem");
+				.withMessageContaining("sak.arkivsaksystem");
 	}
 
 	@Test
@@ -358,7 +359,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.fagsakId");
+				.withMessageContaining("sak.fagsakId");
 	}
 
 	@Test
@@ -368,7 +369,7 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		var exception = assertThrows(InputValideringFeiletException.class, () -> validator.validateRequest(request, FORSOEKFERDIGSTILL));
-		assertThat(exception.getMessage()).contains("Sak.fagsaksystem");
+		assertThat(exception.getMessage()).contains("sak.fagsaksystem");
 	}
 
 	@Test
@@ -379,7 +380,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.arkivsaksnummer");
+				.withMessageContaining("sak.arkivsaksnummer");
 	}
 
 	@Test
@@ -402,7 +403,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.arkivsaksystem");
+				.withMessageContaining("sak.arkivsaksystem");
 	}
 
 	@Test
@@ -417,7 +418,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("AvsenderMottaker.idType");
+				.withMessageContaining("avsenderMottaker.idType");
 	}
 
 	@Test
@@ -432,7 +433,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("AvsenderMottaker.id");
+				.withMessageContaining("avsenderMottaker.id");
 	}
 
 	@Test
@@ -447,7 +448,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("AvsenderMottaker.id");
+				.withMessageContaining("avsenderMottaker.id");
 	}
 
 	@Test
@@ -462,7 +463,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("AvsenderMottaker.id");
+				.withMessageContaining("avsenderMottaker.id");
 	}
 
 	@Test
@@ -477,7 +478,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("AvsenderMottaker.id");
+				.withMessageContaining("avsenderMottaker.id");
 	}
 
 	@ParameterizedTest
@@ -493,7 +494,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("AvsenderMottaker.id");
+				.withMessageContaining("avsenderMottaker.id");
 	}
 
 	@ParameterizedTest
@@ -522,7 +523,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("AvsenderMottaker.id");
+				.withMessageContaining("avsenderMottaker.id");
 	}
 
 	@ParameterizedTest
@@ -538,7 +539,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("AvsenderMottaker.id");
+				.withMessageContaining("avsenderMottaker.id");
 	}
 
 	@Test
@@ -551,7 +552,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Bruker.id");
+				.withMessageContaining("bruker.id");
 	}
 
 	@Test
@@ -565,7 +566,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Bruker.id");
+				.withMessageContaining("bruker.id");
 	}
 
 	@Test
@@ -579,7 +580,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Bruker.id");
+				.withMessageContaining("bruker.id");
 	}
 
 	@Test
@@ -593,7 +594,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Bruker.id");
+				.withMessageContaining("bruker.id");
 	}
 
 	@Test
@@ -607,7 +608,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Bruker.id");
+				.withMessageContaining("bruker.id");
 	}
 
 	@Test
@@ -651,7 +652,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Kanal er påkrevd for inngående journalposter");
+				.withMessageContaining("kanal er påkrevd for inngående journalposter");
 	}
 
 	@Test
@@ -688,7 +689,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class).
 				isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.arkivsaksnummer");
+				.withMessageContaining("sak.arkivsaksnummer");
 	}
 
 	@Test
@@ -702,7 +703,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.arkivsaksnummer");
+				.withMessageContaining("sak.arkivsaksnummer");
 	}
 
 	@Test
@@ -719,7 +720,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Dokumenter[0].dokumentkategori validerer ikke mot kodeverk. Gyldige verdier for dokumentkategori er %s. Mottatt dokumentkategori=kategori"
+				.withMessageContaining("dokumenter[0].dokumentKategori validerer ikke mot kodeverk. Gyldige verdier for dokumentKategori er %s. Mottatt dokumentKategori=kategori"
 						.formatted(Arrays.toString(DokumentKategoriCode.values())));
 	}
 
@@ -737,7 +738,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Dokumenter[0].dokumentvariant(ARKIV).filtype må være satt");
+				.withMessageContaining("dokumenter[0].dokumentvarianter[].filtype må være satt for variantformat=ARKIV");
 	}
 
 	@Test
@@ -754,7 +755,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Dokumenter[0].dokumentvariant(ARKIV).filtype validerer ikke mot kodeverk. Gyldige verdier for filtype er");
+				.withMessageContaining("dokumenter[0].dokumentvarianter[].filtype validerer ikke mot kodeverk for variantformat=ARKIV. Gyldige verdier for filtype er");
 	}
 
 	@Test
@@ -771,7 +772,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Dokumenter[0].dokumentvariant(ARKIV).filtype må være PDF eller PDFA for Dokument.dokumentvariant.variantformat=ARKIV");
+				.withMessageContaining("dokumenter[0].dokumentvarianter[].filtype må være PDF eller PDFA for variantformat=ARKIV");
 	}
 
 	@Test
@@ -788,24 +789,26 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Dokumenter[0].dokumentvariant.variantformat må være satt");
+				.withMessageContaining("dokumenter[0].dokumentvarianter[].variantformat må være satt");
 	}
 
 	@Test
 	public void shouldThrowExceptionIfVariantformatIsInvalid() {
+		String variantformat = "UGYLDIG_VARIANTFORMAT";
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.dokumenter(singletonList(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(singletonList(DokumentVariant.builder()
 								.filtype(FILTYPE_PDF)
-								.variantformat("variantformat")
+								.variantformat(variantformat)
 								.build()))
 						.build()))
 				.build();
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Dokumenter[0].dokumentvariant(variantformat).variantformat validerer ikke mot kodeverk. Gyldige verdier for variantformat er");
+				.withMessageContaining("dokumenter[0].dokumentvarianter[].variantformat validerer ikke mot kodeverk. Gyldige verdier for variantformat er %s. Mottatt variantformat=%s".formatted(
+						Arrays.toString(VariantFormatCode.values()), variantformat));
 	}
 
 	@Test
@@ -816,7 +819,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("dokumenter");
+				.withMessage("Kan ikke opprette journalpost uten dokumenter.");
 	}
 
 	@Test
@@ -828,7 +831,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=ab333");
+				.withMessage("behandlingstema må være på formatet ´ab + 4 siffer´, f.eks. ´ab0256´. Mottatt behandlingstema=ab333");
 	}
 
 	@Test
@@ -850,34 +853,6 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		validator.validateRequest(request, FORSOEKFERDIGSTILL);
-	}
-
-	@Test
-	public void shouldThrowExceptionWhenDocumentHasDuplicateVariantformat() {
-		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
-				.dokumenter(List.of(Dokument.builder()
-						.dokumentKategori(DOKUMENTKATEGORI_SED)
-						.dokumentvarianter(List.of(DokumentVariant.builder()
-										.filtype(FILTYPE_PDF)
-										.fysiskDokument(FYSISK_DOKUMENT)
-										.variantformat(VARIANTFORMAT_ARKIV)
-										.build(),
-								DokumentVariant.builder()
-										.filtype(FILTYPE_XML)
-										.fysiskDokument(FYSISK_DOKUMENT)
-										.variantformat(VARIANTFORMAT_ORIGINAL)
-										.build(),
-								DokumentVariant.builder()
-										.filtype(FILTYPE_PDF)
-										.fysiskDokument(FYSISK_DOKUMENT)
-										.variantformat(VARIANTFORMAT_ORIGINAL)
-										.build()))
-						.build()))
-				.build();
-
-		assertThatExceptionOfType(InputValideringFeiletException.class)
-				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Dokument.dokumentvariant.variantformat");
 	}
 
 	@Test
@@ -913,10 +888,43 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenADocumentHasMultipleVariantformatArkiv() {
+	public void shouldThrowExceptionWhenDocumentHasDuplicateVariantformat() {
+		String tittel = "dokumentMedDuplikateDokumentvarianter";
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.dokumenter(List.of(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.tittel(tittel)
+						.dokumentvarianter(List.of(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.build(),
+								DokumentVariant.builder()
+										.filtype(FILTYPE_XML)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.variantformat(VARIANTFORMAT_ORIGINAL)
+										.build(),
+								DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.variantformat(VARIANTFORMAT_ORIGINAL)
+										.build()))
+						.build()))
+				.build();
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
+				.withMessage("dokumenter[0].dokumentvarianter[].variantformat må være unik. Fant følgende duplikater for dokument med tittel=%s: variantformat=%s funnet 2 ganger"
+						.formatted(tittel, VARIANTFORMAT_ORIGINAL));
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenADocumentHasMultipleVariantformatArkiv() {
+		String tittel = "dokumentMedDuplikateDokumentvarianter";
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.dokumenter(List.of(Dokument.builder()
+						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.tittel(tittel)
 						.dokumentvarianter(List.of(DokumentVariant.builder()
 										.filtype(FILTYPE_PDF)
 										.fysiskDokument(FYSISK_DOKUMENT)
@@ -937,7 +945,8 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Variantformat=ARKIV funnet 2 ganger");
+				.withMessage("dokumenter[0].dokumentvarianter[].variantformat må være unik. Fant følgende duplikater for dokument med tittel=%s: variantformat=%s funnet 2 ganger"
+						.formatted(tittel, VARIANTFORMAT_ARKIV));
 	}
 
 	@Test
@@ -1008,7 +1017,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining(format("Validering av %s feilet. Dato kan ikke være frem i tid.", "DatoDokument"));
+				.withMessageContaining(format("Validering av %s feilet. Dato kan ikke være frem i tid.", "datoDokument"));
 	}
 
 	@ParameterizedTest
@@ -1068,7 +1077,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining(format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler));
+				.withMessageContaining(format("overstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler));
 	}
 
 	@ParameterizedTest
@@ -1102,7 +1111,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument må være en base64 representert fil større enn 0 bytes");
+				.withMessageContaining("dokumenter[0].dokumentvarianter[].fysiskDokument for variantformat=ARKIV må være en base64 representert fil større enn 0 bytes");
 	}
 
 	@Test
@@ -1122,7 +1131,7 @@ public class OpprettJournalpostRequestValidatorTest {
 		//FF D8 FF E0 00
 		assertThatExceptionOfType(InvalidPdfException.class)
 				.isThrownBy(() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL))
-				.withMessage("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument kan ikke lagres i fagarkivet. fysiskDokument magicNumber={FF D8 FF E0 00} matcher ikke angitt filtype=PDF");
+				.withMessage("dokumenter[0].dokumentvarianter[].fysiskDokument med variantformat=ARKIV kan ikke lagres i fagarkivet. fysiskDokument magicNumber={FF D8 FF E0 00} matcher ikke angitt filtype=PDF");
 	}
 
 	@Test
@@ -1141,7 +1150,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Dokumenter[0].dokumentvariant(ARKIV).fysiskDokument må være en base64 representert fil større enn 0 bytes");
+				.withMessageContaining("dokumenter[0].dokumentvarianter[].fysiskDokument for variantformat=ARKIV må være en base64 representert fil større enn 0 bytes");
 	}
 
 
@@ -1155,7 +1164,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Sak.fagsakId må være et heltall dersom saken er opprett i PSAK");
+				.withMessageContaining("sak.fagsakId må være et heltall dersom saken er opprett i PSAK");
 	}
 
 	@Test
@@ -1166,7 +1175,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Tittel kan ikke være " + SKJULT_TITTEL);
+				.withMessageContaining("tittel kan ikke være " + SKJULT_TITTEL);
 	}
 
 }

@@ -21,7 +21,7 @@ public class KopierJournalpostValidator {
 
 		// Verifisere at journalposten er i en tilstand som kan kopieres (status FL, FS, E eller J)
 		if (!GYLDIGE_JOURNALSTATUSER_FOR_KOPIERING.contains(status)) {
-			throw new KanIkkeKopiereException(format("Kan ikke kopiere journalpost med journalpostId=%s fordi journalpost har ugyldig status=%s", journalpost.getJournalpostId(), journalpost.getJournalstatus()));
+			throw new KanIkkeKopiereException(format("Kan ikke kopiere journalpost med kildeJournalpostId=%s fordi journalpost har ugyldig status=%s", journalpost.getJournalpostId(), journalpost.getJournalstatus()));
 		}
 	}
 

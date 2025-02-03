@@ -113,12 +113,12 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			GENERELL_SAK + ", " + FAGSAK_ID + ", " + FAGSAKSYSTEM + ", FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK",
-			GENERELL_SAK + ",, " + FAGSAKSYSTEM + ", FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK",
-			GENERELL_SAK + ", " + FAGSAK_ID + ",, FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK",
-			FAGSAK + ",,,FagsakId kan ikke være null eller tom for sakstype FAGSAK",
-			FAGSAK + "," + FAGSAK_ID + ",,Fagsaksystem kan ikke være null eller tom sakstype FAGSAK",
-			FAGSAK + ",," + FAGSAKSYSTEM + ",FagsakId kan ikke være null eller tom for sakstype FAGSAK"
+			GENERELL_SAK + ", " + FAGSAK_ID + ", " + FAGSAKSYSTEM + ", fagsakId og fagsaksystem skal ikke oppgis dersom sakstype=GENERELL_SAK",
+			GENERELL_SAK + ",, " + FAGSAKSYSTEM + ", fagsakId og fagsaksystem skal ikke oppgis dersom sakstype=GENERELL_SAK",
+			GENERELL_SAK + ", " + FAGSAK_ID + ",, fagsakId og fagsaksystem skal ikke oppgis dersom sakstype=GENERELL_SAK",
+			FAGSAK + ",,,fagsakId kan ikke være null eller tom dersom sakstype=FAGSAK",
+			FAGSAK + "," + FAGSAK_ID + ",,fagsaksystem kan ikke være null eller tom dersom sakstype=FAGSAK",
+			FAGSAK + ",," + FAGSAKSYSTEM + ",fagsakId kan ikke være null eller tom dersom sakstype=FAGSAK"
 	})
 	public void knyttTilAnnenSakShouldFailWithBadInput(String sakstype, String fagsakId, String fagsaksystem, String feilmelding) {
 		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem), createHeadersWithUserAndServiceUserToken());

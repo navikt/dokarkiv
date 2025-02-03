@@ -15,24 +15,25 @@ public class TilknyttVedleggRequestValidator {
 		if (isBlank(MDC.get(MDC_CONSUMER_ID))) {
 			throw new InvalidNavConsumerIdFunctionalException("Fant ikke consumerId i MDC. Dette skal utledes automatisk fra token. Ta kontakt med #team_dokumentløsninger");
 		}
+
 		validateTilknyttetAvNavn(request.getTilknyttetAvNavn());
 		if (!request.getDokument().isEmpty()) {
-			request.getDokument().forEach(this::validateDokumentListe);
+			request.getDokument().forEach(this::validateDokumentVedlegg);
 		}
 	}
 
 	private void validateTilknyttetAvNavn(String tilknyttetAvNavn) {
 		if (isBlank(tilknyttetAvNavn)) {
-			throw new InputValideringFeiletException("TilknyttetAvNavn må være satt");
+			throw new InputValideringFeiletException("tilknyttetAvNavn må være satt");
 		}
 	}
 
-	private void validateDokumentListe(DokumentVedlegg dokumentVedlegg) {
-		if ((dokumentVedlegg.getKildeJournalpostId() == null)) {
-			throw new InputValideringFeiletException("Kilde journalpostId må være satt");
+	private void validateDokumentVedlegg(DokumentVedlegg dokumentVedlegg) {
+		if (dokumentVedlegg.getKildeJournalpostId() == null) {
+			throw new InputValideringFeiletException("dokument.kildeJournalpostId må være satt for vedlegg med dokument.dokumentInfoId=%s".formatted(dokumentVedlegg.getDokumentInfoId()));
 		}
 		if (isBlank(dokumentVedlegg.getDokumentInfoId())) {
-			throw new InputValideringFeiletException("DokumentInfoId må være satt");
+			throw new InputValideringFeiletException("dokument.dokumentInfoId må være satt for vedlegg med dokument.kildeJournalpostId=%s".formatted(dokumentVedlegg.getKildeJournalpostId()));
 		}
 	}
 }

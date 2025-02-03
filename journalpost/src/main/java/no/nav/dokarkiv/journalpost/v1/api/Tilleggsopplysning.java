@@ -14,7 +14,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tilleggsopplysning {
-	@NotNull(message = "Tilleggsopplysning mangler nokkel")
+	@NotNull(message = "tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der nokkel er null")
 	@Schema(
 			description = "Nøkkelen til det fagspesifikke attributtet.",
 			requiredMode = REQUIRED,
@@ -22,7 +22,7 @@ public class Tilleggsopplysning {
 	)
 	private String nokkel;
 
-	@NotNull(message = "Tilleggsopplysning mangler verdi")
+	@NotNull(message = "tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der verdi er null")
 	@Schema(
 			description = "Verdien til det fagspesifikke attributtet.",
 			requiredMode = REQUIRED,

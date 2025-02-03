@@ -71,13 +71,13 @@ class LastOppVedleggValidatorTest {
 	void shouldNotValidateWhenDocumentIsInvalid(LastOppVedleggRequest request, String message) {
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> LastOppVedleggValidator.validateRequest(request))
-				.withMessage("LastOppVedleggRequest.dokument%s", message);
+				.withMessage(message);
 	}
 
 	private static Stream<Arguments> shouldNotValidateWhenDocumentIsInvalid() {
 		return Stream.of(
-				Arguments.of(new LastOppVedleggRequest(null), " kan ikke være null"),
-				Arguments.of(new LastOppVedleggRequest(Dokument.builder().build()), " mangler tittel")
+				Arguments.of(new LastOppVedleggRequest(null), "dokument kan ikke være null"),
+				Arguments.of(new LastOppVedleggRequest(Dokument.builder().build()), "dokument.tittel kan ikke være tom eller null")
 		);
 	}
 
@@ -91,20 +91,20 @@ class LastOppVedleggValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> LastOppVedleggValidator.validateRequest(request))
-				.withMessage("LastOppVedleggRequest.dokument%s", message);
+				.withMessage(message);
 	}
 
 	private static Stream<Arguments> shouldNotValidateWhenDocumentvariantIsInvalid() {
 		return Stream.of(
-				Arguments.of(null, " mangler dokumentvarianter"),
-				Arguments.of(List.of(DokumentVariant.builder().build()),
-						".dokumentvariant mangler variantformat"),
+				Arguments.of(null, "dokument.dokumentvarianter[] kan ikke være null eller en tom liste"),
+				Arguments.of(List.of(DokumentVariant.builder().filtype(FILTYPE_PDF).build()),
+						"dokument.dokumentvarianter[] sin dokumentvariant med filtype=PDF mangler variantformat"),
 				Arguments.of(List.of(DokumentVariant.builder().variantformat(VARIANTFORMAT_ARKIV).build()),
-						".dokumentvariant(%s) mangler filtype".formatted(VARIANTFORMAT_ARKIV)),
+						"dokument.dokumentvarianter[] sin dokumentvariant med variantformat=%s mangler filtype".formatted(VARIANTFORMAT_ARKIV)),
 				Arguments.of(List.of(DokumentVariant.builder().variantformat(VARIANTFORMAT_ARKIV).filtype(FILTYPE_PDF).build()),
-						".dokumentvariant(%s) mangler fysisk dokument".formatted(VARIANTFORMAT_ARKIV)),
+						"dokument.dokumentvarianter[] sin dokumentvariant med variantformat=%s mangler fysisk dokument".formatted(VARIANTFORMAT_ARKIV)),
 				Arguments.of(List.of(DokumentVariant.builder().variantformat(VARIANTFORMAT_ARKIV).filtype(FILTYPE_PDF).fysiskDokument("fil".getBytes()).build()),
-						".dokumentvariant(%s) mangler filnavn".formatted(VARIANTFORMAT_ARKIV))
+						"dokument.dokumentvarianter[] sin dokumentvariant med variantformat=%s mangler filnavn".formatted(VARIANTFORMAT_ARKIV))
 		);
 	}
 
@@ -130,7 +130,7 @@ class LastOppVedleggValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> LastOppVedleggValidator.validateRequest(request))
-				.withMessage("LastOppVedleggRequest.dokument inneholder mer enn én dokumentvariant av følgende variantformat(er): %s",
+				.withMessage("dokument.dokumentvarianter[] inneholder mer enn én dokumentvariant med følgende variantformat(er): %s",
 						List.of(variantformat.name()));
 	}
 	

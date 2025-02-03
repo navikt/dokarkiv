@@ -83,7 +83,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("Sakstype kan ikke være null eller tom"));
+				.withMessageContaining(createFeilmelding("sakstype kan ikke være null eller tom"));
 	}
 
 	@Test
@@ -107,7 +107,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("FagsakId kan ikke være null eller tom for sakstype FAGSAK"));
+				.withMessageContaining(createFeilmelding("fagsakId kan ikke være null eller tom dersom sakstype=FAGSAK"));
 	}
 
 	@ParameterizedTest
@@ -120,7 +120,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("Fagsaksystem kan ikke være null eller tom sakstype FAGSAK"));
+				.withMessageContaining(createFeilmelding("fagsaksystem kan ikke være null eller tom dersom sakstype=FAGSAK"));
 	}
 
 	@Test
@@ -133,7 +133,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK"));
+				.withMessageContaining(createFeilmelding("fagsakId og fagsaksystem skal ikke oppgis dersom sakstype=GENERELL_SAK"));
 	}
 
 	@Test
@@ -146,7 +146,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("FagsakId og fagsaksystem skal ikke oppgis for sakstype GENERELL_SAK"));
+				.withMessageContaining(createFeilmelding("fagsakId og fagsaksystem skal ikke oppgis dersom sakstype=GENERELL_SAK"));
 	}
 
 	@ParameterizedTest
@@ -156,7 +156,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("Fnr må ha 11 siffer."));
+				.withMessageContaining(createFeilmelding("bruker.id må ha 11 siffer dersom bruker.idType=FNR."));
 	}
 
 	@Test
@@ -167,7 +167,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("Id er ikke et tall."));
+				.withMessageContaining(createFeilmelding("bruker.id er ikke et tall."));
 	}
 
 	@ParameterizedTest
@@ -177,7 +177,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("Orgnr må ha 9 siffer."));
+				.withMessageContaining(createFeilmelding("bruker.id må ha 9 siffer dersom bruker.idType=ORGNR."));
 	}
 
 	@Test
@@ -186,7 +186,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("idType kan ikke være null eller tom"));
+				.withMessageContaining(createFeilmelding("bruker.idType kan ikke være null eller tom"));
 	}
 
 	@ParameterizedTest
@@ -199,7 +199,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("Tema kan ikke være null eller tom"));
+				.withMessageContaining(createFeilmelding("tema kan ikke være null eller tom"));
 	}
 
 	@ParameterizedTest
@@ -211,7 +211,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("Tema må ha 3 tegn"));
+				.withMessageContaining(createFeilmelding("tema må ha 3 tegn"));
 	}
 
 	@ParameterizedTest
@@ -224,7 +224,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("JournalfoerendeEnhet kan ikke være null eller tom"));
+				.withMessageContaining(createFeilmelding("journalfoerendeEnhet kan ikke være null eller tom"));
 	}
 
 	@ParameterizedTest
@@ -236,7 +236,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("JournalfoerendeEnhet må ha 4 siffer"));
+				.withMessageContaining(createFeilmelding("journalfoerendeEnhet må ha 4 siffer"));
 	}
 
 	private String createFeilmelding(String melding) {

@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_ONSKE;
-//import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_SIKKERHET;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_FEILSENDT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
@@ -127,22 +126,22 @@ public final class OppdaterJournalpostValidator {
 
 		List<String> feilmeldinger = new ArrayList<>();
 
-		feilmeldinger.add(checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType));
+		feilmeldinger.add(checkIfIllegalFieldIsSet(request.getDatoRetur(), "datoRetur", journalpostStatus, journalpostType));
 
 		if (INNGAAENDE_RESTRICTED_JOURNALSTATUS.contains(journalpostStatus)) {
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType));
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType));
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType));
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getBruker(), "bruker", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getSak(), "sak", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "tema", journalpostStatus, journalpostType));
 			if (request.getAvsenderMottaker() != null) {
 				feilmeldinger.add(validateAvsenderMottakerInngaaende(request.getAvsenderMottaker()));
 			}
 			if (checkIfJournalChangeIsOld(journalpost)) {
 				if (request.getAvsenderMottaker() != null) {
-					feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getAvsenderMottaker().getId(), "AvsenderMottaker.Id", journalpost.getJournalDato()));
-					feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getAvsenderMottaker().getNavn(), "AvsenderMottaker.Navn", journalpost.getJournalDato()));
+					feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getAvsenderMottaker().getId(), "avsenderMottaker.id", journalpost.getJournalDato()));
+					feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getAvsenderMottaker().getNavn(), "avsenderMottaker.navn", journalpost.getJournalDato()));
 				}
-				feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getTittel(), "Tittel", journalpost.getJournalDato()));
+				feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getTittel(), "tittel", journalpost.getJournalDato()));
 			}
 		} else if (request.getSak() != null) {
 			feilmeldinger.addAll(validateSak(request.getSak(), request.getBruker(), request.getTema()));
@@ -170,11 +169,11 @@ public final class OppdaterJournalpostValidator {
 		List<String> feilmeldinger = new ArrayList<>();
 
 		if (UTGAAENDE_RESTRICTED_JOURNALSTATUS.contains(journalpostStatus)) {
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType));
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType));
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType));
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType));
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTittel(), "Tittel", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getBruker(), "bruker", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getSak(), "sak", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "tema", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTittel(), "tittel", journalpostStatus, journalpostType));
 			if (request.getAvsenderMottaker() != null) {
 				feilmeldinger.addAll(validateAvsenderMottaker(request.getAvsenderMottaker(), journalpostStatus, journalpostType));
 			}
@@ -182,7 +181,7 @@ public final class OppdaterJournalpostValidator {
 			if (request.getSak() != null) {
 				feilmeldinger.addAll(validateSak(request.getSak(), request.getBruker(), request.getTema()));
 			}
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getDatoRetur(), "datoRetur", journalpostStatus, journalpostType));
 		}
 
 		return feilmeldinger;
@@ -191,19 +190,19 @@ public final class OppdaterJournalpostValidator {
 	private static List<String> validateNotat(OppdaterJournalpostRequest request, JournalStatusCode journalpostStatus, JournalpostTypeCode journalpostType) {
 		List<String> feilmeldinger = new ArrayList<>();
 
-		feilmeldinger.add(checkIfIllegalFieldIsSet(request.getDatoRetur(), "DatoRetur", journalpostStatus, journalpostType));
+		feilmeldinger.add(checkIfIllegalFieldIsSet(request.getDatoRetur(), "datoRetur", journalpostStatus, journalpostType));
 
 		if (request.getAvsenderMottaker() != null) {
 			feilmeldinger.addAll(validateAvsenderMottaker(request.getAvsenderMottaker(), journalpostStatus, journalpostType));
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getLand(), "AvsendeMottakerLand", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getAvsenderMottaker().getLand(), "avsenderMottaker.land", journalpostStatus, journalpostType));
 		}
 
 		if (NOTAT_RESTRICTED_JOURNALSTATUS.contains(journalpostStatus)) {
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getBruker(), "Bruker", journalpostStatus, journalpostType));
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getSak(), "Sak", journalpostStatus, journalpostType));
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "JournalfoerendeEnhet", journalpostStatus, journalpostType));
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "Tema", journalpostStatus, journalpostType));
-			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTittel(), "Tittel", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getBruker(), "bruker", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getSak(), "sak", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "tema", journalpostStatus, journalpostType));
+			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTittel(), "tittel", journalpostStatus, journalpostType));
 		} else if (request.getSak() != null) {
 			feilmeldinger.addAll(validateSak(request.getSak(), request.getBruker(), request.getTema()));
 		}
@@ -213,7 +212,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static String validateJournalpostTittel(String tittel) {
 		if (SKJULT_TITTEL.equals(tittel)) {
-			return "Tittel kan ikke oppdateres til " + SKJULT_TITTEL;
+			return "tittel kan ikke oppdateres til " + SKJULT_TITTEL;
 		}
 		return null;
 	}
@@ -232,9 +231,9 @@ public final class OppdaterJournalpostValidator {
 
 	private static List<String> validateAvsenderMottaker(AvsenderMottaker avsenderMottaker, JournalStatusCode journalpoststatus, JournalpostTypeCode journalpostType) {
 		List<String> feilmeldinger = new ArrayList<>();
-		feilmeldinger.add(checkIfIllegalFieldIsSet(avsenderMottaker.getId(), "AvsendeMottakerId", journalpoststatus, journalpostType));
-		feilmeldinger.add(checkIfIllegalFieldIsSet(avsenderMottaker.getIdType(), "AvsendeMottakerIdType", journalpoststatus, journalpostType));
-		feilmeldinger.add(checkIfIllegalFieldIsSet(avsenderMottaker.getNavn(), "AvsendeMottakerNavn", journalpoststatus, journalpostType));
+		feilmeldinger.add(checkIfIllegalFieldIsSet(avsenderMottaker.getId(), "avsenderMottaker.id", journalpoststatus, journalpostType));
+		feilmeldinger.add(checkIfIllegalFieldIsSet(avsenderMottaker.getIdType(), "avsenderMottaker.idType", journalpoststatus, journalpostType));
+		feilmeldinger.add(checkIfIllegalFieldIsSet(avsenderMottaker.getNavn(), "avsenderMottaker.navn", journalpoststatus, journalpostType));
 		return feilmeldinger;
 	}
 
@@ -266,26 +265,26 @@ public final class OppdaterJournalpostValidator {
 		List<String> feilmeldinger = new ArrayList<>();
 
 		if (isBlank(tema)) {
-			feilmeldinger.add("Tema må være satt dersom sakstype=FAGSAK");
+			feilmeldinger.add("tema må være satt dersom sakstype=FAGSAK");
 		}
 
-		feilmeldinger.add(validateBruker(bruker, "FAKSAK"));
+		feilmeldinger.add(validateBruker(bruker, "FAGSAK"));
 
 		if (isBlank(sak.getFagsakId())) {
-			feilmeldinger.add("Sak.fagsakId må være satt dersom sakstype=FAGSAK");
+			feilmeldinger.add("sak.fagsakId må være satt dersom sak.sakstype=FAGSAK");
 		}
 		if (sak.getFagsaksystem() == null) {
-			feilmeldinger.add("Sak.fagsaksystem må være satt dersom sakstype=FAGSAK");
+			feilmeldinger.add("sak.fagsaksystem må være satt dersom sak.sakstype=FAGSAK");
 		}
 		if (isNotBlank(sak.getArkivsaksnummer())) {
-			feilmeldinger.add("Sak.arkivsaksnummer kan ikke være satt dersom sakstype=FAGSAK");
+			feilmeldinger.add("sak.arkivsaksnummer kan ikke være satt dersom sak.sakstype=FAGSAK");
 		}
 		if (sak.getArkivsaksystem() != null) {
-			feilmeldinger.add("Sak.arkivsaksystem kan ikke være satt dersom sakstype=FAGSAK");
+			feilmeldinger.add("sak.arkivsaksystem kan ikke være satt dersom sak.sakstype=FAGSAK");
 		}
 		if (FAGSAK == sak.getSakstype() && PP01 == sak.getFagsaksystem()) {
 			if (!isNumeric(sak.getFagsakId())) {
-				feilmeldinger.add("Sak.fagsakId må være et heltall for saker opprettet i PSAK");
+				feilmeldinger.add("sak.fagsakId må være et heltall for saker opprettet i PSAK");
 			}
 		}
 		return feilmeldinger;
@@ -295,22 +294,22 @@ public final class OppdaterJournalpostValidator {
 		List<String> feilmeldinger = new ArrayList<>();
 
 		if (isBlank(tema)) {
-			feilmeldinger.add("Tema må være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("tema må være satt dersom sak.sakstype=GENERELL_SAK");
 		}
 
 		feilmeldinger.add(validateBruker(bruker, "GENERELL_SAK"));
 
 		if (isNotBlank(sak.getFagsakId())) {
-			feilmeldinger.add("Sak.fagsakId kan ikke være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("sak.fagsakId kan ikke være satt dersom sak.sakstype=GENERELL_SAK");
 		}
 		if (sak.getFagsaksystem() != null) {
-			feilmeldinger.add("Sak.fagsaksystem kan ikke være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("sak.fagsaksystem kan ikke være satt dersom sak.sakstype=GENERELL_SAK");
 		}
 		if (isNotBlank(sak.getArkivsaksnummer())) {
-			feilmeldinger.add("Sak.arkivsaksnummer kan ikke være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("sak.arkivsaksnummer kan ikke være satt dersom sak.sakstype=GENERELL_SAK");
 		}
 		if (sak.getArkivsaksystem() != null) {
-			feilmeldinger.add("Sak.arkivsaksystem kan ikke være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("sak.arkivsaksystem kan ikke være satt dersom sak.sakstype=GENERELL_SAK");
 		}
 		return feilmeldinger;
 	}
@@ -319,43 +318,43 @@ public final class OppdaterJournalpostValidator {
 		List<String> feilmeldinger = new ArrayList<>();
 
 		if (isNotBlank(sak.getFagsakId())) {
-			feilmeldinger.add("Sak.fagsakId kan ikke være satt dersom sakstype=ARKIVSAK");
+			feilmeldinger.add("sak.fagsakId kan ikke være satt dersom sak.sakstype=ARKIVSAK");
 		}
 		if (sak.getFagsaksystem() != null) {
-			feilmeldinger.add("Sak.fagsaksystem kan ikke være satt dersom sakstype=ARKIVSAK");
+			feilmeldinger.add("sak.fagsaksystem kan ikke være satt dersom sak.sakstype=ARKIVSAK");
 		}
 		if (isBlank(sak.getArkivsaksnummer())) {
-			feilmeldinger.add("Sak.arkivsaksnummer må være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("sak.arkivsaksnummer må være satt dersom sak.sakstype=GENERELL_SAK");
 		}
 		if (sak.getArkivsaksystem() == null) {
-			feilmeldinger.add("Sak.arkivsaksystem må være satt dersom sakstype=GENERELL_SAK");
+			feilmeldinger.add("sak.arkivsaksystem må være satt dersom sak.sakstype=GENERELL_SAK");
 		}
 		if (!isNumeric(sak.getArkivsaksnummer())) {
-			feilmeldinger.add("Sak.arkivsaksnummer må være et heltall, og saken må være opprettet i GSAK/PSAK");
+			feilmeldinger.add("sak.arkivsaksnummer må være et heltall, og saken må være opprettet i GSAK/PSAK");
 		}
 		return feilmeldinger;
 	}
 
 	private static String validateBehandlingstema(String behandlingstema) {
 		if (!BEHANDLINGSTEMA_PATTERN.matcher(behandlingstema).matches()) {
-			return format("Behandlingstema må være på formatet ´ab + 4 siffer´. Mottatt behandlingstema=%s", behandlingstema);
+			return format("behandlingstema må være på formatet ´ab + 4 siffer´, f.eks. ´ab0256´. Mottatt behandlingstema=%s", behandlingstema);
 		}
 		return null;
 	}
 
 	private static String validateBruker(Bruker bruker, String sakstype) {
 		if (bruker == null) {
-			return format("Bruker må være satt dersom sakstype=%s", sakstype);
+			return format("bruker må være satt dersom sak.sakstype=%s", sakstype);
 		} else if (isBlank(bruker.getId()) || bruker.getIdType() == null) {
-			return format("Bruker.id og Bruker.idType må være satt dersom sakstype=%s. Mottatt id=%s idType=%s", sakstype, masker(bruker.getId()), bruker.getIdType());
+			return format("bruker.id og bruker.idType må være satt dersom sak.sakstype=%s. Mottatt id=%s idType=%s", sakstype, masker(bruker.getId()), bruker.getIdType());
 		} else if (!isNumeric(bruker.getId())) {
-			return format("Bruker.id kan kun bestå av tall. Mottatt id=%s", bruker.getId());
+			return format("bruker.id kan kun bestå av tall. Mottatt id=%s", bruker.getId());
 		} else if (FNR.equals(bruker.getIdType()) && bruker.getId().length() != FNR_LENGTH) {
-			return format("Bruker.id må være 11 siffer for Bruker.idType=FNR. Mottatt id=%s har lengde=%s", masker(bruker.getId()), bruker.getId().length());
+			return format("bruker.id må være 11 siffer dersom bruker.idType=FNR. Mottatt id=%s har lengde=%s", masker(bruker.getId()), bruker.getId().length());
 		} else if (ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != ORGNR_LENGTH) {
-			return format("Bruker.id må være 9 siffer for Bruker.idType=ORGNR. Mottatt id=%s har lengde=%s", masker(bruker.getId()), bruker.getId().length());
+			return format("bruker.id må være 9 siffer dersom bruker.idType=ORGNR. Mottatt id=%s har lengde=%s", masker(bruker.getId()), bruker.getId().length());
 		} else if (AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
-			return format("Bruker.id må være 11 siffer for Bruker.idType=AKTOERID. Mottatt id=%s har lengde=%s", masker(bruker.getId()), bruker.getId().length());
+			return format("bruker.id må være 11 siffer dersom bruker.idType=AKTOERID. Mottatt id=%s har lengde=%s", masker(bruker.getId()), bruker.getId().length());
 		}
 		return null;
 	}
@@ -377,7 +376,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static String validateOverstyrInnsynsregler(String overstyrInnsynsregler) {
 		if (!LOVLIGE_INNSYNSKODER.contains(overstyrInnsynsregler)) {
-			return format("OverstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler);
+			return format("overstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler);
 		}
 		return null;
 	}
@@ -385,7 +384,7 @@ public final class OppdaterJournalpostValidator {
 	private static String validateDokument(DokumentInfo dokumentInfo) {
 		if (dokumentInfo != null) {
 			if (SKJULT_TITTEL.equals(dokumentInfo.getTittel())) {
-				return "Dokumenter.tittel kan ikke oppdateres til " + SKJULT_TITTEL;
+				return "dokumenter.tittel kan ikke oppdateres til %s for dokument med dokumentInfoId=%s".formatted(SKJULT_TITTEL, dokumentInfo.getDokumentInfoId());
 			}
 		}
 		return null;
@@ -411,9 +410,9 @@ public final class OppdaterJournalpostValidator {
 				changes += "id" + addCommaAndSpaceOrNothing(changeCounter);
 			}
 			if (idTypeChanged) {
-				changes += "idtype ";
+				changes += "idType ";
 			}
-			return "Avsender på digitalt innsendt journalpost kan ikke endres. %sble forsøkt endret".formatted(changes);
+			return "avsenderMottaker på digitalt innsendt journalpost kan ikke endres. Følgende felter ble forsøkt endret: %s".formatted(changes);
 		}
 		return null;
 	}
