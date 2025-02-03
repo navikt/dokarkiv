@@ -633,6 +633,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "dokumentinnhenting",
+      "namespace": "aap",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "mulighetsrommet-api",
       "namespace": "team-mulighetsrommet",
       "cluster": "dev-gcp"
