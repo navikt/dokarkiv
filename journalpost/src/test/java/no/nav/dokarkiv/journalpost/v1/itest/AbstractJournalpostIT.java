@@ -137,6 +137,14 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 						.withBodyFile("pdl/pdl-aktoerid-happy.json")));
 	}
 
+	public void happyAktoerIdHistoriskStub() {
+		stubFor(post(urlEqualTo("/pdl"))
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("pdl/pdl-aktoerid-happy-historisk.json")));
+	}
+
 	public void stubAzure() {
 		stubFor(post("/azure_token")
 				.willReturn(aResponse()

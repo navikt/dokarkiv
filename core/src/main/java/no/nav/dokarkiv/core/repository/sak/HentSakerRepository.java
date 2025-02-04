@@ -87,6 +87,30 @@ public class HentSakerRepository {
 		return query.getResultList();
 	}
 
+	public List<Sak> finnSakerForGjenaapneSak(SakSearchCriteria sakSearchCriteria) {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Sak> cq = cb.createQuery(Sak.class);
+		Root<Sak> sak = cq.from(Sak.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		predicates.add(cb.isTrue(sak.get("tema").in(sakSearchCriteria.getTema())));
+		predicates.add(cb.isTrue(sak.get("sakStatus").in("AVSLUTTET")));
+		predicates.add(cb.isTrue(sak.get("avleveringStatus").isNull()));
+		predicates.add(cb.isTrue(sak.get("kassasjonStatus").isNull()));
+		predicates.add(cb.equal(sak.get("fagsakNr"), sakSearchCriteria.getFagsakNr().get()));
+
+		if (!sakSearchCriteria.getAktoerId().isEmpty() && !isBlank(sakSearchCriteria.getAktoerId().get(0))) {
+			predicates.add(cb.isTrue(sak.get("aktoerId").in(sakSearchCriteria.getAktoerId())));
+		} else {
+			predicates.add(cb.equal(sak.get("orgnr"), sakSearchCriteria.getOrgnr().get()));
+		}
+		cq.where(predicates.toArray(new Predicate[0]));
+		cq.orderBy(cb.asc(sak.get("sakId")));
+
+		TypedQuery<Sak> query = entityManager.createQuery(cq);
+		return query.getResultList();
+	}
 
 	public static Counter initSakerRepoCounter(MeterRegistry meterRegistry, String tema, String applikasjon, String fagsakNr) {
 		return Counter.builder("repository_duration_seconds")

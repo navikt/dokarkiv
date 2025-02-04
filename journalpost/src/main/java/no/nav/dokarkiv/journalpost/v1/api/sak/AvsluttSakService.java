@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api.avsluttSak;
+package no.nav.dokarkiv.journalpost.v1.api.sak;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

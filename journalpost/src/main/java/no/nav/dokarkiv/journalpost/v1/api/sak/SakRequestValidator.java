@@ -1,8 +1,9 @@
-package no.nav.dokarkiv.journalpost.v1.api.avsluttSak;
+package no.nav.dokarkiv.journalpost.v1.api.sak;
 
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
+import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
-public class AvsluttSakValidator {
+public class SakRequestValidator {
 
 	private static final int FNR_LENGTH = 11;
 	private static final int ORGNR_LENGTH = 9;
@@ -25,11 +26,18 @@ public class AvsluttSakValidator {
 		validateTema(avsluttSakRequest.getTema());
 		validateString("fagsakId", avsluttSakRequest.getFagsakId());
 		validateString("fagsaksystem", avsluttSakRequest.getFagsaksystem());
-		validateBruker(avsluttSakRequest.getBruker());
+		validateBrukerForSak(avsluttSakRequest.getBruker());
 		validateDate("opprettetDato", avsluttSakRequest.getOpprettetDato());
 		if (avsluttSakRequest.getAvsluttetDato() != null)
 			validateDate("avsluttetDato", avsluttSakRequest.getAvsluttetDato());
 		validateString("administrativEnhet", avsluttSakRequest.getAdministrativEnhet());
+	}
+
+	public static void validateGjenaapneSakRequest(GjenaapneSakRequest gjenaapneSakRequest) throws InputValideringFeiletException {
+		validateTema(gjenaapneSakRequest.getTema());
+		validateString("fagsakId", gjenaapneSakRequest.getFagsakId());
+		validateFagsakSystem(gjenaapneSakRequest.getFagsaksystem());
+		validateBrukerForSak(gjenaapneSakRequest.getBruker());
 	}
 
 	private static void validateDate(String feltnavn, LocalDateTime dato) {
@@ -52,7 +60,7 @@ public class AvsluttSakValidator {
 		}
 	}
 
-	private static void validateBruker(Bruker bruker) {
+	public static void validateBrukerForSak(Bruker bruker) {
 		if (bruker == null) {
 			throw new InputValideringFeiletException("bruker kan ikke være null.");
 		}
@@ -71,6 +79,19 @@ public class AvsluttSakValidator {
 			throw new InputValideringFeiletException("bruker.id må være 9 siffer dersom bruker.idType=ORGNR.");
 		} else if (AKTOERID.equals(bruker.getIdType()) && bruker.getId().length() != AKTOERID_LENGTH) {
 			throw new InputValideringFeiletException("bruker.id må være 13 siffer dersom bruker.idType=AKTOERID.");
+		}
+	}
+
+	private static void validateFagsakSystem(String fagsaksystem) {
+		if (StringUtils.isBlank(fagsaksystem)) {
+			throw new InputValideringFeiletException(format("Mangler påkrevd felt: fagsaksystem. Mottok fagsaksystem=%s", fagsaksystem));
+		}
+		try {
+			Fagsaksystem.valueOf(fagsaksystem);
+		} catch (IllegalArgumentException e) {
+			throw new InputValideringFeiletException(format("Mottatt fagsaksystem=%s validerer ikke mot kodeverk. Gyldige verdier for fagsaksystem er %s",
+					fagsaksystem,
+					Arrays.toString(Fagsaksystem.values())));
 		}
 	}
 

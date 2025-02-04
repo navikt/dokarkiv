@@ -26,7 +26,9 @@ public class SakSearchCriteria {
 	private Boolean soekNullStatus;
 
 
-	public List<String> getAktoerId() {	return aktoerId == null ? emptyList() : aktoerId;}
+	public List<String> getAktoerId() {
+		return aktoerId == null ? emptyList() : aktoerId;
+	}
 
 	public Optional<String> getOrgnr() {
 		return Optional.ofNullable(orgnr);
@@ -44,9 +46,13 @@ public class SakSearchCriteria {
 		return Optional.ofNullable(applikasjon);
 	}
 
-	List<SakStatusCode> getStatuser() {return statuser == null ? emptyList() : statuser;}
+	List<SakStatusCode> getStatuser() {
+		return statuser == null ? emptyList() : statuser;
+	}
 
-	Optional<Boolean> getSoekNullStatus() {return Optional.ofNullable(soekNullStatus);}
+	Optional<Boolean> getSoekNullStatus() {
+		return Optional.ofNullable(soekNullStatus);
+	}
 
 	@Override
 	public String toString() {

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api.avsluttSak;
+package no.nav.dokarkiv.journalpost.v1.api.sak;
 
 import no.nav.dokarkiv.core.domain.codes.AvleveringStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
@@ -22,7 +22,6 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.KassasjonStatusCode.KLAR_FOR_KASSASJON;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVBRUTT;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVSLUTTET;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createBaseSak;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createSakForAktoerId;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createSakForOrgNr;
 import static no.nav.dokarkiv.core.util.TestdataFactory.GSAK_ORGNR;
