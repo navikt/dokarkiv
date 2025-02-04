@@ -10,6 +10,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import org.apache.commons.lang3.StringUtils;
 
@@ -77,6 +78,7 @@ public class OpprettJournalpostRequestValidator {
 		if (request.getSak() != null) {
 			validateSak(request.getSak(), request.getBruker());
 		}
+		validerJournalposttype(request);
 		if (isNotBlank(request.getJournalfoerendeEnhet())) {
 			validateJournalfoerendeEnhet(journalpostFerdigstilt, request.getJournalfoerendeEnhet(), request.getJournalposttype());
 		}
@@ -87,15 +89,10 @@ public class OpprettJournalpostRequestValidator {
 			softValidateDato(request.getDatoMottatt(), "datoMottatt");
 		}
 
-		List<Dokument> dokumenter = request.getDokumenter();
-		if (!dokumenter.isEmpty()) {
-			IntStream.range(0, dokumenter.size())
-					.forEach(dokumentIdx -> {
-						Dokument dokument = dokumenter.get(dokumentIdx);
-						validateDokument(dokumentIdx, dokument);
-					});
-		} else {
-			throw new InputValideringFeiletException("Kan ikke opprette journalpost uten dokumenter.");
+		validateDokumenter(request);
+
+		if (request.getTilleggsopplysninger() != null) {
+			request.getTilleggsopplysninger().forEach(this::validateTilleggsopplysning);
 		}
 
 		validatejournalfoerendeEnhet(request.getJournalfoerendeEnhet());
@@ -171,6 +168,10 @@ public class OpprettJournalpostRequestValidator {
 		if (!isNumeric(bruker.getId())) {
 			throw new InputValideringFeiletException("bruker.id må bestå av tall.");
 		}
+		if (bruker.getIdType() == null) {
+			throw new InputValideringFeiletException("bruker.idType må være satt.");
+		}
+
 		if (FNR.equals(bruker.getIdType()) && bruker.getId().length() != FNR_LENGTH) {
 			throw new InputValideringFeiletException("bruker.id må være 11 siffer dersom bruker.idType er FNR.");
 		} else if (ORGNR.equals(bruker.getIdType()) && bruker.getId().length() != ORGNR_LENGTH) {
@@ -192,6 +193,12 @@ public class OpprettJournalpostRequestValidator {
 					tema,
 					VALIDERER_IKKE_MOT_KODEVERK,
 					Arrays.toString(FagomradeCode.values())));
+		}
+	}
+
+	private void validerJournalposttype(OpprettJournalpostRequest request) {
+		if (request.getJournalposttype() == null) {
+			throw new InputValideringFeiletException("journalposttype må være satt.");
 		}
 	}
 
@@ -333,6 +340,29 @@ public class OpprettJournalpostRequestValidator {
 			throw new InputValideringFeiletException(format("overstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s",
 					LOVLIGE_INNSYNSKODER,
 					overstyrInnsynsregler));
+		}
+	}
+
+	private void validateDokumenter(OpprettJournalpostRequest request) {
+		List<Dokument> dokumenter = request.getDokumenter();
+
+		if (dokumenter == null || dokumenter.isEmpty()) {
+			throw new InputValideringFeiletException("Kan ikke opprette journalpost uten dokumenter.");
+		}
+
+		IntStream.range(0, dokumenter.size())
+				.forEach(dokumentIdx -> validateDokument(dokumentIdx, dokumenter.get(dokumentIdx)));
+	}
+
+	private void validateTilleggsopplysning(Tilleggsopplysning tilleggsopplysning) {
+		String nokkel = tilleggsopplysning.getNokkel();
+		String verdi = tilleggsopplysning.getVerdi();
+
+		if (isBlank(nokkel)) {
+			throw new InputValideringFeiletException("tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der nokkel er null eller blank");
+		}
+		if (isBlank(verdi)) {
+			throw new InputValideringFeiletException("tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der verdi er null eller blank");
 		}
 	}
 }

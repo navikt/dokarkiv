@@ -15,6 +15,9 @@ import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Date;
 import java.util.List;
@@ -82,6 +85,30 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 				.isEqualTo("Kan ikke validere request: " +
 						   "mottakskanal kan ikke være null; " +
 						   "dokumentvarianter[0] mangler filtype, mangler variantformat, mangler fysiskDokument");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"", " "})
+	@NullSource
+	public void shouldNotValidateWhenTilleggsopplysningerIsInvalid(String nokkelOrVerdi) {
+		MottaDokumentUtgaaendeSkanningRequest request = buildRequest(
+				mockMottaksKanal,
+				List.of(DokumentVariant.builder()
+						.filtype(PDF.toString())
+						.variantformat(ORIGINAL.toString())
+						.fysiskDokument(mockData)
+						.filnavn(mockFilnavn)
+						.build()),
+				List.of(new Tilleggsopplysning(nokkelOrVerdi, nokkelOrVerdi))
+		);
+
+		Optional<String> valdationResult = mottaDokumentUtgaaendeSkanningValidator.validateRequest(request);
+
+		assertThat(valdationResult).isPresent();
+		assertThat(valdationResult.get())
+				.isEqualTo("Kan ikke validere request: " +
+						"tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der nokkel er null eller blank; " +
+						"tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der verdi er null eller blank");
 	}
 
 	@Test
@@ -242,6 +269,17 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 				mockDate,
 				mottaksKanal,
 				mockTilleggsopplysninger,
+				mockBatchnavn,
+				dokumentVarianter,
+				mockEksternReferanse
+		);
+	}
+
+	private MottaDokumentUtgaaendeSkanningRequest buildRequest(String mottaksKanal, List<DokumentVariant> dokumentVarianter, List<Tilleggsopplysning> tilleggsopplysninger) {
+		return new MottaDokumentUtgaaendeSkanningRequest(
+				mockDate,
+				mottaksKanal,
+				tilleggsopplysninger,
 				mockBatchnavn,
 				dokumentVarianter,
 				mockEksternReferanse
