@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api.sak;
 
+import no.nav.dokarkiv.core.domain.codes.AvleveringStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.itest.AbstractJournalpostIT;
@@ -99,13 +100,31 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shouldNotGjenaapneSakIfAvlevert() {
+		setupStubs();
+
+		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID_HISTORISK, FAGSAK_SYSTEM, FAGSAK_ID);
+		sak.setSakStatus(AVSLUTTET);
+		sak.setDatoAvsluttet(Date.from(now()));
+		sak.setAvleveringStatus(AvleveringStatusCode.AVLEVERT);
+		sakTestRepository.persist(sak);
+
+		commitAndStartNewTransaction();
+
+		var requestEntity = new HttpEntity<>(createAktoerIdGjenaapneSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
+		ResponseEntity<String> response = restTemplate.exchange(URL_GJENAAPNE_SAK, PATCH, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(BAD_REQUEST));
+		assertThat(response.getBody(), containsString("Fant ingen arkivsak for fagsakId=0123A21 og fagsaksystem=IT01"));
+	}
+
+	@Test
 	public void shouldReturnBadRequestWhenNoArkivsakSakFound() {
 		setupStubs();
 
 		var requestEntity = new HttpEntity<>(createAktoerIdGjenaapneSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
 		ResponseEntity<String> response = restTemplate.exchange(URL_GJENAAPNE_SAK, PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(BAD_REQUEST));
-		assertThat(response.getBody(), containsString("Fant ingen arkivsak for fagsakID=0123A21 og fagsaksystem=IT01"));
+		assertThat(response.getBody(), containsString("Fant ingen arkivsak for fagsakId=0123A21 og fagsaksystem=IT01"));
 	}
 
 	private void assertGjenaapnetSak(Sak updatedSak) {

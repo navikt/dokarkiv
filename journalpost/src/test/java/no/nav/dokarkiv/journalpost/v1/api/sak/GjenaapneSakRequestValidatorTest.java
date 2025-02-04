@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
@@ -34,12 +33,12 @@ public class GjenaapneSakRequestValidatorTest {
 
 	private static Stream<Arguments> generateBrukerAndExpectedResult() {
 		return Stream.of(
-				Arguments.of(null, "Bruker kan ikke være null."),
-				Arguments.of(createBruker(null, FNR), "Bruker.id må være satt"),
-				Arguments.of(createBruker("EN_TO_TRE_FIRE", FNR), "Bruker.id må bestå av tall."),
-				Arguments.of(createBruker("12345", FNR), "Bruker.id må være 11 siffer for FNR."),
-				Arguments.of(createBruker("12345", ORGNR), "Bruker.id må være 9 siffer for ORGNR."),
-				Arguments.of(createBruker("12345", AKTOERID), "Bruker.id må være 13 siffer for AKTOERID.")
+				Arguments.of(null, "bruker kan ikke være null."),
+				Arguments.of(createBruker(null, FNR), "bruker.id må være satt"),
+				Arguments.of(createBruker("EN_TO_TRE_FIRE", FNR), "bruker.id må bestå av tall."),
+				Arguments.of(createBruker("12345", FNR), "bruker.id må være 11 siffer dersom bruker.idType=FNR."),
+				Arguments.of(createBruker("12345", ORGNR), "bruker.id må være 9 siffer dersom bruker.idType=ORGNR."),
+				Arguments.of(createBruker("12345", AKTOERID), "bruker.id må være 13 siffer dersom bruker.idType=AKTOERID.")
 		);
 	}
 
@@ -53,8 +52,8 @@ public class GjenaapneSakRequestValidatorTest {
 
 	private static Stream<Arguments> generateTemaAndExpectedResult() {
 		return Stream.of(
-				Arguments.of(null, "Mangler påkrevd felt: Tema. Mottok tema="),
-				Arguments.of("", "Mangler påkrevd felt: Tema. Mottok tema="),
+				Arguments.of(null, "Mangler påkrevd felt: tema. Mottok tema=null"),
+				Arguments.of("", "Mangler påkrevd felt: tema. Mottok tema="),
 				Arguments.of("AAAP", "Mottatt tema=AAAP validerer ikke mot kodeverk. Gyldige verdier for tema er"),
 				Arguments.of("NEI", "Mottatt tema=NEI validerer ikke mot kodeverk. Gyldige verdier for tema er")
 		);

@@ -15,7 +15,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @AllArgsConstructor
 public class GjenaapneSakRequest {
 
-	@Schema(description = "Tre-bokstavers kode for tema/fagområde på saken som skal avsluttes.",
+	@Schema(description = "Tre-bokstavers kode for tema/fagområde på saken som skal gjenåpnes.",
 			name = "tema",
 			example = "MED",
 			requiredMode = REQUIRED)
@@ -65,7 +65,7 @@ public class GjenaapneSakRequest {
 	)
 	String fagsaksystem;
 
-	@Schema(description = "Bruker som saken som skal avsluttes tilhører.",
+	@Schema(description = "Bruker som saken som skal gjenåpnes tilhører.",
 			name = "bruker",
 			requiredMode = REQUIRED )
 	Bruker bruker;
