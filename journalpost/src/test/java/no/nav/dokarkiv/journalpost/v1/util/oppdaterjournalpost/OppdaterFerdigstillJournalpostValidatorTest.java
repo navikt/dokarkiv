@@ -10,6 +10,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,6 +22,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -270,6 +272,20 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	}
 
 	@Test
+	public void shouldFailWhenDokumentInfoIdIsMissing() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.dokumenter(singletonList(DokumentInfo.builder()
+						.dokumentInfoId(null)
+						.build()))
+				.build();
+		journalpost = createEnkelJournalpost(J, I);
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
+				.withMessageContaining("dokumenter[].dokumentInfoId kan ikke være null");
+	}
+
+	@Test
 	public void shouldFailWhenDokumentTittelFemStjerner() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.dokumenter(singletonList(DokumentInfo.builder()
@@ -281,7 +297,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
-				.withMessageContaining("dokumenter.tittel kan ikke oppdateres til ***** for dokument med dokumentInfoId=" + DOKUMENTINFO_ID1);
+				.withMessageContaining("dokumenter[].tittel kan ikke oppdateres til ***** for dokument med dokumentInfoId=" + DOKUMENTINFO_ID1);
 	}
 
 	// Det skal alltid være lov til å endre brevkode. Se commit.
@@ -466,8 +482,36 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.withMessageContaining(format("overstyrInnsynsregler må være en av følgende verdier: null eller %s. Mottatt: %s", LOVLIGE_INNSYNSKODER, overstyrInnsynsregler));
 	}
 
+	@ParameterizedTest
+	@MethodSource
+	public void shouldNotValidateTilleggsopplysningerWhereNokkelOrVerdiIsBlank(String nokkel, String verdi, String feltnavn) {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_FOR)
+				.bruker(Bruker.builder().idType(FNR).id(BRUKER_ID_PERSON).build())
+				.sak(Sak.builder().sakstype(GENERELL_SAK).build())
+				.tilleggsopplysninger(List.of(new Tilleggsopplysning(nokkel, verdi)))
+				.build();
+		journalpost = createEnkelJournalpost(M, I);
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
+				.withMessageContaining("tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der %s er null eller blank".formatted(feltnavn));
+	}
+
+	private static Stream<Arguments> shouldNotValidateTilleggsopplysningerWhereNokkelOrVerdiIsBlank() {
+		return Stream.of(
+				Arguments.of(null, "verdi", "nokkel"),
+				Arguments.of("", "verdi", "nokkel"),
+				Arguments.of(" ", "verdi", "nokkel"),
+				Arguments.of("nokkel", null, "verdi"),
+				Arguments.of("nokkel", "", "verdi"),
+				Arguments.of("nokkel", " ", "verdi"),
+				Arguments.of(null, null, "nokkel") // nokkel blir sjekket først
+		);
+	}
+
 	@Test
-	public void shouldTNotValidateBrukerWhenSaksTypeIsArkivsak() {
+	public void shouldNotValidateBrukerWhenSaksTypeIsArkivsak() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.sak(Sak.builder()
 						.sakstype(ARKIVSAK)
@@ -503,6 +547,24 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
 				.withMessageContaining("bruker.id og bruker.idType må være satt dersom sak.sakstype=FAGSAK. Mottatt id=null idType=FNR");
+	}
+
+	@Test
+	public void shouldFailIfBrukerIdTypeIsNull() {
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.bruker(Bruker.builder().id(BRUKER_ID_PERSON).idType(null).build())
+				.tema("DAG")
+				.sak(Sak.builder()
+						.fagsakId("10695768")
+						.sakstype(FAGSAK)
+						.fagsaksystem(AO01)
+						.build())
+				.build();
+		journalpost = createEnkelJournalpost(D, I);
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
+				.withMessageContaining("bruker.id og bruker.idType må være satt dersom sak.sakstype=FAGSAK. Mottatt id=%s idType=null".formatted("10987*****"));
 	}
 
 	@Test

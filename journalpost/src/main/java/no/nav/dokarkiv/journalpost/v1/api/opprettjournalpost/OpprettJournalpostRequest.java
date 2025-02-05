@@ -3,7 +3,6 @@ package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,7 +28,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @AllArgsConstructor
 public class OpprettJournalpostRequest {
 
-	@NotNull(message = "journalposttype kan ikke være null")
 	@Schema(
 			requiredMode = REQUIRED,
 			description = """
@@ -149,7 +147,6 @@ public class OpprettJournalpostRequest {
 	private Sak sak;
 
 	@Builder.Default
-	@NotNull(message = "dokumenter kan ikke være null")
 	@ArraySchema(arraySchema = @Schema(
 			description = """
 					Alle dokumentene som skal arkiveres.

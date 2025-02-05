@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,17 +8,12 @@ import lombok.NoArgsConstructor;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
-/**
- * @author Olav Røstvold Thorsen, Visma Consulting.
- */
-
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeiledeDokumenter {
 
-	@NotNull(message = "ID til journalpost kilden mangler")
 	@Schema(
 			description = "ID til journalpost kilden i Joark",
 			requiredMode = REQUIRED,
@@ -40,7 +34,5 @@ public class FeiledeDokumenter {
 			example = "UGYLDIG_STATUS"
 	)
 	private ArsakKode arsakKode;
-
-
 
 }

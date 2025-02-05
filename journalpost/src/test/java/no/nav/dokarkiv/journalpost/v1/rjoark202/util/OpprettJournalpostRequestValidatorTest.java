@@ -14,6 +14,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import org.junit.jupiter.api.Test;
@@ -51,8 +52,10 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
@@ -67,6 +70,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_SER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithoutEksternReferanseId;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
@@ -151,6 +155,17 @@ public class OpprettJournalpostRequestValidatorTest {
 				.build();
 
 		validator.validateRequest(request, FORSOEKFERDIGSTILL);
+	}
+
+	@Test
+	void shouldThrowExceptionWhenJournalposttypeIsNull() {
+		JournalpostType journalpostType = null;
+		OpprettJournalpostRequest request = createMinimalRequest(journalpostType)
+				.build();
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
+				.withMessage("journalposttype må være satt.");
 	}
 
 	@ParameterizedTest
@@ -542,17 +557,33 @@ public class OpprettJournalpostRequestValidatorTest {
 				.withMessageContaining("avsenderMottaker.id");
 	}
 
-	@Test
-	public void shouldThrowExceptionIfBrukerIsMissingId() {
+	@ParameterizedTest
+	@ValueSource(strings = {"", " "})
+	@NullSource
+	public void shouldThrowExceptionIfBrukerIsMissingId(String brukerId) {
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.bruker(Bruker.builder()
-						.id(null)
+						.id(brukerId)
 						.build())
 				.build();
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("bruker.id");
+				.withMessage("bruker.id må være satt.");
+	}
+
+	@Test
+	public void shouldThrowExceptionIfBrukerIsMissingIdType() {
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.bruker(Bruker.builder()
+						.id(BRUKER_ID_PERSON)
+						.idType(null)
+						.build())
+				.build();
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
+				.withMessage("bruker.idType må være satt.");
 	}
 
 	@Test
@@ -566,7 +597,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("bruker.id");
+				.withMessage("bruker.id må bestå av tall.");
 	}
 
 	@Test
@@ -812,6 +843,17 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
+	public void shouldThrowExceptionIfDokumenterIsNull() {
+		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
+				.dokumenter(null)
+				.build();
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
+				.withMessage("Kan ikke opprette journalpost uten dokumenter.");
+	}
+
+	@Test
 	public void shouldThrowExceptionIfDokumenterIsEmpty() {
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.dokumenter(new ArrayList<>())
@@ -820,6 +862,41 @@ public class OpprettJournalpostRequestValidatorTest {
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
 				.withMessage("Kan ikke opprette journalpost uten dokumenter.");
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	public void shouldThrowExceptionIfTilleggsopplysningerIsInvalid(String nokkel, String verdi, String feltnavn) {
+		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
+				.tilleggsopplysninger(List.of(new Tilleggsopplysning(nokkel, verdi)))
+				.dokumenter(singletonList(Dokument.builder()
+						.tittel(DOKUMENT_TITTEL1)
+						.brevkode(BREVKODE1)
+						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.dokumentvarianter(List.of(
+								DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.build()))
+						.build()))
+				.build();
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
+				.withMessage("tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der %s er null eller blank".formatted(feltnavn));
+	}
+
+	private static Stream<Arguments> shouldThrowExceptionIfTilleggsopplysningerIsInvalid() {
+		return Stream.of(
+				Arguments.of(null, "verdi", "nokkel"),
+				Arguments.of("", "verdi", "nokkel"),
+				Arguments.of(" ", "verdi", "nokkel"),
+				Arguments.of("nokkel", null, "verdi"),
+				Arguments.of("nokkel", "", "verdi"),
+				Arguments.of("nokkel", " ", "verdi"),
+				Arguments.of(null, null, "nokkel") // nokkel blir sjekket først
+		);
 	}
 
 	@Test

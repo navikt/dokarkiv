@@ -62,7 +62,7 @@ public class KnyttTilAnnenSakValidator {
 			throw new InputValideringFeiletException("bruker.id er ikke et tall.");
 		}
 		if (idtype == null) {
-			throw new InputValideringFeiletException("bruker.idType kan ikke være null eller tom");
+			throw new InputValideringFeiletException("bruker.idType kan ikke være null");
 		}
 		if (idtype.equals(FNR)) {
 			if (bruker.getId().length() != FNR_LENGTH) {
