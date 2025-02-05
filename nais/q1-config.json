@@ -563,6 +563,11 @@
       "app": "dokumentinnhenting",
       "namespace": "aap",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "dsop-kontroll",
+      "namespace": "dsopkontroll",
+      "cluster": "dev-fss"
     }
   ]
 }
