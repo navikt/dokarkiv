@@ -24,18 +24,19 @@ public class GjenaapneSakRequestValidatorTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("generateBrukerAndExpectedResult")
+	@MethodSource("validateBruker")
 	void validateBruker(Bruker bruker, String expectedExceptionMessage) {
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validateGjenaapneSakRequest((createDefaultGjenaapneSakRequest().bruker(bruker).build())))
 				.withMessageContaining(expectedExceptionMessage);
 	}
 
-	private static Stream<Arguments> generateBrukerAndExpectedResult() {
+	private static Stream<Arguments> validateBruker() {
 		return Stream.of(
 				Arguments.of(null, "bruker kan ikke være null."),
 				Arguments.of(createBruker(null, FNR), "bruker.id må være satt"),
 				Arguments.of(createBruker("EN_TO_TRE_FIRE", FNR), "bruker.id må bestå av tall."),
+				Arguments.of(createBruker("12345", null), "bruker.idType kan ikke være null."),
 				Arguments.of(createBruker("12345", FNR), "bruker.id må være 11 siffer dersom bruker.idType=FNR."),
 				Arguments.of(createBruker("12345", ORGNR), "bruker.id må være 9 siffer dersom bruker.idType=ORGNR."),
 				Arguments.of(createBruker("12345", AKTOERID), "bruker.id må være 13 siffer dersom bruker.idType=AKTOERID.")
@@ -43,24 +44,24 @@ public class GjenaapneSakRequestValidatorTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("generateTemaAndExpectedResult")
+	@MethodSource("shouldValidateTema")
 	void shouldValidateTema(String tema, String expectedExceptionMessage) {
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validateGjenaapneSakRequest(createDefaultGjenaapneSakRequest().tema(tema).build()))
 				.withMessageContaining(expectedExceptionMessage);
 	}
 
-	private static Stream<Arguments> generateTemaAndExpectedResult() {
+	private static Stream<Arguments> shouldValidateTema() {
 		return Stream.of(
-				Arguments.of(null, "Mangler påkrevd felt: tema. Mottok tema=null"),
 				Arguments.of("", "Mangler påkrevd felt: tema. Mottok tema="),
-				Arguments.of("AAAP", "Mottatt tema=AAAP validerer ikke mot kodeverk. Gyldige verdier for tema er"),
-				Arguments.of("NEI", "Mottatt tema=NEI validerer ikke mot kodeverk. Gyldige verdier for tema er")
+				Arguments.of(null, "Mangler påkrevd felt: tema. Mottok tema=null"),
+				Arguments.of("NEI", "Mottatt tema=NEI validerer ikke mot kodeverk. Gyldige verdier for tema er"),
+				Arguments.of("AAAP", "Mottatt tema=AAAP validerer ikke mot kodeverk. Gyldige verdier for tema er")
 		);
 	}
 
 	@ParameterizedTest
-	@MethodSource("generateStringsAndExpectedResult")
+	@MethodSource("shouldValidateFagsakIdAndFagsaksystem")
 	void shouldValidateFagsakIdAndFagsaksystem(String fagsakId, String fagsakSystem, String expectedExceptionMessage) {
 		var gjenaapneSakRequest = createDefaultGjenaapneSakRequest()
 				.fagsakId(fagsakId)
@@ -71,10 +72,10 @@ public class GjenaapneSakRequestValidatorTest {
 				.withMessageContaining(expectedExceptionMessage);
 	}
 
-	private static Stream<Arguments> generateStringsAndExpectedResult() {
+	private static Stream<Arguments> shouldValidateFagsakIdAndFagsaksystem() {
 		return Stream.of(
-				Arguments.of(null, "AO11", "Mottok ugyldig verdi for feltet fagsakId. Feltet var null/tomt"),
 				Arguments.of("", "AO11", "Mottok ugyldig verdi for feltet fagsakId. Feltet var null/tomt"),
+				Arguments.of(null, "AO11", "Mottok ugyldig verdi for feltet fagsakId. Feltet var null/tomt"),
 				Arguments.of("fagsakId", null, "Mangler påkrevd felt: fagsaksystem. Mottok fagsaksystem=null"),
 				Arguments.of("fagsakId", "UGYLDIG_FAGSAKSYSTEM", "Mottatt fagsaksystem=UGYLDIG_FAGSAKSYSTEM validerer ikke mot kodeverk. Gyldige verdier for fagsaksystem er")
 		);
@@ -90,8 +91,8 @@ public class GjenaapneSakRequestValidatorTest {
 	private GjenaapneSakRequest.GjenaapneSakRequestBuilder createDefaultGjenaapneSakRequest() {
 		return GjenaapneSakRequest.builder()
 				.tema("BAR")
-				.fagsakId("fagsakid123")
 				.fagsaksystem("AO11")
+				.fagsakId("fagsakid123")
 				.bruker(Bruker.builder().id("12345678911").idType(FNR).build());
 	}
 

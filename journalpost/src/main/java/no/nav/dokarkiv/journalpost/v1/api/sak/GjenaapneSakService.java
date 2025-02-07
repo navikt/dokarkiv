@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.exceptions.SakIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import org.slf4j.MDC;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,7 +21,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
 
 @Slf4j
-@Component
+@Service
 public class GjenaapneSakService {
 
 	private final HentSakerRepository hentSakerRepository;
@@ -33,13 +33,12 @@ public class GjenaapneSakService {
 	}
 
 	@Transactional
-	public void gjenaapneSak(GjenaapneSakRequest gjenaapneSakRequest) {
+	public void gjenaapneFagsak(GjenaapneSakRequest gjenaapneSakRequest) {
 		List<Sak> saker = finnSakerSomSkalGjenaapnes(gjenaapneSakRequest);
-		log.info("GjenaapneSak fant {} saker som skal gjenåpnes med sakIds={} for fagsak med fagsakId={}",
+		log.info("GjenaapneSak fant {} tilhørende sak-innslag som skal gjenåpnes med sakIds={} for fagsak med fagsakId={}",
 				saker.size(), saker.stream().map(Sak::getSakId).toList(), gjenaapneSakRequest.fagsakId);
 
 		gjenaapneSaker(saker);
-		log.info("GjenaapneSak har gjennåpnet sak med fagsakId={}", gjenaapneSakRequest.fagsakId);
 	}
 
 	private void gjenaapneSaker(List<Sak> saker) {
@@ -66,12 +65,12 @@ public class GjenaapneSakService {
 			case ORGNR -> generateOrganisasjonSakCriteria(gjenaapneSakRequest);
 			case AKTOERID, FNR -> {
 				var aktoerIds = pdlIdentConsumer.hentHistoriskeAktoerIdsForAktoerId(gjenaapneSakRequest.getBruker().getId());
-				yield generateAktoerIdCriteria(gjenaapneSakRequest, aktoerIds);
+				yield generateAktoerIdSakCriteria(gjenaapneSakRequest, aktoerIds);
 			}
 		};
 	}
 
-	private SakSearchCriteria generateAktoerIdCriteria(GjenaapneSakRequest gjenaapneSakRequest, List<String> aktoerIds) {
+	private SakSearchCriteria generateAktoerIdSakCriteria(GjenaapneSakRequest gjenaapneSakRequest, List<String> aktoerIds) {
 		return generateBaseSakSearchCriteria(gjenaapneSakRequest)
 				.aktoerId(aktoerIds)
 				.build();

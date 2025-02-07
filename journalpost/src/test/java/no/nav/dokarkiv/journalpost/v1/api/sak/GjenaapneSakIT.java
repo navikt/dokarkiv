@@ -74,7 +74,7 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 		ResponseEntity<String> response = restTemplate.exchange(URL_GJENAAPNE_SAK, PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(OK));
 
-		sakIds.stream().forEach(sakId -> assertGjenaapnetSak(sakTestRepository.findById(sakId).get()));
+		sakIds.forEach(sakId -> assertGjenaapnetSak(sakTestRepository.findById(sakId).get()));
 	}
 
 	@Test
@@ -107,6 +107,23 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 		sak.setSakStatus(AVSLUTTET);
 		sak.setDatoAvsluttet(Date.from(now()));
 		sak.setAvleveringStatus(AvleveringStatusCode.AVLEVERT);
+		sakTestRepository.persist(sak);
+
+		commitAndStartNewTransaction();
+
+		var requestEntity = new HttpEntity<>(createAktoerIdGjenaapneSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
+		ResponseEntity<String> response = restTemplate.exchange(URL_GJENAAPNE_SAK, PATCH, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(BAD_REQUEST));
+		assertThat(response.getBody(), containsString("Fant ingen arkivsak for fagsakId=0123A21 og fagsaksystem=IT01"));
+	}
+
+	@Test
+	public void shouldNotGjenaapneSakIfRequestFagsaksystemIsNotSakFagsaksystem() {
+		setupStubs();
+
+		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID_HISTORISK, "PP01", FAGSAK_ID);
+		sak.setSakStatus(AVSLUTTET);
+		sak.setDatoAvsluttet(Date.from(now()));
 		sakTestRepository.persist(sak);
 
 		commitAndStartNewTransaction();

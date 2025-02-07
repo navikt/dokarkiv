@@ -99,6 +99,7 @@ public class HentSakerRepository {
 		predicates.add(cb.isTrue(sak.get("avleveringStatus").isNull()));
 		predicates.add(cb.isTrue(sak.get("kassasjonStatus").isNull()));
 		predicates.add(cb.equal(sak.get("fagsakNr"), sakSearchCriteria.getFagsakNr().get()));
+		predicates.add(cb.equal(sak.get("applikasjon"), sakSearchCriteria.getApplikasjon().get()));
 
 		if (!sakSearchCriteria.getAktoerId().isEmpty() && !isBlank(sakSearchCriteria.getAktoerId().get(0))) {
 			predicates.add(cb.isTrue(sak.get("aktoerId").in(sakSearchCriteria.getAktoerId())));

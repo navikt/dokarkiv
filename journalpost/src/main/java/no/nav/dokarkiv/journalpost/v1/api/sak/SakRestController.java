@@ -54,10 +54,10 @@ public class SakRestController {
 			@RequestBody GjenaapneSakRequest gjenaapneSakRequest
 	) {
 		createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		validateGjenaapneSakRequest(gjenaapneSakRequest);
 		log.info("GjenaapneSak har fått kall om å gjenåpne sak med fagsakId={} fra fagsaksystem={}", gjenaapneSakRequest.getFagsakId(), gjenaapneSakRequest.getFagsaksystem());
+		validateGjenaapneSakRequest(gjenaapneSakRequest);
 
-		gjenaapneSakService.gjenaapneSak(gjenaapneSakRequest);
+		gjenaapneSakService.gjenaapneFagsak(gjenaapneSakRequest);
 		log.info("GjenaapneSak har gjenåpnet sak med fagsakId={} fra fagsaksystem={}", gjenaapneSakRequest.getFagsakId(), gjenaapneSakRequest.getFagsaksystem());
 		return ResponseEntity.ok().build();
 	}

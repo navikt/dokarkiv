@@ -58,8 +58,6 @@ public class GjenaapneSakRequest {
 					* TILTAKSPENGER
 					* TILTAKSADMINISTRASJON
 					* FIA
-
-					Skal kun settes dersom sakstype = FAGSAK.
 					""",
 			example = "AO01", requiredMode = REQUIRED
 	)

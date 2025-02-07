@@ -65,6 +65,10 @@ public class SakRequestValidator {
 			throw new InputValideringFeiletException("bruker kan ikke være null.");
 		}
 
+		if (bruker.getIdType() == null) {
+			throw new InputValideringFeiletException("bruker.idType kan ikke være null.");
+		}
+
 		if (isBlank(bruker.getId())) {
 			throw new InputValideringFeiletException("bruker.id må være satt.");
 		}
