@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
+import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.stream.IntStream;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class MottaDokumentUtgaaendeSkanningValidator {
 
@@ -40,6 +42,15 @@ public class MottaDokumentUtgaaendeSkanningValidator {
                     .mapToObj(i -> validateDokumentVariant(request.getDokumentvarianter().get(i), i))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
+                    .toList());
+        }
+
+        if (request.getTilleggsopplysninger() != null) {
+            errors.addAll(request.getTilleggsopplysninger().stream()
+                    .map(MottaDokumentUtgaaendeSkanningValidator::validateTilleggsopplysning)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .flatMap(List::stream)
                     .toList());
         }
 
@@ -135,7 +146,27 @@ public class MottaDokumentUtgaaendeSkanningValidator {
             return Optional.empty();
         }
 
-        return (Optional.of("dokumentvarianter[" + index + "] " + String.join(", ", errors)));
+        return Optional.of("dokumentvarianter[" + index + "] " + String.join(", ", errors));
+    }
+
+    private static Optional<ArrayList<String>> validateTilleggsopplysning(Tilleggsopplysning tilleggsopplysning) {
+        ArrayList<String> errors = new ArrayList<>();
+
+        String nokkel = tilleggsopplysning.getNokkel();
+        String verdi = tilleggsopplysning.getVerdi();
+
+        if (isBlank(nokkel)) {
+            errors.add("tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der nokkel er null eller blank");
+        }
+        if (isBlank(verdi)) {
+            errors.add("tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der verdi er null eller blank");
+        }
+
+        if (errors.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(errors);
     }
 
     private boolean isNullOrEmpty(String string) {

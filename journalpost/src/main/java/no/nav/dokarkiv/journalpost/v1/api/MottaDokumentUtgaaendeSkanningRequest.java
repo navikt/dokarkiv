@@ -2,7 +2,6 @@ package no.nav.dokarkiv.journalpost.v1.api;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +20,6 @@ public class MottaDokumentUtgaaendeSkanningRequest {
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date datoMottatt;
 
-    @NotNull(message = "MottaDokumentUtgaaendeSkanningRequest mangler mottakskanal")
     @Schema(
             description = "Mottakskanal for dokument"
     )

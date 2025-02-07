@@ -186,7 +186,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
-				.withMessageContaining(createFeilmelding("bruker.idType kan ikke være null eller tom"));
+				.withMessageContaining(createFeilmelding("bruker.idType kan ikke være null"));
 	}
 
 	@ParameterizedTest

@@ -72,9 +72,11 @@ public class SakRequestValidator {
 		if (isBlank(bruker.getId())) {
 			throw new InputValideringFeiletException("bruker.id må være satt.");
 		}
-
 		if (!isNumeric(bruker.getId())) {
 			throw new InputValideringFeiletException("bruker.id må bestå av tall.");
+		}
+		if (bruker.getIdType() == null) {
+			throw new InputValideringFeiletException("bruker.idType må være satt.");
 		}
 
 		if (FNR.equals(bruker.getIdType()) && bruker.getId().length() != FNR_LENGTH) {

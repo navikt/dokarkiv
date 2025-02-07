@@ -36,6 +36,7 @@ public class AvsluttSakRequestValidatorTest {
 		return Stream.of(
 				Arguments.of(null, "bruker kan ikke være null."),
 				Arguments.of(createBruker(null, FNR), "bruker.id må være satt"),
+				Arguments.of(createBruker("12345", null), "bruker.idType må være satt"),
 				Arguments.of(createBruker("EN_TO_TRE_FIRE", FNR), "bruker.id må bestå av tall."),
 				Arguments.of(createBruker("12345", FNR), "bruker.id må være 11 siffer dersom bruker.idType=FNR."),
 				Arguments.of(createBruker("12345", ORGNR), "bruker.id må være 9 siffer dersom bruker.idType=ORGNR."),

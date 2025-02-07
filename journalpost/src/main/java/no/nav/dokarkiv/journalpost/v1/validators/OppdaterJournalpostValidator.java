@@ -10,6 +10,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentInfo;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
+import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -109,6 +110,10 @@ public final class OppdaterJournalpostValidator {
 
 		if (DIGITALE_KANALER.contains(journalpost.getMottakskanal()) && request.getAvsenderMottaker() != null) {
 			feilmeldinger.add(validateKanIkkeOppdatereAvsenderPaaDigitaltInnsendteDokumenter(request, journalpost));
+		}
+
+		if (request.getTilleggsopplysninger() != null) {
+			request.getTilleggsopplysninger().forEach(tilleggsopplysning -> feilmeldinger.add(validateTilleggsopplysning(tilleggsopplysning)));
 		}
 
 		String feilmelding = feilmeldinger.stream()
@@ -383,9 +388,26 @@ public final class OppdaterJournalpostValidator {
 
 	private static String validateDokument(DokumentInfo dokumentInfo) {
 		if (dokumentInfo != null) {
-			if (SKJULT_TITTEL.equals(dokumentInfo.getTittel())) {
-				return "dokumenter.tittel kan ikke oppdateres til %s for dokument med dokumentInfoId=%s".formatted(SKJULT_TITTEL, dokumentInfo.getDokumentInfoId());
+			if (dokumentInfo.getDokumentInfoId() == null) {
+				return "dokumenter[].dokumentInfoId kan ikke være null";
 			}
+
+			if (SKJULT_TITTEL.equals(dokumentInfo.getTittel())) {
+				return "dokumenter[].tittel kan ikke oppdateres til %s for dokument med dokumentInfoId=%s".formatted(SKJULT_TITTEL, dokumentInfo.getDokumentInfoId());
+			}
+		}
+		return null;
+	}
+
+	private static String validateTilleggsopplysning(Tilleggsopplysning tilleggsopplysning) {
+		String nokkel = tilleggsopplysning.getNokkel();
+		String verdi = tilleggsopplysning.getVerdi();
+
+		if (isBlank(nokkel)) {
+			return "tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der nokkel er null eller blank";
+		}
+		if (isBlank(verdi)) {
+			return "tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der verdi er null eller blank";
 		}
 		return null;
 	}

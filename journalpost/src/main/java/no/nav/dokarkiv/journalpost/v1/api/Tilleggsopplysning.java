@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +13,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tilleggsopplysning {
-	@NotNull(message = "tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der nokkel er null")
+
 	@Schema(
 			description = "Nøkkelen til det fagspesifikke attributtet.",
 			requiredMode = REQUIRED,
@@ -22,7 +21,6 @@ public class Tilleggsopplysning {
 	)
 	private String nokkel;
 
-	@NotNull(message = "tilleggsopplysninger[] kan ikke inneholde tilleggsopplysning der verdi er null")
 	@Schema(
 			description = "Verdien til det fagspesifikke attributtet.",
 			requiredMode = REQUIRED,

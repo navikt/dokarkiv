@@ -19,7 +19,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @AllArgsConstructor
 public class UbehandletJournalpost {
 
-	@NotNull(message = "JournalpostId mangler")
 	@Schema(
 			description = "ID til journalpost i Joark",
 			requiredMode = REQUIRED,
@@ -27,7 +26,6 @@ public class UbehandletJournalpost {
 	)
 	private long journalpostId;
 
-	@NotNull(message = "JournalStatusCode mangler")
 	@Schema(
 			description = "JournalStatus i Joark",
 			requiredMode = REQUIRED,
@@ -68,7 +66,6 @@ public class UbehandletJournalpost {
 	)
 	private String journalforendeEnhet;
 
-	@NotNull(message = "datoOpprettet mangler for journalpost")
 	@Schema(
 			description = "Dato journalposten ble opprettet i Joark",
 			requiredMode = REQUIRED,
