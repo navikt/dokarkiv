@@ -150,6 +150,8 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 		assertThat(updatedSak.getEndretKildeNavn(), is(KALLENDE_APP));
 		assertThat(updatedSak.getDatoEndret().getDay(), is(Date.from(now()).getDay()));
 		assertThat(updatedSak.getDatoAvsluttet(), is(nullValue()));
+		assertThat(updatedSak.getAvsluttetAv(), is(nullValue()));
+		assertThat(updatedSak.getAvsluttetKildeNavn(), is(nullValue()));
 	}
 
 	private void setupStubs() {
@@ -161,6 +163,8 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 	private long persistDefaultAvsluttetSak() {
 		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID, FAGSAK_SYSTEM, FAGSAK_ID);
 		sak.setSakStatus(AVSLUTTET);
+		sak.setAvsluttetAv("Frankly Frank");
+		sak.setAvsluttetKildeNavn("Frankly Frank");
 		sak.setDatoAvsluttet(Date.from(now()));
 		long sakId = sakTestRepository.persist(sak).getSakId();
 

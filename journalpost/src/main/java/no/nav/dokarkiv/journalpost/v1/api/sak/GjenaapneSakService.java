@@ -48,6 +48,8 @@ public class GjenaapneSakService {
 			sak.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 			sak.setDatoEndret(Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()));
 			sak.setDatoAvsluttet(null);
+			sak.setAvsluttetAv(null);
+			sak.setAvsluttetKildeNavn(null);
 		});
 	}
 
