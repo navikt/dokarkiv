@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api.avsluttSak;
+package no.nav.dokarkiv.journalpost.v1.api.sak;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api.avsluttSak;
+package no.nav.dokarkiv.journalpost.v1.api.sak;
 
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
-import static no.nav.dokarkiv.journalpost.v1.api.avsluttSak.AvsluttSakValidator.validateAvsluttSakRequest;
+import static no.nav.dokarkiv.journalpost.v1.api.sak.SakRequestValidator.validateAvsluttSakRequest;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class AvsluttSakValidatorTest {
+public class AvsluttSakRequestValidatorTest {
 
 	@Test
 	void shouldValidateOK() {
