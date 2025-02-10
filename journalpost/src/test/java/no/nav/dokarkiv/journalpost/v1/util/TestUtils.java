@@ -346,7 +346,7 @@ public class TestUtils {
 
 	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId() {
 		return OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(createAvsenderMottakerPersonWithoutId())
+				.avsenderMottaker(createAvsenderMottakerPersonWithEmptyId())
 				.bruker(createBrukerPerson())
 				.sak(createSak())
 				.tema(TEMA_FOR)
@@ -404,6 +404,7 @@ public class TestUtils {
 		return AvsenderMottaker.builder()
 				.navn(AVSENDER_NAVN)
 				.id(AVSENDER_ID_PERSON)
+				.idType(AvsenderMottakerIdType.FNR)
 				.land(AVSENDER_MOTTAKER_LAND)
 				.build();
 	}
@@ -421,10 +422,36 @@ public class TestUtils {
 				.build();
 	}
 
+	public static AvsenderMottaker createAvsenderMottakerPersonWithEmptyId() {
+		return AvsenderMottaker.builder()
+				.idType(AvsenderMottakerIdType.FNR)
+				.id(" ")
+				.navn(AVSENDER_NAVN)
+				.land(AVSENDER_MOTTAKER_LAND)
+				.build();
+	}
+
 	public static AvsenderMottaker createAvsenderMottakerPersonWithoutId() {
 		return AvsenderMottaker.builder()
 				.idType(AvsenderMottakerIdType.FNR)
 				.id(" ")
+				.navn(AVSENDER_NAVN)
+				.land(AVSENDER_MOTTAKER_LAND)
+				.build();
+	}
+
+	public static AvsenderMottaker createAvsenderMottakerPersonWithoutIdType() {
+		return AvsenderMottaker.builder()
+				.id(AVSENDER_ID_PERSON)
+				.navn(AVSENDER_NAVN)
+				.land(AVSENDER_MOTTAKER_LAND)
+				.build();
+	}
+
+	public static AvsenderMottaker createAvsenderMottakerPersonIdIdType(boolean id, boolean idType) {
+		return AvsenderMottaker.builder()
+				.idType(idType ? AvsenderMottakerIdType.FNR : null)
+				.id(id ? AVSENDER_ID_PERSON : null)
 				.navn(AVSENDER_NAVN)
 				.land(AVSENDER_MOTTAKER_LAND)
 				.build();
@@ -519,6 +546,7 @@ public class TestUtils {
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet) {
 		return createRequest(journalpostType, journalfoerendeEnhet, SAK_ID.toString());
 	}
+
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet, String sakId) {
 		return createBaseRequest(journalpostType, sakId)
 				.journalfoerendeEnhet(journalfoerendeEnhet)
