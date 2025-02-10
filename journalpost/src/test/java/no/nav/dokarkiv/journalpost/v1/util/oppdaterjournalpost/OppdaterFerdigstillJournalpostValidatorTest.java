@@ -190,6 +190,24 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.withMessageContaining("sak.fagsakId");
 	}
 
+	@Test
+	void avsenderMottakerIdValidering(){
+		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.navn(AVSENDER_NAVN)
+						.id(AVSENDER_ID_PERSON)
+						.build())
+				.build();
+		journalpost = createEnkelJournalpost(M, U);
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
+				.withMessageContaining(
+						"AvsendeMottaker Id kan ikke settes uten at idType også er satt."
+				);
+	}
+
+
 	// Det skal ikke være lov til å oppdatere avsenderMottaker (id, navn) for utgående, ferdigstilte journalposter.
 	@ParameterizedTest
 	@EnumSource(value = JournalStatusCode.class, names = {"FL", "FS", "E"})
