@@ -224,6 +224,9 @@ public final class OppdaterJournalpostValidator {
 	}
 
 	private static String validateAvsenderMottakerId(AvsenderMottaker avsenderMottaker) {
+		//Dersom avsendermottaker skal nulles ut, er det greit at avsenderMottaker.id er " " og idType ikke er satt.
+		if(" ".equals(avsenderMottaker.getId()))
+			return null;
 		if (isEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() != null) {
 			return format("Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt. Mottatt id=%s idType=%s",
 					avsenderMottaker.getId(),
