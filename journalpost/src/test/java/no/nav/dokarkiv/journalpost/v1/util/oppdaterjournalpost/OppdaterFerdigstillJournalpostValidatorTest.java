@@ -14,6 +14,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
@@ -57,6 +58,8 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPerson;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPersonIdIdType;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPersonWithoutIdType;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEnkelJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
@@ -190,20 +193,20 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.withMessageContaining("sak.fagsakId");
 	}
 
-	@Test
-	void avsenderMottakerIdValidering(){
+	@ParameterizedTest
+	@CsvSource({"true,false, Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt. Mottatt id=12345***** idType=null",
+			"false,true, Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt. Mottatt id=null idType=FNR"
+	})
+	void shouldFailWhenAvsenderMottakerIdIsSetWithoutIdType(boolean avsenderMottakerId, boolean avsenderMottakerIdType, String resultat){
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.navn(AVSENDER_NAVN)
-						.id(AVSENDER_ID_PERSON)
-						.build())
+				.avsenderMottaker(createAvsenderMottakerPersonIdIdType(avsenderMottakerId,avsenderMottakerIdType))
 				.build();
 		journalpost = createEnkelJournalpost(M, U);
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
 				.withMessageContaining(
-						"AvsendeMottaker Id kan ikke settes uten at idType også er satt."
+						resultat
 				);
 	}
 
@@ -734,9 +737,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 	private static Stream<Arguments> shouldThrowExceptionOnAvsenderMottakerUpdateMismatch() {
 		return Stream.of(
-				Arguments.of(AVSENDER_ID_PERSON, null, "Oppdatering av avsenderMottaker.id for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.idType er satt."),
-				Arguments.of(null, AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.id er satt."),
-				Arguments.of("", AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.id er satt.")
+				Arguments.of(AVSENDER_ID_PERSON, null, "Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt."),
+				Arguments.of(null, AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt."),
+				Arguments.of("", AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt.")
 		);
 	}
 
@@ -792,7 +795,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						fagsaksystem(PP01)
 						.build())
 				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
-				.avsenderMottaker(createAvsenderMottakerPerson())
+				.avsenderMottaker(createAvsenderMottakerPersonWithoutIdType())
 				.build();
 		journalpost = createEnkelJournalpost(J, I);
 

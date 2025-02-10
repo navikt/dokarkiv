@@ -107,6 +107,10 @@ public final class OppdaterJournalpostValidator {
 		if (request.getDokumenter() != null && !request.getDokumenter().isEmpty()) {
 			request.getDokumenter().forEach(dokumentInfo -> feilmeldinger.add(validateDokument(dokumentInfo)));
 		}
+		if (request.getAvsenderMottaker() != null &&
+				(request.getAvsenderMottaker().getId() != null || request.getAvsenderMottaker().getIdType() != null)) {
+			feilmeldinger.add(validateAvsenderMottakerId(request.getAvsenderMottaker()));
+		}
 
 		if (DIGITALE_KANALER.contains(journalpost.getMottakskanal()) && request.getAvsenderMottaker() != null) {
 			feilmeldinger.add(validateKanIkkeOppdatereAvsenderPaaDigitaltInnsendteDokumenter(request, journalpost));
@@ -138,9 +142,6 @@ public final class OppdaterJournalpostValidator {
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getSak(), "sak", journalpostStatus, journalpostType));
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet", journalpostStatus, journalpostType));
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "tema", journalpostStatus, journalpostType));
-			if (request.getAvsenderMottaker() != null) {
-				feilmeldinger.add(validateAvsenderMottakerInngaaende(request.getAvsenderMottaker()));
-			}
 			if (checkIfJournalChangeIsOld(journalpost)) {
 				if (request.getAvsenderMottaker() != null) {
 					feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getAvsenderMottaker().getId(), "avsenderMottaker.id", journalpost.getJournalDato()));
@@ -222,13 +223,13 @@ public final class OppdaterJournalpostValidator {
 		return null;
 	}
 
-	private static String validateAvsenderMottakerInngaaende(AvsenderMottaker avsenderMottaker) {
+	private static String validateAvsenderMottakerId(AvsenderMottaker avsenderMottaker) {
 		if (isEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() != null) {
-			return format("Oppdatering av avsenderMottaker.idType for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.id er satt. Mottatt id=%s idType=%s",
+			return format("Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt. Mottatt id=%s idType=%s",
 					avsenderMottaker.getId(),
 					avsenderMottaker.getIdType());
 		} else if (isNotEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() == null) {
-			return format("Oppdatering av avsenderMottaker.id for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.idType er satt. Mottatt id=%s idType=null",
+			return format("Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt. Mottatt id=%s idType=null",
 					masker(avsenderMottaker.getId()));
 		}
 		return null;
