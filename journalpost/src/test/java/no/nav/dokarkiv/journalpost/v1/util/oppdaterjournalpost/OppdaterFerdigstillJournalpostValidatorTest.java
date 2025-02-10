@@ -806,7 +806,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						"sak kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I",
 						"tema kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I",
 						"journalfoerendeEnhet kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I",
-						"Oppdatering av avsenderMottaker.id for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.idType er satt."
+						"Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt."
 				);
 	}
 
