@@ -32,6 +32,7 @@
   "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/teamdokumenthandtering",
   "SRV_LINUX": "/serviceuser/data/dev/srvssolinux",
   "DOKARKIV_DATABASE_POOLSIZE": "20",
+  "DOKARKIV_DATABASE_PARALLEL_HINT_SUPPORT": "false",
   "SPRINGDOC_ENABLED": "true",
   "AZURE_AD_ADMIN_ROLE": "9732f7dd-550f-4aba-b64a-e1db5428604b",
   "AZURE_IAC_RULES": [
