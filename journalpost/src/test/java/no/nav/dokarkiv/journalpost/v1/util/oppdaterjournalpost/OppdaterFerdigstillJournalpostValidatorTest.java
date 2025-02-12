@@ -14,7 +14,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
@@ -194,9 +193,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	}
 
 	@ParameterizedTest
-	@CsvSource({"true,false, Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt. Mottatt id=12345***** idType=null",
-			"false,true, Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt. Mottatt id=null idType=FNR"
-	})
+	@MethodSource
 	void shouldFailWhenAvsenderMottakerIdIsSetWithoutIdType(boolean avsenderMottakerId, boolean avsenderMottakerIdType, String resultat){
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPersonIdIdType(avsenderMottakerId,avsenderMottakerIdType))
@@ -209,7 +206,12 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						resultat
 				);
 	}
-
+	private static Stream<Arguments> shouldFailWhenAvsenderMottakerIdIsSetWithoutIdType() {
+		return Stream.of(
+				Arguments.of(true, false, "Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt. Mottatt id=12345***** idType=null"),
+				Arguments.of(false, true, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt. Mottatt id=null idType=FNR")
+		);
+	}
 
 	// Det skal ikke være lov til å oppdatere avsenderMottaker (id, navn) for utgående, ferdigstilte journalposter.
 	@ParameterizedTest
