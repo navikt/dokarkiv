@@ -57,7 +57,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPerson;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPersonIdIdType;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPersonWithoutIdType;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEnkelJournalpost;
@@ -194,9 +194,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 	@ParameterizedTest
 	@MethodSource
-	void shouldFailWhenAvsenderMottakerIdIsSetWithoutIdType(boolean avsenderMottakerId, boolean avsenderMottakerIdType, String resultat){
+	void shouldFailWhenAvsenderMottakerIdAndIdTypeIsWrong(String avsenderMottakerId, AvsenderMottakerIdType avsenderMottakerIdType, String resultat){
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(createAvsenderMottakerPersonIdIdType(avsenderMottakerId,avsenderMottakerIdType))
+				.avsenderMottaker(createAvsenderMottaker(avsenderMottakerId,avsenderMottakerIdType))
 				.build();
 		journalpost = createEnkelJournalpost(M, U);
 
@@ -206,12 +206,23 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						resultat
 				);
 	}
-	private static Stream<Arguments> shouldFailWhenAvsenderMottakerIdIsSetWithoutIdType() {
+	private static Stream<Arguments> shouldFailWhenAvsenderMottakerIdAndIdTypeIsWrong() {
 		return Stream.of(
-				Arguments.of(true, false, "Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt. Mottatt id=12345***** idType=null"),
-				Arguments.of(false, true, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt. Mottatt id=null idType=FNR")
+				Arguments.of(AVSENDER_ID_PERSON, null, "Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt. Mottatt id=12345***** idType=null"),
+				Arguments.of(null, AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt. Mottatt id=null idType=FNR"),
+				Arguments.of("1234567890", AvsenderMottakerIdType.FNR, "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR."),
+				Arguments.of("1234567890a", AvsenderMottakerIdType.FNR, "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR."),
+				Arguments.of("1234567891012", AvsenderMottakerIdType.FNR, "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR."),
+				Arguments.of("12345678", AvsenderMottakerIdType.ORGNR, "avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR."),
+				Arguments.of("12345678a", AvsenderMottakerIdType.ORGNR, "avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR."),
+				Arguments.of("12345678910", AvsenderMottakerIdType.ORGNR, "avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR."),
+				Arguments.of("123456", AvsenderMottakerIdType.HPRNR, "avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR."),
+				Arguments.of("123456a", AvsenderMottakerIdType.HPRNR, "avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR."),
+				Arguments.of("1234567891", AvsenderMottakerIdType.HPRNR, "avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR.")
 		);
 	}
+
+
 
 	// Det skal ikke være lov til å oppdatere avsenderMottaker (id, navn) for utgående, ferdigstilte journalposter.
 	@ParameterizedTest

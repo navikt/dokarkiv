@@ -431,15 +431,6 @@ public class TestUtils {
 				.build();
 	}
 
-	public static AvsenderMottaker createAvsenderMottakerPersonWithoutId() {
-		return AvsenderMottaker.builder()
-				.idType(AvsenderMottakerIdType.FNR)
-				.id(" ")
-				.navn(AVSENDER_NAVN)
-				.land(AVSENDER_MOTTAKER_LAND)
-				.build();
-	}
-
 	public static AvsenderMottaker createAvsenderMottakerPersonWithoutIdType() {
 		return AvsenderMottaker.builder()
 				.id(AVSENDER_ID_PERSON)
@@ -448,10 +439,10 @@ public class TestUtils {
 				.build();
 	}
 
-	public static AvsenderMottaker createAvsenderMottakerPersonIdIdType(boolean id, boolean idType) {
+	public static AvsenderMottaker createAvsenderMottaker(String id, AvsenderMottakerIdType idType) {
 		return AvsenderMottaker.builder()
-				.idType(idType ? AvsenderMottakerIdType.FNR : null)
-				.id(id ? AVSENDER_ID_PERSON : null)
+				.idType(idType)
+				.id(id)
 				.navn(AVSENDER_NAVN)
 				.land(AVSENDER_MOTTAKER_LAND)
 				.build();
