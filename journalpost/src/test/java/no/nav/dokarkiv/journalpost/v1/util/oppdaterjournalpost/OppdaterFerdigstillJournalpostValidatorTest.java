@@ -58,7 +58,6 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPerson;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPersonWithoutIdType;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEnkelJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
@@ -807,7 +806,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						fagsaksystem(PP01)
 						.build())
 				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
-				.avsenderMottaker(createAvsenderMottakerPersonWithoutIdType())
+				.avsenderMottaker(createAvsenderMottaker(AVSENDER_ID_PERSON, null))
 				.build();
 		journalpost = createEnkelJournalpost(J, I);
 

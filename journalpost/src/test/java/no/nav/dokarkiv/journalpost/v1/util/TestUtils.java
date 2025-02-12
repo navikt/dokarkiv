@@ -346,7 +346,7 @@ public class TestUtils {
 
 	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId() {
 		return OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(createAvsenderMottakerPersonWithEmptyId())
+				.avsenderMottaker(createAvsenderMottaker(" ", AvsenderMottakerIdType.FNR))
 				.bruker(createBrukerPerson())
 				.sak(createSak())
 				.tema(TEMA_FOR)
@@ -419,23 +419,6 @@ public class TestUtils {
 		return AvsenderMottaker.builder()
 				.id(AVSENDER_ID_PERSON)
 				.idType(AvsenderMottakerIdType.FNR)
-				.build();
-	}
-
-	public static AvsenderMottaker createAvsenderMottakerPersonWithEmptyId() {
-		return AvsenderMottaker.builder()
-				.idType(AvsenderMottakerIdType.FNR)
-				.id(" ")
-				.navn(AVSENDER_NAVN)
-				.land(AVSENDER_MOTTAKER_LAND)
-				.build();
-	}
-
-	public static AvsenderMottaker createAvsenderMottakerPersonWithoutIdType() {
-		return AvsenderMottaker.builder()
-				.id(AVSENDER_ID_PERSON)
-				.navn(AVSENDER_NAVN)
-				.land(AVSENDER_MOTTAKER_LAND)
 				.build();
 	}
 
