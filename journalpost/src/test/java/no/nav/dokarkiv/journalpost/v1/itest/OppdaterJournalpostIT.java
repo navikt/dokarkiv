@@ -1027,6 +1027,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isNull();
 		assertThat(journalpostOppdatert.getAvsenderMottakerIdType()).isNull();
 	}
+
 	@Test
 	public void shouldNotDeleteAvsenderMottaker() {
 		clearSakRepository();

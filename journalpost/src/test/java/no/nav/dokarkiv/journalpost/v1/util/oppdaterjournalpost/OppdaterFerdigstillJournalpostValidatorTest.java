@@ -543,7 +543,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().id("test999999").idType(ORGNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
-						.id("9999999999")
+						.id("99999999")
 						.idType(AvsenderMottakerIdType.HPRNR)
 						.build())
 				.build();
@@ -760,7 +760,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	private static Stream<Arguments> shouldValidateAvsenderMottakerWhenBothIdAndTypeIsSetOrNotSet() {
 		return Stream.of(
 				Arguments.of(AVSENDER_ID_PERSON, AvsenderMottakerIdType.FNR),
-				Arguments.of(AVSENDER_ID_ORGANISASJON, AvsenderMottakerIdType.FNR),
+				Arguments.of(AVSENDER_ID_ORGANISASJON, AvsenderMottakerIdType.ORGNR),
 				Arguments.of(" ", AvsenderMottakerIdType.FNR),
 				Arguments.of("", null),
 				Arguments.of(null, null)
