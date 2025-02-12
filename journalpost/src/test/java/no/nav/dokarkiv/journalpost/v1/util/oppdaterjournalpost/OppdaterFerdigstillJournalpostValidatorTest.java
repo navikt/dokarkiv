@@ -191,37 +191,6 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.withMessageContaining("sak.fagsakId");
 	}
 
-	@ParameterizedTest
-	@MethodSource
-	void shouldFailWhenAvsenderMottakerIdAndIdTypeIsWrong(String avsenderMottakerId, AvsenderMottakerIdType avsenderMottakerIdType, String resultat) {
-		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(createAvsenderMottaker(avsenderMottakerId, avsenderMottakerIdType))
-				.build();
-		journalpost = createEnkelJournalpost(M, U);
-
-		assertThatExceptionOfType(InputValideringFeiletException.class)
-				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
-				.withMessageContaining(
-						resultat
-				);
-	}
-
-	private static Stream<Arguments> shouldFailWhenAvsenderMottakerIdAndIdTypeIsWrong() {
-		return Stream.of(
-				Arguments.of(AVSENDER_ID_PERSON, null, "Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt. Mottatt id=12345***** idType=null"),
-				Arguments.of(null, AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt. Mottatt id=null idType=FNR"),
-				Arguments.of("1234567890", AvsenderMottakerIdType.FNR, "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR."),
-				Arguments.of("1234567890a", AvsenderMottakerIdType.FNR, "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR."),
-				Arguments.of("1234567891012", AvsenderMottakerIdType.FNR, "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR."),
-				Arguments.of("12345678", AvsenderMottakerIdType.ORGNR, "avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR."),
-				Arguments.of("12345678a", AvsenderMottakerIdType.ORGNR, "avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR."),
-				Arguments.of("12345678910", AvsenderMottakerIdType.ORGNR, "avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR."),
-				Arguments.of("123456", AvsenderMottakerIdType.HPRNR, "avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR."),
-				Arguments.of("123456a", AvsenderMottakerIdType.HPRNR, "avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR."),
-				Arguments.of("1234567891", AvsenderMottakerIdType.HPRNR, "avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR.")
-		);
-	}
-
 	// Det skal ikke være lov til å oppdatere avsenderMottaker (id, navn) for utgående, ferdigstilte journalposter.
 	@ParameterizedTest
 	@EnumSource(value = JournalStatusCode.class, names = {"FL", "FS", "E"})
@@ -732,25 +701,33 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 	@ParameterizedTest
 	@MethodSource
-	public void shouldThrowExceptionOnAvsenderMottakerUpdateMismatch(String id, AvsenderMottakerIdType idType, String feilmelding) {
+	void shouldFailWhenAvsenderMottakerIdAndIdTypeIsWrong(String avsenderMottakerId, AvsenderMottakerIdType avsenderMottakerIdType, String resultat) {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.id(id)
-						.idType(idType)
-						.build())
+				.avsenderMottaker(createAvsenderMottaker(avsenderMottakerId, avsenderMottakerIdType))
 				.build();
-		journalpost = createEnkelJournalpost(J, I);
+		journalpost = createEnkelJournalpost(M, U);
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
-				.withMessageContaining(feilmelding);
+				.withMessageContaining(
+						resultat
+				);
 	}
 
-	private static Stream<Arguments> shouldThrowExceptionOnAvsenderMottakerUpdateMismatch() {
+	private static Stream<Arguments> shouldFailWhenAvsenderMottakerIdAndIdTypeIsWrong() {
 		return Stream.of(
-				Arguments.of(AVSENDER_ID_PERSON, null, "Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt."),
-				Arguments.of(null, AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt."),
-				Arguments.of("", AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt.")
+				Arguments.of(AVSENDER_ID_PERSON, null, "Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt. Mottatt id=12345***** idType=null"),
+				Arguments.of(null, AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt. Mottatt id=null idType=FNR"),
+				Arguments.of("", AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt."),
+				Arguments.of("1234567890", AvsenderMottakerIdType.FNR, "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR."),
+				Arguments.of("1234567890a", AvsenderMottakerIdType.FNR, "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR."),
+				Arguments.of("1234567891012", AvsenderMottakerIdType.FNR, "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR."),
+				Arguments.of("12345678", AvsenderMottakerIdType.ORGNR, "avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR."),
+				Arguments.of("12345678a", AvsenderMottakerIdType.ORGNR, "avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR."),
+				Arguments.of("12345678910", AvsenderMottakerIdType.ORGNR, "avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR."),
+				Arguments.of("123456", AvsenderMottakerIdType.HPRNR, "avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR."),
+				Arguments.of("123456a", AvsenderMottakerIdType.HPRNR, "avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR."),
+				Arguments.of("1234567891", AvsenderMottakerIdType.HPRNR, "avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR.")
 		);
 	}
 
