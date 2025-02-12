@@ -56,8 +56,8 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.LOCAL_DATE_TIME;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottaker;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPersonWithoutIdType;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEnkelJournalpost;
@@ -194,9 +194,9 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 
 	@ParameterizedTest
 	@MethodSource
-	void shouldFailWhenAvsenderMottakerIdAndIdTypeIsWrong(String avsenderMottakerId, AvsenderMottakerIdType avsenderMottakerIdType, String resultat){
+	void shouldFailWhenAvsenderMottakerIdAndIdTypeIsWrong(String avsenderMottakerId, AvsenderMottakerIdType avsenderMottakerIdType, String resultat) {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(createAvsenderMottaker(avsenderMottakerId,avsenderMottakerIdType))
+				.avsenderMottaker(createAvsenderMottaker(avsenderMottakerId, avsenderMottakerIdType))
 				.build();
 		journalpost = createEnkelJournalpost(M, U);
 
@@ -206,6 +206,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						resultat
 				);
 	}
+
 	private static Stream<Arguments> shouldFailWhenAvsenderMottakerIdAndIdTypeIsWrong() {
 		return Stream.of(
 				Arguments.of(AVSENDER_ID_PERSON, null, "Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt. Mottatt id=12345***** idType=null"),
@@ -221,8 +222,6 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				Arguments.of("1234567891", AvsenderMottakerIdType.HPRNR, "avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR.")
 		);
 	}
-
-
 
 	// Det skal ikke være lov til å oppdatere avsenderMottaker (id, navn) for utgående, ferdigstilte journalposter.
 	@ParameterizedTest
