@@ -10,6 +10,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.copyOf;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDFA;
+import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.XLSX;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.valueOf;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ORIGINAL;
@@ -33,6 +35,7 @@ import static org.apache.cxf.common.util.CollectionUtils.isEmpty;
 public final class DokumentValidator {
 
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
+	private static final EnumSet<FilTypeCode> VARIANTFORMAT_ARKIV_GYLDIGE_FILTYPER = EnumSet.of(PDF, PDFA, XLSX);
 
 	private DokumentValidator() {
 	}
@@ -94,8 +97,8 @@ public final class DokumentValidator {
 
 	private static void validateOneVariantFormatPerDokument(String variantFormat, List<DokumentVariant> dokumentvarianter, Dokument dokument) {
 		if (dokumentvarianter.stream()
-					.filter(dokumentVariant -> dokumentVariant.getVariantformat().equals(variantFormat))
-					.count() != 1) {
+				.filter(dokumentVariant -> dokumentVariant.getVariantformat().equals(variantFormat))
+				.count() != 1) {
 			throw new InputValideringFeiletException(format("Alle dokumenter må innholde en dokumentvariant av typen %s. %s inneholder følgende varianter: %s",
 					variantFormat,
 					dokument.getTittel(),
@@ -155,9 +158,10 @@ public final class DokumentValidator {
 					variantFormat));
 		}
 
-		if (variantFormat.equals(ARKIV.name()) && !Arrays.asList(PDF, PDFA).contains(valueOf(dokumentVariant.getFiltype()))) {
-			throw new InputValideringFeiletException(format("%s.dokumentvarianter[].filtype må være PDF eller PDFA for variantformat=ARKIV. Mottatt filtype=%s",
+		if (variantFormat.equals(ARKIV.name()) && !VARIANTFORMAT_ARKIV_GYLDIGE_FILTYPER.contains(valueOf(dokumentVariant.getFiltype()))) {
+			throw new InputValideringFeiletException(format("%s.dokumentvarianter[].filtype må være %s for variantformat=ARKIV. Mottatt filtype=%s",
 					dokumentnummerPrefix(dokumentIdx),
+					prettyPrintList("eller", VARIANTFORMAT_ARKIV_GYLDIGE_FILTYPER.stream().map(FilTypeCode::name).toArray(String[]::new)),
 					dokumentVariant.getFiltype()));
 		}
 
@@ -179,5 +183,18 @@ public final class DokumentValidator {
 
 	private static String dokumentnummerPrefix(Integer dokumentIdx) {
 		return dokumentIdx == null ? "dokumenter[0]" : "dokumenter[%s]".formatted(dokumentIdx);
+	}
+
+	private static String prettyPrintList(String konjunksjon, String... list) {
+		if (list.length == 1) {
+			return list[0];
+		}
+
+		StringBuilder stringBuilder = new StringBuilder();
+		int length = list.length - 1;
+		for (int i = 0; i < length - 1; i++) {
+			stringBuilder.append(list[i]).append(", ");
+		}
+		return stringBuilder.append(list[length - 1]).append(" ").append(konjunksjon).append(" ").append(list[length]).toString();
 	}
 }
