@@ -214,7 +214,7 @@ class DokumentValidatorTest {
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = FilTypeCode.class, names = {"PDF", "PDFA"}, mode = EXCLUDE)
+	@EnumSource(value = FilTypeCode.class, names = {"PDF", "PDFA", "XLSX"}, mode = EXCLUDE)
 	void shouldThrowExceptionWhenFiltypeIsInvalidForARKIV(FilTypeCode filTypeCode) {
 		var dokument = dokumentBuilder
 				.dokumentvarianter(singletonList(DokumentVariant.builder()
@@ -225,7 +225,7 @@ class DokumentValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
-				.withMessage("dokumenter[0].dokumentvarianter[].filtype må være PDF eller PDFA for variantformat=ARKIV. Mottatt filtype=%s",
+				.withMessage("dokumenter[0].dokumentvarianter[].filtype må være PDF, PDFA eller XLSX for variantformat=ARKIV. Mottatt filtype=%s",
 						filTypeCode.name());
 	}
 
