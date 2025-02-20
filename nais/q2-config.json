@@ -67,6 +67,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "arbeid-og-inntekt-q4",
+      "namespace": "team-inntekt",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "altinn-meldinger-api",
       "namespace": "permittering-og-nedbemanning",
       "cluster": "dev-gcp"
