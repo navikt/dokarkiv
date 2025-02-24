@@ -22,7 +22,7 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 			and j.changeStamp.createdDate <= :tilOgMedDato
 			AND j.fagomrade = :fagomraade
 			""")
-	List<Journalpost> findUbehandledeJournalpostsForTema(@Param("tilOgMedDato") Date tilOgMedDato, @Param("fagomraade") FagomradeCode fagomrade);
+	List<Journalpost> findUbehandledeJournalpostsForTema(@Param("tilOgMedDato") Date tilOgMedDato, @Param("fagomraade") FagomradeCode fagomraade);
 
 	Optional<Journalpost> findByKanalReferanseId(String kanalReferanseId);
 

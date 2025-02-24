@@ -53,7 +53,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	@CsvSource(value = {
 			"UGYLDIG,Mottok ugyldig verd for tema. UGYLDIG er ikke en gyldig temakode",
 			",Mottok ugyldig verd for tema. null er ikke en gyldig temakode"})
-	public void shouldTest(String fagomraadeCode, String expectedExceptionMessage) {
+	public void shouldReturnBadRequestWhenUgyldigTema(String fagomraadeCode, String expectedExceptionMessage) {
 
 		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, SERVICE_USER_ID));
 
@@ -75,7 +75,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 				//Skal ikke returnere en journalpost som ble opprettet for 5 dager siden når det blir spurt om eldre enn 5 dager
 				createUbehandletJournalpost(FOR_NY_DATO, I, M, GEN)
 		);
-		commitAndStartNewTransaction();
+		saveJournalposts(journalposts);
 
 		FinnMottatteJournalposterResponse ubehandledeJournalposterResponse = doKallFinnMottatteJournalposterAndAssertOK(FINNMOTTATTEJOURNALPOSTER_PENSJON, DOKSIKKERHETSNETT);
 		assertThat(ubehandledeJournalposterResponse.getJournalposter().size(), is(0));
@@ -87,11 +87,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 				createUbehandletJournalpost(OPPRETTET_DATO, I, MO),
 				createUbehandletJournalpost(OPPRETTET_DATO, I, M)
 		);
-		commitAndStartNewTransaction();
-
-		List<Long> journalpostIds = journalposts.stream()
-				.map(this::saveJournalpost)
-				.map(Journalpost::getJournalpostId).toList();
+		List<Long> journalpostIds = saveJournalposts(journalposts);
 
 		FinnMottatteJournalposterResponse doksikkerhetsnettResponse = doKallFinnMottatteJournalposterAndAssertOK(FINNMOTTATTEJOURNALPOSTER_PENSJON, DOKSIKKERHETSNETT);
 		assertThat(doksikkerhetsnettResponse.getJournalposter().size(), is(journalpostIds.size()));
@@ -118,11 +114,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 				createUbehandletJournalpost(OPPRETTET_DATO, I, MO),
 				createUbehandletJournalpost(OPPRETTET_DATO, I, M)
 		);
-		commitAndStartNewTransaction();
-
-		List<Long> journalpostIds = journalposts.stream()
-				.map(this::saveJournalpost)
-				.map(Journalpost::getJournalpostId).toList();
+		List<Long> journalpostIds = saveJournalposts(journalposts);
 
 		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(APP_APPESEN, SERVICE_USER_ID));
 
@@ -131,6 +123,14 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		assertThat(response.getBody(), not(containsString("bruker")));
 		journalpostIds.forEach(jpId -> assertThat(response.getBody(), containsString("" + jpId)));
+	}
+
+	private List<Long> saveJournalposts(List<Journalpost> journalposts){
+		List<Long> journalpostIds = journalposts.stream()
+				.map(this::saveJournalpost)
+				.map(Journalpost::getJournalpostId).toList();
+		commitAndStartNewTransaction();
+		return journalpostIds;
 	}
 
 	private void validateBruker(UbehandletBruker ubehandletBruker) {
