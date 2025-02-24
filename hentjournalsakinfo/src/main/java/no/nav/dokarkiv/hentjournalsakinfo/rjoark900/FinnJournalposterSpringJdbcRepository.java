@@ -2,6 +2,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.hentjournalsakinfo.JournalpostFilter;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -32,13 +33,17 @@ class FinnJournalposterSpringJdbcRepository {
 	private static final String CTE_ALIAS_GSAKSAKER = "gsaksaker";
 	private static final String CTE_ALIAS_PSAKSAKER = "psaksaker";
 	private static final String CTE_ALIAS_MIDLERTIDIGE = "midlertidige";
-	private static final int ORACLE_PARALLELL = 150;
+	private static final int MIN_ANTALL_SAKER_ORACLE_PARALLEL = 150;
 	private final GsakCteMapper gsakCteMapper;
 	private final NamedParameterJdbcTemplate jdbcTemplate;
+	private final boolean parallelHintSupport;
 
-	public FinnJournalposterSpringJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+	public FinnJournalposterSpringJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate,
+												 DokarkivProperties dokarkivProperties) {
 		this.gsakCteMapper = new GsakCteMapper();
 		this.jdbcTemplate = jdbcTemplate;
+		this.parallelHintSupport = dokarkivProperties.getDatabase().isParallelHintSupport();
+		log.info("finnJournalposter jdbc parallelHintSupport={}", parallelHintSupport);
 	}
 
 	List<JournalpostDto> finnJournalposter(final List<String> gsakIds,
@@ -51,11 +56,15 @@ class FinnJournalposterSpringJdbcRepository {
 		if (cteAliases.isEmpty()) {
 			return new ArrayList<>();
 		}
-		boolean parallell = (gsakIds.size() > ORACLE_PARALLELL);
-		String finnJournalposterSql = finnJournalposterSql(journalpostFilter, cteAliases, gsakCte.getCteSql(), parallell);
+
+		String finnJournalposterSql = finnJournalposterSql(journalpostFilter, cteAliases, gsakCte.getCteSql(), brukParallelHint(gsakIds));
 		FinnJournalposterRowCallbackHandler finnJournalposterRowCallbackHandler = new FinnJournalposterRowCallbackHandler();
 		jdbcTemplate.query(finnJournalposterSql, namedParams, finnJournalposterRowCallbackHandler);
 		return finnJournalposterRowCallbackHandler.getJournalpostDtos();
+	}
+
+	private boolean brukParallelHint(List<String> gsakIds) {
+		return gsakIds.size() > MIN_ANTALL_SAKER_ORACLE_PARALLEL && parallelHintSupport;
 	}
 
 	private MapSqlParameterSource buildNamedParams(final List<String> psakIds, final JournalpostFilter journalpostFilter, final GsakCteMapper.GsakCte gsakCte) {

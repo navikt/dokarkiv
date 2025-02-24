@@ -803,7 +803,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("dokumenter[0].dokumentvarianter[].filtype må være PDF eller PDFA for variantformat=ARKIV");
+				.withMessageContaining("dokumenter[0].dokumentvarianter[].filtype må være PDF, PDFA eller XLSX for variantformat=ARKIV");
 	}
 
 	@Test

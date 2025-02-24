@@ -48,6 +48,10 @@ public class DokarkivProperties {
 		 */
 		@Positive
 		private int poolsize = 60;
+		/**
+		 * true hvis miljøet er konfigurert og har ressurser til å kjøre spørringer med Oracle PARALLEL hint
+		 */
+		private boolean parallelHintSupport;
 	}
 
 	@Data
