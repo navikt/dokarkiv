@@ -425,7 +425,8 @@
     {
       "app": "doksikkerhetsnett",
       "namespace": "teamdokumenthandtering",
-      "cluster": "prod-fss"
+      "cluster": "prod-fss",
+      "roles": ["finn_midlertidige_journalposter"]
     },
     {
       "app": "pensjon-dokdist",

@@ -1,22 +1,28 @@
 package no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 
 import java.util.Date;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 
-@Builder
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(value = NON_NULL)
 public class UbehandletJournalpost {
 
 	@Schema(
@@ -31,18 +37,19 @@ public class UbehandletJournalpost {
 			requiredMode = REQUIRED,
 			example = "M"
 	)
-	private String journalStatus;
+	private JournalStatusCode journalStatus;
 
 	@Schema(
 			description = "Mottakskanal til journalpost i Joark",
 			requiredMode = REQUIRED,
 			example = "NAV_NO"
 	)
-	private String mottaksKanal;
+	private MottaksKanalCode mottaksKanal;
 
 	@Schema(
-			description = "Bruker til journalpost i Joark"
+			description = "Bruker til journalpost i Joark. Returneres bare til interne tjenester i dokumentløsninger."
 	)
+	@Hidden
 	private UbehandletBruker bruker;
 
 	@Schema(
@@ -50,7 +57,7 @@ public class UbehandletJournalpost {
 			requiredMode = REQUIRED,
 			example = "PEN"
 	)
-	private String tema;
+	private FagomradeCode tema;
 
 	@Schema(
 			description = "Behandlingstema journalpost i Joark",

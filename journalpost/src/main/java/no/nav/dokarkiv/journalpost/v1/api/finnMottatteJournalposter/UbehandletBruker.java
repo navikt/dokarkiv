@@ -5,9 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 
-@Builder
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UbehandletBruker {
@@ -22,5 +23,5 @@ public class UbehandletBruker {
 			description = "Brukertype i Joark",
 			example = "PERSON"
 	)
-	private String type;
+	private BrukerTypeCode type;
 }

@@ -440,7 +440,8 @@
     {
       "app": "doksikkerhetsnett-q1",
       "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss"
+      "cluster": "dev-fss",
+      "roles": ["finn_midlertidige_journalposter"]
     },
     {
       "app": "esyfovarsel",

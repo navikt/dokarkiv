@@ -2,7 +2,6 @@ package no.nav.dokarkiv.core.util;
 
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
-import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
 import no.nav.dokarkiv.core.domain.builder.ChangeStampBuilder;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
@@ -22,7 +21,6 @@ import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -31,9 +29,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static java.lang.Long.parseLong;
+import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.PEN;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 
 /**
  * Class for generating test data for Joark repository tests
@@ -43,9 +43,9 @@ import static java.lang.Long.parseLong;
 public class TestDataUtils {
 
 	public static final FagsystemCode fagsystem = FagsystemCode.PEN;
-	private static final FagomradeCode fagomrade = FagomradeCode.PEN;
-	private static final BrukerTypeCode brukerType = BrukerTypeCode.PERSON;
-	private static final JournalStatusCode journalStatus = JournalStatusCode.J;
+	private static final FagomradeCode fagomrade = PEN;
+	private static final BrukerTypeCode brukerType = PERSON;
+	private static final JournalStatusCode journalStatus = J;
 	private static final String journalfEnhet = "test";
 	private static Boolean isFeilregistrert = null;
 	private static final JournalpostTypeCode journalpostType = JournalpostTypeCode.U;
@@ -63,7 +63,7 @@ public class TestDataUtils {
 	public static final String APPLICATION = "srvtestbruker";
 	public static final String AKSJON_FRA_VERDI = "Test1";
 	public static final String AKSJON_TIL_VERDI = "Test2";
-	public static final String AKSJON_ARKIVELEMENT= "Journalpost.journalpostId";
+	public static final String AKSJON_ARKIVELEMENT = "Journalpost.journalpostId";
 
 	public static final Long JOURNALPOST_ID = 1L;
 	public static final Long DOKUMENT_INFO_ID = 1L;
@@ -146,56 +146,6 @@ public class TestDataUtils {
 	}
 
 	public static Journalpost createJournalpost() {
-		return createJournalpost("123", Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()), JournalStatusCode.J, FagomradeCode.PEN).build();
+		return createJournalpost("123", Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()), J, PEN).build();
 	}
-
-	public static Journalpost createUbehandletJournalpost(
-			Date date,
-			JournalpostTypeCode journalpostTypeCode,
-			JournalStatusCode journalStatusCode
-	) {
-		return createUbehandletJournalpost(date, journalpostTypeCode, journalStatusCode, FagomradeCode.PEN);
-	}
-
-	public static Journalpost createUbehandletJournalpost(
-			Date date,
-			JournalpostTypeCode journalpostTypeCode,
-			JournalStatusCode journalStatusCode,
-			FagomradeCode fagomradeCode
-	) {
-
-		Map<String, String> tilleggsopplysninger = new HashMap<>();
-		tilleggsopplysninger.put("key", "value");
-
-		Journalpost journalpost = Journalpost
-				.builder()
-				.opprettetAvNavn("test")
-				.journalposttype(journalpostTypeCode)
-				.journalstatus(journalStatusCode)
-				.journalForendeEnhetId("test")
-				.journalDato(date)
-				.kanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID())
-				.endretAvNavn("test")
-				.fagomrade(fagomradeCode)
-				.mottakskanal(MottaksKanalCode.NAV_NO)
-				.behandlingstema("ab0001")
-				.tilleggsopplysninger(tilleggsopplysninger)
-				.build();
-
-		Saksrelasjon saksrelasjon = Saksrelasjon
-				.builder()
-				.sakId(1L)
-				.fagsystem(FagsystemCode.PEN)
-				.feilregistrert(false)
-				.journalpost(journalpost)
-				.build();
-		saksrelasjon.setOpprettetKildeNavn("test");
-
-		journalpost.setSaksrelasjon(saksrelasjon);
-		journalpost.setOpprettetKildeNavn("itest");
-		journalpost.setChangeStamp(new ChangeStamp("createdBy", date, "String updatedBy", date));
-
-		return journalpost;
-	}
-
 }

@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.util;
 
+import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -11,7 +12,6 @@ import no.nav.dokarkiv.core.domain.codes.Innsyn;
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
@@ -37,12 +37,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.lang.Long.parseLong;
+import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
+import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.PEN;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_ONSKE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_INNSKRENKET_PARTSINNSYN;
+import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_KASSERT;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
@@ -111,7 +115,7 @@ public class TestDataGenerator {
 				.innhold(INNHOLD)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.fagomrade(FagomradeCode.RPO)
-				.mottakskanal(MottaksKanalCode.NAV_NO)
+				.mottakskanal(NAV_NO)
 				.antallRetur(ANTALL_RETUR)
 				.kanalReferanseId(KANAL_REFERANSE_ID)
 				.innsyn(BRUK_STANDARDREGLER)
@@ -132,6 +136,63 @@ public class TestDataGenerator {
 		return journalpost;
 	}
 
+	public static Journalpost createUbehandletJournalpost(
+			Date date,
+			JournalpostTypeCode journalpostTypeCode,
+			JournalStatusCode journalStatusCode
+	) {
+		return createUbehandletJournalpost(date, journalpostTypeCode, journalStatusCode, PEN);
+	}
+
+
+	public static Journalpost createUbehandletJournalpost(
+			Date date,
+			JournalpostTypeCode journalpostTypeCode,
+			JournalStatusCode journalStatusCode,
+			FagomradeCode fagomradeCode
+	) {
+
+		Map<String, String> tilleggsopplysninger = new HashMap<>();
+		tilleggsopplysninger.put("key", "value");
+
+		Journalpost journalpost = Journalpost
+				.builder()
+				.opprettetAvNavn(OPPRETTET_AV_NAVN)
+				.journalposttype(journalpostTypeCode)
+				.journalstatus(journalStatusCode)
+				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
+				.journalDato(date)
+				.kanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID())
+				.endretAvNavn(ENDRET_AV_NAVN)
+				.fagomrade(fagomradeCode)
+				.mottakskanal(NAV_NO)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tilleggsopplysninger(tilleggsopplysninger)
+				.build();
+
+		Bruker bruker = Bruker.builder()
+				.brukerType(PERSON)
+				.brukerId(BRUKER_ID)
+				.build();
+		bruker.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+
+		Saksrelasjon saksrelasjon = Saksrelasjon
+				.builder()
+				.sakId(1L)
+				.fagsystem(FagsystemCode.PEN)
+				.feilregistrert(false)
+				.journalpost(journalpost)
+				.build();
+		saksrelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+
+		journalpost.addBruker(bruker);
+		journalpost.setSaksrelasjon(saksrelasjon);
+		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		journalpost.setChangeStamp(new ChangeStamp("createdBy", date, "String updatedBy", date));
+
+		return journalpost;
+	}
+
 
 	public static Journalpost createJournalpostWithSplittetHoveddokument(Journalpost journalpostOriginal) {
 		Journalpost journalpost = Journalpost.builder()
@@ -142,7 +203,7 @@ public class TestDataGenerator {
 				.journalposttype(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.fagomrade(FagomradeCode.RPO)
-				.mottakskanal(MottaksKanalCode.NAV_NO)
+				.mottakskanal(NAV_NO)
 				.innsyn(SKJULES_BRUKERS_ONSKE)
 				.build();
 
@@ -165,7 +226,7 @@ public class TestDataGenerator {
 				.journalposttype(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.fagomrade(FagomradeCode.RPO)
-				.mottakskanal(MottaksKanalCode.NAV_NO)
+				.mottakskanal(NAV_NO)
 				.innsyn(SKJULES_INNSKRENKET_PARTSINNSYN)
 				.build();
 
