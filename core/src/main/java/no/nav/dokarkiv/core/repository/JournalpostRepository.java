@@ -12,8 +12,6 @@ import java.util.Optional;
 
 public interface JournalpostRepository extends HibernateRepository<Journalpost>, BaseJpaRepository<Journalpost, Long> {
 
-	//Ønsker å endre datoen 2020-01-01 til en fleksibel dato for å begrense hvor mye data som må søkes gjennom.
-	//Må grave litt i Joark for å finne ut når de eldste journalpostene i status M/MO stammer fra
 	@Query(value = """
 			select j from Journalpost j
 			where j.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I

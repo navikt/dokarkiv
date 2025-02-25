@@ -64,6 +64,15 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shouldReturnBadRequestForInvalidAntallDager(){
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, SERVICE_USER_ID));
+
+		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_BASE_PATH + "PEN/TEST"), GET, requestEntity, String.class);
+		//Automatisk bad request fra Spring da den forventer int i pathen
+		assertThat(response.getStatusCode(), is(BAD_REQUEST));
+	}
+
+	@Test
 	public void shouldNotReturnAnyJournalposts() {
 		List<Journalpost> journalposts = List.of(
 				//Skal ikke returnere Utgående journalpost

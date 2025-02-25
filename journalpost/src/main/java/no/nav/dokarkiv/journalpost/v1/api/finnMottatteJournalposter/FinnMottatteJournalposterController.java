@@ -26,7 +26,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnM
 
 @Slf4j
 @RestController
-@RequestMapping("/rest/journalpostapi/v1")
+@RequestMapping("/rest/journalpostapi/v1/finnMottatteJournalposter")
 @Tag(name = "journalpostapi", description = "Tjenester mot journalpost")
 @ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE})
 public class FinnMottatteJournalposterController {
@@ -44,15 +44,13 @@ public class FinnMottatteJournalposterController {
 	@ResponseBody
 	@Transactional(readOnly = true)
 	@SwaggerFinnMottatteJournalposterMedTemaEldreEnn
-	@GetMapping(value = "/finnMottatteJournalposter/{tema}/{dagerGamle}")
+	@GetMapping(value = "/{tema}/{dagerGamle}")
 	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposterMedTemaEldreEnn(
 			@PathVariable("tema") String tema,
 			@PathVariable("dagerGamle") int dagerGamle) {
 
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
 		FagomradeCode fagomraade = validateTema(tema);
-		//TODO: Ser på validering av dagerGamle også. SOm det er i dag er det en limit på databasespørringen som gjør at vi max ser tilbake til 01-01 2020, men tenker denne burde endres til i dag -1/2 år.
-		//TODO: Valideringen kommer etter dette, men den er på vei.
 
 		try {
 			log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter med tema blant={}", fagomraade);
