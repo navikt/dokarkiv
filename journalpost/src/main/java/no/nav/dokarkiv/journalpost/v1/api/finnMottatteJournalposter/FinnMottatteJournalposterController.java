@@ -40,7 +40,6 @@ public class FinnMottatteJournalposterController {
 		this.finnMottatteJournalposterService = finnMottatteJournalposterService;
 	}
 
-	@Protected
 	@ResponseBody
 	@Transactional(readOnly = true)
 	@SwaggerFinnMottatteJournalposterMedTemaEldreEnn

@@ -7,6 +7,7 @@ import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletJo
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 
@@ -38,9 +39,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
+	private static String FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE = "finn_midlertidige_journalposter";
 	private static final int ANTALL_DAGER = 5;
 	private static final String FINNMOTTATTEJOURNALPOSTER_BASE_PATH = "finnMottatteJournalposter/";
 	private static final String FINNMOTTATTEJOURNALPOSTER_PENSJON = FINNMOTTATTEJOURNALPOSTER_BASE_PATH + "PEN/" + ANTALL_DAGER;
@@ -55,7 +58,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 			",Mottok ugyldig verd for tema. null er ikke en gyldig temakode"})
 	public void shouldReturnBadRequestWhenUgyldigTema(String fagomraadeCode, String expectedExceptionMessage) {
 
-		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, SERVICE_USER_ID));
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
 
 		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_BASE_PATH + fagomraadeCode + "/" + ANTALL_DAGER), GET, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(BAD_REQUEST));
@@ -63,9 +66,18 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = {" ","BAD_ROLE"})
+	public void shouldReturnUnauthorizedWhenWrongRole(String role){
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, role));
+
+		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_BASE_PATH + "PEN/TEST"), GET, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(UNAUTHORIZED));
+	}
+
 	@Test
 	public void shouldReturnBadRequestForInvalidAntallDager(){
-		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, SERVICE_USER_ID));
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
 
 		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_BASE_PATH + "PEN/TEST"), GET, requestEntity, String.class);
 		//Automatisk bad request fra Spring da den forventer int i pathen
@@ -125,7 +137,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		);
 		List<Long> journalpostIds = saveJournalposts(journalposts);
 
-		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(APP_APPESEN, SERVICE_USER_ID));
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(APP_APPESEN, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
 
 		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_PENSJON), GET, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(OK));
@@ -157,7 +169,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	private FinnMottatteJournalposterResponse doKallFinnMottatteJournalposterAndAssertOK(String url, String app) {
-		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(app, SERVICE_USER_ID));
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(app, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
 
 		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(apiPath(url), GET, requestEntity, FinnMottatteJournalposterResponse.class);
 		assertThat(response.getStatusCode(), is(OK));
