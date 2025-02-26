@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -49,8 +50,8 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	private static final String FINNMOTTATTEJOURNALPOSTER_PENSJON = FINNMOTTATTEJOURNALPOSTER_BASE_PATH + "PEN/" + ANTALL_DAGER;
 	private static final String DOKSIKKERHETSNETT = "test-miljo:teamdokumenthandtering:doksikkerhetsnett";
 	private static final String APP_APPESEN = "test-miljo:annetteam:skummelapp";
-	private static final Date OPPRETTET_DATO = Date.from(LocalDate.now().minusDays(ANTALL_DAGER + 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-	private static final Date FOR_NY_DATO = Date.from(LocalDate.now().minusDays(ANTALL_DAGER).atStartOfDay(ZoneId.systemDefault()).toInstant());
+	private static final Date OPPRETTET_DATO = Date.from(ZonedDateTime.now().minusDays(ANTALL_DAGER).minusMinutes(10).toInstant());
+	private static final Date FOR_NY_DATO = Date.from(ZonedDateTime.now().minusDays(ANTALL_DAGER).plusMinutes(10).toInstant());
 
 	@ParameterizedTest
 	@CsvSource(value = {
@@ -94,7 +95,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 				//Skal ikke returnere tema GEN når det blir spurt på PEN
 				createUbehandletJournalpost(OPPRETTET_DATO, I, M, GEN),
 				//Skal ikke returnere en journalpost som ble opprettet for 5 dager siden når det blir spurt om eldre enn 5 dager
-				createUbehandletJournalpost(FOR_NY_DATO, I, M, GEN)
+				createUbehandletJournalpost(FOR_NY_DATO, I, M, PEN)
 		);
 		saveJournalposts(journalposts);
 

@@ -6,6 +6,8 @@ import no.nav.dokarkiv.core.repository.projections.IdAndFagomradeHolder;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +22,7 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 			and j.changeStamp.createdDate <= :tilOgMedDato
 			AND j.fagomrade = :fagomraade
 			""")
-	List<Journalpost> findUbehandledeJournalpostsForTema(@Param("tilOgMedDato") Date tilOgMedDato, @Param("fagomraade") FagomradeCode fagomraade);
+	List<Journalpost> findUbehandledeJournalpostsForTema(@Param("tilOgMedDato") LocalDateTime tilOgMedDato, @Param("fagomraade") FagomradeCode fagomraade);
 
 	Optional<Journalpost> findByKanalReferanseId(String kanalReferanseId);
 

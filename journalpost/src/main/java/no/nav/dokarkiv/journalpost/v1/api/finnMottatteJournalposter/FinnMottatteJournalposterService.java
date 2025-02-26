@@ -34,7 +34,7 @@ public class FinnMottatteJournalposterService {
 		try {
 			List<Journalpost> ubehandledeJournalposter = journalpostRepository
 					.findUbehandledeJournalpostsForTema(
-							Date.from(LocalDateTime.now().minusDays(eldreEnn).atZone(ZoneId.of("Europe/Oslo")).toInstant()),
+							LocalDateTime.now().minusDays(eldreEnn),
 							fagomraade);
 			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(jp -> createResponseObject(jp, collectBruker)).collect(Collectors.toList()));
 		} catch (DataAccessException e) {
