@@ -89,7 +89,7 @@ public class FinnMottatteJournalposterController {
 	}
 
 	private void validateDagerGamle(int dagerGamle) {
-		long antallDagerSidenJanuar2020 = Duration.between(Instant.now(), JANUARY_1_2020.toInstant()).toDaysPart();
+		long antallDagerSidenJanuar2020 = Duration.between(JANUARY_1_2020.toInstant(), Instant.now()).toDaysPart();
 		if (dagerGamle < 0 || dagerGamle > antallDagerSidenJanuar2020) {
 			throw new InputValideringFeiletException(format("dagerGamle har ugyldig veri: %s. Finnmottattejournalposter kan ikke hente journalposter fra fremtiden eller fra før 01.01.2020", "" + dagerGamle));
 		}
