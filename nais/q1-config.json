@@ -409,6 +409,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "dp-ruting",
+      "namespace": "teamdagpenger",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "bidrag-dokument-arkiv-feature",
       "namespace": "bidrag",
       "cluster": "dev-fss"
