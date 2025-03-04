@@ -196,6 +196,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(apiPath(MOTTATTEJOURNALPOSTER_QUERY, FINNMOTTATTEJOURNALPOSTER_PATH), GET, requestEntity, FinnMottatteJournalposterResponse.class);
 		assertThat(response.getStatusCode(), is(OK));
-		return response.getBody().getMottattJournalpost();
+		return response.getBody().getJournalposter();
 	}
 }
