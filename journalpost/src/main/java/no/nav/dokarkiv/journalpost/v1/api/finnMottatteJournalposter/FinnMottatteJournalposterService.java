@@ -2,22 +2,18 @@ package no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.KanIkkeHenteMottatteJournalposterException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
-import org.springframework.dao.DataAccessException;
+import no.nav.dokarkiv.core.repository.projections.MottattBrukerProjection;
+import no.nav.dokarkiv.core.repository.projections.MottattJournalpostProjection;
+import no.nav.dokarkiv.core.repository.projections.MottattJournalpostProjectionMedBruker;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import static java.lang.String.format;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
-import static org.slf4j.MDC.get;
 
 
 @Service
@@ -30,38 +26,50 @@ public class FinnMottatteJournalposterService {
 		this.journalpostRepository = journalpostRepository;
 	}
 
-	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedTemaEldreEnn(FagomradeCode fagomraade, int eldreEnn, boolean collectBruker) throws KanIkkeHenteMottatteJournalposterException {
-		try {
-			List<Journalpost> ubehandledeJournalposter = journalpostRepository
-					.findUbehandledeJournalpostsForTema(
-							LocalDateTime.now().minusDays(eldreEnn),
-							fagomraade);
-			return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(jp -> createResponseObject(jp, collectBruker)).collect(Collectors.toList()));
-		} catch (DataAccessException e) {
-			throw new KanIkkeHenteMottatteJournalposterException(format("%s finnMottatteJournalposterMedTemaEldreEnn fikk DataAccessException ved kall mot journalpostRepository.", get(MDC_REQUEST_ID)));
-		}
+	@Transactional(readOnly = true)
+	public FinnMottatteJournalposterResponse finnMottatteJournalposterUtenBrukerMedTemaEldreEnn(FagomradeCode fagomraade, int eldreEnn) throws KanIkkeHenteMottatteJournalposterException {
+		Set<MottattJournalpostProjection> ubehandledeJournalposter = journalpostRepository
+				.findMottattJournalpostsForTemaUtenBruker(
+						LocalDateTime.now().minusDays(eldreEnn),
+						fagomraade);
+
+		return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::mapUbehandletJournalpost).collect(Collectors.toSet()));
 	}
 
-	private UbehandletJournalpost createResponseObject(Journalpost journalpost, boolean collectBruker) throws KanIkkeHenteMottatteJournalposterException {
-		UbehandletBruker ubehandletBruker = null;
-		Date datoOpprettet = journalpost.getChangeStamp() != null ? journalpost.getChangeStamp().getCreatedDate() : null;
+	@Transactional(readOnly = true)
+	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedBrukerMedTemaEldreEnn(FagomradeCode fagomraade, int eldreEnn) throws KanIkkeHenteMottatteJournalposterException {
+		Set<MottattJournalpostProjectionMedBruker> ubehandledeJournalposter = journalpostRepository
+				.findMottattJournalpostsForTemaMedBruker(
+						LocalDateTime.now().minusDays(eldreEnn),
+						fagomraade);
+		return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::mapUbehandletJournalpostMedBruker).collect(Collectors.toSet()));
 
-		if (collectBruker) {
-			ubehandletBruker = journalpost.getBrukere()
-					.stream()
-					.max(Comparator.comparing(o -> o.getChangeStamp().getCreatedDate()))
-					.map(e -> new UbehandletBruker(e.getBrukerId(), e.getBrukerType()))
-					.orElse(null);
-		}
+	}
 
-		return UbehandletJournalpost.builder()
+	private MottattJournalpost mapUbehandletJournalpostMedBruker(MottattJournalpostProjectionMedBruker journalpostMedBruker) {
+		MottattJournalpost.MottattJournalpostBuilder builder = mapUbehandletJournalpostBuilder(journalpostMedBruker);
+		MottattJournalpostBruker mottattJournalpostBruker = journalpostMedBruker.getBrukere()
+				.stream()
+				.max(Comparator.comparing(MottattBrukerProjection::getDatoOpprettet))
+				.map(e -> new MottattJournalpostBruker(e.getBrukerId(), e.getBrukerType()))
+				.orElse(null);
+
+		return builder.bruker(mottattJournalpostBruker).build();
+	}
+
+	private MottattJournalpost mapUbehandletJournalpost(MottattJournalpostProjection journalpost) {
+		return mapUbehandletJournalpostBuilder(journalpost).build();
+	}
+
+	private MottattJournalpost.MottattJournalpostBuilder mapUbehandletJournalpostBuilder(MottattJournalpostProjection journalpost) {
+		return MottattJournalpost.builder()
 				.journalpostId(journalpost.getJournalpostId())
 				.journalStatus(journalpost.getJournalstatus())
 				.mottaksKanal(journalpost.getMottakskanal())
-				.bruker(ubehandletBruker)
 				.tema(journalpost.getFagomrade())
 				.behandlingstema(journalpost.getBehandlingstema())
 				.journalforendeEnhet(journalpost.getJournalForendeEnhetId())
-				.datoOpprettet(datoOpprettet).build();
+				.datoOpprettet(journalpost.getDatoOpprettet());
 	}
+
 }

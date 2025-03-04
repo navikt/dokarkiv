@@ -3,26 +3,40 @@ package no.nav.dokarkiv.core.repository;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.projections.IdAndFagomradeHolder;
+import no.nav.dokarkiv.core.repository.projections.MottattJournalpostProjection;
+import no.nav.dokarkiv.core.repository.projections.MottattJournalpostProjectionMedBruker;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface JournalpostRepository extends HibernateRepository<Journalpost>, BaseJpaRepository<Journalpost, Long> {
 
 	@Query(value = """
-			select j from Journalpost j
-			where j.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I
-			and j.journalstatus in (no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M, no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO)
-			and j.changeStamp.createdDate >= {d '2020-01-01'}
-			and j.changeStamp.createdDate <= :tilOgMedDato
-			AND j.fagomrade = :fagomraade
+			select jp
+			from Journalpost jp
+			where jp.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I
+			and jp.journalstatus in (no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M, no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO)
+			and jp.changeStamp.createdDate >= {d '2020-01-01'}
+			and jp.changeStamp.createdDate <= :tilOgMedDato
+			and jp.fagomrade = :fagomraade
 			""")
-	List<Journalpost> findUbehandledeJournalpostsForTema(@Param("tilOgMedDato") LocalDateTime tilOgMedDato, @Param("fagomraade") FagomradeCode fagomraade);
+	Set<MottattJournalpostProjection> findMottattJournalpostsForTemaUtenBruker(@Param("tilOgMedDato") LocalDateTime tilOgMedDato, @Param("fagomraade") FagomradeCode fagomraade);
+
+	@Query(value = """
+			select jp
+			from Journalpost jp
+			join fetch jp.brukere
+			where jp.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I
+			and jp.journalstatus in (no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M, no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO)
+			and jp.changeStamp.createdDate >= {d '2020-01-01'}
+			and jp.changeStamp.createdDate <= :tilOgMedDato
+			and jp.fagomrade = :fagomraade
+			""")
+	Set<MottattJournalpostProjectionMedBruker> findMottattJournalpostsForTemaMedBruker(@Param("tilOgMedDato") LocalDateTime tilOgMedDato, @Param("fagomraade") FagomradeCode fagomraade);
 
 	Optional<Journalpost> findByKanalReferanseId(String kanalReferanseId);
 

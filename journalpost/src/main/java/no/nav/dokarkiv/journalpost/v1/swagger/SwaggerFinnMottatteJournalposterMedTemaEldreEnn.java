@@ -16,7 +16,8 @@ import java.lang.annotation.Target;
 @Documented
 @Operation(
 		summary = """
-				Finner ubehandlede journalposter som er eldre enn "eldreEnn" dager med tema lik input
+				Finner mottatte journalposter som er eldre enn "dagerGamle" dager med tema lik input.
+				Returnerer ikke journalposter opprettet før 01.01.2020
 				"""
 )
 @ApiResponses(value = {

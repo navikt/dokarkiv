@@ -2,20 +2,25 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
-import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletBruker;
-import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.UbehandletJournalpost;
+import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.MottattJournalpostBruker;
+import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.MottattJournalpost;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.net.URI;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.GEN;
@@ -44,27 +49,40 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
-	private static String FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE = "finn_midlertidige_journalposter";
+	private static final String FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE = "finn_midlertidige_journalposter";
 	private static final int ANTALL_DAGER = 5;
-	private static final String FINNMOTTATTEJOURNALPOSTER_BASE_PATH = "finnMottatteJournalposter/";
-	private static final String FINNMOTTATTEJOURNALPOSTER_PENSJON = FINNMOTTATTEJOURNALPOSTER_BASE_PATH + "PEN/" + ANTALL_DAGER;
+	private static final String FINNMOTTATTEJOURNALPOSTER_PATH = "/finnMottatteJournalposter";
 	private static final String DOKSIKKERHETSNETT = "test-miljo:teamdokumenthandtering:doksikkerhetsnett";
 	private static final String APP_APPESEN = "test-miljo:annetteam:skummelapp";
 	private static final Date OPPRETTET_DATO = Date.from(ZonedDateTime.now().minusDays(ANTALL_DAGER).minusMinutes(10).toInstant());
 	private static final Date FOR_NY_DATO = Date.from(ZonedDateTime.now().minusDays(ANTALL_DAGER).plusMinutes(10).toInstant());
 
+	private static final Map<String, List<String>> MOTTATTEJOURNALPOSTER_QUERY = Map.of("tema", List.of("PEN"), "dagerGamle", List.of("5"));
+
 	@ParameterizedTest
 	@CsvSource(value = {
 			"UGYLDIG,Mottok ugyldig verd for tema. UGYLDIG er ikke en gyldig temakode",
-			",Mottok ugyldig verd for tema. null er ikke en gyldig temakode"})
+			",Mottok ugyldig verd for tema. Tema var null eller tom"})
 	public void shouldReturnBadRequestWhenUgyldigTema(String fagomraadeCode, String expectedExceptionMessage) {
 
 		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
 
-		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_BASE_PATH + fagomraadeCode + "/" + ANTALL_DAGER), GET, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(createUri(fagomraadeCode, 5), GET, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(BAD_REQUEST));
 		assertThat(response.getBody(), containsString(expectedExceptionMessage));
+	}
 
+	@ParameterizedTest
+	@CsvSource(value = {
+			"-1,dagerGamle har ugyldig veri: -1. Finnmottattejournalposter kan ikke hente journalposter fra fremtiden eller fra før 01.01.2020",
+			"2000,dagerGamle har ugyldig veri: 2000. Finnmottattejournalposter kan ikke hente journalposter fra fremtiden eller fra før 01.01.2020"})
+	public void shouldReturnBadRequestWhenUgyldigTema(int dagerGamle, String expectedExceptionMessage) {
+
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
+
+		ResponseEntity<String> response = restTemplate.exchange(createUri(PEN.name(), dagerGamle), GET, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(BAD_REQUEST));
+		assertThat(response.getBody(), containsString(expectedExceptionMessage));
 	}
 
 	@ParameterizedTest
@@ -72,16 +90,15 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	public void shouldReturnUnauthorizedWhenWrongRole(String role){
 		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, role));
 
-		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_BASE_PATH + "PEN/TEST"), GET, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_PATH), GET, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(UNAUTHORIZED));
 	}
 
 	@Test
-	public void shouldReturnBadRequestForInvalidAntallDager(){
+	public void shouldReturnBadRequestForMissingQueryParams(){
 		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
 
-		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_BASE_PATH + "PEN/TEST"), GET, requestEntity, String.class);
-		//Automatisk bad request fra Spring da den forventer int i pathen
+		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_PATH), GET, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(BAD_REQUEST));
 	}
 
@@ -99,8 +116,8 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		);
 		saveJournalposts(journalposts);
 
-		FinnMottatteJournalposterResponse ubehandledeJournalposterResponse = doKallFinnMottatteJournalposterAndAssertOK(FINNMOTTATTEJOURNALPOSTER_PENSJON, DOKSIKKERHETSNETT);
-		assertThat(ubehandledeJournalposterResponse.getJournalposter().size(), is(0));
+		Set<MottattJournalpost> mottatteJournalposterResponse = doKallFinnMottatteJournalposterAndAssertOK(DOKSIKKERHETSNETT);
+		assertThat(mottatteJournalposterResponse.size(), is(0));
 	}
 
 	@Test
@@ -111,22 +128,21 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		);
 		List<Long> journalpostIds = saveJournalposts(journalposts);
 
-		FinnMottatteJournalposterResponse doksikkerhetsnettResponse = doKallFinnMottatteJournalposterAndAssertOK(FINNMOTTATTEJOURNALPOSTER_PENSJON, DOKSIKKERHETSNETT);
-		assertThat(doksikkerhetsnettResponse.getJournalposter().size(), is(journalpostIds.size()));
-		assertTrue(doksikkerhetsnettResponse.getJournalposter().stream().map(UbehandletJournalpost::getJournalpostId).toList().containsAll(journalpostIds));
-		doksikkerhetsnettResponse.getJournalposter().forEach(jp -> {
-			validateUbehandletJournalpost(jp);
-			//Bruker returneres bare for doksikkerhetsnett
-			validateBruker(jp.getBruker());
-		});
-
-		FinnMottatteJournalposterResponse fagsystemResponse = doKallFinnMottatteJournalposterAndAssertOK(FINNMOTTATTEJOURNALPOSTER_PENSJON, APP_APPESEN);
-		assertThat(fagsystemResponse.getJournalposter().size(), is(journalpostIds.size()));
-		assertTrue(fagsystemResponse.getJournalposter().stream().map(UbehandletJournalpost::getJournalpostId).toList().containsAll(journalpostIds));
-		fagsystemResponse.getJournalposter().forEach(jp -> {
+		Set<MottattJournalpost> fagsystemJournalposter = doKallFinnMottatteJournalposterAndAssertOK(APP_APPESEN);
+		assertThat(fagsystemJournalposter.size(), is(journalpostIds.size()));
+		assertTrue(fagsystemJournalposter.stream().map(MottattJournalpost::getJournalpostId).toList().containsAll(journalpostIds));
+		fagsystemJournalposter.forEach(jp -> {
 			validateUbehandletJournalpost(jp);
 			//Bruker returneres bare for doksikkerhetsnett
 			assertThat(jp.getBruker(), is(nullValue()));
+		});
+
+		Set<MottattJournalpost> doksikkerhetsnettJournalposter = doKallFinnMottatteJournalposterAndAssertOK(DOKSIKKERHETSNETT);
+		assertThat(doksikkerhetsnettJournalposter.size(), is(journalpostIds.size()));
+		assertTrue(doksikkerhetsnettJournalposter.stream().map(MottattJournalpost::getJournalpostId).toList().containsAll(journalpostIds));
+		doksikkerhetsnettJournalposter.forEach(jp -> {
+			validateUbehandletJournalpost(jp);
+			validateBruker(jp.getBruker());
 		});
 	}
 
@@ -140,11 +156,17 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(APP_APPESEN, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
 
-		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_PENSJON), GET, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiPath(MOTTATTEJOURNALPOSTER_QUERY, FINNMOTTATTEJOURNALPOSTER_PATH), GET, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(OK));
 
 		assertThat(response.getBody(), not(containsString("bruker")));
 		journalpostIds.forEach(jpId -> assertThat(response.getBody(), containsString("" + jpId)));
+	}
+
+	private URI createUri(String fagomraadeCode, Integer dagerGamle){
+		return  UriComponentsBuilder.fromPath(apiMottatteJournalposterfoPath())
+				.queryParam("tema", fagomraadeCode)
+				.queryParam("dagerGamle", dagerGamle).build().toUri();
 	}
 
 	private List<Long> saveJournalposts(List<Journalpost> journalposts){
@@ -155,25 +177,25 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		return journalpostIds;
 	}
 
-	private void validateBruker(UbehandletBruker ubehandletBruker) {
-		assertThat(ubehandletBruker.getType(), is(PERSON));
-		assertThat(ubehandletBruker.getId(), is(BRUKER_ID));
+	private void validateBruker(MottattJournalpostBruker mottattJournalpostBruker) {
+		assertThat(mottattJournalpostBruker.getType(), is(PERSON.name()));
+		assertThat(mottattJournalpostBruker.getId(), is(BRUKER_ID));
 	}
 
-	private void validateUbehandletJournalpost(UbehandletJournalpost jp) {
+	private void validateUbehandletJournalpost(MottattJournalpost jp) {
 		assertThat(jp.getBehandlingstema(), is(BEHANDLINGSTEMA));
-		assertThat(jp.getTema(), is(PEN));
-		assertThat(jp.getJournalStatus(), anyOf(is(MO), is(M)));
-		assertThat(jp.getMottaksKanal(), is(NAV_NO));
+		assertThat(jp.getTema(), is(PEN.name()));
+		assertThat(jp.getJournalStatus(), anyOf(is(MO.name()), is(M.name())));
+		assertThat(jp.getMottaksKanal(), is(NAV_NO.name()));
 		assertThat(jp.getJournalforendeEnhet(), is(JOURNALFOERENDE_ENHET));
 		assertThat(jp.getDatoOpprettet(), is(OPPRETTET_DATO));
 	}
 
-	private FinnMottatteJournalposterResponse doKallFinnMottatteJournalposterAndAssertOK(String url, String app) {
+	private Set<MottattJournalpost> doKallFinnMottatteJournalposterAndAssertOK(String app) {
 		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(app, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
 
-		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(apiPath(url), GET, requestEntity, FinnMottatteJournalposterResponse.class);
+		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(apiPath(MOTTATTEJOURNALPOSTER_QUERY, FINNMOTTATTEJOURNALPOSTER_PATH), GET, requestEntity, FinnMottatteJournalposterResponse.class);
 		assertThat(response.getStatusCode(), is(OK));
-		return response.getBody();
+		return response.getBody().getMottattJournalpost();
 	}
 }

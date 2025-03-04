@@ -8,9 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 
 import java.util.Date;
 
@@ -23,7 +20,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(value = NON_NULL)
-public class UbehandletJournalpost {
+public class MottattJournalpost {
 
 	@Schema(
 			description = "ID til journalpost i Joark",
@@ -33,48 +30,51 @@ public class UbehandletJournalpost {
 	private long journalpostId;
 
 	@Schema(
-			description = "JournalStatus i Joark",
+			description = "Status på journalposten i joark. Journalstatusen gir et indikasjon på hvor i journalførings- eller dokumentproduksjonsprosessen journalposten befinner seg.",
 			requiredMode = REQUIRED,
 			example = "M"
 	)
-	private JournalStatusCode journalStatus;
+	private String journalStatus;
 
 	@Schema(
-			description = "Mottakskanal til journalpost i Joark",
+			description = "Kanalen dokumentene ble mottatt i",
 			requiredMode = REQUIRED,
 			example = "NAV_NO"
 	)
-	private MottaksKanalCode mottaksKanal;
+	private String mottaksKanal;
 
-	@Schema(
-			description = "Bruker til journalpost i Joark. Returneres bare til interne tjenester i dokumentløsninger."
-	)
 	@Hidden
-	private UbehandletBruker bruker;
+	@Schema(
+			description = """
+					Person eller organisasjon som har et forhold til NAV, f.eks. som mottaker av tjenester eller ytelser.
+					Returneres bare internt i teamdokumentløsninger.
+					"""
+	)
+	private MottattJournalpostBruker bruker;
 
 	@Schema(
-			description = "Temakode til journalpost i Joark",
+			description = "Temaet/Fagområdet som en journalpost og tilhørende sak tilhører",
 			requiredMode = REQUIRED,
 			example = "PEN"
 	)
-	private FagomradeCode tema;
+	private String tema;
 
 	@Schema(
-			description = "Behandlingstema journalpost i Joark",
+			description = "Detaljering av tema på journalpost og tilhørende sak",
 			requiredMode = REQUIRED,
-			example = "ab0001"
+			example = "ab0072"
 	)
 	private String behandlingstema;
 
 	@Schema(
-			description = "Journalførende enhet for journalpost i Joark",
+			description = " NAV-enheten som har journalført forsendelsen",
 			requiredMode = REQUIRED,
 			example = "0001"
 	)
 	private String journalforendeEnhet;
 
 	@Schema(
-			description = "Dato journalposten ble opprettet i Joark",
+			description = "Datoen journalposten ble opprettet i arkivet. Datoen settes automatisk og kan ikke overskrives.",
 			requiredMode = REQUIRED,
 			example = "2019-12-04T11:07:25.596+0000"
 	)
