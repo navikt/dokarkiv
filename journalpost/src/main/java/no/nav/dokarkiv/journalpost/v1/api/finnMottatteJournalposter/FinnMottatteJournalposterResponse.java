@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -16,7 +15,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FinnMottatteJournalposterResponse {
 
 	@ArraySchema(arraySchema = @Schema(

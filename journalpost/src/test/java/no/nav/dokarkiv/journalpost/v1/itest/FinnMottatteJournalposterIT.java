@@ -2,8 +2,8 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
-import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.MottattJournalpostBruker;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.MottattJournalpost;
+import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.MottattJournalpostBruker;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -14,10 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,8 +83,8 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {" ","BAD_ROLE"})
-	public void shouldReturnUnauthorizedWhenWrongRole(String role){
+	@ValueSource(strings = {" ", "BAD_ROLE"})
+	public void shouldReturnUnauthorizedWhenWrongRole(String role) {
 		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, role));
 
 		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_PATH), GET, requestEntity, String.class);
@@ -95,7 +92,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldReturnBadRequestForMissingQueryParams(){
+	public void shouldReturnBadRequestForMissingQueryParams() {
 		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
 
 		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_PATH), GET, requestEntity, String.class);
@@ -163,13 +160,13 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		journalpostIds.forEach(jpId -> assertThat(response.getBody(), containsString("" + jpId)));
 	}
 
-	private URI createUri(String fagomraadeCode, Integer dagerGamle){
-		return  UriComponentsBuilder.fromPath(apiMottatteJournalposterfoPath())
+	private URI createUri(String fagomraadeCode, Integer dagerGamle) {
+		return UriComponentsBuilder.fromPath(apiMottatteJournalposterfoPath())
 				.queryParam("tema", fagomraadeCode)
 				.queryParam("dagerGamle", dagerGamle).build().toUri();
 	}
 
-	private List<Long> saveJournalposts(List<Journalpost> journalposts){
+	private List<Long> saveJournalposts(List<Journalpost> journalposts) {
 		List<Long> journalpostIds = journalposts.stream()
 				.map(this::saveJournalpost)
 				.map(Journalpost::getJournalpostId).toList();

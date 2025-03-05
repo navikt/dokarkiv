@@ -24,7 +24,7 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 			and jp.changeStamp.createdDate <= :tilOgMedDato
 			and jp.fagomrade = :fagomraade
 			""")
-	Set<MottattJournalpostProjection> findMottattJournalpostsForTemaUtenBruker(@Param("tilOgMedDato") LocalDateTime tilOgMedDato, @Param("fagomraade") FagomradeCode fagomraade);
+	Set<MottattJournalpostProjection> finnMottatteJournalposterForTemaUtenBruker(@Param("tilOgMedDato") LocalDateTime tilOgMedDato, @Param("fagomraade") FagomradeCode fagomraade);
 
 	@Query(value = """
 			select jp
@@ -36,7 +36,7 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 			and jp.changeStamp.createdDate <= :tilOgMedDato
 			and jp.fagomrade = :fagomraade
 			""")
-	Set<MottattJournalpostProjectionMedBruker> findMottattJournalpostsForTemaMedBruker(@Param("tilOgMedDato") LocalDateTime tilOgMedDato, @Param("fagomraade") FagomradeCode fagomraade);
+	Set<MottattJournalpostProjectionMedBruker> finnMottatteJournalposterForTemaMedBruker(@Param("tilOgMedDato") LocalDateTime tilOgMedDato, @Param("fagomraade") FagomradeCode fagomraade);
 
 	Optional<Journalpost> findByKanalReferanseId(String kanalReferanseId);
 

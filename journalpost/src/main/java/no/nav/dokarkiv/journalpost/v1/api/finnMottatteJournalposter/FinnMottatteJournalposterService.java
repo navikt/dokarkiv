@@ -15,9 +15,9 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
-@Service
 @Slf4j
+@Service
+@Transactional(readOnly = true)
 public class FinnMottatteJournalposterService {
 
 	private final JournalpostRepository journalpostRepository;
@@ -26,23 +26,21 @@ public class FinnMottatteJournalposterService {
 		this.journalpostRepository = journalpostRepository;
 	}
 
-	@Transactional(readOnly = true)
 	public FinnMottatteJournalposterResponse finnMottatteJournalposterUtenBrukerMedTemaEldreEnn(FagomradeCode fagomraade, int eldreEnn) throws KanIkkeHenteMottatteJournalposterException {
-		Set<MottattJournalpostProjection> ubehandledeJournalposter = journalpostRepository
-				.findMottattJournalpostsForTemaUtenBruker(
+		Set<MottattJournalpostProjection> mottatteJournalposter = journalpostRepository
+				.finnMottatteJournalposterForTemaUtenBruker(
 						LocalDateTime.now().minusDays(eldreEnn),
 						fagomraade);
 
-		return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::mapUbehandletJournalpost).collect(Collectors.toSet()));
+		return new FinnMottatteJournalposterResponse(mottatteJournalposter.stream().map(this::mapUbehandletJournalpost).collect(Collectors.toSet()));
 	}
 
-	@Transactional(readOnly = true)
 	public FinnMottatteJournalposterResponse finnMottatteJournalposterMedBrukerMedTemaEldreEnn(FagomradeCode fagomraade, int eldreEnn) throws KanIkkeHenteMottatteJournalposterException {
-		Set<MottattJournalpostProjectionMedBruker> ubehandledeJournalposter = journalpostRepository
-				.findMottattJournalpostsForTemaMedBruker(
+		Set<MottattJournalpostProjectionMedBruker> mottatteJournalposter = journalpostRepository
+				.finnMottatteJournalposterForTemaMedBruker(
 						LocalDateTime.now().minusDays(eldreEnn),
 						fagomraade);
-		return new FinnMottatteJournalposterResponse(ubehandledeJournalposter.stream().map(this::mapUbehandletJournalpostMedBruker).collect(Collectors.toSet()));
+		return new FinnMottatteJournalposterResponse(mottatteJournalposter.stream().map(this::mapUbehandletJournalpostMedBruker).collect(Collectors.toSet()));
 
 	}
 

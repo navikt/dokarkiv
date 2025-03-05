@@ -66,23 +66,23 @@ public class FinnMottatteJournalposterController {
 		validateDagerGamle(dagerGamle);
 
 		try {
-			log.info("finnMottatteJournalposter har mottatt kall om å hente ubehandlede journalposter med tema blant={} som er eldre enn={} dager", fagomraade, dagerGamle);
+			log.info("finnMottatteJournalposter har mottatt kall om å hente mottatte journalposter med tema={} som er eldre enn={} dager", fagomraade, dagerGamle);
 
 			if (MDC.get(MDC_CONSUMER_ID).contains(AZP_NAME_DOKSIKKERHETSNETT)) {
-				FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedBrukerMedTemaEldreEnn(fagomraade, dagerGamle);
-				log.info("finnMottatteJournalposter returnerer {} journalposter for tema={} for doksikkerhetsnett", ubehandledeJournalposter.getJournalposter().size(), fagomraade);
-				return ResponseEntity.ok().body(ubehandledeJournalposter);
+				FinnMottatteJournalposterResponse mottatteJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedBrukerMedTemaEldreEnn(fagomraade, dagerGamle);
+				log.info("finnMottatteJournalposter returnerer {} journalposter for tema={} for doksikkerhetsnett", mottatteJournalposter.getJournalposter().size(), fagomraade);
+				return ResponseEntity.ok().body(mottatteJournalposter);
 			} else {
-				FinnMottatteJournalposterResponse ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterUtenBrukerMedTemaEldreEnn(fagomraade, dagerGamle);
-				log.info("finnMottatteJournalposter returnerer {} journalposter for tema={}", ubehandledeJournalposter.getJournalposter().size(), fagomraade);
-				return ResponseEntity.ok().body(ubehandledeJournalposter);
+				FinnMottatteJournalposterResponse mottatteJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterUtenBrukerMedTemaEldreEnn(fagomraade, dagerGamle);
+				log.info("finnMottatteJournalposter returnerer {} journalposter for tema={}", mottatteJournalposter.getJournalposter().size(), fagomraade);
+				return ResponseEntity.ok().body(mottatteJournalposter);
 			}
 		} catch (DokarkivFunctionalException e) {
-			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}",
+			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på mottatte journalposter med tema={}. Feilmelding={}",
 					fagomraade, e.getMessage());
 			throw e;
 		} catch (DokarkivTechnicalException e) {
-			log.error("finnMottatteJournalposter - feilet teknisk ved søk på ubehandlede journalposter med tema blandt {}. Feilmelding={}",
+			log.error("finnMottatteJournalposter - feilet teknisk ved søk på mottatte journalposter med tema={}. Feilmelding={}",
 					fagomraade, e.getMessage());
 			throw e;
 		}
@@ -91,7 +91,7 @@ public class FinnMottatteJournalposterController {
 	private void validateDagerGamle(int dagerGamle) {
 		long antallDagerSidenJanuar2020 = Duration.between(JANUARY_1_2020.toInstant(), Instant.now()).toDaysPart();
 		if (dagerGamle < 0 || dagerGamle > antallDagerSidenJanuar2020) {
-			throw new InputValideringFeiletException(format("dagerGamle har ugyldig veri: %s. Finnmottattejournalposter kan ikke hente journalposter fra fremtiden eller fra før 01.01.2020", "" + dagerGamle));
+			throw new InputValideringFeiletException(format("Mottok ugyldig verdi for dagerGamle. DagerGamle:%s ender opp utenfor spennet 01.01.2020 -> dagens dato", "" + dagerGamle));
 		}
 	}
 
