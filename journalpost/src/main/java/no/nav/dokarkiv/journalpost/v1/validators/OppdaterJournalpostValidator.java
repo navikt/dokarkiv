@@ -109,8 +109,7 @@ public final class OppdaterJournalpostValidator {
 		}
 		if (request.getAvsenderMottaker() != null &&
 				harAvsenderMottakerIdEllerIdtypeVerdi(request) &&
-				avsenderMottakerIdOgIdTypeSkalIkkeNulles(request.getAvsenderMottaker())
-		) {
+				avsenderMottakerIdOgIdTypeSkalIkkeNulles(request.getAvsenderMottaker())) {
 			feilmeldinger.add(validateAvsenderMottakerIdOgIdType(request.getAvsenderMottaker()));
 			feilmeldinger.add(validateAvsenderMottakerId(request.getAvsenderMottaker()));
 		}

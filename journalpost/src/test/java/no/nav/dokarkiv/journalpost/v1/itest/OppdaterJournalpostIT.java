@@ -25,7 +25,9 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpEntity;
@@ -37,6 +39,7 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -70,6 +73,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AKTOER_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
@@ -1073,6 +1077,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
 		assertThat(journalpostOppdatert.getAvsenderMottaker()).isEqualTo("Bjarne Betjent");
 	}
+
 	@ParameterizedTest
 	@ValueSource(strings = {"NAV_NO", "NAV_NO_CHAT", "ALTINN", "EESSI"})
 	public void shouldNotOppdatereAvsenderMottakerNavnForDigitaltInnsendteDokumenter(String mottaksKanalCode) {
@@ -1122,6 +1127,44 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
 		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
 		assertThat(journalpostOppdatert.getAvsenderMottaker()).isEqualTo("Bjarne Betjent");
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	public void shouldTestAvsenderMottakerIdAndIdType(String originalId, String updatedId, String resultId, AvsenderMottakerIdTypeCode originalIdType, AvsenderMottakerIdType updatedIdType, AvsenderMottakerIdTypeCode resultIdType) {
+		clearSakRepository();
+		stubAzure();
+		happyPersonIdentStub();
+
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen")
+				.avsenderMottakerId(originalId)
+				.avsenderMottakerIdType(originalIdType)
+				.mottakskanal(MottaksKanalCode.SKAN_IM));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder().id(updatedId).idType(updatedIdType).build())
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getAvsenderMottakerId()).contains(resultId);
+		assertThat(journalpostOppdatert.getAvsenderMottakerIdType()).isEqualTo(resultIdType);
+	}
+
+	private static Stream<Arguments> shouldTestAvsenderMottakerIdAndIdType() {
+		return Stream.of(
+				Arguments.of(AVSENDER_ID_PERSON, BRUKER_ID_PERSON, BRUKER_ID_PERSON, AvsenderMottakerIdTypeCode.FNR, AvsenderMottakerIdType.FNR, AvsenderMottakerIdTypeCode.FNR),
+				Arguments.of(AVSENDER_ID_PERSON, BRUKER_ID_PERSON, AVSENDER_ID_PERSON, AvsenderMottakerIdTypeCode.FNR, null, AvsenderMottakerIdTypeCode.FNR),
+				Arguments.of(BRUKER_ID_ORGANISASJON, AVSENDER_ID_PERSON, AVSENDER_ID_PERSON, AvsenderMottakerIdTypeCode.ORGNR, AvsenderMottakerIdType.FNR, AvsenderMottakerIdTypeCode.FNR),
+				Arguments.of(AVSENDER_ID_PERSON, BRUKER_ID_ORGANISASJON, BRUKER_ID_ORGANISASJON, AvsenderMottakerIdTypeCode.FNR, AvsenderMottakerIdType.ORGNR, AvsenderMottakerIdTypeCode.ORGNR)
+		);
+
 	}
 
 	@Test
