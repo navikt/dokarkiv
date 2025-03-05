@@ -464,8 +464,8 @@
       "cluster": "prod-gcp"
     },
     {
-      "app": "pdl-fullmakt",
-      "namespace": "pdl",
+      "app": "repr-fullmakt",
+      "namespace": "repr",
       "cluster": "prod-fss"
     },
     {

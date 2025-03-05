@@ -493,8 +493,8 @@
       "scopes": ["api_admin"]
     },
     {
-      "app": "pdl-fullmakt",
-      "namespace": "pdl",
+      "app": "repr-fullmakt",
+      "namespace": "repr",
       "cluster": "dev-fss"
     },
     {
