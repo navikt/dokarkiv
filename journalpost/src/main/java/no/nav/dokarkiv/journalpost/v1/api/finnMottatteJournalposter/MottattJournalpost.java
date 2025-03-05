@@ -24,21 +24,18 @@ public class MottattJournalpost {
 
 	@Schema(
 			description = "ID til journalpost i Joark",
-			requiredMode = REQUIRED,
 			example = "22345678"
 	)
 	private long journalpostId;
 
 	@Schema(
-			description = "Status på journalposten i joark. Journalstatusen gir et indikasjon på hvor i journalførings- eller dokumentproduksjonsprosessen journalposten befinner seg.",
-			requiredMode = REQUIRED,
+			description = "Status på journalposten i joark. Journalstatusen gir en indikasjon på hvor i journalførings- eller dokumentproduksjonsprosessen journalposten befinner seg.",
 			example = "M"
 	)
 	private String journalStatus;
 
 	@Schema(
 			description = "Kanalen dokumentene ble mottatt i",
-			requiredMode = REQUIRED,
 			example = "NAV_NO"
 	)
 	private String mottaksKanal;
@@ -54,28 +51,24 @@ public class MottattJournalpost {
 
 	@Schema(
 			description = "Temaet/Fagområdet som en journalpost og tilhørende sak tilhører",
-			requiredMode = REQUIRED,
 			example = "PEN"
 	)
 	private String tema;
 
 	@Schema(
 			description = "Detaljering av tema på journalpost og tilhørende sak",
-			requiredMode = REQUIRED,
 			example = "ab0072"
 	)
 	private String behandlingstema;
 
 	@Schema(
 			description = " NAV-enheten som har journalført forsendelsen",
-			requiredMode = REQUIRED,
 			example = "0001"
 	)
 	private String journalforendeEnhet;
 
 	@Schema(
 			description = "Datoen journalposten ble opprettet i arkivet. Datoen settes automatisk og kan ikke overskrives.",
-			requiredMode = REQUIRED,
 			example = "2019-12-04T11:07:25.596+0000"
 	)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")

@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 )
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "OK"),
-		@ApiResponse(responseCode = "400", description = "Kall mangler enn eller flere påkrevde headere", content = @Content),
+		@ApiResponse(responseCode = "400", description = "Kall mangler en eller flere påkrevde requestParameters, eller de er ugyldige", content = @Content),
 		@ApiResponse(responseCode = "401", description = "Konsument har ikke tilgang til å kalle tjenesten.", content = @Content),
 		@ApiResponse(responseCode = "403", description = "Konsument har ikke tilgang til å kalle tjenesten", content = @Content),
 		@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)

@@ -32,6 +32,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.BEHANDLINGSTEMA;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createUbehandletJournalpost;
+import static no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterController.FINN_MOTTATTE_JOURNALPOSTER_ROLE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
@@ -46,7 +47,6 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
-	private static final String FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE = "finn_midlertidige_journalposter";
 	private static final int ANTALL_DAGER = 5;
 	private static final String FINNMOTTATTEJOURNALPOSTER_PATH = "/finnMottatteJournalposter";
 	private static final String DOKSIKKERHETSNETT = "test-miljo:teamdokumenthandtering:doksikkerhetsnett";
@@ -54,15 +54,15 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	private static final Date OPPRETTET_DATO = Date.from(ZonedDateTime.now().minusDays(ANTALL_DAGER).minusMinutes(10).toInstant());
 	private static final Date FOR_NY_DATO = Date.from(ZonedDateTime.now().minusDays(ANTALL_DAGER).plusMinutes(10).toInstant());
 
-	private static final Map<String, List<String>> MOTTATTEJOURNALPOSTER_QUERY = Map.of("tema", List.of("PEN"), "dagerGamle", List.of("5"));
+	private static final Map<String, List<String>> MOTTATTEJOURNALPOSTER_QUERY = Map.of("tema", List.of("PEN"), "antallDagerGamle", List.of("5"));
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			"UGYLDIG,Mottok ugyldig verd for tema. UGYLDIG er ikke en gyldig temakode",
-			",Mottok ugyldig verd for tema. Tema var null eller tom"})
+			"UGYLDIG,Mottok ugyldig verdi for tema. UGYLDIG er ikke en gyldig temakode",
+			",Mottok ugyldig verdi for tema. Tema var null eller tom"})
 	public void shouldReturnBadRequestWhenUgyldigTema(String fagomraadeCode, String expectedExceptionMessage) {
 
-		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MOTTATTE_JOURNALPOSTER_ROLE));
 
 		ResponseEntity<String> response = restTemplate.exchange(createUri(fagomraadeCode, 5), GET, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(BAD_REQUEST));
@@ -71,13 +71,13 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	@ParameterizedTest
 	@CsvSource(value = {
-			"-1,dagerGamle har ugyldig veri: -1. Finnmottattejournalposter kan ikke hente journalposter fra fremtiden eller fra før 01.01.2020",
-			"2000,dagerGamle har ugyldig veri: 2000. Finnmottattejournalposter kan ikke hente journalposter fra fremtiden eller fra før 01.01.2020"})
-	public void shouldReturnBadRequestWhenUgyldigTema(int dagerGamle, String expectedExceptionMessage) {
+			"-1,Mottok ugyldig verdi for antallDagerGamle. AntallDagerGamle:-1 ender opp utenfor spennet 01.01.2020 -> dagens dato",
+			"2000,Mottok ugyldig verdi for antallDagerGamle. AntallDagerGamle:2000 ender opp utenfor spennet 01.01.2020 -> dagens dato"})
+	public void shouldReturnBadRequestWhenUgyldigTema(int antallDagerGamle, String expectedExceptionMessage) {
 
-		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MOTTATTE_JOURNALPOSTER_ROLE));
 
-		ResponseEntity<String> response = restTemplate.exchange(createUri(PEN.name(), dagerGamle), GET, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(createUri(PEN.name(), antallDagerGamle), GET, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(BAD_REQUEST));
 		assertThat(response.getBody(), containsString(expectedExceptionMessage));
 	}
@@ -93,7 +93,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldReturnBadRequestForMissingQueryParams() {
-		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MOTTATTE_JOURNALPOSTER_ROLE));
 
 		ResponseEntity<String> response = restTemplate.exchange(apiPath(FINNMOTTATTEJOURNALPOSTER_PATH), GET, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(BAD_REQUEST));
@@ -151,7 +151,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		);
 		List<Long> journalpostIds = saveJournalposts(journalposts);
 
-		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(APP_APPESEN, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(APP_APPESEN, FINN_MOTTATTE_JOURNALPOSTER_ROLE));
 
 		ResponseEntity<String> response = restTemplate.exchange(apiPath(MOTTATTEJOURNALPOSTER_QUERY, FINNMOTTATTEJOURNALPOSTER_PATH), GET, requestEntity, String.class);
 		assertThat(response.getStatusCode(), is(OK));
@@ -160,10 +160,10 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		journalpostIds.forEach(jpId -> assertThat(response.getBody(), containsString("" + jpId)));
 	}
 
-	private URI createUri(String fagomraadeCode, Integer dagerGamle) {
+	private URI createUri(String fagomraadeCode, Integer antallDagerGamle) {
 		return UriComponentsBuilder.fromPath(apiMottatteJournalposterfoPath())
 				.queryParam("tema", fagomraadeCode)
-				.queryParam("dagerGamle", dagerGamle).build().toUri();
+				.queryParam("antallDagerGamle", antallDagerGamle).build().toUri();
 	}
 
 	private List<Long> saveJournalposts(List<Journalpost> journalposts) {
@@ -189,7 +189,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	private Set<MottattJournalpost> doKallFinnMottatteJournalposterAndAssertOK(String app) {
-		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(app, FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE));
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(app, FINN_MOTTATTE_JOURNALPOSTER_ROLE));
 
 		ResponseEntity<FinnMottatteJournalposterResponse> response = restTemplate.exchange(apiPath(MOTTATTEJOURNALPOSTER_QUERY, FINNMOTTATTEJOURNALPOSTER_PATH), GET, requestEntity, FinnMottatteJournalposterResponse.class);
 		assertThat(response.getStatusCode(), is(OK));

@@ -27,17 +27,17 @@ import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
-import static no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterController.FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE;
+import static no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterController.FINN_MOTTATTE_JOURNALPOSTER_ROLE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
 @RestController
 @RequestMapping("/rest/journalpostapi/v1/finnMottatteJournalposter")
 @Tag(name = "journalpostapi", description = "Tjenester mot journalpost")
-@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE})
+@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + FINN_MOTTATTE_JOURNALPOSTER_ROLE})
 public class FinnMottatteJournalposterController {
 
-	protected static final String FINN_MIDLERTIDIGE_JOURNALPOSTER_ROLE = "finn_midlertidige_journalposter";
+	public static final String FINN_MOTTATTE_JOURNALPOSTER_ROLE = "finn_mottatte_journalposter";
 	private static final String AZP_NAME_DOKSIKKERHETSNETT = "doksikkerhetsnett";
 	private static final Date JANUARY_1_2020 = Date.from(LocalDate.of(2020, Month.JANUARY, 1)
 			.atStartOfDay(ZoneId.systemDefault())
@@ -51,55 +51,55 @@ public class FinnMottatteJournalposterController {
 
 	@GetMapping
 	@SwaggerFinnMottatteJournalposterMedTemaEldreEnn
-	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposterMedTemaEldreEnn(
+	public ResponseEntity<FinnMottatteJournalposterResponse> finnMottatteJournalposter(
 			@Parameter(description = "Tema man ønsker å finne mottatte journalposter for") @RequestParam("tema") String tema,
 			@Parameter(description = """
-					dagerGamle spesifiserer hvilken dato man ønsker å søke etter journalposter fra.
-					Tjenesten vil returne alle journalposter i en midlertidig status som er opprettet mellom 01.01.2020 og Instant.now() - dagerGamle.
-					Hvis dagerGamle er 7 dager vil alle journalposter opprettet mellom 01.01.2020 og Instant.now()-1 uke returneres
-					HVis dagerGamle er 0 dager vil alle midlertidige journalposter opprettet mellom 01.01.2020 og Instant.now()
+					Tjenesten vil returnere alle journalposter i mottatt status opprettet mellom 01.01.2020 og Instant.now() - antallDagerGamle.
 					01.01.2020 er en statisk dato og kan ikke endres.
-					""") @RequestParam("dagerGamle") int dagerGamle) {
+					""") @RequestParam("antallDagerGamle") int antallDagerGamle) {
 
 		MDC.put(MDC_REQUEST_ID, "finnMottatteJournalposter");
 		FagomradeCode fagomraade = validateTema(tema);
-		validateDagerGamle(dagerGamle);
+		validateDagerGamle(antallDagerGamle);
 
 		try {
-			log.info("finnMottatteJournalposter har mottatt kall om å hente mottatte journalposter med tema={} som er eldre enn={} dager", fagomraade, dagerGamle);
+			log.info("finnMottatteJournalposter har mottatt kall om å hente mottatte journalposter med tema={} som er eldre enn={} dager", fagomraade, antallDagerGamle);
 
 			if (MDC.get(MDC_CONSUMER_ID).contains(AZP_NAME_DOKSIKKERHETSNETT)) {
-				FinnMottatteJournalposterResponse mottatteJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedBrukerMedTemaEldreEnn(fagomraade, dagerGamle);
-				log.info("finnMottatteJournalposter returnerer {} journalposter for tema={} for doksikkerhetsnett", mottatteJournalposter.getJournalposter().size(), fagomraade);
+				FinnMottatteJournalposterResponse mottatteJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterMedBrukerMedTemaEldreEnn(fagomraade, antallDagerGamle);
+				log.info("finnMottatteJournalposter returnerer {} journalposter for tema={} som er eldre enn={} dager for doksikkerhetsnett", mottatteJournalposter.getJournalposter().size(), fagomraade, antallDagerGamle);
 				return ResponseEntity.ok().body(mottatteJournalposter);
 			} else {
-				FinnMottatteJournalposterResponse mottatteJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterUtenBrukerMedTemaEldreEnn(fagomraade, dagerGamle);
-				log.info("finnMottatteJournalposter returnerer {} journalposter for tema={}", mottatteJournalposter.getJournalposter().size(), fagomraade);
+				FinnMottatteJournalposterResponse mottatteJournalposter = finnMottatteJournalposterService.finnMottatteJournalposterUtenBrukerMedTemaEldreEnn(fagomraade, antallDagerGamle);
+				log.info("finnMottatteJournalposter returnerer {} journalposter for tema={} som er eldre enn={} dager", mottatteJournalposter.getJournalposter().size(), fagomraade, antallDagerGamle);
 				return ResponseEntity.ok().body(mottatteJournalposter);
 			}
 		} catch (DokarkivFunctionalException e) {
-			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på mottatte journalposter med tema={}. Feilmelding={}",
-					fagomraade, e.getMessage());
+			log.warn("finnMottatteJournalposter - feilet funksjonelt ved søk på mottatte journalposter med tema={} som er eldre enn={} dager. Feilmelding={}",
+					fagomraade, antallDagerGamle, e.getMessage());
 			throw e;
 		} catch (DokarkivTechnicalException e) {
-			log.error("finnMottatteJournalposter - feilet teknisk ved søk på mottatte journalposter med tema={}. Feilmelding={}",
-					fagomraade, e.getMessage());
+			log.error("finnMottatteJournalposter - feilet teknisk ved søk på mottatte journalposter med tema={} som er eldre enn={} dager. Feilmelding={}",
+					fagomraade, antallDagerGamle, e.getMessage());
 			throw e;
 		}
 	}
 
-	private void validateDagerGamle(int dagerGamle) {
+	private void validateDagerGamle(int antallDagerGamle) {
 		long antallDagerSidenJanuar2020 = Duration.between(JANUARY_1_2020.toInstant(), Instant.now()).toDaysPart();
-		if (dagerGamle < 0 || dagerGamle > antallDagerSidenJanuar2020) {
-			throw new InputValideringFeiletException(format("Mottok ugyldig verdi for dagerGamle. DagerGamle:%s ender opp utenfor spennet 01.01.2020 -> dagens dato", "" + dagerGamle));
+		if (antallDagerGamle < 0 || antallDagerGamle > antallDagerSidenJanuar2020) {
+			throw new InputValideringFeiletException(format("Mottok ugyldig verdi for antallDagerGamle. AntallDagerGamle:%s ender opp utenfor spennet 01.01.2020 -> dagens dato", "" + antallDagerGamle));
 		}
 	}
 
 	private FagomradeCode validateTema(String tema) {
+		if(isBlank(tema)){
+			throw new InputValideringFeiletException("Mottok ugyldig verdi for tema. Tema var null eller tom");
+		}
 		try {
 			return FagomradeCode.valueOf(tema);
 		} catch (IllegalArgumentException e) {
-			throw new InputValideringFeiletException(format("Mottok ugyldig verd for tema. %s ", isBlank(tema) ? "Tema var null eller tom" : tema + " er ikke en gyldig temakode"));
+			throw new InputValideringFeiletException(format("Mottok ugyldig verdi for tema. %s er ikke en gyldig temakode", tema));
 		}
 	}
 
