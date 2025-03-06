@@ -16,12 +16,13 @@ import java.lang.annotation.Target;
 @Documented
 @Operation(
 		summary = """
-				Finner ubehandlede journalposter som er eldre enn "eldreEnn" dager med tema lik input
+				Finner mottatte journalposter som er eldre enn "dagerGamle" dager med tema lik input.
+				Returnerer ikke journalposter opprettet før 01.01.2020
 				"""
 )
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "OK"),
-		@ApiResponse(responseCode = "400", description = "Kall mangler enn eller flere påkrevde headere", content = @Content),
+		@ApiResponse(responseCode = "400", description = "Kall mangler en eller flere påkrevde requestParameters, eller de er ugyldige", content = @Content),
 		@ApiResponse(responseCode = "401", description = "Konsument har ikke tilgang til å kalle tjenesten.", content = @Content),
 		@ApiResponse(responseCode = "403", description = "Konsument har ikke tilgang til å kalle tjenesten", content = @Content),
 		@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)

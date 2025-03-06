@@ -43,6 +43,7 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 	static final String JOURNALPOSTAPI_BASE_PATH = "/rest/journalpostapi/v1/";
 	static final String JOURNALPOSTAPI_JOURNALPOST_PATH = "journalpost";
 	static final String JOURNALPOSTAPI_DOKUMENTINFO_PATH = "dokumentInfo";
+	static final String JOURNALPOSTAPI_MOTTATTEJOURNALPOSTER_PATH = "finnMottatteJournalposter";
 	static final String INTERNAL_JOURNALPOSTAPI_BASE_PATH = "/rest/internal/journalpostapi/v1/";
 	static final String INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH = "journalpost";
 	static final String FERDIGSTILL = "/ferdigstill";
@@ -53,6 +54,15 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	protected static String apiPath(String path) {
 		return apiPathBuilder(path).build().toUriString();
+	}
+
+	protected static String apiPath(Map<String, List<String>> queryParams, String path) {
+		UriComponentsBuilder builder = apiPathBuilder(path);
+		if (queryParams.isEmpty()) {
+			return builder.build().toUriString();
+		} else {
+			return builder.queryParams(toMultiValueMap(queryParams)).build().toUriString();
+		}
 	}
 
 	protected static String apiJournalpostPath() {
@@ -78,6 +88,10 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	protected static String apiDokumentInfoPath(String... path) {
 		return apiPathBuilder(JOURNALPOSTAPI_DOKUMENTINFO_PATH).pathSegment(path).build().toUriString();
+	}
+
+	protected static String apiMottatteJournalposterfoPath() {
+		return apiPathBuilder(JOURNALPOSTAPI_MOTTATTEJOURNALPOSTER_PATH).build().toUriString();
 	}
 
 	protected static String apiInternalPath(String... path) {

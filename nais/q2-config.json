@@ -448,7 +448,8 @@
     {
       "app": "doksikkerhetsnett",
       "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss"
+      "cluster": "dev-fss",
+      "roles": ["finn_mottatte_journalposter"]
     },
     {
       "app": "esyfovarsel",

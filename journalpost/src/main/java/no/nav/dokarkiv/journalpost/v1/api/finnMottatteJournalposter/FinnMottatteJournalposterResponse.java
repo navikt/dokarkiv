@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
@@ -18,8 +18,8 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 public class FinnMottatteJournalposterResponse {
 
 	@ArraySchema(arraySchema = @Schema(
-			description = "journalposter",
-			requiredMode = REQUIRED
+			description = "journalposter"
 	))
-	private List<UbehandletJournalpost> journalposter;
+	private Set<MottattJournalpost> journalposter;
+
 }
