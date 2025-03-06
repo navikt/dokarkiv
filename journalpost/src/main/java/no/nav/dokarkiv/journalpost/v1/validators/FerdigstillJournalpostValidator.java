@@ -26,6 +26,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
@@ -37,7 +38,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Slf4j
 public class FerdigstillJournalpostValidator {
 
-	private static final EnumSet<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = EnumSet.of(M, MO, UB, D, R, OD, FL, FS, A);
+	private static final EnumSet<JournalStatusCode> MIDLERTIDIG_JOURNALSTATUS = EnumSet.of(M, MO, UB, U, D, R, OD, FL, FS, A);
 
 	public FerdigstillJournalpostValidator() {
 		// Vi setter ingenting her
