@@ -24,6 +24,7 @@ public record AvsluttAlleSakerPaaTemaRequest(
 		@Schema(
 				description = "Tidspunkt når sakene ble avsluttet. Settes kun dersom alle sakene på tema skal merkes med samme avsluttet dato.",
 				requiredMode = NOT_REQUIRED,
+				pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS",
 				example = "2025-03-07T10:58:53.470892300"
 		)
 		LocalDateTime avsluttetDato,
