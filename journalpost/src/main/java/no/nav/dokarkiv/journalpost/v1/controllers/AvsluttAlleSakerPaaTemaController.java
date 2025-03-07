@@ -1,8 +1,10 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.journalpost.v1.api.AvsluttAlleSakerPaaTemaRequest;
 import no.nav.dokarkiv.journalpost.v1.services.AvsluttAlleSakerPaaTemaService;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerAvsluttAlleSakerPaaTema;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,8 +18,9 @@ import static no.nav.dokarkiv.journalpost.v1.validators.AvsluttAlleSakerPaaTemaV
 
 @Slf4j
 @RestController
-@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + INTERN_ROLE})
 @RequestMapping("/rest/internal/journalpostapi/v1")
+@ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + INTERN_ROLE})
+@Tag(name = "journalpostapi - sak", description = "Tjenester for å modifisere saker")
 public class AvsluttAlleSakerPaaTemaController {
 
 	private final AvsluttAlleSakerPaaTemaService avsluttAlleSakerPaaTemaService;
@@ -27,6 +30,7 @@ public class AvsluttAlleSakerPaaTemaController {
 	}
 
 	@PatchMapping("/avsluttAlleSakerPaaTema")
+	@SwaggerAvsluttAlleSakerPaaTema
 	public ResponseEntity<Void> avsluttAlleSakerPaaTema(@RequestBody AvsluttAlleSakerPaaTemaRequest request) {
 		validerAvsluttAlleSakerPaaTemaRequest(request);
 		log.info("avsluttAlleSakerPaaTema skal avslutte alle saker på tema={} med referanse={}, avsluttetDato={} og administrativEnhet={}",
