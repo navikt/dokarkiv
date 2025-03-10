@@ -13,6 +13,8 @@ import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.ApplicationProblemDetail;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -160,6 +162,40 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 	}
 
+	@ParameterizedTest
+	@CsvSource(value = {"U", "UB", "FS"})
+	public void happyPathJournalstatusKanFerdigstilles(JournalStatusCode journalstatus) {
+		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
+		sakTestRepository.persist(sak);
+		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, journalstatus, sak.getSakId()).build();
+		journalpostTestRepository.persist(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		Long journalpostId = journalpost.getJournalpostId();
+		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
+				.journalfoerendeEnhet("9999")
+				.build();
+
+		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId + FERDIGSTILL), PATCH, requestEntity, String.class);
+
+		assertEquals(OK, response.getStatusCode());
+
+		TestTransaction.start();
+		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
+
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
+		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
+		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
+		assertEquals(JournalStatusCode.FS, ferdigstiltJournalpost.getJournalstatus());
+		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
+		TestTransaction.end();
+	}
+
 	@Test
 	public void happyPathUtgaaendeUtsendingsKanalL() {
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
@@ -190,39 +226,6 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.FL, ferdigstiltJournalpost.getJournalstatus());
-		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
-		TestTransaction.end();
-	}
-
-	@Test
-	public void happyPathJournalstatusFSKanFerdigstilles() {
-		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
-		sakTestRepository.persist(sak);
-		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, JournalStatusCode.FS, sak.getSakId()).build();
-		journalpostTestRepository.persist(journalpost);
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		Long journalpostId = journalpost.getJournalpostId();
-		FerdigstillJournalpostRequest request = FerdigstillJournalpostRequest.builder()
-				.journalfoerendeEnhet("9999")
-				.build();
-
-		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
-		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId + FERDIGSTILL), PATCH, requestEntity, String.class);
-
-		assertEquals(OK, response.getStatusCode());
-
-		TestTransaction.start();
-		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
-
-		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
-		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());
-		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getJournalfortAvNavn());
-		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
-		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
-		assertEquals(JournalStatusCode.FS, ferdigstiltJournalpost.getJournalstatus());
 		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
 		TestTransaction.end();
 	}
