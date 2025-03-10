@@ -68,7 +68,7 @@ public class OpprettJournalpostRequestValidator {
 		if (request.getAvsenderMottaker() != null) {
 			String feilmelding = validateAvsenderMottaker(request.getAvsenderMottaker())
 					.stream().filter(Objects::nonNull).collect(Collectors.joining(", "));
-			if(isNotEmpty(feilmelding)){
+			if (isNotEmpty(feilmelding)){
 				throw new InputValideringFeiletException(feilmelding);
 			}
 		}
