@@ -50,7 +50,6 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -107,11 +106,9 @@ public final class OppdaterJournalpostValidator {
 		if (request.getDokumenter() != null && !request.getDokumenter().isEmpty()) {
 			request.getDokumenter().forEach(dokumentInfo -> feilmeldinger.add(validateDokument(dokumentInfo)));
 		}
-		if (request.getAvsenderMottaker() != null &&
-				harAvsenderMottakerIdEllerIdtypeVerdi(request) &&
-				avsenderMottakerIdOgIdTypeSkalIkkeNulles(request.getAvsenderMottaker())) {
-			feilmeldinger.add(validateAvsenderMottakerIdOgIdType(request.getAvsenderMottaker()));
-			feilmeldinger.add(validateAvsenderMottakerId(request.getAvsenderMottaker()));
+
+		if (request.getAvsenderMottaker() != null){
+			feilmeldinger.addAll(AvsenderMottakerValidator.validateAvsenderMottaker(request.getAvsenderMottaker()));
 		}
 
 		if (DIGITALE_KANALER.contains(journalpost.getMottakskanal()) && request.getAvsenderMottaker() != null) {
@@ -129,14 +126,6 @@ public final class OppdaterJournalpostValidator {
 		if (isNotEmpty(feilmelding)) {
 			throw new InputValideringFeiletException(feilmelding);
 		}
-	}
-
-	private static boolean harAvsenderMottakerIdEllerIdtypeVerdi(OppdaterJournalpostRequest request) {
-		return request.getAvsenderMottaker().getId() != null || request.getAvsenderMottaker().getIdType() != null;
-	}
-
-	private static boolean avsenderMottakerIdOgIdTypeSkalIkkeNulles(AvsenderMottaker avsenderMottaker) {
-		return !" ".equals(avsenderMottaker.getId());
 	}
 
 	private static List<String> validateInngaaende(OppdaterJournalpostRequest request, Journalpost journalpost) {
@@ -229,44 +218,6 @@ public final class OppdaterJournalpostValidator {
 	private static String validateJournalpostTittel(String tittel) {
 		if (SKJULT_TITTEL.equals(tittel)) {
 			return "tittel kan ikke oppdateres til " + SKJULT_TITTEL;
-		}
-		return null;
-	}
-
-	private static String validateAvsenderMottakerIdOgIdType(AvsenderMottaker avsenderMottaker) {
-		if (isEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() != null) {
-			return format("Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt. Mottatt id=%s idType=%s",
-					avsenderMottaker.getId(),
-					avsenderMottaker.getIdType());
-		} else if (isNotEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() == null) {
-			return format("Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt. Mottatt id=%s idType=null",
-					masker(avsenderMottaker.getId()));
-		}
-		return null;
-	}
-
-	private static String validateAvsenderMottakerId(AvsenderMottaker avsenderMottaker) {
-		if (avsenderMottaker.getIdType() != null && avsenderMottaker.getId() != null) {
-			switch (avsenderMottaker.getIdType()) {
-				case FNR:
-					if (!avsenderMottaker.getId().matches("^\\d{11}$")) {
-						return "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR.";
-					}
-					break;
-				case ORGNR:
-					if (!avsenderMottaker.getId().matches("^\\d{9}$")) {
-						return "avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR.";
-					}
-					break;
-				case HPRNR:
-					if (!avsenderMottaker.getId().matches("^\\d{7,9}$")) {
-						return "avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR.";
-					}
-					break;
-				default:
-					// noop
-					break;
-			}
 		}
 		return null;
 	}

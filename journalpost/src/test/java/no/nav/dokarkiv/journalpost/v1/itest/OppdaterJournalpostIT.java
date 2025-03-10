@@ -1131,7 +1131,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 	@ParameterizedTest
 	@MethodSource
-	public void shouldTestAvsenderMottakerIdAndIdType(String originalId, String updatedId, String resultId, AvsenderMottakerIdTypeCode originalIdType, AvsenderMottakerIdType updatedIdType, AvsenderMottakerIdTypeCode resultIdType) {
+	public void shouldOppdatereAvsenderMottakerIdAndIdType(String originalId, String updatedId, String resultId, AvsenderMottakerIdTypeCode originalIdType, AvsenderMottakerIdType updatedIdType, AvsenderMottakerIdTypeCode resultIdType) {
 		clearSakRepository();
 		stubAzure();
 		happyPersonIdentStub();
@@ -1157,7 +1157,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(journalpostOppdatert.getAvsenderMottakerIdType()).isEqualTo(resultIdType);
 	}
 
-	private static Stream<Arguments> shouldTestAvsenderMottakerIdAndIdType() {
+	private static Stream<Arguments> shouldOppdatereAvsenderMottakerIdAndIdType() {
 		return Stream.of(
 				Arguments.of(AVSENDER_ID_PERSON, BRUKER_ID_PERSON, BRUKER_ID_PERSON, AvsenderMottakerIdTypeCode.FNR, AvsenderMottakerIdType.FNR, AvsenderMottakerIdTypeCode.FNR),
 				Arguments.of(AVSENDER_ID_PERSON, BRUKER_ID_PERSON, AVSENDER_ID_PERSON, AvsenderMottakerIdTypeCode.FNR, null, AvsenderMottakerIdTypeCode.FNR),
