@@ -16,7 +16,8 @@ public class AvsenderMottakerValidator {
 	private static final Pattern HPRNR_PATTERN = Pattern.compile("^\\d{7,9}$");
 	public static List<String> validateAvsenderMottaker(AvsenderMottaker avsenderMottaker){
 		List<String> feilmeldinger = new ArrayList<>();
-		if(avsenderMottakerIdOgIdTypeSkalNulles(avsenderMottaker)) return feilmeldinger;
+		if (avsenderMottakerIdOgIdTypeSkalNulles(avsenderMottaker)) 
+			return feilmeldinger;
 
 		feilmeldinger.add(validateAvsenderMottakerIdOgIdType(avsenderMottaker));
 		feilmeldinger.add(validateAvsenderMottakerId(avsenderMottaker));
