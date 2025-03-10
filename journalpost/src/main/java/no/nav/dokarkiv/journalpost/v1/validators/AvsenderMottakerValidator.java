@@ -4,12 +4,16 @@ import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class AvsenderMottakerValidator {
+	private static final Pattern FNR_PATTERN = Pattern.compile("^\\d{11}$");
+	private static final Pattern ORGNR_PATTERN = Pattern.compile("^\\d{9}$");
+	private static final Pattern HPRNR_PATTERN = Pattern.compile("^\\d{7,9}$");
 	public static List<String> validateAvsenderMottaker(AvsenderMottaker avsenderMottaker){
 		List<String> feilmeldinger = new ArrayList<>();
 		if(avsenderMottakerIdOgIdTypeSkalNulles(avsenderMottaker)) return feilmeldinger;
@@ -39,24 +43,21 @@ public class AvsenderMottakerValidator {
 	private static String validateAvsenderMottakerId(AvsenderMottaker avsenderMottaker) {
 		if (avsenderMottaker.getIdType() != null && avsenderMottaker.getId() != null) {
 			switch (avsenderMottaker.getIdType()) {
-				case FNR:
-					if (!avsenderMottaker.getId().matches("^\\d{11}$")) {
+				case FNR -> {
+					if (!FNR_PATTERN.matcher(avsenderMottaker.getId()).matches()) {
 						return "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR.";
 					}
-					break;
-				case ORGNR:
-					if (!avsenderMottaker.getId().matches("^\\d{9}$")) {
+				}
+				case ORGNR -> {
+					if (!ORGNR_PATTERN.matcher(avsenderMottaker.getId()).matches()) {
 						return "avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR.";
 					}
-					break;
-				case HPRNR:
-					if (!avsenderMottaker.getId().matches("^\\d{7,9}$")) {
+				}
+				case HPRNR -> {
+					if (!HPRNR_PATTERN.matcher(avsenderMottaker.getId()).matches()) {
 						return "avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR.";
 					}
-					break;
-				default:
-					// noop
-					break;
+				}
 			}
 		}
 		return null;
