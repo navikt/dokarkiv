@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.hibernate.internal.util.StringHelper.isBlank;
 
 public class AvsenderMottakerValidator {
 	private static final Pattern FNR_PATTERN = Pattern.compile("^\\d{11}$");
 	private static final Pattern ORGNR_PATTERN = Pattern.compile("^\\d{9}$");
 	private static final Pattern HPRNR_PATTERN = Pattern.compile("^\\d{7,9}$");
+
 	public static List<String> validateAvsenderMottaker(AvsenderMottaker avsenderMottaker){
 		List<String> feilmeldinger = new ArrayList<>();
 		if (avsenderMottakerIdOgIdTypeSkalNulles(avsenderMottaker)) 
@@ -30,7 +31,7 @@ public class AvsenderMottakerValidator {
 	}
 
 	private static String validateAvsenderMottakerIdOgIdType(AvsenderMottaker avsenderMottaker) {
-		if (isEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() != null) {
+		if (isBlank(avsenderMottaker.getId()) && avsenderMottaker.getIdType() != null) {
 			return format("Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt. Mottatt id=%s idType=%s",
 					masker(avsenderMottaker.getId()),
 					avsenderMottaker.getIdType());

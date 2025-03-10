@@ -59,6 +59,7 @@ public class AvsenderMottakerValidatorTest {
 				Arguments.of(AVSENDER_ID_PERSON, null, "Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt. Mottatt id=12345***** idType=null"),
 				Arguments.of(null, AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt. Mottatt id=null idType=FNR"),
 				Arguments.of("", AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt."),
+				Arguments.of("  ", AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType krever at feltet avsenderMottaker.id er satt."),
 				Arguments.of("1234567890", AvsenderMottakerIdType.FNR, "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR."),
 				Arguments.of("1234567890a", AvsenderMottakerIdType.FNR, "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR."),
 				Arguments.of("1234567891012", AvsenderMottakerIdType.FNR, "avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR."),
