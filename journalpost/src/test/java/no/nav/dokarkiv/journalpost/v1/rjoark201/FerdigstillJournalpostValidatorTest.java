@@ -227,7 +227,7 @@ public class FerdigstillJournalpostValidatorTest {
 
 
 	@ParameterizedTest
-	@EnumSource(value = JournalStatusCode.class, names = {"FL", "FS", "D", "A", "OD"})
+	@EnumSource(value = JournalStatusCode.class, names = {"M", "MO", "R","FL", "FS", "D", "A", "OD", "U", "UB"})
 	public void shouldValidateJournalStatus(JournalStatusCode journalStatusCode) {
 		Journalpost journalpost = createJournalpost();
 		journalpost.setJournalstatus(journalStatusCode);
