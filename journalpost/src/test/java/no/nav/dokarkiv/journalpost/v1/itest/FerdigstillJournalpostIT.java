@@ -15,6 +15,7 @@ import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -163,8 +164,8 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@ParameterizedTest
-	@CsvSource(value = {"U", "UB", "FS"})
-	public void happyPathJournalstatusKanFerdigstilles(JournalStatusCode journalstatus) {
+	@EnumSource(value = JournalStatusCode.class, names = {"U", "UB", "FS", "R", "FL", "A"} )
+	public void happyPathUtgaaendeJournalstatusKanFerdigstilles(JournalStatusCode journalstatus) {
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
 		sakTestRepository.persist(sak);
 		Journalpost journalpost = JournalpostTestDataProvider.buildJournalpost(JournalpostTypeCode.U, journalstatus, sak.getSakId()).build();
