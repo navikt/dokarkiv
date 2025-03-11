@@ -50,7 +50,6 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -108,6 +107,10 @@ public final class OppdaterJournalpostValidator {
 			request.getDokumenter().forEach(dokumentInfo -> feilmeldinger.add(validateDokument(dokumentInfo)));
 		}
 
+		if (request.getAvsenderMottaker() != null){
+			feilmeldinger.addAll(AvsenderMottakerValidator.validateAvsenderMottaker(request.getAvsenderMottaker()));
+		}
+
 		if (DIGITALE_KANALER.contains(journalpost.getMottakskanal()) && request.getAvsenderMottaker() != null) {
 			feilmeldinger.add(validateKanIkkeOppdatereAvsenderPaaDigitaltInnsendteDokumenter(request, journalpost));
 		}
@@ -138,9 +141,6 @@ public final class OppdaterJournalpostValidator {
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getSak(), "sak", journalpostStatus, journalpostType));
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet", journalpostStatus, journalpostType));
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "tema", journalpostStatus, journalpostType));
-			if (request.getAvsenderMottaker() != null) {
-				feilmeldinger.add(validateAvsenderMottakerInngaaende(request.getAvsenderMottaker()));
-			}
 			if (checkIfJournalChangeIsOld(journalpost)) {
 				if (request.getAvsenderMottaker() != null) {
 					feilmeldinger.add(checkIfFieldIsBeingUpdatedAfterLockDate(request.getAvsenderMottaker().getId(), "avsenderMottaker.id", journalpost.getJournalDato()));
@@ -218,18 +218,6 @@ public final class OppdaterJournalpostValidator {
 	private static String validateJournalpostTittel(String tittel) {
 		if (SKJULT_TITTEL.equals(tittel)) {
 			return "tittel kan ikke oppdateres til " + SKJULT_TITTEL;
-		}
-		return null;
-	}
-
-	private static String validateAvsenderMottakerInngaaende(AvsenderMottaker avsenderMottaker) {
-		if (isEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() != null) {
-			return format("Oppdatering av avsenderMottaker.idType for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.id er satt. Mottatt id=%s idType=%s",
-					avsenderMottaker.getId(),
-					avsenderMottaker.getIdType());
-		} else if (isNotEmpty(avsenderMottaker.getId()) && avsenderMottaker.getIdType() == null) {
-			return format("Oppdatering av avsenderMottaker.id for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.idType er satt. Mottatt id=%s idType=null",
-					masker(avsenderMottaker.getId()));
 		}
 		return null;
 	}

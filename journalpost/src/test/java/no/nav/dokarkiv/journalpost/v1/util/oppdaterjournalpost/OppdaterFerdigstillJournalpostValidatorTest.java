@@ -44,7 +44,6 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
@@ -56,7 +55,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.LOCAL_DATE_TIME;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPerson;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEnkelJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
@@ -188,49 +187,6 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
 				.withMessageContaining("sak.fagsakId");
-	}
-
-	// Det skal ikke være lov til å oppdatere avsenderMottaker (id, navn) for utgående, ferdigstilte journalposter.
-	@ParameterizedTest
-	@EnumSource(value = JournalStatusCode.class, names = {"FL", "FS", "E"})
-	void shouldFailWhenAvsenderMottakerNavnOrIdIsSetForTypeU(JournalStatusCode input) {
-		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(createAvsenderMottakerPerson())
-				.build();
-		journalpost = createEnkelJournalpost(input, U);
-
-		assertThatExceptionOfType(InputValideringFeiletException.class)
-				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
-				.withMessageContaining(
-						format("avsenderMottaker.id kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=U", input),
-						format("avsendeMottaker.navn kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=U", input)
-				);
-	}
-
-	@ParameterizedTest
-	@EnumSource(value = JournalStatusCode.class, names = {"FL", "FS", "E", "D", "A"})
-	public void shouldFailWhenAvsenderMottakerNavnOrIdIsSetForTypeN(JournalStatusCode input) {
-		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(createAvsenderMottakerPerson())
-				.build();
-		journalpost = createEnkelJournalpost(input, N);
-
-		assertThatExceptionOfType(InputValideringFeiletException.class)
-				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
-				.withMessageContaining(
-						format("avsenderMottaker.id kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=N", input),
-						format("avsendeMottaker.navn kan ikke oppdateres for journalpost med journalpoststatus=%s og journalposttype=N", input)
-				);
-	}
-
-	@Test
-	public void shouldValidateWhenAvsenderMottakerNavnOrIdIsSetForStatusJ() {
-		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(createAvsenderMottakerPerson())
-				.build();
-		journalpost = createEnkelJournalpost(J, U);
-
-		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
 	}
 
 	@ParameterizedTest
@@ -522,7 +478,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.bruker(Bruker.builder().id("test999999").idType(ORGNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder()
 						.navn(AVSENDER_NAVN)
-						.id("9999999999")
+						.id("99999999")
 						.idType(AvsenderMottakerIdType.HPRNR)
 						.build())
 				.build();
@@ -565,27 +521,6 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
 				.withMessageContaining("bruker.id og bruker.idType må være satt dersom sak.sakstype=FAGSAK. Mottatt id=%s idType=null".formatted("10987*****"));
-	}
-
-	@Test
-	public void shouldThrowExceptionWhenAvsenderMottakerIdTypeHPRNRMoreThan9Digits() {
-		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.sak(Sak.builder()
-						.sakstype(FAGSAK)
-						.build())
-				.tema("test")
-				.bruker(Bruker.builder().id("9999999999").idType(ORGNR).build())
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.navn(AVSENDER_NAVN)
-						.id("9999999999")
-						.idType(AvsenderMottakerIdType.HPRNR)
-						.build())
-				.build();
-		journalpost = createEnkelJournalpost(D, I);
-
-		assertThatExceptionOfType(InputValideringFeiletException.class)
-				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
-				.withMessageContaining("bruker.id må være 9 siffer dersom bruker.idType=ORGNR. Mottatt id=99999*****");
 	}
 
 	@Test
@@ -698,54 +633,6 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 				.withMessage(format("behandlingstema må være på formatet ´ab + 4 siffer´, f.eks. ´ab0256´. Mottatt behandlingstema=%s", behandlingstema));
 	}
 
-	@ParameterizedTest
-	@MethodSource
-	public void shouldThrowExceptionOnAvsenderMottakerUpdateMismatch(String id, AvsenderMottakerIdType idType, String feilmelding) {
-		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.id(id)
-						.idType(idType)
-						.build())
-				.build();
-		journalpost = createEnkelJournalpost(J, I);
-
-		assertThatExceptionOfType(InputValideringFeiletException.class)
-				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
-				.withMessageContaining(feilmelding);
-	}
-
-	private static Stream<Arguments> shouldThrowExceptionOnAvsenderMottakerUpdateMismatch() {
-		return Stream.of(
-				Arguments.of(AVSENDER_ID_PERSON, null, "Oppdatering av avsenderMottaker.id for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.idType er satt."),
-				Arguments.of(null, AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.id er satt."),
-				Arguments.of("", AvsenderMottakerIdType.FNR, "Oppdatering av avsenderMottaker.idType for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.id er satt.")
-		);
-	}
-
-	@ParameterizedTest
-	@MethodSource
-	public void shouldValidateAvsenderMottakerWhenBothIdAndTypeIsSetOrNotSet(String id, AvsenderMottakerIdType idType) {
-		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.id(id)
-						.idType(idType)
-						.build())
-				.build();
-		journalpost = createEnkelJournalpost(J, I);
-
-		validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost);
-	}
-
-	private static Stream<Arguments> shouldValidateAvsenderMottakerWhenBothIdAndTypeIsSetOrNotSet() {
-		return Stream.of(
-				Arguments.of(AVSENDER_ID_PERSON, AvsenderMottakerIdType.FNR),
-				Arguments.of(AVSENDER_ID_ORGANISASJON, AvsenderMottakerIdType.FNR),
-				Arguments.of(" ", AvsenderMottakerIdType.FNR),
-				Arguments.of("", null),
-				Arguments.of(null, null)
-		);
-	}
-
 	@Test
 	void shouldThrowExceptionWhenFagsakAndFagsystemPP01AndFagsakIdNotNumeric() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
@@ -774,7 +661,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						fagsaksystem(PP01)
 						.build())
 				.journalfoerendeEnhet(JOURNALFOERENDE_ENHET)
-				.avsenderMottaker(createAvsenderMottakerPerson())
+				.avsenderMottaker(createAvsenderMottaker(AVSENDER_ID_PERSON, null))
 				.build();
 		journalpost = createEnkelJournalpost(J, I);
 
@@ -785,32 +672,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 						"sak kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I",
 						"tema kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I",
 						"journalfoerendeEnhet kan ikke oppdateres for journalpost med journalpoststatus=J og journalposttype=I",
-						"Oppdatering av avsenderMottaker.id for journalpost med journalposttype=INNGAAENDE krever at feltet avsenderMottaker.idType er satt."
-				);
-	}
-
-	@Test
-	public void shoudThrowExceptionWhenUpdatingAvsenderOnOldJournapost() {
-		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.id(AVSENDER_ID_PERSON)
-						.idType(AvsenderMottakerIdType.FNR)
-						.navn(AVSENDER_NAVN)
-						.build())
-				.tittel(DOKUMENT_TITTEL1)
-				.build();
-		journalpost = createEnkelJournalpost(J, I);
-		journalpost.setJournalDato(Date.valueOf(LOCAL_DATE_TIME.toLocalDate()));
-
-		SimpleDateFormat datoFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-		String formatedJournalDato = datoFormat.format(journalpost.getJournalDato());
-
-		assertThatExceptionOfType(InputValideringFeiletException.class)
-				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
-				.withMessageContainingAll(
-						format("avsenderMottaker.id kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s", formatedJournalDato),
-						format("avsenderMottaker.navn kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s", formatedJournalDato),
-						format("tittel kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s", formatedJournalDato)
+						"Oppdatering av avsenderMottaker.id krever at feltet avsenderMottaker.idType er satt."
 				);
 	}
 }

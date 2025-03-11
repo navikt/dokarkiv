@@ -5,7 +5,6 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
@@ -20,8 +19,10 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.lang.Boolean.FALSE;
@@ -38,9 +39,11 @@ import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
+import static no.nav.dokarkiv.journalpost.v1.validators.AvsenderMottakerValidator.validateAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateEksternReferanseId;
 import static no.nav.dokarkiv.journalpost.v1.validators.DokumentValidator.validateDokument;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -63,7 +66,11 @@ public class OpprettJournalpostRequestValidator {
 		validateEksternReferanseId(request.getEksternReferanseId());
 
 		if (request.getAvsenderMottaker() != null) {
-			validateAvsenderMottaker(request.getAvsenderMottaker());
+			String feilmelding = validateAvsenderMottaker(request.getAvsenderMottaker())
+					.stream().filter(Objects::nonNull).collect(Collectors.joining(", "));
+			if (isNotEmpty(feilmelding)){
+				throw new InputValideringFeiletException(feilmelding);
+			}
 		}
 		if (request.getBruker() != null) {
 			validateBruker(request.getBruker());
@@ -99,37 +106,6 @@ public class OpprettJournalpostRequestValidator {
 
 		if (request.getOverstyrInnsynsregler() != null) {
 			validateOverstyrInnsynsregler(request.getOverstyrInnsynsregler());
-		}
-	}
-
-	private void validateAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
-		if (isNotBlank(avsenderMottaker.getId()) && avsenderMottaker.getIdType() == null) {
-			throw new InputValideringFeiletException("avsenderMottaker.idType må være satt dersom avsenderMottaker.id er satt.");
-		}
-		if (avsenderMottaker.getIdType() != null && isBlank(avsenderMottaker.getId())) {
-			throw new InputValideringFeiletException("avsenderMottaker.id må være satt dersom avsenderMottaker.idType er satt.");
-		}
-		if (avsenderMottaker.getIdType() != null) {
-			switch (avsenderMottaker.getIdType()) {
-				case FNR:
-					if (!avsenderMottaker.getId().matches("^\\d{11}$")) {
-						throw new InputValideringFeiletException("avsenderMottaker.id må være 11 siffer dersom avsenderMottaker.idType=FNR.");
-					}
-					break;
-				case ORGNR:
-					if (!avsenderMottaker.getId().matches("^\\d{9}$")) {
-						throw new InputValideringFeiletException("avsenderMottaker.id må være 9 siffer dersom avsenderMottaker.idType=ORGNR.");
-					}
-					break;
-				case HPRNR:
-					if (!avsenderMottaker.getId().matches("^\\d{7,9}$")) {
-						throw new InputValideringFeiletException("avsenderMottaker.id må være 7-9 siffer dersom avsenderMottaker.idType=HPRNR.");
-					}
-					break;
-				default:
-					// noop
-					break;
-			}
 		}
 	}
 
