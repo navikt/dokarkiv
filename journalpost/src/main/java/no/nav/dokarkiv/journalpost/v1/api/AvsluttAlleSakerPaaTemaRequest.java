@@ -1,9 +1,11 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
@@ -27,6 +29,7 @@ public record AvsluttAlleSakerPaaTemaRequest(
 				pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS",
 				example = "2025-03-07T10:58:53.470892300"
 		)
+		@JsonFormat(shape = STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 		LocalDateTime avsluttetDato,
 
 		@Schema(
