@@ -26,8 +26,8 @@ public record AvsluttAlleSakerPaaTemaRequest(
 		@Schema(
 				description = "Tidspunkt når sakene ble avsluttet. Settes kun dersom alle sakene på tema skal merkes med samme avsluttet dato.",
 				requiredMode = NOT_REQUIRED,
-				pattern = "yyyy-MM-dd'T'HH:mm:ss",
-				example = "2025-03-07T10:58:53"
+				example = "20230203",
+				pattern = "yyyyMMdd"
 		)
 		@JsonFormat(shape = STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 		LocalDateTime avsluttetDato,
