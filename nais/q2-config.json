@@ -558,6 +558,7 @@
       "app": "fpfordel",
       "namespace": "teamforeldrepenger",
       "cluster": "dev-fss"
+      "roles": ["finn_mottatte_journalposter"]
     },
     {
       "app": "fpsoknad-mottak",
