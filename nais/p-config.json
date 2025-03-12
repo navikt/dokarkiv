@@ -574,7 +574,7 @@
     {
       "app": "fpfordel",
       "namespace": "teamforeldrepenger",
-      "cluster": "prod-fss"
+      "cluster": "prod-fss",
       "roles": ["finn_mottatte_journalposter"]
     },
     {
