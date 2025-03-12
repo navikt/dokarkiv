@@ -26,6 +26,7 @@ public record AvsluttAlleSakerPaaTemaRequest(
 		@Schema(
 				description = "Tidspunkt når sakene ble avsluttet. Settes kun dersom alle sakene på tema skal merkes med samme avsluttet dato.",
 				requiredMode = NOT_REQUIRED,
+				type = "string",
 				example = "20230203",
 				pattern = "yyyyMMdd"
 		)
