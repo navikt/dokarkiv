@@ -608,6 +608,21 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "meldekort-backend",
+      "namespace": "aap",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "brev",
+      "namespace": "aap",
+      "cluster": "prod-gcp"
+    },
+    {
+      "app": "dokumentinnhenting",
+      "namespace": "aap",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "lps-oppfolgingsplan-mottak",
       "namespace": "team-esyfo",
       "cluster": "prod-gcp"
