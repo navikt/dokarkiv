@@ -35,7 +35,7 @@
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
-		<google-cloud-storage.version>2.46.0</google-cloud-storage.version>
+		<libraries-bom.version>26.56.0</libraries-bom.version>
 		<tink.version>1.16.0</tink.version>
 		<tink-gcpkms.version>1.10.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.14</blaze-persistence.version>
@@ -164,8 +164,10 @@
 			</dependency>
 			<dependency>
 				<groupId>com.google.cloud</groupId>
-				<artifactId>google-cloud-storage</artifactId>
-				<version>${google-cloud-storage.version}</version>
+				<artifactId>libraries-bom</artifactId>
+				<version>${libraries-bom.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.google.crypto.tink</groupId>
