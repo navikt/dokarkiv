@@ -52,7 +52,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	}
 
 	@Retryable(
-			include = HttpServerErrorException.class,
+			retryFor = HttpServerErrorException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Override
@@ -86,7 +86,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	}
 
 	@Retryable(
-			include = HttpServerErrorException.class,
+			retryFor = HttpServerErrorException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Override
@@ -120,7 +120,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	}
 
 	@Retryable(
-			include = HttpServerErrorException.class,
+			retryFor = HttpServerErrorException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Cacheable(HISTORISKE_IDENTER)
@@ -147,7 +147,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	}
 
 	@Retryable(
-			include = HttpServerErrorException.class,
+			retryFor = HttpServerErrorException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Override
@@ -173,7 +173,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	}
 
 	@Retryable(
-			include = HttpServerErrorException.class,
+			retryFor = HttpServerErrorException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Override
@@ -205,12 +205,12 @@ public class PdlIdentConsumer implements IdentConsumer {
 		variables.put("ident", ident);
 		return PdlRequest.builder()
 				.query("query hentPerson($ident: ID!) {hentPerson(ident: $ident) {\n" +
-						"navn(historikk: false) {\n" +
-						"  fornavn\n" +
-						"  mellomnavn\n" +
-						"  etternavn\n" +
-						"}" +
-						"}}")
+					   "navn(historikk: false) {\n" +
+					   "  fornavn\n" +
+					   "  mellomnavn\n" +
+					   "  etternavn\n" +
+					   "}" +
+					   "}}")
 				.variables(variables)
 				.build();
 	}
@@ -223,7 +223,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 						query hentIdenter($ident: ID!) {
 						 hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: true) {
 						 identer { ident gruppe historisk } } }
-						 """)
+						""")
 				.variables(variables)
 				.build();
 	}
@@ -243,8 +243,8 @@ public class PdlIdentConsumer implements IdentConsumer {
 
 	boolean isPdlResponseOrIdenterNull(PdlResponse pdlResponse) {
 		return Objects.isNull(pdlResponse.getData().getHentIdenter()) ||
-				Objects.isNull(pdlResponse.getData().getHentIdenter().getIdenter()) ||
-				pdlResponse.getData().getHentIdenter().getIdenter().isEmpty();
+			   Objects.isNull(pdlResponse.getData().getHentIdenter().getIdenter()) ||
+			   pdlResponse.getData().getHentIdenter().getIdenter().isEmpty();
 	}
 
 	String validateAndTrimIdent(String ident) {

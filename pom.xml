@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.6</version>
+		<version>3.4.3</version>
 	</parent>
 
 	<groupId>no.nav.dokarkiv</groupId>
@@ -31,23 +31,23 @@
 	<properties>
 		<java.version>21</java.version>
 
-		<cxf.version>4.0.5</cxf.version>
+		<cxf.version>4.1.1</cxf.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
-		<google-cloud-storage.version>2.46.0</google-cloud-storage.version>
+		<libraries-bom.version>26.56.0</libraries-bom.version>
 		<tink.version>1.16.0</tink.version>
 		<tink-gcpkms.version>1.10.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.14</blaze-persistence.version>
 		<commons-io.version>2.18.0</commons-io.version>
-		<microsoft-graph.version>6.23.0</microsoft-graph.version>
+		<microsoft-graph.version>6.31.0</microsoft-graph.version>
 		<azure-identity.version>1.14.2</azure-identity.version>
 		<!-- https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot -->
-		<springdoc-openapi-starter-webmvc-ui.version>2.6.0</springdoc-openapi-starter-webmvc-ui.version>
+		<springdoc-openapi-starter-webmvc-ui.version>2.8.5</springdoc-openapi-starter-webmvc-ui.version>
 
 		<!-- NAV -->
-		<token-support.version>5.0.13</token-support.version>
-		<verapdf.version>1.26.1</verapdf.version>
+		<token-support.version>5.0.19</token-support.version>
+		<verapdf.version>1.26.5</verapdf.version>
 
 		<!-- Tjenestegrensesnitt -->
 		<dok-legacy-tjenestespesifikasjoner.version>32-9d17b57</dok-legacy-tjenestespesifikasjoner.version>
@@ -164,8 +164,10 @@
 			</dependency>
 			<dependency>
 				<groupId>com.google.cloud</groupId>
-				<artifactId>google-cloud-storage</artifactId>
-				<version>${google-cloud-storage.version}</version>
+				<artifactId>libraries-bom</artifactId>
+				<version>${libraries-bom.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.google.crypto.tink</groupId>

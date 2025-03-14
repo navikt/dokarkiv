@@ -34,9 +34,8 @@ public class SecurityRestConfig {
 				.requestMatchers("/rest/journalpostapi/**",
 						"/rest/admin/**")
 				.permitAll();
-		httpSecurity.sessionManagement(configurer -> {
-			configurer.sessionCreationPolicy(STATELESS);
-		});
+		httpSecurity.sessionManagement(configurer ->
+				configurer.sessionCreationPolicy(STATELESS));
 		return httpSecurity.build();
 	}
 
