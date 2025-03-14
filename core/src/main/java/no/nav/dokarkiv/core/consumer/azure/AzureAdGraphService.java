@@ -43,7 +43,7 @@ public class AzureAdGraphService {
 	}
 
 	@Cacheable(value = NAVUSER_CACHE, key = "#navIdent")
-	@Retryable(exclude = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(noRetryFor = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public String hentFulltNavn(String navIdent) {
 		User user = getUser(navIdent);
 
@@ -54,7 +54,7 @@ public class AzureAdGraphService {
 		return user.getGivenName() + " " + user.getSurname();
 	}
 
-	@Retryable(exclude = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(noRetryFor = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId) {
 		List<DirectoryObject> result = graphServiceClient
 				.users()

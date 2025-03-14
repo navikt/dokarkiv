@@ -27,7 +27,7 @@ public class GoogleCloudBucketStorage implements BucketStorage {
 
 	@Override
 	@Retryable(
-			include = DokarkivTechnicalException.class,
+			retryFor = DokarkivTechnicalException.class,
 			backoff = @Backoff(delay = DELAY_SHORT,
 			multiplier = MULTIPLIER_SHORT)
 	)

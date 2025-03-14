@@ -92,7 +92,7 @@ public class OppdaterJournalpostService {
 	}
 
 	@Retryable(
-			include = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
+			retryFor = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
 			backoff = @Backoff(delay = RETRY_DELAY, multiplier = RETRY_MULTIPLIER)
 	)
 	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
