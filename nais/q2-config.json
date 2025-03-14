@@ -649,6 +649,11 @@
       "app": "mulighetsrommet-api",
       "namespace": "team-mulighetsrommet",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "saas-proxy",
+      "namespace": "teamcrm",
+      "cluster": "dev-gcp"
     }
   ]
 }
