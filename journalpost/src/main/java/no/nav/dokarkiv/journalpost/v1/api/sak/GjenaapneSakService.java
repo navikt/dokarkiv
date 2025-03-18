@@ -66,7 +66,7 @@ public class GjenaapneSakService {
 		return switch (gjenaapneSakRequest.getBruker().getIdType()) {
 			case ORGNR -> generateOrganisasjonSakCriteria(gjenaapneSakRequest);
 			case AKTOERID, FNR -> {
-				var aktoerIds = pdlIdentConsumer.hentHistoriskeAktoerIdsForAktoerId(gjenaapneSakRequest.getBruker().getId());
+				var aktoerIds = pdlIdentConsumer.hentAlleAktoerIdsForIdent(gjenaapneSakRequest.getBruker().getId());
 				yield generateAktoerIdSakCriteria(gjenaapneSakRequest, aktoerIds);
 			}
 		};

@@ -40,19 +40,19 @@ public class SafGraphqlConsumer {
 				.bodyValue(graphQLRequest)
 				.retrieve()
 				.toEntity(String.class)
-				.doOnError(this::handleError)
+				.onErrorMap(this::mapError)
 				.block();
 	}
 
-	private void handleError(Throwable error) {
+	private Throwable mapError(Throwable error) {
 		if (error instanceof WebClientResponseException response && response.getStatusCode().is4xxClientError()) {
-			throw new SafJournalpostUnauthorizedException(
+			return new SafJournalpostUnauthorizedException(
 					String.format("Tjenesten SAF (graphQL) feilet funksjonelt med status: %s, feilmelding: %s",
 							response.getStatusCode(),
 							response.getMessage()),
 					error);
 		} else {
-			throw new SafJournalpostQueryTechnicalException(
+			return new SafJournalpostQueryTechnicalException(
 					String.format("Tjenesten SAF (graphQL) feilet teknisk med feilmelding: %s", error.getMessage()),
 					error);
 		}
