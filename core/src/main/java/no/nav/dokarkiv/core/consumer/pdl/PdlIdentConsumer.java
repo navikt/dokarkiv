@@ -5,7 +5,6 @@ import no.nav.dokarkiv.core.consumer.azure.WebClientAzureAuthentication;
 import no.nav.dokarkiv.core.exceptions.PdlTechnicalException;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.util.NavHeadersFilter;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -18,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import static no.nav.dokarkiv.core.cache.CacheConfig.HISTORISKE_IDENTER;
 import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
 import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -63,7 +61,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.bodyValue(mapHentAktoerIdForFolkeregisterident(ident))
 				.retrieve()
 				.bodyToMono(PdlResponse.class)
-				.doOnError(this::handleError)
+				.onErrorMap(this::mapError)
 				.block();
 
 		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
@@ -97,7 +95,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.bodyValue(mapHentFolkeregisterIdentForAktoerId(ident))
 				.retrieve()
 				.bodyToMono(PdlResponse.class)
-				.doOnError(this::handleError)
+				.onErrorMap(this::mapError)
 				.block();
 
 		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
@@ -123,42 +121,15 @@ public class PdlIdentConsumer implements IdentConsumer {
 			retryFor = HttpServerErrorException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
-	@Cacheable(HISTORISKE_IDENTER)
 	@Override
-	public List<String> hentHistoriskeFolkeregisterIdenter(String folkeregisterIdent) throws PersonIkkeFunnetException {
-		String ident = validateAndTrimIdent(folkeregisterIdent);
+	public List<String> hentAlleAktoerIdsForIdent(final String ident) throws PersonIkkeFunnetException {
+		String trimmedIdent = validateAndTrimIdent(ident);
 
 		PdlResponse pdlResponse = webClient.post()
-				.bodyValue(mapHentHistoriskeFolkeregisterIdentForAktoerId(ident))
+				.bodyValue(mapHentAlleAktoerIdsForIdent(trimmedIdent))
 				.retrieve()
 				.bodyToMono(PdlResponse.class)
-				.doOnError(this::handleError)
-				.block();
-
-		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-			return pdlResponse.getData().getHentIdenter().getIdenter()
-					.stream().map(PdlResponse.PdlIdent::getIdent).toList();
-		} else {
-			if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
-				throw new PersonIkkeFunnetException("Fant ikke historiske identer for person i pdl.");
-			}
-			throw new PdlFunctionalException("Kunne ikke hente historiske identer for ident." + pdlResponse.getErrors());
-		}
-	}
-
-	@Retryable(
-			retryFor = HttpServerErrorException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
-	)
-	@Override
-	public List<String> hentHistoriskeAktoerIdsForAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
-		String ident = validateAndTrimIdent(folkeregisterIdent);
-
-		PdlResponse pdlResponse = webClient.post()
-				.bodyValue(mapHentHistoriskeAktoerIdsForIdent(ident))
-				.retrieve()
-				.bodyToMono(PdlResponse.class)
-				.doOnError(this::handleError)
+				.onErrorMap(this::mapError)
 				.block();
 
 		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
@@ -184,7 +155,8 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.bodyValue(mapHentPersonIdentForId(validateAndTrimIdent(ident)))
 				.retrieve()
 				.toEntity(PdlPersonResponse.class)
-				.doOnError(this::handleError).block();
+				.onErrorMap(this::mapError)
+				.block();
 
 		if (pdlPersonResponse.getBody().getData().getHentPerson() != null && !pdlPersonResponse.getBody().getData().getHentPerson().getNavn().isEmpty()) {
 			return pdlPersonResponse.getBody().getData().getHentPerson().getNavn().get(0).getFulltNavn();
@@ -215,20 +187,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.build();
 	}
 
-	private PdlRequest mapHentHistoriskeFolkeregisterIdentForAktoerId(final String ident) {
-		final HashMap<String, Object> variables = new HashMap<>();
-		variables.put("ident", ident);
-		return PdlRequest.builder()
-				.query("""
-						query hentIdenter($ident: ID!) {
-						 hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: true) {
-						 identer { ident gruppe historisk } } }
-						""")
-				.variables(variables)
-				.build();
-	}
-
-	private PdlRequest mapHentHistoriskeAktoerIdsForIdent(final String aktoerId) {
+	private PdlRequest mapHentAlleAktoerIdsForIdent(final String aktoerId) {
 		final HashMap<String, Object> variables = new HashMap<>();
 		variables.put("ident", aktoerId);
 		return PdlRequest.builder()
@@ -265,15 +224,15 @@ public class PdlIdentConsumer implements IdentConsumer {
 		return identTrimmed;
 	}
 
-	private void handleError(Throwable error) {
+	private Throwable mapError(Throwable error) {
 		if (error instanceof WebClientResponseException response && response.getStatusCode().is4xxClientError()) {
-			throw new PdlFunctionalException(
+			return new PdlFunctionalException(
 					String.format("Kall mot pdl feilet funksjonelt med statuskode=%s Feilmelding=%s",
 							response.getStatusCode(),
 							response.getMessage()),
 					error);
 		} else {
-			throw new PdlTechnicalException(
+			return new PdlTechnicalException(
 					String.format("Kall mot pdl feilet teknisk med feilmelding=%s", error.getMessage()),
 					error);
 		}

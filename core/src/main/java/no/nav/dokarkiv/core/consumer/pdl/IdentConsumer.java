@@ -1,13 +1,6 @@
 package no.nav.dokarkiv.core.consumer.pdl;
 
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
-import org.springframework.web.client.HttpServerErrorException;
-
 import java.util.List;
-
-import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
-import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 
 /**
  * Interface for tjenester relatert til henting av identer.
@@ -32,17 +25,13 @@ public interface IdentConsumer {
 	String hentFolkeregisterIdent(final String aktoerId) throws PersonIkkeFunnetException;
 
 	/**
-	 * Henter historiske folkeregister identer for folkeregisterIdent.
-	 * Et typisk tilfelle er at en person har fått ett D-nummer og deretter et fødselsnummer i folkeregisteret.
+	 * Henter alle aktørIds for ident (inkludert historiske identer)
 	 *
-	 * @param folkeregisterIdent Folkeregisterident tilhørende person
-	 * @return Liste av historiske folkeregisteridenter tilhørende person
-	 * @throws PersonIkkeFunnetException Finner ikke person
+	 * @param ident Både aktørId og folkeregisterIdent
+	 * @return Liste av alle aktørIds for ident. Inkludert historiske
+	 * @throws PersonIkkeFunnetException
 	 */
-	List<String> hentHistoriskeFolkeregisterIdenter(final String folkeregisterIdent) throws PersonIkkeFunnetException;
-
-	List<String> hentHistoriskeAktoerIdsForAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException;
-
+	List<String> hentAlleAktoerIdsForIdent(final String ident) throws PersonIkkeFunnetException;
 
 	/**
 	 * Henter personens fulle navn

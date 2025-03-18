@@ -157,7 +157,7 @@ public class AvsluttSakService {
 		return switch (avsluttSakRequest.getBruker().getIdType()) {
 			case ORGNR -> generateOrganisasjonSakCriteria(avsluttSakRequest);
 			case AKTOERID, FNR -> {
-				var aktoerIds = pdlIdentConsumer.hentHistoriskeAktoerIdsForAktoerId(avsluttSakRequest.getBruker().getId());
+				var aktoerIds = pdlIdentConsumer.hentAlleAktoerIdsForIdent(avsluttSakRequest.getBruker().getId());
 				yield generateAktoerIdCriteria(avsluttSakRequest, aktoerIds);
 			}
 		};
