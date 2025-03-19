@@ -104,6 +104,7 @@ public final class LastOppVedleggValidator {
 				.filter(it -> it.getDokumentInfo().hasArkivFormat())
 				.flatMap(it -> it.getDokumentInfo().getFildetaljerListe().stream())
 				.filter(FilDetaljer::isArkivVariant)
+				.filter(filDetaljer -> filDetaljer.getDokumentInfo().getDokumentInfoId() != null)
 				.collect(Collectors.toMap(FilDetaljer::getFilnavn, filDetaljer -> filDetaljer.getDokumentInfo().getDokumentInfoId()));
 
 		dokument.getDokumentvarianter().stream()
