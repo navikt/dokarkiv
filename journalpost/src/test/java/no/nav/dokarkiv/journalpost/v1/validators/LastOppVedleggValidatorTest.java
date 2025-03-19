@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.DuplikatVedleggException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeLeggeTilVedleggException;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
@@ -133,7 +134,7 @@ class LastOppVedleggValidatorTest {
 				.withMessage("dokument.dokumentvarianter[] inneholder mer enn én dokumentvariant med følgende variantformat(er): %s",
 						List.of(variantformat.name()));
 	}
-	
+
 	@ParameterizedTest
 	@EnumSource(value = JournalStatusCode.class, names = {"D"}, mode = EXCLUDE)
 	void shouldNotValidateJournalpostAndDokumentWhenJournalpoststatusIsNotUnderProduksjon(JournalStatusCode journalStatusCode) {
@@ -159,6 +160,7 @@ class LastOppVedleggValidatorTest {
 	@Test
 	void shouldNotValidateJournalpostAndDokumentWhenDuplicateVedleggExists() {
 		DokumentInfo vedlegg = createDokumentInfo();
+		vedlegg.setDokumentInfoId(1L);
 		vedlegg.clearFildetaljerListe();
 
 		FilDetaljer filDetaljer = createFildetaljerOgFilMedFilnavn(vedlegg, ARKIV, FILNAVN_VEDLEGG);
@@ -167,10 +169,9 @@ class LastOppVedleggValidatorTest {
 		Journalpost journalpost = createJournalpostUnderArbeid();
 		journalpost.addJournalpostDokumentInfoRelasjon(createVedleggRelasjon(journalpost, vedlegg));
 
-		assertThatExceptionOfType(KanIkkeLeggeTilVedleggException.class)
+		assertThatExceptionOfType(DuplikatVedleggException.class)
 				.isThrownBy(() -> LastOppVedleggValidator.validateJournalpostAndDokument(journalpost, DOKUMENT))
-				.withMessage("Dokument med variantformat=%s og filnavn=%s er allerede tilknyttet journalposten",
-						ARKIV.name(), FILNAVN_VEDLEGG);
+				.hasFieldOrPropertyWithValue("dokumentInfoId", 1L);
 	}
 
 	@ParameterizedTest

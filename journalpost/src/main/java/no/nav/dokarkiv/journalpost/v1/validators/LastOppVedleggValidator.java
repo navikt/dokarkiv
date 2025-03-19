@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.DuplikatVedleggException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeLeggeTilVedleggException;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
@@ -99,21 +100,20 @@ public final class LastOppVedleggValidator {
 	}
 
 	private static void validateDuplikatVedlegg(Journalpost journalpost, Dokument dokument) {
-
-		var filnavnForEksisterendeArkivVariant = journalpost.getJournalpostDokumentInfoRelasjoner().stream()
+		Map<String, Long> filnavn = journalpost.getJournalpostDokumentInfoRelasjoner().stream()
 				.filter(it -> it.getDokumentInfo().hasArkivFormat())
 				.flatMap(it -> it.getDokumentInfo().getFildetaljerListe().stream())
 				.filter(FilDetaljer::isArkivVariant)
-				.map(FilDetaljer::getFilnavn)
-				.toList();
+				.filter(filDetaljer -> filDetaljer.getDokumentInfo().getDokumentInfoId() != null)
+				.collect(Collectors.toMap(FilDetaljer::getFilnavn, filDetaljer -> filDetaljer.getDokumentInfo().getDokumentInfoId()));
 
 		dokument.getDokumentvarianter().stream()
 				.filter(it -> it.getVariantformat().equals(ARKIV.name()))
-				.filter(it -> filnavnForEksisterendeArkivVariant.contains(it.getFilnavn()))
-				.findFirst()
-				.ifPresent(duplikat -> {
-					throw new KanIkkeLeggeTilVedleggException("Dokument med variantformat=%s og filnavn=%s er allerede tilknyttet journalposten"
-							.formatted(ARKIV.name(), duplikat.getFilnavn()));
+				.findFirst().ifPresent(dokumentvariant -> {
+					if (filnavn.containsKey(dokumentvariant.getFilnavn())) {
+						long dokumentInfoId = filnavn.get(dokumentvariant.getFilnavn());
+						throw new DuplikatVedleggException(dokumentInfoId);
+					}
 				});
 	}
 }

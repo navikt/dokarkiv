@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
+import no.nav.dokarkiv.core.exceptions.DuplikatVedleggException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
@@ -48,7 +49,6 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
-import no.nav.dokarkiv.journalpost.v1.validators.LastOppVedleggValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import no.nav.security.token.support.core.api.Protected;
@@ -79,6 +79,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateEksternReferanseId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
+import static no.nav.dokarkiv.journalpost.v1.validators.LastOppVedleggValidator.validateRequest;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.MASKINELL_JOURNALFOERENDE_ENHET;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -127,7 +128,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@SwaggerFerdigstillJournalpost
 	@PatchMapping(value = "/{journalpostId}/ferdigstill")
-		public ResponseEntity<String> ferdigstillJournalpost(
+	public ResponseEntity<String> ferdigstillJournalpost(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal ferdigstilles", required = true, example = "77778888") String journalpostId,
 			@RequestBody FerdigstillJournalpostRequest request
 	) {
@@ -157,7 +158,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@SwaggerOppdaterDistribusjonsinfo
 	@PatchMapping("/{journalpostId}/oppdaterDistribusjonsinfo")
-		public ResponseEntity<String> oppdaterDistribusjonsinfo(
+	public ResponseEntity<String> oppdaterDistribusjonsinfo(
 			@PathVariable @Parameter(description = "IDen til journalposten som skal oppdateres", required = true, example = "77778888") String journalpostId,
 			@RequestBody OppdaterDistribusjonsinfoRequest request) {
 		MDC.put(MDC_REQUEST_ID, "oppdaterDistribusjonsinfo");
@@ -187,7 +188,7 @@ public class ArkiverOgJournalfoerRestController {
 	@SwaggerOppdaterJournalpost
 	@ResponseBody
 	@PutMapping(value = "/{journalpostId}")
-		public OppdaterJournalpostResponse oppdaterJournalpost(
+	public OppdaterJournalpostResponse oppdaterJournalpost(
 			@Parameter(
 					name = "journalpostId",
 					description = "Angir JournalpostId som skal oppdatere f.eks. 467011764",
@@ -216,7 +217,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@PostMapping
 	@SwaggerOpprettJournalpost
-		public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(
+	public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(
 			@RequestBody OpprettJournalpostRequest request,
 			@Parameter(
 					name = "forsoekFerdigstill",
@@ -297,7 +298,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@SwaggerFjernVedlegg
 	@PatchMapping("/{journalpostId}/fjernVedlegg")
-		public ResponseEntity<String> fjernVedleggTilknyttetJournalpost(@PathVariable String journalpostId,
+	public ResponseEntity<String> fjernVedleggTilknyttetJournalpost(@PathVariable String journalpostId,
 																	@RequestBody FjernVedleggTilknyttetJournalpostRequest request) {
 		MDC.put(MDCConstants.MDC_REQUEST_ID, "fjernVedleggTilknyttetJournalpost");
 		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
@@ -327,7 +328,7 @@ public class ArkiverOgJournalfoerRestController {
 	@Transactional
 	@PostMapping("/kopierJournalpost")
 	@SwaggerKopierJournalpost
-		public ResponseEntity<KopierJournalpostResponse> kopierJournalpost(
+	public ResponseEntity<KopierJournalpostResponse> kopierJournalpost(
 			@Parameter(
 					name = "kildeJournalpostId",
 					description = "Angir kildeJournalpostId som skal kopieres",
@@ -391,7 +392,7 @@ public class ArkiverOgJournalfoerRestController {
 		log.info("lastOppVedlegg har mottatt kall om å legge til vedlegg på journalpost med journalpostId={}", journalpostIdParsed);
 
 		try {
-			LastOppVedleggValidator.validateRequest(request);
+			validateRequest(request);
 
 			LastOppVedleggResponse response = lastOppVedleggService.lastOppVedlegg(journalpostIdParsed, request);
 
@@ -410,6 +411,9 @@ public class ArkiverOgJournalfoerRestController {
 			throw new ResponseStatusException(CONFLICT,
 					"Kunne ikke legge til vedlegg på journalpost med journalpostId=%s. %s"
 							.formatted(journalpostIdParsed, e.getMessage()));
+		} catch (DuplikatVedleggException e) {
+			return ResponseEntity.ok()
+					.body(new LastOppVedleggResponse(String.valueOf(e.getDokumentInfoId())));
 		}
 	}
 
