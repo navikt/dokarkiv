@@ -49,6 +49,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
 public class LastOppVedleggIT extends AbstractJournalpostIT {
 
@@ -289,7 +290,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	void shouldReturnConflictWhenDuplikatVedlegg() {
+	void shouldReturnOkWhenDuplikatVedlegg() {
 		DokumentInfo vedlegg = createDokumentInfo();
 		vedlegg.clearFildetaljerListe();
 
@@ -314,11 +315,12 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 						.build());
 
 		var request = new HttpEntity<>(requestBody, headers);
-		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(journalpostId), PATCH, request, String.class);
+		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(journalpostId), PATCH, request, LastOppVedleggResponse.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(CONFLICT);
+		assertThat(response.getStatusCode()).isEqualTo(OK);
 		assertThat(response.getBody())
-				.contains("Kunne ikke legge til vedlegg på journalpost med journalpostId=%s. Dokument med variantformat=%s og filnavn=%s er allerede tilknyttet journalposten"
-						.formatted(journalpostId, ARKIV.name(), FILNAVN_VEDLEGG));
+				.isNotNull()
+				.extracting(LastOppVedleggResponse::dokumentInfoId)
+				.isEqualTo(filDetaljer.getDokumentInfo().getDokumentInfoId().toString());
 	}
 }

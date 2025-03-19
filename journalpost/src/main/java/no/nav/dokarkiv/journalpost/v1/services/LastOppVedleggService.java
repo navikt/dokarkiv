@@ -14,8 +14,6 @@ import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.lastOppVedlegg.LastOppVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.lastOppVedlegg.LastOppVedleggResponse;
-import no.nav.dokarkiv.journalpost.v1.validators.DokumentValidator;
-import no.nav.dokarkiv.journalpost.v1.validators.LastOppVedleggValidator;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +26,8 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.TILKNYTT_NYTT_DO
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.IS;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.dokarkiv.journalpost.v1.validators.DokumentValidator.validateDokument;
+import static no.nav.dokarkiv.journalpost.v1.validators.LastOppVedleggValidator.validateJournalpostAndDokument;
 
 @Service
 public class LastOppVedleggService {
@@ -45,14 +45,13 @@ public class LastOppVedleggService {
 	}
 
 	public LastOppVedleggResponse lastOppVedlegg(long journalpostId, LastOppVedleggRequest request) {
-
-		DokumentValidator.validateDokument(request.dokument());
+		validateDokument(request.dokument());
 
 		var journalpost = journalpostRepository.fetchByIdWithJournalpostDokumentInfoRelasjoner(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException("Kunne ikke finne journalpost med journalpostId=%s i joark"
 						.formatted(journalpostId)));
 
-		LastOppVedleggValidator.validateJournalpostAndDokument(journalpost, request.dokument());
+		validateJournalpostAndDokument(journalpost, request.dokument());
 
 		var dokumentInfo = opprettDokumentInfo(journalpost, request);
 		var journalpostDokumentInfoRelasjon = opprettJournalpostDokumentInfoRelasjon(journalpost, dokumentInfo);
