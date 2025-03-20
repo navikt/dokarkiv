@@ -159,19 +159,28 @@ class LastOppVedleggValidatorTest {
 
 	@Test
 	void shouldNotValidateJournalpostAndDokumentWhenDuplicateVedleggExists() {
-		DokumentInfo vedlegg = createDokumentInfo();
-		vedlegg.setDokumentInfoId(1L);
-		vedlegg.clearFildetaljerListe();
-
-		FilDetaljer filDetaljer = createFildetaljerOgFilMedFilnavn(vedlegg, ARKIV, FILNAVN_VEDLEGG);
-		vedlegg.addFilDetaljer(filDetaljer);
+		DokumentInfo vedlegg1 = createVedlegg(1L, null);
+		DokumentInfo vedlegg2 = createVedlegg(2L, FILNAVN_VEDLEGG);
+		DokumentInfo vedlegg3 = createVedlegg(3L, FILNAVN_VEDLEGG);
 
 		Journalpost journalpost = createJournalpostUnderArbeid();
-		journalpost.addJournalpostDokumentInfoRelasjon(createVedleggRelasjon(journalpost, vedlegg));
+		journalpost.addJournalpostDokumentInfoRelasjon(createVedleggRelasjon(journalpost, vedlegg1));
+		journalpost.addJournalpostDokumentInfoRelasjon(createVedleggRelasjon(journalpost, vedlegg2));
+		journalpost.addJournalpostDokumentInfoRelasjon(createVedleggRelasjon(journalpost, vedlegg3));
 
 		assertThatExceptionOfType(DuplikatVedleggException.class)
 				.isThrownBy(() -> LastOppVedleggValidator.validateJournalpostAndDokument(journalpost, DOKUMENT))
-				.hasFieldOrPropertyWithValue("dokumentInfoId", 1L);
+				.hasFieldOrPropertyWithValue("dokumentInfoId", 2L);
+	}
+
+	private static DokumentInfo createVedlegg(long dokumentInfoId, String filnavn) {
+		DokumentInfo dokumentInfo = createDokumentInfo();
+		dokumentInfo.setDokumentInfoId(dokumentInfoId);
+		dokumentInfo.clearFildetaljerListe();
+
+		FilDetaljer filDetaljer = createFildetaljerOgFilMedFilnavn(dokumentInfo, ARKIV, filnavn);
+		dokumentInfo.addFilDetaljer(filDetaljer);
+		return dokumentInfo;
 	}
 
 	@ParameterizedTest

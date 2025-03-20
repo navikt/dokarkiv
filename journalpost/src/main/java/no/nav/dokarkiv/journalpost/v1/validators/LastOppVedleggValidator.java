@@ -9,15 +9,16 @@ import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.lastOppVedlegg.LastOppVedleggRequest;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toMap;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 public final class LastOppVedleggValidator {
 
@@ -41,7 +42,7 @@ public final class LastOppVedleggValidator {
 			throw new InputValideringFeiletException("dokument.tittel kan ikke være tom eller null");
 		}
 
-		if (CollectionUtils.isEmpty(dokument.getDokumentvarianter())) {
+		if (isEmpty(dokument.getDokumentvarianter())) {
 			throw new InputValideringFeiletException("dokument.dokumentvarianter[] kan ikke være null eller en tom liste");
 		}
 
@@ -105,7 +106,8 @@ public final class LastOppVedleggValidator {
 				.flatMap(it -> it.getDokumentInfo().getFildetaljerListe().stream())
 				.filter(FilDetaljer::isArkivVariant)
 				.filter(filDetaljer -> filDetaljer.getDokumentInfo().getDokumentInfoId() != null)
-				.collect(Collectors.toMap(FilDetaljer::getFilnavn, filDetaljer -> filDetaljer.getDokumentInfo().getDokumentInfoId()));
+				.filter(filDetaljer -> filDetaljer.getFilnavn() != null)
+				.collect(toMap(FilDetaljer::getFilnavn, filDetaljer -> filDetaljer.getDokumentInfo().getDokumentInfoId(), (first, second) -> first));
 
 		dokument.getDokumentvarianter().stream()
 				.filter(it -> it.getVariantformat().equals(ARKIV.name()))
