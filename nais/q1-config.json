@@ -41,11 +41,6 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "salesforce",
-      "namespace": "teamcrm",
-      "cluster": "dev-external"
-    },
-    {
       "app": "arbeid-og-inntekt-q1",
       "namespace": "team-inntekt",
       "cluster": "dev-fss"
@@ -560,11 +555,6 @@
       "app": "dokumentfordeling",
       "namespace": "arbeidsgiver",
       "cluster": "dev-fss"
-    },
-    {
-      "app": "saas-proxy",
-      "namespace": "teamcrm",
-      "cluster": "dev-gcp"
     },
     {
       "app": "dokumentinnhenting",
