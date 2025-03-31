@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
+import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -22,6 +23,7 @@ import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
+import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -56,12 +58,13 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.ORGANISASJON;
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
-import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.EESSI;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem.GSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.HPRNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
@@ -116,6 +119,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	private static final String BREVKODE = "brevkode";
 	private static final String JOURNALFOERENDE_ENHET = "9999";
 	private static final String SERVICE_USER_ID = "srvdokarkiv";
+	public static final String FAGSYSTEM_EESSI_PENSJON_AZP_NAME = "dev-gcp:eessipensjon:eessi-pensjon-journalforing-q2";
 
 	@BeforeEach
 	public void setUp() {
@@ -977,7 +981,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
@@ -995,7 +999,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_PEN)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
 				.sak(Sak.builder()
 						.sakstype(FAGSAK)
 						.fagsakId(PENSJON_FAGSAK_ID)
@@ -1020,7 +1024,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder().id(" ").build())
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
@@ -1042,7 +1046,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder().id("").build())
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
@@ -1064,7 +1068,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder().id("5").navn("Max Mekker").build())
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
@@ -1090,7 +1094,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder().navn("Nytt Navnesen").id(" ").idType(HPRNR).build())
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
@@ -1110,12 +1114,12 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen")
 				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR)
-				.mottakskanal(EESSI));
+				.mottakskanal(MottaksKanalCode.EESSI));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder().id(" ").idType(HPRNR).build())
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
@@ -1145,7 +1149,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder().id(updatedId).idType(updatedIdType).build())
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
@@ -1190,7 +1194,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
 				.tittel("Ny tittel")
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
@@ -1219,7 +1223,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(FNR).build())
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
 				.avsenderMottaker(AvsenderMottaker.builder().id("01234567891").idType(AvsenderMottakerIdType.FNR).build())
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
@@ -1310,6 +1314,33 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).isEmpty();
+	}
+
+	@Test
+	void shouldAllowOppdaterAvsenderMottakerForUtgaaendeEkspedertJournalpostWhenConsumerIsEessiPensjon() {
+		stubAzure();
+		happyPersonIdentStub();
+		Journalpost journalpost = buildAndCommit(buildJournalpost(U, E)
+				.mottakskanal(null)
+				.utsendingskanal(UtsendingsKanalCode.EESSI)
+				.endretAvNavn("saksbehandlersen"));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.id("12345678911")
+						.idType(AvsenderMottakerIdType.FNR)
+						.build())
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndRolesClaim(FAGSYSTEM_EESSI_PENSJON_AZP_NAME, ""));
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("12345678911");
 	}
 
 	@ParameterizedTest
