@@ -16,7 +16,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
-import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
@@ -56,7 +55,6 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.ALTINN;
 import static no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem.GSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
-import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.ARGUS;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.DAGPENGER;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.KELVIN;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
@@ -81,7 +79,6 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAIL_AKTOER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILNAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDFA;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XLSX;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FNR_2;
@@ -92,19 +89,16 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_WITH
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANAL_ALTINN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANAL_NAVNO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.PENSJON_FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_KTR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_SYM;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.XLSX_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
@@ -125,7 +119,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
-	private static final String FAGSYSTEM_ARGUS_AZP_NAME = "dev-fss:dsopkontroll:dsop-kontroll";
 	private static final Map<String, List<String>> FERDIGSTILL_QUERY = Map.of("forsoekFerdigstill", List.of("true"));
 	private final ObjectMapper mapper = new ObjectMapper();
 
@@ -807,172 +800,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(saksrelasjon.getFagsystem(), FagsystemCode.PEN);
 
 		assertEquals(sakTestRepository.count(), sakRepositoryCount);
-	}
-
-	@Test
-	public void happyPathKunOriginalFerdigstillingWhenArgusIsConsumerId() {
-		clearSakRepository();
-		restStsToken();
-		stubAzure();
-		happyAktoerIdStub();
-
-		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.navn("NAV Sparebank Oslo")
-						.build())
-				.tema(TEMA_KTR)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
-				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(ARGUS).build())
-				.kanal(KANAL_ALTINN)
-				.tittel("Kontoopplysninger")
-				.journalfoerendeEnhet("9999")
-				.dokumenter(singletonList(
-						Dokument.builder()
-								.tittel("Kontoopplysninger")
-								.brevkode("KONTOOPPLYSNINGER")
-								.dokumentvarianter(singletonList(DokumentVariant.builder()
-										.filtype(FILTYPE_XLSX)
-										.variantformat(VARIANTFORMAT_ORIGINAL)
-										.fysiskDokument(XLSX_DOKUMENT)
-										.build()))
-								.build()))
-				.build();
-
-		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndRolesClaim(FAGSYSTEM_ARGUS_AZP_NAME, ""));
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
-
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(sakTestRepository.count(), 1);
-
-		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
-		assertEquals(sak.getAktoerId(), AKTOER_ID);
-		assertTrue(isBlank(sak.getOrgnr()));
-		assertEquals(sak.getTema(), TEMA_KTR);
-		assertEquals(sak.getFagsakNr(), FAGSAK_ID);
-		assertEquals(sak.getApplikasjon(), ARGUS.name());
-
-		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
-		assertEquals(journalpost.getJournalstatus(), J);
-
-		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList).hasSize(3);
-	}
-
-	@Test
-	public void happyPathKunOriginalFerdigstillingWhenArgusIsConsumerIdMedFlereDokumenter() {
-		clearSakRepository();
-		restStsToken();
-		stubAzure();
-		happyAktoerIdStub();
-
-		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.navn("NAV Sparebank Oslo")
-						.build())
-				.tema(TEMA_KTR)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
-				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(ARGUS).build())
-				.kanal(KANAL_ALTINN)
-				.tittel("Kontoopplysninger")
-				.journalfoerendeEnhet("9999")
-				.dokumenter(List.of(
-						Dokument.builder()
-								.tittel("Kontoopplysninger")
-								.brevkode("KONTOOPPLYSNINGER")
-								.dokumentvarianter(singletonList(DokumentVariant.builder()
-										.filtype(FILTYPE_PDF)
-										.variantformat(VARIANTFORMAT_ARKIV)
-										.fysiskDokument(FYSISK_DOKUMENT)
-										.build()))
-								.build(),
-						Dokument.builder()
-								.tittel("Kontoopplysninger")
-								.brevkode("KONTOOPPLYSNINGER")
-								.dokumentvarianter(singletonList(DokumentVariant.builder()
-										.filtype(FILTYPE_XLSX)
-										.variantformat(VARIANTFORMAT_ORIGINAL)
-										.fysiskDokument(XLSX_DOKUMENT)
-										.build()))
-								.build(),
-						Dokument.builder()
-								.tittel("Kontoopplysninger")
-								.brevkode("KONTOOPPLYSNINGER")
-								.dokumentvarianter(singletonList(DokumentVariant.builder()
-										.filtype(FILTYPE_XLSX)
-										.variantformat(VARIANTFORMAT_ORIGINAL)
-										.fysiskDokument(XLSX_DOKUMENT)
-										.build()))
-								.build()
-				))
-				.build();
-
-		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndRolesClaim(FAGSYSTEM_ARGUS_AZP_NAME, ""));
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
-
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(sakTestRepository.count(), 1);
-
-		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
-		assertEquals(sak.getAktoerId(), AKTOER_ID);
-		assertTrue(isBlank(sak.getOrgnr()));
-		assertEquals(sak.getTema(), TEMA_KTR);
-		assertEquals(sak.getFagsakNr(), FAGSAK_ID);
-		assertEquals(sak.getApplikasjon(), ARGUS.name());
-
-		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
-		assertEquals(journalpost.getJournalstatus(), J);
-
-		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList).hasSize(3);
-	}
-
-	@Test
-	public void happyPathKunArkivFerdigstillingWhenArgusIsConsumerId() {
-		clearSakRepository();
-		restStsToken();
-		stubAzure();
-		happyAktoerIdStub();
-
-		OpprettJournalpostRequest request = createMinimalRequestWithAvsenderMottaker(INNGAAENDE)
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.navn("NAV Sparebank Oslo")
-						.build())
-				.tema(TEMA_KTR)
-				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
-				.sak(Sak.builder().sakstype(Sakstype.FAGSAK).fagsakId(FAGSAK_ID).fagsaksystem(ARGUS).build())
-				.kanal(KANAL_ALTINN)
-				.tittel("Kontoopplysninger")
-				.journalfoerendeEnhet("9999")
-				.dokumenter(singletonList(
-						Dokument.builder()
-								.tittel("Kontoopplysninger")
-								.brevkode("KONTOOPPLYSNINGER")
-								.dokumentvarianter(singletonList(DokumentVariant.builder()
-										.filtype(FILTYPE_PDF)
-										.variantformat(VARIANTFORMAT_ARKIV)
-										.fysiskDokument(FYSISK_DOKUMENT)
-										.build()))
-								.build()))
-				.build();
-
-		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndRolesClaim(FAGSYSTEM_ARGUS_AZP_NAME, ""));
-		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
-
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(sakTestRepository.count(), 1);
-
-		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
-		assertEquals(sak.getAktoerId(), AKTOER_ID);
-		assertTrue(isBlank(sak.getOrgnr()));
-		assertEquals(sak.getTema(), TEMA_KTR);
-		assertEquals(sak.getFagsakNr(), FAGSAK_ID);
-		assertEquals(sak.getApplikasjon(), ARGUS.name());
-
-		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
-		assertEquals(journalpost.getJournalstatus(), J);
-
-		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList).hasSize(3);
 	}
 
 	@Test

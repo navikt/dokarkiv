@@ -31,7 +31,6 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.isConsumerFagsystemArgus;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -121,11 +120,7 @@ public class FerdigstillJournalpostValidator {
 
 	private void verifyFildetaljerVariantFormat(Journalpost jp) {
 		try {
-			if (isConsumerFagsystemArgus()) {
-				verifyVarianterFagsystemArgus(jp);
-			} else {
-				jp.verifyArkivVariantOfAllDocuments();
-			}
+			jp.verifyArkivVariantOfAllDocuments();
 		} catch (InvalidJournalpostStructureException e) {
 			throw new KanIkkeFerdigstilleException("Journalposten mangler arkivvariant");
 		}
@@ -136,15 +131,6 @@ public class FerdigstillJournalpostValidator {
 				throw new KanIkkeFerdigstilleException("Journalposten inneholder flere dokumentvarianter med samme variantformat. Følgende duplikate varianter ble funnet: " + e.getMessage());
 			}
 		});
-	}
-
-	// For å støtte arkivering av Excel-filer fra Argus uten ARKIV-variant
-	private void verifyVarianterFagsystemArgus(Journalpost journalpost) {
-		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfos()) {
-			if (!dokumentInfo.hasArkivFormat() && !dokumentInfo.hasOriginalFormat()) {
-				throw new KanIkkeFerdigstilleException("Argus-arkivering må ha hoveddokument med minst en original-variant");
-			}
-		}
 	}
 
 	private void verifyAtLeastOneBrukerExists(Journalpost jp) {
