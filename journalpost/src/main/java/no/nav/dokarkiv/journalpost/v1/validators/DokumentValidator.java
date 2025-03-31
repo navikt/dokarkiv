@@ -22,8 +22,6 @@ import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDFA;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.XLSX;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.valueOf;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ORIGINAL;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.isConsumerFagsystemArgus;
 import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
 import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileContentContainsValidMagicNumber;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.validateSkjultTittel;
@@ -68,22 +66,9 @@ public final class DokumentValidator {
 		if (!isEmpty(dokument.getDokumentvarianter())) {
 			dokument.getDokumentvarianter().forEach(dokumentVariant -> validateDokumentvariant(dokumentIdx, dokumentVariant));
 			validateUniqueDokumentvariant(dokumentIdx, dokument);
-			// Spesialhåndtering for Argus (dsop-kontroll) slik at de kan ferdigstille Excel-filer som ORIGINAL variant
-			if (isConsumerFagsystemArgus()) {
-				validateDokumentvarianterFagsystemArgus(dokument);
-			} else {
-				validateOneArkivVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
-			}
+			validateOneArkivVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
 		} else {
 			throw new InputValideringFeiletException(format("Alle dokumenter må innholde en dokumentvariant av typen %s", ARKIV.name()));
-		}
-	}
-
-	private static void validateDokumentvarianterFagsystemArgus(Dokument dokument) {
-		try {
-			validateOneArkivVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
-		} catch (InputValideringFeiletException e) {
-			validateOneOriginalVariantFormatPerDokument(dokument.getDokumentvarianter(), dokument);
 		}
 	}
 
@@ -91,14 +76,10 @@ public final class DokumentValidator {
 		validateOneVariantFormatPerDokument(ARKIV.name(), dokumentvarianter, dokument);
 	}
 
-	private static void validateOneOriginalVariantFormatPerDokument(List<DokumentVariant> dokumentvarianter, Dokument dokument) {
-		validateOneVariantFormatPerDokument(ORIGINAL.name(), dokumentvarianter, dokument);
-	}
-
 	private static void validateOneVariantFormatPerDokument(String variantFormat, List<DokumentVariant> dokumentvarianter, Dokument dokument) {
 		if (dokumentvarianter.stream()
-				.filter(dokumentVariant -> dokumentVariant.getVariantformat().equals(variantFormat))
-				.count() != 1) {
+					.filter(dokumentVariant -> dokumentVariant.getVariantformat().equals(variantFormat))
+					.count() != 1) {
 			throw new InputValideringFeiletException(format("Alle dokumenter må innholde en dokumentvariant av typen %s. %s inneholder følgende varianter: %s",
 					variantFormat,
 					dokument.getTittel(),
