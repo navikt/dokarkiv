@@ -26,12 +26,12 @@ import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
-import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
+import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
 import java.time.LocalDate;
@@ -498,11 +498,24 @@ public class TestUtils {
 		);
 	}
 
-	public static KnyttTilAnnenSakRequest createKnyttTilAnnenSakRequest(String sakstype, String fagsakId, String fagsaksystem, String tema, BrukerIdType brukerIdType, String brukerId, String journalfoerendeEnhet) {
+	public static KnyttTilAnnenSakRequest createKnyttTilAnnenSakRequest(
+			String sakstype,
+			String fagsakId,
+			String fagsaksystem,
+			String tema,
+			BrukerIdType brukerIdType,
+			String brukerId,
+			String journalfoerendeEnhet,
+			List<String> dokumenter) {
 		no.nav.dokarkiv.journalpost.v1.api.Bruker bruker = no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
 				.idType(brukerIdType)
 				.id(brukerId)
 				.build();
+
+		var dokumentliste = dokumenter == null ? null : dokumenter.stream()
+				.map(no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.Dokument::new)
+				.toList();
+
 		return KnyttTilAnnenSakRequest.builder()
 				.sakstype(sakstype)
 				.fagsakId(fagsakId)
@@ -510,6 +523,7 @@ public class TestUtils {
 				.tema(tema)
 				.bruker(bruker)
 				.journalfoerendeEnhet(journalfoerendeEnhet)
+				.dokumenter(dokumentliste)
 				.build();
 	}
 

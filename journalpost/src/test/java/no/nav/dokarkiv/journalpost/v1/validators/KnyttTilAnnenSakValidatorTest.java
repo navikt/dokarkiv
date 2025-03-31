@@ -2,18 +2,25 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
-import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
-import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest.KnyttTilAnnenSakRequestBuilder;
+import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.Dokument;
+import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.KnyttTilAnnenSakRequest;
+import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.KnyttTilAnnenSakRequest.KnyttTilAnnenSakRequestBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.itest.KnyttTilAnnenSakIT.createKnyttTilAnnenSakRequestHappyPath;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTINFO_ID1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createKnyttTilAnnenSakRequest;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -46,6 +53,15 @@ class KnyttTilAnnenSakValidatorTest {
 	public void shouldValidateRequestWithAktoerid() {
 		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder()
 				.bruker(Bruker.builder().id(AKTOER_ID).idType(AKTOERID).build())
+				.build();
+
+		knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID);
+	}
+
+	@Test
+	public void shouldValidateRequestWithDokumenter() {
+		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder()
+				.dokumenter(List.of(new Dokument(DOKUMENTINFO_ID1)))
 				.build();
 
 		knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID);
@@ -152,7 +168,7 @@ class KnyttTilAnnenSakValidatorTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"0101011234", "010101123456"})
 	public void shouldThrowInputValideringFeiletExceptionWhenLengthOfFnrIsIncorrect(String brukerId) {
-		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, FNR, brukerId, JOURNALFOERENDE_ENHET);
+		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, FNR, brukerId, JOURNALFOERENDE_ENHET, List.of());
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
@@ -173,7 +189,7 @@ class KnyttTilAnnenSakValidatorTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"12345678", "1234567890"})
 	public void shouldThrowInputValideringFeiletExceptionWhenLengthOfOrgnrIsIncorrect(String brukerId) {
-		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, ORGNR, brukerId, JOURNALFOERENDE_ENHET);
+		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, ORGNR, brukerId, JOURNALFOERENDE_ENHET, List.of());
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
@@ -182,7 +198,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 	@Test
 	public void shouldThrowInputValideringFeiletExceptionForIllegalBrukerIdType() {
-		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, null, "010101123456", JOURNALFOERENDE_ENHET);
+		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, null, "010101123456", JOURNALFOERENDE_ENHET, List.of());
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
@@ -239,6 +255,39 @@ class KnyttTilAnnenSakValidatorTest {
 				.withMessageContaining(createFeilmelding("journalfoerendeEnhet må ha 4 siffer"));
 	}
 
+	@Test
+	public void shouldThrowInputValideringFeiletExceptionWhenDokumenterContainsDuplicates() {
+		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder()
+				.dokumenter(List.of(new Dokument(DOKUMENTINFO_ID1), new Dokument(DOKUMENTINFO_ID1)))
+				.build();
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
+				.withMessageContaining(createFeilmelding("dokumenter[] kan ikke inneholde duplikate dokumentInfoId-er. Mottok følgende duplikate dokumentInfoId-er: [%s]"
+						.formatted(DOKUMENTINFO_ID1)));
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	public void shouldThrowInputValideringFeiletExceptionWhenDokumenterIsEmptyOrContainsInvalidDokumentInfoIds(List<Dokument> dokumenter, String feilmelding) {
+		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder()
+				.dokumenter(dokumenter)
+				.build();
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
+				.withMessage(createFeilmelding(feilmelding));
+	}
+
+	static Stream<Arguments> shouldThrowInputValideringFeiletExceptionWhenDokumenterIsEmptyOrContainsInvalidDokumentInfoIds() {
+		final String ikkeNumeriskVerdiFeilmelding = "dokumenter[].dokumentInfoId kan ikke inneholde ikke-numeriske verdier. Mottok følgende dokumentInfoId(er) med ikke-numeriske verdier: [%s]";
+		return Stream.of(
+				Arguments.of(List.of(), "dokumenter[] kan ikke være tom"),
+				Arguments.of(List.of(new Dokument("")), ikkeNumeriskVerdiFeilmelding.formatted("")),
+				Arguments.of(List.of(new Dokument("123abc"), new Dokument("#$%")), ikkeNumeriskVerdiFeilmelding.formatted("123abc, #$%"))
+		);
+	}
+
 	private String createFeilmelding(String melding) {
 		return format(FEILMELDING, melding);
 	}
@@ -252,7 +301,8 @@ class KnyttTilAnnenSakValidatorTest {
 				.fagsaksystem(requestHappyPath.getFagsaksystem())
 				.tema(requestHappyPath.getTema())
 				.bruker(requestHappyPath.getBruker())
-				.journalfoerendeEnhet(requestHappyPath.getJournalfoerendeEnhet());
+				.journalfoerendeEnhet(requestHappyPath.getJournalfoerendeEnhet())
+				.dokumenter(requestHappyPath.getDokumenter());
 	}
 
 }

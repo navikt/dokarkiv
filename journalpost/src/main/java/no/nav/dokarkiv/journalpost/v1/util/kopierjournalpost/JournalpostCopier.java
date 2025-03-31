@@ -1,24 +1,29 @@
 package no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost;
 
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.Dokument;
 import org.slf4j.MDC;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 
 public class JournalpostCopier {
 
-	public Journalpost copy(Journalpost journalpost, String eksternReferanseId) {
+	public Journalpost copy(Journalpost journalpost, String eksternReferanseId, List<Dokument> dokumenter) {
 		Journalpost kopiertJournalpost = journalpost.toBuilder()
 				.journalpostId(null)
 				.opprettetAvNavn(null)
@@ -35,10 +40,7 @@ public class JournalpostCopier {
 
 		kopiertJournalpost.setSaksrelasjon(copySaksrelasjon(kopiertJournalpost, journalpost.getSaksrelasjon()));
 
-		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(
-				journalpostDokumentInfoRelasjon ->
-						kopiertJournalpost.addJournalpostDokumentInfoRelasjon(copyJournalpostDokumentInfoRelasjon(kopiertJournalpost, journalpostDokumentInfoRelasjon))
-		);
+		kopierDokumentinfoRelasjoner(journalpost, dokumenter, kopiertJournalpost);
 
 		for (Bruker bruker : journalpost.getBrukere()) {
 			kopiertJournalpost.addBruker(cloneBruker(bruker));
@@ -47,6 +49,28 @@ public class JournalpostCopier {
 		journalpost.getKryssreferanser().forEach(kopiertJournalpost::addKryssReferanse);
 
 		return kopiertJournalpost;
+	}
+
+	private void kopierDokumentinfoRelasjoner(Journalpost journalpost, List<Dokument> dokumenter, Journalpost kopiertJournalpost) {
+
+		if (dokumenter == null) {
+			journalpost.getJournalpostDokumentInfoRelasjoner().forEach(
+					journalpostDokumentInfoRelasjon ->
+							kopiertJournalpost.addJournalpostDokumentInfoRelasjon(copyJournalpostDokumentInfoRelasjon(kopiertJournalpost, journalpostDokumentInfoRelasjon)));
+		} else {
+			Map<Long, JournalpostDokumentInfoRelasjon> dokumentInfoRelasjonMap = journalpost.getJournalpostDokumentInfoRelasjoner().stream()
+					.collect(HashMap::new, (map, relasjon) -> map.put(relasjon.getDokumentInfo().getDokumentInfoId(), relasjon), HashMap::putAll);
+
+			var hoveddokument = dokumentInfoRelasjonMap.get(Long.parseLong(dokumenter.getFirst().dokumentInfoId()));
+			kopiertJournalpost.addJournalpostDokumentInfoRelasjon(copyJournalpostDokumentInfoRelasjon(kopiertJournalpost, hoveddokument, HOVEDDOKUMENT));
+
+			dokumenter.stream()
+					.skip(1) //Første element i dokumenter skal være hoveddokument
+					.map(Dokument::dokumentInfoId)
+					.map(Long::parseLong)
+					.map(dokumentInfoRelasjonMap::get)
+					.forEach(relasjon -> kopiertJournalpost.addJournalpostDokumentInfoRelasjon(copyJournalpostDokumentInfoRelasjon(kopiertJournalpost, relasjon, VEDLEGG)));
+		}
 	}
 
 	private String mapKanalReferanseId(Journalpost journalpost, String eksternReferanseId) {
@@ -87,11 +111,18 @@ public class JournalpostCopier {
 		return kopiertSaksrelasjon;
 	}
 
-	private JournalpostDokumentInfoRelasjon copyJournalpostDokumentInfoRelasjon(Journalpost kopiertJournalpost, JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon) {
+	private JournalpostDokumentInfoRelasjon copyJournalpostDokumentInfoRelasjon(Journalpost kopiertJournalpost,
+																				JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon) {
+		return copyJournalpostDokumentInfoRelasjon(kopiertJournalpost, journalpostDokumentInfoRelasjon, null);
+	}
+
+	private JournalpostDokumentInfoRelasjon copyJournalpostDokumentInfoRelasjon(Journalpost kopiertJournalpost,
+																				JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon,
+																				TilknyttetJournalpostSomCode tilknyttetJournalpostSom) {
 		JournalpostDokumentInfoRelasjon kopiertJournalpostdokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
 				.journalpost(kopiertJournalpost)
 				.dokumentInfo(journalpostDokumentInfoRelasjon.getDokumentInfo())
-				.tilknyttetJournalpostSom(journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom())
+				.tilknyttetJournalpostSom(tilknyttetJournalpostSom != null ? tilknyttetJournalpostSom : journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom())
 				.tilknyttetAvNavn(MDC.get(MDC_CONSUMER_ID))
 				.build();
 		kopiertJournalpostdokumentInfoRelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));

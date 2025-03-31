@@ -1,9 +1,12 @@
-package no.nav.dokarkiv.journalpost.v1.api;
+package no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Value;
+import no.nav.dokarkiv.journalpost.v1.api.Bruker;
+
+import java.util.List;
 
 @Value
 @Builder
@@ -21,9 +24,11 @@ public class KnyttTilAnnenSakRequest {
     Bruker bruker;
     @Schema(description = "NAV-enheten som personen som utfører journalføring jobber for", name = "journalfoerendeEnhet", example = "9999")
     String journalfoerendeEnhet;
+    @Schema(description = "Liste over dokumentene som skal kopieres over til ny journalpost.", name = "dokumenter", example = "[\"12345678\", \"09876543\"]")
+    List<Dokument> dokumenter;
 
     @JsonIgnore
     public String getLogFriendlyString(){
-        return String.format("sakstype=%s, fagsakId=%s, fagsaksystem=%s, tema=%s, journalførendeEnhet=%s", sakstype, fagsakId, fagsaksystem, tema, journalfoerendeEnhet);
+        return "sakstype=%s, fagsakId=%s, fagsaksystem=%s, tema=%s, journalførendeEnhet=%s, dokumenter=%s".formatted(sakstype, fagsakId, fagsaksystem, tema, journalfoerendeEnhet, dokumenter);
     }
 }
