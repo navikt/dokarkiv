@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak;
+package no.nav.dokarkiv.journalpost.v1.api.knytttilannensak;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,7 +25,8 @@ public class KnyttTilAnnenSakRequest {
     @Schema(description = "NAV-enheten som personen som utfører journalføring jobber for", name = "journalfoerendeEnhet", example = "9999")
     String journalfoerendeEnhet;
     @Schema(description = "Liste over dokumentene som skal kopieres over til ny journalpost.", name = "dokumenter", example = "[\"12345678\", \"09876543\"]")
-    List<Dokument> dokumenter;
+    @Builder.Default
+    List<Long> dokumenter = List.of();
 
     @JsonIgnore
     public String getLogFriendlyString(){

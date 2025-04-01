@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
-import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.Dokument;
 import no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.JournalpostCopier;
 import no.nav.dokarkiv.journalpost.v1.validators.KopierJournalpostValidator;
 import org.slf4j.MDC;
@@ -58,18 +57,18 @@ public class KopierJournalpostService {
 				return new KopierJournalpostResult(duplikatJournalpostId, true);
 			}
 		}
-		Long nyJournalpostId = doKopierJournalpost(journalpostId, eksternReferanseId, null);
+		Long nyJournalpostId = doKopierJournalpost(journalpostId, eksternReferanseId, List.of());
 		return new KopierJournalpostResult(nyJournalpostId, false);
 	}
 
-	public Long kopierJournalpost(Long journalpostId, List<Dokument> dokumenter) {
+	public Long kopierJournalpost(Long journalpostId, List<Long> dokumenter) {
 		if (journalpostId == null) {
 			throw new IllegalArgumentException("Kan ikke kopiere journalpost. journalpostId er null.");
 		}
 		return doKopierJournalpost(journalpostId, null, dokumenter);
 	}
 
-	private Long doKopierJournalpost(Long journalpostId, String eksternReferanseId, List<Dokument> dokumenter) {
+	private Long doKopierJournalpost(Long journalpostId, String eksternReferanseId, List<Long> dokumenter) {
 		// finn journalpost
 		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med kildeJournalpostId=%s i joark", journalpostId)));

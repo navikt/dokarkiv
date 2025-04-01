@@ -8,13 +8,13 @@ import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
-import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.KnyttTilAnnenSakRequest;
-import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.KnyttTilAnnenSakResponse;
+import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
+import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static no.nav.dokarkiv.journalpost.v1.util.knyttTilAnnenSak.DokumentUtils.sjekkOmAlleDokumenterEksistererPaaJournalposten;
-import static no.nav.dokarkiv.journalpost.v1.util.knyttTilAnnenSak.DokumentUtils.sjekkOmAlleDokumentvarianterErGyldige;
+import static no.nav.dokarkiv.journalpost.v1.util.knytttilannensak.DokumentUtils.sjekkOmAlleDokumenterEksistererPaaJournalposten;
+import static no.nav.dokarkiv.journalpost.v1.util.knytttilannensak.DokumentUtils.sjekkOmAlleDokumentvarianterErGyldige;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Slf4j

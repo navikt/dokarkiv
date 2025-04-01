@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.util.knyttTilAnnenSak;
+package no.nav.dokarkiv.journalpost.v1.util.knytttilannensak;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.consumers.saf.exceptions.saf.SafJournalpostUnauthorizedException;
@@ -6,8 +6,7 @@ import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo;
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo.DokumentInfo;
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo.Dokumentvariant;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
-import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.Dokument;
-import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.KnyttTilAnnenSakRequest;
+import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
 
 import java.util.List;
 import java.util.Set;
@@ -22,18 +21,12 @@ public class DokumentUtils {
 	public static void sjekkOmAlleDokumenterEksistererPaaJournalposten(KnyttTilAnnenSakRequest request,
 																	   SafJournalpostTo safJournalpost,
 																	   long journalpostId) {
-		if (request.getDokumenter() == null) {
-			return;
-		}
-
-		List<String> dokumenter = request.getDokumenter().stream()
-				.map(Dokument::dokumentInfoId)
-				.toList();
-		Set<String> journalpostDokumenter = safJournalpost.getDokumenter().stream()
+		Set<Long> journalpostDokumenter = safJournalpost.getDokumenter().stream()
 				.map(DokumentInfo::getDokumentInfoId)
+				.map(Long::parseLong)
 				.collect(Collectors.toSet());
 
-		List<String> ugyldigeDokumenter = dokumenter.stream()
+		List<Long> ugyldigeDokumenter = request.getDokumenter().stream()
 				.filter(dokument -> !journalpostDokumenter.contains(dokument))
 				.toList();
 

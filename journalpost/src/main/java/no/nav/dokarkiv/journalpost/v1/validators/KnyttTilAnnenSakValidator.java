@@ -3,8 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
-import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.Dokument;
-import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.KnyttTilAnnenSakRequest;
+import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -101,35 +100,9 @@ public class KnyttTilAnnenSakValidator {
 		}
 	}
 
-	private void validateDokumenter(List<Dokument> dokumenter) {
-		if (dokumenter == null) {
-			return;
-		}
-
-		if (dokumenter.isEmpty()) {
-			throw new InputValideringFeiletException("dokumenter[] kan ikke være tom");
-		}
-
-		validateUniqueDokumenter(dokumenter);
-		validateNumericDokumenter(dokumenter);
-	}
-
-	private static void validateNumericDokumenter(List<Dokument> dokumenter) {
-		var ugyldigeDokumentInfoIDer = dokumenter.stream()
-				.map(Dokument::dokumentInfoId)
-				.filter(d -> !isNumeric(d))
-				.toList();
-
-		if (!ugyldigeDokumentInfoIDer.isEmpty()) {
-			throw new InputValideringFeiletException(
-					"dokumenter[].dokumentInfoId kan ikke inneholde ikke-numeriske verdier. Mottok følgende dokumentInfoId(er) med ikke-numeriske verdier: %s"
-					.formatted(ugyldigeDokumentInfoIDer));
-		}
-	}
-
-	private static void validateUniqueDokumenter(List<Dokument> dokumenter) {
+	private void validateDokumenter(List<Long> dokumenter) {
 		var duplikateDokumentInfoIDer = dokumenter.stream()
-				.collect(Collectors.groupingBy(Dokument::dokumentInfoId, Collectors.counting()))
+				.collect(Collectors.groupingBy(dokumentInfoId -> dokumentInfoId, Collectors.counting()))
 				.entrySet().stream()
 				.filter(entry -> entry.getValue() > 1)
 				.map(Map.Entry::getKey)

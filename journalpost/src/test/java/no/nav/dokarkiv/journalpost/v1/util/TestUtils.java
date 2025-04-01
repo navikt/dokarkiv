@@ -31,7 +31,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
-import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.KnyttTilAnnenSakRequest;
+import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
 import java.time.LocalDate;
@@ -506,15 +506,11 @@ public class TestUtils {
 			BrukerIdType brukerIdType,
 			String brukerId,
 			String journalfoerendeEnhet,
-			List<String> dokumenter) {
+			List<Long> dokumenter) {
 		no.nav.dokarkiv.journalpost.v1.api.Bruker bruker = no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
 				.idType(brukerIdType)
 				.id(brukerId)
 				.build();
-
-		var dokumentliste = dokumenter == null ? null : dokumenter.stream()
-				.map(no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.Dokument::new)
-				.toList();
 
 		return KnyttTilAnnenSakRequest.builder()
 				.sakstype(sakstype)
@@ -523,7 +519,7 @@ public class TestUtils {
 				.tema(tema)
 				.bruker(bruker)
 				.journalfoerendeEnhet(journalfoerendeEnhet)
-				.dokumenter(dokumentliste)
+				.dokumenter(dokumenter)
 				.build();
 	}
 

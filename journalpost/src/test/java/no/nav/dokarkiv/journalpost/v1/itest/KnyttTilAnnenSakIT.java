@@ -8,13 +8,11 @@ import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.KnyttTilAnnenSakRequest;
-import no.nav.dokarkiv.journalpost.v1.api.knyttTilAnnenSak.KnyttTilAnnenSakResponse;
+import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
+import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -22,7 +20,6 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -45,7 +42,6 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoVedl
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.AVSENDER_MOTTAKER_ID;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTINFO_ID1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createKnyttTilAnnenSakRequest;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -91,7 +87,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 		Long journalpostId = journalpostTestRepository.persist(createJournalpostWithHoveddokument()).getJournalpostId();
 		commitAndStartNewTransaction();
 
-		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem, null), createHeadersWithUserAndServiceUserToken());
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem, List.of()), createHeadersWithUserAndServiceUserToken());
 		ResponseEntity<KnyttTilAnnenSakResponse> response = restTemplate.exchange(apiJournalpostPath(journalpostId + KNYTT_TIL_ANNEN_SAK), PUT, requestEntity, KnyttTilAnnenSakResponse.class);
 		assertEquals(OK, response.getStatusCode());
 
@@ -140,10 +136,9 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		List<String> dokumenter = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG).stream()
+		List<Long> dokumenter = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG).stream()
 				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
 				.map(DokumentInfo::getDokumentInfoId)
-				.map(String::valueOf)
 				.toList();
 
 		stubSafForDokumenter(dokumenter);
@@ -162,8 +157,8 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 
 		var nyJournalpost = journalpostTestRepository.findById(nyJournalpostId);
 
-		var hoveddokumentId = Long.parseLong(dokumenter.getFirst());
-		var vedleggId = Long.parseLong(dokumenter.getLast());
+		var hoveddokumentId = dokumenter.getFirst();
+		var vedleggId = dokumenter.getLast();
 
 		// Sjekk at de to dokumentene fra requesten blir kopiert til den nye journalposten, som henholdsvis hoveddokument (første element) og vedlegg (siste element)
 		assertThat(nyJournalpost)
@@ -181,13 +176,12 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 				);
 	}
 
-	@ParameterizedTest
-	@MethodSource
-	void shouldReturnBadRequestWhenDokumenterIsInvalid(List<String> dokumenter) {
+	@Test
+	void shouldReturnBadRequestWhenDokumenterContainsDuplicates() {
 		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 		stubAzure();
 
-		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(FAGSAK, FAGSAK_ID, FAGSAKSYSTEM, dokumenter), createHeadersWithUserAndServiceUserToken());
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(FAGSAK, FAGSAK_ID, FAGSAKSYSTEM, List.of(12345678L, 12345678L)), createHeadersWithUserAndServiceUserToken());
 		ResponseEntity<KnyttTilAnnenSakResponse> response = restTemplate.exchange(apiJournalpostPath(JOURNALPOST_ID + KNYTT_TIL_ANNEN_SAK), PUT, requestEntity, KnyttTilAnnenSakResponse.class);
 
 		assertThat(response).isNotNull();
@@ -195,14 +189,6 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 
 		//Feilmeldinger returneres ikke til konsument slik det er implementert nå, det bør sjekkes her når dette er utbedret
 		//assertThat(response.getBody()).isEqualTo("Validering feilet for journalpostId=%s. Feilmelding=%s".formatted(JOURNALPOST_ID, feilmelding));
-	}
-
-	private static Stream<Arguments> shouldReturnBadRequestWhenDokumenterIsInvalid() {
-		return Stream.of(
-				Arguments.of(List.of()), //kan ikke være tom
-				Arguments.of(List.of("abcdefgh", "111-222")), //kan ikke innholde ikke-numeriske tegn
-				Arguments.of(List.of(DOKUMENTINFO_ID1, DOKUMENTINFO_ID1)) //kan ikke inneholde duplikater
-		);
 	}
 
 	@Test
@@ -220,7 +206,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 		Long journalpostId = journalpostTestRepository.persist(createJournalpostWithHoveddokument()).getJournalpostId();
 		commitAndStartNewTransaction();
 
-		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(FAGSAK, FAGSAK_ID, FAGSAKSYSTEM, List.of("11111111")), createHeadersWithUserAndServiceUserToken());
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(FAGSAK, FAGSAK_ID, FAGSAKSYSTEM, List.of(11111111L)), createHeadersWithUserAndServiceUserToken());
 		ResponseEntity<KnyttTilAnnenSakResponse> response = restTemplate.exchange(apiJournalpostPath(journalpostId + KNYTT_TIL_ANNEN_SAK), PUT, requestEntity, KnyttTilAnnenSakResponse.class);
 
 		assertThat(response).isNotNull();
@@ -237,7 +223,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 			FAGSAK + ",," + FAGSAKSYSTEM + ",fagsakId kan ikke være null eller tom dersom sakstype=FAGSAK"
 	})
 	public void knyttTilAnnenSakShouldFailWithBadInput(String sakstype, String fagsakId, String fagsaksystem, String feilmelding) {
-		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem, null), createHeadersWithUserAndServiceUserToken());
+		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem, List.of()), createHeadersWithUserAndServiceUserToken());
 		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath("12345678910" + KNYTT_TIL_ANNEN_SAK), PUT, requestEntity, String.class);
 		assertTrue(response.getBody().contains(feilmelding));
 		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
@@ -270,15 +256,15 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 	}
 
 	public static KnyttTilAnnenSakRequest createKnyttTilAnnenSakRequestHappyPath() {
-		return createKnyttTilAnnenSakRequest(FAGSAK, FAGSAK_ID, FAGSAKSYSTEM, TEMA, FNR, GYLDIG_FNR, JOURNALFOERENDE_ENHET, null);
+		return createKnyttTilAnnenSakRequest(FAGSAK, FAGSAK_ID, FAGSAKSYSTEM, TEMA, FNR, GYLDIG_FNR, JOURNALFOERENDE_ENHET, List.of());
 	}
 
-	public static KnyttTilAnnenSakRequest createKnyttTilAnnenSakRequestHappyPath(String sakstype, String fagsakid, String fagsaksystem, List<String> dokumenter) {
+	public static KnyttTilAnnenSakRequest createKnyttTilAnnenSakRequestHappyPath(String sakstype, String fagsakid, String fagsaksystem, List<Long> dokumenter) {
 		return createKnyttTilAnnenSakRequest(sakstype, fagsakid, fagsaksystem, TEMA, FNR, GYLDIG_FNR, JOURNALFOERENDE_ENHET, dokumenter);
 	}
 
 	@SneakyThrows
-	private void stubSafForDokumenter(List<String> dokumenter) {
+	private void stubSafForDokumenter(List<Long> dokumenter) {
 
 		List<Map<String, Object>> dokumentliste = dokumenter.stream()
 				.map(dokumentInfoId -> {
