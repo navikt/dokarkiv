@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 
@@ -25,7 +26,7 @@ public class JournalpostCopier {
 	public Journalpost copy(Journalpost journalpost, String eksternReferanseId, List<Long> dokumenter) {
 		Journalpost kopiertJournalpost = journalpost.toBuilder()
 				.journalpostId(null)
-				.opprettetAvNavn(null)
+				.opprettetAvNavn(MDC.get(MDC_USER_NAME))
 				.tilleggsopplysninger(copyTilleggsopplysninger(journalpost.getTilleggsopplysninger()))
 				.saksrelasjon(null)
 				.kanalReferanseId(mapKanalReferanseId(journalpost, eksternReferanseId))
