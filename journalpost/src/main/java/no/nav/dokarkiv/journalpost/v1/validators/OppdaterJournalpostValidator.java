@@ -50,7 +50,6 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.isConsumerEessiPensjon;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -182,14 +181,8 @@ public final class OppdaterJournalpostValidator {
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet", journalpostStatus, journalpostType));
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "tema", journalpostStatus, journalpostType));
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTittel(), "tittel", journalpostStatus, journalpostType));
-			if (isConsumerEessiPensjon()) {
-				if (request.getAvsenderMottaker() != null && journalpostStatus != E) {
-					feilmeldinger.addAll(validateAvsenderMottaker(request.getAvsenderMottaker(), journalpostStatus, journalpostType));
-				}
-			} else {
-				if (request.getAvsenderMottaker() != null) {
-					feilmeldinger.addAll(validateAvsenderMottaker(request.getAvsenderMottaker(), journalpostStatus, journalpostType));
-				}
+			if (request.getAvsenderMottaker() != null) {
+				feilmeldinger.addAll(validateAvsenderMottaker(request.getAvsenderMottaker(), journalpostStatus, journalpostType));
 			}
 		} else {
 			if (request.getSak() != null) {

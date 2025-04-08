@@ -2,14 +2,11 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.MDC;
 
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.domain.entities.Journalpost.KANAL_REFERANSE_ID_LENGTH;
-import static no.nav.dokarkiv.core.properties.DokarkivProperties.FAGSYSTEM_EESSI_PENSJON;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public final class CommonValidator {
@@ -89,9 +86,5 @@ public final class CommonValidator {
 		if (o == null) {
 			throw new InputValideringFeiletException(feltnavn + " kan ikke være null" + (ekstraInformasjon != null ? ", " + ekstraInformasjon : "") + "!");
 		}
-	}
-
-	static boolean isConsumerEessiPensjon() {
-		return MDC.get(MDC_CONSUMER_ID) != null && MDC.get(MDC_CONSUMER_ID).contains(FAGSYSTEM_EESSI_PENSJON);
 	}
 }
