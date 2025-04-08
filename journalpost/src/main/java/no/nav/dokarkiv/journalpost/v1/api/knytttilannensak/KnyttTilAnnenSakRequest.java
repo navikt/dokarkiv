@@ -27,7 +27,7 @@ public class KnyttTilAnnenSakRequest {
     @Schema(description = "NAV-enheten som personen som utfører journalføring jobber for", name = "journalfoerendeEnhet", example = "9999")
     String journalfoerendeEnhet;
     @Schema(description = "Liste over dokumentene som skal kopieres over til ny journalpost.", name = "dokumenter", example = "[\"12345678\", \"09876543\"]")
-    @JsonSetter(contentNulls = Nulls.SKIP)
+    @JsonSetter(contentNulls = Nulls.SKIP, nulls = Nulls.AS_EMPTY)
     @Builder.Default
     List<Long> dokumenter = List.of();
 
