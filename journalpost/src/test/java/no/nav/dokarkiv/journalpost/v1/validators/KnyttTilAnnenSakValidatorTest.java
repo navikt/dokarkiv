@@ -2,12 +2,14 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
-import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
-import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest.KnyttTilAnnenSakRequestBuilder;
+import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
+import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest.KnyttTilAnnenSakRequestBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.List;
 
 import static java.lang.String.format;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
@@ -28,6 +30,7 @@ class KnyttTilAnnenSakValidatorTest {
 	private static final String AKTOER_ID = "12345612345";
 	private static final String ORG_NR = "123456789";
 	private static final long KILDE_JOURNALPOST_ID = 111111111;
+	private static final Long DOKUMENTINFO_ID = 12345678L;
 	private static final String JOURNALFOERENDE_ENHET = "9999";
 	private static final String FEILMELDING = "Validering feilet for journalpostId=111111111. Feilmelding=%s";
 
@@ -46,6 +49,15 @@ class KnyttTilAnnenSakValidatorTest {
 	public void shouldValidateRequestWithAktoerid() {
 		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder()
 				.bruker(Bruker.builder().id(AKTOER_ID).idType(AKTOERID).build())
+				.build();
+
+		knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID);
+	}
+
+	@Test
+	public void shouldValidateRequestWithDokumenter() {
+		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder()
+				.dokumenter(List.of(DOKUMENTINFO_ID))
 				.build();
 
 		knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID);
@@ -152,7 +164,7 @@ class KnyttTilAnnenSakValidatorTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"0101011234", "010101123456"})
 	public void shouldThrowInputValideringFeiletExceptionWhenLengthOfFnrIsIncorrect(String brukerId) {
-		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, FNR, brukerId, JOURNALFOERENDE_ENHET);
+		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, FNR, brukerId, JOURNALFOERENDE_ENHET, List.of());
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
@@ -173,7 +185,7 @@ class KnyttTilAnnenSakValidatorTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"12345678", "1234567890"})
 	public void shouldThrowInputValideringFeiletExceptionWhenLengthOfOrgnrIsIncorrect(String brukerId) {
-		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, ORGNR, brukerId, JOURNALFOERENDE_ENHET);
+		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, ORGNR, brukerId, JOURNALFOERENDE_ENHET, List.of());
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
@@ -182,7 +194,7 @@ class KnyttTilAnnenSakValidatorTest {
 
 	@Test
 	public void shouldThrowInputValideringFeiletExceptionForIllegalBrukerIdType() {
-		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, null, "010101123456", JOURNALFOERENDE_ENHET);
+		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createKnyttTilAnnenSakRequest(SAKSTYPE_FAGSAK, FAGSAK_ID, FAGSAK_SYSTEM, TEMA, null, "010101123456", JOURNALFOERENDE_ENHET, List.of());
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
@@ -239,6 +251,18 @@ class KnyttTilAnnenSakValidatorTest {
 				.withMessageContaining(createFeilmelding("journalfoerendeEnhet må ha 4 siffer"));
 	}
 
+	@Test
+	public void shouldThrowInputValideringFeiletExceptionWhenDokumenterContainsDuplicates() {
+		KnyttTilAnnenSakRequest knyttTilAnnenSakRequest = createStandardKnyttTilAnnenSakRequestBuilder()
+				.dokumenter(List.of(DOKUMENTINFO_ID, DOKUMENTINFO_ID))
+				.build();
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, KILDE_JOURNALPOST_ID))
+				.withMessageContaining(createFeilmelding("dokumenter[] kan ikke inneholde duplikate dokumentInfoId-er. Mottok følgende duplikate dokumentInfoId-er: [%s]"
+						.formatted(DOKUMENTINFO_ID)));
+	}
+
 	private String createFeilmelding(String melding) {
 		return format(FEILMELDING, melding);
 	}
@@ -252,7 +276,8 @@ class KnyttTilAnnenSakValidatorTest {
 				.fagsaksystem(requestHappyPath.getFagsaksystem())
 				.tema(requestHappyPath.getTema())
 				.bruker(requestHappyPath.getBruker())
-				.journalfoerendeEnhet(requestHappyPath.getJournalfoerendeEnhet());
+				.journalfoerendeEnhet(requestHappyPath.getJournalfoerendeEnhet())
+				.dokumenter(requestHappyPath.getDokumenter());
 	}
 
 }

@@ -5,15 +5,16 @@ import no.nav.dokarkiv.core.consumers.saf.SafJournalpostQueryService;
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
-import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
-import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakResponse;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
+import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
+import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static no.nav.dokarkiv.journalpost.v1.util.knyttTilAnnenSak.DokumentUtils.sjekkOmAlleDokumentvarianterErGyldige;
+import static no.nav.dokarkiv.journalpost.v1.util.knytttilannensak.DokumentUtils.sjekkOmAlleDokumenterEksistererPaaJournalposten;
+import static no.nav.dokarkiv.journalpost.v1.util.knytttilannensak.DokumentUtils.sjekkOmAlleDokumentvarianterErGyldige;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Slf4j
@@ -39,10 +40,11 @@ public class KnyttTilAnnenSakService {
 	public KnyttTilAnnenSakResponse knyttTilAnnenSak(KnyttTilAnnenSakRequest knyttTilAnnenSakRequest, long kildeJournalpostId) {
 		// 3. Sjekk tilgang til å knytte dokumenter på journalpost til ny sak.
 		SafJournalpostTo safJournalpostFra = safJournalpostQueryService.hentJournalpost(kildeJournalpostId);
+		sjekkOmAlleDokumenterEksistererPaaJournalposten(knyttTilAnnenSakRequest, safJournalpostFra, kildeJournalpostId);
 		sjekkOmAlleDokumentvarianterErGyldige(safJournalpostFra, kildeJournalpostId);
 
 		// 4. Kopier kildejournalpost, ny journalpost vil få midlertidlig journalpostStatus = "OD"/"R"
-		Long nyJournalpostId = kopierJournalpostService.kopierJournalpost(kildeJournalpostId);
+		Long nyJournalpostId = kopierJournalpostService.kopierJournalpost(kildeJournalpostId, knyttTilAnnenSakRequest.getDokumenter());
 		log.info("knyttTilAnnenSak har kopiert journalpost med journalpostId={} til ny journalpost med journalpostId={}", kildeJournalpostId, nyJournalpostId);
 
 		// 5. Oppdater journalpost med ny sak

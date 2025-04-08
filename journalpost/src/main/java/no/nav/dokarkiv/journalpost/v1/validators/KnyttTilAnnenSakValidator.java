@@ -3,9 +3,13 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
-import no.nav.dokarkiv.journalpost.v1.api.KnyttTilAnnenSakRequest;
+import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
@@ -29,6 +33,7 @@ public class KnyttTilAnnenSakValidator {
 			validateBruker(request.getBruker());
 			validateTema(request.getTema());
 			validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet());
+			validateDokumenter(request.getDokumenter());
 		} catch (InputValideringFeiletException e) {
 			throw new InputValideringFeiletException(format("Validering feilet for journalpostId=%s. Feilmelding=%s", kildeJournalpostId, e.getMessage()));
 		}
@@ -92,6 +97,21 @@ public class KnyttTilAnnenSakValidator {
 		}
 		if (journalfoerendeEnhet.length() != JOURNALFOERENDE_ENHET_LENGTH) {
 			throw new InputValideringFeiletException("journalfoerendeEnhet må ha 4 siffer");
+		}
+	}
+
+	private void validateDokumenter(List<Long> dokumenter) {
+		var duplikateDokumentInfoIDer = dokumenter.stream()
+				.collect(Collectors.groupingBy(dokumentInfoId -> dokumentInfoId, Collectors.counting()))
+				.entrySet().stream()
+				.filter(entry -> entry.getValue() > 1)
+				.map(Map.Entry::getKey)
+				.toList();
+
+		if (!duplikateDokumentInfoIDer.isEmpty()) {
+			throw new InputValideringFeiletException(
+					"dokumenter[] kan ikke inneholde duplikate dokumentInfoId-er. Mottok følgende duplikate dokumentInfoId-er: %s"
+					.formatted(duplikateDokumentInfoIDer));
 		}
 	}
 }

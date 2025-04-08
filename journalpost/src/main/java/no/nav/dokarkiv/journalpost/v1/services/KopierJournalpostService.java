@@ -14,6 +14,7 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -56,18 +57,18 @@ public class KopierJournalpostService {
 				return new KopierJournalpostResult(duplikatJournalpostId, true);
 			}
 		}
-		Long nyJournalpostId = doKopierJournalpost(journalpostId, eksternReferanseId);
+		Long nyJournalpostId = doKopierJournalpost(journalpostId, eksternReferanseId, List.of());
 		return new KopierJournalpostResult(nyJournalpostId, false);
 	}
 
-	public Long kopierJournalpost(Long journalpostId) {
+	public Long kopierJournalpost(Long journalpostId, List<Long> dokumenter) {
 		if (journalpostId == null) {
 			throw new IllegalArgumentException("Kan ikke kopiere journalpost. journalpostId er null.");
 		}
-		return doKopierJournalpost(journalpostId, null);
+		return doKopierJournalpost(journalpostId, null, dokumenter);
 	}
 
-	private Long doKopierJournalpost(Long journalpostId, String eksternReferanseId) {
+	private Long doKopierJournalpost(Long journalpostId, String eksternReferanseId, List<Long> dokumenter) {
 		// finn journalpost
 		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(format("Kunne ikke finne journalpost med kildeJournalpostId=%s i joark", journalpostId)));
@@ -75,7 +76,7 @@ public class KopierJournalpostService {
 		kopierJournalpostValidator.validate(journalpost);
 
 		// kopier journalpost
-		Journalpost nyJournalpost = journalpostCopier.copy(journalpost, eksternReferanseId);
+		Journalpost nyJournalpost = journalpostCopier.copy(journalpost, eksternReferanseId, dokumenter);
 
 		// Nullstill saksrelasjon på den nye journalposten.
 		nyJournalpost.setSaksrelasjon(null);

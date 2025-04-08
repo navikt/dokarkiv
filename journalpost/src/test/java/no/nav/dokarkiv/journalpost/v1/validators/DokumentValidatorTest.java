@@ -30,7 +30,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_WITH_INVALID_MAGIC_NUMBER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_UGYLDIG;
-import static no.nav.dokarkiv.journalpost.v1.util.knyttTilAnnenSak.DokumentUtilsTest.VARIANTFORMAT_ARKIV;
+import static no.nav.dokarkiv.journalpost.v1.util.knytttilannensak.DokumentUtilsTest.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;

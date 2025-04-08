@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api;
+package no.nav.dokarkiv.journalpost.v1.api.knytttilannensak;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

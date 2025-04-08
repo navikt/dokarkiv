@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.util.knyttTilAnnenSak;
+package no.nav.dokarkiv.journalpost.v1.util.knytttilannensak;
 
 import no.nav.dokarkiv.core.consumers.saf.journalpost.SafJournalpostTo;
 
