@@ -23,7 +23,6 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.Long.parseLong;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.PEN;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
@@ -146,6 +146,6 @@ public class TestDataUtils {
 	}
 
 	public static Journalpost createJournalpost() {
-		return createJournalpost("123", Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()), J, PEN).build();
+		return createJournalpost("123", Date.from(LocalDateTime.now().atZone(ZONEID_NORGE).toInstant()), J, PEN).build();
 	}
 }

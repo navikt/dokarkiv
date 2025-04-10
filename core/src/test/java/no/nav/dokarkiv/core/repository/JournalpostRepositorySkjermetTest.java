@@ -20,10 +20,10 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
 
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
 import static org.hamcrest.CoreMatchers.is;
@@ -218,7 +218,7 @@ public class JournalpostRepositorySkjermetTest {
 	}
 
 	static Journalpost createUniqueJournalpost() {
-		return createJournalpost("123", Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()), JournalStatusCode.J, FagomradeCode.PEN)
+		return createJournalpost("123", Date.from(LocalDateTime.now().atZone(ZONEID_NORGE).toInstant()), JournalStatusCode.J, FagomradeCode.PEN)
 				.kanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID())
 				.build();
 	}

@@ -15,7 +15,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -30,7 +30,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 
 	private static final Boolean OBSERVED_VALUE = true;
-	private static final String ZONEID_NORGE = "Europe/Oslo";
 	private final Map<Long, JournalpostDto> journalposter = new HashMap<>();
 	private final MultiKeyMap<Object, Boolean> tilleggsopplysninger = new MultiKeyMap<>();
 	private final MultiKeyMap<Long, Boolean> dokumenter = new MultiKeyMap<>();
@@ -266,7 +265,7 @@ public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 		if (date == null) {
 			return null;
 		}
-		return ZonedDateTime.from(date.toInstant().atZone(ZoneId.of(ZONEID_NORGE)));
+		return date.toInstant().atZone(ZONEID_NORGE);
 	}
 
 	private static Long mapZeroToNull(Long value) {

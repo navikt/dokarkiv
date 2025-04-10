@@ -16,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
+import java.time.ZoneId;
 
 @ComponentScan
 @Configuration
@@ -24,6 +25,8 @@ import java.time.Duration;
 @EnableAspectJAutoProxy
 @EnableRetry
 public class CoreConfig {
+
+	public static final ZoneId ZONEID_NORGE = ZoneId.of("Europe/Oslo");
 
 	@Bean
 	WebClient webClient(WebClient.Builder webClientBuilder) {

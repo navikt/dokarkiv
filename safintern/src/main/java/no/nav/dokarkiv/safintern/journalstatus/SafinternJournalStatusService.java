@@ -23,10 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Set;
+
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 
 @Slf4j
 @Component
@@ -34,7 +35,6 @@ import java.util.Set;
 public class SafinternJournalStatusService {
 	private static final EnumSet<JournalStatusCode> GYLDIGE_JOURNALSTATUSER = EnumSet.of(JournalStatusCode.U, JournalStatusCode.UB);
 	public static final int MAX_PAGE_SIZE = 1000;
-	public static final ZoneId NORGE_ZONE = ZoneId.of("Europe/Oslo");
 
 	private final SafinternJournalStatusRepository repository;
 	private final KeysetPageSerializerDeserializer<Long> keysetPageSerializerDeserializer;
@@ -79,7 +79,7 @@ public class SafinternJournalStatusService {
 		if (finnJournalposterStatusRequest.fraDato() != null) {
 			return LocalDate.parse(finnJournalposterStatusRequest.fraDato())
 					.atStartOfDay()
-					.atZone(NORGE_ZONE)
+					.atZone(ZONEID_NORGE)
 					.toInstant();
 		}
 		throw new UgyldigJournalpostQueryStartDatoException();

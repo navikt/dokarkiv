@@ -16,7 +16,6 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -24,6 +23,7 @@ import java.util.List;
 import static java.time.Instant.now;
 import static java.time.ZoneId.systemDefault;
 import static java.util.Collections.singletonList;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
@@ -87,7 +87,7 @@ public class AvsluttSakService {
 			sak.setSakStatus(AVBRUTT);
 			sak.setKassasjonStatus(KLAR_FOR_KASSASJON);
 			sak.setAvleveringStatus(AvleveringStatusCode.AVBRUTT);
-			sak.setDatoEndret(Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()));
+			sak.setDatoEndret(Date.from(LocalDateTime.now().atZone(ZONEID_NORGE).toInstant()));
 			sak.setEndretAv(determineSaksbehandler());
 		});
 	}
@@ -99,7 +99,7 @@ public class AvsluttSakService {
 			sak.setKassasjonStatus(null);
 			sak.setEndretAv(MDC.get(MDC_USER_ID));
 			sak.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-			sak.setDatoEndret(Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()));
+			sak.setDatoEndret(Date.from(LocalDateTime.now().atZone(ZONEID_NORGE).toInstant()));
 			sak.setDatoAvsluttet(determineDatoAvsluttet(avsluttSakRequest));
 			sak.setAdministrativEnhet(avsluttSakRequest.getAdministrativEnhet());
 			sak.setDatoSakOpprettet(convertLocalDateTimeToDate(avsluttSakRequest.getOpprettetDato()));
@@ -116,7 +116,7 @@ public class AvsluttSakService {
 	}
 
 	private Date determineDatoAvsluttet(AvsluttSakRequest avsluttSakRequest) {
-		return avsluttSakRequest.getAvsluttetDato() == null ? Date.from(LocalDateTime.now().atZone(ZoneId.of("Europe/Oslo")).toInstant()) :
+		return avsluttSakRequest.getAvsluttetDato() == null ? Date.from(LocalDateTime.now().atZone(ZONEID_NORGE).toInstant()) :
 				convertLocalDateTimeToDate(avsluttSakRequest.getAvsluttetDato());
 	}
 

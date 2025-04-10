@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -30,13 +29,13 @@ import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static java.util.function.Predicate.not;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 
 @Slf4j
 @Component
 @Transactional(readOnly = true)
 public class SafinternFinnJournalposterService {
 	public static final int DEFAULT_PAGE_SIZE = 200;
-	public static final ZoneId NORGE_ZONE = ZoneId.of("Europe/Oslo");
 
 	private final SafinternFinnJournalposterRepository repository;
 	private final KeysetPageSerializerDeserializer<Long> keysetPageSerializerDeserializer;
@@ -89,7 +88,7 @@ public class SafinternFinnJournalposterService {
 				.map(date ->
 						LocalDate.parse(date)
 								.atStartOfDay()
-								.atZone(NORGE_ZONE)
+								.atZone(ZONEID_NORGE)
 								.toInstant());
 	}
 

@@ -28,7 +28,6 @@ import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,6 +39,7 @@ import static java.time.temporal.ChronoField.HOUR_OF_DAY;
 import static java.time.temporal.ChronoField.MILLI_OF_SECOND;
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
@@ -94,7 +94,7 @@ public class TestdataFactory {
 	public static final String FIL_UUID_ARKIV_VEDLEGG = "filUuidVedleggArkiv";
 	public static final String FIL_UUID_PRODUKSJON_VEDLEGG = "filUuidVedleggProduksjon";
 	public static final String GSAK_ORGNR = "812345678";
-	public static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2023-08-11T12:01:01.001Z"), ZoneId.of("Europe/Oslo"));
+	public static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2023-08-11T12:01:01.001Z"), ZONEID_NORGE);
 
 	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(long sakId) {
 		return createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(createSaksrelasjon(sakId));

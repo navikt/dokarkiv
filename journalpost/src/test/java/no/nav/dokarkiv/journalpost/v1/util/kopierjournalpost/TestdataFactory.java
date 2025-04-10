@@ -24,12 +24,12 @@ import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.time.Instant.now;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode.FNR;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.ES;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.JSON;
@@ -76,7 +76,7 @@ public class TestdataFactory {
 	static final String FIL_UUID_ARKIV_VEDLEGG = "filUuidVedleggArkiv";
 	static final String FIL_UUID_PRODUKSJON_VEDLEGG = "filUuidVedleggProduksjon";
 	static final Long SAK_ID = 12223344L;
-	private static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2023-08-11T12:01:01.001Z"), ZoneId.of("Europe/Oslo"));
+	private static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2023-08-11T12:01:01.001Z"), ZONEID_NORGE);
 
 	public static Journalpost createJournalpostWithHoveddokumentAndVedlegg(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus) {
 		Journalpost journalpost = Journalpost.builder()
