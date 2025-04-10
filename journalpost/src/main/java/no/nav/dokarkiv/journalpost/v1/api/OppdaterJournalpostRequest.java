@@ -87,7 +87,7 @@ public class OppdaterJournalpostRequest {
 	@Schema(
 			description = """
 					Brukes for å datere innholdet i hoveddokumentet.
-					     
+					
 					Skal kun brukes dersom innholdet i dokumentet har en annen datering enn tidspunktet for opprettelse av journalposten.
 					""",
 			example = "2023-02-22T10:58:53.470892300"
@@ -98,7 +98,6 @@ public class OppdaterJournalpostRequest {
 	@Schema(
 			description = "Dato forsendelsen ble mottatt fra avsender. Feltet kan kun settes for inngående journalposter.",
 			example = "2019-11-29")
-	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date datoMottatt;
 
 	@Schema(
@@ -124,13 +123,13 @@ public class OppdaterJournalpostRequest {
 					som et skjemaløst nøkkel-verdi-sett og valideres ikke ved arkivering. Et eksempel på et slikt sett kan være
 					nøkkel: bucid og verdi: 12345.
 					"""
-		)
+	)
 	)
 	private List<Tilleggsopplysning> tilleggsopplysninger;
 
 	@ArraySchema(arraySchema = @Schema(
 			description = "Liste over dokumentene på journalposten der metadata skal endres"
-		)
+	)
 	)
 	private List<DokumentInfo> dokumenter;
 }
