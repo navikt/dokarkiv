@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.validators;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
@@ -55,6 +56,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
+@Slf4j
 public final class OppdaterJournalpostValidator {
 
 	private static final int FNR_LENGTH = 11;
@@ -97,7 +99,12 @@ public final class OppdaterJournalpostValidator {
 		}
 
 		if (request.getDatoDokument() != null) {
+			log.info("oppdaterJournalpost datoDokument={}", request.getDatoDokument());
 			feilmeldinger.add(validateDatoKanIkkeVaereIFremtid(request.getDatoDokument(), "datoDokument"));
+		}
+
+		if (request.getDatoMottatt() != null) {
+			log.info("oppdaterJournalpost datoMottatt={}", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(request.getDatoMottatt()));
 		}
 
 		if (request.getOverstyrInnsynsregler() != null) {

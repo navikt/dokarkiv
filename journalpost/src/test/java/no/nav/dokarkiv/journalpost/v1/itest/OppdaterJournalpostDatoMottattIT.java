@@ -23,7 +23,12 @@ public class OppdaterJournalpostDatoMottattIT extends AbstractJournalpostIT {
 
 	@ParameterizedTest
 	@ValueSource(strings = {
-			"1744182775271"
+			"1744182775271",
+			"\"2025-04-09T07:12:55.271\"",
+			"\"2025-04-09T07:12:55.271Z\"",
+			"\"2025-04-09T09:12:55.271+02:00\"",
+			"\"2025-04-09T07:12:55.271+00:00\"",
+			"\"2025-04-09T07:12:55.271000000Z\""
 	})
 	public void shouldOppdaterJournalpostWithDatoMottatt(String datoMottatt) {
 		restStsToken();
@@ -51,13 +56,7 @@ public class OppdaterJournalpostDatoMottattIT extends AbstractJournalpostIT {
 
 	@ParameterizedTest
 	@ValueSource(strings = {
-			"\"2025-04-09\"",
-			// Det er kun dato-presisjon på oppdaterJournalpost pga @JsonFormat, derfor mister disse tiden
-			"\"2025-04-09T07:12:55.271\"",
-			"\"2025-04-09T07:12:55.271Z\"",
-			"\"2025-04-09T09:12:55.271+02:00\"",
-			"\"2025-04-09T07:12:55.271+00:00\"",
-			"\"2025-04-09T07:12:55.271000000Z\""
+			"\"2025-04-09\""
 	})
 	public void shouldOppdaterJournalpostWithDatoMottattOnlyDate(String datoMottatt) {
 		restStsToken();
