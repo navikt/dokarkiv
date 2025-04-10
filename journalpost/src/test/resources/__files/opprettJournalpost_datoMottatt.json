@@ -1,0 +1,22 @@
+{
+  "journalposttype": "INNGAAENDE",
+  "kanal": "NAV_NO",
+  "datoMottatt": {{datoMottatt}},
+  "eksternReferanseId": "{{eksternReferanseId}}",
+  "avsenderMottaker": {
+    "navn": "Ola Normann"
+  },
+  "tema": "PEN",
+  "behandlingstema": "ab0054",
+  "tittel": "Søknad om stønad i pensjonsnød",
+  "dokumenter": [
+    {
+      "tittel": "brev",
+      "dokumentvarianter": [ {
+        "filtype": "PDFA",
+        "fysiskDokument":"JVBERi0xLjcNCiWhs8U=",
+        "variantformat": "ARKIV"
+      } ]
+    }
+  ]
+}

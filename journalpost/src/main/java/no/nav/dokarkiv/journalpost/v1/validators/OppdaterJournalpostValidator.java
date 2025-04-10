@@ -14,7 +14,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
@@ -25,6 +24,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_ONSKE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_FEILSENDT;
@@ -158,7 +158,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static boolean checkIfJournalChangeIsOld(Journalpost journalpost) {
 		return journalpost.getJournalDato() != null &&
-				journalpost.getJournalDato().toInstant().atZone(ZoneId.of("Europe/Oslo")).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
+				journalpost.getJournalDato().toInstant().atZone(ZONEID_NORGE).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
 	}
 
 	private static String checkIfFieldIsBeingUpdatedAfterLockDate(Object field, String fieldName, Date journalDato) {

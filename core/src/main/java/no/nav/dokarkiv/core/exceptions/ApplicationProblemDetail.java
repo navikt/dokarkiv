@@ -4,8 +4,9 @@ import lombok.Getter;
 import org.springframework.http.ProblemDetail;
 
 import java.net.URI;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 
 /**
  * Tilpasset RFC 9457 ProblemDetail subklasse
@@ -27,7 +28,7 @@ public class ApplicationProblemDetail extends ProblemDetail {
 
 	public ApplicationProblemDetail(ProblemDetail other, URI instance) {
 		super(other);
-		this.timestamp = ZonedDateTime.now(ZoneId.of("Europe/Oslo"));
+		this.timestamp = ZonedDateTime.now(ZONEID_NORGE);
 		this.error = getTitle();
 		this.message = getDetail();
 		setInstance(instance);
