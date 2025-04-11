@@ -565,6 +565,11 @@
       "app": "dsop-kontroll",
       "namespace": "dsopkontroll",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "rpa-nos-robot1",
+      "namespace": "team-rpa",
+      "cluster": "dev-fss"
     }
   ]
 }
