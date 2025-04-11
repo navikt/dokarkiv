@@ -42,6 +42,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.type.TrueFalseConverter;
 
 import java.io.Serial;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -158,9 +159,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "journalfort_av_navn", length = 50)
 	private String journalfortAvNavn;
 
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_mottatt")
-	private Date mottattDato;
+	private LocalDateTime mottattDato;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_mottaks_kanal", length = 20)
@@ -815,14 +815,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			this.dokumentDato = new Date(dokumentDato.getTime());
 		} else {
 			this.dokumentDato = null;
-		}
-	}
-
-	public void setMottattDato(Date mottattDato) {
-		if (mottattDato != null) {
-			this.mottattDato = new Date(mottattDato.getTime());
-		} else {
-			this.mottattDato = null;
 		}
 	}
 

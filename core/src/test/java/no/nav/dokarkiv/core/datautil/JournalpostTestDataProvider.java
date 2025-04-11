@@ -5,19 +5,18 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
-import no.nav.dokarkiv.core.domain.codes.Fagomrade;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
 
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createHovedDokumentInfoFP;
@@ -27,7 +26,6 @@ import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.PEN_SAK
 import static no.nav.dokarkiv.core.datautil.SaksrelasjonTestDataProvider.createSaksrelasjon;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.DAG;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
@@ -41,11 +39,9 @@ public final class JournalpostTestDataProvider {
 	public static final String JP_AVSENDER_MOTTAKER = "test";
 	public static final FagomradeCode JP_FAGOMRADE = FagomradeCode.PEN;
 	public static final String JP_INNHOLD = "innhold";
-	public static final JournalpostTypeCode JP_TYPE = U;
 	public static final String FNR = "12341234123";
-	public static final Date JANUARY_1_2020 = Date.from(LocalDate.of(2020, Month.JANUARY, 1)
-			.atStartOfDay(ZoneId.systemDefault())
-			.toInstant());
+	public static final LocalDateTime JANUARY_1_2020 = LocalDateTime.of(2020, Month.JANUARY, 1, 0, 0, 0);
+	public static final Date JANUARY_1_2020_DATE = Date.from(JANUARY_1_2020.atZone(ZONEID_NORGE).toInstant());
 	public static final String INNHOLD = "Foreldrepenger";
 
 	private JournalpostTestDataProvider() {
@@ -88,12 +84,12 @@ public final class JournalpostTestDataProvider {
 				.fagomrade(fagomradeCode)
 				.avsenderMottaker(JP_AVSENDER_MOTTAKER)
 				.avsenderMottakerId(JP_AVSENDER_MOTTAKER_ID)
-				.changeStamp(new ChangeStamp(null, JANUARY_1_2020, null, null))
+				.changeStamp(new ChangeStamp(null, JANUARY_1_2020_DATE, null, null))
 				.opprettetAvNavn("testuser")
 				.opprettetKildeNavn("test")
 				.mottakskanal(NAV_NO)
 				.mottattDato(JANUARY_1_2020)
-				.journalDato(JANUARY_1_2020)
+				.journalDato(JANUARY_1_2020_DATE)
 				.innhold(JP_INNHOLD)
 				.saksrelasjon(createSaksrelasjon().build());
 	}
@@ -107,7 +103,7 @@ public final class JournalpostTestDataProvider {
 				.addOriginalJournalpost(true)
 				.avsenderMottakerId("1")
 				.kanalReferanseId("kanalreferanseId-" + UUID.randomUUID())
-				.mottattDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
+				.mottattDato(JANUARY_1_2020)
 				.mottakskanal(NAV_NO)
 				.fagomrade(FagomradeCode.PEN)
 				.journalStatus(journalStatus)

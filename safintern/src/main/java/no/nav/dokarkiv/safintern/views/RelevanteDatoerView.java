@@ -3,15 +3,20 @@ package no.nav.dokarkiv.safintern.views;
 import com.blazebit.persistence.view.EntityView;
 import com.blazebit.persistence.view.Mapping;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.safintern.serializers.LocalDateTimeToUTCSerializer;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @EntityView(Journalpost.class)
 public interface RelevanteDatoerView {
+
+	@JsonSerialize(using = LocalDateTimeToUTCSerializer.class)
 	@Mapping("mottattDato")
-	Date getForsendelseMottatt();
+	LocalDateTime getForsendelseMottatt();
 
 	@Mapping("dokumentDato")
 	Date getHoveddokument();

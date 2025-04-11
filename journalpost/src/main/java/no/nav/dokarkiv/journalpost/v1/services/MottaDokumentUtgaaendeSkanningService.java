@@ -21,10 +21,12 @@ import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.MottaDokumentUtgaaendeSkanningValidator;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
@@ -64,7 +66,7 @@ public class MottaDokumentUtgaaendeSkanningService {
 
 			journalpost.setEndretKildeNavn(KILDENAVN);
 			if (request.getDatoMottatt() != null) {
-				journalpost.setMottattDato(request.getDatoMottatt());
+				journalpost.setMottattDato(LocalDateTime.ofInstant(request.getDatoMottatt().toInstant(), ZONEID_NORGE));
 			}
 			journalpost.setJournalDato(DateProvider.getToday());
 

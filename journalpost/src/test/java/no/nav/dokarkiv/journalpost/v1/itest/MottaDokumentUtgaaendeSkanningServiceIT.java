@@ -30,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -87,7 +89,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 				tilleggsopplysninger.get(mockTilleggsopplysninger.get(0).getNokkel()));
 		assertEquals(MottaksKanalCode.SKAN_NETS, oppdatertJP.getMottakskanal());
 		assertEquals(KILDE, oppdatertJP.getEndretKildeNavn());
-		assertEquals(mockDate, oppdatertJP.getMottattDato());
+		assertEquals(LocalDateTime.ofInstant(mockDate.toInstant(), ZONEID_NORGE), oppdatertJP.getMottattDato());
 		assertEquals(DateProvider.getToday(), oppdatertJP.getJournalDato());
 		assertEquals(FilTypeCode.PDF, filDetaljer.getFiltype());
 		assertEquals(mockFilnavn, filDetaljer.getFilnavn());

@@ -24,6 +24,7 @@ import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class TestdataFactory {
 				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
 				.avsenderMottakerIdType(AVSENDER_MOTTAKER_ID_TYPE)
 				.land(AVSENDER_MOTTAKER_LAND)
-				.mottattDato(Date.from(now(FIXED_CLOCK)))
+				.mottattDato(LocalDateTime.now(FIXED_CLOCK))
 				.journalDato(Date.from(now(FIXED_CLOCK)))
 				.sendtPrintDato(Date.from(now(FIXED_CLOCK)))
 				.ekspedertDato(Date.from(now(FIXED_CLOCK)))

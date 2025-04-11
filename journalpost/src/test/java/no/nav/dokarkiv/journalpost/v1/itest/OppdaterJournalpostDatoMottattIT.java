@@ -8,10 +8,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.buildJournalpost;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
@@ -49,9 +47,7 @@ public class OppdaterJournalpostDatoMottattIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
 		Journalpost oppdaterJournalpost = journalpostTestRepository.findByKanalReferanseId(eksternReferanseId).orElse(new Journalpost());
-		LocalDateTime localDateTime = oppdaterJournalpost.getMottattDato().toInstant()
-				.atZone(ZONEID_NORGE).toLocalDateTime();
-		assertThat(localDateTime.toString()).isEqualTo("2025-04-09T09:12:55.271");
+		assertThat(oppdaterJournalpost.getMottattDato().toString()).isEqualTo("2025-04-09T09:12:55.271");
 	}
 
 	@ParameterizedTest
@@ -77,8 +73,6 @@ public class OppdaterJournalpostDatoMottattIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
 		Journalpost oppdaterJournalpost = journalpostTestRepository.findByKanalReferanseId(eksternReferanseId).orElse(new Journalpost());
-		LocalDateTime localDateTime = oppdaterJournalpost.getMottattDato().toInstant()
-				.atZone(ZONEID_NORGE).toLocalDateTime();
-		assertThat(localDateTime.toString()).isEqualTo("2025-04-09T02:00");
+		assertThat(oppdaterJournalpost.getMottattDato().toString()).isEqualTo("2025-04-09T02:00");
 	}
 }

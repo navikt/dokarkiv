@@ -37,7 +37,6 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -67,7 +66,7 @@ public class TestUtils {
 	public static final String AVSENDER_ID_HELSEPERSONELLNR = "123456789";
 	public static final String AVSENDER_ID_UTLORGANISASJON = "123456789";
 
-	public static final Date MOTTAT_DATO = Date.from(LocalDateTime.of(2017, 2, 3, 10, 37, 30).toInstant(ZoneOffset.UTC));
+	public static final LocalDateTime MOTTAT_DATO = LocalDateTime.of(2017, 2, 3, 10, 37, 30);
 	public static final String BRUKER_ID_PERSON = "10987654321";
 	public static final String BRUKER_ID_ORGANISASJON = "987654321";
 	public static final Long SAK_ID = 12345L;
@@ -153,7 +152,7 @@ public class TestUtils {
 				.innhold(INNHOLD)
 				.kanalReferanseId(KANALREFERANSE_ID)
 				.mottakskanal(MottaksKanalCode.ALTINN)
-				.mottattDato(Date.from(LOCAL_DATE_TIME.toInstant(ZoneOffset.UTC)))
+				.mottattDato(LOCAL_DATE_TIME)
 				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
 				.saksrelasjon(Saksrelasjon.builder()
 						.sakId(SAK_ID)
