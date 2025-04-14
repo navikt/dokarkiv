@@ -40,12 +40,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.time.temporal.ChronoUnit.MINUTES;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
@@ -91,6 +92,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanal;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
+import static org.assertj.core.api.Assertions.within;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -215,7 +217,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.datoMottatt(DATO_MOTTATT)
 				.build();
 		Journalpost journalpost = mapper.map(request, null);
-		assertEquals(journalpost.getMottattDato(), DATO_MOTTATT);
+		assertEquals(LocalDateTime.ofInstant(DATO_MOTTATT.toInstant(), ZONEID_NORGE), journalpost.getMottattDato());
 	}
 
 	@Test
@@ -224,8 +226,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.datoMottatt(null)
 				.build();
 		Journalpost journalpost = mapper.map(request, null);
-		// Sjekk om det er den samme datoen som dagens dato.
-		assertEquals(LocalDate.ofInstant(journalpost.getMottattDato().toInstant(), ZoneId.systemDefault()), LocalDate.now());
+		assertThat(journalpost.getMottattDato()).isCloseTo(LocalDateTime.now(), within(1, MINUTES));
 	}
 
 	@Test
@@ -260,8 +261,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.build();
 
 		Journalpost journalpost = mapper.map(request, SAK_ID);
-		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
-
+		assertEquals(FagsystemCode.FS22, journalpost.getSaksrelasjon().getFagsystem());
 	}
 
 	@Test
@@ -301,7 +301,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.build();
 
 		Journalpost journalpost = mapper.map(request, SAK_ID);
-		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.PEN);
+		assertEquals(FagsystemCode.PEN, journalpost.getSaksrelasjon().getFagsystem());
 
 	}
 
@@ -320,7 +320,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.build();
 
 		Journalpost journalpost = mapper.map(request, SAK_ID);
-		assertEquals(journalpost.getSaksrelasjon().getFagsystem(), FagsystemCode.FS22);
+		assertEquals(FagsystemCode.FS22, journalpost.getSaksrelasjon().getFagsystem());
 
 	}
 
@@ -380,7 +380,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 								.build()))
 				.build();
 		Journalpost jp = mapper.map(request, null);
-		assertEquals(jp.getJournalstatus(), JournalStatusCode.M);
+		assertEquals(JournalStatusCode.M, jp.getJournalstatus());
 	}
 
 	@Test
@@ -407,7 +407,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerPersonWithoutNavnAndIdType());
 		Journalpost jp = mapper.map(request, null);
-		assertEquals(jp.getAvsenderMottaker(), AVSENDER_NAVN);
+		assertEquals(AVSENDER_NAVN, jp.getAvsenderMottaker());
 	}
 
 	@Test
@@ -416,7 +416,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(JournalpostType.INNGAAENDE, createAvsenderMottakerPersonWithoutNavn());
 		Journalpost jp = mapper.map(request, null);
-		assertEquals(jp.getAvsenderMottaker(), AVSENDER_NAVN);
+		assertEquals(AVSENDER_NAVN, jp.getAvsenderMottaker());
 	}
 
 	@Test

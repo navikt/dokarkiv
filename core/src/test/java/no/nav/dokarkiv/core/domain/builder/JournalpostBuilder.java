@@ -15,6 +15,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Date;
@@ -62,7 +63,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	private String avsenderMottakerId;
 	private AvsenderMottakerIdTypeCode avsenderMottakerIdType;
 	private String journalfortAvNavn;
-	private Date mottattDato;
+	private LocalDateTime mottattDato;
 	private MottaksKanalCode mottakskanal;
 	private UtsendingsKanalCode utsendingskanal;
 	private String land;
@@ -104,7 +105,7 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	public JournalpostBuilder avsenderMottakerId(String value) { this.avsenderMottakerId = value; return this; }
 	public JournalpostBuilder avsenderMottakerIdType(AvsenderMottakerIdTypeCode value) { this.avsenderMottakerIdType = value; return this; }
 	public JournalpostBuilder journalfortAvNavn(String value) { this.journalfortAvNavn = value; return this; }
-	public JournalpostBuilder mottattDato(Date value) { this.mottattDato = value; return this; }
+	public JournalpostBuilder mottattDato(LocalDateTime value) { this.mottattDato = value; return this; }
 	public JournalpostBuilder mottakskanal(MottaksKanalCode value) { this.mottakskanal = value; return this; }
 	public JournalpostBuilder utsendingskanal(UtsendingsKanalCode value) { this.utsendingskanal = value; return this; }
 	public JournalpostBuilder land(String value) { this.land = value; return this; }

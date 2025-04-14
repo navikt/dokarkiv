@@ -14,8 +14,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_UTLAND;
@@ -140,8 +142,8 @@ public class JournalpostUpdaterTest {
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		assertEquals(journalpost.getMottattDato(), MOTTAT_DATO);
-		assertEquals(journalpost.getJournalposttype(), JournalpostTypeCode.I);
+		assertEquals(MOTTAT_DATO, journalpost.getMottattDato());
+		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 	}
 
 	@Test
@@ -151,8 +153,8 @@ public class JournalpostUpdaterTest {
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		assertEquals(journalpost.getMottattDato(), DATO_MOTTATT_1);
-		assertEquals(journalpost.getJournalposttype(), JournalpostTypeCode.I);
+		assertEquals(LocalDateTime.ofInstant(DATO_MOTTATT_1.toInstant(), ZONEID_NORGE), journalpost.getMottattDato());
+		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 	}
 
 	@Test

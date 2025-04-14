@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
@@ -174,9 +175,9 @@ public class OpprettJournalpostApiRequestMapper {
 		return null;
 	}
 
-	private java.util.Date mapMottattDato(OpprettJournalpostRequest request) {
+	private LocalDateTime mapMottattDato(OpprettJournalpostRequest request) {
 		if (JournalpostType.INNGAAENDE.equals(request.getJournalposttype())) {
-			return request.getDatoMottatt() == null ? Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()) : request.getDatoMottatt();
+			return request.getDatoMottatt() == null ? LocalDateTime.now() : LocalDateTime.ofInstant(request.getDatoMottatt().toInstant(), ZONEID_NORGE);
 		}
 		return null;
 	}

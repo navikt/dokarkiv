@@ -8,10 +8,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpMethod.POST;
@@ -40,10 +38,7 @@ public class OpprettJournalpostDatoMottattIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findByKanalReferanseId(eksternReferanseId).orElse(new Journalpost());
-
-		LocalDateTime localDateTime = journalpost.getMottattDato().toInstant()
-				.atZone(ZONEID_NORGE).toLocalDateTime();
-		assertThat(localDateTime.toString()).isEqualTo("2025-04-09T09:12:55.271");
+		assertThat(journalpost.getMottattDato().toString()).isEqualTo("2025-04-09T09:12:55.271");
 	}
 
 	@ParameterizedTest
@@ -63,9 +58,6 @@ public class OpprettJournalpostDatoMottattIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findByKanalReferanseId(eksternReferanseId).orElse(new Journalpost());
-
-		LocalDateTime localDateTime = journalpost.getMottattDato().toInstant()
-				.atZone(ZONEID_NORGE).toLocalDateTime();
-		assertThat(localDateTime.toString()).isEqualTo("2025-04-09T02:00");
+		assertThat(journalpost.getMottattDato().toString()).isEqualTo("2025-04-09T02:00");
 	}
 }

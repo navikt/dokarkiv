@@ -26,6 +26,7 @@ import java.time.ZoneId;
 @EnableRetry
 public class CoreConfig {
 
+	public static final ZoneId ZONEID_UTC = ZoneId.of("UTC");
 	public static final ZoneId ZONEID_NORGE = ZoneId.of("Europe/Oslo");
 
 	@Bean
