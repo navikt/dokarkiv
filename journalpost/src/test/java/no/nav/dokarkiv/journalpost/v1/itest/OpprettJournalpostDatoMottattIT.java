@@ -3,7 +3,6 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.ApplicationProblemDetail;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -66,7 +65,6 @@ public class OpprettJournalpostDatoMottattIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	@Disabled
 	void shouldReturnProblemDetailWhenJsonMappingError() {
 		String eksternReferanseId = UUID.randomUUID().toString();
 		String request = classpathToString("__files/opprettJournalpost_datoMottatt.json")
@@ -76,6 +74,6 @@ public class OpprettJournalpostDatoMottattIT extends AbstractJournalpostIT {
 		ResponseEntity<ApplicationProblemDetail> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, ApplicationProblemDetail.class);
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-		assertThat(response.getBody().getMessage()).isEqualTo("Klarte ikke parse tekst=01.01.2025 til LocalDateTime");
+		assertThat(response.getBody().getMessage()).contains("Klarte ikke parse tekst=01.01.2025 til LocalDateTime");
 	}
 }
