@@ -11,10 +11,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 
 import static com.fasterxml.jackson.core.JsonToken.VALUE_NUMBER_INT;
 import static com.fasterxml.jackson.core.JsonToken.VALUE_STRING;
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 
 /**
@@ -24,6 +27,13 @@ import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
  * Deserialiserer til norsk tidssone Europe/Oslo
  */
 public class DateStringsToLocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
+
+	private static final DateTimeFormatter ISO_DATE_TIME_ZONE_OFFSET = new DateTimeFormatterBuilder()
+			.append(ISO_DATE_TIME)
+			.optionalStart()
+			.appendPattern("Z") // Offset in +0000 format
+			.optionalEnd()
+			.toFormatter();
 
 	@SuppressWarnings("unused")
 	public DateStringsToLocalDateTimeDeserializer() {
@@ -63,6 +73,12 @@ public class DateStringsToLocalDateTimeDeserializer extends StdDeserializer<Loca
 
 		try {
 			return OffsetDateTime.parse(dateString).atZoneSameInstant(ZONEID_NORGE).toLocalDateTime();
+		} catch (DateTimeParseException ignored) {
+			// Try parsing as ISO_DATE_TIME_ZONE_OFFSET
+		}
+
+		try {
+			return OffsetDateTime.parse(dateString, ISO_DATE_TIME_ZONE_OFFSET).atZoneSameInstant(ZONEID_NORGE).toLocalDateTime();
 		} catch (DateTimeParseException ignored) {
 			// Try parsing as LocalDateTime
 		}

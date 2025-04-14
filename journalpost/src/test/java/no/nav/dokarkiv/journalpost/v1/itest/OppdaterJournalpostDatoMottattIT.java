@@ -26,6 +26,7 @@ public class OppdaterJournalpostDatoMottattIT extends AbstractJournalpostIT {
 			"\"2025-04-09T07:12:55.271Z\"",
 			"\"2025-04-09T09:12:55.271+02:00\"",
 			"\"2025-04-09T07:12:55.271+00:00\"",
+			"\"2025-04-09T07:12:55.271+0000\"",
 			"\"2025-04-09T07:12:55.271000000Z\""
 	})
 	public void shouldOppdaterJournalpostWithDatoMottatt(String datoMottatt) {
