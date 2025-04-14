@@ -25,20 +25,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static java.time.ZoneId.systemDefault;
-import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.HOURS;
-import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem.GSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.HPRNR;
@@ -1099,7 +1092,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 	@ParameterizedTest
 	@MethodSource
-	void shouldLogWarningWhenDatoMottattIsAfter(Date innsendtDato) {
+	void shouldLogWarningWhenDatoMottattIsAfter(LocalDateTime innsendtDato) {
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.behandlingstema("ab0001")
 				.avsenderMottaker(null)
@@ -1110,16 +1103,16 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	private static Stream<Arguments> shouldLogWarningWhenDatoMottattIsAfter() {
-		var naatid = LocalDate.now();
+		var naatid = LocalDateTime.now();
 
 		return Stream.of(
-				Arguments.of(Date.from(naatid.atStartOfDay().atZone(ZoneId.of("Z")).toInstant().plus(23, HOURS).plus(59, MINUTES)))
+				Arguments.of(naatid.plusHours(1))
 		);
 	}
 
 	@ParameterizedTest
 	@MethodSource
-	void shouldNotLogWarningWhenDatoMottattIsBeforeOrSameDate(Date innsendtDato) {
+	void shouldNotLogWarningWhenDatoMottattIsBeforeOrSameDate(LocalDateTime innsendtDato) {
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.behandlingstema("ab0001")
 				.avsenderMottaker(null)
@@ -1130,14 +1123,11 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	private static Stream<Arguments> shouldNotLogWarningWhenDatoMottattIsBeforeOrSameDate() {
-		var naatid = LocalDate.now();
+		var naatid = LocalDateTime.now();
 
 		return Stream.of(
-				Arguments.of(Date.from(naatid.atStartOfDay().atZone(systemDefault()).toInstant())),
-				Arguments.of(Date.from(naatid.atStartOfDay().atZone(systemDefault()).toInstant().plus(23, HOURS).plus(59, MINUTES))),
-				Arguments.of(Date.from(naatid.atStartOfDay().atZone(systemDefault()).minus(1, DAYS).toInstant())),
-				Arguments.of(Date.from(naatid.atStartOfDay().atZone(ZoneId.of("Z")).toInstant())), // datoMottatt er UTC uten klokkeslett
-				Arguments.of(Date.from(naatid.atStartOfDay().atZone(ZoneId.of("Z")).toInstant().minus(1, DAYS))) // datoMottatt er UTC uten klokkeslett
+				Arguments.of(naatid),
+				Arguments.of(naatid.minusDays(1))
 		);
 	}
 

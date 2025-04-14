@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
+import no.nav.dokarkiv.journalpost.v1.api.DateStringsToLocalDateTimeDeserializer;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
@@ -16,7 +18,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
@@ -32,9 +33,9 @@ public class OpprettJournalpostRequest {
 			requiredMode = REQUIRED,
 			description = """
 					INNGAAENDE brukes for dokumentasjon som NAV har mottatt fra en ekstern part. Dette kan være søknader, ettersendelser av dokumentasjon til sak eller meldinger fra arbeidsgivere.
-					     
+					
 					UTGAAENDE brukes for dokumentasjon som NAV har produsert og sendt ut til en ekstern part. Dette kan for eksempel være informasjons- eller vedtaksbrev til privatpersoner eller organisasjoner.
-					     
+					
 					NOTAT brukes for dokumentasjon som NAV har produsert selv og uten mål om å distribuere dette ut av NAV. Eksempler på dette er forvaltningsnotater og referater fra telefonsamtaler med brukere.
 					""",
 			example = "INNGAAENDE"
@@ -92,9 +93,9 @@ public class OpprettJournalpostRequest {
 	@Schema(
 			description = """
 					NAV-enheten som har journalført forsendelsen.
-
+					
 					Dersom forsoekFerdigstill=true skal enhet alltid settes. Dersom  det ikke er noen Nav-enhet involvert (f.eks. ved automatisk brevutsending), skal enhet være '9999'.
-
+					
 					Dersom foersoekFerdigstill=false bør journalførendeEnhet kun settes dersom oppgavene skal rutes på en annen måte enn Norg-reglene tilsier. Hvis enhet er bank, havner oppgavene på enheten som ligger i Norg-regelsettet.
 					""",
 			example = "0701"
@@ -105,7 +106,7 @@ public class OpprettJournalpostRequest {
 			requiredMode = REQUIRED,
 			description = """
 					Unik id for forsendelsen som kan brukes til sporing gjennom verdikjeden. Eksempler på eksternReferanseId kan være en GUID, sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.
-					                                                                                                                                                                      
+					
 					NB: Det er duplikatkontroll på eksternReferanseId. Dersom man sender inn en eksternReferanseId som allerede finnes i arkivet, vil tjenesten kaste feil (409 Conflict).
 					""",
 			example = "a0f480a3-8ab2-4c56-8c93-e53bb35bec2b"
@@ -115,27 +116,31 @@ public class OpprettJournalpostRequest {
 	@Schema(
 			description = """
 					Brukes for å datere innholdet i hoveddokumentet.
-					     
+					
 					Skal kun brukes dersom innholdet i dokumentet har en annen datering enn tidspunktet for opprettelse av journalposten.
+					Sett lokaltid Europe/Oslo på format "yyyy-MM-dd'T'HH:mm:ss.SSS"
 					""",
-			example = "2023-02-22T10:58:53.470892300"
+			example = "2024-04-14T10:58:53.470"
 	)
 	private LocalDateTime datoDokument;
 
 	@Schema(
 			description = """
 					Dato forsendelsen ble mottatt fra avsender. Dersom datoMottatt er tom, settes verdien til dagens dato.
+					
 					Feltet kan kun settes for inngående journalposter.
+					Sett lokaltid Europe/Oslo på format "yyyy-MM-dd'T'HH:mm:ss.SSS" eller UTC på format "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
 					""",
-			example = "2020-01-01"
+			examples = {"2024-04-14T10:58:53.470", "2024-04-14T08:58:53.470Z"}
 	)
-	private Date datoMottatt;
+	@JsonDeserialize(using = DateStringsToLocalDateTimeDeserializer.class)
+	private LocalDateTime datoMottatt;
 
 	@Builder.Default
 	@ArraySchema(arraySchema = @Schema(
 			description = """
 					Kan brukes av fagsystemene til å lagre egne fagspesifikke attributter per journalpost. Nøkkel-verdi-settet er skjemaløst og valideres ikke. Nøkkelen bør prefixes med fagsystemets navn for å unngå "kollisjon" mellom fagsystemer.
-
+					
 					Et eksempel er nøkkel eessi_bucid og verdi 1234
 					""")
 	)
@@ -150,7 +155,7 @@ public class OpprettJournalpostRequest {
 	@ArraySchema(arraySchema = @Schema(
 			description = """
 					Alle dokumentene som skal arkiveres.
-					  
+					
 					Det første dokument i meldingen blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke nødvendigvis ved uthenting av journalpost.
 					""",
 			requiredMode = REQUIRED)

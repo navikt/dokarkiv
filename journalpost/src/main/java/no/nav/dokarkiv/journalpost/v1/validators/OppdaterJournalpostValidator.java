@@ -99,12 +99,7 @@ public final class OppdaterJournalpostValidator {
 		}
 
 		if (request.getDatoDokument() != null) {
-			log.info("oppdaterJournalpost datoDokument={}", request.getDatoDokument());
 			feilmeldinger.add(validateDatoKanIkkeVaereIFremtid(request.getDatoDokument(), "datoDokument"));
-		}
-
-		if (request.getDatoMottatt() != null) {
-			log.info("oppdaterJournalpost datoMottatt={}", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(request.getDatoMottatt()));
 		}
 
 		if (request.getOverstyrInnsynsregler() != null) {
@@ -115,7 +110,7 @@ public final class OppdaterJournalpostValidator {
 			request.getDokumenter().forEach(dokumentInfo -> feilmeldinger.add(validateDokument(dokumentInfo)));
 		}
 
-		if (request.getAvsenderMottaker() != null){
+		if (request.getAvsenderMottaker() != null) {
 			feilmeldinger.addAll(AvsenderMottakerValidator.validateAvsenderMottaker(request.getAvsenderMottaker()));
 		}
 
@@ -165,7 +160,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static boolean checkIfJournalChangeIsOld(Journalpost journalpost) {
 		return journalpost.getJournalDato() != null &&
-				journalpost.getJournalDato().toInstant().atZone(ZONEID_NORGE).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
+			   journalpost.getJournalDato().toInstant().atZone(ZONEID_NORGE).toLocalDateTime().isBefore(LocalDateTime.now().minusYears(1));
 	}
 
 	private static String checkIfFieldIsBeingUpdatedAfterLockDate(Object field, String fieldName, Date journalDato) {
@@ -187,7 +182,7 @@ public final class OppdaterJournalpostValidator {
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet", journalpostStatus, journalpostType));
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTema(), "tema", journalpostStatus, journalpostType));
 			feilmeldinger.add(checkIfIllegalFieldIsSet(request.getTittel(), "tittel", journalpostStatus, journalpostType));
-			if(isConsumerEessiPensjon()) {
+			if (isConsumerEessiPensjon()) {
 				if (request.getAvsenderMottaker() != null && journalpostStatus != E) {
 					feilmeldinger.addAll(validateAvsenderMottaker(request.getAvsenderMottaker(), journalpostStatus, journalpostType));
 				}
@@ -418,8 +413,8 @@ public final class OppdaterJournalpostValidator {
 		boolean nameChanged = isChangeAndNotFromEmpty(request.getAvsenderMottaker().getNavn(), journalpost.getAvsenderMottaker());
 		boolean idChanged = isChangeAndNotFromEmpty(request.getAvsenderMottaker().getId(), journalpost.getAvsenderMottakerId());
 		boolean idTypeChanged = request.getAvsenderMottaker().getIdType() != null &&
-				journalpost.getAvsenderMottakerIdType() != null &&
-				!request.getAvsenderMottaker().getIdType().name().equals(journalpost.getAvsenderMottakerIdType().name());
+								journalpost.getAvsenderMottakerIdType() != null &&
+								!request.getAvsenderMottaker().getIdType().name().equals(journalpost.getAvsenderMottakerIdType().name());
 		int changeCounter = (nameChanged ? 1 : 0) + (idChanged ? 1 : 0) + (idTypeChanged ? 1 : 0);
 
 		if (nameChanged || idChanged || idTypeChanged) {
@@ -454,7 +449,7 @@ public final class OppdaterJournalpostValidator {
 
 	private static boolean isChangeAndNotFromEmpty(String newValueFromUpdateRequest, String existingValue) {
 		return newValueFromUpdateRequest != null &&
-				isNotBlank(existingValue) &&
-				!newValueFromUpdateRequest.equals(existingValue);
+			   isNotBlank(existingValue) &&
+			   !newValueFromUpdateRequest.equals(existingValue);
 	}
 }

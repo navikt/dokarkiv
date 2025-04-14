@@ -22,7 +22,7 @@ public class OppdaterJournalpostDatoMottattIT extends AbstractJournalpostIT {
 	@ParameterizedTest
 	@ValueSource(strings = {
 			"1744182775271",
-			"\"2025-04-09T07:12:55.271\"",
+			"\"2025-04-09T09:12:55.271\"",
 			"\"2025-04-09T07:12:55.271Z\"",
 			"\"2025-04-09T09:12:55.271+02:00\"",
 			"\"2025-04-09T07:12:55.271+00:00\"",
@@ -73,6 +73,6 @@ public class OppdaterJournalpostDatoMottattIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getBody().getJournalpostId()).isEqualTo(journalpostId.toString());
 
 		Journalpost oppdaterJournalpost = journalpostTestRepository.findByKanalReferanseId(eksternReferanseId).orElse(new Journalpost());
-		assertThat(oppdaterJournalpost.getMottattDato().toString()).isEqualTo("2025-04-09T02:00");
+		assertThat(oppdaterJournalpost.getMottattDato().toString()).isEqualTo("2025-04-09T00:00");
 	}
 }

@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -89,16 +90,23 @@ public class OppdaterJournalpostRequest {
 					Brukes for å datere innholdet i hoveddokumentet.
 					
 					Skal kun brukes dersom innholdet i dokumentet har en annen datering enn tidspunktet for opprettelse av journalposten.
+					Sett lokaltid Europe/Oslo på format "yyyy-MM-dd'T'HH:mm:ss.SSS"
 					""",
-			example = "2023-02-22T10:58:53.470892300"
+			example = "2024-04-14T10:58:53.470"
 	)
 	private LocalDateTime datoDokument;
 
 	@Hidden
 	@Schema(
-			description = "Dato forsendelsen ble mottatt fra avsender. Feltet kan kun settes for inngående journalposter.",
-			example = "2019-11-29")
-	private Date datoMottatt;
+			description = """
+					Dato forsendelsen ble mottatt fra avsender. Feltet kan kun settes for inngående journalposter.
+					
+					Sett lokaltid Europe/Oslo på format "yyyy-MM-dd'T'HH:mm:ss.SSS" eller UTC på format "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+					""",
+			examples = {"2024-04-14T10:58:53.470", "2024-04-14T08:58:53.470Z"}
+	)
+	@JsonDeserialize(using = DateStringsToLocalDateTimeDeserializer.class)
+	private LocalDateTime datoMottatt;
 
 	@Schema(
 			description = """
