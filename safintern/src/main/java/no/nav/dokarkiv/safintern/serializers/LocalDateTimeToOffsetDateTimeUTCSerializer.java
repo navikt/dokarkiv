@@ -12,21 +12,24 @@ import java.time.OffsetDateTime;
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_UTC;
 
-public class LocalDateTimeToUTCSerializer extends StdSerializer<LocalDateTime> {
+/**
+ * Serialiserer jackson-annotert json-felt fra LocalDateTime Europe/Oslo til OffsetDateTime UTC String
+ */
+public class LocalDateTimeToOffsetDateTimeUTCSerializer extends StdSerializer<LocalDateTime> {
 
 	@SuppressWarnings("unused")
-	public LocalDateTimeToUTCSerializer() {
+	public LocalDateTimeToOffsetDateTimeUTCSerializer() {
 		super(LocalDateTime.class);
 	}
 
 	@SuppressWarnings("unused")
-	protected LocalDateTimeToUTCSerializer(JavaType type) {
+	protected LocalDateTimeToOffsetDateTimeUTCSerializer(JavaType type) {
 		super(type);
 	}
 
 	@Override
 	public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider provider) throws IOException {
 		OffsetDateTime offsetDateTime = value.atZone(ZONEID_NORGE).withZoneSameInstant(ZONEID_UTC).toOffsetDateTime();
-		gen.writeObject(offsetDateTime.toString());
+		gen.writeString(offsetDateTime.toString());
 	}
 }
