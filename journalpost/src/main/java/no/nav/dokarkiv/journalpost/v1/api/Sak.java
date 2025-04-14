@@ -62,6 +62,7 @@ public class Sak {
 					* TILTAKSPENGER
 					* TILTAKSADMINISTRASJON
 					* FIA
+					* HELT
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",

@@ -58,6 +58,7 @@ public class GjenaapneSakRequest {
 					* TILTAKSPENGER
 					* TILTAKSADMINISTRASJON
 					* FIA
+					* HELT
 					""",
 			example = "AO01", requiredMode = REQUIRED
 	)

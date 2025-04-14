@@ -46,5 +46,9 @@ public enum Fagsaksystem {
     /**
      * Inkluderende arbeidsliv
      */
-    FIA
+    FIA,
+    /**
+     * nytt fagsystem for helsetjenester.
+     */
+    HELT
 }
