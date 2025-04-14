@@ -42,7 +42,7 @@ public class DateStringsToLocalDateTimeDeserializer extends StdDeserializer<Loca
 			long epochTimeMillis = _parseLongPrimitive(context, parser.getText());
 			return Instant.ofEpochMilli(epochTimeMillis).atZone(ZONEID_NORGE).toLocalDateTime();
 		}
-		String message = "Klarte ikke parse token=%s, tokenId=%d til LocalDateTime".formatted(parser.getText(), parser.currentTokenId());
+		String message = "Klarte ikke parse token=%s til LocalDateTime".formatted(parser.getText());
 		throw JsonMappingException.from(parser, message);
 	}
 
