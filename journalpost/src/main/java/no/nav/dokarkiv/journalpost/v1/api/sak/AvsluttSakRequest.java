@@ -61,6 +61,7 @@ public class AvsluttSakRequest {
 					* TILTAKSPENGER
 					* TILTAKSADMINISTRASJON
 					* FIA
+					* HELT
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",
