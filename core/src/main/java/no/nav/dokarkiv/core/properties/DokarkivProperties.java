@@ -15,7 +15,6 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class DokarkivProperties {
 
-	public static final String FAGSYSTEM_EESSI_PENSJON = "eessi-pensjon-journalforing";
 	private final Database database = new Database();
 	private final Endpoints endpoints = new Endpoints();
 
