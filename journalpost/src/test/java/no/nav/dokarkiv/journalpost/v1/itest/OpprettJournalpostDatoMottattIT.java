@@ -1,7 +1,9 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.ApplicationProblemDetail;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpEntity;
@@ -19,10 +21,11 @@ public class OpprettJournalpostDatoMottattIT extends AbstractJournalpostIT {
 	@ParameterizedTest
 	@ValueSource(strings = {
 			"1744182775271",
-			"\"2025-04-09T07:12:55.271\"",
+			"\"2025-04-09T09:12:55.271\"",
 			"\"2025-04-09T07:12:55.271Z\"",
 			"\"2025-04-09T09:12:55.271+02:00\"",
 			"\"2025-04-09T07:12:55.271+00:00\"",
+			"\"2025-04-09T07:12:55.271+0000\"",
 			"\"2025-04-09T07:12:55.271000000Z\""
 	})
 	public void shouldOpprettJournalpostWithDatoMottatt(String datoMottatt) {
@@ -58,6 +61,19 @@ public class OpprettJournalpostDatoMottattIT extends AbstractJournalpostIT {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findByKanalReferanseId(eksternReferanseId).orElse(new Journalpost());
-		assertThat(journalpost.getMottattDato().toString()).isEqualTo("2025-04-09T02:00");
+		assertThat(journalpost.getMottattDato().toString()).isEqualTo("2025-04-09T00:00");
+	}
+
+	@Test
+	void shouldReturnProblemDetailWhenJsonMappingError() {
+		String eksternReferanseId = UUID.randomUUID().toString();
+		String request = classpathToString("__files/opprettJournalpost_datoMottatt.json")
+				.replace("{{eksternReferanseId}}", eksternReferanseId)
+				.replace("{{datoMottatt}}", "\"01.01.2025\"");
+		HttpEntity<String> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<ApplicationProblemDetail> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, ApplicationProblemDetail.class);
+
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertThat(response.getBody().getMessage()).contains("Klarte ikke parse tekst=01.01.2025 til LocalDateTime");
 	}
 }

@@ -15,9 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -121,8 +119,8 @@ public class OpprettJournalpostRequestValidator {
 		}
 	}
 
-	private void softValidateDato(Date dato, String datoFeltNavn) {
-		var innsendtDato = dato.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(); // Konverterer til lokaltid på formatet "yyyy-MM-dd"
+	private void softValidateDato(LocalDateTime dateTime, String datoFeltNavn) {
+		var innsendtDato = dateTime.toLocalDate();
 		var dagensDato = LocalDate.now();
 
 		if (innsendtDato.isAfter(dagensDato)) {
@@ -132,7 +130,7 @@ public class OpprettJournalpostRequestValidator {
 					dagensDato,
 					datoFeltNavn,
 					innsendtDato,
-					dato
+					dateTime
 			));
 		}
 	}

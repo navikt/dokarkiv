@@ -22,7 +22,6 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -31,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER;
@@ -137,7 +135,7 @@ public class JournalpostUpdater {
 			if (oppdaterJournalpostRequest.getDatoMottatt() == null) {
 				return;
 			} else {
-				journalpost.setMottattDato(LocalDateTime.ofInstant(oppdaterJournalpostRequest.getDatoMottatt().toInstant(), ZONEID_NORGE));
+				journalpost.setMottattDato(oppdaterJournalpostRequest.getDatoMottatt());
 			}
 			endret.setEndretFlagg(true);
 		}

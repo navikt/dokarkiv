@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.exceptions;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.validation.ConstraintViolationException;
@@ -37,6 +38,8 @@ public class ApplicationServletExceptionHandler extends ResponseEntityExceptionH
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 		if (ex.getCause() instanceof InvalidFormatException ife) {
 			return handleInvalidFormatException(ex, ife);
+		} else if (ex.getCause() instanceof JsonProcessingException jpe) {
+			return handleJsonProcessingException(jpe, request);
 		}
 		return handleExceptionInternal(ex, ex.getMessage(), headers, BAD_REQUEST, request);
 	}
@@ -57,6 +60,12 @@ public class ApplicationServletExceptionHandler extends ResponseEntityExceptionH
 		return ResponseEntity.badRequest()
 				.contentType(APPLICATION_JSON)
 				.body(format("\"%s\"", feilmelding));
+	}
+
+	private ResponseEntity<Object> handleJsonProcessingException(JsonProcessingException error, WebRequest webRequest) {
+		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(BAD_REQUEST, error.getMessage());
+		problemDetail.setTitle("JSON Parse error");
+		return createResponseEntity(problemDetail, EMPTY, BAD_REQUEST, webRequest);
 	}
 
 	@Override

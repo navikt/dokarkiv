@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
-import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
@@ -217,7 +216,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.datoMottatt(DATO_MOTTATT)
 				.build();
 		Journalpost journalpost = mapper.map(request, null);
-		assertEquals(LocalDateTime.ofInstant(DATO_MOTTATT.toInstant(), ZONEID_NORGE), journalpost.getMottattDato());
+		assertEquals(DATO_MOTTATT, journalpost.getMottattDato());
 	}
 
 	@Test

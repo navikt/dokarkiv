@@ -34,9 +34,7 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -76,8 +74,8 @@ public class TestUtils {
 	public static final String INNHOLD = "innhold";
 	public static final String KANALREFERANSE_ID = "kanalreferansId";
 	public static final LocalDateTime DATO_DOKUMENT = LocalDateTime.now().minusDays(3);
-	public static final Date DATO_MOTTATT = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
-	public static final Date DATO_MOTTATT_1 = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
+	public static final LocalDateTime DATO_MOTTATT = LocalDateTime.now().minusDays(2);
+	public static final LocalDateTime DATO_MOTTATT_1 = LocalDateTime.now().minusDays(1);
 	public static final String JOURNALFOERENDE_ENHET = "4000";
 	public static final String JOURNALFOERENDE_ENHET_UGYLDIG = "40000";
 	public static final String JOURNALFOERENDE_ENHET_UGYLDIG_WHITESPACES = "    ";
@@ -315,13 +313,13 @@ public class TestUtils {
 	}
 
 
-	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDatoMottat(Date date) {
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDatoMottat(LocalDateTime datoMottatt) {
 		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.bruker(createBrukerPerson())
 				.sak(createSak())
 				.tema(TEMA_FOR)
-				.datoMottatt(date)
+				.datoMottatt(datoMottatt)
 				.behandlingstema(BEHANDLINGSTEMA)
 				.tittel(DOKUMENT_TITTEL1)
 				.tilleggsopplysninger(createTilleggsopplysninger())
