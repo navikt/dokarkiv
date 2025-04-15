@@ -129,9 +129,10 @@ public class OpprettJournalpostRequest {
 					Dato forsendelsen ble mottatt fra avsender. Dersom datoMottatt er tom, settes verdien til dagens dato.
 					
 					Feltet kan kun settes for inngående journalposter.
-					Sett lokaltid Europe/Oslo på format "yyyy-MM-dd'T'HH:mm:ss.SSS" eller UTC på format "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+					Sett lokaltid Europe/Oslo på format `"yyyy-MM-dd'T'HH:mm:ss.SSS"`. `java.time.LocalDateTime` kan brukes som felt-type og serialiseringsbibliotek som jackson vil vanligvis gi denne representasjonen.
+					Alternativt UTC på format `"yyyy-MM-dd'T'HH:mm:ss.SSSXXX"`. `java.time.OffsetDateTime` kan brukes som felt-type og serialiseringsbibliotek som jackson vil vanligvis gi denne representasjonen.
 					""",
-			examples = {"2024-04-14T10:58:53.470", "2024-04-14T08:58:53.470Z"}
+			example = "2024-04-14T10:58:53.470"
 	)
 	@JsonDeserialize(using = DateStringsToLocalDateTimeDeserializer.class)
 	private LocalDateTime datoMottatt;
