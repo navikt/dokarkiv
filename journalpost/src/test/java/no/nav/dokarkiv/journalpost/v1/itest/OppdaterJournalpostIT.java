@@ -116,7 +116,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	private static final String BREVKODE = "brevkode";
 	private static final String JOURNALFOERENDE_ENHET = "9999";
 	private static final String SERVICE_USER_ID = "srvdokarkiv";
-	public static final String FAGSYSTEM_EESSI_PENSJON_AZP_NAME = "dev-gcp:eessipensjon:eessi-pensjon-journalforing-q2";
 
 	@BeforeEach
 	public void setUp() {
