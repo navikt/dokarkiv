@@ -19,10 +19,11 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasj
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.GregorianCalendar;
 
 import static java.util.Arrays.asList;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 
 /**
  * Util for creating Journalpost for the OpprettJournalpostArkiverDokument
@@ -53,7 +54,7 @@ public class OpprettJournalpostArkiverDokumentDataUtil {
 	protected static final Long SAKSID = 312L;
 	protected static final String BRUKERID = "312273912";
 	protected static final BrukerTypeCode BRUKERTYPE = BrukerTypeCode.PERSON;
-	protected static final Date DATO_DOKUMENT = new Date(1234567890);
+	protected static final LocalDateTime DATO_DOKUMENT = LocalDateTime.now();
 	protected static final String TILLEGGSOPPLYSNING_KEY_2 = "tilleggsopplysning-2";
 	protected static final String BESTILLINGS_ID = "id010101";
 	protected static final String TILLEGGSOPPLYSNING_VALUE_2 = "Tillegg 2";
@@ -121,10 +122,9 @@ public class OpprettJournalpostArkiverDokumentDataUtil {
 		return bruker;
 	}
 
-	public static XMLGregorianCalendar toXMLGregorianCalendar(Date date) {
+	public static XMLGregorianCalendar toXMLGregorianCalendar(LocalDateTime dateTime) {
 		try {
-			GregorianCalendar c = new GregorianCalendar();
-			c.setTime(date);
+			GregorianCalendar c = GregorianCalendar.from(dateTime.atZone(ZONEID_NORGE));
 			return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
 		} catch (DatatypeConfigurationException e) {
 			throw new RuntimeException(e);

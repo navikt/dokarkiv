@@ -18,8 +18,9 @@ public interface RelevanteDatoerView {
 	@Mapping("mottattDato")
 	LocalDateTime getForsendelseMottatt();
 
+	@JsonSerialize(using = LocalDateTimeToOffsetDateTimeUTCSerializer.class)
 	@Mapping("dokumentDato")
-	Date getHoveddokument();
+	LocalDateTime getHoveddokument();
 
 	@Mapping("journalDato")
 	Date getJournalfoert();
@@ -27,14 +28,16 @@ public interface RelevanteDatoerView {
 	@Mapping("sendtPrintDato")
 	Date getSendtPrint();
 
+	@JsonSerialize(using = LocalDateTimeToOffsetDateTimeUTCSerializer.class)
 	@Mapping("ekspedertDato")
-	Date getEkspedert();
+	LocalDateTime getEkspedert();
 
 	@Mapping("avsendtReturDato")
 	Date getRetur();
 
+	@JsonSerialize(using = LocalDateTimeToOffsetDateTimeUTCSerializer.class)
 	@Mapping("lestDato")
-	Date getLest();
+	LocalDateTime getLest();
 
 	@Mapping("changeStamp.createdDate")
 	Date getOpprettet();

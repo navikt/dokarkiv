@@ -26,7 +26,7 @@ public class FinnUlesteJournalposterService {
 		validateInput(ekspedertFra, ekspedertTil);
 		Date datoOpprettetStart = convertToDate(ekspedertFra.minusDays(90));
 		Date datoOpprettetSlutt = convertToDate(ekspedertTil.plusDays(2));
-		return sikkerhetsnivaaRepository.finnUlesteJournalposter(UtsendingsKanalCode.fromString(utsendingskanal), convertToDate(ekspedertFra), convertToDate(ekspedertTil), datoOpprettetStart, datoOpprettetSlutt);
+		return sikkerhetsnivaaRepository.finnUlesteJournalposter(UtsendingsKanalCode.fromString(utsendingskanal), ekspedertFra, ekspedertTil, datoOpprettetStart, datoOpprettetSlutt);
 	}
 
 	private void validateInput(LocalDateTime ekspedertFra, LocalDateTime ekspedertTil) {

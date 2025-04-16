@@ -11,11 +11,9 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
-import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
@@ -46,7 +44,7 @@ public class GjenaapneSakService {
 			sak.setSakStatus(AAPEN);
 			sak.setEndretAv(MDC.get(MDC_USER_ID));
 			sak.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-			sak.setDatoEndret(Date.from(LocalDateTime.now().atZone(ZONEID_NORGE).toInstant()));
+			sak.setDatoEndret(LocalDateTime.now());
 			sak.setDatoAvsluttet(null);
 			sak.setAvsluttetAv(null);
 			sak.setAvsluttetKildeNavn(null);

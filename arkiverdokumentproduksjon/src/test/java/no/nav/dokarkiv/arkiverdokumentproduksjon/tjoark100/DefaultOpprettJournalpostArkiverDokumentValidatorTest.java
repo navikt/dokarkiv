@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
@@ -339,7 +339,7 @@ public class DefaultOpprettJournalpostArkiverDokumentValidatorTest {
 				.journalpostType(JournalpostTypeCode.U)
 				.utsendingskanal(UtsendingsKanalCode.EESSI)
 				.fagomrade(FagomradeCode.AAP)
-				.dokumentDato(new Date())
+				.dokumentDato(LocalDateTime.now())
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.journalForendeEnhetId("309480dfk")
 				.land("Norge")
@@ -377,7 +377,7 @@ public class DefaultOpprettJournalpostArkiverDokumentValidatorTest {
 				.utsendingskanal(UtsendingsKanalCode.EESSI)
 				.fagomrade(FagomradeCode.AAP)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
-				.dokumentDato(new Date())
+				.dokumentDato(LocalDateTime.now())
 				.journalForendeEnhetId("309480dfk")
 				.land("Norge")
 				.dokumentInfoRelasjoner(

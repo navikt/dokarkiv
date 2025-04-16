@@ -22,14 +22,13 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER;
@@ -93,7 +92,7 @@ public class JournalpostUpdater {
 		}
 
 		if (request.getDatoLest() != null && journalpost.getLestDato() == null) {
-			journalpost.setLestDato(request.getDatoLest());
+			journalpost.setLestDato(request.getDatoLest().atZoneSameInstant(ZONEID_NORGE).toLocalDateTime());
 		}
 
 		return tracker;
@@ -103,7 +102,7 @@ public class JournalpostUpdater {
 		tracker.setEndretFlagg(true);
 		tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), journalStatusCode.name());
 		journalpost.setJournalstatus(journalStatusCode);
-		journalpost.setEkspedertDato(journalStatusCode == E ? OffsetDateTime.now() : null);
+		journalpost.setEkspedertDato(journalStatusCode == E ? LocalDateTime.now() : null);
 		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
@@ -146,7 +145,7 @@ public class JournalpostUpdater {
 		if (oppdaterJournalpostRequest.getDatoDokument() == null) {
 			return;
 		} else {
-			journalpost.setDokumentDato(Date.from(oppdaterJournalpostRequest.getDatoDokument().atZone(ZoneId.systemDefault()).toInstant()));
+			journalpost.setDokumentDato(oppdaterJournalpostRequest.getDatoDokument());
 		}
 		endret.setEndretFlagg(true);
 

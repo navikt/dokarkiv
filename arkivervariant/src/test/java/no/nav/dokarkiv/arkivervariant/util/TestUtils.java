@@ -18,7 +18,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 
@@ -54,7 +54,7 @@ public class TestUtils {
 	private static JournalpostBuilder getBaseJournalpostBuilder() {
 		return JournalpostBuilder.getJournalpostBuilder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
-				.dokumentDato(new Date())
+				.dokumentDato(LocalDateTime.now())
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.journalStatus(JournalStatusCode.FS)
 				.journalpostType(JournalpostTypeCode.U)

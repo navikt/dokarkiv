@@ -25,6 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
@@ -241,7 +242,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 				.fagomrade(FagomradeCode.AAP)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
 				.journalForendeEnhetId("309480dfk")
-				.dokumentDato(new Date())
+				.dokumentDato(LocalDateTime.now())
 				.land("Norge")
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()

@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102;
 
-import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
-
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
@@ -13,11 +11,8 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * Implementation of OppdaterJournalpostArkiverDokumentRequestMapper
- *
- * @author Sigurd Midttun
- */
+import static no.nav.dokarkiv.core.util.SpecialFilTypeConverter.convertFilType;
+
 @Component
 public class OppdaterJournalpostArkiverDokumentRequestMapper {
 
@@ -29,7 +24,7 @@ public class OppdaterJournalpostArkiverDokumentRequestMapper {
 					.dokumentInfoId(wsRequest.getDokumentInfoId())
 					.utsendingskanal(wsRequest.getUtsendingskanal() == null ? null : UtsendingsKanalCode.valueOf(wsRequest.getUtsendingskanal()))
 					.endretAvNavn(wsRequest.getEndretAvNavn())
-					.datoDokument(wsRequest.getDatoDokument().toGregorianCalendar().getTime())
+					.datoDokument(wsRequest.getDatoDokument().toGregorianCalendar().toZonedDateTime().toLocalDateTime())
 					.fildetaljerSet(wsRequest.getFildetaljerListe().stream()
 							.map(fildetaljer -> FilDetaljer.builder()
 									.filtype(fildetaljer.getFiltype() == null ? null : FilTypeCode.valueOf(convertFilType(fildetaljer.getFiltype())))

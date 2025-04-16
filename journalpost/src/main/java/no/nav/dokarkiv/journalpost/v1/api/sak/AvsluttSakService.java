@@ -16,14 +16,10 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 
-import static java.time.Instant.now;
-import static java.time.ZoneId.systemDefault;
 import static java.util.Collections.singletonList;
-import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
@@ -87,7 +83,7 @@ public class AvsluttSakService {
 			sak.setSakStatus(AVBRUTT);
 			sak.setKassasjonStatus(KLAR_FOR_KASSASJON);
 			sak.setAvleveringStatus(AvleveringStatusCode.AVBRUTT);
-			sak.setDatoEndret(Date.from(LocalDateTime.now().atZone(ZONEID_NORGE).toInstant()));
+			sak.setDatoEndret(LocalDateTime.now());
 			sak.setEndretAv(determineSaksbehandler());
 		});
 	}
@@ -99,10 +95,10 @@ public class AvsluttSakService {
 			sak.setKassasjonStatus(null);
 			sak.setEndretAv(MDC.get(MDC_USER_ID));
 			sak.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-			sak.setDatoEndret(Date.from(LocalDateTime.now().atZone(ZONEID_NORGE).toInstant()));
+			sak.setDatoEndret(LocalDateTime.now());
 			sak.setDatoAvsluttet(determineDatoAvsluttet(avsluttSakRequest));
 			sak.setAdministrativEnhet(avsluttSakRequest.getAdministrativEnhet());
-			sak.setDatoSakOpprettet(convertLocalDateTimeToDate(avsluttSakRequest.getOpprettetDato()));
+			sak.setDatoSakOpprettet(avsluttSakRequest.getOpprettetDato());
 			sak.setSakAnsvarlig(determineSakAnsvarlig(avsluttSakRequest));
 			sak.setAvsluttetAv(determineSaksbehandler());
 			sak.setAvsluttetKildeNavn(MDC.get(MDC_CONSUMER_ID));
@@ -115,13 +111,8 @@ public class AvsluttSakService {
 				MDC.get(MDC_CONSUMER_ID) : userId;
 	}
 
-	private Date determineDatoAvsluttet(AvsluttSakRequest avsluttSakRequest) {
-		return avsluttSakRequest.getAvsluttetDato() == null ? Date.from(LocalDateTime.now().atZone(ZONEID_NORGE).toInstant()) :
-				convertLocalDateTimeToDate(avsluttSakRequest.getAvsluttetDato());
-	}
-
-	private Date convertLocalDateTimeToDate(LocalDateTime ldt) {
-		return Date.from(ldt.toInstant(systemDefault().getRules().getOffset(now())));
+	private LocalDateTime determineDatoAvsluttet(AvsluttSakRequest avsluttSakRequest) {
+		return avsluttSakRequest.getAvsluttetDato() == null ? LocalDateTime.now() : avsluttSakRequest.getAvsluttetDato();
 	}
 
 	private String determineSakAnsvarlig(AvsluttSakRequest avsluttSakRequest) {

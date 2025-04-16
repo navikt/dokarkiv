@@ -36,9 +36,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -169,7 +167,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJP.getSaksrelasjon().getFagsystem().name()).isEqualTo("FS22");
 
 		LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
-		assertThat(toLocalDateTime(oppdatertJP.getDokumentDato())).isBefore(twoDaysAgo);
+		assertThat(oppdatertJP.getDokumentDato()).isBefore(twoDaysAgo);
 
 		assertThat(oppdatertJP.getTilleggsopplysninger()).hasSize(1);
 		assertThat(oppdatertJP.getTilleggsopplysninger().containsKey(request.getTilleggsopplysninger().get(0).getNokkel())).isNotNull();
@@ -197,12 +195,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(aksjonsLoggList.get(2).getApplikasjon()).isEqualTo(SERVICE_USER_ID);
 		assertThat(aksjonsLoggList.get(2).getAksjon()).isEqualTo(ENDRE_METADATA);
 		assertThat(aksjonsLoggList.get(2).getArkivElementEndringer()).hasSize(2);
-	}
-
-	private LocalDateTime toLocalDateTime(Date date){
-		return date.toInstant()
-				.atZone(ZoneId.systemDefault())
-				.toLocalDateTime();
 	}
 
 	@Test

@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.oppdaterjournalpostarkiverdokument.Fildetaljer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OppdaterJournalpostArkiverDokumentRequest;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,10 +17,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.GregorianCalendar;
 import java.util.Set;
 
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -35,23 +37,13 @@ public class OppdaterJournalpostArkiverDokumentRequestMapperTest {
 	private static final FilTypeCode FILTYPE = FilTypeCode.XML;
 	private static final String ENDRET_AV_NAVN = "Siri Saksbehandler";
 	private static final String DOKUMENTINNHOLD = "test dokumeprivate";
-	private static final Date DATO_DOKUMENT = new Date(212234567890L);
+	private static final LocalDateTime DATO_DOKUMENT = LocalDateTime.now();
 
 	@InjectMocks
 	private OppdaterJournalpostArkiverDokumentRequestMapper requestMapper;
 
 	private OppdaterJournalpostArkiverDokumentRequest wsRequest;
 	private OppdaterJournalpostArkiverDokumentRequestTo requestTo;
-
-	public static XMLGregorianCalendar toXMLGregorianCalendar(Date date) {
-		try {
-			GregorianCalendar c = new GregorianCalendar();
-			c.setTime(date);
-			return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-		} catch (DatatypeConfigurationException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -66,7 +58,7 @@ public class OppdaterJournalpostArkiverDokumentRequestMapperTest {
 		assertThat(requestTo.getDokumentInfoId(), is(DOKUMENTINFO_ID));
 		assertThat(requestTo.getUtsendingskanal(), is(UTSENDINGSKANAL));
 		assertThat(requestTo.getEndretAvNavn(), is(ENDRET_AV_NAVN));
-		assertThat(requestTo.getDatoDokument(), is(DATO_DOKUMENT));
+		Assertions.assertThat(requestTo.getDatoDokument()).isEqualToIgnoringNanos(DATO_DOKUMENT);
 		assertFilDetaljer(requestTo);
 	}
 
@@ -96,5 +88,14 @@ public class OppdaterJournalpostArkiverDokumentRequestMapperTest {
 		fildetaljer.setVariantformat(VARIANTFORMAT.name());
 		fildetaljer.setRedigerbartDokument(DOKUMENTINNHOLD.getBytes());
 		return fildetaljer;
+	}
+
+	private static XMLGregorianCalendar toXMLGregorianCalendar(LocalDateTime dateTime) {
+		try {
+			GregorianCalendar c = GregorianCalendar.from(dateTime.atZone(ZONEID_NORGE));
+			return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+		} catch (DatatypeConfigurationException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

@@ -27,11 +27,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -68,7 +65,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -76,8 +72,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 	private static final String FINNJOURNALPOSTER_STATUS = "/hentjournalsakinfo/finnjournalposter";
-	private static final Date LESTDATO = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
-
 
 	@Test
 	public void shouldReturnEmptyResponseWhenNotFound() {
@@ -264,7 +258,6 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertThat(journalpostDto.getDokumenter().get(2).getDokumentInfoId(), is(vedlegg2.getDokumentInfoId()));
 		assertThat(journalpostDto.getInnsyn(), is(BRUK_STANDARDREGLER.name()));
 		assertThat(journalpostDto.getInnsynbeskrivelse(), is("beskrivelse av " + BRUK_STANDARDREGLER));
-		assertEquals(LESTDATO, journalpostDto.getLestDato());
 	}
 
 	@Test

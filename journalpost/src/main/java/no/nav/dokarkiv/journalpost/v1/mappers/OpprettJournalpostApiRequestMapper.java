@@ -36,9 +36,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -100,7 +98,7 @@ public class OpprettJournalpostApiRequestMapper {
 		if (avsenderMottaker != null && isNotBlank(avsenderMottaker.getNavn())) {
 			return avsenderMottaker.getNavn();
 		} else if (avsenderMottaker != null && isNotBlank(avsenderMottaker.getId()) &&
-				(avsenderMottaker.getIdType() == null || avsenderMottaker.getIdType() == AvsenderMottakerIdType.FNR)) {
+				   (avsenderMottaker.getIdType() == null || avsenderMottaker.getIdType() == AvsenderMottakerIdType.FNR)) {
 			return identConsumer.hentPersonnavn(avsenderMottaker.getId(), request.getTema());
 		}
 		return null;
@@ -181,10 +179,10 @@ public class OpprettJournalpostApiRequestMapper {
 		return null;
 	}
 
-	private java.util.Date mapDokumentDato(OpprettJournalpostRequest request) {
+	private LocalDateTime mapDokumentDato(OpprettJournalpostRequest request) {
 		return request.getDatoDokument() == null ?
-				Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()) :
-				Date.from(request.getDatoDokument().atZone(ZoneId.systemDefault()).toInstant());
+				LocalDateTime.now() :
+				request.getDatoDokument();
 	}
 
 	private FagomradeCode mapTema(OpprettJournalpostRequest request) {
@@ -252,7 +250,7 @@ public class OpprettJournalpostApiRequestMapper {
 		if (isValidFagsaksystem(sakstype, fagsaksystem) && PP01.equals(fagsaksystem)) {
 			return FagsystemCode.PEN;
 		} else if ((isValidFagsaksystem(sakstype, fagsaksystem) || Sakstype.GENERELL_SAK.equals(sakstype))
-				&& !PP01.equals(fagsaksystem)) {
+				   && !PP01.equals(fagsaksystem)) {
 			return FagsystemCode.FS22;
 		} else {
 			throw new InputValideringFeiletException(format(

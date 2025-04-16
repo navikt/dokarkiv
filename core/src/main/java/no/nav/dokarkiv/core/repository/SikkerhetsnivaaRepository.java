@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -30,8 +31,8 @@ public interface SikkerhetsnivaaRepository extends HibernateRepository<Journalpo
 			""")
 	List<Long>
 	finnUlesteJournalposter(@Param("utsendingskanal") UtsendingsKanalCode utsendingskanal,
-							@Param("ekspedertFra") Date ekspedertFra,
-							@Param("ekspedertTil") Date ekspedertTil,
+							@Param("ekspedertFra") LocalDateTime ekspedertFra,
+							@Param("ekspedertTil") LocalDateTime ekspedertTil,
 							@Param("datoOpprettetStart") Date datoOpprettetStart,
 							@Param("datoOpprettetSlutt") Date datoOpprettetSlutt
 	);

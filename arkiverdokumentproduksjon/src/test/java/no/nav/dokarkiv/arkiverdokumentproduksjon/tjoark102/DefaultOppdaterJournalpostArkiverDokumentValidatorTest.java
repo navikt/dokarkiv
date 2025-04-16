@@ -17,7 +17,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -323,7 +323,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 				.journalpostId(2379873L)
 				.dokumentInfoId(123456L)
 				.endretAvNavn("endretAv")
-				.datoDokument(new Date())
+				.datoDokument(LocalDateTime.now())
 				.ferdigstillJournalpost(true);
 	}
 

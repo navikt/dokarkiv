@@ -43,7 +43,6 @@ import org.hibernate.type.TrueFalseConverter;
 
 import java.io.Serial;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -142,9 +141,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_journal_s", nullable = false, length = 20)
 	private JournalStatusCode journalstatus;
 
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_dokument")
-	private Date dokumentDato;
+	private LocalDateTime dokumentDato;
 
 	@Column(name = "avsend_mottaker", length = 200)
 	private String avsenderMottaker;
@@ -184,13 +182,11 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Convert(converter = TrueFalseConverter.class)
 	private Boolean elektroniskDistribusjon;
 
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_ekspedert")
-	private Date ekspedertDato;
+	private LocalDateTime ekspedertDato;
 
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_lest")
-	private Date lestDato;
+	private LocalDateTime lestDato;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_journalpost_t", nullable = false, length = 20)
@@ -770,22 +766,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		}
 	}
 
-	public void setEkspedertDato(OffsetDateTime ekspedertDato) {
-		if (ekspedertDato != null) {
-			this.ekspedertDato = Date.from(ekspedertDato.toInstant());
-		} else {
-			this.ekspedertDato = null;
-		}
-	}
-
-	public void setLestDato(OffsetDateTime lestDato) {
-		if (lestDato != null) {
-			this.lestDato = Date.from(lestDato.toInstant());
-		} else {
-			this.lestDato = null;
-		}
-	}
-
 	public void setAvsendtReturDato(Date avsendtReturDato) {
 		if (avsendtReturDato != null) {
 			this.avsendtReturDato = new Date(avsendtReturDato.getTime());
@@ -807,14 +787,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			this.journalDato = new Date(journalDato.getTime());
 		} else {
 			this.journalDato = null;
-		}
-	}
-
-	public void setDokumentDato(Date dokumentDato) {
-		if (dokumentDato != null) {
-			this.dokumentDato = new Date(dokumentDato.getTime());
-		} else {
-			this.dokumentDato = null;
 		}
 	}
 
