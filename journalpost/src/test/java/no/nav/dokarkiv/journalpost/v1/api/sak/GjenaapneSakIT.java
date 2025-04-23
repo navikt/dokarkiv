@@ -4,14 +4,15 @@ import no.nav.dokarkiv.core.domain.codes.AvleveringStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.itest.AbstractJournalpostIT;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 
-import static java.time.Instant.now;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVSLUTTET;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createSakForAktoerId;
@@ -19,6 +20,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createSakForOrgNr;
 import static no.nav.dokarkiv.core.util.TestdataFactory.GSAK_ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
+import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.nullValue;
@@ -87,7 +89,7 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 
 		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID_HISTORISK, FAGSAK_SYSTEM, FAGSAK_ID);
 		sak.setSakStatus(AVSLUTTET);
-		sak.setDatoAvsluttet(Date.from(now()));
+		sak.setDatoAvsluttet(LocalDateTime.now());
 		long sakId2 = sakTestRepository.persist(sak).getSakId();
 
 		commitAndStartNewTransaction();
@@ -105,7 +107,7 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 
 		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID_HISTORISK, FAGSAK_SYSTEM, FAGSAK_ID);
 		sak.setSakStatus(AVSLUTTET);
-		sak.setDatoAvsluttet(Date.from(now()));
+		sak.setDatoAvsluttet(LocalDateTime.now());
 		sak.setAvleveringStatus(AvleveringStatusCode.AVLEVERT);
 		sakTestRepository.persist(sak);
 
@@ -123,7 +125,7 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 
 		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID_HISTORISK, "PP01", FAGSAK_ID);
 		sak.setSakStatus(AVSLUTTET);
-		sak.setDatoAvsluttet(Date.from(now()));
+		sak.setDatoAvsluttet(LocalDateTime.now());
 		sakTestRepository.persist(sak);
 
 		commitAndStartNewTransaction();
@@ -148,7 +150,7 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 		assertThat(updatedSak.getSakStatus(), is(AAPEN));
 		assertThat(updatedSak.getEndretAv(), is(NAV_IDENT_SAKSBEHANDLER));
 		assertThat(updatedSak.getEndretKildeNavn(), is(KALLENDE_APP));
-		assertThat(updatedSak.getDatoEndret().getDay(), is(Date.from(now()).getDay()));
+		Assertions.assertThat(updatedSak.getDatoEndret()).isCloseTo(LocalDateTime.now(), within(1, MINUTES));
 		assertThat(updatedSak.getDatoAvsluttet(), is(nullValue()));
 		assertThat(updatedSak.getAvsluttetAv(), is(nullValue()));
 		assertThat(updatedSak.getAvsluttetKildeNavn(), is(nullValue()));
@@ -165,7 +167,7 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 		sak.setSakStatus(AVSLUTTET);
 		sak.setAvsluttetAv("Frankly Frank");
 		sak.setAvsluttetKildeNavn("Frankly Frank");
-		sak.setDatoAvsluttet(Date.from(now()));
+		sak.setDatoAvsluttet(LocalDateTime.now());
 		long sakId = sakTestRepository.persist(sak).getSakId();
 
 		commitAndStartNewTransaction();
@@ -175,7 +177,7 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 	private long persistDefaultAvsluttetSakForOrganisasjon() {
 		Sak sak = createSakForOrgNr(TEMA, GSAK_ORGNR, FAGSAK_SYSTEM, FAGSAK_ID);
 		sak.setSakStatus(AVSLUTTET);
-		sak.setDatoAvsluttet(Date.from(now()));
+		sak.setDatoAvsluttet(LocalDateTime.now());
 
 		long sakId = sakTestRepository.persist(sak).getSakId();
 		commitAndStartNewTransaction();

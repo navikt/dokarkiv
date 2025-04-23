@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.itest.AbstractJournalpostIT;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -17,6 +18,7 @@ import java.time.ZoneId;
 import java.util.Date;
 
 import static java.time.Instant.now;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.KassasjonStatusCode.KLAR_FOR_KASSASJON;
@@ -28,6 +30,7 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.GSAK_ORGNR;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggWithJournalstatusCode;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
+import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.nullValue;
@@ -166,11 +169,11 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 		assertThat(updatedSak.getKassasjonStatus(), is(nullValue()));
 		assertThat(updatedSak.getEndretAv(), is(NAV_IDENT_SAKSBEHANDLER));
 		assertThat(updatedSak.getEndretKildeNavn(), is(KALLENDE_APP));
-		assertThat(updatedSak.getDatoEndret().getDay(), is(Date.from(now()).getDay()));
-		assertThat(updatedSak.getDatoAvsluttet().getTime(), is(LocalDateTimeToDate(JANUAR_2023).getTime()));
+		Assertions.assertThat(updatedSak.getDatoEndret()).isCloseTo(LocalDateTime.now(), within(1, MINUTES));
+		assertThat(updatedSak.getDatoAvsluttet(), is(JANUAR_2023));
 		assertThat(updatedSak.getAvsluttetAv(), is(NAV_IDENT_SAKSBEHANDLER));
 		assertThat(updatedSak.getAvsluttetKildeNavn(), is(KALLENDE_APP));
-		assertThat(updatedSak.getDatoSakOpprettet().getTime(), is(LocalDateTimeToDate(JANUAR_2010).getTime()));
+		assertThat(updatedSak.getDatoSakOpprettet(), is(JANUAR_2010));
 		assertThat(updatedSak.getAdministrativEnhet(), is(ADMINISTRATIV_ENHET));
 		assertThat(updatedSak.getSakAnsvarlig(), is(SAKANSVARLIG));
 	}
@@ -180,7 +183,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 		assertThat(updatedSak.getAvleveringStatus(), is(AvleveringStatusCode.AVBRUTT));
 		assertThat(updatedSak.getKassasjonStatus(), is(KLAR_FOR_KASSASJON));
 		assertThat(updatedSak.getEndretAv(), is(NAV_IDENT_SAKSBEHANDLER));
-		assertThat(updatedSak.getDatoEndret().getDay(), is(Date.from(now()).getDay()));
+		Assertions.assertThat(updatedSak.getDatoEndret()).isCloseTo(LocalDateTime.now(), within(1, MINUTES));
 	}
 
 	private void setupStubs() {

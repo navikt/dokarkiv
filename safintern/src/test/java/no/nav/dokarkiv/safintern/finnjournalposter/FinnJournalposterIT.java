@@ -18,7 +18,6 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -27,6 +26,7 @@ import java.util.stream.Stream;
 
 import static java.lang.Long.parseLong;
 import static java.util.Collections.emptyList;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_UTC;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
@@ -42,9 +42,9 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoWithMoreData;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createPsakSaksrelasjon;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
-import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static no.nav.dokarkiv.core.util.TestdataFactory.FIXED_CLOCK;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FinnJournalposterIT extends AbstractSafinternTest {
@@ -220,7 +220,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 		assertThat(dokumenter.get(2).dokumentInfoId()).isEqualTo(vedlegg2.getDokumentInfoId());
 		assertThat(responseJournalpost.innsyn()).isEqualTo(BRUK_STANDARDREGLER);
 		assertThat(responseJournalpost.innsynsbeskrivelse()).isEqualToIgnoringCase("beskrivelse av " + BRUK_STANDARDREGLER);
-		String expectedLestDato = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(Instant.now(FIXED_CLOCK).atZone(ZoneOffset.ofHours(0))) + "+00:00";
+		String expectedLestDato = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(Instant.now(FIXED_CLOCK).atZone(ZONEID_UTC));
 		assertThat(responseJournalpost.relevanteDatoer().lest()).isEqualTo(expectedLestDato);
 	}
 

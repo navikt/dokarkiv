@@ -21,6 +21,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasj
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -64,16 +65,19 @@ public class OpprettJournalpostArkiverDokumentRequestMapper {
 				.opprettetAvNavn(journalpost.getOpprettetAvNavn())
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.innhold(journalpost.getInnhold())
-				.dokumentDato(journalpost.getDatoDokument() == null || journalpost.getDatoDokument()
-																			   .toGregorianCalendar() == null ? null : journalpost.getDatoDokument()
-						.toGregorianCalendar()
-						.getTime())
+				.dokumentDato(mapDokumentDato(journalpost))
 				.avsenderMottaker(journalpost.getAvsenderMottakerNavn())
 				.avsenderMottakerId(journalpost.getAvsenderMottakerId())
 				.utsendingskanal(journalpost.getUtsendingskanal() == null ? null : UtsendingsKanalCode.valueOf(journalpost
 						.getUtsendingskanal()))
 				.land(journalpost.getLand())
 				.build();
+	}
+
+	private static LocalDateTime mapDokumentDato(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost journalpost) {
+		return journalpost.getDatoDokument() == null || journalpost.getDatoDokument().toGregorianCalendar() == null ?
+				null :
+				journalpost.getDatoDokument().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
 	}
 
 	private void addBruker(Journalpost domainJournalpost,

@@ -12,7 +12,6 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
 
@@ -115,7 +114,7 @@ public final class JournalpostTestDataProvider {
 				.avsenderMottaker("Bjarne Betjent")
 				.opprettetAvNavn("Leonora Dorothea Dahl")
 				.opprettetKildeNavn("itest")
-				.dokumentDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
+				.dokumentDato(LocalDateTime.now())
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
 								.opprettetKildeNavn("itest")

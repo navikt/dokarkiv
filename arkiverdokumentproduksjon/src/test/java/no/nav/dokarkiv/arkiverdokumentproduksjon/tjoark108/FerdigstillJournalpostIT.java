@@ -19,6 +19,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
@@ -123,7 +124,7 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 	private Journalpost buildAndPersistJournalpost(DokumentStatusCode dokumentStatusCode) {
 		Journalpost journalpost = getJournalpostBuilder()
 				.avsenderMottakerId("02016126007")
-				.dokumentDato(new Date())
+				.dokumentDato(LocalDateTime.now())
 				.journalStatus(JournalStatusCode.D)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)

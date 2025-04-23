@@ -22,7 +22,7 @@ import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +61,7 @@ public class TestDataUtils {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
 				.avsenderMottakerIdType(AVSENDER_MOTTAKER_ID_TYPE)
-				.dokumentDato(new Date())
+				.dokumentDato(LocalDateTime.now())
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.journalstatus(UNDER_ARBEID)
 				.journalposttype(UTGAAENDE_DOKUMENT)

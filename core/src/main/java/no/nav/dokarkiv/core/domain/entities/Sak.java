@@ -8,8 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +17,6 @@ import no.nav.dokarkiv.core.domain.codes.KassasjonStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
@@ -72,12 +69,10 @@ public class Sak {
 	private String endretAv;
 
 	@Column(name = "dato_endret")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date datoEndret;
+	private LocalDateTime datoEndret;
 
 	@Column(name = "dato_avsluttet")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date datoAvsluttet;
+	private LocalDateTime datoAvsluttet;
 
 	@Column(name = "endret_kilde_navn", length = 40)
 	private String endretKildeNavn;
@@ -89,7 +84,7 @@ public class Sak {
 	private String avsluttetKildeNavn;
 
 	@Column(name = "dato_sak_opprettet", length = 40)
-	private Date datoSakOpprettet;
+	private LocalDateTime datoSakOpprettet;
 
 	@Column(name = "administrativ_enhet", length = 40)
 	private String administrativEnhet;

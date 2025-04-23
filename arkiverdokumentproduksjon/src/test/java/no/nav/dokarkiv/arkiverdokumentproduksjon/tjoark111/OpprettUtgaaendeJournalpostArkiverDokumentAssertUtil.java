@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettutgaaendejournalpostarkiverdokument.Vedlegg;
+import org.assertj.core.api.Assertions;
 
 import java.util.List;
 import java.util.Set;
@@ -45,7 +46,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		assertThat(domainJournalpost.getInnhold(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.INNHOLD));
 		assertThat(domainJournalpost.getAvsenderMottaker(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.EKSTERNPART_NAVN));
 		assertThat(domainJournalpost.getAvsenderMottakerId(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.PERSONIDENT));
-		assertThat(domainJournalpost.getDokumentDato(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.DATO_DOKUMENT));
+		Assertions.assertThat(domainJournalpost.getDokumentDato()).isEqualToIgnoringNanos(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.DATO_DOKUMENT);
 		assertThat(domainJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
 		assertThat(domainJournalpost.getKanalReferanseId(), is(KANAL_REF_ID));
 		assertThat(domainJournalpost.getOpprettetKildeNavn(), is(ITEST_COMPONENTID));

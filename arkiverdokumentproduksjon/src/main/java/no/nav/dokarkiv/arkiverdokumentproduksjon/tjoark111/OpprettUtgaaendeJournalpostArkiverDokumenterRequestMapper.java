@@ -91,10 +91,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 				.opprettetAvNavn(journalpost.getOpprettetAvNavn())
 				.journalForendeEnhetId(journalpost.getJournalforendeEnhet())
 				.innhold(journalpost.getInnhold())
-				.dokumentDato(journalpost.getDatoDokument() == null || journalpost.getDatoDokument()
-																			   .toGregorianCalendar() == null ? null : journalpost.getDatoDokument()
-						.toGregorianCalendar()
-						.getTime())
+				.dokumentDato(mapDokumentDato(journalpost))
 				.avsenderMottaker(journalpost.getAvsenderMottakerNavn())
 				.avsenderMottakerId(journalpost.getAvsenderMottakerId())
 				.utsendingskanal(journalpost.getUtsendingskanal() == null ? null : UtsendingsKanalCode.valueOf(journalpost
@@ -102,6 +99,11 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 				.kanalReferanseId(journalpost.getKanalreferanseId())
 				.tilleggsopplysninger(addTilleggsopplysningAsMap(journalpost.getTilleggsopplysninger()))
 				.build();
+	}
+
+	private static LocalDateTime mapDokumentDato(no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettutgaaendejournalpostarkiverdokument.Journalpost journalpost) {
+		return journalpost.getDatoDokument() == null || journalpost.getDatoDokument().toGregorianCalendar() == null ?
+				null : journalpost.getDatoDokument().toGregorianCalendar().toZonedDateTime().toLocalDateTime();
 	}
 
 	private void addBruker(Journalpost domainJournalpost,

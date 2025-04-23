@@ -14,7 +14,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 import static java.util.Arrays.asList;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
@@ -103,9 +102,8 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	private Journalpost opprettLestJournalpost() {
-		OffsetDateTime now = OffsetDateTime.now();
 		Journalpost journalpost = generateBaseJp(2);
-		journalpost.setLestDato(now.minusHours(5));
+		journalpost.setLestDato(LocalDateTime.now().minusHours(5));
 		return journalpost;
 	}
 
@@ -124,10 +122,9 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 	}
 
 	private Journalpost generateBaseJp(int dagerSidenEkspedert) {
-		OffsetDateTime now = OffsetDateTime.now();
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setKanalReferanseId(java.util.UUID.randomUUID().toString());
-		journalpost.setEkspedertDato(now.minusDays(dagerSidenEkspedert));
+		journalpost.setEkspedertDato(LocalDateTime.now().minusDays(dagerSidenEkspedert));
 		journalpost.setJournalstatus(E);
 		journalpost.setLestDato(null);
 		return journalpost;

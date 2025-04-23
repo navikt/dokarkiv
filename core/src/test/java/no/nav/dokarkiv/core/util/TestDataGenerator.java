@@ -30,9 +30,7 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +78,7 @@ public class TestDataGenerator {
 	public static final Integer ANTALL_RETUR = 3;
 	public static final String KANAL_REFERANSE_ID = "KANAL_REFERANSE_ID";
 	public static final String AKTOER_ID = "111113333333";
-	private static final Date LESTDATO = Date.from(LocalDate.now().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
+	public static final LocalDateTime LESTDATO = LocalDateTime.now().minusDays(3);
 	public static final String ADRESSELINJE1 = "adresselinje1";
 	public static final String ADRESSELINJE2 = "adresselinje2";
 	public static final String ADRESSELINJE3 = "adresselinje3";
@@ -106,7 +104,7 @@ public class TestDataGenerator {
 				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
 				.avsenderMottakerIdType(AVSENDER_MOTTAKER_ID_TYPE)
 				.land(AVSENDER_MOTTAKER_LAND)
-				.dokumentDato(new Date())
+				.dokumentDato(LocalDateTime.now())
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.journalstatus(JournalStatusCode.FS)
 				.journalposttype(JournalpostTypeCode.U)
@@ -123,7 +121,7 @@ public class TestDataGenerator {
 				.journalDato(new Date())
 				.avsendtReturDato(new Date())
 				.sendtPrintDato(new Date())
-				.ekspedertDato(new Date())
+				.ekspedertDato(LocalDateTime.now())
 				.build();
 
 		journalpost.addBruker(createBruker());
@@ -197,7 +195,7 @@ public class TestDataGenerator {
 	public static Journalpost createJournalpostWithSplittetHoveddokument(Journalpost journalpostOriginal) {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
-				.dokumentDato(new Date())
+				.dokumentDato(LocalDateTime.now())
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.journalstatus(JournalStatusCode.FS)
 				.journalposttype(JournalpostTypeCode.U)
@@ -220,7 +218,7 @@ public class TestDataGenerator {
 	public static Journalpost createJournalpostWithGjenbruktHoveddokument(DokumentInfo dokumentInfoGjenbrukt) {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
-				.dokumentDato(new Date())
+				.dokumentDato(LocalDateTime.now())
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.journalstatus(JournalStatusCode.FS)
 				.journalposttype(JournalpostTypeCode.U)

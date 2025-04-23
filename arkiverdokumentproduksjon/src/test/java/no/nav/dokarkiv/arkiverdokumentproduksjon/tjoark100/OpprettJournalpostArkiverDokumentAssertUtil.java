@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import org.assertj.core.api.Assertions;
 
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +54,7 @@ public class OpprettJournalpostArkiverDokumentAssertUtil {
 		assertThat(domainJournalpost.getAvsenderMottaker(), is(OpprettJournalpostArkiverDokumentDataUtil.EKSTERNPART_NAVN));
 		assertThat(domainJournalpost.getAvsenderMottakerId(), is(OpprettJournalpostArkiverDokumentDataUtil.PERSONIDENT));
 		assertThat(domainJournalpost.getLand(), is(OpprettJournalpostArkiverDokumentDataUtil.LAND));
-		assertThat(domainJournalpost.getDokumentDato(), is(OpprettJournalpostArkiverDokumentDataUtil.DATO_DOKUMENT));
+		Assertions.assertThat(domainJournalpost.getDokumentDato()).isEqualToIgnoringNanos(OpprettJournalpostArkiverDokumentDataUtil.DATO_DOKUMENT);
 		assertThat(domainJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
 	}
 

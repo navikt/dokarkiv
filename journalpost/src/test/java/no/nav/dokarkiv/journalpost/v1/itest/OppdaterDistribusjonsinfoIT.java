@@ -24,11 +24,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +34,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
@@ -44,10 +44,10 @@ import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.S;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.SDP;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.OK;
@@ -73,7 +73,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertEquals(E, ekspedertJournalpost.getJournalstatus());
 		assertEquals(SDP, ekspedertJournalpost.getUtsendingskanal());
 		assertNull(ekspedertJournalpost.getLestDato());
-		assertTrue(Duration.between(ekspedertDato.toInstant(), ekspedertJournalpost.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).toSeconds() < 3);
+		assertThat(ekspedertDato.atZoneSameInstant(ZONEID_NORGE).toLocalDateTime()).isCloseTo(ekspedertJournalpost.getEkspedertDato(), within(3, SECONDS));
 	}
 
 	@Test
@@ -92,7 +92,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		assertEquals(E, ekspedertJournalpost.getJournalstatus());
 		assertEquals(SDP, ekspedertJournalpost.getUtsendingskanal());
 		assertNull(ekspedertJournalpost.getLestDato());
-		assertTrue(Duration.between(ekspedertDato.toInstant(), ekspedertJournalpost.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).toSeconds() < 3);
+		assertThat(ekspedertDato.atZoneSameInstant(ZONEID_NORGE).toLocalDateTime()).isCloseTo(ekspedertJournalpost.getEkspedertDato(), within(3, SECONDS));
 	}
 
 	@Test
@@ -117,7 +117,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		Journalpost ferdigstiltJournalpost2 = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(SDP, ferdigstiltJournalpost2.getUtsendingskanal());
-		assertTrue(Duration.between(firstReadAtTimestamp.toInstant(), ferdigstiltJournalpost2.getLestDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).toSeconds() < 3);
+		assertThat(firstReadAtTimestamp.atZoneSameInstant(ZONEID_NORGE).toLocalDateTime()).isCloseTo(ferdigstiltJournalpost2.getLestDato(), within(3, SECONDS));
 	}
 
 	@Test
@@ -176,7 +176,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		Journalpost ferdigstiltJournalpost2 = journalpostTestRepository.findById(journalpostId).orElseThrow(RuntimeException::new);
 
 		assertEquals(SDP, ferdigstiltJournalpost2.getUtsendingskanal());
-		assertTrue(Duration.between(ekspedertDato.toInstant(), ferdigstiltJournalpost2.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
+		assertThat(ekspedertDato.atZoneSameInstant(ZONEID_NORGE).toLocalDateTime()).isCloseTo(ferdigstiltJournalpost2.getEkspedertDato(), within(3, SECONDS));
 
 		UtsendingsInfo utsendingsInfo = utsendingsInfoTestRepository.findById(ferdigstiltJournalpost2.getJournalpostId()).orElseThrow();
 		assertNull(utsendingsInfo.getNavNoVarsling());
@@ -233,7 +233,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		Journalpost ferdigstiltJournalpost2 = journalpostTestRepository.findById(jpAll.get(1)).orElseThrow(RuntimeException::new);
 
 		assertEquals(SDP, ferdigstiltJournalpost2.getUtsendingskanal());
-		assertTrue(Duration.between(ekspedertDato.toInstant(), ferdigstiltJournalpost2.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
+		assertThat(ekspedertDato.atZoneSameInstant(ZONEID_NORGE).toLocalDateTime()).isCloseTo(ferdigstiltJournalpost2.getEkspedertDato(), within(3, SECONDS));
 
 		UtsendingsInfo utsendingsInfo = utsendingsInfoTestRepository.findById(ferdigstiltJournalpost2.getJournalpostId()).orElseThrow();
 		assertNull(utsendingsInfo.getNavNoVarsling());
@@ -273,7 +273,7 @@ public class OppdaterDistribusjonsinfoIT extends AbstractJournalpostIT {
 		Journalpost ferdigstiltJournalpost2 = journalpostTestRepository.findById(jpAll.get(1)).orElseThrow(RuntimeException::new);
 
 		assertEquals(S, ferdigstiltJournalpost2.getUtsendingskanal());
-		assertTrue(Duration.between(ekspedertDato.toInstant(), ferdigstiltJournalpost2.getEkspedertDato().toInstant()).truncatedTo(ChronoUnit.SECONDS).isZero());
+		assertThat(ekspedertDato.atZoneSameInstant(ZONEID_NORGE).toLocalDateTime()).isCloseTo(ferdigstiltJournalpost2.getEkspedertDato(), within(3, SECONDS));
 
 		UtsendingsInfo utsendingsInfo = utsendingsInfoTestRepository.findById(ferdigstiltJournalpost2.getJournalpostId()).orElseThrow();
 		assertNull(utsendingsInfo.getNavNoVarsling());
