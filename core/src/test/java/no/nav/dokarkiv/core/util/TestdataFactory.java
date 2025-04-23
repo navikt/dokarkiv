@@ -30,7 +30,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatterBuilder;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,17 +112,17 @@ public class TestdataFactory {
 		return createJournalpost(createSaksrelasjon(sakId), statusCode);
 	}
 
-	private static Journalpost createJournalpost(Saksrelasjon saksrelasjon, JournalStatusCode statusCode){
+	private static Journalpost createJournalpost(Saksrelasjon saksrelasjon, JournalStatusCode statusCode) {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
 				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
 				.avsenderMottakerIdType(AVSENDER_MOTTAKER_ID_TYPE)
 				.land(AVSENDER_MOTTAKER_LAND)
 				.mottattDato(LocalDateTime.now(FIXED_CLOCK))
-				.journalDato(Date.from(Instant.now(FIXED_CLOCK)))
-				.sendtPrintDato(Date.from(Instant.now(FIXED_CLOCK)))
+				.journalDato(LocalDateTime.now(FIXED_CLOCK))
+				.sendtPrintDato(LocalDateTime.now(FIXED_CLOCK))
 				.ekspedertDato(LocalDateTime.now(FIXED_CLOCK))
-				.avsendtReturDato(Date.from(Instant.now(FIXED_CLOCK)))
+				.avsendtReturDato(LocalDateTime.now(FIXED_CLOCK))
 				.dokumentDato(LocalDateTime.now(FIXED_CLOCK))
 				.lestDato(LocalDateTime.now(FIXED_CLOCK))
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
@@ -212,8 +211,8 @@ public class TestdataFactory {
 		return journalpostDokumentInfoRelasjon;
 	}
 
-	static no.nav.dokarkiv.core.domain.entities.Saksrelasjon createSaksrelasjon(long sakId, Journalpost... journalpost) {
-		no.nav.dokarkiv.core.domain.entities.Saksrelasjon saksrelasjon = no.nav.dokarkiv.core.domain.entities.Saksrelasjon.builder()
+	static Saksrelasjon createSaksrelasjon(long sakId, Journalpost... journalpost) {
+		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
 				.fagsystem(FagsystemCode.FS22)
 				.sakId(sakId)
 				.feilregistrert(false)
@@ -226,8 +225,8 @@ public class TestdataFactory {
 		return saksrelasjon;
 	}
 
-	static no.nav.dokarkiv.core.domain.entities.Bruker createBruker() {
-		no.nav.dokarkiv.core.domain.entities.Bruker bruker = Bruker.builder()
+	static Bruker createBruker() {
+		Bruker bruker = Bruker.builder()
 				.brukerType(BrukerTypeCode.PERSON)
 				.brukerId(BRUKER_ID)
 				.build();
@@ -251,7 +250,7 @@ public class TestdataFactory {
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.tittel(DOKUMENT_INFO_TITTEL)
 				.dokumenttypeId(DOKUMENT_TYPE_ID)
-				.dokumentFerdigDato(Date.from(Instant.now(FIXED_CLOCK)))
+				.dokumentFerdigDato(LocalDateTime.now(FIXED_CLOCK))
 				.brevkode(BREVKODE)
 				.kassert(false)
 				.kategori(DokumentKategoriCode.ES)

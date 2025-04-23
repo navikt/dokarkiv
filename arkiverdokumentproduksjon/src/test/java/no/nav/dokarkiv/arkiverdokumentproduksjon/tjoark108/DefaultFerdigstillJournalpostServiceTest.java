@@ -14,15 +14,14 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -74,7 +73,7 @@ public class DefaultFerdigstillJournalpostServiceTest {
 		service.ferdigstillJournalpost(request);
 
 		assertThat(journalpost.getJournalstatus(), is(JournalStatusCode.FS));
-		assertThat(journalpost.getJournalDato(), is(Date.from(LocalDateTime.parse(MOCK_DATE).atZone(ZoneId.systemDefault()).toInstant())));
+		Assertions.assertThat(journalpost.getJournalDato()).isEqualToIgnoringNanos(LocalDateTime.now());
 		assertThat(journalpost.getUtsendingskanal(), is(UTSENDINGS_KANAL));
 		assertThat(journalpost.getJournalfortAvNavn(), is(ENDRET_AV_NAVN));
 

@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.InputValideringBadMetadataException;
@@ -68,7 +67,7 @@ public class MottaDokumentUtgaaendeSkanningService {
 			if (request.getDatoMottatt() != null) {
 				journalpost.setMottattDato(LocalDateTime.ofInstant(request.getDatoMottatt().toInstant(), ZONEID_NORGE));
 			}
-			journalpost.setJournalDato(DateProvider.getToday());
+			journalpost.setJournalDato(LocalDateTime.now());
 
 			if (request.getEksternReferanseId() != null) {
 				journalpost.setKanalReferanseId(request.getEksternReferanseId());

@@ -5,12 +5,13 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 public class DefaultArkiverVedleggService implements ArkiverVedleggService {
@@ -62,7 +63,7 @@ public class DefaultArkiverVedleggService implements ArkiverVedleggService {
 	private void updateDokumentInfo(DokumentInfo dokumentInfo, ArkiverVedleggRequestTo arkiverVedleggRequest) {
 		boolean ferdigstillDokument = arkiverVedleggRequest.getFerdigstillDokument();
 		dokumentInfo.setDokumentstatus(toDokumentStatusCode(ferdigstillDokument));
-		dokumentInfo.setDokumentFerdigDato(ferdigstillDokument ? DateProvider.getToday() : null);
+		dokumentInfo.setDokumentFerdigDato(ferdigstillDokument ? LocalDateTime.now() : null);
 	}
 
 	private JournalpostDokumentInfoRelasjon createJournalpostDokumentInfoRelasjon(ArkiverVedleggRequestTo arkiverVedleggRequest,

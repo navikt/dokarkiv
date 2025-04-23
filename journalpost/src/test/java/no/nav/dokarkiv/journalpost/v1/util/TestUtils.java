@@ -34,12 +34,12 @@ import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -298,13 +298,13 @@ public class TestUtils {
 				.build();
 	}
 
-	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDatoRetur(Date date) {
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithDatoRetur(LocalDate datoRetur) {
 		return OppdaterJournalpostRequest.builder()
 				.avsenderMottaker(createAvsenderMottakerPerson())
 				.bruker(createBrukerPerson())
 				.sak(createSak())
 				.tema(TEMA_FOR)
-				.datoRetur(date)
+				.datoRetur(datoRetur)
 				.behandlingstema(BEHANDLINGSTEMA)
 				.tittel(DOKUMENT_TITTEL1)
 				.tilleggsopplysninger(createTilleggsopplysninger())

@@ -1051,7 +1051,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, J)
 				.endretAvNavn("saksbehandlersen")
-				.journalDato(java.sql.Date.valueOf(LOCAL_DATE_TIME.toLocalDate())));
+				.journalDato(LOCAL_DATE_TIME));
 		Long journalpostId = journalpost.getJournalpostId();
 
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
@@ -1169,7 +1169,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.journalstatus(FL)
 				.endretAvNavn("saksbehandlersen")
 				.innhold("Gammel tittel")
-				.journalDato(java.sql.Date.valueOf(LOCAL_DATE_TIME.toLocalDate()))
+				.journalDato(LOCAL_DATE_TIME)
 				.fagomrade(FagomradeCode.PEN)
 				.build();
 		journalpostDraft.setOpprettetKildeNavn("itest");

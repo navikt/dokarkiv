@@ -12,8 +12,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -150,17 +148,16 @@ public class AvsenderMottakerValidatorTest {
 				.tittel(DOKUMENT_TITTEL1)
 				.build();
 		journalpost = createEnkelJournalpost(J, I);
-		journalpost.setJournalDato(Date.valueOf(LOCAL_DATE_TIME.toLocalDate()));
+		journalpost.setJournalDato(LOCAL_DATE_TIME);
 
-		SimpleDateFormat datoFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-		String formatedJournalDato = datoFormat.format(journalpost.getJournalDato());
+		String journalDatoAsString = journalpost.getJournalDato().toString();
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validateOppdaterteFelt(oppdaterJournalpostRequest, journalpost))
 				.withMessageContainingAll(
-						format("avsenderMottaker.id kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s", formatedJournalDato),
-						format("avsenderMottaker.navn kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s", formatedJournalDato),
-						format("tittel kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s", formatedJournalDato)
+						format("avsenderMottaker.id kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s", journalDatoAsString),
+						format("avsenderMottaker.navn kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s", journalDatoAsString),
+						format("tittel kan ikke oppdateres da journalposten er journalført for over 1 år siden. journalDato=%s", journalDatoAsString)
 				);
 	}
 }

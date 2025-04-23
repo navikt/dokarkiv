@@ -7,6 +7,7 @@ import java.util.Date;
 /**
  * @author Ugur Alpay Cenar, Visma Consulting.
  */
+@Deprecated
 public class DateUtil {
 
 

@@ -20,7 +20,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
@@ -147,7 +146,7 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 	private DokumentInfo createDokumentInfo(DokumentStatusCode dokumentStatusCode) {
 		return getDokumentInfoBuilder()
 				.dokumentstatus(dokumentStatusCode)
-				.dokumentFerdigDato(new Date())
+				.dokumentFerdigDato(LocalDateTime.now())
 				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.filDetaljerList(createPDFFilDetaljerArkiv(), createPDFFilDetaljerProduksjon())
 				.build();

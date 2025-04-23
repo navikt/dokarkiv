@@ -25,12 +25,9 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import static java.time.LocalDateTime.now;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
@@ -160,8 +157,7 @@ public class FerdigstillJournalpostService {
 	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
 	private void oppdatertJournalpost(Journalpost journalpost, FerdigstillJournalpostRequest journalfoerendeEnhet) {
 		journalpost.setJournalDato(
-				journalfoerendeEnhet.getDatoJournal() != null ? journalfoerendeEnhet.getDatoJournal() :
-						Date.from(now().atZone(ZoneId.systemDefault()).toInstant())
+				journalfoerendeEnhet.getDatoJournal() != null ? journalfoerendeEnhet.getDatoJournal() : LocalDateTime.now()
 		);
 		journalpost.setJournalForendeEnhetId(journalfoerendeEnhet.getJournalfoerendeEnhet());
 		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
@@ -178,7 +174,7 @@ public class FerdigstillJournalpostService {
 	}
 
 	private void oppdatertJournalpost(Journalpost journalpost, String journalfoerendeEnhet) {
-		journalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+		journalpost.setJournalDato(LocalDateTime.now());
 		journalpost.setJournalForendeEnhetId(journalfoerendeEnhet);
 		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 		journalpost.setJournalfortAvNavn(MDC.get(MDC_USER_NAME));

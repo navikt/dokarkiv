@@ -15,9 +15,14 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpost.Journalpost;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
+import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -68,12 +73,12 @@ public class OpprettJournalpostIT extends AbstractArkiverdokumentproduksjonItest
 		DokumentInfo dokumentInfo = Iterables.getFirst(persistedJournalpost.getJournalpostDokumentInfoRelasjoner(), null)
 				.getDokumentInfo();
 
-		assertThat(persistedJournalpost.getJournalDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(persistedJournalpost.getJournalDato()).isEqualToIgnoringNanos(LocalDateTime.now());
 		assertThat(persistedJournalpost.getJournalstatus(), is(JournalStatusCode.D));
 		assertThat(persistedJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
 		assertThat(dokumentInfoRelasjon.getTilknyttetJournalpostSom(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT));
 		assertThat(dokumentInfo.getDokumentstatus(), is(DokumentStatusCode.UNDER_REDIGERING));
-		assertThat(dokumentInfo.getDokumentFerdigDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(dokumentInfo.getDokumentFerdigDato()).isCloseTo(LocalDateTime.now(), within(3, ChronoUnit.SECONDS));
 	}
 
 	@Test

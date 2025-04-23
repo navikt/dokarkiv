@@ -20,16 +20,15 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Kryssreferanse;
+import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.time.Instant.now;
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode.FNR;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.ES;
@@ -86,10 +85,10 @@ public class TestdataFactory {
 				.avsenderMottakerIdType(AVSENDER_MOTTAKER_ID_TYPE)
 				.land(AVSENDER_MOTTAKER_LAND)
 				.mottattDato(LocalDateTime.now(FIXED_CLOCK))
-				.journalDato(Date.from(now(FIXED_CLOCK)))
-				.sendtPrintDato(Date.from(now(FIXED_CLOCK)))
+				.journalDato(LocalDateTime.now(FIXED_CLOCK))
+				.sendtPrintDato(LocalDateTime.now(FIXED_CLOCK))
 				.ekspedertDato(LocalDateTime.now(FIXED_CLOCK))
-				.avsendtReturDato(Date.from(now(FIXED_CLOCK)))
+				.avsendtReturDato(LocalDateTime.now(FIXED_CLOCK))
 				.dokumentDato(LocalDateTime.now(FIXED_CLOCK))
 				.lestDato(LocalDateTime.now(FIXED_CLOCK))
 				.utsendingskanal(NAV_NO)
@@ -163,8 +162,8 @@ public class TestdataFactory {
 		return journalpostDokumentInfoRelasjon;
 	}
 
-	static no.nav.dokarkiv.core.domain.entities.Saksrelasjon createSaksrelasjon(Journalpost journalpost) {
-		no.nav.dokarkiv.core.domain.entities.Saksrelasjon saksrelasjon = no.nav.dokarkiv.core.domain.entities.Saksrelasjon.builder()
+	static Saksrelasjon createSaksrelasjon(Journalpost journalpost) {
+		Saksrelasjon saksrelasjon = Saksrelasjon.builder()
 				.fagsystem(FagsystemCode.FS22)
 				.sakId(SAK_ID)
 				.journalpost(journalpost)
@@ -199,7 +198,7 @@ public class TestdataFactory {
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.tittel(DOKUMENT_INFO_TITTEL)
 				.dokumenttypeId(DOKUMENT_TYPE_ID)
-				.dokumentFerdigDato(Date.from(now(FIXED_CLOCK)))
+				.dokumentFerdigDato(LocalDateTime.now(FIXED_CLOCK))
 				.brevkode(BREVKODE)
 				.kassert(false)
 				.kategori(ES)

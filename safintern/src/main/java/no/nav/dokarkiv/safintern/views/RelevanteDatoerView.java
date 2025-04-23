@@ -22,18 +22,21 @@ public interface RelevanteDatoerView {
 	@Mapping("dokumentDato")
 	LocalDateTime getHoveddokument();
 
+	@JsonSerialize(using = LocalDateTimeToOffsetDateTimeUTCSerializer.class)
 	@Mapping("journalDato")
-	Date getJournalfoert();
+	LocalDateTime getJournalfoert();
 
+	@JsonSerialize(using = LocalDateTimeToOffsetDateTimeUTCSerializer.class)
 	@Mapping("sendtPrintDato")
-	Date getSendtPrint();
+	LocalDateTime getSendtPrint();
 
 	@JsonSerialize(using = LocalDateTimeToOffsetDateTimeUTCSerializer.class)
 	@Mapping("ekspedertDato")
 	LocalDateTime getEkspedert();
 
+	@JsonSerialize(using = LocalDateTimeToOffsetDateTimeUTCSerializer.class)
 	@Mapping("avsendtReturDato")
-	Date getRetur();
+	LocalDateTime getRetur();
 
 	@JsonSerialize(using = LocalDateTimeToOffsetDateTimeUTCSerializer.class)
 	@Mapping("lestDato")

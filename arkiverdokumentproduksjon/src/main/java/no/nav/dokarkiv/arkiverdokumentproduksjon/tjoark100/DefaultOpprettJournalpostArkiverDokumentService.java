@@ -7,11 +7,12 @@ import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.BESTILLINGS_ID_KEY;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -68,7 +69,7 @@ public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJ
 			} else {
 				journalpost.setJournalstatus(JournalStatusCode.FS);
 			}
-			journalpost.setJournalDato(DateProvider.getToday());
+			journalpost.setJournalDato(LocalDateTime.now());
 			journalpost.setJournalfortAvNavn(journalpost.getOpprettetAvNavn());
 			journalpost.setUtsendingskanal(journalpost.getUtsendingskanal());
 		} else {
@@ -86,7 +87,7 @@ public class DefaultOpprettJournalpostArkiverDokumentService implements OpprettJ
 
 		DokumentInfo dokumentInfo = relasjon.getDokumentInfo();
 		dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
-		dokumentInfo.setDokumentFerdigDato(DateProvider.getToday());
+		dokumentInfo.setDokumentFerdigDato(LocalDateTime.now());
 		dokumentInfo.setOriginalJournalpost(journalpost);
 	}
 

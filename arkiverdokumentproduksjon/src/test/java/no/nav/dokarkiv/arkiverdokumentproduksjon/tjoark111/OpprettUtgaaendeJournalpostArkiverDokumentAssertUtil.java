@@ -12,6 +12,8 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettutgaaendejournalpostarkiverdokument.Vedlegg;
 import org.assertj.core.api.Assertions;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +26,7 @@ import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaen
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111.OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.TILLEGGSOPPLYSNING_VERDI;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.FERDIGSTILT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
+import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,8 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Assert util specific for operation OpprettJournalpostArkiverDokument
- *
- * @author Ugur Alpay Cenar, Visma Consulting.
  */
 public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 
@@ -90,8 +90,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentAssertUtil {
 		assertThat(domainDokumentInfo.getKategori().name(), is(OpprettUtgaaendeJournalpostArkiverDokumentDataUtil.KATEGORI));
 		assertThat(domainDokumentInfo.getBrevkode(), is(BREVKODE));
 		assertThat(domainDokumentInfo.getFildetaljerListe().size(), is(1));
-		assertTrue(domainDokumentInfo.getDokumentFerdigDato().toInstant().toEpochMilli() - getDateNow().toInstant()
-				.toEpochMilli() < 1000);
+		Assertions.assertThat(domainDokumentInfo.getDokumentFerdigDato()).isCloseTo(LocalDateTime.now(), within(3, ChronoUnit.SECONDS));
 		assertFildetaljer(domainDokumentInfo.getFildetaljerListe().iterator().next());
 		assertThat(domainDokumentInfo.getOpprettetKildeNavn(), is(ITEST_COMPONENTID));
 	}

@@ -8,8 +8,6 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import org.slf4j.MDC;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +30,7 @@ public class JournalpostCopier {
 				.kanalReferanseId(mapKanalReferanseId(journalpost, eksternReferanseId))
 				.build();
 
-		kopiertJournalpost.setJournalDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+		kopiertJournalpost.setJournalDato(LocalDateTime.now());
 		kopiertJournalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
 		kopiertJournalpost.setJournalfortAvNavn(MDC.get(MDC_USER_ID));
 		kopiertJournalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));

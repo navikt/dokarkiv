@@ -7,12 +7,12 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -95,7 +95,7 @@ public class DefaultOpprettJournalpostArkiverDokumenterService implements Oppret
 			relasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn());
 			DokumentInfo dokumentInfo = relasjon.getDokumentInfo();
 			dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
-			dokumentInfo.setDokumentFerdigDato(DateProvider.getToday());
+			dokumentInfo.setDokumentFerdigDato(LocalDateTime.now());
 			dokumentInfo.setOriginalJournalpost(journalpost);
 		});
 	}

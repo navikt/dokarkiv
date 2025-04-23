@@ -20,11 +20,9 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
-import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
 
 /**
  * Util for creating Journalpost for the OpprettJournalpostArkiverDokument
@@ -58,7 +56,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentDataUtil {
 	protected static final String VEDLEGG_JP_ID = "123213213";
 	protected static final BrukerTypeCode BRUKERTYPE = BrukerTypeCode.PERSON;
 	protected static final LocalDateTime DATO_DOKUMENT = LocalDateTime.now();
-	protected static final Date DATO_JOURNAL = getDateNow();
+	protected static final LocalDateTime DATO_JOURNAL = LocalDateTime.now();
 
 	public static Journalpost createJournalpostOnlyRequiredValues() {
 		Journalpost journalpost = new Journalpost();

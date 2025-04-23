@@ -33,6 +33,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.stream.Collectors.joining;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.FAR;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.KTA;
@@ -51,6 +52,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.IKKE_FUNNET;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.UGYLDIG_STATUS;
 import static no.nav.dokarkiv.journalpost.v1.util.FunctionalMatcher.where;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
@@ -526,7 +528,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private void assertDokumentInfo(DokumentInfo sourceDokumentInfo, DokumentInfo dokumentInfoKopi) {
 		assertEquals(sourceDokumentInfo.getDokumentstatus(), dokumentInfoKopi.getDokumentstatus());
-		assertThat(sourceDokumentInfo.getDokumentFerdigDato()).isCloseTo(dokumentInfoKopi.getDokumentFerdigDato(), 200);
+		assertThat(sourceDokumentInfo.getDokumentFerdigDato()).isCloseTo(dokumentInfoKopi.getDokumentFerdigDato(), within(200, MILLIS));
 		assertEquals(sourceDokumentInfo.getTittel(), dokumentInfoKopi.getTittel());
 		assertEquals(sourceDokumentInfo.getBrevkode(), dokumentInfoKopi.getBrevkode());
 		assertEquals(sourceDokumentInfo.getDokumenttypeId(), dokumentInfoKopi.getDokumenttypeId());

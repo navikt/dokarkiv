@@ -20,9 +20,14 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVe
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.Fildetaljer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggResponse;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
+import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -73,7 +78,7 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 		DokumentInfo dokumentInfo = persistedJournalpost.findDokumentInfoById(arkiverVedleggResponse.getDokumentInfoId());
 
 		assertThat(dokumentInfo.getDokumentstatus(), is(DokumentStatusCode.FERDIGSTILT));
-		assertThat(dokumentInfo.getDokumentFerdigDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(dokumentInfo.getDokumentFerdigDato()).isCloseTo(LocalDateTime.now(), within(3, ChronoUnit.SECONDS));
 		assertThat(dokumentInfo.getKategori(), is(DokumentKategoriCode.B));
 		assertThat(dokumentInfo.getTittel(), is(TITTEL));
 		assertThat(dokumentInfo.getBrevkode(), is(BREVKODE));

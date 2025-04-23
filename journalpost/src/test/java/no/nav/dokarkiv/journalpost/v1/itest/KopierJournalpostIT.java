@@ -18,7 +18,6 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -45,7 +44,6 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.entities.Journalpost.KANAL_REFERANSE_ID_LENGTH;
 import static no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.TestdataFactory.createJournalpostWithHoveddokumentAndVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -106,9 +104,9 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		assertThat(kopiertJournalpost.getSkjermingType()).isEqualTo(originalJournalpost.getSkjermingType());
 
 		assertThat(kopiertJournalpost.getOpprettetKildeNavn()).isEqualTo(SERVICE_USER_ID);
-		assertThat(kopiertJournalpost.getMottattDato()).isCloseTo(originalJournalpost.getMottattDato(), within(1, ChronoUnit.MINUTES));
-		assertThat(kopiertJournalpost.getSendtPrintDato()).isInSameHourWindowAs(originalJournalpost.getSendtPrintDato());
-		assertThat(kopiertJournalpost.getAvsendtReturDato()).isInSameDayAs(originalJournalpost.getAvsendtReturDato());
+		assertThat(kopiertJournalpost.getMottattDato()).isEqualToIgnoringNanos(originalJournalpost.getMottattDato());
+		assertThat(kopiertJournalpost.getSendtPrintDato()).isEqualToIgnoringNanos(originalJournalpost.getSendtPrintDato());
+		assertThat(kopiertJournalpost.getAvsendtReturDato()).isEqualToIgnoringNanos(originalJournalpost.getAvsendtReturDato());
 
 		kopiertJournalpost.getJournalpostDokumentInfoRelasjoner().forEach(jpdok -> {
 			assertThat(jpdok.getOpprettetKildeNavn()).isEqualTo(SERVICE_USER_ID);

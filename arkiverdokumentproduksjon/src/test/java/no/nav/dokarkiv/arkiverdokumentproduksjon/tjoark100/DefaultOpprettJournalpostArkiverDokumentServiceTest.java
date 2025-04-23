@@ -12,10 +12,10 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
+import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,12 +24,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -46,7 +50,6 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 	private static final Long JOURNALPOST_ID = 1L;
-	private static final String TODAY_DATE = "2018-06-20T14:31:54.767";
 	private static final boolean SENSITIVT_REQUEST = true;
 	private static final String OPPRETTET_AV_NAVN = "Saksbehandler";
 	private static final boolean FERDIGSTILL_JOURNALPOST = true;
@@ -67,7 +70,6 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 
 	@BeforeEach
 	public void setUp() {
-		DateProvider.configure(true, TODAY_DATE);
 		journalpost = createJournalpost().build();
 		requestFerdigstillJournalpost = new OpprettJournalpostArkiverDokumentRequestTo(journalpost, FERDIGSTILL_JOURNALPOST);
 		requestIkkeFerdigstillJournalpost = new OpprettJournalpostArkiverDokumentRequestTo(journalpost, IKKE_FERDIGSTILL_JOURNALPOST);
@@ -118,7 +120,7 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 	@Test
 	public void shouldSetJournalDatoToToday() {
 		service.opprettJournalpostArkiverDokument(requestFerdigstillJournalpost);
-		assertThat(journalpost.getJournalDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(journalpost.getJournalDato()).isEqualToIgnoringNanos(LocalDateTime.now());
 	}
 	
 	@Test
@@ -169,8 +171,8 @@ public class DefaultOpprettJournalpostArkiverDokumentServiceTest {
 	@Test
 	public void shouldSetDokumentFerdigDatoToToday() {
 		service.opprettJournalpostArkiverDokument(requestFerdigstillJournalpost);
-		assertThat(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentFerdigDato(),
-				is(DateProvider.getToday()));
+		Assertions.assertThat(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentFerdigDato())
+				.isCloseTo(LocalDateTime.now(), within(3, ChronoUnit.SECONDS));
 	}
 	
 	@Test

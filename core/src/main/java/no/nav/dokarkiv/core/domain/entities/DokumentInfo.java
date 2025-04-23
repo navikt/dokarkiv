@@ -16,8 +16,6 @@ import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +32,6 @@ import org.hibernate.annotations.Cascade;
 import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -105,9 +102,8 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "k_dokument_s", length = 20)
 	private DokumentStatusCode dokumentstatus;
 
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_dok_ferdig")
-	private Date dokumentFerdigDato;
+	private LocalDateTime dokumentFerdigDato;
 
 	@Column(name = "tittel", length = 500)
 	private String tittel;
@@ -446,14 +442,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	public void clearSkannetInnhold() {
 		skannetInnholdListe.clear();
-	}
-
-	public void setDokumentFerdigDato(Date dokumentFerdigDato) {
-		if (dokumentFerdigDato != null) {
-			this.dokumentFerdigDato = new Date(dokumentFerdigDato.getTime());
-		} else {
-			this.dokumentFerdigDato = null;
-		}
 	}
 
 	/**

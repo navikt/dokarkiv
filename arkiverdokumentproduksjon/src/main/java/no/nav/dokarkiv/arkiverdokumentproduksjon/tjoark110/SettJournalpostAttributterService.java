@@ -1,11 +1,12 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark110;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -39,7 +40,7 @@ public class SettJournalpostAttributterService {
 		}
 		if (domainRequest.getAntallRetur() != null) {
 			journalpost.setAntallRetur(domainRequest.getAntallRetur());
-			journalpost.setAvsendtReturDato(DateProvider.getToday());
+			journalpost.setAvsendtReturDato(LocalDateTime.now());
 		}
 	}
 
