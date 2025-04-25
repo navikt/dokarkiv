@@ -14,7 +14,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVedleggJournalpostIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVedleggJournalpostIkkeUnderArbeid;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.Fildetaljer;
@@ -64,8 +63,6 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 
 	@Test
 	public void shouldSaveDokumentInfo() throws Exception {
-		DateProvider.configure(true, "2018-06-20T14:31:54.767");
-
 		Journalpost journalpost = createJournalpost(JournalStatusCode.D);
 		journalpostTestRepository.persist(journalpost);
 		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
@@ -93,8 +90,6 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 
 		DokumentFil dokumentFil = dokumentFilTestRepository.findByFilUuid(filDetaljer.getFilUuid());
 		assertThat(dokumentFil.getFil(), is(equalTo(FILE_CONTENT)));
-
-		DateProvider.configure(false, null);
 	}
 
 	@Test

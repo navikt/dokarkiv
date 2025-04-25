@@ -4,6 +4,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterResponse;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.MottattJournalpost;
 import no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.MottattJournalpostBruker;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -13,12 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.time.ZonedDateTime;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.GEN;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.PEN;
@@ -33,6 +35,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createUbehandletJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.api.finnMottatteJournalposter.FinnMottatteJournalposterController.FINN_MOTTATTE_JOURNALPOSTER_ROLE;
+import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
@@ -51,8 +54,8 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 	private static final String FINNMOTTATTEJOURNALPOSTER_PATH = "/finnMottatteJournalposter";
 	private static final String DOKSIKKERHETSNETT = "test-miljo:teamdokumenthandtering:doksikkerhetsnett";
 	private static final String APP_APPESEN = "test-miljo:annetteam:skummelapp";
-	private static final Date OPPRETTET_DATO = Date.from(ZonedDateTime.now().minusDays(ANTALL_DAGER).minusMinutes(10).toInstant());
-	private static final Date FOR_NY_DATO = Date.from(ZonedDateTime.now().minusDays(ANTALL_DAGER).plusMinutes(10).toInstant());
+	private static final LocalDateTime OPPRETTET_DATO = LocalDateTime.now().minusDays(ANTALL_DAGER).minusMinutes(10);
+	private static final LocalDateTime FOR_NY_DATO = LocalDateTime.now().minusDays(ANTALL_DAGER).plusMinutes(10);
 
 	private static final Map<String, List<String>> MOTTATTEJOURNALPOSTER_QUERY = Map.of("tema", List.of("PEN"), "antallDagerGamle", List.of("5"));
 
@@ -185,7 +188,7 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		assertThat(jp.getJournalStatus(), anyOf(is(MO.name()), is(M.name())));
 		assertThat(jp.getMottaksKanal(), is(NAV_NO.name()));
 		assertThat(jp.getJournalforendeEnhet(), is(JOURNALFOERENDE_ENHET));
-		assertThat(jp.getDatoOpprettet(), is(OPPRETTET_DATO));
+		Assertions.assertThat(jp.getDatoOpprettet().atZoneSameInstant(ZONEID_NORGE).toLocalDateTime()).isCloseTo(OPPRETTET_DATO, within(3, SECONDS));
 	}
 
 	private Set<MottattJournalpost> doKallFinnMottatteJournalposterAndAssertOK(String app) {

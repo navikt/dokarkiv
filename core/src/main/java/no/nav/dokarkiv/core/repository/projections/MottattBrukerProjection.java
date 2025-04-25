@@ -2,7 +2,7 @@ package no.nav.dokarkiv.core.repository.projections;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 
 public interface MottattBrukerProjection {
@@ -12,6 +12,6 @@ public interface MottattBrukerProjection {
 	String getBrukerType();
 
 	@Value("#{target.changeStamp.createdDate}")
-	Date getDatoOpprettet();
+	LocalDateTime getDatoOpprettet();
 
 }

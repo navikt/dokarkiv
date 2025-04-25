@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Builder
@@ -18,7 +18,7 @@ public class MottaDokumentUtgaaendeSkanningRequest {
             description = "Dato batch ble mottatt",
             example = "2019-11-29")
     @JsonFormat(pattern="yyyy-MM-dd")
-    private Date datoMottatt;
+    private LocalDate datoMottatt;
 
     @Schema(
             description = "Mottakskanal for dokument"

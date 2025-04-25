@@ -19,7 +19,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -38,7 +38,7 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 
 	MottaDokumentUtgaaendeSkanningValidator mottaDokumentUtgaaendeSkanningValidator = new MottaDokumentUtgaaendeSkanningValidator();
 
-	private static final Date mockDate = new Date(1000000L);
+	private static final LocalDate mockDate = LocalDate.of(2025, 4, 25);
 	private static final String mockMottaksKanal = MottaksKanalCode.SKAN_NETS.toString();
 	private static final List<Tilleggsopplysning> mockTilleggsopplysninger = List.of(new Tilleggsopplysning("mockNoekkel", "mockVerdi"));
 	private static final String mockBatchnavn = "mockBatchnavn";

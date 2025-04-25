@@ -17,7 +17,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.MottaDokumentUtgaaendeSkanningRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
@@ -30,16 +29,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -52,7 +49,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 	private static final String KILDE = "skanmotutgaaende";
 	public static final String MOTTA_DOKUMENT_UTGAAENDE_SKANNING_PATH = "/mottaDokumentUtgaaendeSkanning";
 
-	private final Date mockDate = new Date(Date.UTC(100, Calendar.NOVEMBER, 10, 0, 0, 0)); // aar 2000
+	private final LocalDate mockDate = LocalDate.of(2025, 4, 25);
 
 	private final String mockMottaksKanal = MottaksKanalCode.SKAN_NETS.toString();
 	private final List<Tilleggsopplysning> mockTilleggsopplysninger = List.of(new Tilleggsopplysning("mockNoekkel",
@@ -71,7 +68,6 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 				JournalStatusCode.R,
 				TilknyttetJournalpostSomCode.HOVEDDOKUMENT
 		).build();
-		DateProvider.configure(true, DateProvider.getDate(new Date()));
 
 		long journalpostId = saveJournalpost(journalpost).getId();
 
@@ -92,7 +88,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 				tilleggsopplysninger.get(mockTilleggsopplysninger.get(0).getNokkel()));
 		assertEquals(MottaksKanalCode.SKAN_NETS, oppdatertJP.getMottakskanal());
 		assertEquals(KILDE, oppdatertJP.getEndretKildeNavn());
-		assertEquals(LocalDateTime.ofInstant(mockDate.toInstant(), ZONEID_NORGE), oppdatertJP.getMottattDato());
+		assertEquals(mockDate.atStartOfDay(), oppdatertJP.getMottattDato());
 		assertThat(oppdatertJP.getJournalDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 		assertEquals(FilTypeCode.PDF, filDetaljer.getFiltype());
 		assertEquals(mockFilnavn, filDetaljer.getFilnavn());

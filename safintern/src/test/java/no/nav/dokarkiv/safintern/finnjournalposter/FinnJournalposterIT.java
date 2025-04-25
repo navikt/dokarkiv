@@ -189,7 +189,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 		FinnJournalposterRequest request = createRequest(FS, 10, null,
 				Stream.concat(Stream.of(parseLong(API_GSAK_ID)), LongStream.range(0, 2000).boxed()).toList(), parseLong(API_PSAK_ID));
 
-		PaginatedAnyViewForTest responseTo = finnJournalposterRest(request);
+			PaginatedAnyViewForTest responseTo = finnJournalposterRest(request);
 
 		assertThat(responseTo.journalposter()).hasSize(2);
 	}

@@ -19,17 +19,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.Serializable;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_UTC;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjon;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
-import static no.nav.dokarkiv.core.util.TestdataFactory.formattedDate;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -226,9 +225,6 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	}
 
 	private static String mapStringResponse(Journalpost foerste, Journalpost andre, String responseTemplate, int count, int totalcount, int currentPage, int totalPages, String nextPage) {
-		Date createdDate = foerste.getChangeStamp().getCreatedDate();
-		String nowIso = formattedDate().toFormatter().format(createdDate.toInstant().atZone(ZoneId.of("UTC"))) + "+00:00";
-
 		DokumentInfo hoved = getDokumentInfo(foerste, JournalpostDokumentInfoRelasjon::isHoveddokument);
 		DokumentInfo vedlegg = getDokumentInfo(foerste, JournalpostDokumentInfoRelasjon::isVedlegg);
 		assertThat(hoved).isNotNull();
@@ -247,7 +243,6 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 				.replace("count_replace", "" + count)
 				.replace("current_page_replace", "" + currentPage)
 				.replace("total_pages_replace", "" + totalPages)
-				.replace("opprettet_replace", nowIso)
 				.replace("status_replace", foerste.getJournalstatus().toString())
 				.replace("referanseId_replace", foerste.getKanalReferanseId())
 				.replace("journalpostId_replace", foerste.getJournalpostId().toString())
@@ -280,8 +275,8 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		assertThat(andreHoved).isNotNull();
 		assertThat(andreVedlegg).isNotNull();
 
-		Date createdDateGjenbrukt = andre.getChangeStamp().getCreatedDate();
-		String gjenbruktNowIso = formattedDate().toFormatter().format(createdDateGjenbrukt.toInstant().atZone(ZoneId.of("UTC"))) + "+00:00";
+		LocalDateTime createdDateGjenbrukt = andre.getChangeStamp().getCreatedDate();
+		String gjenbruktNowIso = createdDateGjenbrukt.atZone(ZONEID_UTC).toOffsetDateTime().toString();
 		return responseTemplate
 				.replace("opprettet_b_replace", gjenbruktNowIso)
 				.replace("referanseId_b_replace", andre.getKanalReferanseId())

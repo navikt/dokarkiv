@@ -13,9 +13,11 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 
 @Repository
 public class SafinternJournalStatusRepository {
@@ -34,7 +36,7 @@ public class SafinternJournalStatusRepository {
 		CriteriaBuilder<Journalpost> cb = cbf.create(em, Journalpost.class, "j")
 				.where("j.journalstatus").eq(journalStatus)
 				.where("j.journalposttype").in(typer)
-				.where("j.changeStamp.createdDate").gt(Timestamp.from(fraDato))
+				.where("j.changeStamp.createdDate").gt(LocalDateTime.ofInstant(fraDato, ZONEID_NORGE))
 				.orderByDesc("j.journalpostId");
 
 		PaginatedCriteriaBuilder<JournalpostView> journalpostBuilder = evm.applySetting(evs, cb);

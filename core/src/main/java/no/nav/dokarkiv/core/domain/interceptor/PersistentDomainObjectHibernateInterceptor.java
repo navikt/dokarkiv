@@ -3,21 +3,17 @@ package no.nav.dokarkiv.core.domain.interceptor;
 import no.nav.dokarkiv.core.domain.AbstractPersistentDomainObject;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
-import org.hibernate.EmptyInterceptor;
+import org.hibernate.CallbackException;
+import org.hibernate.Interceptor;
 import org.hibernate.type.Type;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Hibernate interceptor to update change stamp of persistent domain objects.
- *
- * @author Thomas Eugen Bjørge, Sirius IT
  */
-public class PersistentDomainObjectHibernateInterceptor extends EmptyInterceptor {
-
-	private static final long serialVersionUID = 5990411704958677007L;
-
+@SuppressWarnings("unused")
+public class PersistentDomainObjectHibernateInterceptor implements Interceptor {
 	/**
 	 * Updates the change stamp columns of the object that is dirty.
 	 * 
@@ -36,8 +32,7 @@ public class PersistentDomainObjectHibernateInterceptor extends EmptyInterceptor
 	 * @return true if the change stamp is updated, false otherwise
 	 */
 	@Override
-	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
-								String[] propertyNames, Type[] types) {
+	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) throws CallbackException {
 		return updateChangeStamp(entity, currentState, types);
 	}
 
@@ -48,7 +43,7 @@ public class PersistentDomainObjectHibernateInterceptor extends EmptyInterceptor
 	 *            The object to update the change stamp for
 	 * @param id
 	 *            The id of the object
-	 * @param currentState
+	 * @param state
 	 *            The values of the object's variables
 	 * @param propertyNames
 	 *            The names of the object's variables
@@ -57,8 +52,8 @@ public class PersistentDomainObjectHibernateInterceptor extends EmptyInterceptor
 	 * @return true if the change stamp is updated, false otherwise
 	 */
 	@Override
-	public boolean onSave(Object entity, Serializable id, Object[] currentState, String[] propertyNames, Type[] types) {
-		return updateChangeStamp(entity, currentState, types);
+	public boolean onPersist(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
+		return updateChangeStamp(entity, state, types);
 	}
 
 	/**
@@ -92,7 +87,7 @@ public class PersistentDomainObjectHibernateInterceptor extends EmptyInterceptor
 						current.updatedBy(userId);
 					} else {
 						//Only set created fields for new objects
-						currentState[i] = new ChangeStamp(userId, new Date(), null, null);
+						currentState[i] = new ChangeStamp(userId, LocalDateTime.now(), null, null);
 					}
 					response = true;
 					break;

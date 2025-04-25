@@ -13,8 +13,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
@@ -22,7 +20,6 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
-import static no.nav.dokarkiv.core.util.TestdataFactory.formattedDate;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -152,8 +149,6 @@ public class JournalpostIT extends AbstractSafinternTest {
 	}
 
 	private String mapStringResponse(String path, Journalpost journalpost) {
-		Date createdDate = journalpost.getChangeStamp().getCreatedDate();
-		String nowIso = formattedDate().toFormatter().format(createdDate.toInstant().atZone(ZoneId.of("UTC"))) + "+00:00";
 		DokumentInfo hoved = journalpost.getJournalpostDokumentInfoRelasjonerAdmin().stream()
 				.filter(JournalpostDokumentInfoRelasjon::isHoveddokument)
 				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo).findFirst().get();
@@ -163,7 +158,6 @@ public class JournalpostIT extends AbstractSafinternTest {
 		assertThat(hoved).isNotNull();
 		assertThat(vedlegg).isNotNull();
 		return classpathResourceToString(path)
-				.replace("opprettet_replace", nowIso)
 				.replace("journalpostId_replace", journalpost.getJournalpostId().toString())
 				.replace("dokumentInfoId_hoveddokument_replace", hoved.getDokumentInfoId().toString())
 				.replace("dokumentInfoId_vedlegg_replace", vedlegg.getDokumentInfoId().toString())

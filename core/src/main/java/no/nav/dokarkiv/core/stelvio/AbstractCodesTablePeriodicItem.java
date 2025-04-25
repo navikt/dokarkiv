@@ -2,13 +2,12 @@ package no.nav.dokarkiv.core.stelvio;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import static no.nav.dokarkiv.core.stelvio.Internal.cast;
 
@@ -35,41 +34,22 @@ import static no.nav.dokarkiv.core.stelvio.Internal.cast;
  *            a type variable
  */
 @Deprecated
+@Getter
 @MappedSuperclass
 public abstract class AbstractCodesTablePeriodicItem<K extends Enum, V> extends AbstractCodesTableItem<K, V> {
 	/** The date the item is valid from. */
 	@Column(name = "FROM_DATE")
-	@Temporal(TemporalType.DATE)
-	private Date fromDate;
+	private LocalDate fromDate;
 
 	/** The date the item is valid to. */
 	@Column(name = "TO_DATE")
-	@Temporal(TemporalType.DATE)
-	private Date toDate;
+	private LocalDate toDate;
 
 	/**
 	 * Constructs a new instance. Should only be used by the persistence provider and in some cases architecture code for
 	 * mapping between layers.
 	 */
 	protected AbstractCodesTablePeriodicItem() {
-	}
-
-	/**
-	 * Returns the date the item is valid from.
-	 *
-	 * @return The date the item is valid from.
-	 */
-	public Date getFromDate() {
-		return fromDate == null ? null : new Date(fromDate.getTime());
-	}
-
-	/**
-	 * Returns the date the item is valid to.
-	 *
-	 * @return The date the item is valid to.
-	 */
-	public Date getToDate() {
-		return toDate == null ? null : new Date(toDate.getTime());
 	}
 
 	/**

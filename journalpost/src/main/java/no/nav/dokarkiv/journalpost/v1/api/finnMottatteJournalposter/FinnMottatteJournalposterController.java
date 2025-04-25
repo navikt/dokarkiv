@@ -16,14 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.ZoneId;
-import java.util.Date;
 
 import static java.lang.String.format;
+import static java.time.temporal.ChronoUnit.DAYS;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
@@ -39,9 +36,7 @@ public class FinnMottatteJournalposterController {
 
 	public static final String FINN_MOTTATTE_JOURNALPOSTER_ROLE = "finn_mottatte_journalposter";
 	private static final String AZP_NAME_DOKSIKKERHETSNETT = "doksikkerhetsnett";
-	private static final Date JANUARY_1_2020 = Date.from(LocalDate.of(2020, Month.JANUARY, 1)
-			.atStartOfDay(ZoneId.systemDefault())
-			.toInstant());
+	private static final LocalDate JANUARY_1_2020 = LocalDate.of(2020, Month.JANUARY, 1);
 
 	private final FinnMottatteJournalposterService finnMottatteJournalposterService;
 
@@ -86,7 +81,7 @@ public class FinnMottatteJournalposterController {
 	}
 
 	private void validateDagerGamle(int antallDagerGamle) {
-		long antallDagerSidenJanuar2020 = Duration.between(JANUARY_1_2020.toInstant(), Instant.now()).toDaysPart();
+		long antallDagerSidenJanuar2020 = DAYS.between(JANUARY_1_2020, LocalDate.now());
 		if (antallDagerGamle < 0 || antallDagerGamle > antallDagerSidenJanuar2020) {
 			throw new InputValideringFeiletException(format("Mottok ugyldig verdi for antallDagerGamle. AntallDagerGamle:%s ender opp utenfor spennet 01.01.2020 -> dagens dato", "" + antallDagerGamle));
 		}

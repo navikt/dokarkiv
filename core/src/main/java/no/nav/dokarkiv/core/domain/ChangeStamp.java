@@ -2,13 +2,11 @@ package no.nav.dokarkiv.core.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Class used to represent audit information for an entity in the database. This object is embeddedable, meaning it can be used
@@ -45,15 +43,13 @@ public class ChangeStamp implements Serializable {
 	private String createdBy;
 
 	@Column(name = "dato_opprettet", updatable = false, nullable = false)
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdDate;
+	private LocalDateTime createdDate;
 
 	@Column(name = "endret_av", length = 40)
 	private String updatedBy;
 
 	@Column(name = "dato_endret")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date updatedDate;
+	private LocalDateTime updatedDate;
 
 	/**
 	 * Constructs a new ChangeStamp. The constructor should only be called once, when the object embedding this
@@ -66,7 +62,7 @@ public class ChangeStamp implements Serializable {
 		this.updatedBy = userId;
 
 		// Updated and Created times are equal at first
-		Date now = new Date();
+		LocalDateTime now = LocalDateTime.now();
 		this.createdDate = now;
 		this.updatedDate = now;
 	}
@@ -86,11 +82,11 @@ public class ChangeStamp implements Serializable {
 	 * @param updatedBy   Last updated by user id
 	 * @param updatedDate Last updated date
 	 */
-	public ChangeStamp(String createdBy, Date createdDate, String updatedBy, Date updatedDate) {
+	public ChangeStamp(String createdBy, LocalDateTime createdDate, String updatedBy, LocalDateTime updatedDate) {
 		this.createdBy = createdBy;
-		this.createdDate = createdDate == null ? null : new Date(createdDate.getTime());
+		this.createdDate = createdDate;
 		this.updatedBy = updatedBy;
-		this.updatedDate = updatedDate == null ? null : new Date(updatedDate.getTime());
+		this.updatedDate = updatedDate;
 	}
 
 	/**
@@ -100,6 +96,6 @@ public class ChangeStamp implements Serializable {
 	 */
 	public void updatedBy(String userId) {
 		updatedBy = userId;
-		updatedDate = new Date();
+		updatedDate = LocalDateTime.now();
 	}
 }
