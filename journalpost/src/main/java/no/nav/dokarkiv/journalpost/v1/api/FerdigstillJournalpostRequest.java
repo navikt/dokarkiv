@@ -1,12 +1,13 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
@@ -48,12 +49,14 @@ public class FerdigstillJournalpostRequest {
 			description = "Dato for ferdigstilling av dokumentet i Infotrygd.",
 			example = "2020-02-20"
 	)
-	private Date datoJournal;
+	@JsonDeserialize(using = DateStringsToLocalDateTimeDeserializer.class)
+	private LocalDateTime datoJournal;
 
 	@Deprecated
 	@Schema(
 			description = "Datoen journalposten ble plukket ut til Sentral Print.",
 			example = "2020-02-20"
 	)
-	private Date datoSendtPrint;
+	@JsonDeserialize(using = DateStringsToLocalDateTimeDeserializer.class)
+	private LocalDateTime datoSendtPrint;
 }

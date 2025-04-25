@@ -19,8 +19,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
@@ -48,7 +46,6 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTINFO_ID1;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.LOCAL_DATE_TIME;
@@ -384,7 +381,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	@Test
 	public void shouldFailIfDatoReturSetForStatusFSAndNotat() {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()
-				.datoRetur(Date.valueOf(LOCAL_DATE_TIME.toLocalDate()))
+				.datoRetur(LOCAL_DATE_TIME.toLocalDate())
 				.build();
 		journalpost = createEnkelJournalpost(FS, N);
 

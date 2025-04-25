@@ -16,8 +16,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,7 +44,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -100,20 +97,17 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "journalf_enhet", length = 20)
 	private String journalForendeEnhetId;
 
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_journal")
-	private Date journalDato;
+	private LocalDateTime journalDato;
 
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_sendt_print")
-	private Date sendtPrintDato;
+	private LocalDateTime sendtPrintDato;
 
 	@Column(name = "antall_retur")
 	private Integer antallRetur;
 
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dato_avs_retur")
-	private Date avsendtReturDato;
+	private LocalDateTime avsendtReturDato;
 
 	@Column(name = "innhold", length = 500)
 	private String innhold;
@@ -763,30 +757,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		if (kryssreferanse != null) {
 			kryssreferanser.add(kryssreferanse);
 			kryssreferanse.setJournalpost(this);
-		}
-	}
-
-	public void setAvsendtReturDato(Date avsendtReturDato) {
-		if (avsendtReturDato != null) {
-			this.avsendtReturDato = new Date(avsendtReturDato.getTime());
-		} else {
-			this.avsendtReturDato = null;
-		}
-	}
-
-	public void setSendtPrintDato(Date sendtPrintDato) {
-		if (sendtPrintDato != null) {
-			this.sendtPrintDato = new Date(sendtPrintDato.getTime());
-		} else {
-			this.sendtPrintDato = null;
-		}
-	}
-
-	public void setJournalDato(Date journalDato) {
-		if (journalDato != null) {
-			this.journalDato = new Date(journalDato.getTime());
-		} else {
-			this.journalDato = null;
 		}
 	}
 

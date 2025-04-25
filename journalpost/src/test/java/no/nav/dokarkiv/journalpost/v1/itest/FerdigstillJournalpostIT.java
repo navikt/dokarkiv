@@ -14,13 +14,12 @@ import no.nav.dokarkiv.core.exceptions.ApplicationProblemDetail;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.PEN;
@@ -81,8 +80,8 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 
 	@Test // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
 	public void happyPathInngaaendeForOndemand() {
-		Date datoJournal = new Date(System.currentTimeMillis() - 50000L);
-		Date datoSendtPrint = new Date(System.currentTimeMillis() - 20000L);
+		LocalDateTime datoJournal = LocalDateTime.now();
+		LocalDateTime datoSendtPrint = LocalDateTime.now().minusDays(1);
 
 		Sak sak = SakTestDataProvider.createSakWithStatus(AAPEN).build();
 		sakTestRepository.persist(sak);
@@ -109,8 +108,8 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		TestTransaction.start();
 		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
-		assertEquals(datoJournal, ferdigstiltJournalpost.getJournalDato());
-		assertEquals(datoSendtPrint, ferdigstiltJournalpost.getSendtPrintDato());
+		assertThat(ferdigstiltJournalpost.getJournalDato()).isEqualToIgnoringNanos(datoJournal);
+		assertThat(ferdigstiltJournalpost.getSendtPrintDato()).isEqualToIgnoringNanos(datoSendtPrint);
 
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());

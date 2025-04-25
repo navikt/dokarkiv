@@ -38,7 +38,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -90,7 +93,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		assertEquals(MottaksKanalCode.SKAN_NETS, oppdatertJP.getMottakskanal());
 		assertEquals(KILDE, oppdatertJP.getEndretKildeNavn());
 		assertEquals(LocalDateTime.ofInstant(mockDate.toInstant(), ZONEID_NORGE), oppdatertJP.getMottattDato());
-		assertEquals(DateProvider.getToday(), oppdatertJP.getJournalDato());
+		assertThat(oppdatertJP.getJournalDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 		assertEquals(FilTypeCode.PDF, filDetaljer.getFiltype());
 		assertEquals(mockFilnavn, filDetaljer.getFilnavn());
 		assertEquals(VariantFormatCode.ORIGINAL, filDetaljer.getVariantFormat());

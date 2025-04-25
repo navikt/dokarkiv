@@ -12,10 +12,8 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.Date;
 import java.util.UUID;
 
-import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createHovedDokumentInfoFP;
@@ -40,7 +38,6 @@ public final class JournalpostTestDataProvider {
 	public static final String JP_INNHOLD = "innhold";
 	public static final String FNR = "12341234123";
 	public static final LocalDateTime JANUARY_1_2020 = LocalDateTime.of(2020, Month.JANUARY, 1, 0, 0, 0);
-	public static final Date JANUARY_1_2020_DATE = Date.from(JANUARY_1_2020.atZone(ZONEID_NORGE).toInstant());
 	public static final String INNHOLD = "Foreldrepenger";
 
 	private JournalpostTestDataProvider() {
@@ -59,7 +56,7 @@ public final class JournalpostTestDataProvider {
 		return createJournalpost(createDokumentInfo(dokumentTittel, filuid, FIL_UUID_SLADDET));
 	}
 
-	public static JournalpostBuilder createJournalpost(String dokumentTittel, String filuid, Date hoveddokumentFerdigDato) {
+	public static JournalpostBuilder createJournalpost(String dokumentTittel, String filuid, LocalDateTime hoveddokumentFerdigDato) {
 		return createJournalpost(createDokumentInfo(dokumentTittel, filuid, FIL_UUID_SLADDET).dokumentFerdigDato(hoveddokumentFerdigDato));
 	}
 
@@ -83,12 +80,12 @@ public final class JournalpostTestDataProvider {
 				.fagomrade(fagomradeCode)
 				.avsenderMottaker(JP_AVSENDER_MOTTAKER)
 				.avsenderMottakerId(JP_AVSENDER_MOTTAKER_ID)
-				.changeStamp(new ChangeStamp(null, JANUARY_1_2020_DATE, null, null))
+				.changeStamp(new ChangeStamp("test"))
 				.opprettetAvNavn("testuser")
 				.opprettetKildeNavn("test")
 				.mottakskanal(NAV_NO)
 				.mottattDato(JANUARY_1_2020)
-				.journalDato(JANUARY_1_2020_DATE)
+				.journalDato(JANUARY_1_2020)
 				.innhold(JP_INNHOLD)
 				.saksrelasjon(createSaksrelasjon().build());
 	}

@@ -10,17 +10,18 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
-import org.junit.jupiter.api.BeforeEach;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.LocalDateTime;
 import java.util.GregorianCalendar;
 
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
@@ -30,22 +31,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * Itest for the settJournalpostAttributter operation
- *
- * @author Joakim Bjørnstad, Jbit AS
- */
 public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduksjonItest {
 
 	private static final String ENDRET_AV_NAVN = "Tester2";
 	private static final int ANTALL_RETURPOST = 1;
 	public static final String ORIGINAL_ENDRET_AV_NAVN = "original";
 	public static final String UTSENDINGSKANAL = UtsendingsKanalCode.EESSI.name();
-
-	@BeforeEach
-	public void setUp() throws Exception {
-		DateProvider.configure(true, "2018-06-20T14:31:54.767");
-	}
 
 	@Test
 	public void shouldSetAttributterOnJournalpostId() throws Exception {
@@ -56,7 +47,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 
 		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 
-		assertThat(persistedJournalpost1.getSendtPrintDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(persistedJournalpost1.getSendtPrintDato()).isEqualToIgnoringNanos(LocalDateTime.now());
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(persistedJournalpost1.getUtsendingskanal().name(), is(UTSENDINGSKANAL));
@@ -90,12 +81,11 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 
 		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 
-		assertThat(persistedJournalpost1.getSendtPrintDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(persistedJournalpost1.getSendtPrintDato()).isEqualToIgnoringNanos(LocalDateTime.now());
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ORIGINAL_ENDRET_AV_NAVN));
 		assertThat(persistedJournalpost1.getUtsendingskanal(), is(nullValue()));
 	}
-
 
 	@Test
 	public void shouldNotSetUtsendingskanal() throws Exception {
@@ -107,7 +97,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 
 		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 
-		assertThat(persistedJournalpost1.getSendtPrintDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(persistedJournalpost1.getSendtPrintDato()).isEqualToIgnoringNanos(LocalDateTime.now());
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(persistedJournalpost1.getUtsendingskanal(), is(nullValue()));
@@ -138,7 +128,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 		assertThat(persistedJournalpost.getSendtPrintDato(), is(nullValue()));
 		assertThat(persistedJournalpost.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost.getEndretAvNavn(), is(ORIGINAL_ENDRET_AV_NAVN));
-		assertThat(persistedJournalpost.getAvsendtReturDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(persistedJournalpost.getAvsendtReturDato()).isEqualToIgnoringNanos(LocalDateTime.now());
 	}
 
 	@Test
@@ -152,14 +142,14 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 		Journalpost persistedJournalpost2 = journalpostTestRepository.findById(journalpost2.getJournalpostId()).get();
 
-		assertThat(persistedJournalpost1.getSendtPrintDato(), is(DateProvider.getToday()));
-		assertThat(persistedJournalpost2.getSendtPrintDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(persistedJournalpost1.getSendtPrintDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(persistedJournalpost2.getSendtPrintDato()).isEqualToIgnoringNanos(LocalDateTime.now());
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost2.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(persistedJournalpost2.getEndretAvNavn(), is(ENDRET_AV_NAVN));
-		assertThat(persistedJournalpost1.getAvsendtReturDato(), is(DateProvider.getToday()));
-		assertThat(persistedJournalpost2.getAvsendtReturDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(persistedJournalpost1.getAvsendtReturDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(persistedJournalpost2.getAvsendtReturDato()).isEqualToIgnoringNanos(LocalDateTime.now());
 	}
 
 	@Test
@@ -218,8 +208,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 	}
 
 	public XMLGregorianCalendar xmlGregorianCalendarToday() throws DatatypeConfigurationException {
-		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.setTime(DateProvider.getToday());
+		GregorianCalendar calendar = GregorianCalendar.from(LocalDateTime.now().atZone(ZONEID_NORGE));
 		return DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
 	}
 }

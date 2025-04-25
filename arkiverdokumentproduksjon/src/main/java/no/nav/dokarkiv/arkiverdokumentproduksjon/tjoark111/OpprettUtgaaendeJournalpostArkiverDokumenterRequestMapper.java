@@ -23,9 +23,7 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasj
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -145,7 +143,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 					.tilknyttetAvNavn(domainJournalpost.getOpprettetAvNavn())
 					.dokumentInfo(DokumentInfo.builder()
 							.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-							.dokumentFerdigDato(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
+							.dokumentFerdigDato(LocalDateTime.now())
 							.kategori(stringToEnum(DokumentKategoriCode.class, dokumentInfo.getKategori()))
 							.tittel(dokumentInfo.getTittel())
 							.brevkode(dokumentInfo.getBrevkode())

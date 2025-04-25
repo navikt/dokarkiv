@@ -17,7 +17,6 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -40,10 +39,10 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 
 	private Long journalpostId;
 	private String journalForendeEnhetId;
-	private Date journalDato;
-	private Date sendtPrintDato;
+	private LocalDateTime journalDato;
+	private LocalDateTime sendtPrintDato;
 	private Integer antallRetur;
-	private Date avsendtReturDato;
+	private LocalDateTime avsendtReturDato;
 	private String innhold;
 	private String kravtype;
 	private Boolean originaltBestilt;
@@ -80,10 +79,10 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 
 	public JournalpostBuilder journalpostId(Long value) { this.journalpostId = value; return this; }
 	public JournalpostBuilder journalForendeEnhetId(String value) { this.journalForendeEnhetId = value; return this; }
-	public JournalpostBuilder journalDato(Date value) { this.journalDato = value; return this; }
-	public JournalpostBuilder sendtPrintDato(Date value) { this.sendtPrintDato = value; return this; }
+	public JournalpostBuilder journalDato(LocalDateTime value) { this.journalDato = value; return this; }
+	public JournalpostBuilder sendtPrintDato(LocalDateTime value) { this.sendtPrintDato = value; return this; }
 	public JournalpostBuilder antallRetur(Integer value) { this.antallRetur = value; return this; }
-	public JournalpostBuilder avsendtReturDato(Date value) { this.avsendtReturDato = value; return this; }
+	public JournalpostBuilder avsendtReturDato(LocalDateTime value) { this.avsendtReturDato = value; return this; }
 	public JournalpostBuilder innhold(String value) { this.innhold = value; return this; }
 	public JournalpostBuilder kravtype(String value) { this.kravtype = value; return this; }
 	public JournalpostBuilder originaltBestilt(Boolean value) { this.originaltBestilt = value; return this; }

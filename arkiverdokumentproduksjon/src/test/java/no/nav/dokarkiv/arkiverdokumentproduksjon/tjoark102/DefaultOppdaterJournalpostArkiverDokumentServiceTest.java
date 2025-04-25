@@ -18,6 +18,7 @@ import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -37,6 +38,7 @@ import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetal
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -93,7 +95,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 		requestTo.setFerdigstillJournalpost(true);
 		service.updateJournalpost(journalpost, requestTo);
 		assertThat(journalpost.getJournalstatus(), is(JournalStatusCode.FS));
-		assertThat(journalpost.getJournalDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(journalpost.getJournalDato()).isEqualToIgnoringNanos(LocalDateTime.now());
 		assertThat(journalpost.getJournalfortAvNavn(), is(requestTo.getEndretAvNavn()));
 		assertThat(journalpost.getUtsendingskanal(), is(requestTo.getUtsendingskanal()));
 	}
@@ -104,7 +106,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 		requestTo.setUtsendingskanal(UtsendingsKanalCode.L);
 		service.updateJournalpost(journalpost, requestTo);
 		assertThat(journalpost.getJournalstatus(), is(JournalStatusCode.FL));
-		assertThat(journalpost.getJournalDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(journalpost.getJournalDato()).isEqualToIgnoringNanos(LocalDateTime.now());
 		assertThat(journalpost.getJournalfortAvNavn(), is(requestTo.getEndretAvNavn()));
 		assertThat(journalpost.getUtsendingskanal(), is(requestTo.getUtsendingskanal()));
 	}
@@ -112,7 +114,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	@Test
 	public void shouldUpdateJournalpostIfNotFerdigstillJournalpost() {
 		JournalStatusCode journalStatusCode = journalpost.getJournalstatus();
-		Date journalDato = journalpost.getJournalDato();
+		LocalDateTime journalDato = journalpost.getJournalDato();
 		String journalfortAvNavn = journalpost.getJournalfortAvNavn();
 
 		requestTo.setFerdigstillJournalpost(false);
@@ -127,7 +129,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 		service.updateJournalpost(journalpost, requestTo);
 		DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(DOKUMENTINFO_ID);
 		assertThat(dokumentInfo.getDokumentstatus(), is(DokumentStatusCode.FERDIGSTILT));
-		assertThat(dokumentInfo.getDokumentFerdigDato(), is(DateProvider.getToday()));
+		Assertions.assertThat(dokumentInfo.getDokumentFerdigDato()).isCloseTo(LocalDateTime.now(), within(3, ChronoUnit.SECONDS));
 	}
 
 	@Test

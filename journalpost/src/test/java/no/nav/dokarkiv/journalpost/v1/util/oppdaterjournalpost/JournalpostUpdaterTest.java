@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
@@ -73,7 +73,7 @@ public class JournalpostUpdaterTest {
 
 	@Test
 	public void shouldNotIncrementAntallReturWhenDateIsEquals() throws UgyldigAksjonsLoggException {
-		Date earliest = new Date();
+		LocalDate earliest = LocalDate.of(2025, 4, 23);
 		oppdaterJournalpostRequest = TestUtils.createPutOppdaterJournalpostRequestWithDatoRetur(earliest);
 
 		journalpost = TestUtils.createEnkelJournalpost();
@@ -85,8 +85,7 @@ public class JournalpostUpdaterTest {
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 		assertEquals(1, journalpost.getAntallRetur().intValue());
 
-		earliest.setTime(earliest.getTime() + 1);
-		oppdaterJournalpostRequest = TestUtils.createPutOppdaterJournalpostRequestWithDatoRetur(earliest);
+		oppdaterJournalpostRequest = TestUtils.createPutOppdaterJournalpostRequestWithDatoRetur(earliest.plusDays(1));
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 		assertEquals(2, journalpost.getAntallRetur().intValue());
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);

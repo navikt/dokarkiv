@@ -13,10 +13,9 @@ import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static no.nav.dokarkiv.core.util.DateUtil.getDateNow;
 
 @Component
 @Slf4j
@@ -142,7 +141,7 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 
 	private void updateJournalpostAfterValidation(Journalpost journalpost, String journalforendeEnhet) {
 		if (JournalStatusCode.FS == journalpost.getJournalstatus()) {
-			journalpost.setJournalDato(getDateNow());
+			journalpost.setJournalDato(LocalDateTime.now());
 			journalpost.setJournalForendeEnhetId(journalforendeEnhet);
 			journalpost.setJournalfortAvNavn(journalpost.getOpprettetAvNavn());
 		} else {

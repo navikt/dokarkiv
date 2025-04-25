@@ -10,8 +10,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Builder
@@ -83,7 +83,7 @@ public class OppdaterJournalpostRequest {
 			description = "Dato forsendelsen ble mottatt i retur. Feltet kan kun settes for utgående journalposter."
 	)
 	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date datoRetur;
+	private LocalDate datoRetur;
 
 	@Schema(
 			description = """

@@ -12,12 +12,12 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Component
@@ -57,7 +57,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentService implements Oppdate
 			} else {
 				journalpost.setJournalstatus(JournalStatusCode.FS);
 			}
-			journalpost.setJournalDato(DateProvider.getToday());
+			journalpost.setJournalDato(LocalDateTime.now());
 			journalpost.setJournalfortAvNavn(request.getEndretAvNavn());
 		}
 
@@ -65,7 +65,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentService implements Oppdate
 		journalpost.setDokumentDato(request.getDatoDokument());
 		DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(request.getDokumentInfoId());
 		dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
-		dokumentInfo.setDokumentFerdigDato(DateProvider.getToday());
+		dokumentInfo.setDokumentFerdigDato(LocalDateTime.now());
 
 		addUpdateDokumentInfoFilDetaljer(dokumentInfo, request.getFildetaljer(), request.isFerdigstillJournalpost());
 	}

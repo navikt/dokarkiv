@@ -8,11 +8,12 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 public class DefaultFerdigstillJournalpostService implements FerdigstillJournalpostService {
@@ -40,7 +41,7 @@ public class DefaultFerdigstillJournalpostService implements FerdigstillJournalp
 		} else {
 			journalpost.setJournalstatus(JournalStatusCode.FS);
 		}
-		journalpost.setJournalDato(DateProvider.getToday());
+		journalpost.setJournalDato(LocalDateTime.now());
 		journalpost.setUtsendingskanal(utsendingskanal);
 		journalpost.setJournalfortAvNavn(request.getEndretAvNavn());
 

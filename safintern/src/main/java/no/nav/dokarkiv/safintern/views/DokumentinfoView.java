@@ -7,14 +7,16 @@ import com.blazebit.persistence.view.Mapping;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.safintern.serializers.LocalDateTimeToOffsetDateTimeUTCSerializer;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -46,8 +48,9 @@ public interface DokumentinfoView {
 	@Mapping("dokumentInfo.dokumentstatus")
 	DokumentStatusCode getStatus();
 
+	@JsonSerialize(using = LocalDateTimeToOffsetDateTimeUTCSerializer.class)
 	@Mapping("dokumentInfo.dokumentFerdigDato")
-	Date getFerdigDato();
+	LocalDateTime getFerdigDato();
 
 	@Mapping("dokumentInfo.tittel")
 	String getTittel();

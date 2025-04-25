@@ -9,9 +9,9 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,7 +43,7 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	private String endretAvNavn;
 	private DokumentKategoriCode kategori;
 	private DokumentStatusCode dokumentstatus;
-	private Date dokumentFerdigDato;
+	private LocalDateTime dokumentFerdigDato;
 	private String tittel;
 	private String brukeroppgittTittel;
 	private String opprettetKildeNavn;
@@ -63,7 +63,7 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	public DokumentInfoBuilder endretAvNavn(String value) { this.endretAvNavn = value; return this; }
 	public DokumentInfoBuilder kategori(DokumentKategoriCode value) { this.kategori = value; return this; }
 	public DokumentInfoBuilder dokumentstatus(DokumentStatusCode value) { this.dokumentstatus = value ; return this; }
-	public DokumentInfoBuilder dokumentFerdigDato(Date value) { this.dokumentFerdigDato = value; return this; }
+	public DokumentInfoBuilder dokumentFerdigDato(LocalDateTime value) { this.dokumentFerdigDato = value; return this; }
 	public DokumentInfoBuilder tittel(String value) { this.tittel = value; return this; }
 	public DokumentInfoBuilder brukeroppgittTittel(String value) { this.brukeroppgittTittel = value; return this; }
 	public DokumentInfoBuilder dokumenttypeId(String value) { this.dokumenttypeId = value; return this; }

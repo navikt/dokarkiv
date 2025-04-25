@@ -121,8 +121,8 @@ public class JournalpostUpdater {
 
 	private void updateReturInfo(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (oppdaterJournalpostRequest.getDatoRetur() != null &&
-				!oppdaterJournalpostRequest.getDatoRetur().equals(journalpost.getAvsendtReturDato())) {
-			journalpost.setAvsendtReturDato(oppdaterJournalpostRequest.getDatoRetur());
+				!oppdaterJournalpostRequest.getDatoRetur().atStartOfDay().equals(journalpost.getAvsendtReturDato())) {
+			journalpost.setAvsendtReturDato(oppdaterJournalpostRequest.getDatoRetur().atStartOfDay());
 			journalpost.setAntallRetur(journalpost.getAntallRetur() == null ? 1 : (journalpost.getAntallRetur() + 1));
 			endret.setEndretFlagg(true);
 		}

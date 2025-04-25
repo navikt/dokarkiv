@@ -6,11 +6,12 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 public class DefaultOpprettJournalpostService implements OpprettJournalpostService {
@@ -55,14 +56,14 @@ public class DefaultOpprettJournalpostService implements OpprettJournalpostServi
 	private void updateJournalpost(Journalpost journalpost) {
 		journalpost.setJournalposttype(JournalpostTypeCode.U);
 		journalpost.setJournalstatus(JournalStatusCode.D);
-		journalpost.setJournalDato(DateProvider.getToday());
+		journalpost.setJournalDato(LocalDateTime.now());
 		journalpost.setJournalfortAvNavn(journalpost.getOpprettetAvNavn());
 		JournalpostDokumentInfoRelasjon hoveddokumentDokumentInfoRelasjon = journalpost.findHoveddokumentDokumentInfoRelasjon();
 		hoveddokumentDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn());
 
 		DokumentInfo dokumentInfo = hoveddokumentDokumentInfoRelasjon.getDokumentInfo();
 		dokumentInfo.setDokumentstatus(DokumentStatusCode.UNDER_REDIGERING);
-		dokumentInfo.setDokumentFerdigDato(DateProvider.getToday());
+		dokumentInfo.setDokumentFerdigDato(LocalDateTime.now());
 		dokumentInfo.setOriginalJournalpost(journalpost);
 	}
 }

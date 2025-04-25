@@ -2,8 +2,8 @@ package no.nav.dokarkiv.core.util;
 
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.builder.BrukerBuilder;
-import no.nav.dokarkiv.core.domain.builder.ChangeStampBuilder;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
@@ -24,13 +24,11 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.Long.parseLong;
-import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.PEN;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
@@ -99,7 +97,7 @@ public class TestDataUtils {
 		);
 	}
 
-	public static JournalpostBuilder createJournalpost(String saksNr, Date journalDato, JournalStatusCode journalStatusCode, FagomradeCode fagomrade) {
+	public static JournalpostBuilder createJournalpost(String saksNr, LocalDateTime journalDato, JournalStatusCode journalStatusCode, FagomradeCode fagomrade) {
 		Map<String, String> tilleggsopplysninger = new HashMap<>();
 		tilleggsopplysninger.put(TILLEGGSOPPLYSNINGER_KEY, TILLEGGSOPPLYSNINGER_VALUE);
 
@@ -137,7 +135,7 @@ public class TestDataUtils {
 								.build())
 						.build())
 				.journalDato(journalDato)
-				.changeStamp(ChangeStampBuilder.aChangeStamp().withCreatedDate(journalDato).withCreatedBy("test").build())
+				.changeStamp(new ChangeStamp("test"))
 				.fagomrade(fagomrade == null ? TestDataUtils.fagomrade : fagomrade)
 				.journalStatus(journalStatusCode == null ? TestDataUtils.journalStatus : journalStatusCode)
 				.journalpostType(journalpostType)
@@ -146,6 +144,6 @@ public class TestDataUtils {
 	}
 
 	public static Journalpost createJournalpost() {
-		return createJournalpost("123", Date.from(LocalDateTime.now().atZone(ZONEID_NORGE).toInstant()), J, PEN).build();
+		return createJournalpost("123", LocalDateTime.now(), J, PEN).build();
 	}
 }
