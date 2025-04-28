@@ -31,7 +31,6 @@ import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,16 +134,16 @@ public class TestDataGenerator {
 	}
 
 	public static Journalpost createUbehandletJournalpost(
-			Date date,
+			LocalDateTime dateTime,
 			JournalpostTypeCode journalpostTypeCode,
 			JournalStatusCode journalStatusCode
 	) {
-		return createUbehandletJournalpost(date, journalpostTypeCode, journalStatusCode, PEN);
+		return createUbehandletJournalpost(dateTime, journalpostTypeCode, journalStatusCode, PEN);
 	}
 
 
 	public static Journalpost createUbehandletJournalpost(
-			Date date,
+			LocalDateTime dateTime,
 			JournalpostTypeCode journalpostTypeCode,
 			JournalStatusCode journalStatusCode,
 			FagomradeCode fagomradeCode
@@ -186,7 +185,7 @@ public class TestDataGenerator {
 		journalpost.addBruker(bruker);
 		journalpost.setSaksrelasjon(saksrelasjon);
 		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		journalpost.setChangeStamp(new ChangeStamp("createdBy", date, "String updatedBy", date));
+		journalpost.setChangeStamp(new ChangeStamp("createdBy", dateTime, "String updatedBy", dateTime));
 
 		return journalpost;
 	}

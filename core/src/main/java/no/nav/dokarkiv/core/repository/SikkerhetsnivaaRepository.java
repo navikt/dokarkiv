@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 public interface SikkerhetsnivaaRepository extends HibernateRepository<Journalpost>, BaseJpaRepository<Journalpost, Long> {
@@ -33,7 +32,7 @@ public interface SikkerhetsnivaaRepository extends HibernateRepository<Journalpo
 	finnUlesteJournalposter(@Param("utsendingskanal") UtsendingsKanalCode utsendingskanal,
 							@Param("ekspedertFra") LocalDateTime ekspedertFra,
 							@Param("ekspedertTil") LocalDateTime ekspedertTil,
-							@Param("datoOpprettetStart") Date datoOpprettetStart,
-							@Param("datoOpprettetSlutt") Date datoOpprettetSlutt
+							@Param("datoOpprettetStart") LocalDateTime datoOpprettetStart,
+							@Param("datoOpprettetSlutt") LocalDateTime datoOpprettetSlutt
 	);
 }

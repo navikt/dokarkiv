@@ -13,8 +13,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,7 +22,6 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJour
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createHoveddokumentRelasjonGjenbruktDokumentInfo;
-import static no.nav.dokarkiv.core.util.TestdataFactory.formattedDate;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -126,10 +123,6 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 	}
 
 	private static String mapStringResponse(Journalpost originalJournalpost, Journalpost gjenbrukendeJournalpost, String responseTemplate) {
-		Date createdDate = originalJournalpost.getChangeStamp().getCreatedDate();
-		String nowIso = formattedDate().toFormatter().format(createdDate.toInstant().atZone(ZoneId.of("UTC"))) + "+00:00";
-		Date createdDateGjenbrukt = gjenbrukendeJournalpost.getChangeStamp().getCreatedDate();
-		String gjenbruktNowIso = formattedDate().toFormatter().format(createdDateGjenbrukt.toInstant().atZone(ZoneId.of("UTC"))) + "+00:00";
 		DokumentInfo hoved = originalJournalpost.getJournalpostDokumentInfoRelasjonerAdmin().stream()
 				.filter(JournalpostDokumentInfoRelasjon::isHoveddokument)
 				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo).findFirst().get();
@@ -139,8 +132,6 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 		assertThat(hoved).isNotNull();
 		assertThat(vedlegg).isNotNull();
 		return responseTemplate
-				.replace("opprettet_replace", nowIso)
-				.replace("opprettet_b_replace", gjenbruktNowIso)
 				.replace("referanseId_replace", originalJournalpost.getKanalReferanseId())
 				.replace("referanseId_b_replace", gjenbrukendeJournalpost.getKanalReferanseId())
 				.replace("journalpostId_replace", originalJournalpost.getJournalpostId().toString())

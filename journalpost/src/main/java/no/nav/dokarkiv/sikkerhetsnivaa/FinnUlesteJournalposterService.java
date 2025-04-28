@@ -7,7 +7,6 @@ import no.nav.dokarkiv.core.repository.SikkerhetsnivaaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -24,8 +23,8 @@ public class FinnUlesteJournalposterService {
 
 	public List<Long> finnUlesteJournalposter(String utsendingskanal, LocalDateTime ekspedertFra, LocalDateTime ekspedertTil) {
 		validateInput(ekspedertFra, ekspedertTil);
-		Date datoOpprettetStart = convertToDate(ekspedertFra.minusDays(90));
-		Date datoOpprettetSlutt = convertToDate(ekspedertTil.plusDays(2));
+		LocalDateTime datoOpprettetStart = ekspedertFra.minusDays(90);
+		LocalDateTime datoOpprettetSlutt = ekspedertTil.plusDays(2);
 		return sikkerhetsnivaaRepository.finnUlesteJournalposter(UtsendingsKanalCode.fromString(utsendingskanal), ekspedertFra, ekspedertTil, datoOpprettetStart, datoOpprettetSlutt);
 	}
 
@@ -34,10 +33,6 @@ public class FinnUlesteJournalposterService {
 			throw new InputValideringFeiletException(
 					format("EkspedertFra kan ikke være før ekspedertTil. ekspedertFra=%s, ekspedertTil=%s", ekspedertFra, ekspedertTil));
 		}
-	}
-
-	public Date convertToDate(LocalDateTime dateToConvert) {
-		return java.sql.Timestamp.valueOf(dateToConvert);
 	}
 }
 

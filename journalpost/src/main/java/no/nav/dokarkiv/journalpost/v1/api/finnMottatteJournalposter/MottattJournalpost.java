@@ -9,10 +9,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 
 @Getter
@@ -72,5 +71,5 @@ public class MottattJournalpost {
 			example = "2019-12-04T11:07:25.596+0000"
 	)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-	private Date datoOpprettet;
+	private OffsetDateTime datoOpprettet;
 }

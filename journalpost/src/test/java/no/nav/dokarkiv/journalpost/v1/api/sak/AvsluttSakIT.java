@@ -14,10 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
-import static java.time.Instant.now;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
@@ -235,9 +232,5 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 		return createDefaultAvsluttSakRequest()
 				.bruker(new Bruker(AKTOERID, AKTOER_ID))
 				.build();
-	}
-
-	private Date LocalDateTimeToDate(LocalDateTime ldt) {
-		return Date.from(ldt.toInstant(ZoneId.systemDefault().getRules().getOffset(now())));
 	}
 }

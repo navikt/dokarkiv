@@ -66,7 +66,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.J, ferdigstiltJournalpost.getJournalstatus());
-		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
+		assertThat(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate()).isAfter(journalpost.getChangeStamp().getCreatedDate());
 		assertEquals("Leonora Dorothea Dahl", ferdigstiltJournalpost.getOpprettetAvNavn());
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
@@ -117,7 +117,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.J, ferdigstiltJournalpost.getJournalstatus());
-		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
+		assertThat(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate()).isAfter(journalpost.getChangeStamp().getCreatedDate());
 		assertEquals("opprettetAvNavn", ferdigstiltJournalpost.getOpprettetAvNavn());
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
@@ -158,7 +158,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.FS, ferdigstiltJournalpost.getJournalstatus());
-		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
+		assertThat(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate()).isAfter(journalpost.getChangeStamp().getCreatedDate());
 		TestTransaction.end();
 	}
 
@@ -192,7 +192,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.FS, ferdigstiltJournalpost.getJournalstatus());
-		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
+		assertThat(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate()).isAfter(journalpost.getChangeStamp().getCreatedDate());
 		TestTransaction.end();
 	}
 
@@ -226,7 +226,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.FL, ferdigstiltJournalpost.getJournalstatus());
-		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
+		assertThat(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate()).isAfter(journalpost.getChangeStamp().getCreatedDate());
 		TestTransaction.end();
 	}
 
@@ -260,7 +260,7 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(request.getJournalfoerendeEnhet(), ferdigstiltJournalpost.getJournalForendeEnhetId());
 		assertEquals(JournalStatusCode.FL, ferdigstiltJournalpost.getJournalstatus());
-		assertTrue(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate().after(journalpost.getChangeStamp().getCreatedDate()));
+		assertThat(ferdigstiltJournalpost.getChangeStamp().getUpdatedDate()).isAfter(journalpost.getChangeStamp().getCreatedDate());
 		TestTransaction.end();
 	}
 

@@ -14,7 +14,6 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.core.sporing.SporingPopulator;
@@ -52,7 +51,6 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 
 	private static final Long JOURNALPOST_ID = 42L;
 	private static final Long DOKUMENTINFO_ID = 56L;
-	private static final String TODAY_DATE = "2018-06-20T14:31:54.767";
 	private static final boolean SENSITIVT_REQUEST = true;
 	private static final String OPPRETTET_AV_NAVN = "Saksbehandler2";
 	private static final String ENDRET_AV_NAVN = "Saksbehandler1";
@@ -77,7 +75,6 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	public void setUp() {
 		requestTo = createJournalpostRequestTo(JOURNALPOST_ID, DOKUMENTINFO_ID);
 		journalpost = createJournalpost(JOURNALPOST_ID, DOKUMENTINFO_ID);
-		DateProvider.configure(true, TODAY_DATE);
 	}
 
 	@Test

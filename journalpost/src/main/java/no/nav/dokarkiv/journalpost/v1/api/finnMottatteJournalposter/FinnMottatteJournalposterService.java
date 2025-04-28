@@ -15,6 +15,8 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -67,7 +69,7 @@ public class FinnMottatteJournalposterService {
 				.tema(journalpost.getFagomrade())
 				.behandlingstema(journalpost.getBehandlingstema())
 				.journalforendeEnhet(journalpost.getJournalForendeEnhetId())
-				.datoOpprettet(journalpost.getDatoOpprettet());
+				.datoOpprettet(journalpost.getDatoOpprettet().atZone(ZONEID_NORGE).toOffsetDateTime());
 	}
 
 }

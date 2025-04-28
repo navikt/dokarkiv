@@ -18,12 +18,13 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.PEN;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
@@ -80,12 +81,12 @@ public class SafinternFinnJournalposterRepository {
 						.where("j.journalstatus").in(journalstatuser)
 					.endAnd()
 				.endOr()
-				.where("j.changeStamp.createdDate").ge(Date.from(fraDato))
+				.where("j.changeStamp.createdDate").ge(LocalDateTime.ofInstant(fraDato, ZONEID_NORGE))
 				.where("j.journalstatus").in(journalstatuser)
 				.where("j.journalposttype").in(journalposttyper);
 
 		if (tilDato.isPresent()) {
-			cb = cb.where("j.changeStamp.createdDate").le(Date.from(tilDato.get()));
+			cb = cb.where("j.changeStamp.createdDate").le(LocalDateTime.ofInstant(tilDato.get(), ZONEID_NORGE));
 		}
 
 		cb = cb.orderByDesc("j.journalpostId");

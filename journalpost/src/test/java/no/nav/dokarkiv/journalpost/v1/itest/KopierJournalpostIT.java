@@ -163,7 +163,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 				assertThat(fd.getVariantFormat()).isEqualTo(originalFilDetaljer.getVariantFormat());
 				assertThat(fd.getFildetaljerId()).isEqualTo(originalFilDetaljer.getFildetaljerId());
 				assertThat(fd.getFiltype()).isEqualTo(originalFilDetaljer.getFiltype());
-				assertThat(fd.getChangeStamp().getCreatedDate().toInstant()).isEqualTo(originalFilDetaljer.getChangeStamp().getCreatedDate().toInstant());
+				assertThat(fd.getChangeStamp().getCreatedDate()).isEqualToIgnoringNanos(originalFilDetaljer.getChangeStamp().getCreatedDate());
 			});
 
 

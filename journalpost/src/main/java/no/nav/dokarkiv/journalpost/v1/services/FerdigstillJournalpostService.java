@@ -155,21 +155,21 @@ public class FerdigstillJournalpostService {
 	}
 
 	@Deprecated // skal bli fjernet når migrering fra ondemand til Joark er ferdig, gjelder sak MMA-5695.
-	private void oppdatertJournalpost(Journalpost journalpost, FerdigstillJournalpostRequest journalfoerendeEnhet) {
+	private void oppdatertJournalpost(Journalpost journalpost, FerdigstillJournalpostRequest ferdigstillJournalpostRequest) {
 		journalpost.setJournalDato(
-				journalfoerendeEnhet.getDatoJournal() != null ? journalfoerendeEnhet.getDatoJournal() : LocalDateTime.now()
+				ferdigstillJournalpostRequest.getDatoJournal() != null ? ferdigstillJournalpostRequest.getDatoJournal() : LocalDateTime.now()
 		);
-		journalpost.setJournalForendeEnhetId(journalfoerendeEnhet.getJournalfoerendeEnhet());
+		journalpost.setJournalForendeEnhetId(ferdigstillJournalpostRequest.getJournalfoerendeEnhet());
 		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 		journalpost.setJournalfortAvNavn(
-				journalfoerendeEnhet.getJournalfortAvNavn() != null ? journalfoerendeEnhet.getJournalfortAvNavn() : MDC.get(MDC_USER_NAME)
+				ferdigstillJournalpostRequest.getJournalfortAvNavn() != null ? ferdigstillJournalpostRequest.getJournalfortAvNavn() : MDC.get(MDC_USER_NAME)
 		);
 		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		if (!isBlank(journalfoerendeEnhet.getOpprettetAvNavn())) {
-			journalpost.setOpprettetAvNavn(journalfoerendeEnhet.getOpprettetAvNavn());
+		if (!isBlank(ferdigstillJournalpostRequest.getOpprettetAvNavn())) {
+			journalpost.setOpprettetAvNavn(ferdigstillJournalpostRequest.getOpprettetAvNavn());
 		}
-		if (journalfoerendeEnhet.getDatoSendtPrint() != null) {
-			journalpost.setSendtPrintDato(journalfoerendeEnhet.getDatoSendtPrint());
+		if (ferdigstillJournalpostRequest.getDatoSendtPrint() != null) {
+			journalpost.setSendtPrintDato(ferdigstillJournalpostRequest.getDatoSendtPrint());
 		}
 	}
 

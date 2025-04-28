@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.util;
 
 
+import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -29,16 +30,10 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-import static java.time.temporal.ChronoField.HOUR_OF_DAY;
-import static java.time.temporal.ChronoField.MILLI_OF_SECOND;
-import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
-import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
@@ -141,6 +136,7 @@ public class TestdataFactory {
 				.skjermingType(SKJERMING_TYPE_CODE)
 				.build();
 
+		journalpost.setChangeStamp(new ChangeStamp("itest", LocalDateTime.now(FIXED_CLOCK), null, null));
 		journalpost.addBruker(createBruker());
 		journalpost.addBruker(createBruker());
 		journalpost.addKryssReferanse(createKryssreferanse());
@@ -319,21 +315,6 @@ public class TestdataFactory {
 		var epostvarsel = new UtsendingsInfo.EpostVarsler(List.of(new UtsendingsInfo.EpostVarsel("tittel", "tekst", "homer@epos.gr", "2023-02-27T12:30:00.000")));
 		var smsvarsel = new UtsendingsInfo.SmsVarsler(List.of(new UtsendingsInfo.SmsVarsel("tekst", "+4700000000", "2023-02-27T12:30:00.000")));
 		return new UtsendingsInfo(journalpost, digitalPostadresse, epostvarsel, smsvarsel);
-	}
-
-	public static DateTimeFormatterBuilder formattedDate() {
-		return new DateTimeFormatterBuilder()
-				.parseCaseInsensitive()
-				.append(ISO_LOCAL_DATE)
-				.appendLiteral('T')
-				.appendValue(HOUR_OF_DAY, 2)
-				.appendLiteral(':')
-				.appendValue(MINUTE_OF_HOUR, 2)
-				.optionalStart()
-				.appendLiteral(':')
-				.appendValue(SECOND_OF_MINUTE, 2)
-				// ikke avrunding i millis
-				.appendFraction(MILLI_OF_SECOND, 3, 3, true);
 	}
 
 	public static void setSkjermingVedlegg(Journalpost actualJournalpost) {

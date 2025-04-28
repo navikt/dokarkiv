@@ -1,10 +1,9 @@
 package no.nav.dokarkiv.core.exceptions;
 
-import no.nav.dokarkiv.core.domain.util.DateProvider;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
 
 /**
@@ -49,9 +48,7 @@ public abstract class AbstractJournalFaultInfoPopulator {
 	 * @return now
 	 */
 	protected XMLGregorianCalendar getXmlTimestamp() {
-		GregorianCalendar calendar = new GregorianCalendar();
-		// Setting the date explicitly to make it testable
-		calendar.setTime(DateProvider.getToday());
+		GregorianCalendar calendar = GregorianCalendar.from(ZonedDateTime.now());
 		try {
 			return DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
 		} catch (DatatypeConfigurationException e) {

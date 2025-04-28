@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost;
@@ -25,7 +24,6 @@ public class OpprettJournalpostArkiverDokumentRequestMapperTest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		DateProvider.configure(true, "2014-08-27T12:00:00");
 		createRequest();
 		RequestContextSetter.setRequestContextForUnitTest();
 	}

@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.safintern.serializers.LocalDateTimeToOffsetDateTimeUTCSerializer;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @EntityView(Journalpost.class)
@@ -42,6 +41,7 @@ public interface RelevanteDatoerView {
 	@Mapping("lestDato")
 	LocalDateTime getLest();
 
+	@JsonSerialize(using = LocalDateTimeToOffsetDateTimeUTCSerializer.class)
 	@Mapping("changeStamp.createdDate")
-	Date getOpprettet();
+	LocalDateTime getOpprettet();
 }

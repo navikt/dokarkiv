@@ -8,7 +8,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.util.DateProvider;
 import no.nav.dokarkiv.core.exceptions.ApplicationException;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
@@ -42,7 +41,6 @@ public class OpprettJournalpostIT extends AbstractArkiverdokumentproduksjonItest
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		DateProvider.configure(true, "2018-07-17T12:00");
 		RequestContextSetter.setRequestContextForUnitTest();
 		wsJournalpost = OpprettJournalpostDataUtil.createJournalpost();
 		createRequest();

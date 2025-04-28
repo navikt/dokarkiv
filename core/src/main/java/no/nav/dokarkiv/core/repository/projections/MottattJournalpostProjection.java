@@ -2,7 +2,7 @@ package no.nav.dokarkiv.core.repository.projections;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public interface MottattJournalpostProjection {
 	long getJournalpostId();
@@ -18,5 +18,5 @@ public interface MottattJournalpostProjection {
 	String getBehandlingstema();
 
 	@Value("#{target.changeStamp.createdDate}")
-	Date getDatoOpprettet();
+	LocalDateTime getDatoOpprettet();
 }
