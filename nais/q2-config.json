@@ -656,7 +656,7 @@
       "cluster": "dev-gcp"
     },
     {
-      "application": "historisk-helt-backend",
+      "app": "historisk-helt-backend",
       "namespace": "historisk",
       "cluster": "dev-gcp"
     }
