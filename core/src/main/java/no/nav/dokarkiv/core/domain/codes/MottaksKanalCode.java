@@ -2,8 +2,6 @@ package no.nav.dokarkiv.core.domain.codes;
 
 /**
  * Enum for codes in T_K_MOTTAKS_KANAL. 
- * 
- * @author Per Kristian Foss, Visma Sirius
  */
 public enum MottaksKanalCode {
 
@@ -34,5 +32,7 @@ public enum MottaksKanalCode {
 	/** Innlogget chat **/
 	NAV_NO_CHAT,
 	/** E-post */
-	E_POST;
+	E_POST,
+	/** HR-system med integrasjon mot Nav */
+	HR_SYSTEM_API
 }
