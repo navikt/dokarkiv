@@ -24,10 +24,12 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -70,7 +72,7 @@ public class DefaultFerdigstillJournalpostServiceTest {
 		service.ferdigstillJournalpost(request);
 
 		assertThat(journalpost.getJournalstatus(), is(JournalStatusCode.FS));
-		Assertions.assertThat(journalpost.getJournalDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(journalpost.getJournalDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 		assertThat(journalpost.getUtsendingskanal(), is(UTSENDINGS_KANAL));
 		assertThat(journalpost.getJournalfortAvNavn(), is(ENDRET_AV_NAVN));
 

@@ -26,8 +26,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
@@ -126,7 +126,7 @@ public class DefaultOpprettJournalpostServiceTest {
 	@Test
 	public void shouldSetJournalDatoToToday() {
 		service.opprettJournalpost(request);
-		Assertions.assertThat(journalpost.getJournalDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(journalpost.getJournalDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 	}
 
 	@Test
@@ -148,7 +148,7 @@ public class DefaultOpprettJournalpostServiceTest {
 	public void shouldSetDokumentFerdigDatoToToday() {
 		service.opprettJournalpost(request);
 		Assertions.assertThat(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentFerdigDato())
-				.isCloseTo(LocalDateTime.now(), within(3, ChronoUnit.SECONDS));
+				.isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 	}
 
 	private Journalpost createJournalpost(Long journalpostId, Long dokumentinfoId) {

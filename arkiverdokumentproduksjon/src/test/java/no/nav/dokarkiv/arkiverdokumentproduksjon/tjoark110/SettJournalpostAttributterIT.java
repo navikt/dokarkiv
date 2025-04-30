@@ -21,11 +21,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDateTime;
 import java.util.GregorianCalendar;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -47,7 +49,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 
 		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 
-		Assertions.assertThat(persistedJournalpost1.getSendtPrintDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(persistedJournalpost1.getSendtPrintDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(persistedJournalpost1.getUtsendingskanal().name(), is(UTSENDINGSKANAL));
@@ -81,7 +83,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 
 		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 
-		Assertions.assertThat(persistedJournalpost1.getSendtPrintDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(persistedJournalpost1.getSendtPrintDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ORIGINAL_ENDRET_AV_NAVN));
 		assertThat(persistedJournalpost1.getUtsendingskanal(), is(nullValue()));
@@ -97,7 +99,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 
 		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 
-		Assertions.assertThat(persistedJournalpost1.getSendtPrintDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(persistedJournalpost1.getSendtPrintDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(persistedJournalpost1.getUtsendingskanal(), is(nullValue()));
@@ -128,7 +130,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 		assertThat(persistedJournalpost.getSendtPrintDato(), is(nullValue()));
 		assertThat(persistedJournalpost.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost.getEndretAvNavn(), is(ORIGINAL_ENDRET_AV_NAVN));
-		Assertions.assertThat(persistedJournalpost.getAvsendtReturDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(persistedJournalpost.getAvsendtReturDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 	}
 
 	@Test
@@ -142,14 +144,14 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 		Journalpost persistedJournalpost1 = journalpostTestRepository.findById(journalpost1.getJournalpostId()).get();
 		Journalpost persistedJournalpost2 = journalpostTestRepository.findById(journalpost2.getJournalpostId()).get();
 
-		Assertions.assertThat(persistedJournalpost1.getSendtPrintDato()).isEqualToIgnoringNanos(LocalDateTime.now());
-		Assertions.assertThat(persistedJournalpost2.getSendtPrintDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(persistedJournalpost1.getSendtPrintDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
+		Assertions.assertThat(persistedJournalpost2.getSendtPrintDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 		assertThat(persistedJournalpost1.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost2.getAntallRetur(), is(ANTALL_RETURPOST));
 		assertThat(persistedJournalpost1.getEndretAvNavn(), is(ENDRET_AV_NAVN));
 		assertThat(persistedJournalpost2.getEndretAvNavn(), is(ENDRET_AV_NAVN));
-		Assertions.assertThat(persistedJournalpost1.getAvsendtReturDato()).isEqualToIgnoringNanos(LocalDateTime.now());
-		Assertions.assertThat(persistedJournalpost2.getAvsendtReturDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(persistedJournalpost1.getAvsendtReturDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
+		Assertions.assertThat(persistedJournalpost2.getAvsendtReturDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 	}
 
 	@Test

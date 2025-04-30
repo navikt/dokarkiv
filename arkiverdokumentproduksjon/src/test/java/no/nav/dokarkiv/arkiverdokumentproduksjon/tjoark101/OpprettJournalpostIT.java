@@ -19,8 +19,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -71,12 +71,12 @@ public class OpprettJournalpostIT extends AbstractArkiverdokumentproduksjonItest
 		DokumentInfo dokumentInfo = Iterables.getFirst(persistedJournalpost.getJournalpostDokumentInfoRelasjoner(), null)
 				.getDokumentInfo();
 
-		Assertions.assertThat(persistedJournalpost.getJournalDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(persistedJournalpost.getJournalDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 		assertThat(persistedJournalpost.getJournalstatus(), is(JournalStatusCode.D));
 		assertThat(persistedJournalpost.getJournalposttype(), is(JournalpostTypeCode.U));
 		assertThat(dokumentInfoRelasjon.getTilknyttetJournalpostSom(), is(TilknyttetJournalpostSomCode.HOVEDDOKUMENT));
 		assertThat(dokumentInfo.getDokumentstatus(), is(DokumentStatusCode.UNDER_REDIGERING));
-		Assertions.assertThat(dokumentInfo.getDokumentFerdigDato()).isCloseTo(LocalDateTime.now(), within(3, ChronoUnit.SECONDS));
+		Assertions.assertThat(dokumentInfo.getDokumentFerdigDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 	}
 
 	@Test
