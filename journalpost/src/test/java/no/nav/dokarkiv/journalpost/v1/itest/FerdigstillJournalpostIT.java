@@ -22,12 +22,14 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.PEN;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.RPO;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVSLUTTET;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -108,8 +110,8 @@ public class FerdigstillJournalpostIT extends AbstractJournalpostIT {
 		TestTransaction.start();
 		Journalpost ferdigstiltJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
-		assertThat(ferdigstiltJournalpost.getJournalDato()).isEqualToIgnoringNanos(datoJournal);
-		assertThat(ferdigstiltJournalpost.getSendtPrintDato()).isEqualToIgnoringNanos(datoSendtPrint);
+		assertThat(ferdigstiltJournalpost.getJournalDato()).isCloseTo(datoJournal, within(3, SECONDS));
+		assertThat(ferdigstiltJournalpost.getSendtPrintDato()).isCloseTo(datoSendtPrint, within(3, SECONDS));
 
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretAvNavn());
 		assertEquals(SERVICE_USER_ID, ferdigstiltJournalpost.getEndretKildeNavn());

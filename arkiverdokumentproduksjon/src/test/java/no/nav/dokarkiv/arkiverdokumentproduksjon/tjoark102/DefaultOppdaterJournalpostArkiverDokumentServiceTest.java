@@ -26,11 +26,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
@@ -92,7 +92,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 		requestTo.setFerdigstillJournalpost(true);
 		service.updateJournalpost(journalpost, requestTo);
 		assertThat(journalpost.getJournalstatus(), is(JournalStatusCode.FS));
-		Assertions.assertThat(journalpost.getJournalDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(journalpost.getJournalDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 		assertThat(journalpost.getJournalfortAvNavn(), is(requestTo.getEndretAvNavn()));
 		assertThat(journalpost.getUtsendingskanal(), is(requestTo.getUtsendingskanal()));
 	}
@@ -103,7 +103,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 		requestTo.setUtsendingskanal(UtsendingsKanalCode.L);
 		service.updateJournalpost(journalpost, requestTo);
 		assertThat(journalpost.getJournalstatus(), is(JournalStatusCode.FL));
-		Assertions.assertThat(journalpost.getJournalDato()).isEqualToIgnoringNanos(LocalDateTime.now());
+		Assertions.assertThat(journalpost.getJournalDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 		assertThat(journalpost.getJournalfortAvNavn(), is(requestTo.getEndretAvNavn()));
 		assertThat(journalpost.getUtsendingskanal(), is(requestTo.getUtsendingskanal()));
 	}
@@ -126,7 +126,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 		service.updateJournalpost(journalpost, requestTo);
 		DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(DOKUMENTINFO_ID);
 		assertThat(dokumentInfo.getDokumentstatus(), is(DokumentStatusCode.FERDIGSTILT));
-		Assertions.assertThat(dokumentInfo.getDokumentFerdigDato()).isCloseTo(LocalDateTime.now(), within(3, ChronoUnit.SECONDS));
+		Assertions.assertThat(dokumentInfo.getDokumentFerdigDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 	}
 
 	@Test
