@@ -11,6 +11,8 @@ public enum FagomradeCode {
 	AAR,
 	/** Ajourhold – grunnopplysninger */
 	AGR,
+	/** Aktivitetsplan med dialoger */
+	AKT,
 	/** Arbeidsrådgivning – psykologtester */
 	ARP,
 	/** Arbeidsrådgivning – skjermet */
@@ -59,10 +61,10 @@ public enum FagomradeCode {
 	IAR,
 	/** Tiltakspenger */
 	IND,
-	/** Kontantstøtte */
-	KON,
 	/** Klage – lønnsgaranti */
 	KLL,
+	/** Kontantstøtte */
+	KON,
 	/** Kontroll – anmeldelse */
 	KTA,
 	/** Kontroll */
@@ -77,10 +79,14 @@ public enum FagomradeCode {
 	OPA,
 	/** Oppfølging */
 	OPP,
+	/** Innsyn */
+	PAI,
 	/** Pensjon */
 	PEN,
 	/** Permittering og masseoppsigelser */
 	PER,
+	/** Innsyn etter personopplysningsloven */
+	POI,
 	/** Rehabiliteringspenger */
 	REH,
 	/** Rekruttering */
@@ -100,12 +106,12 @@ public enum FagomradeCode {
 	SER,
 	/** Regnskap/utbetaling/årsoppgave */
 	STO,
+	/** Supplerende stønad */
+	SUP,
 	/** Sykepenger */
 	SYK,
 	/** Sykemelding */
 	SYM,
-	/** Supplerende stønad */
-	SUP,
 	/** Tiltak */
 	TIL,
 	/** Trekk */
@@ -123,10 +129,13 @@ public enum FagomradeCode {
 	/** Ukjent */
 	@Deprecated
 	UKJ,
+	/** Ungdomsprogramytelsen */
+	UNG,
 	/** Ventelønn */
 	VEN,
 	/** Yrkesrettet attføring */
 	YRA,
 	/** Yrkesskade og menerstatning */
 	YRK
+
 }
