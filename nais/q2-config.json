@@ -421,6 +421,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "dp-mottak",
+      "namespace": "teamdagpenger",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "bidrag-dokument-arkiv",
       "namespace": "bidrag",
       "cluster": "dev-fss"
