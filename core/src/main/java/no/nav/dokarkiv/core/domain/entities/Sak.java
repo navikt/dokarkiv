@@ -86,10 +86,10 @@ public class Sak {
 	@Column(name = "dato_sak_opprettet", length = 40)
 	private LocalDateTime datoSakOpprettet;
 
-	@Column(name = "administrativ_enhet", length = 40)
+	@Column(name = "administrativ_enhet", length = 128)
 	private String administrativEnhet;
 
-	@Column(name = "sak_ansvarlig", length = 40)
+	@Column(name = "sak_ansvarlig", length = 128)
 	private String sakAnsvarlig;
 
 	@Enumerated(EnumType.STRING)
