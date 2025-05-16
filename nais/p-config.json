@@ -676,6 +676,11 @@
       "app": "rpa-nos-gosys",
       "namespace": "team-rpa",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "journey",
+      "namespace": "tsm",
+      "cluster": "prod-gcp"
     }
   ]
 }
