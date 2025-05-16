@@ -570,6 +570,11 @@
       "app": "rpa-nos-robot1",
       "namespace": "team-rpa",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "journey",
+      "namespace": "tsm",
+      "cluster": "dev-gcp"
     }
   ]
 }
