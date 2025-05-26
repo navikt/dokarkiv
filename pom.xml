@@ -35,7 +35,7 @@
 		<commons-collections4.version>4.5.0</commons-collections4.version>
 		<logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
-		<libraries-bom.version>26.60.0</libraries-bom.version>
+		<libraries-bom.version>26.61.0</libraries-bom.version>
 		<tink.version>1.17.0</tink.version>
 		<tink-gcpkms.version>1.10.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.14</blaze-persistence.version>
