@@ -8,7 +8,6 @@ import static java.lang.String.format;
 /**
  * Enum for codes in T_K_UTSENDINGS_KANAL.
  *
- * @author Per Kristian Foss, Visma Sirius
  */
 public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, String> {
 
@@ -64,6 +63,10 @@ public enum UtsendingsKanalCode implements CtiRelationship<UtsendingsKanalCode, 
 	 * Innlogget samtale
 	 */
 	NAV_NO_CHAT,
+	/**
+	 * Presentert direkte på nav.no for innlogget bruker
+	 */
+	NAV_NO_UTEN_VARSLING,
 	/**
 	 * Taushetsbelagt Post via Altinn
 	 */
