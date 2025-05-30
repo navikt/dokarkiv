@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
+import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.AKTOER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.ANTALL_RETUR;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.API_GSAK_ID;
@@ -177,6 +178,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertThat(journalpostDto.getSaksrelasjon().getSakId(), is(sak.getSakId().toString()));
 		assertThat(journalpostDto.getSaksrelasjon().getOpprettetAv(), is("Donald Duck"));
 		assertThat(journalpostDto.getSaksrelasjon().getFagsakNr(), is(GSAK_FAGSAKNR));
+		assertThat(journalpostDto.getSaksrelasjon().getSakStatus(), is(AAPEN.name()));
 
 		assertThat(journalpostDto.getBruker().getBrukerId(), is(BRUKER_ID));
 		assertThat(journalpostDto.getBruker().getBrukerIdType(), is(BrukerTypeCode.PERSON.name()));
