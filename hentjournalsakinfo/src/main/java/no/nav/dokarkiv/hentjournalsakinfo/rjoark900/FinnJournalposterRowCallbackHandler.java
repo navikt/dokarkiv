@@ -118,6 +118,7 @@ public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 				.fagsakNr(rs.getString("saksrelasjon_fagsaknr"))
 				.applikasjon(rs.getString("saksrelasjon_applikasjon"))
 				.orgnr(rs.getString("saksrelasjon_orgnr"))
+				.sakStatus(rs.getString("saksrelasjon_sak_status"))
 				.opprettetAv(rs.getString("saksrelasjon_opprettet_av"))
 				.opprettetTid(mapOpprettetTid(rs.getTimestamp("saksrelasjon_opprettet_tid")))
 				.build();

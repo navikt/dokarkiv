@@ -5,6 +5,7 @@ import com.blazebit.persistence.view.IdMapping;
 import com.blazebit.persistence.view.Mapping;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 
 import java.time.LocalDateTime;
@@ -33,4 +34,7 @@ public interface SakView {
 
 	@Mapping("opprettetTidspunkt")
 	LocalDateTime getOpprettetTid();
+
+	@Mapping("sakStatus")
+	SakStatusCode getSakStatus();
 }

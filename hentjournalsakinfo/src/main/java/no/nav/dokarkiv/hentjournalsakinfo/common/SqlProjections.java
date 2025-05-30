@@ -41,6 +41,7 @@ public final class SqlProjections {
 					sa.aktoerid                     AS saksrelasjon_aktoerid,
 					sa.tema                         AS saksrelasjon_tema,
 					sa.fagsaknr                     AS saksrelasjon_fagsaknr,
+					sa.k_sak_status                 AS saksrelasjon_sak_status,
 					sa.orgnr                        AS saksrelasjon_orgnr,
 					sa.applikasjon                  AS saksrelasjon_applikasjon,
 					sa.opprettet_tidspunkt          AS saksrelasjon_opprettet_tid,
