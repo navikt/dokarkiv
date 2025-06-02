@@ -17,6 +17,7 @@
           "fagsakNr": "1234",
           "opprettetTid": "2023-08-11T00:00:00",
           "orgNr": "812345678",
+          "sakStatus": "AAPEN",
           "tema": "RPO"
         },
         "sakId": sakId_replace
@@ -151,6 +152,7 @@
           "fagsakNr": "1234",
           "opprettetTid": "2023-08-11T00:00:00",
           "orgNr": "812345678",
+          "sakStatus": "AAPEN",
           "tema": "RPO"
         },
         "sakId": sakId_replace

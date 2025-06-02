@@ -2,6 +2,7 @@ package no.nav.dokarkiv.safintern.journalpost;
 
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
+import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import no.nav.dokarkiv.safintern.views.BrukerView;
 import no.nav.dokarkiv.safintern.views.SaksrelasjonView;
 
@@ -25,6 +26,7 @@ public final class TestdataAsserter {
 		assertThat(saksrelasjon.getSak().getOrgNr()).isEqualTo(GSAK_ORGNR);
 		assertThat(saksrelasjon.getSak().getFagsakNr()).isEqualTo(GSAK_FAGSAKNR);
 		assertThat(saksrelasjon.getSak().getApplikasjon()).isEqualTo(GSAK_APPLIKASJON);
+		assertThat(saksrelasjon.getSak().getSakStatus()).isEqualTo(SakStatusCode.AAPEN);
 		assertThat(saksrelasjon.getSak().getOpprettetTid()).isNotNull();
 	}
 

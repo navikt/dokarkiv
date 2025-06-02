@@ -12,6 +12,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.codes.ReferanseTypeCode;
+import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -292,6 +293,7 @@ public class TestdataFactory {
 				.fagsakNr(GSAK_FAGSAKNR)
 				.orgnr(GSAK_ORGNR)
 				.tema(GSAK_TEMA)
+				.sakStatus(SakStatusCode.AAPEN)
 				.applikasjon(GSAK_APPLIKASJON)
 				.opprettetAv(GSAK_OPPRETTET_AV)
 				.opprettetTidspunkt(LocalDate.now(FIXED_CLOCK).atStartOfDay())
