@@ -62,6 +62,7 @@ public class AvsluttSakRequest {
 					* TILTAKSADMINISTRASJON
 					* FIA
 					* HELT
+					* UNG_SAK
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",
