@@ -63,6 +63,7 @@ public class Sak {
 					* TILTAKSADMINISTRASJON
 					* FIA
 					* HELT
+					* UNG_SAK
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",

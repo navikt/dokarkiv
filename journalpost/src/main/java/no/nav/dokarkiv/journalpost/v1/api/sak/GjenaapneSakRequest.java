@@ -59,6 +59,7 @@ public class GjenaapneSakRequest {
 					* TILTAKSADMINISTRASJON
 					* FIA
 					* HELT
+					* UNG_SAK
 					""",
 			example = "AO01", requiredMode = REQUIRED
 	)

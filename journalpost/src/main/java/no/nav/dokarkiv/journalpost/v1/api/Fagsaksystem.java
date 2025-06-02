@@ -48,7 +48,11 @@ public enum Fagsaksystem {
      */
     FIA,
     /**
-     * nytt fagsystem for helsetjenester.
+     * Fagsystem for helsetjenester
      */
-    HELT
+    HELT,
+    /**
+     * Fagsystem for å saksbehandling av ungdomsprogramytelsen
+     */
+    UNG_SAK
 }
