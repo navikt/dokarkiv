@@ -453,7 +453,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 
 
 	@Test
-	void shoulMapHoveddokumentWhenAssignedRekkefoelge() {
+	void shouldMapRekkefoelgeForHoveddokument() {
 		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
 				.dokumenter(List.of(
 						Dokument.builder()
@@ -470,7 +470,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)
 								.brevkode(BREVKODE1)
-								.rekkefoelge(1L)
+								.rekkefoelge(1)
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
 								.dokumentvarianter(List.of(
 										DokumentVariant.builder()
@@ -485,6 +485,6 @@ public class OpprettJournalpostApiRequestMapperTest {
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		assertEquals(DOKUMENT_TITTEL2, dokumentInfo.getTittel());
 		assertEquals(BREVKODE2, dokumentInfo.getBrevkode());
-		assertEquals(1L, dokumentInfo.getRekkefoelge());
+		assertEquals(1, journalpost.findHoveddokumentDokumentInfoRelasjon().getRekkefoelge());
 	}
 }

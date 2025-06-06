@@ -323,14 +323,6 @@ public class OpprettJournalpostRequestValidator {
 		if (dokumenter == null || dokumenter.isEmpty()) {
 			throw new InputValideringFeiletException("Kan ikke opprette journalpost uten dokumenter.");
 		}
-
-		if (dokumenter.stream()
-				.filter(dokument -> dokument.getRekkefoelge() != null)
-				.filter(dokument -> dokument.getRekkefoelge() == (1L))
-				.count() > 1) {
-			throw new InputValideringFeiletException("Kan ikke opprette journalpost som inneholder flere dokumenter med rekkefølge = 1");
-		}
-
 		IntStream.range(0, dokumenter.size())
 				.forEach(dokumentIdx -> validateDokument(dokumentIdx, dokumenter.get(dokumentIdx)));
 	}

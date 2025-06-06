@@ -320,11 +320,6 @@ public class OpprettJournalpostApiRequestMapper {
 				//hack for sykepengeberegningsmodulen. ref MMA-6005
 				.dokumenttypeId(BREVKODE_4936.equals(dokument.getBrevkode()) ? "I000067" : null)
 				.build();
-		if (tilknyttetJournalpostSomCode==HOVEDDOKUMENT)
-			dokumentInfo.setRekkefoelge(1L);
-		else if(dokument.getRekkefoelge() != null){
-			dokumentInfo.setRekkefoelge(dokument.getRekkefoelge());
-		}
 
 		if (dokument.getDokumentvarianter() != null) {
 			dokument.getDokumentvarianter().forEach(
@@ -344,6 +339,11 @@ public class OpprettJournalpostApiRequestMapper {
 				.journalpost(jp)
 				.dokumentInfo(dokumentInfo)
 				.build();
+		if (tilknyttetJournalpostSomCode==HOVEDDOKUMENT)
+			relasjon.setRekkefoelge(1);
+		else if(dokument.getRekkefoelge() != null){
+			relasjon.setRekkefoelge(dokument.getRekkefoelge());
+		}
 		jp.addJournalpostDokumentInfoRelasjon(relasjon);
 	}
 

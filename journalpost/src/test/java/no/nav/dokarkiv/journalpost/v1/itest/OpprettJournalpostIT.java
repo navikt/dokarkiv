@@ -291,8 +291,9 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 		assertEquals(J, journalpost.getJournalstatus());
 		assertEquals("9999", journalpost.getJournalForendeEnhetId());
-		assertThat(journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getRekkefoelge()).isEqualTo(1L);
-		assertThat(journalpost.getDokumentInfoFromJpDokInfoRelasjoner(1).getRekkefoelge()).isEqualTo(3L);
+		assertThat(journalpost.findHoveddokumentDokumentInfoRelasjon().getRekkefoelge()).isEqualTo(1);
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().stream().findFirst().get().getRekkefoelge()).isEqualTo(1);
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().stream().skip(1).findFirst().get().getRekkefoelge()).isEqualTo(3);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertEquals(2, aksjonsLoggList.size());
