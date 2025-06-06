@@ -124,6 +124,9 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "kassert", length = 1)
 	private Boolean kassert;
 
+	@Column(name = "rekkefoelge", length = 20)
+	private Long rekkefoelge;
+
 	@ElementCollection
 	@JoinTable(name = "t_dok_info_tillegg", joinColumns = @JoinColumn(name = "dokument_info_id", nullable = false))
 	@MapKeyColumn(name = "nokkel")

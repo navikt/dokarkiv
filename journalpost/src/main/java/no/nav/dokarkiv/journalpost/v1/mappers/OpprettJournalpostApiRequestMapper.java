@@ -320,6 +320,11 @@ public class OpprettJournalpostApiRequestMapper {
 				//hack for sykepengeberegningsmodulen. ref MMA-6005
 				.dokumenttypeId(BREVKODE_4936.equals(dokument.getBrevkode()) ? "I000067" : null)
 				.build();
+		if (tilknyttetJournalpostSomCode==HOVEDDOKUMENT)
+			dokumentInfo.setRekkefoelge(1L);
+		else if(dokument.getRekkefoelge() != null){
+			dokumentInfo.setRekkefoelge(dokument.getRekkefoelge());
+		}
 
 		if (dokument.getDokumentvarianter() != null) {
 			dokument.getDokumentvarianter().forEach(

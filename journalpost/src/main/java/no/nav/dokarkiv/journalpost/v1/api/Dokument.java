@@ -38,6 +38,18 @@ public class Dokument {
 	)
 	private String brevkode;
 
+	@Schema(
+			description = """
+					Dokumentets plassering i listen.
+					     
+					Første dokument i meldingen skal ha rekkefoelge=1, og blir tilknyttet journalposten som hoveddokument. Hvis rekkefoelge ikke er satt på første dokument i meldingen, settes rekkefoelge=1. Kun ett dokument kan ha rekkefoelge=1.
+					     
+					Tjenesten verifiserer ikke at duplikater ikke forekommer. Dersom flere vedlegg har samme rekkefoelge, vil rekkefølgen på disse være vilkårlig.
+					""",
+			example = "1"
+	)
+	private Long rekkefoelge;
+
 	@Hidden
 	@Schema(
 			description = """

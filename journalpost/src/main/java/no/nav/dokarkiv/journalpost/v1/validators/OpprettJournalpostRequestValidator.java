@@ -66,7 +66,7 @@ public class OpprettJournalpostRequestValidator {
 		if (request.getAvsenderMottaker() != null) {
 			String feilmelding = validateAvsenderMottaker(request.getAvsenderMottaker())
 					.stream().filter(Objects::nonNull).collect(Collectors.joining(", "));
-			if (isNotEmpty(feilmelding)){
+			if (isNotEmpty(feilmelding)) {
 				throw new InputValideringFeiletException(feilmelding);
 			}
 		}
@@ -322,6 +322,13 @@ public class OpprettJournalpostRequestValidator {
 
 		if (dokumenter == null || dokumenter.isEmpty()) {
 			throw new InputValideringFeiletException("Kan ikke opprette journalpost uten dokumenter.");
+		}
+
+		if (dokumenter.stream()
+				.filter(dokument -> dokument.getRekkefoelge() != null)
+				.filter(dokument -> dokument.getRekkefoelge() == (1L))
+				.count() > 1) {
+			throw new InputValideringFeiletException("Kan ikke opprette journalpost som inneholder flere dokumenter med rekkefølge = 1");
 		}
 
 		IntStream.range(0, dokumenter.size())
