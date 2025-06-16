@@ -157,7 +157,7 @@ public class OpprettJournalpostRequest {
 			description = """
 					Alle dokumentene som skal arkiveres.
 					
-					Det første dokument i meldingen blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg beholdes ikke nødvendigvis ved uthenting av journalpost.
+					Det første dokument i meldingen blir tilknyttet som hoveddokument på journalposten. Øvrige dokumenter tilknyttes som vedlegg. Rekkefølgen på vedlegg kan settes med felt "rekkefoelge".
 					""",
 			requiredMode = REQUIRED)
 	)

@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -258,5 +259,22 @@ class DokumentValidatorTest {
 		assertThatExceptionOfType(InvalidPdfException.class)
 				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
 				.withMessage("dokumenter[0].dokumentvarianter[].fysiskDokument med variantformat=ARKIV kan ikke lagres i fagarkivet. fysiskDokument magicNumber={FF D8 FF E0 00} matcher ikke angitt filtype=PDF");
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = {0, -1})
+	void shouldThrowExceptionWhenDokumentRekkefoelgeIsNonPositiveNumber(Integer rekkefoelge) {
+		var dokument = dokumentBuilder
+				.dokumentvarianter(List.of(DokumentVariant.builder()
+								.filtype(FILTYPE_PDF)
+								.variantformat(VARIANTFORMAT_ARKIV)
+								.fysiskDokument(FYSISK_DOKUMENT)
+								.build()))
+				.rekkefoelge(rekkefoelge)
+				.build();
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
+				.withMessage("dokumenter[0].rekkefoelge må være null eller et positivt heltall. Mottatt rekkefoelge=%s", rekkefoelge);
 	}
 }

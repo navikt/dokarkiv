@@ -11,9 +11,11 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
@@ -109,6 +111,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -169,6 +172,13 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.filter(dokumentFil -> Arrays.equals(FYSISK_DOKUMENT, dokumentFil.getFil())).count());
 		assertEquals(1, dokumentFilList.stream()
 				.filter(dokumentFil -> Arrays.equals(FYSISK_DOKUMENT_2, dokumentFil.getFil())).count());
+
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner())
+				.extracting(JournalpostDokumentInfoRelasjon::getTilknyttetJournalpostSom, JournalpostDokumentInfoRelasjon::getRekkefoelge)
+				.containsExactly(
+						tuple(TilknyttetJournalpostSomCode.HOVEDDOKUMENT, null),
+						tuple(TilknyttetJournalpostSomCode.VEDLEGG, 2)
+				);
 	}
 
 	@ParameterizedTest
@@ -291,9 +301,6 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 		assertEquals(J, journalpost.getJournalstatus());
 		assertEquals("9999", journalpost.getJournalForendeEnhetId());
-		assertThat(journalpost.findHoveddokumentDokumentInfoRelasjon().getRekkefoelge()).isEqualTo(1);
-		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().stream().findFirst().get().getRekkefoelge()).isEqualTo(1);
-		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().stream().skip(1).findFirst().get().getRekkefoelge()).isEqualTo(3);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertEquals(2, aksjonsLoggList.size());

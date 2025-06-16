@@ -92,8 +92,9 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanal;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestAvsenderMottaker;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.Assertions.within;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -451,26 +452,15 @@ public class OpprettJournalpostApiRequestMapperTest {
 		assertEquals(jp.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getSensitivt(), value);
 	}
 
-
-	@Test
-	void shouldMapRekkefoelgeForHoveddokument() {
+	@ParameterizedTest
+	@MethodSource
+	void shouldMapRekkefoelge(Integer hoveddokumentRekkefoelge, Integer vedleggRekkefoelge) {
 		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
 				.dokumenter(List.of(
 						Dokument.builder()
-								.tittel(DOKUMENT_TITTEL2)
-								.brevkode(BREVKODE2)
-								.dokumentKategori(DOKUMENTKATEGORI_SED)
-								.dokumentvarianter(List.of(
-										DokumentVariant.builder()
-												.filtype(FILTYPE_PDF)
-												.fysiskDokument(FYSISK_DOKUMENT_2)
-												.variantformat(VARIANTFORMAT_ARKIV)
-												.build()))
-								.build(),
-						Dokument.builder()
 								.tittel(DOKUMENT_TITTEL1)
+								.rekkefoelge(hoveddokumentRekkefoelge)
 								.brevkode(BREVKODE1)
-								.rekkefoelge(1)
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
 								.dokumentvarianter(List.of(
 										DokumentVariant.builder()
@@ -478,13 +468,35 @@ public class OpprettJournalpostApiRequestMapperTest {
 												.fysiskDokument(FYSISK_DOKUMENT)
 												.variantformat(VARIANTFORMAT_ARKIV)
 												.build()))
+								.build(),
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL2)
+								.rekkefoelge(vedleggRekkefoelge)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(List.of(
+										DokumentVariant.builder()
+												.filtype(FILTYPE_PDF)
+												.fysiskDokument(FYSISK_DOKUMENT_2)
+												.variantformat(VARIANTFORMAT_ARKIV)
+												.build()))
 								.build()
 				)).build();
 		Journalpost journalpost = mapper.map(request, null);
 
-		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		assertEquals(DOKUMENT_TITTEL2, dokumentInfo.getTittel());
-		assertEquals(BREVKODE2, dokumentInfo.getBrevkode());
-		assertEquals(1, journalpost.findHoveddokumentDokumentInfoRelasjon().getRekkefoelge());
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner())
+				.extracting(JournalpostDokumentInfoRelasjon::getTilknyttetJournalpostSom, JournalpostDokumentInfoRelasjon::getRekkefoelge)
+				.containsExactly(
+						tuple(TilknyttetJournalpostSomCode.HOVEDDOKUMENT, null), // Rekkefoelge for hoveddokument skal alltid være null
+						tuple(TilknyttetJournalpostSomCode.VEDLEGG, vedleggRekkefoelge)
+				);
+	}
+
+	private static Stream<Arguments> shouldMapRekkefoelge() {
+		return Stream.of(
+				Arguments.of(null, null),
+				Arguments.of(1, 2),
+				Arguments.of(1, null),
+				Arguments.of(null, 2)
+		);
 	}
 }

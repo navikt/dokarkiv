@@ -554,7 +554,7 @@ public class TestUtils {
 								.tittel(DOKUMENT_TITTEL2)
 								.brevkode(BREVKODE2)
 								.dokumentKategori(DOKUMENTKATEGORI_SED)
-								.rekkefoelge(3)
+								.rekkefoelge(2)
 								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
 										.filtype(FILTYPE_PDF)
 										.variantformat(VARIANTFORMAT_ARKIV)

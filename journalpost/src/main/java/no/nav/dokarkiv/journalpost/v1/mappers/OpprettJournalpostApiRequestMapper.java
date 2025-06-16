@@ -339,11 +339,13 @@ public class OpprettJournalpostApiRequestMapper {
 				.journalpost(jp)
 				.dokumentInfo(dokumentInfo)
 				.build();
-		if (tilknyttetJournalpostSomCode==HOVEDDOKUMENT)
-			relasjon.setRekkefoelge(1);
-		else if(dokument.getRekkefoelge() != null){
+
+		if (HOVEDDOKUMENT.equals(tilknyttetJournalpostSomCode)) {
+			relasjon.setRekkefoelge(null);
+		} else {
 			relasjon.setRekkefoelge(dokument.getRekkefoelge());
 		}
+
 		jp.addJournalpostDokumentInfoRelasjon(relasjon);
 	}
 

@@ -40,9 +40,9 @@ public class Dokument {
 
 	@Schema(
 			description = """
-					Dokumentets plassering i listen.
+					Dokumentets plassering i listen. Kun relevant for vedlegg.
 					     
-					Første dokument i meldingen skal ha rekkefoelge=1 og blir tilknyttet journalposten som hoveddokument. Hvis rekkefoelge ikke er satt på første dokument i meldingen settes rekkefoelge=1. Kun ett dokument kan ha rekkefoelge=1.
+					Første dokument i meldingen blir tilknyttet journalposten som hoveddokument (og vil få rekkefoelge=null). Dette feltet styrer rekkefølgen på de øvrige dokumentene ved uthenting av journalposten.
 					     
 					Tjenesten verifiserer ikke at duplikater ikke forekommer. Dersom flere vedlegg har samme rekkefoelge, vil rekkefølgen på disse være vilkårlig.
 					""",
