@@ -46,6 +46,7 @@ public final class DokumentValidator {
 		validateSkjultTittel(dokument.getTittel(), dokumentnummerPrefix(dokumentIdx) + ".tittel");
 		validateDokumentKategori(dokumentIdx, dokument);
 		validateDokumentVarianter(dokumentIdx, dokument);
+		validateRekkefoelge(dokumentIdx, dokument);
 	}
 
 	private static void validateDokumentKategori(Integer dokumentIdx, Dokument dokument) {
@@ -159,6 +160,13 @@ public final class DokumentValidator {
 							.withDelimiter(" ")
 							.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length)),
 					dokumentVariant.getFiltype()));
+		}
+	}
+
+	private static void validateRekkefoelge(Integer dokumentIdx, Dokument dokument) {
+		if (dokument.getRekkefoelge() != null && dokument.getRekkefoelge() < 1) {
+			throw new InputValideringFeiletException("%s.rekkefoelge må være null eller et positivt heltall. Mottatt rekkefoelge=%s"
+					.formatted(dokumentnummerPrefix(dokumentIdx), dokument.getRekkefoelge()));
 		}
 	}
 

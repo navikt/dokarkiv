@@ -76,6 +76,9 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@JoinColumn(name = "journalpost_id", nullable = false)
 	private Journalpost journalpost;
 
+	@Column(name = "rekkefoelge", length = 20)
+	private Integer rekkefoelge;
+
 	/**
 	 * Default constructor.
 	 */

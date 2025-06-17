@@ -38,6 +38,18 @@ public class Dokument {
 	)
 	private String brevkode;
 
+	@Schema(
+			description = """
+					Dokumentets plassering i listen. Kun relevant for vedlegg.
+					     
+					Første dokument i meldingen blir tilknyttet journalposten som hoveddokument (og vil få rekkefoelge=null). Dette feltet styrer rekkefølgen på de øvrige dokumentene ved uthenting av journalposten.
+					     
+					Tjenesten verifiserer ikke at duplikater ikke forekommer. Dersom flere vedlegg har samme rekkefoelge, vil rekkefølgen på disse være vilkårlig.
+					""",
+			example = "1"
+	)
+	private Integer rekkefoelge;
+
 	@Hidden
 	@Schema(
 			description = """
