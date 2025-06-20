@@ -88,7 +88,7 @@ final class FinnJournalpostSqlGenerator {
 			   "              ) t\n" +
 			   "         WHERE rownum <= :antallRader\n" +
 			   "       ) journalposter ON journalposter.journalpost_id = r.journalpostid\n" +
-			   "ORDER BY journalpostid DESC, dokumenter_tilknyttetsom ASC, dokumenter_jprelasjonid ASC, dokumenter_varianter_variantf ASC";
+			   "ORDER BY journalpostid DESC, dokumenter_tilknyttetsom ASC, dokumenter_rekkefoelge ASC nulls last, dokumenter_jprelasjonid ASC, dokumenter_varianter_variantf ASC";
 	}
 
 	private static String parallelHint(boolean brukParallelHint) {

@@ -17,6 +17,7 @@ import no.nav.dokarkiv.safintern.serializers.LocalDateTimeToOffsetDateTimeUTCSer
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -29,6 +30,9 @@ public interface DokumentinfoView {
 
 	@Mapping("dokumentInfo.dokumentInfoId")
 	Long getDokumentInfoId();
+
+	@Mapping("rekkefoelge")
+	Integer getRekkefoelge();
 
 	@Mapping("tilknyttetJournalpostSom")
 	TilknyttetJournalpostSomCode getTilknyttetSom();
@@ -82,14 +86,24 @@ public interface DokumentinfoView {
 		@Override
 		public int compare(DokumentinfoView o1, DokumentinfoView o2) {
 			if (o1.getTilknyttetSom() == o2.getTilknyttetSom()) {
-				if(o1.getId() == null && o2.getId() == null) {
-					return 1;
-				} else if (o1.getId() == null) {
-					return -1;
-				} else if (o2.getId() == null) {
-					return 1;
+				if (!Objects.equals(o1.getRekkefoelge(), o2.getRekkefoelge())) {
+					if (o1.getRekkefoelge() == null) {
+						return 1;
+					} else if (o2.getRekkefoelge() == null) {
+						return -1;
+					} else {
+						return o1.getRekkefoelge().compareTo(o2.getRekkefoelge());
+					}
+				} else {
+					if (o1.getId() == null && o2.getId() == null) {
+						return 1;
+					} else if (o1.getId() == null) {
+						return -1;
+					} else if (o2.getId() == null) {
+						return 1;
+					}
+					return o1.getId().compareTo(o2.getId());
 				}
-				return o1.getId().compareTo(o2.getId());
 			} else {
 				return o1.getTilknyttetSom().compareTo(o2.getTilknyttetSom());
 			}

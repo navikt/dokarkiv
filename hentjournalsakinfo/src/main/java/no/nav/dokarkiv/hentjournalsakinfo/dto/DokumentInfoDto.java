@@ -25,4 +25,5 @@ public class DokumentInfoDto {
 	List<LogiskVedleggDto> logiske;
 	String kategori;
 	boolean sensitivt;
+	Integer rekkefoelge;
 }

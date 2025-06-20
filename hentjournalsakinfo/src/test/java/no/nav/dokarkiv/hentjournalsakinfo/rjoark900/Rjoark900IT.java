@@ -233,17 +233,25 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 	}
 
 	@Test
-	public void shouldReturnVedleggOrderedByRelasjonId() {
+	public void shouldReturnVedleggOrderedByRekkefoelgeAndRelasjonId() {
 		populateInnsyn();
-		DokumentInfo vedlegg2 = createDokumentInfo();
-		dokumentInfoRepository.persist(vedlegg2);
+		DokumentInfo vedlegg4 = createDokumentInfo();
+		dokumentInfoRepository.persist(vedlegg4);
+		DokumentInfo vedlegg3 = createDokumentInfo();
+		dokumentInfoRepository.persist(vedlegg3);
 		DokumentInfo vedlegg1 = createDokumentInfo();
 		dokumentInfoRepository.persist(vedlegg1);
+		DokumentInfo vedlegg2 = createDokumentInfo();
+		dokumentInfoRepository.persist(vedlegg2);
 		Journalpost journalpost = createUniqueJournalpost();
 		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
-		createVedleggRelasjon(journalpost, vedlegg1);
+		createVedleggRelasjon(journalpost, vedlegg3);
 		journalpostTestRepository.persist(journalpost);
-		createVedleggRelasjon(journalpost, vedlegg2);
+		createVedleggRelasjon(journalpost, vedlegg4);
+		journalpostTestRepository.persist(journalpost);
+		createVedleggRelasjon(journalpost, vedlegg2, 2);
+		journalpostTestRepository.persist(journalpost);
+		createVedleggRelasjon(journalpost, vedlegg1, 1);
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -254,10 +262,12 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 
 		assertThat(responseTo.getTilgangJournalposter(), hasSize(1));
 		JournalpostDto journalpostDto = responseTo.getTilgangJournalposter().get(0);
-		assertThat(journalpostDto.getDokumenter(), hasSize(3));
+		assertThat(journalpostDto.getDokumenter(), hasSize(5));
 		assertThat(journalpostDto.getDokumenter().get(0).getDokumentInfoId(), is(hoveddokument.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(1).getDokumentInfoId(), is(vedlegg1.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(2).getDokumentInfoId(), is(vedlegg2.getDokumentInfoId()));
+		assertThat(journalpostDto.getDokumenter().get(3).getDokumentInfoId(), is(vedlegg3.getDokumentInfoId()));
+		assertThat(journalpostDto.getDokumenter().get(4).getDokumentInfoId(), is(vedlegg4.getDokumentInfoId()));
 		assertThat(journalpostDto.getInnsyn(), is(BRUK_STANDARDREGLER.name()));
 		assertThat(journalpostDto.getInnsynbeskrivelse(), is("beskrivelse av " + BRUK_STANDARDREGLER));
 	}

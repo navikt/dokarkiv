@@ -192,12 +192,17 @@ public class TestdataFactory {
 	}
 
 	public static JournalpostDokumentInfoRelasjon createDokumentInfoVedleggRelasjon(Journalpost journalpost) {
+		return createDokumentInfoVedleggRelasjon(journalpost, null);
+
+	}
+	public static JournalpostDokumentInfoRelasjon createDokumentInfoVedleggRelasjon(Journalpost journalpost, Integer rekkefoelge) {
 		DokumentInfo dokumentInfo = createDokumentInfo(FIL_UUID_ARKIV_VEDLEGG, FIL_UUID_PRODUKSJON_VEDLEGG);
 		dokumentInfo.setOriginalJournalpost(journalpost);
 
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
 				.journalpost(journalpost)
 				.dokumentInfo(dokumentInfo)
+				.rekkefoelge(rekkefoelge)
 				.tilknyttetJournalpostSom(VEDLEGG)
 				.skjermingType(null)
 				.build();
