@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 public class DokumentInfoDto {
 	Long dokumentInfoId;
-	@JsonIgnore
 	String tilknyttetSom;
 	@JsonIgnore
 	Long jpRelasjonId;
