@@ -14,7 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,11 +76,23 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 		assertThat(response.getBody(), containsString(expectedExceptionMessage));
 	}
 
-	@ParameterizedTest
-	@CsvSource(value = {
-			"-1,Mottok ugyldig verdi for antallDagerGamle. AntallDagerGamle:-1 ender opp utenfor spennet 01.01.2020 -> dagens dato",
-			"2000,Mottok ugyldig verdi for antallDagerGamle. AntallDagerGamle:2000 ender opp utenfor spennet 01.01.2020 -> dagens dato"})
-	public void shouldReturnBadRequestWhenUgyldigTema(int antallDagerGamle, String expectedExceptionMessage) {
+	@Test
+	public void shouldReturnBadRequestWhenDocumentAgeOutOfRange() {
+		Duration x = Duration.between(LocalDate.of(2020,1,1).atStartOfDay().toInstant(ZoneOffset.UTC), Instant.now());
+		int antallDagerGamle = Long.valueOf(x.toDays()).intValue() + 2;
+		String expectedExceptionMessage = "Mottok ugyldig verdi for antallDagerGamle. AntallDagerGamle:%d ender opp utenfor spennet 01.01.2020 -> dagens dato".formatted(antallDagerGamle);
+
+		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MOTTATTE_JOURNALPOSTER_ROLE));
+
+		ResponseEntity<String> response = restTemplate.exchange(createUri(PEN.name(), antallDagerGamle), GET, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(BAD_REQUEST));
+		assertThat(response.getBody(), containsString(expectedExceptionMessage));
+	}
+
+	@Test
+	public void shouldReturnBadRequestWhenDocumentAgeOutOfRangeTooSmall() {
+		int antallDagerGamle = -1;
+		String expectedExceptionMessage = "Mottok ugyldig verdi for antallDagerGamle. AntallDagerGamle:-1 ender opp utenfor spennet 01.01.2020 -> dagens dato";
 
 		var requestEntity = new HttpEntity<>(null, createHeadersWithServiceUserTokenAndRolesClaim(DOKSIKKERHETSNETT, FINN_MOTTATTE_JOURNALPOSTER_ROLE));
 
