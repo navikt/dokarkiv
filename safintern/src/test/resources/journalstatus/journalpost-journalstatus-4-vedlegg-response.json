@@ -83,7 +83,7 @@
           "tittel": "TITTEL"
         },
         {
-          "dokumentInfoId": dokumentInfoId_vedlegg_replace,
+          "dokumentInfoId": dokumentInfoId_vedleggc_replace,
           "brevkode": "Brevkode",
           "dokumenttypeId": "0000001",
           "ferdigDato": "2023-08-11T12:01:01.001Z",
@@ -110,10 +110,11 @@
           "logiskVedlegg": [
             {
               "tittel": "Henvendelse fra lege",
-              "vedleggId": logiskVedleggId_vedlegg_replace
+              "vedleggId": logiskVedleggId_vedleggc_replace
             }
           ],
           "originalJournalpostId": journalpostId_replace,
+          "rekkefoelge": 1,
           "sensitivt": true,
           "skjerming": "POL",
           "status": "FERDIGSTILT",
@@ -149,6 +150,45 @@
             {
               "tittel": "Henvendelse fra lege",
               "vedleggId": logiskVedleggId_vedleggb_replace
+            }
+          ],
+          "originalJournalpostId": journalpostId_replace,
+          "rekkefoelge": 2,
+          "sensitivt": true,
+          "skjerming": "POL",
+          "status": "FERDIGSTILT",
+          "tilknyttetSom": "VEDLEGG",
+          "tittel": "TITTEL"
+        },
+        {
+          "dokumentInfoId": dokumentInfoId_vedlegg_replace,
+          "brevkode": "Brevkode",
+          "dokumenttypeId": "0000001",
+          "ferdigDato": "2023-08-11T12:01:01.001Z",
+          "fildetaljer": [
+            {
+              "format": "ARKIV",
+              "navn": "navn",
+              "skjerming": "POL",
+              "stoerrelse": "13",
+              "type": "PDF",
+              "uuid": "filUuidVedleggArkiv"
+            },
+            {
+              "format": "PRODUKSJON",
+              "navn": "navn",
+              "skjerming": "POL",
+              "stoerrelse": "13",
+              "type": "JSON",
+              "uuid": "filUuidVedleggProduksjon"
+            }
+          ],
+          "kassert": false,
+          "kategori": "ES",
+          "logiskVedlegg": [
+            {
+              "tittel": "Henvendelse fra lege",
+              "vedleggId": logiskVedleggId_vedlegg_replace
             }
           ],
           "originalJournalpostId": journalpostId_replace,

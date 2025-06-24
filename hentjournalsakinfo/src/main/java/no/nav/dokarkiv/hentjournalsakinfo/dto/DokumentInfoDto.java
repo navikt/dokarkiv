@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 public class DokumentInfoDto {
 	Long dokumentInfoId;
-	@JsonIgnore
 	String tilknyttetSom;
 	@JsonIgnore
 	Long jpRelasjonId;
@@ -25,4 +24,5 @@ public class DokumentInfoDto {
 	List<LogiskVedleggDto> logiske;
 	String kategori;
 	boolean sensitivt;
+	Integer rekkefoelge;
 }

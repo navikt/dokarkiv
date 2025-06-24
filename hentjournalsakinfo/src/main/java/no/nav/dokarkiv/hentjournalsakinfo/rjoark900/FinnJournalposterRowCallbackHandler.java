@@ -225,6 +225,7 @@ public class FinnJournalposterRowCallbackHandler implements RowCallbackHandler {
 		dokumentInfoDto.setKassert(rs.getBoolean("dokumenter_kassert"));
 		dokumentInfoDto.setKategori(rs.getString("dokumenter_kategori"));
 		dokumentInfoDto.setSensitivt(rs.getBoolean("dokumenter_sensitivt"));
+		dokumentInfoDto.setRekkefoelge(rs.getObject("dokumenter_rekkefoelge", Integer.class));
 		dokumentInfoDto.setVarianter(new ArrayList<>());
 		dokumentInfoDto.setLogiske(new ArrayList<>());
 		addPossibleVariant(journalpostId, dokumentInfoDto, rs);

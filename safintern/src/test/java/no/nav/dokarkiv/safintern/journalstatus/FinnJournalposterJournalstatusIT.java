@@ -20,6 +20,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -179,12 +180,13 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	}
 
 	@Test
-	public void shouldReturnVedleggOrderedByRelasjonId() {
+	public void shouldReturnVedleggOrderedByRekkefoelgeAndRelasjonId() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
 		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
 		journalpost.setJournalstatus(JournalStatusCode.U);
-		createDokumentInfoVedleggRelasjon(journalpost);
+		createDokumentInfoVedleggRelasjon(journalpost, 2);
+		createDokumentInfoVedleggRelasjon(journalpost, 1);
 		setSkjermingVedlegg(journalpost);
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
@@ -194,7 +196,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		ResponseEntity<String> response = finnJournalposterStatusRest(finnJournalposterStatusRequestTo);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(journalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-3-vedlegg-response.json")));
+		assertThat(response.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(journalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-4-vedlegg-response.json")));
 	}
 
 	private FinnJournalposterStatusRequest createRequest(JournalStatusCode journalStatusCode) {
@@ -230,15 +232,20 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		assertThat(hoved).isNotNull();
 		assertThat(vedlegg).isNotNull();
 
-		Optional<DokumentInfo> vedlegg2 = foerste.getJournalpostDokumentInfoRelasjonerAdmin().stream()
+		List<DokumentInfo> ytterligereVedlegg = foerste.getJournalpostDokumentInfoRelasjonerAdmin().stream()
 				.filter(JournalpostDokumentInfoRelasjon::isVedlegg)
 				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
+				.sorted(Comparator.comparing(DokumentInfo::getDokumentInfoId))
 				.filter(dok -> !dok.getDokumentInfoId().equals(vedlegg.getDokumentInfoId()))
-				.findFirst();
+				.toList();
+		Optional<DokumentInfo> vedlegg2 = ytterligereVedlegg.stream().findFirst();
+		Optional<DokumentInfo> vedlegg3 = ytterligereVedlegg.stream().skip(1).findFirst();
 		String replace = responseTemplate
 				.replace("nextpage_replace", nextPage != null ? nextPage : generateNextPage(currentPage, foerste))
 				.replace("dokumentInfoId_vedleggb_replace", vedlegg2.map(DokumentInfo::getDokumentInfoId).map(String::valueOf).orElse(""))
 				.replace("logiskVedleggId_vedleggb_replace", vedlegg2.map(x -> x.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString()).orElse(""))
+				.replace("dokumentInfoId_vedleggc_replace", vedlegg3.map(DokumentInfo::getDokumentInfoId).map(String::valueOf).orElse(""))
+				.replace("logiskVedleggId_vedleggc_replace", vedlegg3.map(x -> x.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString()).orElse(""))
 				.replace("count_total_replace", "" + totalcount)
 				.replace("count_replace", "" + count)
 				.replace("current_page_replace", "" + currentPage)

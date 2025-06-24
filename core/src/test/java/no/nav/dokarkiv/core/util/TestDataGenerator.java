@@ -288,10 +288,14 @@ public class TestDataGenerator {
 	}
 
 	public static JournalpostDokumentInfoRelasjon createVedleggRelasjon(Journalpost journalpost, DokumentInfo dokumentInfo) {
+		return createVedleggRelasjon(journalpost, dokumentInfo, null);
+	}
 
+	public static JournalpostDokumentInfoRelasjon createVedleggRelasjon(Journalpost journalpost, DokumentInfo dokumentInfo, Integer rekkefoelge) {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
 				.journalpost(journalpost)
 				.dokumentInfo(dokumentInfo)
+				.rekkefoelge(rekkefoelge)
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.build();
 

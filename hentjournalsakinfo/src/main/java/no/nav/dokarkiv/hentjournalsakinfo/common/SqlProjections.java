@@ -53,6 +53,7 @@ public final class SqlProjections {
 					d.dokument_info_id              AS dokumenter_dokumentinfoid,
 					rel.k_tilkn_jp_som              AS dokumenter_tilknyttetsom,
 					rel.jp_dok_info_rel_id          AS dokumenter_jprelasjonid,
+					rel.rekkefoelge                 AS dokumenter_rekkefoelge,
 					d.k_dokument_s                  AS dokumenter_dokumentstatus,
 					d.dato_dok_ferdig               AS dokumenter_datoferdigstilt,
 					d.brev_kode                     AS dokumenter_brevkode,
