@@ -85,6 +85,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
+import static no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdater.DELETE_MARKER;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.LOVLIGE_INNSYNSKODER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -1002,7 +1003,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldDeleteAvsenderMottaker() {
+	public void shouldDeleteAvsenderMottakerIdIfDeleteMarkerSet() {
 		clearSakRepository();
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen")
@@ -1013,19 +1014,20 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
-				.avsenderMottaker(AvsenderMottaker.builder().id(" ").build())
+				.avsenderMottaker(AvsenderMottaker.builder().id(DELETE_MARKER).build())
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 
 		restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getAvsenderMottaker()).isNotNull();
 		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isNull();
 		assertThat(journalpostOppdatert.getAvsenderMottakerIdType()).isNull();
 	}
 
 	@Test
-	public void shouldNotDeleteAvsenderMottaker() {
+	public void shouldNotDeleteAvsenderMottakerIdIfBlank() {
 		clearSakRepository();
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen")
@@ -1042,6 +1044,54 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
 
 		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
+		assertThat(journalpostOppdatert.getAvsenderMottakerIdType()).isEqualTo(AvsenderMottakerIdTypeCode.FNR);
+	}
+
+	@Test
+	public void shouldDeleteAvsenderMottakerNavnIfDeleteMarkerSet() {
+		clearSakRepository();
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen")
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR)
+				.mottakskanal(MottaksKanalCode.SKAN_IM));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder().navn(DELETE_MARKER).build())
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getAvsenderMottaker()).isNull();
+		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
+		assertThat(journalpostOppdatert.getAvsenderMottakerIdType()).isEqualTo(AvsenderMottakerIdTypeCode.FNR);
+	}
+
+	@Test
+	public void shouldNotDeleteAvsenderMottakerNavnIfBlank() {
+		clearSakRepository();
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen")
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR)
+				.mottakskanal(MottaksKanalCode.SKAN_IM));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder().navn("").build())
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		Journalpost journalpostOppdatert = journalpostTestRepository.findById(journalpostId).get();
+		assertThat(journalpostOppdatert.getAvsenderMottaker()).isEqualTo("Bjarne Betjent");
 		assertThat(journalpostOppdatert.getAvsenderMottakerId()).isEqualTo("1");
 		assertThat(journalpostOppdatert.getAvsenderMottakerIdType()).isEqualTo(AvsenderMottakerIdTypeCode.FNR);
 	}
@@ -1197,8 +1247,10 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		assertThat(journalpostOppdatert.getInnhold()).isEqualTo("Gammel tittel");
 	}
 
-	@Test
-	public void shouldUsePdlNameForAvsenderMottakerNameNull() {
+	@ParameterizedTest
+	@ValueSource(strings = {"", DELETE_MARKER})
+	@NullSource
+	public void shouldUsePdlNameForAvsenderMottakerName(String avsenderMottakerNavn) {
 		clearSakRepository();
 		restStsToken();
 		stubAzure();
@@ -1212,7 +1264,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
 				.tema(TEMA_SYM)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(TestUtils.FNR).build())
-				.avsenderMottaker(AvsenderMottaker.builder().id("01234567891").idType(AvsenderMottakerIdType.FNR).build())
+				.avsenderMottaker(AvsenderMottaker.builder().navn(avsenderMottakerNavn).id("01234567891").idType(AvsenderMottakerIdType.FNR).build())
 				.build();
 		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
 

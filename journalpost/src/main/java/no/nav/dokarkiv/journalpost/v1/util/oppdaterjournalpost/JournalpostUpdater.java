@@ -47,7 +47,7 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 @Component
 public class JournalpostUpdater {
 
-	private static final String DELETE_MARKER = " ";
+	public static final String DELETE_MARKER = " ";
 	private final BrukerRepository brukerRepository;
 	private final IdentConsumer identConsumer;
 
@@ -121,7 +121,7 @@ public class JournalpostUpdater {
 
 	private void updateReturInfo(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (oppdaterJournalpostRequest.getDatoRetur() != null &&
-				!oppdaterJournalpostRequest.getDatoRetur().atStartOfDay().equals(journalpost.getAvsendtReturDato())) {
+			!oppdaterJournalpostRequest.getDatoRetur().atStartOfDay().equals(journalpost.getAvsendtReturDato())) {
 			journalpost.setAvsendtReturDato(oppdaterJournalpostRequest.getDatoRetur().atStartOfDay());
 			journalpost.setAntallRetur(journalpost.getAntallRetur() == null ? 1 : (journalpost.getAntallRetur() + 1));
 			endret.setEndretFlagg(true);
@@ -129,7 +129,6 @@ public class JournalpostUpdater {
 	}
 
 	private void updateDatoMottatt(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
-
 		if (JournalpostTypeCode.I.equals(journalpost.getJournalposttype())) {
 			if (oppdaterJournalpostRequest.getDatoMottatt() == null) {
 				return;
@@ -179,28 +178,30 @@ public class JournalpostUpdater {
 	private void updateAvsenderMottaker(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
 		if (oppdaterJournalpostRequest.getAvsenderMottaker() != null) {
 			AvsenderMottaker ny = oppdaterJournalpostRequest.getAvsenderMottaker();
-			if (ny.getId() != null) {
-				if (ny.getIdType() != null &&
-						oversettAvsenderMottakerIdType(ny.getIdType()) != journalpost.getAvsenderMottakerIdType()) {
+			final String nyId = ny.getId();
+			if (nyId != null) {
+				final AvsenderMottakerIdType nyIdType = ny.getIdType();
+				if (nyIdType != null &&
+					oversettAvsenderMottakerIdType(nyIdType) != journalpost.getAvsenderMottakerIdType()) {
 					String gammelAvsenderMottakerType = journalpost.getAvsenderMottakerIdType() == null ? "" : journalpost.getAvsenderMottakerIdType().toString();
 					endret.add(
 							JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE,
 							gammelAvsenderMottakerType,
-							ny.getIdType().toString()
+							nyIdType.toString()
 					);
-					journalpost.setAvsenderMottakerIdType(oversettAvsenderMottakerIdType(ny.getIdType()));
+					journalpost.setAvsenderMottakerIdType(oversettAvsenderMottakerIdType(nyIdType));
 					endret.setEndretFlagg(true);
 				}
-				if (!ny.getId().equalsIgnoreCase(journalpost.getAvsenderMottakerId()) && !ny.getId().isBlank()) {
+				if (!nyId.equalsIgnoreCase(journalpost.getAvsenderMottakerId()) && !nyId.isBlank()) {
 					endret.add(
 							JOURNALPOST_AVSENDER_MOTTAKER_ID,
 							journalpost.getAvsenderMottakerId(),
-							oppdaterJournalpostRequest.getAvsenderMottaker().getId()
+							nyId
 					);
-					journalpost.setAvsenderMottakerId(ny.getId());
+					journalpost.setAvsenderMottakerId(nyId);
 					endret.setEndretFlagg(true);
 				}
-				if (DELETE_MARKER.equals(ny.getId())) {
+				if (DELETE_MARKER.equals(nyId)) {
 					nullUtAvsenderMottakerIdOgAvsenderMottakerIdType(journalpost, endret);
 				}
 			}
@@ -209,16 +210,22 @@ public class JournalpostUpdater {
 				journalpost.setLand(ny.getLand());
 				endret.setEndretFlagg(true);
 			}
-			if (isNotBlank(oppdaterJournalpostRequest.getAvsenderMottaker().getNavn())) {
-				oppdaterAvsenderMottaker(endret, journalpost, oppdaterJournalpostRequest.getAvsenderMottaker().getNavn());
-			} else if (oppdaterJournalpostRequest.getAvsenderMottaker() != null && oppdaterJournalpostRequest.getAvsenderMottaker().getId() != null && oppdaterJournalpostRequest.getAvsenderMottaker().getIdType() != null) {
-				if (oversettAvsenderMottakerIdType(oppdaterJournalpostRequest.getAvsenderMottaker().getIdType()).equals(AvsenderMottakerIdTypeCode.FNR)) {
-					String navn = identConsumer.hentPersonnavn(oppdaterJournalpostRequest.getAvsenderMottaker().getId(), oppdaterJournalpostRequest.getTema());
-					oppdaterAvsenderMottaker(endret, journalpost, navn);
 
-				}
+			if (DELETE_MARKER.equals(ny.getNavn())) {
+				nullUtAvsenderMottakerNavn(journalpost, endret);
+			}
+
+			if (isNotBlank(ny.getNavn())) {
+				oppdaterAvsenderMottakerNavn(endret, journalpost, ny.getNavn());
+			} else if (sjekkAtAvsenderMottakerIdTypeFnrOgIkkeMarkertSlettet(ny)) {
+				String navn = identConsumer.hentPersonnavn(nyId, oppdaterJournalpostRequest.getTema());
+				oppdaterAvsenderMottakerNavn(endret, journalpost, navn);
 			}
 		}
+	}
+
+	private boolean sjekkAtAvsenderMottakerIdTypeFnrOgIkkeMarkertSlettet(AvsenderMottaker ny) {
+		return ny.getId() != null && AvsenderMottakerIdTypeCode.FNR.equals(oversettAvsenderMottakerIdType(ny.getIdType())) && !DELETE_MARKER.equals(ny.getId());
 	}
 
 	private static void nullUtAvsenderMottakerIdOgAvsenderMottakerIdType(Journalpost journalpost, ChangeTracker endret) {
@@ -239,7 +246,17 @@ public class JournalpostUpdater {
 		endret.setEndretFlagg(true);
 	}
 
-	private void oppdaterAvsenderMottaker(ChangeTracker endret, Journalpost journalpost, String navn) {
+	private static void nullUtAvsenderMottakerNavn(Journalpost journalpost, ChangeTracker endret) {
+		endret.add(
+				JOURNALPOST_AVSENDER_MOTTAKER,
+				journalpost.getAvsenderMottaker(),
+				null
+		);
+		journalpost.setAvsenderMottaker(null);
+		endret.setEndretFlagg(true);
+	}
+
+	private static void oppdaterAvsenderMottakerNavn(ChangeTracker endret, Journalpost journalpost, String navn) {
 		if (isNotBlank(navn)) {
 			endret.add(
 					JOURNALPOST_AVSENDER_MOTTAKER,
@@ -252,18 +269,15 @@ public class JournalpostUpdater {
 	}
 
 	private AvsenderMottakerIdTypeCode oversettAvsenderMottakerIdType(AvsenderMottakerIdType idType) {
-		switch (idType) {
-			case FNR:
-				return AvsenderMottakerIdTypeCode.FNR;
-			case HPRNR:
-				return AvsenderMottakerIdTypeCode.HPRNR;
-			case ORGNR:
-				return AvsenderMottakerIdTypeCode.ORGNR;
-			case UTL_ORG:
-				return AvsenderMottakerIdTypeCode.UTL_ORG;
-			default:
-				return null;
+		if (idType == null) {
+			return null;
 		}
+		return switch (idType) {
+			case FNR -> AvsenderMottakerIdTypeCode.FNR;
+			case HPRNR -> AvsenderMottakerIdTypeCode.HPRNR;
+			case ORGNR -> AvsenderMottakerIdTypeCode.ORGNR;
+			case UTL_ORG -> AvsenderMottakerIdTypeCode.UTL_ORG;
+		};
 	}
 
 	private void updateTema(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
