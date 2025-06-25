@@ -48,6 +48,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
+import static no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdater.DELETE_MARKER;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -343,7 +344,7 @@ public class TestUtils {
 
 	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId() {
 		return OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(createAvsenderMottaker(" ", AvsenderMottakerIdType.FNR))
+				.avsenderMottaker(createAvsenderMottaker(null, DELETE_MARKER, AvsenderMottakerIdType.FNR))
 				.bruker(createBrukerPerson())
 				.sak(createSak())
 				.tema(TEMA_FOR)
@@ -367,13 +368,12 @@ public class TestUtils {
 	}
 
 	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithoutWrongAvsenderMottakerId() {
+		return createPutOppdaterJournalpostRequestWithAvsenderMottaker(createAvsenderMottaker(AVSENDER_NAVN, "", AvsenderMottakerIdType.FNR));
+	}
+
+	public static OppdaterJournalpostRequest createPutOppdaterJournalpostRequestWithAvsenderMottaker(AvsenderMottaker avsenderMottaker) {
 		return OppdaterJournalpostRequest.builder()
-				.avsenderMottaker(AvsenderMottaker.builder()
-						.idType(AvsenderMottakerIdType.FNR)
-						.id("")
-						.navn(AVSENDER_NAVN)
-						.land(AVSENDER_MOTTAKER_LAND)
-						.build())
+				.avsenderMottaker(avsenderMottaker)
 				.bruker(createBrukerPerson())
 				.sak(createSak())
 				.tema(TEMA_FOR)
@@ -398,32 +398,26 @@ public class TestUtils {
 	}
 
 	public static AvsenderMottaker createAvsenderMottakerPerson() {
-		return AvsenderMottaker.builder()
-				.navn(AVSENDER_NAVN)
-				.id(AVSENDER_ID_PERSON)
-				.idType(AvsenderMottakerIdType.FNR)
-				.land(AVSENDER_MOTTAKER_LAND)
-				.build();
+		return createAvsenderMottaker(AVSENDER_NAVN, AVSENDER_ID_PERSON, AvsenderMottakerIdType.FNR);
 	}
 
 	public static AvsenderMottaker createAvsenderMottakerPersonWithoutNavnAndIdType() {
-		return AvsenderMottaker.builder()
-				.id(AVSENDER_ID_PERSON)
-				.build();
+		return createAvsenderMottaker(null, AVSENDER_ID_PERSON, null);
 	}
 
 	public static AvsenderMottaker createAvsenderMottakerPersonWithoutNavn() {
-		return AvsenderMottaker.builder()
-				.id(AVSENDER_ID_PERSON)
-				.idType(AvsenderMottakerIdType.FNR)
-				.build();
+		return createAvsenderMottaker(null, AVSENDER_ID_PERSON, AvsenderMottakerIdType.FNR);
 	}
 
 	public static AvsenderMottaker createAvsenderMottaker(String id, AvsenderMottakerIdType idType) {
+		return createAvsenderMottaker(AVSENDER_NAVN, id, idType);
+	}
+
+	public static AvsenderMottaker createAvsenderMottaker(String navn, String id, AvsenderMottakerIdType idType) {
 		return AvsenderMottaker.builder()
-				.idType(idType)
+				.navn(navn)
 				.id(id)
-				.navn(AVSENDER_NAVN)
+				.idType(idType)
 				.land(AVSENDER_MOTTAKER_LAND)
 				.build();
 	}

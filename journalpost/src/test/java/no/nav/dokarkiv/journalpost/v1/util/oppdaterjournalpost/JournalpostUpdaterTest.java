@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import org.junit.jupiter.api.Test;
@@ -22,13 +23,13 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_UT
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT_1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.MOTTAT_DATO;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostAvsenderMottakerKunLandRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestUtenDatoMottat;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithDatoMottat;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottaker;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithoutWrongAvsenderMottakerId;
+import static no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdater.DELETE_MARKER;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -96,41 +97,57 @@ public class JournalpostUpdaterTest {
 	@Test
 	public void shouldRemoveAvsenderMottakerIdType() throws UgyldigAksjonsLoggException {
 		MDC.put(MDC_USER_NAME, "Test Testesen");
-		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithoutAvsenderMottakerId();
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithAvsenderMottaker(createAvsenderMottaker(null, DELETE_MARKER, AvsenderMottakerIdType.FNR));
 
 		journalpost = TestUtils.createJournalpostForOppdatering();
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
 		assertEquals("Test Testesen", journalpost.getEndretAvNavn());
+		assertEquals(AVSENDER_NAVN, journalpost.getAvsenderMottaker());
 		assertNull(journalpost.getAvsenderMottakerId());
 		assertNull(journalpost.getAvsenderMottakerIdType());
 	}
 
 	@Test
-	public void shouldNotChangeAvsenderMottaker() throws UgyldigAksjonsLoggException {
-		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithoutAvsenderMottaker();
+	public void shouldRemoveAvsenderMottakerNavn() throws UgyldigAksjonsLoggException {
+		MDC.put(MDC_USER_NAME, "Test Testesen");
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithAvsenderMottaker(createAvsenderMottaker(DELETE_MARKER, null, null));
 
 		journalpost = TestUtils.createJournalpostForOppdatering();
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		assertEquals(journalpost.getAvsenderMottakerId(), AVSENDER_ID_PERSON);
-		assertEquals(journalpost.getAvsenderMottaker(), AVSENDER_NAVN);
+		assertEquals("Test Testesen", journalpost.getEndretAvNavn());
+		assertNull(journalpost.getAvsenderMottaker());
+		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
+		assertNull(journalpost.getAvsenderMottakerIdType());
+	}
+
+	@Test
+	public void shouldNotChangeAvsenderMottaker() throws UgyldigAksjonsLoggException {
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithAvsenderMottaker(null);
+
+		journalpost = TestUtils.createJournalpostForOppdatering();
+
+		updater.updateFields(journalpost, oppdaterJournalpostRequest);
+
+		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
+		assertEquals(AVSENDER_NAVN, journalpost.getAvsenderMottaker());
 	}
 
 	@Test
 	public void shouldNotChangeAvsenderMottakerIdWithWrongDeleteMarker() throws UgyldigAksjonsLoggException {
-		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithoutWrongAvsenderMottakerId();
+		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithAvsenderMottaker(createAvsenderMottaker(AVSENDER_NAVN, "", AvsenderMottakerIdType.FNR));
 
 		journalpost = TestUtils.createJournalpostForOppdatering();
 		assertNull(journalpost.getAvsenderMottakerIdType());
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		assertEquals(journalpost.getAvsenderMottakerId(), AVSENDER_ID_PERSON);
-		assertEquals(journalpost.getAvsenderMottaker(), AVSENDER_NAVN);
-		assertEquals(journalpost.getAvsenderMottakerIdType(), AvsenderMottakerIdTypeCode.FNR);
+		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
+		assertEquals(AVSENDER_NAVN, journalpost.getAvsenderMottaker());
+		assertEquals(AvsenderMottakerIdTypeCode.FNR, journalpost.getAvsenderMottakerIdType());
 	}
 	@Test
 	public void shouldUpdateJPMottattDatoWithNullWhenJpErInngaaendeAndRequestMottattDatoNull() throws UgyldigAksjonsLoggException {
@@ -165,8 +182,8 @@ public class JournalpostUpdaterTest {
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
 		assertThat(journalpost.getBrukere(), hasSize(1));
-		assertEquals(journalpost.getAvsenderMottaker(), AVSENDER_NAVN);
-		assertEquals(journalpost.getAvsenderMottakerId(), AVSENDER_ID_PERSON);
-		assertEquals(journalpost.getLand(), AVSENDER_MOTTAKER_UTLAND);
+		assertEquals(AVSENDER_NAVN, journalpost.getAvsenderMottaker());
+		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
+		assertEquals(AVSENDER_MOTTAKER_UTLAND, journalpost.getLand());
 	}
 }
