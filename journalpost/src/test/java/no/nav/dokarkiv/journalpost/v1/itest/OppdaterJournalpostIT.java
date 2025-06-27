@@ -85,7 +85,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createFagsak;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createGenerellSak;
-import static no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdater.DELETE_MARKER;
+import static no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.AvsenderMottakerUpdater.DELETE_MARKER;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.LOVLIGE_INNSYNSKODER;
 import static org.assertj.core.api.Assertions.assertThat;

@@ -48,7 +48,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
-import static no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.JournalpostUpdater.DELETE_MARKER;
+import static no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.AvsenderMottakerUpdater.DELETE_MARKER;
 
 /**
  * @author Sigurd Midttun, Visma Consulting.
@@ -414,11 +414,15 @@ public class TestUtils {
 	}
 
 	public static AvsenderMottaker createAvsenderMottaker(String navn, String id, AvsenderMottakerIdType idType) {
+		return createAvsenderMottaker(navn, id, idType, AVSENDER_MOTTAKER_LAND);
+	}
+
+	public static AvsenderMottaker createAvsenderMottaker(String navn, String id, AvsenderMottakerIdType idType, String land) {
 		return AvsenderMottaker.builder()
 				.navn(navn)
 				.id(id)
 				.idType(idType)
-				.land(AVSENDER_MOTTAKER_LAND)
+				.land(land)
 				.build();
 	}
 

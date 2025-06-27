@@ -17,10 +17,10 @@ public class ChangeTracker {
 		changes = new ArrayList<>();
 	}
 
-	public void add(ArkivElementEndringTO endring) {
+	private void add(ArkivElementEndringTO endring) {
 		if (endring != null) {
 			if (endring.getFraVerdi() != null) {
-				if (endring.getTilVerdi() != null && !endring.getFraVerdi().equals(endring.getTilVerdi())) {
+				if (!endring.getFraVerdi().equals(endring.getTilVerdi())) {
 					changes.add(endring);
 					endretFlagg = true;
 				}
