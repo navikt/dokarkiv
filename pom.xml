@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.3</version>
+		<version>3.5.3</version>
 	</parent>
 
 	<groupId>no.nav.dokarkiv</groupId>
@@ -35,15 +35,15 @@
 		<commons-collections4.version>4.5.0</commons-collections4.version>
 		<logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
-		<libraries-bom.version>26.60.0</libraries-bom.version>
-		<tink.version>1.17.0</tink.version>
+		<libraries-bom.version>26.62.0</libraries-bom.version>
+		<tink.version>1.18.0</tink.version>
 		<tink-gcpkms.version>1.10.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.14</blaze-persistence.version>
 		<commons-io.version>2.19.0</commons-io.version>
-		<microsoft-graph.version>6.38.0</microsoft-graph.version>
+		<microsoft-graph.version>6.42.1</microsoft-graph.version>
 		<azure-identity.version>1.16.0</azure-identity.version>
 		<!-- https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot -->
-		<springdoc-openapi-starter-webmvc-ui.version>2.8.5</springdoc-openapi-starter-webmvc-ui.version>
+		<springdoc-openapi-starter-webmvc-ui.version>2.8.9</springdoc-openapi-starter-webmvc-ui.version>
 
 		<!-- NAV -->
 		<token-support.version>5.0.19</token-support.version>
@@ -55,7 +55,7 @@
 		<datasource-proxy-spring-boot-starter.version>1.11.0</datasource-proxy-spring-boot-starter.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
-		<spring-cloud-contract-wiremock.version>4.2.0</spring-cloud-contract-wiremock.version>
+		<spring-cloud-contract-wiremock.version>4.3.0</spring-cloud-contract-wiremock.version>
 		<!-- Plugins -->
 		<maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
 	</properties>
