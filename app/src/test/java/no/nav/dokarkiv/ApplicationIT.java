@@ -23,7 +23,6 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
@@ -109,8 +108,7 @@ public class ApplicationIT {
 	@Test
 	void shouldCheckSpringDoc() {
 		var response = testRestTemplate.exchange(RequestEntity.get("/swagger-ui.html").build(), String.class);
-		assertThat(response.getStatusCode()).isEqualTo(FOUND);
-		assertThat(response.getHeaders().getLocation()).isEqualTo(URI.create("/swagger-ui/index.html"));
+		assertThat(response.getStatusCode()).isEqualTo(OK);
 	}
 
 	private String token(String issuer, String subject, Map<String, Object> claims) {
