@@ -24,6 +24,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class JournalpostUpdaterTest {
@@ -50,6 +53,7 @@ public class JournalpostUpdaterTest {
 		assertThat(journalpost.getFagomrade().name(), is(oppdaterJournalpostRequest.getTema()));
 		assertThat(journalpost.getInnhold(), is(oppdaterJournalpostRequest.getTittel()));
 		assertThat(journalpost.getBrukere(), hasSize(1));
+		verify(avsenderMottakerUpdaterMock).updateAvsenderMottaker(eq(journalpost), eq(oppdaterJournalpostRequest), any(ChangeTracker.class));
 	}
 
 	@Test

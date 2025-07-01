@@ -35,19 +35,6 @@ public class AvsenderMottakerUpdater {
 		}
 	}
 
-	private void oppdaterAvsenderMottakerNavn(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret, AvsenderMottaker ny) {
-		if (DELETE_MARKER.equals(ny.getNavn())) {
-			nullUtAvsenderMottakerNavn(journalpost, endret);
-		}
-
-		if (isNotBlank(ny.getNavn())) {
-			oppdaterAvsenderMottakerNavn(endret, journalpost, ny.getNavn());
-		} else if (sjekkAtAvsenderMottakerIdTypeFnrOgIkkeMarkertSlettet(ny)) {
-			String navn = identConsumer.hentPersonnavn(ny.getId(), oppdaterJournalpostRequest.getTema());
-			oppdaterAvsenderMottakerNavn(endret, journalpost, navn);
-		}
-	}
-
 	private void oppdaterAvsenderMottakerIdOgIdType(Journalpost journalpost, ChangeTracker endret, AvsenderMottaker ny) {
 		final String nyId = ny.getId();
 		AvsenderMottakerIdTypeCode nyIdTypeCode = oversettAvsenderMottakerIdType(ny.getIdType());
@@ -62,13 +49,26 @@ public class AvsenderMottakerUpdater {
 		}
 	}
 
+	private void oppdaterAvsenderMottakerNavn(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret, AvsenderMottaker ny) {
+		if (DELETE_MARKER.equals(ny.getNavn())) {
+			nullUtAvsenderMottakerNavn(journalpost, endret);
+		}
+
+		if (isNotBlank(ny.getNavn())) {
+			oppdaterAvsenderMottakerNavn(endret, journalpost, ny.getNavn());
+		} else if (isIdOgIdTypeFnrSatt(ny)) {
+			String navn = identConsumer.hentPersonnavn(ny.getId(), oppdaterJournalpostRequest.getTema());
+			oppdaterAvsenderMottakerNavn(endret, journalpost, navn);
+		}
+	}
+
 	private static void oppdaterAvsenderMottakerLand(Journalpost journalpost, ChangeTracker endret, AvsenderMottaker ny) {
 		journalpost.setLand(ny.getLand());
 		endret.setEndretFlagg(true);
 	}
 
-	private boolean sjekkAtAvsenderMottakerIdTypeFnrOgIkkeMarkertSlettet(AvsenderMottaker ny) {
-		return ny.getId() != null && AvsenderMottakerIdTypeCode.FNR.equals(oversettAvsenderMottakerIdType(ny.getIdType())) && !DELETE_MARKER.equals(ny.getId());
+	private boolean isIdOgIdTypeFnrSatt(AvsenderMottaker ny) {
+		return ny.getId() != null && !DELETE_MARKER.equals(ny.getId()) && AvsenderMottakerIdTypeCode.FNR.equals(oversettAvsenderMottakerIdType(ny.getIdType()));
 	}
 
 	private static void nullUtAvsenderMottakerIdOgAvsenderMottakerIdType(Journalpost journalpost, ChangeTracker endret) {
