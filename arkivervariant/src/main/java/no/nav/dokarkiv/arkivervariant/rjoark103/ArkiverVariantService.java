@@ -13,7 +13,6 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
-import org.apache.commons.codec.binary.Base64;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -45,10 +44,7 @@ public class ArkiverVariantService {
 						request.getDokumentInfoId())));
 
 		sjekkOmVariantFinnes(dokumentInfo, request.getVariant());
-
-		byte[] decodedFil = base64ToByte(request.getFil());
-		FilDetaljer filDetaljer = lagreVariantFormat(dokumentInfo, request.getVariant(), decodedFil, request.getFilnavn(), request.getFilType());
-
+		FilDetaljer filDetaljer = lagreVariantFormat(dokumentInfo, request.getVariant(), request.getFil(), request.getFilnavn(), request.getFilType());
 		lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ARKIVERING, request.getDokumentInfoId(), hjemmel, melding, utfoertAv,
 				Arrays.asList(
 						ArkivElementEndringTO.builder()
@@ -77,10 +73,6 @@ public class ArkiverVariantService {
 			throw new VariantFormatAlreadyExistsException(format("Det finnes allerede en variant: %s for dokumentInfoId: %s", variantFormatCode
 					.name(), dokumentInfo.getDokumentInfoId()));
 		}
-	}
-
-	private byte[] base64ToByte(String dokumentFilBase64) {
-		return Base64.decodeBase64(dokumentFilBase64);
 	}
 
 	private FilDetaljer lagreVariantFormat(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, byte[] fil, String filnavn, FilTypeCode filTypeCode) {

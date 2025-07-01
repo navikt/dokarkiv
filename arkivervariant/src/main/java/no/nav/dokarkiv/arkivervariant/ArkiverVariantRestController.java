@@ -52,7 +52,7 @@ public class ArkiverVariantRestController {
 				.getDokumentInfoId());
 		RequestContextUtil.createAndSetUsername(MDC.get(MDCConstants.MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		ArkiverVariantResponse respons = arkiverVariantService.arkiverVariant(request, melding, utfoertAv, hjemmel);
-		log.info("{} har arkivert variant= {} med dokumentInfoId={}",
+		log.info("{} har arkivert variant={} med dokumentInfoId={}",
 				MDC.get(MDCConstants.MDC_REQUEST_ID), request.getVariant(), request.getDokumentInfoId());
 		return respons;
 	}
