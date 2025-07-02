@@ -28,7 +28,6 @@ import static no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessIntercept
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
-import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.POST;
@@ -51,7 +50,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(encodeBase64String(FIL))
+				.fil(FIL)
 				.filnavn("filnavn")
 				.variant(SLADDET)
 				.filType(PDF).build();
@@ -122,7 +121,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(encodeBase64String(FIL))
+				.fil(FIL)
 				.filnavn("filnavn")
 				.variant(SLADDET)
 				.filType(PDF).build();
@@ -135,7 +134,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(encodeBase64String(FIL2))
+				.fil(FIL2)
 				.filnavn("filnavn")
 				.variant(SLADDET)
 				.filType(PDF).build();
@@ -156,7 +155,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(123456L)
-				.fil(encodeBase64String(FIL))
+				.fil(FIL)
 				.filnavn("filnavn")
 				.variant(SLADDET)
 				.filType(PDF).build();
@@ -177,7 +176,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		ResponseEntity<String> responseEntity =  restTemplate.exchange(URL_ARKIVERVARIANT, POST, new HttpEntity<>(ArkiverVariantRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(encodeBase64String(FIL))
+				.fil(FIL)
 				.filnavn("filnavn")
 				.variant(SLADDET)
 				.filType(PDF).build(), headers), String.class);
@@ -195,7 +194,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		ResponseEntity<String> responseEntity =  restTemplate.exchange(URL_ARKIVERVARIANT, POST, new HttpEntity<>(ArkiverVariantRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(encodeBase64String(FIL))
+				.fil(FIL)
 				.filnavn("filnavn")
 				.variant(SLADDET)
 				.filType(PDF).build(), headers), String.class);
@@ -214,7 +213,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		ResponseEntity<String> responseEntity =  restTemplate.exchange(URL_ARKIVERVARIANT, POST, new HttpEntity<>(ArkiverVariantRequest.builder()
 				.dokumentInfoId(dokumentInfo.getDokumentInfoId())
-				.fil(encodeBase64String(FIL))
+				.fil(FIL)
 				.filnavn("filnavn")
 				.variant(SLADDET)
 				.filType(PDF).build(), headers), String.class);

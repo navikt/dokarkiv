@@ -3,7 +3,6 @@ package no.nav.dokarkiv.arkivervariant.rjoark103;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.Test;
 
 import static no.nav.dokarkiv.arkivervariant.util.TestUtils.FIL;
@@ -17,7 +16,7 @@ public class ArkiverVariantValidatorTest {
 	public void happyPath() {
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(123456L)
-				.fil(Base64.encodeBase64String(FIL))
+				.fil(FIL)
 				.filnavn("filnavn")
 				.variant(VariantFormatCode.SLADDET)
 				.filType(FilTypeCode.PDF).build();
@@ -28,13 +27,13 @@ public class ArkiverVariantValidatorTest {
 	@Test
 	public void dokumentIdIsNull() {
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
-				.fil(Base64.encodeBase64String(FIL))
+				.fil(FIL)
 				.filnavn("filnavn")
 				.variant(VariantFormatCode.SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
 		assertThrows(UgyldigInputException.class, () ->
-				validator.validateArkiverVariantRequest(request),
+						validator.validateArkiverVariantRequest(request),
 				"DokumentInfoId kan ikke være null");
 	}
 
@@ -55,7 +54,7 @@ public class ArkiverVariantValidatorTest {
 	public void filnavnIsNull() {
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(123456L)
-				.fil(Base64.encodeBase64String(FIL))
+				.fil(FIL)
 				.variant(VariantFormatCode.SLADDET)
 				.filType(FilTypeCode.PDF).build();
 
@@ -68,7 +67,7 @@ public class ArkiverVariantValidatorTest {
 	public void variantIsNull() {
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(123456L)
-				.fil(Base64.encodeBase64String(FIL))
+				.fil(FIL)
 				.filnavn("filnavn")
 				.filType(FilTypeCode.PDF).build();
 
@@ -81,7 +80,7 @@ public class ArkiverVariantValidatorTest {
 	public void filTypeIsNull() {
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(123456L)
-				.fil(Base64.encodeBase64String(FIL))
+				.fil(FIL)
 				.filnavn("filnavn")
 				.variant(VariantFormatCode.SLADDET).build();
 

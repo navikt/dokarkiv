@@ -14,7 +14,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 public class ArkiverVariantRequest {
 	private Long dokumentInfoId;
 	private VariantFormatCode variant;
-	private String fil;
+	private byte[] fil;
 	private FilTypeCode filType;
 	private String filnavn;
 }
