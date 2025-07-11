@@ -742,16 +742,22 @@ public class TestUtils {
 		return dokumentVedleggList;
 	}
 
-	public static List<DokumentVedlegg> createDokumentVedleggList(Long journalpostId, String dokumentInfo) {
+	public static List<DokumentVedlegg> createDokumentVedleggList(Long journalpostId, String dokumentinfoId) {
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
-		dokumentVedleggList.add(createDokumentVedlegg(journalpostId, dokumentInfo).build());
+		dokumentVedleggList.add(createDokumentVedlegg(journalpostId, dokumentinfoId));
 		return dokumentVedleggList;
 	}
 
-	private static DokumentVedlegg.DokumentVedleggBuilder createDokumentVedlegg(Long journalpostId, String dokumentId) {
+	public static DokumentVedlegg createDokumentVedlegg(Long journalpostId, String dokumentinfoId) {
+		return createDokumentVedlegg(journalpostId, dokumentinfoId, null);
+	}
+
+	public static DokumentVedlegg createDokumentVedlegg(Long journalpostId, String dokumentinfoId, Integer rekkefoelge) {
 		return DokumentVedlegg.builder()
 				.kildeJournalpostId(journalpostId)
-				.dokumentInfoId(dokumentId);
+				.dokumentInfoId(dokumentinfoId)
+				.rekkefoelge(rekkefoelge)
+				.build();
 	}
 
 	public static no.nav.dokarkiv.core.domain.entities.Sak createGenerellSak() {
