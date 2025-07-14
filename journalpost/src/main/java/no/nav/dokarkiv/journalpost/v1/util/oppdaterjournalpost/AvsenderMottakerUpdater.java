@@ -28,7 +28,7 @@ public class AvsenderMottakerUpdater {
 			if (ny.getId() != null) {
 				oppdaterAvsenderMottakerIdOgIdType(journalpost, endret, ny);
 			}
-			oppdaterAvsenderMottakerNavn(journalpost, oppdaterJournalpostRequest, endret, ny);
+			oppdaterAvsenderMottakerNavn(journalpost, endret, ny);
 			if (isNotBlank(ny.getLand())) {
 				oppdaterAvsenderMottakerLand(journalpost, endret, ny);
 			}
@@ -49,7 +49,7 @@ public class AvsenderMottakerUpdater {
 		}
 	}
 
-	private void oppdaterAvsenderMottakerNavn(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret, AvsenderMottaker ny) {
+	private void oppdaterAvsenderMottakerNavn(Journalpost journalpost, ChangeTracker endret, AvsenderMottaker ny) {
 		if (DELETE_MARKER.equals(ny.getNavn())) {
 			nullUtAvsenderMottakerNavn(journalpost, endret);
 		}
