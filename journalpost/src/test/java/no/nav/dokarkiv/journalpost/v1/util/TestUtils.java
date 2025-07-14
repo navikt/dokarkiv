@@ -406,6 +406,10 @@ public class TestUtils {
 		return createAvsenderMottaker(null, AVSENDER_ID_PERSON, AvsenderMottakerIdType.FNR);
 	}
 
+	public static AvsenderMottaker createAvsenderMottakerPersonWithoutIdAndNavn() {
+		return createAvsenderMottaker(null, null, ORGNR);
+	}
+
 	public static AvsenderMottaker createAvsenderMottaker(String id, AvsenderMottakerIdType idType) {
 		return createAvsenderMottaker(AVSENDER_NAVN, id, idType);
 	}
@@ -560,6 +564,44 @@ public class TestUtils {
 				.build();
 	}
 
+	public static OpprettJournalpostRequest createRequestOrg(JournalpostType journalpostType, String journalfoerendeEnhet, String sakId) {
+		return createBaseRequestOrg(journalpostType, sakId)
+				.journalfoerendeEnhet(journalfoerendeEnhet)
+				.dokumenter(Arrays.asList(
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL1)
+								.brevkode(BREVKODE1)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.dokumentvarianter(Arrays.asList(DokumentVariant.builder()
+												.filtype(FILTYPE_PDF)
+												.variantformat(VARIANTFORMAT_ARKIV)
+												.fysiskDokument(FYSISK_DOKUMENT)
+												.batchnavn(BATCHNAVN)
+												.build(),
+										DokumentVariant.builder()
+												.filtype(FILTYPE_XML)
+												.variantformat(VARIANTFORMAT_ORIGINAL)
+												.filnavn(FILNAVN)
+												.fysiskDokument(FYSISK_DOKUMENT_2)
+												.batchnavn(BATCHNAVN)
+												.build()))
+								.build(),
+						Dokument.builder()
+								.tittel(DOKUMENT_TITTEL2)
+								.brevkode(BREVKODE2)
+								.dokumentKategori(DOKUMENTKATEGORI_SED)
+								.rekkefoelge(2)
+								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
+										.filtype(FILTYPE_PDF)
+										.variantformat(VARIANTFORMAT_ARKIV)
+										.fysiskDokument(FYSISK_DOKUMENT)
+										.batchnavn(BATCHNAVN)
+										.build()))
+								.build()))
+				.build();
+	}
+
+
 	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseRequest(JournalpostType journalpostType) {
 		return OpprettJournalpostRequest.builder()
 				.journalposttype(journalpostType)
@@ -590,6 +632,7 @@ public class TestUtils {
 						.build());
 	}
 
+
 	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseRequest(JournalpostType journalpostType, String sakId) {
 		return OpprettJournalpostRequest.builder()
 				.journalposttype(journalpostType)
@@ -597,6 +640,36 @@ public class TestUtils {
 						.id(AVSENDER_ID_PERSON)
 						.idType(AvsenderMottakerIdType.FNR)
 						.navn(AVSENDER_NAVN)
+						.land(AVSENDER_MOTTAKER_LAND)
+						.build())
+				.bruker(no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()
+						.idType(BrukerIdType.FNR)
+						.id(BRUKER_ID_PERSON)
+						.build())
+				.tema(TEMA_FOR)
+				.behandlingstema(BEHANDLINGSTEMA)
+				.tittel(INNHOLD)
+				.kanal(KANAL_NAVNO)
+				.eksternReferanseId(KANALREFERANSE_ID)
+				.datoDokument(DATO_DOKUMENT)
+				.datoMottatt(DATO_MOTTATT)
+				.tilleggsopplysninger(Collections.singletonList(Tilleggsopplysning.builder()
+						.nokkel(TILLEGGSOPPLYSNING_NOKKEL)
+						.verdi(TILLEGGSOPPLYSNING_VERDI)
+						.build()))
+				.sak(Sak.builder()
+						.fagsakId(sakId)
+						.sakstype(Sakstype.FAGSAK)
+						.fagsaksystem(Fagsaksystem.PP01)
+						.build());
+	}
+
+	public static OpprettJournalpostRequest.OpprettJournalpostRequestBuilder createBaseRequestOrg(JournalpostType journalpostType, String sakId) {
+		return OpprettJournalpostRequest.builder()
+				.journalposttype(journalpostType)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.id(AVSENDER_ID_ORGANISASJON)
+						.idType(ORGNR)
 						.land(AVSENDER_MOTTAKER_LAND)
 						.build())
 				.bruker(no.nav.dokarkiv.journalpost.v1.api.Bruker.builder()

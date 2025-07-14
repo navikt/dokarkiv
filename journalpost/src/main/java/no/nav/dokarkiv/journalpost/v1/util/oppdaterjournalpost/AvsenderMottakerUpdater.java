@@ -57,7 +57,7 @@ public class AvsenderMottakerUpdater {
 		if (isNotBlank(ny.getNavn())) {
 			oppdaterAvsenderMottakerNavn(endret, journalpost, ny.getNavn());
 		} else if (isIdOgIdTypeFnrSatt(ny)) {
-			String navn = identConsumer.hentPersonnavn(ny.getId(), oppdaterJournalpostRequest.getTema());
+			String navn = identConsumer.hentPersonnavn(ny.getId());
 			oppdaterAvsenderMottakerNavn(endret, journalpost, navn);
 		}
 	}

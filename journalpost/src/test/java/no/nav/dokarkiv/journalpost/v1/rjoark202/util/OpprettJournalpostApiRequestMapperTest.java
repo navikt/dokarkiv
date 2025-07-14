@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
+import no.nav.dokarkiv.core.consumer.ereg.EregConsumer;
+import no.nav.dokarkiv.core.consumer.ereg.EregResponse;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -46,6 +48,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
+import static no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode.ORGNR;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
@@ -53,9 +56,11 @@ import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_L;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.S;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_LAND;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BATCHNAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BEHANDLINGSTEMA;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
@@ -74,7 +79,6 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.KANALREFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.PENSJON_FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.SAK_ID;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_FOR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_TIL;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TILLEGGSOPPLYSNING_NOKKEL;
@@ -83,6 +87,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerHelsepersonell;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerOrganisasjon;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerOrganisasjonWithoutNavn;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPersonWithoutIdAndNavn;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPersonWithoutNavn;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPersonWithoutNavnAndIdType;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtlandOrganisasjon;
@@ -108,6 +113,9 @@ public class OpprettJournalpostApiRequestMapperTest {
 
 	@Mock
 	private IdentConsumer identConsumerMock;
+
+	@Mock
+	private EregConsumer eregConsumerMock;
 
 	@InjectMocks
 	private OpprettJournalpostApiRequestMapper mapper;
@@ -348,7 +356,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	void shouldMapInngaaendeJournalpostOrganisasjon() {
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerOrganisasjon());
 		Journalpost jp = mapper.map(request, null);
-		assertEquals(AvsenderMottakerIdTypeCode.ORGNR, jp.getAvsenderMottakerIdType());
+		assertEquals(ORGNR, jp.getAvsenderMottakerIdType());
 	}
 
 	@Test
@@ -403,8 +411,8 @@ public class OpprettJournalpostApiRequestMapperTest {
 	}
 
 	@Test
-	void shouldMapNavnWhenIdTypeAndNavnNull() {
-		when(identConsumerMock.hentPersonnavn(eq(AVSENDER_ID_PERSON), eq(TEMA_FOR))).thenReturn(AVSENDER_NAVN);
+	void shouldHentNavnFromPDLAndMapNavnWhenIdTypeAndNavnIsNull() {
+		when(identConsumerMock.hentPersonnavn(eq(AVSENDER_ID_PERSON))).thenReturn(AVSENDER_NAVN);
 
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerPersonWithoutNavnAndIdType());
 		Journalpost jp = mapper.map(request, null);
@@ -412,8 +420,19 @@ public class OpprettJournalpostApiRequestMapperTest {
 	}
 
 	@Test
+	void shouldNotMapWhenIdAndNavnIsNull() {
+		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
+				.avsenderMottaker(createAvsenderMottakerPersonWithoutIdAndNavn())
+				.build();
+		Journalpost jp = mapper.map(request, null);
+		assertNull(jp.getAvsenderMottaker());
+		assertNull(jp.getAvsenderMottakerId());
+		assertEquals(ORGNR, jp.getAvsenderMottakerIdType());
+	}
+
+	@Test
 	void shouldMapNavnWhenIdTypeFNR() {
-		when(identConsumerMock.hentPersonnavn(eq(AVSENDER_ID_PERSON), eq(TEMA_FOR))).thenReturn(AVSENDER_NAVN);
+		when(identConsumerMock.hentPersonnavn(eq(AVSENDER_ID_PERSON))).thenReturn(AVSENDER_NAVN);
 
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerPersonWithoutNavn());
 		Journalpost jp = mapper.map(request, null);
@@ -421,10 +440,13 @@ public class OpprettJournalpostApiRequestMapperTest {
 	}
 
 	@Test
-	void shouldMapNavnToNullWhenIdTypeORGNR() {
+	void shouldHentNavFraEregAndMapNavnWhenIdTypeIsORGNR() {
+		when(eregConsumerMock.hentOrganisasjon(eq(AVSENDER_ID_ORGANISASJON)))
+				.thenReturn(new EregResponse(AVSENDER_ID_ORGANISASJON, new EregResponse.Navn(AVSENDER_NAVN_ORGANISASJON)));
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerOrganisasjonWithoutNavn());
 		Journalpost jp = mapper.map(request, null);
-		assertNull(jp.getAvsenderMottaker());
+		assertEquals(AVSENDER_NAVN_ORGANISASJON, jp.getAvsenderMottaker());
+		assertEquals(AVSENDER_ID_ORGANISASJON, jp.getAvsenderMottakerId());
 	}
 
 	@Test

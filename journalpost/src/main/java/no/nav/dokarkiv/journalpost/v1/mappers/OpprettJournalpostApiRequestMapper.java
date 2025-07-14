@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.mappers;
 
+import no.nav.dokarkiv.core.consumer.ereg.EregConsumer;
+import no.nav.dokarkiv.core.consumer.ereg.EregResponse;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.consumer.pdl.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
@@ -44,6 +46,8 @@ import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
+import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.FNR;
+import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
@@ -54,10 +58,16 @@ import static org.apache.commons.lang3.StringUtils.trim;
 @Component
 public class OpprettJournalpostApiRequestMapper {
 
-	private final IdentConsumer identConsumer;
+	private static final int FNR_LENGTH = 11;
+	private static final int ORGNR_LENGTH = 9;
 
-	public OpprettJournalpostApiRequestMapper(IdentConsumer identConsumer) {
+	private final IdentConsumer identConsumer;
+	private final EregConsumer eregConsumer;
+
+	public OpprettJournalpostApiRequestMapper(IdentConsumer identConsumer,
+											  EregConsumer eregConsumer) {
 		this.identConsumer = identConsumer;
+		this.eregConsumer = eregConsumer;
 	}
 
 	public Journalpost map(OpprettJournalpostRequest request, Long sakId) {
@@ -95,13 +105,32 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private String hentNavn(OpprettJournalpostRequest request) {
 		final AvsenderMottaker avsenderMottaker = request.getAvsenderMottaker();
-		if (avsenderMottaker != null && isNotBlank(avsenderMottaker.getNavn())) {
+		if (avsenderMottaker == null || erBrukerIdOgNavnNull(avsenderMottaker)) {
+			return null;
+		}
+
+		if (isNotBlank(avsenderMottaker.getNavn())) {
 			return avsenderMottaker.getNavn();
-		} else if (avsenderMottaker != null && isNotBlank(avsenderMottaker.getId()) &&
-				   (avsenderMottaker.getIdType() == null || avsenderMottaker.getIdType() == AvsenderMottakerIdType.FNR)) {
-			return identConsumer.hentPersonnavn(avsenderMottaker.getId(), request.getTema());
+		} else if (isNotBlank(avsenderMottaker.getId())) {
+			if (erAvsenderMottakerPerson(avsenderMottaker)) {
+				return hentPersonnavn(request);
+			} else if (erAvsenderMottakerOrgnisasjon(avsenderMottaker)) {
+				return hentOrganisasjonsnavn(request);
+			}
 		}
 		return null;
+	}
+
+	private String hentPersonnavn(OpprettJournalpostRequest request) {
+		final AvsenderMottaker avsenderMottaker = request.getAvsenderMottaker();
+		return identConsumer.hentPersonnavn(avsenderMottaker.getId());
+	}
+
+	private String hentOrganisasjonsnavn(OpprettJournalpostRequest request) {
+		final AvsenderMottaker avsenderMottaker = request.getAvsenderMottaker();
+		EregResponse eregResponse = eregConsumer.hentOrganisasjon(avsenderMottaker.getId());
+
+		return (eregResponse == null || eregResponse.navn() == null) ? null : eregResponse.navn().sammensattnavn();
 	}
 
 	private JournalpostTypeCode mapJournalposttype(JournalpostType request) {
@@ -250,7 +279,7 @@ public class OpprettJournalpostApiRequestMapper {
 		if (isValidFagsaksystem(sakstype, fagsaksystem) && PP01.equals(fagsaksystem)) {
 			return FagsystemCode.PEN;
 		} else if ((isValidFagsaksystem(sakstype, fagsaksystem) || Sakstype.GENERELL_SAK.equals(sakstype))
-				   && !PP01.equals(fagsaksystem)) {
+				&& !PP01.equals(fagsaksystem)) {
 			return FagsystemCode.FS22;
 		} else {
 			throw new InputValideringFeiletException(format(
@@ -355,5 +384,17 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private VariantFormatCode mapVariantFormat(String variantformat) {
 		return VariantFormatCode.valueOf(variantformat);
+	}
+
+	private boolean erAvsenderMottakerPerson(AvsenderMottaker avsenderMottaker) {
+		return avsenderMottaker.getId().length() == FNR_LENGTH || FNR.equals(avsenderMottaker.getIdType());
+	}
+
+	private boolean erBrukerIdOgNavnNull(AvsenderMottaker avsenderMottaker) {
+		return isBlank(avsenderMottaker.getNavn()) && isBlank(avsenderMottaker.getId());
+	}
+
+	private boolean erAvsenderMottakerOrgnisasjon(AvsenderMottaker avsenderMottaker) {
+		return avsenderMottaker.getId().length() == ORGNR_LENGTH || ORGNR.equals(avsenderMottaker.getIdType());
 	}
 }

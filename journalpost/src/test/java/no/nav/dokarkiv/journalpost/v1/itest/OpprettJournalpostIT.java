@@ -44,6 +44,7 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
@@ -51,6 +52,7 @@ import static java.lang.Long.parseLong;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
+import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.ORGANISASJON;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.FOR;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
@@ -67,6 +69,7 @@ import static no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService.
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AKTOER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_UTLORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_LAND;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BATCHNAVN;
@@ -108,6 +111,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanal;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createRequestOrg;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -118,6 +122,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
@@ -134,7 +139,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
@@ -193,7 +198,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertEquals(overstyrInnsynsregler, journalpost.getInnsyn());
@@ -217,7 +222,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertNull(journalpost.getInnsyn());
@@ -239,7 +244,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
@@ -262,7 +267,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
@@ -289,7 +294,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNull(response.getBody().getMelding());
 		assertTrue(response.getBody().isJournalpostferdigstilt());
@@ -328,7 +333,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNull(response.getBody().getMelding());
 		assertTrue(response.getBody().isJournalpostferdigstilt());
@@ -368,7 +373,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
 		assertEquals(saksrelasjon.getSakId(), parseLong(ARKIVSAKSNUMMER));
@@ -387,7 +392,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
 		assertEquals(saksrelasjon.getSakId(), parseLong(ARKIVSAKSNUMMER));
@@ -410,7 +415,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
 		assertEquals(saksrelasjon.getSakId(), parseLong(ARKIVSAKSNUMMER));
@@ -433,7 +438,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertEquals(sakTestRepository.count(), 1);
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
@@ -480,7 +485,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertEquals(sakTestRepository.count(), 1);
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
@@ -514,7 +519,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertEquals(2, sakTestRepository.count());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
@@ -538,7 +543,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertEquals(sakTestRepository.count(), 1);
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
@@ -579,11 +584,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(sakTestRepository.count(), 1);
+		assertEquals(CREATED, response.getStatusCode());
+		assertEquals(1, sakTestRepository.count());
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
-		assertEquals(sak.getAktoerId(), AKTOER_ID);
+		assertEquals(AKTOER_ID, sak.getAktoerId());
 
 		no.nav.dokarkiv.core.domain.entities.Bruker bruker = journalpostTestRepository.findAll()
 				.iterator()
@@ -591,12 +596,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.getBrukere()
 				.iterator()
 				.next();
-		assertEquals(bruker.getBrukerId(), FNR);
-		assertEquals(bruker.getBrukerType(), BrukerTypeCode.PERSON);
+		assertEquals(FNR, bruker.getBrukerId());
+		assertEquals(BrukerTypeCode.PERSON, bruker.getBrukerType());
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(2);
-		assertEquals(aksjonsLoggList.get(0).getBruker(), FNR);
+		assertEquals(FNR, aksjonsLoggList.get(0).getBruker());
 	}
 
 	@Test
@@ -644,11 +649,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
-		assertEquals(sak.getTema(), TEMA_UFO);
+		assertEquals(TEMA_UFO, sak.getTema());
 		assertEquals(sak.getApplikasjon(), FS22.name());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
-		assertEquals(saksrelasjon.getFagsystem(), FS22);
+		assertEquals(FS22, saksrelasjon.getFagsystem());
 	}
 
 	@Test
@@ -668,11 +673,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
-		assertEquals(sak.getTema(), TEMA_PEN);
+		assertEquals(TEMA_PEN, sak.getTema());
 		assertEquals(sak.getApplikasjon(), FS22.name());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
-		assertEquals(saksrelasjon.getFagsystem(), FS22);
+		assertEquals(FS22, saksrelasjon.getFagsystem());
 	}
 
 	@Test
@@ -691,17 +696,17 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(sakTestRepository.count(), 1);
+		assertEquals(CREATED, response.getStatusCode());
+		assertEquals(1, sakTestRepository.count());
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
-		assertEquals(sak.getAktoerId(), FAIL_AKTOER_ID);
+		assertEquals(FAIL_AKTOER_ID, sak.getAktoerId());
 
-		assertEquals(journalpostTestRepository.findAll().iterator().next().getBrukere().size(), 0);
+		assertEquals(0, journalpostTestRepository.findAll().iterator().next().getBrukere().size());
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(2);
-		assertEquals(aksjonsLoggList.get(0).getBruker(), UKJENT);
+		assertEquals(UKJENT, aksjonsLoggList.get(0).getBruker());
 	}
 
 	@Test
@@ -737,11 +742,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(sakTestRepository.count(), 1);
+		assertEquals(CREATED, response.getStatusCode());
+		assertEquals(1, sakTestRepository.count());
 
 		no.nav.dokarkiv.core.domain.entities.Sak sak = sakTestRepository.findAll().iterator().next();
-		assertEquals(sak.getOrgnr(), BRUKER_ID_ORGANISASJON);
+		assertEquals(BRUKER_ID_ORGANISASJON, sak.getOrgnr());
 
 		no.nav.dokarkiv.core.domain.entities.Bruker bruker = journalpostTestRepository.findAll()
 				.iterator()
@@ -749,12 +754,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				.getBrukere()
 				.iterator()
 				.next();
-		assertEquals(bruker.getBrukerId(), BRUKER_ID_ORGANISASJON);
-		assertEquals(bruker.getBrukerType(), BrukerTypeCode.ORGANISASJON);
+		assertEquals(BRUKER_ID_ORGANISASJON, bruker.getBrukerId());
+		assertEquals(ORGANISASJON, bruker.getBrukerType());
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(2);
-		assertEquals(aksjonsLoggList.get(0).getBruker(), BRUKER_ID_ORGANISASJON);
+		assertEquals(BRUKER_ID_ORGANISASJON, aksjonsLoggList.get(0).getBruker());
 	}
 
 	@Test
@@ -768,7 +773,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		sakTestRepository.persist(sak);
 		commitAndStartNewTransaction();
 
-		assertEquals(sakTestRepository.count(), 1);
+		assertEquals(1, sakTestRepository.count());
 
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.INNGAAENDE)
 				.tema(TEMA_TIL)
@@ -779,12 +784,12 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-		assertEquals(sakTestRepository.count(), 1);
+		assertEquals(CREATED, response.getStatusCode());
+		assertEquals(1, sakTestRepository.count());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
 		assertEquals(saksrelasjon.getSakId(), sak.getSakId());
-		assertEquals(saksrelasjon.getFagsystem(), FS22);
+		assertEquals(FS22, saksrelasjon.getFagsystem());
 	}
 
 	@Test
@@ -803,11 +808,11 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Saksrelasjon saksrelasjon = journalpostTestRepository.findAll().iterator().next().getSaksrelasjon();
 		assertEquals(saksrelasjon.getSakId(), parseLong(PENSJON_FAGSAK_ID));
-		assertEquals(saksrelasjon.getFagsystem(), FagsystemCode.PEN);
+		assertEquals(FagsystemCode.PEN, saksrelasjon.getFagsystem());
 
 		assertEquals(sakTestRepository.count(), sakRepositoryCount);
 	}
@@ -821,7 +826,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
 		assertFalse(response.getBody().isJournalpostferdigstilt());
@@ -870,7 +875,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
 		assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: tittel");
@@ -960,7 +965,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
 		assertThat(response.getBody().getMelding()).contains("Journalposten mangler følgende felter: tittel");
@@ -1021,7 +1026,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 		assertNotNull(response.getBody().getMelding());
 		assertThat(response.getBody().getMelding()).contains(String.format("Kunne ikke ferdigstille: Journalpost med journalpostId=%s må ha en saksrelasjon", response.getBody().getJournalpostId()));
@@ -1051,7 +1056,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertNotNull(response.getBody());
 	}
 
@@ -1064,7 +1069,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertEquals("M", response.getBody().getJournalstatus());
 	}
 
@@ -1107,7 +1112,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 		assertEquals("ENDELIG", response.getBody().getJournalstatus());
 	}
 
@@ -1237,7 +1242,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		ResponseEntity<OpprettJournalpostResponse> responseFirst = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 		ResponseEntity<OpprettJournalpostResponse> responseSecond = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, responseFirst.getStatusCode());
+		assertEquals(CREATED, responseFirst.getStatusCode());
 		assertNotNull(responseFirst.getBody());
 		assertThat(responseFirst.getBody().getJournalpostId()).isNotNull();
 		assertTrue(responseFirst.getBody().isJournalpostferdigstilt());
@@ -1261,7 +1266,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		ResponseEntity<OpprettJournalpostResponse> responseFirst = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 		ResponseEntity<OpprettJournalpostResponse> responseSecond = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, responseFirst.getStatusCode());
+		assertEquals(CREATED, responseFirst.getStatusCode());
 		assertNotNull(responseFirst.getBody());
 		assertThat(responseFirst.getBody().getJournalpostId()).isNotNull();
 		assertFalse(responseFirst.getBody().isJournalpostferdigstilt());
@@ -1280,7 +1285,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertNull(journalpost.getEndretAvNavn());
@@ -1302,7 +1307,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertEquals(SERVICE_USER_ID, journalpost.getEndretAvNavn());
@@ -1321,7 +1326,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithUserAndServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertNull(journalpost.getEndretAvNavn());
@@ -1344,7 +1349,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithUserAndServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertEquals(PERSON_USER_NAME, journalpost.getEndretAvNavn());
@@ -1363,7 +1368,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, NAV_USER_ID));
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertNull(journalpost.getEndretAvNavn());
@@ -1386,7 +1391,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, NAV_USER_ID));
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertEquals(PERSON_USER_NAME, journalpost.getEndretAvNavn());
@@ -1421,12 +1426,33 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertEquals("TESTFORNAVN TESTFAMILIEN", journalpost.getAvsenderMottaker());
 		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
 		verify(exactly(1), postRequestedFor(urlEqualTo("/pdl")));
+	}
+
+	@Test
+	public void shouldUseEregNameForAvsenderMottakerWhenIdTypeIsORGNRAndNameIsNull() {
+		no.nav.dokarkiv.core.domain.entities.Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
+		restStsToken();
+		stubAzure();
+		happyEregOrganisasjonStub();
+
+		OpprettJournalpostRequest request = createRequestOrg(UTGAAENDE, "0123", SAK_ID.toString());
+
+		ReflectionTestUtils.setField(request.getAvsenderMottaker(), "navn", " ");
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(CREATED, response.getStatusCode());
+
+		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
+		assertEquals("Test Organisasjon AS", journalpost.getAvsenderMottaker());
+		assertEquals(AVSENDER_ID_UTLORGANISASJON, journalpost.getAvsenderMottakerId());
+		verify(exactly(1), getRequestedFor(urlEqualTo("/ereg/123456789/noekkelinfo")));
 	}
 
 	@Test
@@ -1436,7 +1462,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(CREATED, response.getStatusCode());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertEquals(AVSENDER_NAVN, journalpost.getAvsenderMottaker());

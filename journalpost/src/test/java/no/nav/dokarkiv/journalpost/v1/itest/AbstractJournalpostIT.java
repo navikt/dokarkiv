@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -157,6 +158,14 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 						.withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-aktoerid-happy-historisk.json")));
+	}
+
+	public void happyEregOrganisasjonStub() {
+		stubFor(get(urlEqualTo("/ereg/123456789/noekkelinfo"))
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("ereg/ereg-organisasjon-happy.json")));
 	}
 
 	public void stubAzure() {

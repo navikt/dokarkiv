@@ -37,8 +37,7 @@ public interface IdentConsumer {
 	 * Henter personens fulle navn
 	 *
 	 * @param id   Folkeregisterident tilhørende person
-	 * @param tema Tema for tilgang til PDL
 	 * @return Personens fulle navn
 	 */
-	String hentPersonnavn(String id, String tema);
+	String hentPersonnavn(String id);
 }

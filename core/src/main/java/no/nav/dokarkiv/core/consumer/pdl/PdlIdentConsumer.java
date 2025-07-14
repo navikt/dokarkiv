@@ -148,10 +148,9 @@ public class PdlIdentConsumer implements IdentConsumer {
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Override
-	public String hentPersonnavn(String ident, String tema) {
+	public String hentPersonnavn(String ident) {
 
 		ResponseEntity<PdlPersonResponse> pdlPersonResponse = webClient.post()
-				.header(HEADER_PDL_TEMA, tema)
 				.bodyValue(mapHentPersonIdentForId(validateAndTrimIdent(ident)))
 				.retrieve()
 				.toEntity(PdlPersonResponse.class)

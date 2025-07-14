@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +45,7 @@ class AvsenderMottakerUpdaterTest {
 
 	@Test
 	void shouldChangeAvsenderMottakerId() {
-		when(identConsumerMock.hentPersonnavn(eq(NY_AVSENDER_MOTTAKER_ID), any(String.class))).thenReturn(NY_AVSENDER_MOTTAKER_NAVN);
+		when(identConsumerMock.hentPersonnavn(eq(NY_AVSENDER_MOTTAKER_ID))).thenReturn(NY_AVSENDER_MOTTAKER_NAVN);
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithAvsenderMottaker(createAvsenderMottaker(null, NY_AVSENDER_MOTTAKER_ID, FNR));
 
 		Journalpost journalpost = TestUtils.createJournalpostForOppdatering();
