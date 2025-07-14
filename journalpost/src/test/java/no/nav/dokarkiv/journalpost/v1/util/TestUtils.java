@@ -50,9 +50,6 @@ import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.AvsenderMottakerUpdater.DELETE_MARKER;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 public class TestUtils {
 
 	public static final long JOURNALPOST_ID = 1234L;
@@ -742,20 +739,20 @@ public class TestUtils {
 		return dokumentVedleggList;
 	}
 
-	public static List<DokumentVedlegg> createDokumentVedleggList(Long journalpostId, String dokumentinfoId) {
+	public static List<DokumentVedlegg> createDokumentVedleggList(Long journalpostId, String dokumentInfoId) {
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
-		dokumentVedleggList.add(createDokumentVedlegg(journalpostId, dokumentinfoId));
+		dokumentVedleggList.add(createDokumentVedlegg(journalpostId, dokumentInfoId));
 		return dokumentVedleggList;
 	}
 
-	public static DokumentVedlegg createDokumentVedlegg(Long journalpostId, String dokumentinfoId) {
-		return createDokumentVedlegg(journalpostId, dokumentinfoId, null);
+	public static DokumentVedlegg createDokumentVedlegg(Long journalpostId, String dokumentInfoId) {
+		return createDokumentVedlegg(journalpostId, dokumentInfoId, null);
 	}
 
-	public static DokumentVedlegg createDokumentVedlegg(Long journalpostId, String dokumentinfoId, Integer rekkefoelge) {
+	public static DokumentVedlegg createDokumentVedlegg(Long journalpostId, String dokumentInfoId, Integer rekkefoelge) {
 		return DokumentVedlegg.builder()
 				.kildeJournalpostId(journalpostId)
-				.dokumentInfoId(dokumentinfoId)
+				.dokumentInfoId(dokumentInfoId)
 				.rekkefoelge(rekkefoelge)
 				.build();
 	}

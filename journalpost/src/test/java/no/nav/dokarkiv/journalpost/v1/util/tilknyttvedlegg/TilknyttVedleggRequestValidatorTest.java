@@ -6,6 +6,7 @@ import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggRequestValidator
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.MDC;
 
@@ -19,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class TilknyttVedleggRequestValidatorTest {
 
-	private TilknyttVedleggRequest tilknyttVedleggRequest;
 	private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
 
 	@BeforeEach
@@ -29,14 +29,23 @@ public class TilknyttVedleggRequestValidatorTest {
 
 	@Test
 	public void happyPath() {
-		tilknyttVedleggRequest = createTilknyttVedleggRequest();
+		TilknyttVedleggRequest tilknyttVedleggRequest = createTilknyttVedleggRequest();
+
+		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = {1, 2})
+	@NullSource
+	public void shouldValidateRekkefoelgeOk(Integer rekkefoelge) {
+		TilknyttVedleggRequest tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", List.of(createDokumentVedlegg(1L, "2", rekkefoelge)));
 
 		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenTilknyttetNavnIsMissing() {
-		tilknyttVedleggRequest = createTilknyttVedleggRequest("", createDokumentVedleggList());
+		TilknyttVedleggRequest tilknyttVedleggRequest = createTilknyttVedleggRequest("", createDokumentVedleggList());
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest))
@@ -45,7 +54,7 @@ public class TilknyttVedleggRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenKildeJournalpostIdIsMissing() {
-		tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", createDokumentVedleggList(null, "20000000"));
+		TilknyttVedleggRequest tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", createDokumentVedleggList(null, "20000000"));
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest))
@@ -54,7 +63,7 @@ public class TilknyttVedleggRequestValidatorTest {
 
 	@Test
 	public void shouldThrowExceptionWhenKildeDokumentInfoIdIsMissing() {
-		tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", createDokumentVedleggList(318883708L, ""));
+		TilknyttVedleggRequest tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", createDokumentVedleggList(318883708L, ""));
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest))
@@ -64,7 +73,7 @@ public class TilknyttVedleggRequestValidatorTest {
 	@ParameterizedTest
 	@ValueSource(ints = {0, -1})
 	public void shouldThrowExceptionWhenRekkefoelgeLessThan1(int rekkefoelge) {
-		tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", List.of(createDokumentVedlegg(1L, "2", rekkefoelge)));
+		TilknyttVedleggRequest tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", List.of(createDokumentVedlegg(1L, "2", rekkefoelge)));
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest))
