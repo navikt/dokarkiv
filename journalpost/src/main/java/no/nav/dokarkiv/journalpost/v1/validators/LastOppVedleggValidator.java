@@ -42,6 +42,11 @@ public final class LastOppVedleggValidator {
 			throw new InputValideringFeiletException("dokument.tittel kan ikke være tom eller null");
 		}
 
+		if (dokument.getRekkefoelge() != null && dokument.getRekkefoelge() < 1) {
+			throw new InputValideringFeiletException("dokument.rekkefoelge må være null eller et positivt heltall. Mottatt rekkefoelge=%s"
+					.formatted(dokument.getRekkefoelge()));
+		}
+
 		if (isEmpty(dokument.getDokumentvarianter())) {
 			throw new InputValideringFeiletException("dokument.dokumentvarianter[] kan ikke være null eller en tom liste");
 		}

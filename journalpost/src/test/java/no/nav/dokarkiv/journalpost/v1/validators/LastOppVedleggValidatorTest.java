@@ -16,6 +16,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -60,6 +62,21 @@ class LastOppVedleggValidatorTest {
 		assertDoesNotThrow(() -> LastOppVedleggValidator.validateJournalpostAndDokument(journalpost, DOKUMENT));
 	}
 
+	@ParameterizedTest
+	@ValueSource(ints = {1, 2})
+	@NullSource
+	void shouldValidateJournalpostAndDokumentWithRekkefoelge(Integer rekkefoelge) {
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+		journalpost.setJournalstatus(D);
+		Dokument dokument = Dokument.builder()
+				.tittel(TITTEL)
+				.dokumentvarianter(DOKUMENTVARIANTER)
+				.rekkefoelge(rekkefoelge)
+				.build();
+
+		assertDoesNotThrow(() -> LastOppVedleggValidator.validateJournalpostAndDokument(journalpost, dokument));
+	}
+
 	@Test
 	void shouldNotValidateWhenRequestIsNull() {
 		assertThatExceptionOfType(InputValideringFeiletException.class)
@@ -78,7 +95,17 @@ class LastOppVedleggValidatorTest {
 	private static Stream<Arguments> shouldNotValidateWhenDocumentIsInvalid() {
 		return Stream.of(
 				Arguments.of(new LastOppVedleggRequest(null), "dokument kan ikke være null"),
-				Arguments.of(new LastOppVedleggRequest(Dokument.builder().build()), "dokument.tittel kan ikke være tom eller null")
+				Arguments.of(new LastOppVedleggRequest(Dokument.builder().build()), "dokument.tittel kan ikke være tom eller null"),
+				Arguments.of(new LastOppVedleggRequest(Dokument.builder()
+						.tittel(TITTEL)
+						.dokumentvarianter(DOKUMENTVARIANTER)
+						.rekkefoelge(0)
+						.build()), "dokument.rekkefoelge må være null eller et positivt heltall. Mottatt rekkefoelge=0"),
+				Arguments.of(new LastOppVedleggRequest(Dokument.builder()
+						.tittel(TITTEL)
+						.dokumentvarianter(DOKUMENTVARIANTER)
+						.rekkefoelge(-1)
+						.build()), "dokument.rekkefoelge må være null eller et positivt heltall. Mottatt rekkefoelge=-1")
 		);
 	}
 
