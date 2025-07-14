@@ -176,7 +176,7 @@ public class TilknyttVedleggService {
 	private void tilknyttDokumentInfoSomVedleggPaaJournalpost(String tilKnyttetAvNavn, DokumentInfo dokumentInfo, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiledeDokumenter> feiledeDokumenterList) {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon;
 		try {
-			journalpostDokumentInfoRelasjon = createJournalpostDokumentInfoRelasjon(tilKnyttetAvNavn, dokumentInfo, journalpost);
+			journalpostDokumentInfoRelasjon = createJournalpostDokumentInfoRelasjon(tilKnyttetAvNavn, dokumentVedlegg.getRekkefoelge(), dokumentInfo, journalpost);
 			journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
 			journalpostRepositorySkjermet.save(journalpost);
 			log.info("Journalpost med journalpostId={} har fått tilknyttet dokument vedlegg fra DokumentInfoId={} ", journalpost
@@ -186,12 +186,13 @@ public class TilknyttVedleggService {
 		}
 	}
 
-	private JournalpostDokumentInfoRelasjon createJournalpostDokumentInfoRelasjon(String tilKnyttetAvNavn, DokumentInfo dokumentInfo, Journalpost journalpost) {
+	private JournalpostDokumentInfoRelasjon createJournalpostDokumentInfoRelasjon(String tilKnyttetAvNavn, Integer rekkefoelge, DokumentInfo dokumentInfo, Journalpost journalpost) {
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
 				.journalpost(journalpost)
 				.dokumentInfo(dokumentInfo)
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.tilknyttetAvNavn(tilKnyttetAvNavn)
+				.rekkefoelge(rekkefoelge)
 				.build();
 		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		return journalpostDokumentInfoRelasjon;

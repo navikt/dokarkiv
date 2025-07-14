@@ -30,10 +30,16 @@ public class TilknyttVedleggRequestValidator {
 
 	private void validateDokumentVedlegg(DokumentVedlegg dokumentVedlegg) {
 		if (dokumentVedlegg.getKildeJournalpostId() == null) {
-			throw new InputValideringFeiletException("dokument.kildeJournalpostId må være satt for vedlegg med dokument.dokumentInfoId=%s".formatted(dokumentVedlegg.getDokumentInfoId()));
+			throw new InputValideringFeiletException("dokument.kildeJournalpostId må være satt for vedlegg med dokument.dokumentInfoId=%s"
+					.formatted(dokumentVedlegg.getDokumentInfoId()));
 		}
 		if (isBlank(dokumentVedlegg.getDokumentInfoId())) {
-			throw new InputValideringFeiletException("dokument.dokumentInfoId må være satt for vedlegg med dokument.kildeJournalpostId=%s".formatted(dokumentVedlegg.getKildeJournalpostId()));
+			throw new InputValideringFeiletException("dokument.dokumentInfoId må være satt for vedlegg med dokument.kildeJournalpostId=%s"
+					.formatted(dokumentVedlegg.getKildeJournalpostId()));
+		}
+		if (dokumentVedlegg.getRekkefoelge() != null && dokumentVedlegg.getRekkefoelge() < 1) {
+			throw new InputValideringFeiletException("dokument.rekkefoelge må være null eller et positivt heltall. Mottatt rekkefoelge=%s"
+					.formatted(dokumentVedlegg.getRekkefoelge()));
 		}
 	}
 }

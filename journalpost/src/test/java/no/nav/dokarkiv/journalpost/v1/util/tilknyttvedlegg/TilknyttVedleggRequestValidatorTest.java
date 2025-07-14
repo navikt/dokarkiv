@@ -5,16 +5,21 @@ import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.TilknyttVedleggRequestValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.MDC;
 
+import java.util.List;
+
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createDokumentVedlegg;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createDokumentVedleggList;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createTilknyttVedleggRequest;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class TilknyttVedleggRequestValidatorTest {
 
-	private TilknyttVedleggRequest tilknyttVedleggRequest;
 	private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
 
 	@BeforeEach
@@ -24,14 +29,23 @@ public class TilknyttVedleggRequestValidatorTest {
 
 	@Test
 	public void happyPath() {
-		tilknyttVedleggRequest = createTilknyttVedleggRequest();
+		TilknyttVedleggRequest tilknyttVedleggRequest = createTilknyttVedleggRequest();
+
+		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = {1, 2})
+	@NullSource
+	public void shouldValidateRekkefoelgeOk(Integer rekkefoelge) {
+		TilknyttVedleggRequest tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", List.of(createDokumentVedlegg(1L, "2", rekkefoelge)));
 
 		tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest);
 	}
 
 	@Test
-	public void shouldThrowExceptionIfTilknyttetNavnIsMissing() {
-		tilknyttVedleggRequest = createTilknyttVedleggRequest("", createDokumentVedleggList());
+	public void shouldThrowExceptionWhenTilknyttetNavnIsMissing() {
+		TilknyttVedleggRequest tilknyttVedleggRequest = createTilknyttVedleggRequest("", createDokumentVedleggList());
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest))
@@ -39,8 +53,8 @@ public class TilknyttVedleggRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfkildeJournalpostIdIsMissing() {
-		tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", createDokumentVedleggList(null, "20000000"));
+	public void shouldThrowExceptionWhenKildeJournalpostIdIsMissing() {
+		TilknyttVedleggRequest tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", createDokumentVedleggList(null, "20000000"));
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest))
@@ -48,11 +62,21 @@ public class TilknyttVedleggRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfkildeDokumentInfoIdIsMissing() {
-		tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", createDokumentVedleggList(318883708L, ""));
+	public void shouldThrowExceptionWhenKildeDokumentInfoIdIsMissing() {
+		TilknyttVedleggRequest tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", createDokumentVedleggList(318883708L, ""));
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest))
 				.withMessage("dokument.dokumentInfoId må være satt for vedlegg med dokument.kildeJournalpostId=318883708");
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = {0, -1})
+	public void shouldThrowExceptionWhenRekkefoelgeLessThan1(int rekkefoelge) {
+		TilknyttVedleggRequest tilknyttVedleggRequest = createTilknyttVedleggRequest("testus testesen", List.of(createDokumentVedlegg(1L, "2", rekkefoelge)));
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> tilknyttVedleggRequestValidator.validateRequest(tilknyttVedleggRequest))
+				.withMessage("dokument.rekkefoelge må være null eller et positivt heltall. Mottatt rekkefoelge=" + rekkefoelge);
 	}
 }

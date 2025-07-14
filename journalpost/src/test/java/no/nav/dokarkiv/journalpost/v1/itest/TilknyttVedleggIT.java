@@ -51,6 +51,8 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.IKKE_FUNNET;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.UGYLDIG_STATUS;
 import static no.nav.dokarkiv.journalpost.v1.util.FunctionalMatcher.where;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createDokumentVedlegg;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createDokumentVedleggList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -150,9 +152,9 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 				.getDokumentInfoId();
 
 		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
-		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId1, sourceDokumentInfoId1.toString()));
-		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId2, sourceDokumentInfoId2.toString()));
-		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId3, sourceDokumentInfoId3.toString()));
+		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId1, sourceDokumentInfoId1.toString(), null));
+		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId2, sourceDokumentInfoId2.toString(), 2));
+		dokumentVedleggList.add(createDokumentVedlegg(sourceJournalpostId3, sourceDokumentInfoId3.toString(), 1));
 
 		HttpHeaders headers = createHeadersWithUserAndServiceUserToken();
 
@@ -181,7 +183,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentFil sourceDokumentFil1 = dokumentFilTestRepository.findByFilUuid(sourceFilDetaljer1.getFilUuid());
 		DokumentFil dokumentFilKopi1 = dokumentFilTestRepository.findByFilUuid(filDetaljerKopi1.getFilUuid());
 
-		assertRelasjon(journalpostTilknyttetVedlegg1.getJournalpostId(), dokumentInfoKopi1);
+		assertRelasjon(journalpostTilknyttetVedlegg1.getJournalpostId(), dokumentInfoKopi1, null);
 		assertDokumentInfo(sourceDokumentInfo1, dokumentInfoKopi1);
 		assertFildetaljer(sourceFilDetaljer1, filDetaljerKopi1);
 		assertDokumentFil(sourceDokumentFil1, dokumentFilKopi1);
@@ -201,22 +203,22 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentFil sourceDokumentFil2 = dokumentFilTestRepository.findByFilUuid(sourceFilDetaljer2.getFilUuid());
 		DokumentFil dokumentFilKopi2 = dokumentFilTestRepository.findByFilUuid(filDetaljerKopi2.getFilUuid());
 
-		assertRelasjon(journalpostTilknyttetVedlegg2.getJournalpostId(), dokumentInfoKopi2);
+		assertRelasjon(journalpostTilknyttetVedlegg2.getJournalpostId(), dokumentInfoKopi2, 2);
 		assertDokumentInfo(sourceDokumentInfo2, dokumentInfoKopi2);
 		assertFildetaljer(sourceFilDetaljer2, filDetaljerKopi2);
 		assertDokumentFil(sourceDokumentFil2, dokumentFilKopi2);
 
 
 		//Assert 3 Arkiv
-		Journalpost journalpostTilknyttetVedlegg = journalpostTestRepository.findById(targetJournalpostId).get();
+		Journalpost journalpostTilknyttetVedlegg3 = journalpostTestRepository.findById(targetJournalpostId).get();
 		DokumentInfo sourceDokumentInfo3 = sourceJournalpost3.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		DokumentInfo dokumentInfoKopi3 = journalpostTilknyttetVedlegg.getJournalpostDokumentInfoRelasjoner()
+		DokumentInfo dokumentInfoKopi3 = journalpostTilknyttetVedlegg3.getJournalpostDokumentInfoRelasjoner()
 				.stream()
 				.filter(j -> j.getDokumentInfo().getDokumentInfoId().equals(sourceDokumentInfoId3))
 				.findAny()
 				.get()
 				.getDokumentInfo();
-
+		assertRelasjon(journalpostTilknyttetVedlegg3.getJournalpostId(), dokumentInfoKopi3, 1);
 		assertThat(responseEntity.getStatusCode(), is(OK));
 		assertEquals(sourceDokumentInfo3.getDokumentInfoId(), dokumentInfoKopi3.getDokumentInfoId());
 	}
@@ -521,9 +523,14 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	}
 
 	private void assertRelasjon(Long journalpostIdTilknyttet, DokumentInfo dokumentInfoKopi) {
+		assertRelasjon(journalpostIdTilknyttet, dokumentInfoKopi, null);
+	}
+
+	private void assertRelasjon(Long journalpostIdTilknyttet, DokumentInfo dokumentInfoKopi, Integer rekkefoelge) {
 		JournalpostDokumentInfoRelasjon tilknyttetRelasjon = dokumentInfoKopi.findJournalpostRelasjonByJournalpostId(journalpostIdTilknyttet);
 		assertThat(tilknyttetRelasjon.getTilknyttetAvNavn(), is(PERSON_USER_NAME));
 		assertThat(tilknyttetRelasjon.getOpprettetKildeNavn(), is(SERVICE_USER_ID));
+		assertThat(tilknyttetRelasjon.getRekkefoelge(), is(rekkefoelge));
 	}
 
 	private void assertDokumentInfo(DokumentInfo sourceDokumentInfo, DokumentInfo dokumentInfoKopi) {
@@ -600,19 +607,6 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		return journalpostArkiv;
 	}
 
-	private List<DokumentVedlegg> createDokumentVedleggList(Long journalpostId, String dokumentinfoId) {
-		List<DokumentVedlegg> dokumentVedleggList = new ArrayList<>();
-		dokumentVedleggList.add(createDokumentVedlegg(journalpostId, dokumentinfoId));
-		return dokumentVedleggList;
-	}
-
-	private DokumentVedlegg createDokumentVedlegg(Long journalpostId, String dokumentinfoId) {
-		return DokumentVedlegg.builder()
-				.kildeJournalpostId(journalpostId)
-				.dokumentInfoId(dokumentinfoId)
-				.build();
-	}
-
 	private void completeCurrentAndStartNewTransaction() {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -621,27 +615,27 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private static void generateAndStubSafResponse(Journalpost... journalposts) {
 		String response = """
-				{
-				"data": {
-				  "journalpost": {
-				    "dokumenter": [
-				    """ +
-				Stream.of(journalposts)
-						.map(Journalpost::findHoveddokumentDokumentInfoRelasjon)
-						.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
-						.map(DokumentInfo::getDokumentInfoId)
-						.map(id -> String.format("""
 								  {
-								  "dokumentInfoId": "%d",
-								  "dokumentvarianter": [
-									{
-									  "saksbehandlerHarTilgang": true,
-									  "variantformat": "ARKIV"
-									}
-								  ]
-								}""", id))
-						.collect(joining(","))
-				+ "] }}}";
+								  "data": {
+								    "journalpost": {
+								      "dokumenter": [
+								  """ +
+						  Stream.of(journalposts)
+								  .map(Journalpost::findHoveddokumentDokumentInfoRelasjon)
+								  .map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
+								  .map(DokumentInfo::getDokumentInfoId)
+								  .map(id -> String.format("""
+										    {
+										    "dokumentInfoId": "%d",
+										    "dokumentvarianter": [
+										  	{
+										  	  "saksbehandlerHarTilgang": true,
+										  	  "variantformat": "ARKIV"
+										  	}
+										    ]
+										  }""", id))
+								  .collect(joining(","))
+						  + "] }}}";
 
 		stubFor(post(urlMatching("/safgraphql"))
 				.willReturn(aResponse()

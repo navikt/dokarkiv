@@ -6,11 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
-
-/**
- * @author Olav Røstvold Thorsen, Visma Consulting.
- */
 
 @Builder
 @Getter
@@ -25,11 +22,19 @@ public class DokumentVedlegg {
 	)
 	private Long kildeJournalpostId;
 
+
 	@Schema(
 			description = "ID til dokumentet som skal legges til som vedlegg",
 			requiredMode = REQUIRED,
 			example = "12345678"
 	)
 	private String dokumentInfoId;
+
+	@Schema(
+			description = "Vedleggets plassering blant alle vedlegg på journalposten. Skal være > 0 eller ikke satt (null)",
+			requiredMode = NOT_REQUIRED,
+			example = "1"
+	)
+	private Integer rekkefoelge;
 
 }
