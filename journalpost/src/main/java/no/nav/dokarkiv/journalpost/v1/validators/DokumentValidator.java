@@ -22,6 +22,7 @@ import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDFA;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.XLSX;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.valueOf;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConstants.MIN_VEDLEGG_REKKEFOELGE;
 import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.PDF_MAGIC_NUMBER;
 import static no.nav.dokarkiv.journalpost.v1.validators.FilMagicNumberValidator.isFileContentContainsValidMagicNumber;
 import static no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator.validateSkjultTittel;
@@ -164,7 +165,7 @@ public final class DokumentValidator {
 	}
 
 	private static void validateRekkefoelge(Integer dokumentIdx, Dokument dokument) {
-		if (dokument.getRekkefoelge() != null && dokument.getRekkefoelge() < 1) {
+		if (dokument.getRekkefoelge() != null && dokument.getRekkefoelge() < MIN_VEDLEGG_REKKEFOELGE) {
 			throw new InputValideringFeiletException("%s.rekkefoelge må være null eller et positivt heltall. Mottatt rekkefoelge=%s"
 					.formatted(dokumentnummerPrefix(dokumentIdx), dokument.getRekkefoelge()));
 		}

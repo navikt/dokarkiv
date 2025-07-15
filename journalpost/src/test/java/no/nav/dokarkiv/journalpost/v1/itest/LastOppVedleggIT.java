@@ -164,6 +164,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 						.tittel(TITTEL)
 						.brevkode(BREVKODE)
 						.dokumentvarianter(List.of(DOCUMENT_PDF, DOCUMENT_XML))
+						.rekkefoelge(null)
 						.build());
 
 		var request = new HttpEntity<>(requestBody, headers);
@@ -180,6 +181,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 		var dokumentInfo = vedleggRelasjon.getDokumentInfo();
 		var fildetaljerListe = dokumentInfo.getFildetaljerListe();
 
+		assertThat(vedleggRelasjon.getRekkefoelge()).isNull();
 		assertThat(fildetaljerListe)
 				.hasSize(2)
 				.extracting(FilDetaljer::getVariantFormat)
