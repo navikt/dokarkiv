@@ -114,7 +114,7 @@ public class OpprettJournalpostApiRequestMapper {
 		} else if (isNotBlank(avsenderMottaker.getId())) {
 			if (erAvsenderMottakerPerson(avsenderMottaker)) {
 				return hentPersonnavn(request);
-			} else if (erAvsenderMottakerOrgnisasjon(avsenderMottaker)) {
+			} else if (erAvsenderMottakerOrganisasjon(avsenderMottaker)) {
 				return hentOrganisasjonsnavn(request);
 			}
 		}
@@ -128,7 +128,7 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private String hentOrganisasjonsnavn(OpprettJournalpostRequest request) {
 		final AvsenderMottaker avsenderMottaker = request.getAvsenderMottaker();
-		EregResponse eregResponse = eregConsumer.hentOrganisasjon(avsenderMottaker.getId());
+		EregResponse eregResponse = eregConsumer.hentOrganisasjonnavn(avsenderMottaker.getId());
 
 		return (eregResponse == null || eregResponse.navn() == null) ? null : eregResponse.navn().sammensattnavn();
 	}
@@ -387,14 +387,14 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private boolean erAvsenderMottakerPerson(AvsenderMottaker avsenderMottaker) {
-		return avsenderMottaker.getId().length() == FNR_LENGTH || FNR.equals(avsenderMottaker.getIdType());
+		return avsenderMottaker.getIdType() == null || FNR.equals(avsenderMottaker.getIdType());
 	}
 
 	private boolean erBrukerIdOgNavnNull(AvsenderMottaker avsenderMottaker) {
 		return isBlank(avsenderMottaker.getNavn()) && isBlank(avsenderMottaker.getId());
 	}
 
-	private boolean erAvsenderMottakerOrgnisasjon(AvsenderMottaker avsenderMottaker) {
-		return avsenderMottaker.getId().length() == ORGNR_LENGTH || ORGNR.equals(avsenderMottaker.getIdType());
+	private boolean erAvsenderMottakerOrganisasjon(AvsenderMottaker avsenderMottaker) {
+		return ORGNR.equals(avsenderMottaker.getIdType());
 	}
 }

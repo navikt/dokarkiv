@@ -123,6 +123,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
@@ -1435,15 +1436,13 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldUseEregNameForAvsenderMottakerWhenIdTypeIsORGNRAndNameIsNull() {
-		no.nav.dokarkiv.core.domain.entities.Sak sak = SakTestDataProvider.createSakWithStatus(null).build();
+	public void shouldFetchNameFromEregWhenNameIsNullAndOrgIdAndTypeAreGiven() {
 		restStsToken();
 		stubAzure();
 		happyEregOrganisasjonStub();
 
 		OpprettJournalpostRequest request = createRequestOrg(UTGAAENDE, "0123", SAK_ID.toString());
 
-		ReflectionTestUtils.setField(request.getAvsenderMottaker(), "navn", " ");
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
 
@@ -1453,6 +1452,20 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals("Test Organisasjon AS", journalpost.getAvsenderMottaker());
 		assertEquals(AVSENDER_ID_UTLORGANISASJON, journalpost.getAvsenderMottakerId());
 		verify(exactly(1), getRequestedFor(urlEqualTo("/ereg/123456789/noekkelinfo")));
+	}
+
+	@Test
+	public void shouldEregThrowNotFoundException() {
+		restStsToken();
+		stubAzure();
+		notFoundEregOrganisasjonStub();
+
+		OpprettJournalpostRequest request = createRequestOrg(UTGAAENDE, "0123", SAK_ID.toString());
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(NOT_FOUND, response.getStatusCode());
 	}
 
 	@Test

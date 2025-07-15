@@ -441,7 +441,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 
 	@Test
 	void shouldHentNavFraEregAndMapNavnWhenIdTypeIsORGNR() {
-		when(eregConsumerMock.hentOrganisasjon(eq(AVSENDER_ID_ORGANISASJON)))
+		when(eregConsumerMock.hentOrganisasjonnavn(eq(AVSENDER_ID_ORGANISASJON)))
 				.thenReturn(new EregResponse(AVSENDER_ID_ORGANISASJON, new EregResponse.Navn(AVSENDER_NAVN_ORGANISASJON)));
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerOrganisasjonWithoutNavn());
 		Journalpost jp = mapper.map(request, null);
