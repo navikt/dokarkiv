@@ -54,7 +54,7 @@ public class LastOppVedleggService {
 		validateJournalpostAndDokument(journalpost, request.dokument());
 
 		var dokumentInfo = opprettDokumentInfo(journalpost, request);
-		var journalpostDokumentInfoRelasjon = opprettJournalpostDokumentInfoRelasjon(journalpost, dokumentInfo);
+		var journalpostDokumentInfoRelasjon = opprettJournalpostDokumentInfoRelasjon(journalpost, dokumentInfo, request);
 
 		journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
 
@@ -80,11 +80,12 @@ public class LastOppVedleggService {
 		aksjonsLoggService.validateAndSaveAksjonsLogg(aksjonsLogg, Collections.emptyList());
 	}
 
-	private JournalpostDokumentInfoRelasjon opprettJournalpostDokumentInfoRelasjon(Journalpost journalpost, DokumentInfo dokumentInfo) {
+	private JournalpostDokumentInfoRelasjon opprettJournalpostDokumentInfoRelasjon(Journalpost journalpost, DokumentInfo dokumentInfo, LastOppVedleggRequest request) {
 		var relasjon = JournalpostDokumentInfoRelasjon.builder()
 				.tilknyttetJournalpostSom(VEDLEGG)
 				.journalpost(journalpost)
 				.tilknyttetAvNavn(MDC.get(MDC_USER_NAME))
+				.rekkefoelge(request.dokument().getRekkefoelge())
 				.build();
 
 		relasjon.setDokumentInfo(dokumentInfo);

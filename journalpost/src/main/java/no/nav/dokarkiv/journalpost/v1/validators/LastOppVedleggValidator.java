@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConstants.MIN_VEDLEGG_REKKEFOELGE;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -40,6 +41,11 @@ public final class LastOppVedleggValidator {
 	private static void validateDokument(Dokument dokument) {
 		if (isEmpty(dokument.getTittel())) {
 			throw new InputValideringFeiletException("dokument.tittel kan ikke være tom eller null");
+		}
+
+		if (dokument.getRekkefoelge() != null && dokument.getRekkefoelge() < MIN_VEDLEGG_REKKEFOELGE) {
+			throw new InputValideringFeiletException("dokument.rekkefoelge må være null eller et positivt heltall. Mottatt rekkefoelge=%s"
+					.formatted(dokument.getRekkefoelge()));
 		}
 
 		if (isEmpty(dokument.getDokumentvarianter())) {

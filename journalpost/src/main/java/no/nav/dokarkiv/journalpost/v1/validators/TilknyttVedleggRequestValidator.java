@@ -7,6 +7,7 @@ import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import org.slf4j.MDC;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConstants.MIN_VEDLEGG_REKKEFOELGE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class TilknyttVedleggRequestValidator {
@@ -37,7 +38,7 @@ public class TilknyttVedleggRequestValidator {
 			throw new InputValideringFeiletException("dokument.dokumentInfoId må være satt for vedlegg med dokument.kildeJournalpostId=%s"
 					.formatted(dokumentVedlegg.getKildeJournalpostId()));
 		}
-		if (dokumentVedlegg.getRekkefoelge() != null && dokumentVedlegg.getRekkefoelge() < 1) {
+		if (dokumentVedlegg.getRekkefoelge() != null && dokumentVedlegg.getRekkefoelge() < MIN_VEDLEGG_REKKEFOELGE) {
 			throw new InputValideringFeiletException("dokument.rekkefoelge må være null eller et positivt heltall. Mottatt rekkefoelge=%s"
 					.formatted(dokumentVedlegg.getRekkefoelge()));
 		}
