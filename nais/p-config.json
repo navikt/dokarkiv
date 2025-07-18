@@ -15,6 +15,7 @@
   "DOKARKIV_ENDPOINTS_SAF_URL": "https://saf.nais.adeo.no/graphql",
   "DOKARKIV_ENDPOINTS_SAF_SCOPE": "api://prod-fss.teamdokumenthandtering.saf/.default",
   "DOKARKIV_ENDPOINTS_PDL_SCOPE": "api://prod-fss.pdl.pdl-api/.default",
+  "DOKARKIV_EREG_URL": "http://ereg-services.arbeidsforhold.svc.nais.local/v2/organisasjon",
   "DOKPRODMELLOMLAGER_PROJECTID": "teamdokumenthandteri-prod-a63b",
   "DOKPRODMELLOMLAGER_BUCKET": "dokprodmellomlager-prod",
   "DOKPRODMELLOMLAGER_KEYRING": "dokprodmellomlager-keyring",

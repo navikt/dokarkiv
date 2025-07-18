@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -26,6 +27,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -94,10 +96,6 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 		return apiPathBuilder(JOURNALPOSTAPI_MOTTATTEJOURNALPOSTER_PATH).build().toUriString();
 	}
 
-	protected static String apiInternalPath(String... path) {
-		return apiInternalPathBuilder(path).build().toUriString();
-	}
-
 	protected static String apiInternalJournalpostPath(String... path) {
 		return apiInternalPathBuilder(INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH).pathSegment(path).build().toUriString();
 	}
@@ -157,6 +155,22 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 						.withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-aktoerid-happy-historisk.json")));
+	}
+
+	public void happyEregOrganisasjonStub() {
+		stubFor(get(urlEqualTo("/ereg/123456789/noekkelinfo"))
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("ereg/ereg-organisasjon-happy.json")));
+	}
+
+	public void notFoundEregOrganisasjonStub() {
+		stubFor(get(urlEqualTo("/ereg/123456789/noekkelinfo"))
+				.willReturn(aResponse()
+						.withStatus(NOT_FOUND.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withBodyFile("ereg/not_found_error.json")));
 	}
 
 	public void stubAzure() {

@@ -17,6 +17,7 @@ public class DokarkivProperties {
 
 	private final Database database = new Database();
 	private final Endpoints endpoints = new Endpoints();
+	private final EregEndpoint ereg = new EregEndpoint();
 
 	@Data
 	@Validated
@@ -85,5 +86,16 @@ public class DokarkivProperties {
 		 */
 		@NotEmpty
 		private String scope;
+	}
+
+	@Data
+	@Validated
+	public static class EregEndpoint {
+		/**
+		 * URL til Ereg API.
+		 */
+		@NotEmpty
+		private String url;
+
 	}
 }
