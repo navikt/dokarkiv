@@ -384,7 +384,7 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private boolean erAvsenderMottakerPerson(AvsenderMottaker avsenderMottaker) {
-		return avsenderMottaker.getIdType() == null || FNR.equals(avsenderMottaker.getIdType());
+		return avsenderMottaker.getIdType() == null || FNR == avsenderMottaker.getIdType();
 	}
 
 	private boolean erBrukerIdOgNavnNull(AvsenderMottaker avsenderMottaker) {
@@ -392,6 +392,6 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private boolean erAvsenderMottakerOrganisasjon(AvsenderMottaker avsenderMottaker) {
-		return ORGNR.equals(avsenderMottaker.getIdType());
+		return ORGNR == avsenderMottaker.getIdType();
 	}
 }
