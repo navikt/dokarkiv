@@ -58,9 +58,6 @@ import static org.apache.commons.lang3.StringUtils.trim;
 @Component
 public class OpprettJournalpostApiRequestMapper {
 
-	private static final int FNR_LENGTH = 11;
-	private static final int ORGNR_LENGTH = 9;
-
 	private final IdentConsumer identConsumer;
 	private final EregConsumer eregConsumer;
 
