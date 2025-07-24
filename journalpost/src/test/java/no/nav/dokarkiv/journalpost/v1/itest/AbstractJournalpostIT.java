@@ -165,6 +165,14 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 						.withBodyFile("ereg/ereg-organisasjon-happy.json")));
 	}
 
+	public void expiredEregOrganisasjonStub() {
+		stubFor(get(urlEqualTo("/ereg/123456789/noekkelinfo"))
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("ereg/ereg-organisasjon-expired.json")));
+	}
+
 	public void notFoundEregOrganisasjonStub() {
 		stubFor(get(urlEqualTo("/ereg/123456789/noekkelinfo"))
 				.willReturn(aResponse()

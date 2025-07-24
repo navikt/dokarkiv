@@ -127,7 +127,13 @@ public class OpprettJournalpostApiRequestMapper {
 		final AvsenderMottaker avsenderMottaker = request.getAvsenderMottaker();
 		EregResponse eregResponse = eregConsumer.hentOrganisasjonnavn(avsenderMottaker.getId());
 
-		return (eregResponse == null || eregResponse.navn() == null) ? null : eregResponse.navn().sammensattnavn();
+		if (eregResponse == null || eregResponse.navn() == null) {
+			return null;
+		}
+
+		var navn = eregResponse.navn();
+
+		return navn.erGyldig() ? navn.sammensattnavn() : null;
 	}
 
 	private JournalpostTypeCode mapJournalposttype(JournalpostType request) {

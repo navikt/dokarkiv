@@ -4,11 +4,11 @@
     "sammensattnavn": "Test Organisasjon AS",
     "bruksperiode": {
       "fom": "2000-01-06T21:44:04.748",
-      "tom": "2099-12-06T19:45:04"
+      "tom": "2020-12-06T19:45:04"
     },
     "gyldighetsperiode": {
       "fom": "2000-07-01",
-      "tom": "2099-12-31"
+      "tom": "2020-12-31"
     }
   }
 }

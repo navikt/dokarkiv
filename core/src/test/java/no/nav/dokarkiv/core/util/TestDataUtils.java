@@ -22,6 +22,7 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.Long.parseLong;
+import static java.time.LocalDateTime.now;
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.PEN;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
@@ -65,6 +67,11 @@ public class TestDataUtils {
 
 	public static final Long JOURNALPOST_ID = 1L;
 	public static final Long DOKUMENT_INFO_ID = 1L;
+
+	public static final LocalDateTime FORTID = now().minusDays(1);
+	public static final LocalDateTime FREMTID = now().plusDays(1);
+	public static final LocalDate FORTID_DATO = now().minusDays(1).toLocalDate();
+	public static final LocalDate FREMTID_DATO = now().plusDays(1).toLocalDate();
 
 	public static AksjonsLoggTO createAksjonsLoggTO(Long journalpostId, Long dokumentInfoId) {
 		return AksjonsLoggTO.builder()

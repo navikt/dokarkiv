@@ -1455,6 +1455,25 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shouldSetNameToNullWhenNameFromEregIsExpired() {
+		restStsToken();
+		stubAzure();
+		expiredEregOrganisasjonStub();
+
+		OpprettJournalpostRequest request = createRequestOrg(UTGAAENDE, "0123", SAK_ID.toString());
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(CREATED, response.getStatusCode());
+
+		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
+		assertNull(journalpost.getAvsenderMottaker());
+		assertEquals(AVSENDER_ID_UTLORGANISASJON, journalpost.getAvsenderMottakerId());
+		verify(exactly(1), getRequestedFor(urlEqualTo("/ereg/123456789/noekkelinfo")));
+	}
+
+	@Test
 	public void shouldEregThrowNotFoundException() {
 		restStsToken();
 		stubAzure();

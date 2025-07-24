@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
 import no.nav.dokarkiv.core.consumer.ereg.EregConsumer;
-import no.nav.dokarkiv.core.consumer.ereg.EregResponse;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -73,6 +72,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FORTID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
@@ -92,6 +92,8 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottak
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPersonWithoutNavnAndIdType;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerUtlandOrganisasjon;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBaseRequest;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEregResponse;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEregResponseWithBruksperiode;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithBrevkode;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createMinimalRequestWithKanal;
@@ -440,13 +442,23 @@ public class OpprettJournalpostApiRequestMapperTest {
 	}
 
 	@Test
-	void shouldHentNavFraEregAndMapNavnWhenIdTypeIsORGNR() {
+	void shouldHentNavnFraEregAndMapNavnWhenIdTypeIsORGNR() {
 		when(eregConsumerMock.hentOrganisasjonnavn(eq(AVSENDER_ID_ORGANISASJON)))
-				.thenReturn(new EregResponse(AVSENDER_ID_ORGANISASJON, new EregResponse.Navn(AVSENDER_NAVN_ORGANISASJON)));
+				.thenReturn(createEregResponse(AVSENDER_ID_ORGANISASJON, AVSENDER_NAVN_ORGANISASJON));
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerOrganisasjonWithoutNavn());
 		Journalpost jp = mapper.map(request, null);
 		assertEquals(AVSENDER_NAVN_ORGANISASJON, jp.getAvsenderMottaker());
 		assertEquals(AVSENDER_ID_ORGANISASJON, jp.getAvsenderMottakerId());
+	}
+
+	@Test
+	void shouldMapOrganisasjonsnavnToNullWhenNotValidFromEreg() {
+		when(eregConsumerMock.hentOrganisasjonnavn(eq(AVSENDER_ID_ORGANISASJON)))
+				.thenReturn(createEregResponseWithBruksperiode(AVSENDER_ID_ORGANISASJON, AVSENDER_NAVN_ORGANISASJON, FORTID, FORTID));
+		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerOrganisasjonWithoutNavn());
+
+		Journalpost jp = mapper.map(request, null);
+		assertNull(jp.getAvsenderMottaker());
 	}
 
 	@Test
