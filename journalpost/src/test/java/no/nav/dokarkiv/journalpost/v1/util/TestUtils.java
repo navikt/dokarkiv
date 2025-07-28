@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.util;
 
+import no.nav.dokarkiv.core.consumer.ereg.EregResponse;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -135,6 +136,11 @@ public class TestUtils {
 	public static final String FNR = "01010199999";
 	public static final String FNR_2 = "01010188888";
 	public static final String FNR_UGYLDIG = "12345678901";
+
+	public static final LocalDateTime FORTID = LocalDateTime.now().minusDays(1);
+	public static final LocalDateTime FREMTID = LocalDateTime.now().plusDays(1);
+	public static final LocalDate FORTID_DATO = LocalDate.now().minusDays(1);
+	public static final LocalDate FREMTID_DATO = LocalDate.now().plusDays(1);
 
 	public static Journalpost createEnkelJournalpost() {
 		Journalpost journalpost = Journalpost.builder()
@@ -849,5 +855,19 @@ public class TestUtils {
 				.opprettetAv(CONSUMER_ID)
 				.opprettetTidspunkt(LocalDateTime.now())
 				.build();
+	}
+
+	public static EregResponse createEregResponse(String organisasjonId, String organisasjonNavn) {
+		var bruksperiode = new EregResponse.Navn.Bruksperiode(FORTID, FREMTID);
+		var gyldighetsperiode = new EregResponse.Navn.Gyldighetsperiode(FORTID_DATO, FREMTID_DATO);
+
+		return new EregResponse(organisasjonId, new EregResponse.Navn(organisasjonNavn, bruksperiode, gyldighetsperiode));
+	}
+
+	public static EregResponse createEregResponseWithBruksperiode(String organisasjonId, String organisasjonNavn, LocalDateTime bruksperiodeStart, LocalDateTime bruksperiodeSlutt) {
+		var gyldighetsperiode = new EregResponse.Navn.Gyldighetsperiode(FORTID_DATO, FREMTID_DATO);
+		var bruksperiode = new EregResponse.Navn.Bruksperiode(bruksperiodeStart, bruksperiodeSlutt);
+
+		return new EregResponse(organisasjonId, new EregResponse.Navn(organisasjonNavn, bruksperiode, gyldighetsperiode));
 	}
 }
