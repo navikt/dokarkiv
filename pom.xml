@@ -50,7 +50,7 @@
 		<verapdf.version>1.28.1</verapdf.version>
 
 		<!-- Tjenestegrensesnitt -->
-		<dok-legacy-tjenestespesifikasjoner.version>32-9d17b57</dok-legacy-tjenestespesifikasjoner.version>
+		<dok-legacy-tjenestespesifikasjoner.version>41-d282678</dok-legacy-tjenestespesifikasjoner.version>
 		<!-- test -->
 		<datasource-proxy-spring-boot-starter.version>1.11.0</datasource-proxy-spring-boot-starter.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
