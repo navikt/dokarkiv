@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
+import no.nav.dokarkiv.core.consumer.ereg.EregConsumer;
+import no.nav.dokarkiv.core.consumer.ereg.EregResponse;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -17,9 +19,11 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 public class AvsenderMottakerUpdater {
 	public static final String DELETE_MARKER = " ";
 	private final IdentConsumer identConsumer;
+	private final EregConsumer eregConsumer;
 
-	public AvsenderMottakerUpdater(IdentConsumer identConsumer) {
+	public AvsenderMottakerUpdater(IdentConsumer identConsumer, EregConsumer eregConsumer) {
 		this.identConsumer = identConsumer;
+		this.eregConsumer = eregConsumer;
 	}
 
 	void updateAvsenderMottaker(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
@@ -56,9 +60,15 @@ public class AvsenderMottakerUpdater {
 
 		if (isNotBlank(ny.getNavn())) {
 			oppdaterAvsenderMottakerNavn(endret, journalpost, ny.getNavn());
-		} else if (isIdOgIdTypeFnrSatt(ny)) {
+		} else if (isIdOgIdTypeSatt(ny, AvsenderMottakerIdTypeCode.FNR)) {
 			String navn = identConsumer.hentPersonnavn(ny.getId());
 			oppdaterAvsenderMottakerNavn(endret, journalpost, navn);
+		} else if (isIdOgIdTypeSatt(ny, AvsenderMottakerIdTypeCode.ORGNR)) {
+			EregResponse eregResponse = eregConsumer.hentOrganisasjonsnavn(ny.getId());
+
+			if (eregResponse != null && eregResponse.navn() != null && eregResponse.navn().erGyldig()) {
+				oppdaterAvsenderMottakerNavn(endret, journalpost, eregResponse.navn().sammensattnavn());
+			}
 		}
 	}
 
@@ -67,8 +77,8 @@ public class AvsenderMottakerUpdater {
 		endret.setEndretFlagg(true);
 	}
 
-	private boolean isIdOgIdTypeFnrSatt(AvsenderMottaker ny) {
-		return ny.getId() != null && !DELETE_MARKER.equals(ny.getId()) && AvsenderMottakerIdTypeCode.FNR.equals(oversettAvsenderMottakerIdType(ny.getIdType()));
+	private static boolean isIdOgIdTypeSatt(AvsenderMottaker ny, AvsenderMottakerIdTypeCode idTypeCode) {
+		return ny.getId() != null && !DELETE_MARKER.equals(ny.getId()) && idTypeCode.equals(oversettAvsenderMottakerIdType(ny.getIdType()));
 	}
 
 	private static void nullUtAvsenderMottakerIdOgAvsenderMottakerIdType(Journalpost journalpost, ChangeTracker endret) {
@@ -109,15 +119,13 @@ public class AvsenderMottakerUpdater {
 		journalpost.setAvsenderMottakerIdType(idType);
 	}
 
-	private AvsenderMottakerIdTypeCode oversettAvsenderMottakerIdType(AvsenderMottakerIdType idType) {
-		if (idType == null) {
-			return null;
-		}
+	private static AvsenderMottakerIdTypeCode oversettAvsenderMottakerIdType(AvsenderMottakerIdType idType) {
 		return switch (idType) {
 			case FNR -> AvsenderMottakerIdTypeCode.FNR;
 			case HPRNR -> AvsenderMottakerIdTypeCode.HPRNR;
 			case ORGNR -> AvsenderMottakerIdTypeCode.ORGNR;
 			case UTL_ORG -> AvsenderMottakerIdTypeCode.UTL_ORG;
+			case null -> null;
 		};
 	}
 }

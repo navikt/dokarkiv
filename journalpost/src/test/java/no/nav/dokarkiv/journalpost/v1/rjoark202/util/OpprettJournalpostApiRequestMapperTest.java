@@ -443,7 +443,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 
 	@Test
 	void shouldHentNavnFraEregAndMapNavnWhenIdTypeIsORGNR() {
-		when(eregConsumerMock.hentOrganisasjonnavn(eq(AVSENDER_ID_ORGANISASJON)))
+		when(eregConsumerMock.hentOrganisasjonsnavn(eq(AVSENDER_ID_ORGANISASJON)))
 				.thenReturn(createEregResponse(AVSENDER_ID_ORGANISASJON, AVSENDER_NAVN_ORGANISASJON));
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerOrganisasjonWithoutNavn());
 		Journalpost jp = mapper.map(request, null);
@@ -453,7 +453,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 
 	@Test
 	void shouldMapOrganisasjonsnavnToNullWhenNotValidFromEreg() {
-		when(eregConsumerMock.hentOrganisasjonnavn(eq(AVSENDER_ID_ORGANISASJON)))
+		when(eregConsumerMock.hentOrganisasjonsnavn(eq(AVSENDER_ID_ORGANISASJON)))
 				.thenReturn(createEregResponseWithBruksperiode(AVSENDER_ID_ORGANISASJON, AVSENDER_NAVN_ORGANISASJON, FORTID, FORTID));
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerOrganisasjonWithoutNavn());
 

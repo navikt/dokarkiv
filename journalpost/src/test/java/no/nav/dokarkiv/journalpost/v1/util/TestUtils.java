@@ -65,7 +65,7 @@ public class TestUtils {
 
 	public static final LocalDateTime MOTTAT_DATO = LocalDateTime.of(2017, 2, 3, 10, 37, 30);
 	public static final String BRUKER_ID_PERSON = "10987654321";
-	public static final String BRUKER_ID_ORGANISASJON = "987654321";
+	public static final String BRUKER_ID_ORGANISASJON = "123456789";
 	public static final Long SAK_ID = 12345L;
 	public static final String FAGSAK_ID = "123abc";
 	public static final String PENSJON_FAGSAK_ID = "54321";

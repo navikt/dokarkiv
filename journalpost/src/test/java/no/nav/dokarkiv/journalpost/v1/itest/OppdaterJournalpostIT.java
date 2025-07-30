@@ -38,6 +38,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -1177,6 +1178,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 		clearSakRepository();
 		stubAzure();
 		happyPersonIdentStub();
+		happyEregOrganisasjonStub();
 
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
 				.endretAvNavn("saksbehandlersen")
@@ -1207,6 +1209,40 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				Arguments.of(AVSENDER_ID_PERSON, BRUKER_ID_ORGANISASJON, BRUKER_ID_ORGANISASJON, AvsenderMottakerIdTypeCode.FNR, AvsenderMottakerIdType.ORGNR, AvsenderMottakerIdTypeCode.ORGNR)
 		);
 
+	}
+
+	@Test
+	void shouldOppdatereAvsenderMottakerNavnForOrganisasjonWithNavnFromEreg() {
+		clearSakRepository();
+		stubAzure();
+		happyEregOrganisasjonStub();
+
+		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M)
+				.endretAvNavn("saksbehandlersen")
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.ORGNR)
+				.mottakskanal(MottaksKanalCode.SKAN_IM));
+		Long journalpostId = journalpost.getJournalpostId();
+
+		OppdaterJournalpostRequest request = OppdaterJournalpostRequest.builder()
+				.tema(TEMA_SYM)
+				.avsenderMottaker(AvsenderMottaker.builder()
+						.id(BRUKER_ID_ORGANISASJON)
+						.idType(AvsenderMottakerIdType.ORGNR)
+						.build())
+				.build();
+		HttpEntity<OppdaterJournalpostRequest> requestHttpEntity = new HttpEntity<>(request, oidcHeaders());
+
+		ResponseEntity<OppdaterJournalpostResponse> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()), PUT, requestHttpEntity, OppdaterJournalpostResponse.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+
+		Optional<Journalpost> journalpostOppdatert = journalpostTestRepository.findById(journalpostId);
+
+		assertThat(journalpostOppdatert)
+				.isPresent()
+				.get()
+				.extracting(Journalpost::getAvsenderMottaker)
+				.isEqualTo("Test Organisasjon AS");
 	}
 
 	@Test
