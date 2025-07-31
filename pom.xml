@@ -35,24 +35,24 @@
 		<commons-collections4.version>4.5.0</commons-collections4.version>
 		<logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
-		<libraries-bom.version>26.62.0</libraries-bom.version>
+		<libraries-bom.version>26.64.0</libraries-bom.version>
 		<tink.version>1.18.0</tink.version>
 		<tink-gcpkms.version>1.10.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.14</blaze-persistence.version>
-		<commons-io.version>2.19.0</commons-io.version>
-		<microsoft-graph.version>6.43.0</microsoft-graph.version>
+		<commons-io.version>2.20.0</commons-io.version>
+		<microsoft-graph.version>6.47.0</microsoft-graph.version>
 		<azure-identity.version>1.16.0</azure-identity.version>
 		<!-- https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot -->
 		<springdoc-openapi-starter-webmvc-ui.version>2.8.9</springdoc-openapi-starter-webmvc-ui.version>
 
 		<!-- NAV -->
-		<token-support.version>5.0.19</token-support.version>
+		<token-support.version>5.0.33</token-support.version>
 		<verapdf.version>1.28.1</verapdf.version>
 
 		<!-- Tjenestegrensesnitt -->
-		<dok-legacy-tjenestespesifikasjoner.version>32-9d17b57</dok-legacy-tjenestespesifikasjoner.version>
+		<dok-legacy-tjenestespesifikasjoner.version>41-d282678</dok-legacy-tjenestespesifikasjoner.version>
 		<!-- test -->
-		<datasource-proxy-spring-boot-starter.version>1.11.0</datasource-proxy-spring-boot-starter.version>
+		<datasource-proxy-spring-boot-starter.version>1.12.0</datasource-proxy-spring-boot-starter.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
 		<spring-cloud-contract-wiremock.version>4.3.0</spring-cloud-contract-wiremock.version>
