@@ -26,7 +26,7 @@ public class EregConsumer {
 				.build();
 	}
 
-	public EregResponse hentOrganisasjonnavn(String organisasjonsnummer) {
+	public EregResponse hentOrganisasjonsnavn(String organisasjonsnummer) {
 		ResponseEntity<EregResponse> entity = restClient.get()
 				.uri(uriBuilder -> uriBuilder.path("/{organisasjonsnummer}/noekkelinfo")
 						.build(organisasjonsnummer))

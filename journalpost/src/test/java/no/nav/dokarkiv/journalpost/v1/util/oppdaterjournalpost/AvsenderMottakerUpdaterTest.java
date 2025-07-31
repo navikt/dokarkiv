@@ -1,10 +1,13 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.consumer.ereg.EregConsumer;
+import no.nav.dokarkiv.core.consumer.ereg.EregResponse;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
+import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import org.junit.jupiter.api.Test;
@@ -19,10 +22,13 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_AVSENDER_MOTTAKER_ID_TYPE;
 import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.FNR;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_UTLAND;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottaker;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerOrganisasjonWithoutNavn;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEregResponse;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostAvsenderMottakerKunLandRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.AvsenderMottakerUpdater.DELETE_MARKER;
@@ -38,8 +44,12 @@ class AvsenderMottakerUpdaterTest {
 	private static final String NY_AVSENDER_MOTTAKER_ID = "11223344556";
 	private static final String NY_AVSENDER_MOTTAKER_NAVN = "Max Mekker";
 
+	private static final String NY_AVSENDER_MOTTAKER_ORG_NAVN = "Max Mekker AS";
+
 	@Mock
 	private IdentConsumer identConsumerMock;
+	@Mock
+	private EregConsumer eregConsumerMock;
 	@InjectMocks
 	private AvsenderMottakerUpdater avsenderMottakerUpdater;
 
@@ -159,4 +169,22 @@ class AvsenderMottakerUpdaterTest {
 		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
 		assertEquals(AVSENDER_MOTTAKER_UTLAND, journalpost.getLand());
 	}
+
+	@Test
+	void shouldChangeAvsenderMottakerNavnForOrganisasjon() {
+		EregResponse eregResponse = createEregResponse(AVSENDER_ID_ORGANISASJON, NY_AVSENDER_MOTTAKER_ORG_NAVN);
+		when(eregConsumerMock.hentOrganisasjonsnavn(eq(AVSENDER_ID_ORGANISASJON))).thenReturn(eregResponse);
+
+		AvsenderMottaker avsenderMottaker = createAvsenderMottakerOrganisasjonWithoutNavn();
+
+		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithAvsenderMottaker(avsenderMottaker);
+
+		Journalpost journalpost = TestUtils.createJournalpostForOppdatering();
+		ChangeTracker changeTracker = new ChangeTracker();
+
+		avsenderMottakerUpdater.updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, changeTracker);
+
+		assertThat(journalpost.getAvsenderMottaker()).isEqualTo(NY_AVSENDER_MOTTAKER_ORG_NAVN);
+	}
+
 }

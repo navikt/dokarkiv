@@ -125,7 +125,7 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private String hentOrganisasjonsnavn(OpprettJournalpostRequest request) {
 		final AvsenderMottaker avsenderMottaker = request.getAvsenderMottaker();
-		EregResponse eregResponse = eregConsumer.hentOrganisasjonnavn(avsenderMottaker.getId());
+		EregResponse eregResponse = eregConsumer.hentOrganisasjonsnavn(avsenderMottaker.getId());
 
 		if (eregResponse == null || eregResponse.navn() == null) {
 			return null;
