@@ -669,6 +669,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "mulighetsrommet-api",
+      "namespace": "team-mulighetsrommet",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "saas-proxy",
       "namespace": "teamcrm",
       "cluster": "prod-gcp"
