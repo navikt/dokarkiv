@@ -280,6 +280,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "ung-sak",
+      "namespace": "k9saksbehandling",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "yrkesskade-melding-mottak",
       "namespace": "yrkesskade",
       "cluster": "prod-gcp"
