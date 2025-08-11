@@ -670,6 +670,11 @@
       "app": "journey",
       "namespace": "tsm",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "melosys",
+      "namespace": "teammelosys-q1",
+      "cluster": "dev-fss"
     }
   ]
 }
