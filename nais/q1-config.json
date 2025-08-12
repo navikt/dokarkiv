@@ -568,7 +568,7 @@
       "cluster": "dev-fss"
     },
     {
-      "app": "rpa-nos-robot1",
+      "app": "rpa-nos-robot",
       "namespace": "team-rpa",
       "cluster": "dev-fss"
     },
