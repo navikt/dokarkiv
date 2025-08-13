@@ -678,7 +678,7 @@
     },
     {
       "app": "melosys",
-      "namespace": "teammelosys-q1",
+      "namespace": "teammelosys",
       "cluster": "dev-fss"
     }
   ]
