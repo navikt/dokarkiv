@@ -578,8 +578,8 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "melosys",
-      "namespace": "teammelosys-q1",
+      "app": "melosys-q1",
+      "namespace": "teammelosys",
       "cluster": "dev-fss"
     }
   ]
