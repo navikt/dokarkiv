@@ -617,6 +617,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "fia-dokument-publisering",
+      "namespace": "pia",
+      "cluster": "dev-gcp"
+    },    
+    {
       "app": "tiltak-vedtaksbrev",
       "namespace": "arbeidsgiver",
       "cluster": "dev-gcp"
