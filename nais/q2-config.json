@@ -680,6 +680,11 @@
       "app": "melosys",
       "namespace": "teammelosys",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "rpa-nrf-api",
+      "namespace": "team-rpa",
+      "cluster": "dev-fss"
     }
   ]
 }
