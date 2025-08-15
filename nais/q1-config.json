@@ -581,6 +581,11 @@
       "app": "melosys-q1",
       "namespace": "teammelosys",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "syfo-oppfolgingsplan-backend",
+      "namespace": "team-esyfo",
+      "cluster": "dev-gcp"
     }
   ]
 }
