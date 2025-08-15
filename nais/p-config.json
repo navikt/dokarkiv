@@ -702,6 +702,11 @@
       "app": "melosys",
       "namespace": "teammelosys",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "syfo-oppfolgingsplan-backend",
+      "namespace": "team-esyfo",
+      "cluster": "prod-gcp"
     }
   ]
 }

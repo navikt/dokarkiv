@@ -685,6 +685,11 @@
       "app": "rpa-nrf-api",
       "namespace": "team-rpa",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "syfo-oppfolgingsplan-backend",
+      "namespace": "team-esyfo",
+      "cluster": "dev-gcp"
     }
   ]
 }
