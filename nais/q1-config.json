@@ -24,7 +24,8 @@
     "https://dokarkiv-q1.nais.preprod.local",
     "https://dokarkiv-q1.dev.adeo.no",
     "https://dokarkiv.dev-fss-pub.nais.io",
-    "https://dokarkiv-q1.dev.intern.nav.no"
+    "https://dokarkiv-q1.dev.intern.nav.no",
+    "https://dokarkiv-q1.intern.dev.nav.no"
   ],
   "DOKARKIV_DS_CREDS": "/oracle/data/dev/creds/joark_q1-user",
   "DOKARKIV_DS_CONFIG": "/oracle/data/dev/config/joark_q1",
