@@ -25,7 +25,9 @@
     "https://dokarkiv-q2.dev.adeo.no",
     "https://dokarkiv-q2.dev.intern.nav.no",
     "https://dokarkiv-q2.dev-fss-pub.nais.io",
-    "https://dokarkiv.dev.intern.nav.no"
+    "https://dokarkiv.dev.intern.nav.no",
+    "https://dokarkiv.intern.dev.nav.no",
+    "https://dokarkiv-q2.intern.dev.nav.no"
   ],
   "DOKARKIV_DS_CREDS": "/oracle/data/dev/creds/joark_q2-user",
   "DOKARKIV_DS_CONFIG": "/oracle/data/dev/config/joark_q2",

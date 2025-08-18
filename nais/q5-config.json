@@ -23,7 +23,8 @@
   "INGRESSES": [
     "https://dokarkiv-q5.nais.preprod.local",
     "https://dokarkiv-q5.dev.adeo.no",
-    "https://dokarkiv-q5.dev.intern.nav.no"
+    "https://dokarkiv-q5.dev.intern.nav.no",
+    "https://dokarkiv-q5.intern.dev.nav.no"
   ],
   "DOKARKIV_DS_CREDS": "/oracle/data/dev/creds/joark_q5-user",
   "DOKARKIV_DS_CONFIG": "/oracle/data/dev/config/joark_q5",
