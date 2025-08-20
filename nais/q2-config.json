@@ -641,7 +641,8 @@
     {
       "app": "postmottak-backend",
       "namespace": "aap",
-      "cluster": "dev-gcp"
+      "cluster": "dev-gcp",
+      "roles": ["finn_mottatte_journalposter"]
     },
     {
       "app": "veilarbvedtaksstotte",
