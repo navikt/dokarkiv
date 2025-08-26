@@ -223,6 +223,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "fagarkiv-administrasjon-q2",
+      "namespace": "isa",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "fritakagp",
       "namespace": "helsearbeidsgiver",
       "cluster": "dev-gcp"
