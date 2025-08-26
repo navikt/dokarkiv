@@ -533,6 +533,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "pensjon-testdata-server-q2",
+      "namespace": "pensjontestdata",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "hm-joark-sink",
       "namespace": "teamdigihot",
       "cluster": "dev-gcp"
