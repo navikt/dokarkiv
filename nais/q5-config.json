@@ -48,6 +48,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "pensjon-testdata-server-q5",
+      "namespace": "pensjontestdata",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "testnav-dokarkiv-proxy-trygdeetaten",
       "namespace": "dolly",
       "cluster": "dev-fss"

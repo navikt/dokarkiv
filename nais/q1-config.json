@@ -499,6 +499,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "pensjon-testdata-server-q1",
+      "namespace": "pensjontestdata",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "pensjon-selvbetjening-soknad-alder-backend",
       "namespace": "pensjonselvbetjening",
       "cluster": "dev-gcp"
