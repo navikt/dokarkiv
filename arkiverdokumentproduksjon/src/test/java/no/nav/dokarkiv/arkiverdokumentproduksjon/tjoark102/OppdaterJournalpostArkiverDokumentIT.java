@@ -15,6 +15,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FeilStrukturException;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.UgyldigInputException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.oppdaterjournalpostarkiverdokument.Fildetaljer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OppdaterJournalpostArkiverDokumentRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,7 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalp
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -138,6 +140,17 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 		assertThrows(FeilStrukturException.class,
 				() -> arkiverDokumentproduksjonProvider.oppdaterJournalpostArkiverDokument(request),
 				"Input til tjenesten inneholder flere fildetaljer med samme variantformat");
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenFileContentEmpty() throws Exception {
+		Fildetaljer wsFilDetaljer = createWsFilDetaljer(VariantFormatCode.ARKIV);
+		wsFilDetaljer.setRedigerbartDokument("".getBytes());
+		request.getFildetaljerListe().add(wsFilDetaljer);
+
+		UgyldigInputException ugyldigInputException = assertThrows(UgyldigInputException.class,
+				() -> arkiverDokumentproduksjonProvider.oppdaterJournalpostArkiverDokument(request));
+		assertThat(ugyldigInputException.getMessage(), containsString("FilDetaljer som forsøkes arkiveres inneholder en tom byte-array. variantFormatCode=ARKIV."));
 	}
 
 	private Journalpost buildAndPersistJournalpost() {

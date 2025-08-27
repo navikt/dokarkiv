@@ -26,8 +26,6 @@ import java.util.Set;
 
 /**
  * Validation for the operation ArkiverDokumentOgFerdigstillJournalpost
- *
- * @author Torgeir Cook
  */
 @Component
 public class DefaultOppdaterJournalpostArkiverDokumentValidator implements OppdaterJournalpostArkiverDokumentValidator {
@@ -39,14 +37,15 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 		}
 		DokumentInfo dokumentInfoById = journalpost.findDokumentInfoById(request.getDokumentInfoId());
 		Set<FilDetaljer> fildetaljer = request.getFildetaljer();
+		validateFilDetaljerDokumentHasFileContent(fildetaljer, journalpost.getJournalpostId());
 		validateJournalpostContainsDokumentInfoWithId(journalpost, request.getDokumentInfoId());
 		validateNoDuplicateVariantFormats(fildetaljer, journalpost.getJournalpostId());
 		validateDokumentInfoOrFilDetaljerContainsArkivFormat(dokumentInfoById, fildetaljer, journalpost.getJournalpostId());
 		validateJournalpostTypeAndStatus(journalpost, request);
-		validateJournalpostContainsOneRealtedDokumenInfoOfTypeHoveddokument(journalpost);
+		validateJournalpostContainsOneRelatedDokumenInfoOfTypeHoveddokument(journalpost);
 		validateNoDuplicateVariantFormatsExceptProduksjon(dokumentInfoById.getFildetaljerListe(), fildetaljer, journalpost.getJournalpostId());
 		validateDokumentInfoIsUnderRedigering(dokumentInfoById, journalpost.getJournalpostId());
-		if(request.isFerdigstillJournalpost()) {
+		if (request.isFerdigstillJournalpost()) {
 			validateThatAllDocumentStatusesAreFerdigstilt(journalpost, dokumentInfoById);
 		}
 		validateDatoDokument(request);
@@ -94,7 +93,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 			if (!dokumentInfo.isFerdigstilt()) {
 				throw new KanIkkeFerdigstillesException("Journalposten kan ikke ferdigstilles fordi tilknyttet dokument (dokumentInfoId=" + dokumentInfo
 						.getDokumentInfoId() + ")  ikke har status " + DokumentStatusCode.FERDIGSTILT
-						.name(),
+																.name(),
 						journalpost.getJournalpostId());
 			}
 		}
@@ -131,22 +130,22 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 		} else {
 			DokumentInfo dokumentInfoById = journalpost.findDokumentInfoById(request.getDokumentInfoId());
 			if (journalpost.getJournalstatus() == JournalStatusCode.FS
-					&& UtsendingsKanalCode.L != request.getUtsendingskanal()
-					&& DokumentStatusCode.FERDIGSTILT == dokumentInfoById.getDokumentstatus()) {
+				&& UtsendingsKanalCode.L != request.getUtsendingskanal()
+				&& DokumentStatusCode.FERDIGSTILT == dokumentInfoById.getDokumentstatus()) {
 				throw new AlleredeFerdigstiltException("Journalpost med dokument er allerede ferdigstilt", journalpost.getJournalpostId());
 			} else if (journalpost.getJournalstatus() == JournalStatusCode.FL
-					&& UtsendingsKanalCode.L == request.getUtsendingskanal()
-					&& DokumentStatusCode.FERDIGSTILT == dokumentInfoById.getDokumentstatus()
-					&& ferdigstillJournalpost) {
+					   && UtsendingsKanalCode.L == request.getUtsendingskanal()
+					   && DokumentStatusCode.FERDIGSTILT == dokumentInfoById.getDokumentstatus()
+					   && ferdigstillJournalpost) {
 				throw new AlleredeFerdigstiltException("Journalpost med dokument er allerede ferdigstilt lokalprint", journalpost
 						.getJournalpostId());
 			} else if (journalpost.getJournalstatus() == JournalStatusCode.D
-					&& DokumentStatusCode.FERDIGSTILT == dokumentInfoById.getDokumentstatus()
-					&& !ferdigstillJournalpost) {
+					   && DokumentStatusCode.FERDIGSTILT == dokumentInfoById.getDokumentstatus()
+					   && !ferdigstillJournalpost) {
 				throw new AlleredeFerdigstiltException("Dokument er allerede ferdigstilt for journalpost under arbeid", journalpost
 						.getJournalpostId());
 			} else if (journalpost.getJournalstatus() != JournalStatusCode.D
-					|| DokumentStatusCode.UNDER_REDIGERING != dokumentInfoById.getDokumentstatus()) {
+					   || DokumentStatusCode.UNDER_REDIGERING != dokumentInfoById.getDokumentstatus()) {
 				throw new KanIkkeFerdigstillesException("Journal- og/eller dokumentstatus er ulik \"under arbeid\"", journalpost
 						.getJournalpostId());
 			}
@@ -213,7 +212,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 *
 	 * @param journalpost to be validated.
 	 */
-	void validateJournalpostContainsOneRealtedDokumenInfoOfTypeHoveddokument(Journalpost journalpost) throws FeilStrukturException {
+	void validateJournalpostContainsOneRelatedDokumenInfoOfTypeHoveddokument(Journalpost journalpost) throws FeilStrukturException {
 		Set<JournalpostDokumentInfoRelasjon> infoRels =
 				journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
 		int count = infoRels.size();
@@ -231,6 +230,14 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	void validateDatoDokument(OppdaterJournalpostArkiverDokumentRequestTo request) throws UgyldigInputException {
 		if (request.getDatoDokument() == null) {
 			throw new UgyldigInputException("Mangler påkrevd felt datoDokument", request.getJournalpostId());
+		}
+	}
+
+	void validateFilDetaljerDokumentHasFileContent(Set<FilDetaljer> fildetaljer, Long journalpostId) {
+		for (FilDetaljer filDetaljer : fildetaljer) {
+			if (!filDetaljer.hasFileContent()) {
+				throw new UgyldigInputException("FilDetaljer som forsøkes arkiveres inneholder en tom byte-array. variantFormatCode=" + filDetaljer.getVariantFormat(), journalpostId);
+			}
 		}
 	}
 
