@@ -29,8 +29,8 @@ import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetal
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrelasjonBuilder;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -148,9 +148,9 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 		wsFilDetaljer.setRedigerbartDokument("".getBytes());
 		request.getFildetaljerListe().add(wsFilDetaljer);
 
-		UgyldigInputException ugyldigInputException = assertThrows(UgyldigInputException.class,
-				() -> arkiverDokumentproduksjonProvider.oppdaterJournalpostArkiverDokument(request));
-		assertThat(ugyldigInputException.getMessage(), containsString("FilDetaljer som forsøkes arkiveres inneholder en tom byte-array. variantFormatCode=ARKIV."));
+		assertThatExceptionOfType(UgyldigInputException.class)
+				.isThrownBy(() -> arkiverDokumentproduksjonProvider.oppdaterJournalpostArkiverDokument(request))
+				.withMessageContaining("FilDetaljer som forsøkes arkiveres inneholder en tom byte-array. variantFormatCode=ARKIV.");
 	}
 
 	private Journalpost buildAndPersistJournalpost() {

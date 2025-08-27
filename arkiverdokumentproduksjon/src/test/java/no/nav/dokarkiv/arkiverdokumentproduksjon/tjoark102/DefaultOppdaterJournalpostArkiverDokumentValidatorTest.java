@@ -25,7 +25,7 @@ import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumen
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
@@ -293,9 +293,9 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 		filDetaljer.add(arkiv);
 		filDetaljer.add(createFilDetaljer(VariantFormatCode.PRODUKSJON));
 
-		UgyldigInputException ugyldigInputException = assertThrows(UgyldigInputException.class,
-				() -> validator.validateFilDetaljerDokumentHasFileContent(filDetaljer, 10L));
-		assertThat(ugyldigInputException.getMessage()).contains("FilDetaljer som forsøkes arkiveres inneholder en tom byte-array. variantFormatCode=ARKIV");
+		assertThatExceptionOfType(UgyldigInputException.class)
+				.isThrownBy(() -> validator.validateFilDetaljerDokumentHasFileContent(filDetaljer, 10L))
+				.withMessageContaining("FilDetaljer som forsøkes arkiveres inneholder en tom byte-array. variantFormatCode=ARKIV");
 	}
 
 	private FilDetaljer createFilDetaljer(VariantFormatCode variantFormatCode) {
