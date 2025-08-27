@@ -25,6 +25,7 @@ import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumen
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
@@ -145,7 +146,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 				.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG);
 
 		assertThrows(FeilStrukturException.class,
-				() -> validator.validateJournalpostContainsOneRealtedDokumenInfoOfTypeHoveddokument(journalpost),
+				() -> validator.validateJournalpostContainsOneRelatedDokumenInfoOfTypeHoveddokument(journalpost),
 				"Journalpost har ikke korrekt struktur");
 	}
 
@@ -160,7 +161,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 				.setTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
 
 		assertThrows(FeilStrukturException.class,
-				() -> validator.validateJournalpostContainsOneRealtedDokumenInfoOfTypeHoveddokument(journalpost),
+				() -> validator.validateJournalpostContainsOneRelatedDokumenInfoOfTypeHoveddokument(journalpost),
 				"Journalpost har ikke korrekt struktur");
 	}
 
@@ -282,6 +283,19 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 		assertThrows(AlleredeFerdigstiltException.class,
 				() -> validator.validateJournalpostTypeAndStatus(journalpost, request),
 				"Dokument er allerede ferdigstilt for journalpost under arbeid.");
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenAnyDokumentEmpty() {
+		Set<FilDetaljer> filDetaljer = new HashSet<>();
+		FilDetaljer arkiv = createFilDetaljer(VariantFormatCode.ARKIV);
+		arkiv.setFileContent("".getBytes());
+		filDetaljer.add(arkiv);
+		filDetaljer.add(createFilDetaljer(VariantFormatCode.PRODUKSJON));
+
+		assertThatExceptionOfType(UgyldigInputException.class)
+				.isThrownBy(() -> validator.validateFilDetaljerDokumentHasFileContent(filDetaljer, 10L))
+				.withMessageContaining("FilDetaljer som forsøkes arkiveres inneholder en tom byte-array. variantFormatCode=ARKIV");
 	}
 
 	private FilDetaljer createFilDetaljer(VariantFormatCode variantFormatCode) {
