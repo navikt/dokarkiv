@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
+import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -18,7 +20,6 @@ import java.util.List;
 import static java.lang.String.format;
 import static java.time.LocalDateTime.now;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.JANUARY_1_2020;
-import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.buildJournalpost;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_JOURNALPOSTTYPE;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
@@ -188,6 +189,11 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
 		assertThat(responseEntity.getBody()).contains("Fant ingen journalpost med journalpostId=123456789 i arkivet");
+	}
+
+	public static JournalpostBuilder buildJournalpost(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus) {
+		return JournalpostTestDataProvider.buildJournalpost(journalpostType, journalStatus)
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR);
 	}
 
 	private void validateBadRequestResponse(ResponseEntity<String> responseEntity, String expectedMessage, Journalpost changedJournalpost, JournalStatusCode journalStatusCode) {

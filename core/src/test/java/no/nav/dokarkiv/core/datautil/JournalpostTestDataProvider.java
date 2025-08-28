@@ -110,7 +110,6 @@ public final class JournalpostTestDataProvider {
 				.innhold(INNHOLD)
 				.journalForendeEnhetId("SesamStasjon")
 				.avsenderMottaker("Bjarne Betjent")
-				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR)
 				.opprettetAvNavn("Leonora Dorothea Dahl")
 				.opprettetKildeNavn("itest")
 				.dokumentDato(LocalDateTime.now())
