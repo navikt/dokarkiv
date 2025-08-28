@@ -611,7 +611,9 @@
     {
       "app": "postmottak-backend",
       "namespace": "aap",
-      "cluster": "prod-gcp"
+      "cluster": "prod-gcp",
+      "roles": ["finn_mottatte_journalposter"]
+
     },
     {
       "app": "meldekort-backend",

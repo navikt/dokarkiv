@@ -223,6 +223,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "fagarkiv-administrasjon-q2",
+      "namespace": "isa",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "fritakagp",
       "namespace": "helsearbeidsgiver",
       "cluster": "dev-gcp"
@@ -533,6 +538,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "pensjon-testdata-server-q2",
+      "namespace": "pensjontestdata",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "hm-joark-sink",
       "namespace": "teamdigihot",
       "cluster": "dev-gcp"
@@ -641,7 +651,8 @@
     {
       "app": "postmottak-backend",
       "namespace": "aap",
-      "cluster": "dev-gcp"
+      "cluster": "dev-gcp",
+      "roles": ["finn_mottatte_journalposter"]
     },
     {
       "app": "veilarbvedtaksstotte",
