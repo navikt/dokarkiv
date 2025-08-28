@@ -45,8 +45,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
 	@AfterEach
 	public void cleanUp() {
-		journalpostTestRepository.deleteAll();
-		aksjonsLoggTestRepository.deleteAll();
+		super.cleanup();
 	}
 
 	@Test

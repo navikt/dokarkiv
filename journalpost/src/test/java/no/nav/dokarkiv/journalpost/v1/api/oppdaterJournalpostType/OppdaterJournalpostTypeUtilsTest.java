@@ -67,7 +67,6 @@ class OppdaterJournalpostTypeUtilsTest {
 		assertThat(exception.getMessage()).contains(expectedMessage);
 	}
 
-	//Splitt denne i 2
 	private static Stream<Arguments> provideInvalidJournalpostsForUpdating() {
 		return Stream.of(
 				arguments(createMinimalJournalpost(JournalpostTypeCode.N, JournalStatusCode.M), "Journalpost med journalpostId=123 har journalposttype=N og kan derfor ikke endres. Kun journalposter med journalposttype=I kan endres."),
@@ -126,7 +125,6 @@ class OppdaterJournalpostTypeUtilsTest {
 		OppdaterJournalpostTypeRequest request = createMinimalOppdaterJournalpostTypeRequest(journalfoerendeEnhet, "UTGAAENDE");
 
 		assertDoesNotThrow(() -> validateOppdaterJournalpostTypeRequest(request));
-
 	}
 
 	@ParameterizedTest
@@ -136,7 +134,6 @@ class OppdaterJournalpostTypeUtilsTest {
 			InputValideringFeiletException exception = assertThrows(InputValideringFeiletException.class,
 					() -> validateOppdaterJournalpostTypeRequest(request));
 			assertThat(exception.getMessage()).contains(expectedMessage);
-
 	}
 
 	private static Stream<Arguments> provideUgyldigeEndresTil() {
@@ -168,6 +165,4 @@ class OppdaterJournalpostTypeUtilsTest {
 				.journalstatus(journalStatusCode)
 				.build();
 	}
-
-
 }
