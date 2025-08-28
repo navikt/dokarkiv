@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.datautil;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
+import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -109,6 +110,7 @@ public final class JournalpostTestDataProvider {
 				.innhold(INNHOLD)
 				.journalForendeEnhetId("SesamStasjon")
 				.avsenderMottaker("Bjarne Betjent")
+				.avsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR)
 				.opprettetAvNavn("Leonora Dorothea Dahl")
 				.opprettetKildeNavn("itest")
 				.dokumentDato(LocalDateTime.now())
