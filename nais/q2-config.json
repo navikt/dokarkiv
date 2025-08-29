@@ -372,7 +372,11 @@
       "namespace": "k9saksbehandling",
       "cluster": "dev-gcp"
     },
-
+    {
+      "app": "ung-tilbake",
+      "namespace": "k9saksbehandling",
+      "cluster": "dev-gcp"
+    },
     {
       "app": "flex-joark-mottak",
       "namespace": "flex",
