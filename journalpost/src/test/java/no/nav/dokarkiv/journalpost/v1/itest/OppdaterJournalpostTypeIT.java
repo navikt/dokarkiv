@@ -9,7 +9,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalpostType.OppdaterJournalposttypeRequest;
+import no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalposttypeRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -43,6 +43,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 	private final String NOTAT = "NOTAT";
 	private final String UTGAAENDE = "UTGAAENDE";
 	private final String SRV_JOARKADMIN = "srvjoarkadmin";
+	private final String OPPDATERJOURNALPOSTTYPE_URL = "/oppdaterJournalposttype";
 
 	@AfterEach
 	public void cleanUp() {
@@ -58,7 +59,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequest(NOTAT, EXPECTED_ENHET);
 		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + "/oppdaterJournalpostType", PATCH, requestHttpEntity, String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
 		commitAndStartNewTransaction();
 
@@ -78,7 +79,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequest(UTGAAENDE, EXPECTED_ENHET);
 		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + "/oppdaterJournalpostType", PATCH, requestHttpEntity, String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
 		commitAndStartNewTransaction();
 
@@ -98,7 +99,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet(UTGAAENDE);
 		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + "/oppdaterJournalpostType", PATCH, requestHttpEntity, String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
 		commitAndStartNewTransaction();
 
@@ -116,7 +117,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet(UTGAAENDE);
 		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + "/oppdaterJournalpostType", PATCH, requestHttpEntity, String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
 		commitAndStartNewTransaction();
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
@@ -134,7 +135,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet(UTGAAENDE);
 		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + "/oppdaterJournalpostType", PATCH, requestHttpEntity, String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
 		commitAndStartNewTransaction();
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
@@ -152,7 +153,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequest(UTGAAENDE, "12345");
 		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + "/oppdaterJournalpostType", PATCH, requestHttpEntity, String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
 		commitAndStartNewTransaction();
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
@@ -170,7 +171,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequest("INVALID", "1234");
 		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + "/oppdaterJournalpostType", PATCH, requestHttpEntity, String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
 		commitAndStartNewTransaction();
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
@@ -185,7 +186,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequest(UTGAAENDE, "1234");
 		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath("123456789") + "/oppdaterJournalpostType", PATCH, requestHttpEntity, String.class);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath("123456789") + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
 		assertThat(responseEntity.getBody()).contains("Fant ingen journalpost med journalpostId=123456789 i arkivet");

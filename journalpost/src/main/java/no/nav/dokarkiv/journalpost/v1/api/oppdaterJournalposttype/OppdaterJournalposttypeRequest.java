@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalpostType;
+package no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalpostType;
+package no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
@@ -23,10 +23,10 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_JOURNALPOS
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
-import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalpostType.OppdaterJournalpostTypeUtils.determineJournalpostTypeCode;
-import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalpostType.OppdaterJournalpostTypeUtils.determineNewJournalstatusCode;
-import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalpostType.OppdaterJournalpostTypeUtils.validateJournalpostKanEndres;
-import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalpostType.OppdaterJournalpostTypeUtils.validateOppdaterJournalpostTypeRequest;
+import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.determineJournalpostTypeCode;
+import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.determineNewJournalstatusCode;
+import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.validateJournalpostKanEndres;
+import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.validateOppdaterJournalpostTypeRequest;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Slf4j

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalpostType;
+package no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
