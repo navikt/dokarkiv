@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.domain.codes;
 
+//Obs! Nye verdier her må også legges til i tabellen t_k_aksjon_type i databasen.
+//Se V95__aksjonstype_oppdater_journalposttype.sql for eksempel
 public enum AksjonsTypeCode {
 	ARKIVERING,
 	AVBRYT,
