@@ -122,7 +122,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
 
-		String expectedErrorMessage = format("Kunne ikke oppdatere journalpostStatus for journalpost med journalpostId=%s. Journalpost med journalpostId=%s har journalposttype=U og kan derfor ikke endres. Kun journalposter med journalposttype=I kan endres.", journalpostId, journalpostId);
+		String expectedErrorMessage = format("Kunne ikke oppdatere journalposttype for journalpost med journalpostId=%s. Journalpost med journalpostId=%s har journalposttype=U og kan derfor ikke endres. Kun journalposter med journalposttype=I kan endres.", journalpostId, journalpostId);
 		validateBadRequestResponse(responseEntity, expectedErrorMessage, changedJournalpost, U);
 	}
 
@@ -140,7 +140,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
 
-		String expectedErrorMessage = format("Kunne ikke oppdatere journalpostStatus for journalpost med journalpostId=%s. Journalpost med journalpostId=%s har journalstatus=A og kan derfor ikke endres. Kun journalposter med journalstatus=[M, MO, U, UB, J] kan endres.", journalpostId, journalpostId);
+		String expectedErrorMessage = format("Kunne ikke oppdatere journalposttype for journalpost med journalpostId=%s. Journalpost med journalpostId=%s har journalstatus=A og kan derfor ikke endres. Kun journalposter med journalstatus=[M, MO, U, UB, J] kan endres.", journalpostId, journalpostId);
 		validateBadRequestResponse(responseEntity, expectedErrorMessage, changedJournalpost, A);
 	}
 
@@ -158,7 +158,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
 
-		String expectedErrorMessage = format("Kunne ikke oppdatere journalpostStatus for journalpost med journalpostId=%s. Ugyldig journalfoerendeEnhet, må være 4 siffer. Mottok: 12345", journalpostId);
+		String expectedErrorMessage = format("Kunne ikke oppdatere journalposttype for journalpost med journalpostId=%s. Ugyldig journalfoerendeEnhet, må være 4 siffer. Mottok: 12345", journalpostId);
 		validateBadRequestResponse(responseEntity, expectedErrorMessage, changedJournalpost, M);
 	}
 
@@ -176,7 +176,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
 
-		String expectedErrorMessage = format("Kunne ikke oppdatere journalpostStatus for journalpost med journalpostId=%s. Ugyldig typeEndresTil, kan kun endres til UTGAAENDE eller NOTAT. Mottok:", journalpostId);
+		String expectedErrorMessage = format("Kunne ikke oppdatere journalposttype for journalpost med journalpostId=%s. Ugyldig typeEndresTil, kan kun endres til UTGAAENDE eller NOTAT. Mottok:", journalpostId);
 		validateBadRequestResponse(responseEntity, expectedErrorMessage, changedJournalpost, M);
 	}
 
