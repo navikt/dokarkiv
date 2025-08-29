@@ -42,7 +42,7 @@ public class OppdaterJournalpostTypeService {
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
-	public ResponseEntity<String> OppdaterJournalpostType(long journalpostId, OppdaterJournalpostTypeRequest oppdaterJournalpostTypeRequest) {
+	public ResponseEntity<String> OppdaterJournalpostType(long journalpostId, OppdaterJournalposttypeRequest oppdaterJournalpostTypeRequest) {
 
 		validateOppdaterJournalpostTypeRequest(oppdaterJournalpostTypeRequest);
 
@@ -74,7 +74,7 @@ public class OppdaterJournalpostTypeService {
 		}
 	}
 
-	private void oppdaterJournalpost(Journalpost journalpostToUpdate, OppdaterJournalpostTypeRequest oppdaterJournalpostTypeRequest) {
+	private void oppdaterJournalpost(Journalpost journalpostToUpdate, OppdaterJournalposttypeRequest oppdaterJournalpostTypeRequest) {
 		String nyJournalforendeEnhet = oppdaterJournalpostTypeRequest.getJournalfoerendeEnhet();
 		String nyTypeEndresTil = oppdaterJournalpostTypeRequest.getTypeEndresTil();
 

@@ -48,8 +48,8 @@ class OppdaterJournalpostTypeUtilsTest {
 
 	@ParameterizedTest
 	@MethodSource("provideJournalpostTypeCases")
-	void shouldReturnExpectedJournalpostTypeCodeForGivenJournalPostType(String journalpostType, JournalpostTypeCode expectedTypeCode) {
-		assertEquals(expectedTypeCode, determineJournalpostTypeCode(journalpostType));
+	void shouldReturnExpectedJournalpostTypeCodeForGivenJournalPostType(String journalposttype, JournalpostTypeCode expectedTypeCode) {
+		assertEquals(expectedTypeCode, determineJournalpostTypeCode(journalposttype));
 	}
 
 	private static Stream<Arguments> provideJournalpostTypeCases() {
@@ -102,7 +102,7 @@ class OppdaterJournalpostTypeUtilsTest {
 	@ParameterizedTest
 	@MethodSource("provideUgyldigeJournalfoerendeEnheter")
 	void shouldThrowExeptionWhenValidatingJournalfoerendeEnhet(String journalfoerendeEnhet, String expectedMessage) {
-		OppdaterJournalpostTypeRequest request = createMinimalOppdaterJournalpostTypeRequest(journalfoerendeEnhet, "UTGAAENDE");
+		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest(journalfoerendeEnhet, "UTGAAENDE");
 
 		InputValideringFeiletException exception = assertThrows(InputValideringFeiletException.class,
 				() -> validateOppdaterJournalpostTypeRequest(request));
@@ -122,7 +122,7 @@ class OppdaterJournalpostTypeUtilsTest {
 	@ParameterizedTest
 	@CsvSource({"1234"})
 	void shouldNotThrowExceptionWhenValidatingJournalfoerendeEnhet(String journalfoerendeEnhet) {
-		OppdaterJournalpostTypeRequest request = createMinimalOppdaterJournalpostTypeRequest(journalfoerendeEnhet, "UTGAAENDE");
+		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest(journalfoerendeEnhet, "UTGAAENDE");
 
 		assertDoesNotThrow(() -> validateOppdaterJournalpostTypeRequest(request));
 	}
@@ -130,7 +130,7 @@ class OppdaterJournalpostTypeUtilsTest {
 	@ParameterizedTest
 	@MethodSource("provideUgyldigeEndresTil")
 	void shouldThrowExceptionWhenValidatingTypeEndresTil(String typeEndresTil, String expectedMessage) {
-		OppdaterJournalpostTypeRequest request = createMinimalOppdaterJournalpostTypeRequest("1234", typeEndresTil);
+		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest("1234", typeEndresTil);
 			InputValideringFeiletException exception = assertThrows(InputValideringFeiletException.class,
 					() -> validateOppdaterJournalpostTypeRequest(request));
 			assertThat(exception.getMessage()).contains(expectedMessage);
@@ -147,13 +147,13 @@ class OppdaterJournalpostTypeUtilsTest {
 	@ParameterizedTest
 	@CsvSource({"UTGAAENDE", "NOTAT"})
 	void shouldNotThrowExceptionWhenValidatingTypeEndresTil(String typeEndresTil) {
-		OppdaterJournalpostTypeRequest request = createMinimalOppdaterJournalpostTypeRequest("1234", typeEndresTil);
+		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest("1234", typeEndresTil);
 
 		assertDoesNotThrow(() -> validateOppdaterJournalpostTypeRequest(request));
 	}
 
-	private static OppdaterJournalpostTypeRequest createMinimalOppdaterJournalpostTypeRequest(String journalfoerendeEnhet, String typeEndresTil) {
-		return OppdaterJournalpostTypeRequest.builder()
+	private static OppdaterJournalposttypeRequest createMinimalOppdaterJournalpostTypeRequest(String journalfoerendeEnhet, String typeEndresTil) {
+		return OppdaterJournalposttypeRequest.builder()
 				.journalfoerendeEnhet(journalfoerendeEnhet)
 				.typeEndresTil(typeEndresTil).build();
 	}

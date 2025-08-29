@@ -29,8 +29,8 @@ import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.lastOppVedlegg.LastOppVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.lastOppVedlegg.LastOppVedleggResponse;
-import no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalpostType.OppdaterJournalpostTypeRequest;
 import no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalpostType.OppdaterJournalpostTypeService;
+import no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalpostType.OppdaterJournalposttypeRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfoId;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
@@ -49,7 +49,7 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLastOppVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
-import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpostType;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalposttype;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
@@ -222,17 +222,17 @@ public class ArkiverOgJournalfoerRestController {
 
 	@Transactional
 	@ResponseBody
-	@SwaggerOppdaterJournalpostType
-	@PatchMapping(value = "/{journalpostId}/oppdaterJournalpostType")
-	public ResponseEntity<String> oppdaterJournalpostType(
+	@SwaggerOppdaterJournalposttype
+	@PatchMapping(value = "/{journalpostId}/oppdaterJournalposttype")
+	public ResponseEntity<String> oppdaterJournalposttype(
 			@Parameter(
 					name = "journalpostId",
-					description = "Angir JournalpostId som det skal oppdateres journalpostType for f.eks. 467011764",
+					description = "Angir JournalpostId som det skal oppdateres journalposttype for f.eks. 467011764",
 					required = true,
 					example = "467011764"
 			)
 			@PathVariable String journalpostId,
-			@RequestBody OppdaterJournalpostTypeRequest request) {
+			@RequestBody OppdaterJournalposttypeRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		MDC.put(MDC_REQUEST_ID, "oppdaterJournalpostType");
 		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
@@ -241,12 +241,12 @@ public class ArkiverOgJournalfoerRestController {
 
 		try {
 			ResponseEntity<String> response = oppdaterJournalpostTypeService.OppdaterJournalpostType(journalpostIdParsed, request);
-			log.info("oppdaterJournalpostType har oppdatert journalpostType for journalpost med journalpostId={} i Joark.", journalpostIdParsed);
+			log.info("oppdaterJournalposttype har oppdatert journalposttype for journalpost med journalpostId={} i Joark.", journalpostIdParsed);
 
 			return response;
 		} catch (InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
-					format("Kunne ikke oppdatere journalpostStatus for journalpost med journalpostId=%s. %s", journalpostIdParsed, e.getMessage()));
+					format("Kunne ikke oppdatere journalposttype for journalpost med journalpostId=%s. %s", journalpostIdParsed, e.getMessage()));
 		}
 	}
 

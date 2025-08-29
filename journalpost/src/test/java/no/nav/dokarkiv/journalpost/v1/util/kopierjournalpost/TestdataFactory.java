@@ -78,7 +78,7 @@ public class TestdataFactory {
 	static final Long SAK_ID = 12223344L;
 	private static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2023-08-11T12:01:01.001Z"), ZONEID_NORGE);
 
-	public static Journalpost createJournalpostWithHoveddokumentAndVedlegg(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus) {
+	public static Journalpost createJournalpostWithHoveddokumentAndVedlegg(JournalpostTypeCode journalposttTypeCode, JournalStatusCode journalStatus) {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
 				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
@@ -93,7 +93,7 @@ public class TestdataFactory {
 				.lestDato(LocalDateTime.now(FIXED_CLOCK))
 				.utsendingskanal(NAV_NO)
 				.journalstatus(journalStatus)
-				.journalposttype(journalpostType)
+				.journalposttype(journalposttTypeCode)
 				.innhold(INNHOLD)
 				.behandlingstema(BEHANDLINGSTEMA)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)

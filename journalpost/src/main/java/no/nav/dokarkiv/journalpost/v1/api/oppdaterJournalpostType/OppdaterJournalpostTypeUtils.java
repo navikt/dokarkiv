@@ -31,8 +31,8 @@ public class OppdaterJournalpostTypeUtils {
 		return J.equals(currentStatus) ? FL : D;
 	}
 
-	public static JournalpostTypeCode determineJournalpostTypeCode(String journalpostType) {
-		return UTGAAENDE.name().equals(journalpostType) ? JournalpostTypeCode.U : N;
+	public static JournalpostTypeCode determineJournalpostTypeCode(String journalposttype) {
+		return UTGAAENDE.name().equals(journalposttype) ? JournalpostTypeCode.U : N;
 	}
 
 	public static void validateJournalpostKanEndres(Journalpost journalpostToUpdate) {
@@ -51,7 +51,7 @@ public class OppdaterJournalpostTypeUtils {
 		}
 	}
 
-	public static void validateOppdaterJournalpostTypeRequest(OppdaterJournalpostTypeRequest request) {
+	public static void validateOppdaterJournalpostTypeRequest(OppdaterJournalposttypeRequest request) {
 		validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet());
 		validateEndresTil(request.getTypeEndresTil());
 	}

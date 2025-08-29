@@ -24,5 +24,5 @@ import java.lang.annotation.Target;
 		@ApiResponse(responseCode = "404", description = "Journalpost ikke funnet", content = @Content),
 		@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
 })
-public @interface SwaggerOppdaterJournalpostType {
+public @interface SwaggerOppdaterJournalposttype {
 }
