@@ -64,6 +64,7 @@ public class Sak {
 					* FIA
 					* HELT
 					* UNG_SAK
+					* REMEDY
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",

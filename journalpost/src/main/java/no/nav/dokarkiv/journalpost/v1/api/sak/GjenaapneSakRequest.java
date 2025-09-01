@@ -60,6 +60,7 @@ public class GjenaapneSakRequest {
 					* FIA
 					* HELT
 					* UNG_SAK
+					* REMEDY
 					""",
 			example = "AO01", requiredMode = REQUIRED
 	)
