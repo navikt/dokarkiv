@@ -54,5 +54,9 @@ public enum Fagsaksystem {
     /**
      * Fagsystem for å saksbehandling av ungdomsprogramytelsen
      */
-    UNG_SAK
+    UNG_SAK,
+    /**
+     * Identstyring, ifm avvikling av Remedy migreres dokumentasjon til Joark
+     */
+    REMEDY
 }
