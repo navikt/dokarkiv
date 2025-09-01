@@ -6,8 +6,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.EnumSet;
 
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
@@ -21,11 +20,11 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 public class OppdaterJournalpostTypeUtils {
 
-	private static final List<JournalStatusCode> GODKJENTE_JOURNALSTATUS_FOR_ENDRING = Arrays.asList(M, MO, U, UB, J);
+	private static final EnumSet<JournalStatusCode> GODKJENTE_JOURNALSTATUS_FOR_ENDRING = EnumSet.of(M, MO, U, UB, J);
 
 	public static JournalStatusCode determineNewJournalstatusCode(JournalStatusCode currentStatus) {
 		return J.equals(currentStatus) ? FL : D;
@@ -52,12 +51,12 @@ public class OppdaterJournalpostTypeUtils {
 	}
 
 	public static void validateOppdaterJournalpostTypeRequest(OppdaterJournalposttypeRequest request) {
-		validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet());
-		validateEndresTil(request.getTypeEndresTil());
+		validateJournalfoerendeEnhet(request.journalfoerendeEnhet());
+		validateEndresTil(request.typeEndresTil());
 	}
 
 	private static void validateJournalfoerendeEnhet(String journalfoerendeEnhet) {
-		if (!isEmpty(journalfoerendeEnhet)) {
+		if (isNotEmpty(journalfoerendeEnhet)) {
 			if (journalfoerendeEnhet.length() != 4 || !journalfoerendeEnhet.chars().allMatch(Character::isDigit)) {
 				throw new InputValideringFeiletException("Ugyldig journalfoerendeEnhet, må være 4 siffer. Mottok: " + journalfoerendeEnhet);
 			}

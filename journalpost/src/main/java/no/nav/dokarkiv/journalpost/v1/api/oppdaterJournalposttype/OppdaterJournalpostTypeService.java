@@ -27,7 +27,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.Oppdate
 import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.determineNewJournalstatusCode;
 import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.validateJournalpostKanEndres;
 import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.validateOppdaterJournalpostTypeRequest;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Slf4j
 @Service
@@ -42,7 +42,7 @@ public class OppdaterJournalpostTypeService {
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
-	public ResponseEntity<String> OppdaterJournalpostType(long journalpostId, OppdaterJournalposttypeRequest oppdaterJournalpostTypeRequest) {
+	public ResponseEntity<String> oppdaterJournalpostType(long journalpostId, OppdaterJournalposttypeRequest oppdaterJournalpostTypeRequest) {
 
 		validateOppdaterJournalpostTypeRequest(oppdaterJournalpostTypeRequest);
 
@@ -75,8 +75,8 @@ public class OppdaterJournalpostTypeService {
 	}
 
 	private void oppdaterJournalpost(Journalpost journalpostToUpdate, OppdaterJournalposttypeRequest oppdaterJournalpostTypeRequest) {
-		String nyJournalforendeEnhet = oppdaterJournalpostTypeRequest.getJournalfoerendeEnhet();
-		String nyTypeEndresTil = oppdaterJournalpostTypeRequest.getTypeEndresTil();
+		String nyJournalforendeEnhet = oppdaterJournalpostTypeRequest.journalfoerendeEnhet();
+		String nyTypeEndresTil = oppdaterJournalpostTypeRequest.typeEndresTil();
 
 		journalpostToUpdate.setJournalposttype(determineJournalpostTypeCode(nyTypeEndresTil));
 		journalpostToUpdate.setJournalstatus(determineNewJournalstatusCode(journalpostToUpdate.getJournalstatus()));
@@ -85,7 +85,7 @@ public class OppdaterJournalpostTypeService {
 			journalpostToUpdate.setUtsendingskanal(L);
 		}
 
-		if (!isEmpty(nyJournalforendeEnhet)) {
+		if (isNotEmpty(nyJournalforendeEnhet)) {
 			journalpostToUpdate.setJournalForendeEnhetId(nyJournalforendeEnhet);
 		}
 

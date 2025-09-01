@@ -25,6 +25,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.Oppdate
 import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.validateJournalpostKanEndres;
 import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.validateOppdaterJournalpostTypeRequest;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -62,9 +63,9 @@ class OppdaterJournalpostTypeUtilsTest {
 	@ParameterizedTest
 	@MethodSource("provideInvalidJournalpostsForUpdating")
 	void shouldThrowExceptionWhenNotJournalpostKanEndres(Journalpost journalpost, String expectedMessage) {
-		InputValideringFeiletException exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateJournalpostKanEndres(journalpost));
-		assertThat(exception.getMessage()).contains(expectedMessage);
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validateJournalpostKanEndres(journalpost))
+				.withMessageContaining(expectedMessage);
 	}
 
 	private static Stream<Arguments> provideInvalidJournalpostsForUpdating() {
@@ -94,27 +95,19 @@ class OppdaterJournalpostTypeUtilsTest {
 
 	@ParameterizedTest
 	@CsvSource({"M", "MO", "U", "UB", "J"})
-	void shouldValidateJournalpostKanEndres() {
-		Journalpost jp = createMinimalJournalpost(JournalpostTypeCode.I, JournalStatusCode.M);
+	void shouldValidateJournalpostKanEndres(String journalstatusCode) {
+		Journalpost jp = createMinimalJournalpost(JournalpostTypeCode.I, JournalStatusCode.valueOf(journalstatusCode));
 		assertDoesNotThrow(() -> validateJournalpostKanEndres(jp));
 	}
 
 	@ParameterizedTest
-	@MethodSource("provideUgyldigeJournalfoerendeEnheter")
-	void shouldThrowExeptionWhenValidatingJournalfoerendeEnhet(String journalfoerendeEnhet, String expectedMessage) {
+	@CsvSource({"12", "abcd", "12345", "123a"})
+	void shouldThrowExeptionWhenValidatingJournalfoerendeEnhet(String journalfoerendeEnhet) {
 		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest(journalfoerendeEnhet, "UTGAAENDE");
 
-		InputValideringFeiletException exception = assertThrows(InputValideringFeiletException.class,
-				() -> validateOppdaterJournalpostTypeRequest(request));
-		assertThat(exception.getMessage()).contains(expectedMessage);
-
-	}
-
-	private static Stream<Arguments> provideUgyldigeJournalfoerendeEnheter() {
-		return Stream.of(
-				arguments("12", "Ugyldig journalfoerendeEnhet, må være 4 siffer. Mottok: 12"),
-				arguments("abcd", "Ugyldig journalfoerendeEnhet, må være 4 siffer. Mottok: abcd")
-		);
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validateOppdaterJournalpostTypeRequest(request))
+				.withMessageContaining("Ugyldig journalfoerendeEnhet, må være 4 siffer. Mottok: " + journalfoerendeEnhet);
 	}
 
 	@NullSource
@@ -127,21 +120,17 @@ class OppdaterJournalpostTypeUtilsTest {
 		assertDoesNotThrow(() -> validateOppdaterJournalpostTypeRequest(request));
 	}
 
+	@NullSource
+	@EmptySource
 	@ParameterizedTest
-	@MethodSource("provideUgyldigeEndresTil")
-	void shouldThrowExceptionWhenValidatingTypeEndresTil(String typeEndresTil, String expectedMessage) {
+	@CsvSource({"INVALID", "INNGAAENDE"})
+	void shouldThrowExceptionWhenValidatingTypeEndresTil(String typeEndresTil) {
 		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest("1234", typeEndresTil);
-			InputValideringFeiletException exception = assertThrows(InputValideringFeiletException.class,
-					() -> validateOppdaterJournalpostTypeRequest(request));
-			assertThat(exception.getMessage()).contains(expectedMessage);
-	}
 
-	private static Stream<Arguments> provideUgyldigeEndresTil() {
-		return Stream.of(
-				arguments("INVALID", "Ugyldig typeEndresTil, kan kun endres til UTGAAENDE eller NOTAT. Mottok: INVALID"),
-				arguments("", "Ugyldig typeEndresTil, kan kun endres til UTGAAENDE eller NOTAT. Mottok: "),
-				arguments(null, "Ugyldig typeEndresTil, kan kun endres til UTGAAENDE eller NOTAT. Mottok: null")
-		);
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> validateOppdaterJournalpostTypeRequest(request))
+				.withMessageContaining("Ugyldig typeEndresTil, kan kun endres til UTGAAENDE eller NOTAT. Mottok: " + typeEndresTil);
 	}
 
 	@ParameterizedTest
@@ -153,9 +142,7 @@ class OppdaterJournalpostTypeUtilsTest {
 	}
 
 	private static OppdaterJournalposttypeRequest createMinimalOppdaterJournalpostTypeRequest(String journalfoerendeEnhet, String typeEndresTil) {
-		return OppdaterJournalposttypeRequest.builder()
-				.journalfoerendeEnhet(journalfoerendeEnhet)
-				.typeEndresTil(typeEndresTil).build();
+		return new OppdaterJournalposttypeRequest(typeEndresTil, journalfoerendeEnhet);
 	}
 
 	private static Journalpost createMinimalJournalpost(JournalpostTypeCode journalpostTypeCode, JournalStatusCode journalStatusCode) {

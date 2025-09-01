@@ -22,8 +22,6 @@ import static java.time.LocalDateTime.now;
 import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.JANUARY_1_2020;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_JOURNALPOSTTYPE;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
@@ -39,11 +37,11 @@ import static org.springframework.http.HttpStatus.OK;
 
 public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
-	private final String EXPECTED_ENHET = "1234";
-	private final String NOTAT = "NOTAT";
-	private final String UTGAAENDE = "UTGAAENDE";
-	private final String SRV_JOARKADMIN = "srvjoarkadmin";
-	private final String OPPDATERJOURNALPOSTTYPE_URL = "/oppdaterJournalposttype";
+	private static final String EXPECTED_ENHET = "1234";
+	private static final String UTGAAENDE = "UTGAAENDE";
+	private static final String OPPDATERJOURNALPOSTTYPE_URL = "/oppdaterJournalposttype";
+	private static final String SRV_JOARKADMIN = "srvjoarkadmin";
+	private static final String NOTAT = "NOTAT";
 
 	@AfterEach
 	public void cleanUp() {
@@ -66,7 +64,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
 		List<AksjonsLogg> aksjonsLogg = aksjonsLoggTestRepository.getAksjonsLoggByJournalpostId(journalpostId);
-		validateUpdatedJournalpostNotat(changedJournalpost, D);
+		validateUpdatedJournalpostNotat(changedJournalpost);
 		validateAksjonslogg(aksjonsLogg.get(0), journalpostId, N);
 	}
 
@@ -85,18 +83,18 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
-		validateUpdatedJournalpostUtgaaende(changedJournalpost, FL);
+		validateUpdatedJournalpostUtgaaende(changedJournalpost);
 		List<AksjonsLogg> aksjonsLogg = aksjonsLoggTestRepository.getAksjonsLoggByJournalpostId(journalpostId);
 		validateAksjonslogg(aksjonsLogg.get(0), journalpostId, JournalpostTypeCode.U);
 	}
 
 	@Test
-	public void ShouldNotChangeJournalforendeEnhetWhenJournalforendeEnhetIsNotGivenInRequest() {
+	public void shouldNotChangeJournalforendeEnhetWhenJournalforendeEnhetIsNotGivenInRequest() {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, U).journalForendeEnhetId("5678"));
 
 		Long journalpostId = journalpost.getJournalpostId();
 
-		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet(UTGAAENDE);
+		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet();
 		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
@@ -109,12 +107,12 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void ShouldNotChangeJournalpostTypeWhenJournalpostIsNotIngaaende() {
+	public void shouldReturnBadRequestWhenJournalpostIsNotIngaaende() {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(JournalpostTypeCode.U, U).journalForendeEnhetId("5678"));
 
 		Long journalpostId = journalpost.getJournalpostId();
 
-		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet(UTGAAENDE);
+		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet();
 		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
@@ -127,12 +125,12 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void ShouldNotChangeJournalpostTypeWhenJournalpostIsInWrongStatus() {
+	public void shouldReturnBadRequestWhenJournalpostIsInWrongStatus() {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, A).journalForendeEnhetId("5678"));
 
 		Long journalpostId = journalpost.getJournalpostId();
 
-		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet(UTGAAENDE);
+		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet();
 		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
@@ -145,7 +143,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void ShouldNotChangeJournalpostTypeWhenJournalforendeEnhetIsInvalid() {
+	public void shouldReturnBadRequestWhenJournalforendeEnhetIsInvalid() {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M).journalForendeEnhetId("5678"));
 
 		Long journalpostId = journalpost.getJournalpostId();
@@ -163,7 +161,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void ShouldNotChangeJournalpostTypeWhenTypeEndresTilIsInvalid() {
+	public void shouldReturnBadRequestWhenTypeEndresTilIsInvalid() {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M).journalForendeEnhetId("5678"));
 
 		Long journalpostId = journalpost.getJournalpostId();
@@ -181,7 +179,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void ShouldReturn404WHenNoJournalpost() {
+	public void shouldReturn404WHenNoJournalpost() {
 
 		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequest(UTGAAENDE, "1234");
 		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
@@ -215,10 +213,10 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		assertThat(endring.getTilVerdi()).isEqualTo(nyJournalpostTypeCode.name());
 	}
 
-	private void validateUpdatedJournalpostUtgaaende(Journalpost updatedJournalpost, JournalStatusCode expectedJournalStatus) {
+	private void validateUpdatedJournalpostUtgaaende(Journalpost updatedJournalpost) {
 		assertThat(updatedJournalpost.getJournalposttype()).isEqualTo(JournalpostTypeCode.U);
 		assertThat(updatedJournalpost.getUtsendingskanal()).isEqualTo(L);
-		assertThat(updatedJournalpost.getJournalstatus()).isEqualTo(expectedJournalStatus);
+		assertThat(updatedJournalpost.getJournalstatus()).isEqualTo(JournalStatusCode.FL);
 
 		assertThat(updatedJournalpost.getAvsenderMottakerId()).isEqualTo("1");
 		assertThat(updatedJournalpost.getAvsenderMottaker()).isEqualTo("Bjarne Betjent");
@@ -227,9 +225,9 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		validateBaseJournalpost(updatedJournalpost);
 	}
 
-	private void validateUpdatedJournalpostNotat(Journalpost updatedJournalpost, JournalStatusCode expectedJournalStatus) {
+	private void validateUpdatedJournalpostNotat(Journalpost updatedJournalpost) {
 		assertThat(updatedJournalpost.getJournalposttype()).isEqualTo(N);
-		assertThat(updatedJournalpost.getJournalstatus()).isEqualTo(expectedJournalStatus);
+		assertThat(updatedJournalpost.getJournalstatus()).isEqualTo(JournalStatusCode.D);
 		assertThat(updatedJournalpost.getAvsenderMottakerId()).isNull();
 		assertThat(updatedJournalpost.getAvsenderMottaker()).isNull();
 		assertThat(updatedJournalpost.getAvsenderMottakerIdType()).isNull();
@@ -255,14 +253,11 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 	}
 
 	private OppdaterJournalposttypeRequest createPatchOppdaterJournalpostTypeRequest(String typeEndresTil, String journalfoerendeEnhet) {
-		return OppdaterJournalposttypeRequest.builder()
-				.typeEndresTil(typeEndresTil)
-				.journalfoerendeEnhet(journalfoerendeEnhet).build();
+		return new OppdaterJournalposttypeRequest(typeEndresTil, journalfoerendeEnhet);
 	}
 
 
-	private OppdaterJournalposttypeRequest createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet(String typeEndresTil) {
-		return OppdaterJournalposttypeRequest.builder()
-				.typeEndresTil(typeEndresTil).build();
+	private OppdaterJournalposttypeRequest createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet() {
+		return new OppdaterJournalposttypeRequest(OppdaterJournalpostTypeIT.UTGAAENDE, null);
 	}
 }

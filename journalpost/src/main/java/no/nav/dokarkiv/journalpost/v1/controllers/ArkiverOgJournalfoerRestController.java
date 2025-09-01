@@ -240,7 +240,7 @@ public class ArkiverOgJournalfoerRestController {
 		log.info("{} har mottatt kall om å oppdatere journalpostType for journalpost med journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostIdParsed);
 
 		try {
-			ResponseEntity<String> response = oppdaterJournalpostTypeService.OppdaterJournalpostType(journalpostIdParsed, request);
+			ResponseEntity<String> response = oppdaterJournalpostTypeService.oppdaterJournalpostType(journalpostIdParsed, request);
 			log.info("oppdaterJournalposttype har oppdatert journalposttype for journalpost med journalpostId={} i Joark.", journalpostIdParsed);
 
 			return response;
