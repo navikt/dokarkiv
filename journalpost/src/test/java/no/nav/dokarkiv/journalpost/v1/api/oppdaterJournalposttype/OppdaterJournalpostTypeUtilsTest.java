@@ -71,9 +71,9 @@ class OppdaterJournalpostTypeUtilsTest {
 	private static Stream<Arguments> provideInvalidJournalpostsForUpdating() {
 		return Stream.of(
 				arguments(createMinimalJournalpost(JournalpostTypeCode.N, JournalStatusCode.M), "Journalpost med journalpostId=123 har journalposttype=N og kan derfor ikke endres. Kun journalposter med journalposttype=I kan endres."),
-				arguments(createMinimalJournalpost(JournalpostTypeCode.I, JournalStatusCode.FL), "Journalpost med journalpostId=123 har journalstatus=FL og kan derfor ikke endres. Kun journalposter med journalstatus=[M, MO, U, UB, J] kan endres."),
-				arguments(createMinimalJournalpost(JournalpostTypeCode.I, JournalStatusCode.A), "Journalpost med journalpostId=123 har journalstatus=A og kan derfor ikke endres. Kun journalposter med journalstatus=[M, MO, U, UB, J] kan endres."),
-				arguments(createMinimalJournalpost(JournalpostTypeCode.I, JournalStatusCode.D), "Journalpost med journalpostId=123 har journalstatus=D og kan derfor ikke endres. Kun journalposter med journalstatus=[M, MO, U, UB, J] kan endres.")
+				arguments(createMinimalJournalpost(JournalpostTypeCode.I, JournalStatusCode.FL), "Journalpost med journalpostId=123 har journalstatus=FL og kan derfor ikke endres. Kun journalposter med journalstatus=[J, M, U, MO, UB] kan endres."),
+				arguments(createMinimalJournalpost(JournalpostTypeCode.I, JournalStatusCode.A), "Journalpost med journalpostId=123 har journalstatus=A og kan derfor ikke endres. Kun journalposter med journalstatus=[J, M, U, MO, UB] kan endres."),
+				arguments(createMinimalJournalpost(JournalpostTypeCode.I, JournalStatusCode.D), "Journalpost med journalpostId=123 har journalstatus=D og kan derfor ikke endres. Kun journalposter med journalstatus=[J, M, U, MO, UB] kan endres.")
 		);
 	}
 

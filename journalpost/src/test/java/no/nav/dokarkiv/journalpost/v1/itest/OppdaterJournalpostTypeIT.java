@@ -138,7 +138,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
 
-		String expectedErrorMessage = format("Kunne ikke oppdatere journalposttype for journalpost med journalpostId=%s. Journalpost med journalpostId=%s har journalstatus=A og kan derfor ikke endres. Kun journalposter med journalstatus=[M, MO, U, UB, J] kan endres.", journalpostId, journalpostId);
+		String expectedErrorMessage = format("Kunne ikke oppdatere journalposttype for journalpost med journalpostId=%s. Journalpost med journalpostId=%s har journalstatus=A og kan derfor ikke endres. Kun journalposter med journalstatus=[J, M, U, MO, UB] kan endres.", journalpostId, journalpostId);
 		validateBadRequestResponse(responseEntity, expectedErrorMessage, changedJournalpost, A);
 	}
 
