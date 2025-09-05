@@ -95,6 +95,17 @@ public class JournalpostUpdater {
 		return tracker;
 	}
 
+	public ChangeTracker changeJournalstatus(Journalpost journalpost, JournalStatusCode journalStatusCode) {
+		ChangeTracker tracker = new ChangeTracker();
+
+		tracker.setEndretFlagg(true);
+		tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), journalStatusCode.name());
+		journalpost.setJournalstatus(journalStatusCode);
+		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
+		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		return tracker;
+	}
+
 	private static void updateJournalstatus(Journalpost journalpost, ChangeTracker tracker, JournalStatusCode journalStatusCode) {
 		tracker.setEndretFlagg(true);
 		tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), journalStatusCode.name());

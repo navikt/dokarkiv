@@ -65,6 +65,9 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settUkjentBruker",
 						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settStatusUtgår"
 				);
+		registry.addInterceptor(new JoarkVedlikeholdTokenClaimOnlyInterceptor(azureAdAdminRole))
+				.addPathPatterns(
+						"/rest/journalpostapi/v1/journalpost/*/endreJournalstatus");
 
 		registry.addInterceptor(new PopulateMDCHandler())
 				.addPathPatterns("/rest/**", "/hentjournalsakinfo/**");

@@ -101,14 +101,14 @@ public class TestdataFactory {
 	}
 
 	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(Saksrelasjon saksrelasjon) {
-		return createJournalpost(saksrelasjon, FS);
+		return createJournalpost(saksrelasjon, JournalpostTypeCode.U, FS);
 	}
 
 	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedleggWithJournalstatusCode(long sakId, JournalStatusCode statusCode) {
-		return createJournalpost(createSaksrelasjon(sakId), statusCode);
+		return createJournalpost(createSaksrelasjon(sakId), JournalpostTypeCode.U, statusCode);
 	}
 
-	private static Journalpost createJournalpost(Saksrelasjon saksrelasjon, JournalStatusCode statusCode) {
+	public static Journalpost createJournalpost(Saksrelasjon saksrelasjon, JournalpostTypeCode journalpostTypeCode, JournalStatusCode statusCode) {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
 				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
@@ -123,7 +123,7 @@ public class TestdataFactory {
 				.lestDato(LocalDateTime.now(FIXED_CLOCK))
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.journalstatus(statusCode)
-				.journalposttype(JournalpostTypeCode.U)
+				.journalposttype(journalpostTypeCode)
 				.innhold(INNHOLD)
 				.behandlingstema(BEHANDLINGSTEMA)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
