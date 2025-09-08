@@ -182,7 +182,7 @@ public class EndreJournalstatusIT extends AbstractJournalpostIT {
 		Long journalpostId = journalpost.getJournalpostId();
 		EndreJournalstatusRequest request = new EndreJournalstatusRequest("BRUKJENT_UKER");
 
-		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId, "Secondary-group"));
 		String url = apiJournalpostPath(journalpostId + ENDRE_JOURNALSTATUS);
 		ResponseEntity<String> response = restTemplate.exchange(url, POST, requestEntity, String.class);
 

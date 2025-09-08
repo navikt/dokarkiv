@@ -106,6 +106,8 @@ spec:
         extra:
           - "NAVident"
           - "azp_name"
+        groups:
+          - id: "{{ AZURE_AD_ADMIN_ROLE }}"
   accessPolicy:
     inbound:
       rules:

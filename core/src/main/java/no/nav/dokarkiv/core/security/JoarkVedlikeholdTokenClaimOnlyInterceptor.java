@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.List;
+
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static java.lang.String.format;
@@ -38,9 +40,9 @@ public class JoarkVedlikeholdTokenClaimOnlyInterceptor implements HandlerInterce
 		String authorizationToken = headerTokenExtractor.getIdToken(request);
 
 		if (!isMemberOfGroupJoarkVedlikehold(authorizationToken, joarkVedlikeholdGroupObjectId)) {
-			log.error(format("NAV-ansatt er ikke medlem av gruppen med objectId=\"%s\" i Entra ID", joarkVedlikeholdGroupObjectId));
+			log.error(format("NAV-ansatt har ikke gruppen med objectId=\"%s\" i Entra ID token claims", joarkVedlikeholdGroupObjectId));
 
-			response.sendError(SC_FORBIDDEN, format("NAV-ansatt må være medlem av gruppen med objectId=\"%s\" i Entra ID", joarkVedlikeholdGroupObjectId));
+			response.sendError(SC_FORBIDDEN, format("NAV-ansatt må ha gruppen med objectId=\"%s\" i Entra ID token claims", joarkVedlikeholdGroupObjectId));
 			return false;
 		}
 
@@ -53,9 +55,9 @@ public class JoarkVedlikeholdTokenClaimOnlyInterceptor implements HandlerInterce
 
 	public boolean isMemberOfGroupJoarkVedlikehold(String token, String entraIdGroup) {
 		DecodedJWT decode = JWT.decode(token);
-		String groupsInClaim = decode.getClaim("groups").asString();
+		List<String> groupsInClaim = decode.getClaim("groups").asList(String.class);
 
-		return isNotBlank(groupsInClaim) && groupsInClaim.contains(entraIdGroup);
+		return !groupsInClaim.isEmpty() && groupsInClaim.contains(entraIdGroup);
 	}
 
 }

@@ -294,7 +294,7 @@ public abstract class AbstractRestIT {
 				CLAIM_NAVIDENT, NAV_USER_ID,
 				DEFAULT_CLAIM_OID, msUserId,
 				CLAIM_NAME, NAV_USER_NAME,
-				GROUPS, String.join(",", groups),
+				GROUPS, List.of(groups),
 				SCOPES, "api_admin defaultaccess"
 		)));
 		headers.add(NAV_CALL_ID, "itest");
