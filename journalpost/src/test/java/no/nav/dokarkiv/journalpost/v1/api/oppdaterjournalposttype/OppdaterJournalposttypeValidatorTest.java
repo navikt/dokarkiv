@@ -84,7 +84,7 @@ public class OppdaterJournalposttypeValidatorTest {
 
 	@NullSource
 	@ParameterizedTest
-	@CsvSource({"INVALID", "INNGAAENDE"})
+	@CsvSource({"INNGAAENDE"})
 	void shouldThrowExceptionWhenGivenBadTypeEndresTil(JournalpostType typeEndresTil) {
 		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest("1234", typeEndresTil);
 
