@@ -51,7 +51,7 @@ public class EndreJournalstatusService {
 			AksjonsTypeCode aksjonsTypeCode = switch (newStatus) {
 				case UB -> UKJENT_BRUKER;
 				case U -> UTGAAR;
-				case MO -> TILBAKE_TIL_MOTTATT;
+				case M -> TILBAKE_TIL_MOTTATT;
 				default ->
 						throw new UgyldigAksjonsLoggException("Kunne ikke finne riktig aksjonstype for endreJournalstatus til " + newStatus);
 			};

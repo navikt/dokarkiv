@@ -35,8 +35,8 @@ public class EndreJournalstatusIT extends AbstractJournalpostIT {
 
 	@ParameterizedTest
 	@MethodSource
-	void successfullyEndreJournalstatusForJournalpost(String statusEndresTil, JournalStatusCode journalStatusResult, AksjonsTypeCode aksjonsTypeCode) {
-		Journalpost journalpost = createJournalpost(null, JournalpostTypeCode.I, JournalStatusCode.M);
+	void successfullyEndreJournalstatusForJournalpost(JournalStatusCode opprinneligJournalStatusCode, String statusEndresTil, JournalStatusCode journalStatusResult, AksjonsTypeCode aksjonsTypeCode) {
+		Journalpost journalpost = createJournalpost(null, JournalpostTypeCode.I, opprinneligJournalStatusCode);
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -71,9 +71,9 @@ public class EndreJournalstatusIT extends AbstractJournalpostIT {
 
 	static Stream<Arguments> successfullyEndreJournalstatusForJournalpost() {
 		return Stream.of(
-				Arguments.of("MOTTATT", JournalStatusCode.MO, AksjonsTypeCode.TILBAKE_TIL_MOTTATT),
-				Arguments.of("UKJENT_BRUKER", JournalStatusCode.UB, AksjonsTypeCode.UKJENT_BRUKER),
-				Arguments.of("UTGAAR", JournalStatusCode.U, AksjonsTypeCode.UTGAAR)
+				Arguments.of(JournalStatusCode.U, "MOTTATT", JournalStatusCode.M, AksjonsTypeCode.TILBAKE_TIL_MOTTATT),
+				Arguments.of(JournalStatusCode.M, "UKJENT_BRUKER", JournalStatusCode.UB, AksjonsTypeCode.UKJENT_BRUKER),
+				Arguments.of(JournalStatusCode.M, "UTGAAR", JournalStatusCode.U, AksjonsTypeCode.UTGAAR)
 		);
 	}
 

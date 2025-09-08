@@ -55,7 +55,7 @@ public class EndreJournalstatusValidator {
 			return switch (journalstatus) {
 				case "UTGAAR" -> U;
 				case "UKJENT_BRUKER" -> UB;
-				case "MOTTATT" -> MO;
+				case "MOTTATT" -> M;
 				default ->
 			throw new InputValideringFeiletException("Ugyldig verdi for Journalstatus: " + removeUnsafeChars(journalstatus));
 		};
