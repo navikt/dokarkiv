@@ -29,6 +29,8 @@ import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.lastOppVedlegg.LastOppVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.lastOppVedlegg.LastOppVedleggResponse;
+import no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJournalposttypeRequest;
+import no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJournalposttypeService;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfoId;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
@@ -47,6 +49,7 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLastOppVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterDistribusjonsinfo;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalposttype;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
@@ -77,6 +80,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJournalposttypeValidator.validateOppdaterJournalpostTypeRequest;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateEksternReferanseId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 import static no.nav.dokarkiv.journalpost.v1.validators.LastOppVedleggValidator.validateRequest;
@@ -85,6 +89,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Tag(name = "journalpostapi", description = "Tjenester for å arkivere og journalføre i fagarkiv")
@@ -106,6 +111,7 @@ public class ArkiverOgJournalfoerRestController {
 	private final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost;
 	private final KopierJournalpostService kopierJournalpostService;
 	private final LastOppVedleggService lastOppVedleggService;
+	private final OppdaterJournalposttypeService oppdaterJournalposttypeService;
 
 	public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
 											  final OppdaterJournalpostService oppdaterJournalpostService,
@@ -113,12 +119,14 @@ public class ArkiverOgJournalfoerRestController {
 											  final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
 											  final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost,
 											  final KopierJournalpostService kopierJournalpostService,
-											  final LastOppVedleggService lastOppVedleggService) {
+											  final LastOppVedleggService lastOppVedleggService,
+											  final OppdaterJournalposttypeService oppdaterJournalposttypeService) {
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 		this.oppdaterJournalpostService = oppdaterJournalpostService;
 		this.opprettJournalpostService = opprettJournalpostService;
 		this.fjernVedleggTilknyttJournalpost = fjernVedleggTilknyttJournalpost;
 		this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
+		this.oppdaterJournalposttypeService = oppdaterJournalposttypeService;
 		this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
 		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
 		this.kopierJournalpostService = kopierJournalpostService;
@@ -215,6 +223,36 @@ public class ArkiverOgJournalfoerRestController {
 	}
 
 	@Transactional
+	@SwaggerOppdaterJournalposttype
+	@PatchMapping(value = "/{journalpostId}/oppdaterJournalposttype")
+	public ResponseEntity<String> oppdaterJournalposttype(
+			@Parameter(
+					name = "journalpostId",
+					description = "Angir JournalpostId som det skal oppdateres journalposttype for.",
+					required = true,
+					example = "467011764"
+			)
+			@PathVariable long journalpostId,
+			@RequestBody OppdaterJournalposttypeRequest request) {
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		MDC.put(MDC_JOURNALPOST_ID, String.valueOf(journalpostId));
+		log.info("oppdaterJournalposttype har mottatt kall om å oppdatere journalposttype for journalpost med journalpostId={}", journalpostId);
+
+		try {
+			validateOppdaterJournalpostTypeRequest(request);
+			oppdaterJournalposttypeService.oppdaterJournalpostType(journalpostId, request);
+			log.info("oppdaterJournalposttype har oppdatert journalposttype for journalpost med journalpostId={} i Joark.", journalpostId);
+
+			return ResponseEntity.status(OK)
+					.contentType(APPLICATION_JSON)
+					.body("Journalposttype oppdatert");
+		} catch (InputValideringFeiletException e) {
+			throw new ResponseStatusException(BAD_REQUEST,
+					format("Kunne ikke oppdatere journalposttype for journalpost med journalpostId=%s. %s", journalpostId, e.getMessage()));
+		}
+	}
+
+	@Transactional
 	@PostMapping
 	@SwaggerOpprettJournalpost
 	public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(
@@ -223,9 +261,9 @@ public class ArkiverOgJournalfoerRestController {
 					name = "forsoekFerdigstill",
 					description = """
 							Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Når journalposten ferdigstilles, blir den låst for senere endringer.
-							
+														
 							Dersom ferdigstilling ikke lykkes, returnerer tjenesten journalpostFerdigstilt=false
-							
+														
 							Journalposten blir opprettet i alle tilfeller, men kan bare ferdigstilles dersom (minst) følgende er satt på input:
 							* bruker
 							* sak
@@ -235,7 +273,7 @@ public class ArkiverOgJournalfoerRestController {
 							* avsenderMottaker.navn
 							* tittel på journalpostnivå
 							* tittel på alle dokumentene
-							
+														
 							NB: Dersom dokumentene skal være mulig å distribuere via Dokdist, eller skal kunne vises til brukeren på nav.no, må i tillegg avsenderMottaker.id og avsenderMottaker.idType settes.
 							""",
 					schema = @Schema(type = "boolean", allowableValues = {"true", "false"})

@@ -17,6 +17,7 @@ public class ArkivElementConstants {
 	public static final String JOURNALPOST_JOURNALPOST_ID = "Journalpost.journalpostId";
 	public static final String JOURNALPOST_SKJERMING_TYPE = "Journalpost.skjermingType";
 	public static final String JOURNALPOST_JOURNALSTATUS = "Journalpost.journalstatus";
+	public static final String JOURNALPOST_JOURNALPOSTTYPE = "Journalpost.journalpost_type";
 	public static final String JOURNALPOST_FAGOMRADE = "Journalpost.fagomrade";
 	public static final String JOURNALPOST_INNHOLD = "Journalpost.innhold";
 	public static final String JOURNALPOST_BRUKER = "Journalpost.bruker";

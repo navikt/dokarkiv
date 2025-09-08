@@ -75,15 +75,15 @@ public final class OppdaterJournalpostValidator {
 
 	public static void validateOppdaterteFelt(OppdaterJournalpostRequest request, Journalpost journalpost) {
 		JournalStatusCode journalpostStatus = journalpost.getJournalstatus();
-		JournalpostTypeCode journalpostType = journalpost.getJournalposttype();
+		JournalpostTypeCode journalposttype = journalpost.getJournalposttype();
 		List<String> feilmeldinger = new ArrayList<>();
 
-		if (I.equals(journalpostType)) {
+		if (I.equals(journalposttype)) {
 			feilmeldinger.addAll(validateInngaaende(request, journalpost));
-		} else if (U.equals(journalpostType)) {
-			feilmeldinger.addAll(validateUtgaaende(request, journalpostStatus, journalpostType));
-		} else if (N.equals(journalpostType)) {
-			feilmeldinger.addAll(validateNotat(request, journalpostStatus, journalpostType));
+		} else if (U.equals(journalposttype)) {
+			feilmeldinger.addAll(validateUtgaaende(request, journalpostStatus, journalposttype));
+		} else if (N.equals(journalposttype)) {
+			feilmeldinger.addAll(validateNotat(request, journalpostStatus, journalposttype));
 		}
 
 		if (request.getTittel() != null) {
