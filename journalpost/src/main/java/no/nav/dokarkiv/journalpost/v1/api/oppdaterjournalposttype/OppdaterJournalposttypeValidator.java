@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype;
+package no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -9,30 +9,19 @@ import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import java.util.EnumSet;
 
 import static java.lang.String.format;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
-import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
-public class OppdaterJournalpostTypeUtils {
-
+public class OppdaterJournalposttypeValidator {
 	private static final EnumSet<JournalStatusCode> GODKJENTE_JOURNALSTATUS_FOR_ENDRING = EnumSet.of(M, MO, U, UB, J);
-
-	public static JournalStatusCode determineNewJournalstatusCode(JournalStatusCode currentStatus) {
-		return J.equals(currentStatus) ? FL : D;
-	}
-
-	public static JournalpostTypeCode determineJournalpostTypeCode(String journalposttype) {
-		return UTGAAENDE.name().equals(journalposttype) ? JournalpostTypeCode.U : N;
-	}
 
 	public static void validateJournalpostKanEndres(Journalpost journalpostToUpdate) {
 		if (journalpostToUpdate.getJournalposttype() != I) {
@@ -57,16 +46,15 @@ public class OppdaterJournalpostTypeUtils {
 
 	private static void validateJournalfoerendeEnhet(String journalfoerendeEnhet) {
 		if (isNotEmpty(journalfoerendeEnhet)) {
-			if (journalfoerendeEnhet.length() != 4 || !journalfoerendeEnhet.chars().allMatch(Character::isDigit)) {
+			if (!isNumeric(journalfoerendeEnhet) || journalfoerendeEnhet.length() != 4)
 				throw new InputValideringFeiletException("Ugyldig journalfoerendeEnhet, må være 4 siffer. Mottok: " + journalfoerendeEnhet);
-			}
 		}
+
 	}
 
-	private static void validateEndresTil(String typeEndresTil) {
+	private static void validateEndresTil(JournalpostType typeEndresTil) {
 		try {
-			JournalpostType endresTil = JournalpostType.valueOf(typeEndresTil);
-			if (endresTil != UTGAAENDE && endresTil != NOTAT) {
+			if (typeEndresTil != UTGAAENDE && typeEndresTil != NOTAT) {
 				throw new InputValideringFeiletException("Ugyldig typeEndresTil, kan kun endres til UTGAAENDE eller NOTAT. Mottok: " + typeEndresTil);
 			}
 		} catch (Exception e) {

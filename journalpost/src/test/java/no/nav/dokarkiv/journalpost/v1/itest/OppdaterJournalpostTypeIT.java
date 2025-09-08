@@ -9,8 +9,8 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalposttypeRequest;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -48,14 +48,19 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		super.cleanup();
 	}
 
+	@BeforeEach
+	public void setup() {
+		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
+	}
+
 	@Test
 	public void happyPathNotat() {
 		Journalpost journalpost = buildAndCommit(buildJournalpost(I, M));
 
 		Long journalpostId = journalpost.getJournalpostId();
 
-		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequest(NOTAT, EXPECTED_ENHET);
-		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		OppdaterJournalposttypeRequestTest request = createPatchOppdaterJournalpostTypeRequest(NOTAT, EXPECTED_ENHET);
+		HttpEntity<OppdaterJournalposttypeRequestTest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
@@ -74,8 +79,8 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 
-		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequest(UTGAAENDE, EXPECTED_ENHET);
-		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		OppdaterJournalposttypeRequestTest request = createPatchOppdaterJournalpostTypeRequest(UTGAAENDE, EXPECTED_ENHET);
+		HttpEntity<OppdaterJournalposttypeRequestTest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
@@ -94,8 +99,8 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 
-		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet();
-		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		OppdaterJournalposttypeRequestTest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet();
+		HttpEntity<OppdaterJournalposttypeRequestTest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
@@ -112,8 +117,8 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 
-		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet();
-		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		OppdaterJournalposttypeRequestTest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet();
+		HttpEntity<OppdaterJournalposttypeRequestTest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
@@ -130,8 +135,8 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 
-		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet();
-		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		OppdaterJournalposttypeRequestTest request = createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet();
+		HttpEntity<OppdaterJournalposttypeRequestTest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
@@ -148,8 +153,8 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 
-		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequest(UTGAAENDE, "12345");
-		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		OppdaterJournalposttypeRequestTest request = createPatchOppdaterJournalpostTypeRequest(UTGAAENDE, "12345");
+		HttpEntity<OppdaterJournalposttypeRequestTest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
@@ -166,23 +171,23 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
 		Long journalpostId = journalpost.getJournalpostId();
 
-		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequest("INVALID", "1234");
-		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		OppdaterJournalposttypeRequestTest request = createPatchOppdaterJournalpostTypeRequest("INVALID", "1234");
+		HttpEntity<OppdaterJournalposttypeRequestTest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath(journalpostId.toString()) + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
 		commitAndStartNewTransaction();
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
 
-		String expectedErrorMessage = format("Kunne ikke oppdatere journalposttype for journalpost med journalpostId=%s. Ugyldig typeEndresTil, kan kun endres til UTGAAENDE eller NOTAT. Mottok:", journalpostId);
+		String expectedErrorMessage = format("Feltet typeEndresTil=INVALID må være en av [INNGAAENDE, UTGAAENDE, NOTAT]");
 		validateBadRequestResponse(responseEntity, expectedErrorMessage, changedJournalpost, M);
 	}
 
 	@Test
 	public void shouldReturn404WHenNoJournalpost() {
 
-		OppdaterJournalposttypeRequest request = createPatchOppdaterJournalpostTypeRequest(UTGAAENDE, "1234");
-		HttpEntity<OppdaterJournalposttypeRequest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		OppdaterJournalposttypeRequestTest request = createPatchOppdaterJournalpostTypeRequest(OppdaterJournalpostTypeIT.UTGAAENDE, "1234");
+		HttpEntity<OppdaterJournalposttypeRequestTest> requestHttpEntity = new HttpEntity<>(request, createHeadersWithServiceUserTokenAndUserIdHeader());
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(apiJournalpostPath("123456789") + OPPDATERJOURNALPOSTTYPE_URL, PATCH, requestHttpEntity, String.class);
 
@@ -213,51 +218,54 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 		assertThat(endring.getTilVerdi()).isEqualTo(nyJournalpostTypeCode.name());
 	}
 
-	private void validateUpdatedJournalpostUtgaaende(Journalpost updatedJournalpost) {
-		assertThat(updatedJournalpost.getJournalposttype()).isEqualTo(JournalpostTypeCode.U);
-		assertThat(updatedJournalpost.getUtsendingskanal()).isEqualTo(L);
-		assertThat(updatedJournalpost.getJournalstatus()).isEqualTo(JournalStatusCode.FL);
+	private void validateUpdatedJournalpostUtgaaende(Journalpost oppdaterJournalpost) {
+		assertThat(oppdaterJournalpost.getJournalposttype()).isEqualTo(JournalpostTypeCode.U);
+		assertThat(oppdaterJournalpost.getUtsendingskanal()).isEqualTo(L);
+		assertThat(oppdaterJournalpost.getSendtPrintDato()).isEqualTo(oppdaterJournalpost.getChangeStamp().getCreatedDate());
+		assertThat(oppdaterJournalpost.getJournalstatus()).isEqualTo(JournalStatusCode.FL);
 
-		assertThat(updatedJournalpost.getAvsenderMottakerId()).isEqualTo("1");
-		assertThat(updatedJournalpost.getAvsenderMottaker()).isEqualTo("Bjarne Betjent");
-		assertThat(updatedJournalpost.getAvsenderMottakerIdType()).isEqualTo(AvsenderMottakerIdTypeCode.FNR);
+		assertThat(oppdaterJournalpost.getAvsenderMottakerId()).isEqualTo("1");
+		assertThat(oppdaterJournalpost.getAvsenderMottaker()).isEqualTo("Bjarne Betjent");
+		assertThat(oppdaterJournalpost.getAvsenderMottakerIdType()).isEqualTo(AvsenderMottakerIdTypeCode.FNR);
 
-		validateBaseJournalpost(updatedJournalpost);
+		validateBaseJournalpost(oppdaterJournalpost);
 	}
 
-	private void validateUpdatedJournalpostNotat(Journalpost updatedJournalpost) {
-		assertThat(updatedJournalpost.getJournalposttype()).isEqualTo(N);
-		assertThat(updatedJournalpost.getJournalstatus()).isEqualTo(JournalStatusCode.D);
-		assertThat(updatedJournalpost.getAvsenderMottakerId()).isNull();
-		assertThat(updatedJournalpost.getAvsenderMottaker()).isNull();
-		assertThat(updatedJournalpost.getAvsenderMottakerIdType()).isNull();
+	private void validateUpdatedJournalpostNotat(Journalpost oppdaterJournalpost) {
+		assertThat(oppdaterJournalpost.getJournalposttype()).isEqualTo(N);
+		assertThat(oppdaterJournalpost.getJournalstatus()).isEqualTo(JournalStatusCode.D);
+		assertThat(oppdaterJournalpost.getAvsenderMottakerId()).isNull();
+		assertThat(oppdaterJournalpost.getAvsenderMottaker()).isNull();
+		assertThat(oppdaterJournalpost.getAvsenderMottakerIdType()).isNull();
 
-		validateBaseJournalpost(updatedJournalpost);
+		validateBaseJournalpost(oppdaterJournalpost);
 	}
 
-	private void validateBaseJournalpost(Journalpost updatedJournalpost) {
-		validateBaseJournalpost(updatedJournalpost, EXPECTED_ENHET);
+	private void validateBaseJournalpost(Journalpost oppdaterJournalpost) {
+		validateBaseJournalpost(oppdaterJournalpost, EXPECTED_ENHET);
 	}
 
-	private void validateBaseJournalpost(Journalpost updatedJournalpost, String expectedEnhet) {
-		assertThat(updatedJournalpost.getJournalForendeEnhetId()).isEqualTo(expectedEnhet);
-		assertThat(updatedJournalpost.getMottakskanal()).isEqualTo(NAV_NO);
-		assertThat(updatedJournalpost.getMottattDato()).isEqualTo(JANUARY_1_2020);
-		assertThat(updatedJournalpost.getEndretAvNavn()).isEqualTo(SRV_JOARKADMIN);
-		assertThat(updatedJournalpost.getEndretKildeNavn()).isEqualTo(SRV_JOARKADMIN);
-
-		ChangeStamp changestamp = updatedJournalpost.getChangeStamp();
+	private void validateBaseJournalpost(Journalpost oppdaterJournalpost, String expectedEnhet) {
+		assertThat(oppdaterJournalpost.getJournalForendeEnhetId()).isEqualTo(expectedEnhet);
+		assertThat(oppdaterJournalpost.getMottakskanal()).isEqualTo(NAV_NO);
+		assertThat(oppdaterJournalpost.getMottattDato()).isEqualTo(JANUARY_1_2020);
+		assertThat(oppdaterJournalpost.getEndretAvNavn()).isEqualTo(PERSON_USER_NAME);
+		assertThat(oppdaterJournalpost.getEndretKildeNavn()).isEqualTo(SRV_JOARKADMIN);
+		ChangeStamp changestamp = oppdaterJournalpost.getChangeStamp();
 
 		assertThat(changestamp.getUpdatedDate()).isAfter(now().minusSeconds(10));
-		assertThat(changestamp.getUpdatedBy()).isEqualTo(SRV_JOARKADMIN);
+		assertThat(oppdaterJournalpost.getChangeStamp().getUpdatedBy()).isEqualTo(NAV_USER_ID);
 	}
 
-	private OppdaterJournalposttypeRequest createPatchOppdaterJournalpostTypeRequest(String typeEndresTil, String journalfoerendeEnhet) {
-		return new OppdaterJournalposttypeRequest(typeEndresTil, journalfoerendeEnhet);
+	private OppdaterJournalposttypeRequestTest createPatchOppdaterJournalpostTypeRequest(String typeEndresTil, String journalfoerendeEnhet) {
+		return new OppdaterJournalposttypeRequestTest(typeEndresTil, journalfoerendeEnhet);
 	}
 
 
-	private OppdaterJournalposttypeRequest createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet() {
-		return new OppdaterJournalposttypeRequest(OppdaterJournalpostTypeIT.UTGAAENDE, null);
+	private OppdaterJournalposttypeRequestTest createPatchOppdaterJournalpostTypeRequestWithoutJournalforendeEnhet() {
+		return new OppdaterJournalposttypeRequestTest(OppdaterJournalpostTypeIT.UTGAAENDE, null);
+	}
+
+	public record OppdaterJournalposttypeRequestTest(String typeEndresTil, String journalfoerendeEnhet) {
 	}
 }

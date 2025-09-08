@@ -1,9 +1,10 @@
-package no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype;
+package no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -13,53 +14,14 @@ import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.stream.Stream;
 
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
-import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
-import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.determineJournalpostTypeCode;
-import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.determineNewJournalstatusCode;
-import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.validateJournalpostKanEndres;
-import static no.nav.dokarkiv.journalpost.v1.api.oppdaterJournalposttype.OppdaterJournalpostTypeUtils.validateOppdaterJournalpostTypeRequest;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
+import static no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJournalposttypeValidator.validateJournalpostKanEndres;
+import static no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJournalposttypeValidator.validateOppdaterJournalpostTypeRequest;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-class OppdaterJournalpostTypeUtilsTest {
-
-	@ParameterizedTest
-	@MethodSource("provideJournalStatusCodes")
-	void shouldReturnExpectedStatusForGivenJournalpostStatusCode(JournalStatusCode currentStatus, JournalStatusCode expectedStatus) {
-		assertEquals(expectedStatus, determineNewJournalstatusCode(currentStatus));
-	}
-
-	private static Stream<Arguments> provideJournalStatusCodes() {
-		return Stream.of(
-				arguments(J, FL),
-				arguments(M, D),
-				arguments(U, D),
-				arguments(UB, D));
-	}
-
-	@ParameterizedTest
-	@MethodSource("provideJournalpostTypeCases")
-	void shouldReturnExpectedJournalpostTypeCodeForGivenJournalPostType(String journalposttype, JournalpostTypeCode expectedTypeCode) {
-		assertEquals(expectedTypeCode, determineJournalpostTypeCode(journalposttype));
-	}
-
-	private static Stream<Arguments> provideJournalpostTypeCases() {
-		return Stream.of(
-				arguments("UTGAAENDE", JournalpostTypeCode.U),
-				arguments("NOTAT", N)
-		);
-	}
-
+public class OppdaterJournalposttypeValidatorTest {
 	@ParameterizedTest
 	@MethodSource("provideInvalidJournalpostsForUpdating")
 	void shouldThrowExceptionWhenNotJournalpostKanEndres(Journalpost journalpost, String expectedMessage) {
@@ -103,7 +65,7 @@ class OppdaterJournalpostTypeUtilsTest {
 	@ParameterizedTest
 	@CsvSource({"12", "abcd", "12345", "123a"})
 	void shouldThrowExeptionWhenValidatingJournalfoerendeEnhet(String journalfoerendeEnhet) {
-		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest(journalfoerendeEnhet, "UTGAAENDE");
+		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest(journalfoerendeEnhet, UTGAAENDE);
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validateOppdaterJournalpostTypeRequest(request))
@@ -115,16 +77,15 @@ class OppdaterJournalpostTypeUtilsTest {
 	@ParameterizedTest
 	@CsvSource({"1234"})
 	void shouldNotThrowExceptionWhenValidatingJournalfoerendeEnhet(String journalfoerendeEnhet) {
-		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest(journalfoerendeEnhet, "UTGAAENDE");
+		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest(journalfoerendeEnhet, UTGAAENDE);
 
 		assertDoesNotThrow(() -> validateOppdaterJournalpostTypeRequest(request));
 	}
 
 	@NullSource
-	@EmptySource
 	@ParameterizedTest
 	@CsvSource({"INVALID", "INNGAAENDE"})
-	void shouldThrowExceptionWhenValidatingTypeEndresTil(String typeEndresTil) {
+	void shouldThrowExceptionWhenGivenBadTypeEndresTil(JournalpostType typeEndresTil) {
 		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest("1234", typeEndresTil);
 
 
@@ -135,13 +96,13 @@ class OppdaterJournalpostTypeUtilsTest {
 
 	@ParameterizedTest
 	@CsvSource({"UTGAAENDE", "NOTAT"})
-	void shouldNotThrowExceptionWhenValidatingTypeEndresTil(String typeEndresTil) {
+	void shouldValidateTypeEndresTil(JournalpostType typeEndresTil) {
 		OppdaterJournalposttypeRequest request = createMinimalOppdaterJournalpostTypeRequest("1234", typeEndresTil);
 
 		assertDoesNotThrow(() -> validateOppdaterJournalpostTypeRequest(request));
 	}
 
-	private static OppdaterJournalposttypeRequest createMinimalOppdaterJournalpostTypeRequest(String journalfoerendeEnhet, String typeEndresTil) {
+	private static OppdaterJournalposttypeRequest createMinimalOppdaterJournalpostTypeRequest(String journalfoerendeEnhet, JournalpostType typeEndresTil) {
 		return new OppdaterJournalposttypeRequest(typeEndresTil, journalfoerendeEnhet);
 	}
 

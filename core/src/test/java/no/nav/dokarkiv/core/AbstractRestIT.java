@@ -243,6 +243,10 @@ public abstract class AbstractRestIT {
 		return createHeadersWithServiceUserToken(SERVICE_USER_ID);
 	}
 
+	protected HttpHeaders createHeadersWithServiceUserTokenAndUserIdHeader() {
+		return createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, NAV_USER_ID);
+	}
+
 	protected HttpHeaders createHeadersWithServiceUserAndAksjonslogg(String servicebruker) {
 		var headers = createHeadersWithServiceUserToken(servicebruker);
 
