@@ -477,23 +477,21 @@ public class ArkiverOgJournalfoerRestController {
 					required = true,
 					example = "467011764"
 			)
-			@PathVariable String journalpostId,
+			@PathVariable long journalpostId,
 			@RequestBody EndreJournalstatusRequest request
 	) {
-		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-		MDC.put(MDC_REQUEST_ID, "endreJournalStatus");
-		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
-		MDC.put(MDC_JOURNALPOST_ID, String.valueOf(journalpostIdParsed));
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		MDC.put(MDC_JOURNALPOST_ID, valueOf(journalpostId));
 
 		log.info("endreJournalstatus har mottatt kall om å endre status på journalpost med journalpostId={} til {}",
-				journalpostIdParsed, removeUnsafeChars(request.statusEndresTil()));
+				journalpostId, removeUnsafeChars(request.statusEndresTil()));
 
 		try {
 			JournalStatusCode newStatus = validateAndParseJournalStatus(request.statusEndresTil());
-			endreJournalstatusService.endreJournalstatus(journalpostIdParsed, newStatus);
+			endreJournalstatusService.endreJournalstatus(journalpostId, newStatus);
 
 			log.info("endreJournalstatus har endret status til {} på journalpost med journalpostId={}",
-					newStatus, journalpostIdParsed);
+					newStatus, journalpostId);
 
 			return ResponseEntity
 					.status(NO_CONTENT).build();
@@ -501,11 +499,11 @@ public class ArkiverOgJournalfoerRestController {
 		} catch (InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
 					"Kunne ikke endre status på journalpost med journalpostId=%s. Validering av input feilet: %s"
-							.formatted(journalpostIdParsed, e.getMessage()));
+							.formatted(journalpostId, e.getMessage()));
 		} catch (KanIkkeEndreJournalstatusException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
 					"Kunne ikke endre status på journalpost med journalpostId=%s. %s"
-							.formatted(journalpostIdParsed, e.getMessage()));
+							.formatted(journalpostId, e.getMessage()));
 		}
 	}
 }

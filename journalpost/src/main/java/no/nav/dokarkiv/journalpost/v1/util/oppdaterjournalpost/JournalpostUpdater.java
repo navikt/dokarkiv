@@ -98,11 +98,7 @@ public class JournalpostUpdater {
 	public ChangeTracker changeJournalstatus(Journalpost journalpost, JournalStatusCode journalStatusCode) {
 		ChangeTracker tracker = new ChangeTracker();
 
-		tracker.setEndretFlagg(true);
-		tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), journalStatusCode.name());
-		journalpost.setJournalstatus(journalStatusCode);
-		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
-		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		updateJournalstatus(journalpost, tracker, journalStatusCode);
 		return tracker;
 	}
 
