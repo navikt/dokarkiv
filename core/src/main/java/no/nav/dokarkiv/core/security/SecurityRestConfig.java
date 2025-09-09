@@ -30,10 +30,9 @@ public class SecurityRestConfig {
 		httpSecurity.csrf(AbstractHttpConfigurer::disable);
 		// Disse endepunktene er beskyttet av token-support @Protected
 		// Se JwtTokenValidationFilter
-		httpSecurity.authorizeRequests()
-				.requestMatchers("/rest/journalpostapi/**",
-						"/rest/admin/**")
-				.permitAll();
+		httpSecurity.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
+				authorizationManagerRequestMatcherRegistry.anyRequest().permitAll()
+		);
 		httpSecurity.sessionManagement(configurer ->
 				configurer.sessionCreationPolicy(STATELESS));
 		return httpSecurity.build();
