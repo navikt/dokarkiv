@@ -37,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -45,12 +46,10 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalIkkeKassereDokumentNårDokmentInfoIkkeFinnes() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Long dokumentInfoId = 13L;
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(
-				createKasserDokumentRequest(dokumentInfoId), createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)), String.class);
+				createKasserDokumentRequest(dokumentInfoId), createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
 		assertTrue(responseEntity.getBody().contains("Fant ikke dokument med dokumentInfoId=" + dokumentInfoId));
@@ -58,8 +57,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentSomErKnyttetTilFlereJournalposter() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -80,7 +77,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(
 						createKasserDokumentRequest(dokumentInfoSomSkalKasseres.getDokumentInfoId()),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
@@ -166,8 +163,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentMedSomErKnyttetTilEnJournalpost() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
@@ -188,7 +183,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(
 				createKasserDokumentRequest(dokumentInfoRep.get().getDokumentInfoId()),
-				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)), String.class);
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)), String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
 		reinitTransaction();
@@ -208,8 +203,6 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentSomErKnyttetTilEnJournalpostMedClientCredentialTokenFraJoarkadmin() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
@@ -271,14 +264,13 @@ public class Rjoark102IT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
-		stubMsGraphMemberOfNotJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+	public void skalReturnereForbiddenHvisKallendeBrukerManglerRiktigGruppe() {
 		var headers = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT, DELETE, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
 
-		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("NAV-ansatt må være medlem av gruppen");
+		assertThat(responseEntity.getStatusCode()).isEqualTo(FORBIDDEN);
+		assertThat(responseEntity.getBody()).contains("NAV-ansatt må ha gruppen med objectId");
 	}
 
 }

@@ -30,7 +30,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class EndreJournalstatusIT extends AbstractJournalpostIT {
 
-	@Value("${azure.ad.admin.role}")
+	@Value("${joark.vedlikehold.group.id}")
 	String joarkVedlikeholdGruppeId;
 
 	@ParameterizedTest

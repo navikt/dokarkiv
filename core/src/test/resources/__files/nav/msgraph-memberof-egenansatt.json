@@ -1,8 +1,0 @@
-{
-  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#groups",
-  "value": [
-    {
-      "id": "abcd163a-9821-4637-a23d-b706e5b24809"
-    }
-  ]
-}

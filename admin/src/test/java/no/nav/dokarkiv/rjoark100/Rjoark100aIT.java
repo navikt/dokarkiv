@@ -37,6 +37,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
@@ -47,8 +48,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeJournalpost() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 		reinitTransaction();
 
@@ -56,7 +55,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, JOURNALPOST, journalpost.getJournalpostId(), null, null),
-				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)
 		);
 
 		var responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, POST, httpEntity, String.class);
@@ -82,9 +81,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeJournalpostForStsTokenFraJoarkadmin() {
-		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 		reinitTransaction();
 
@@ -120,7 +116,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentInfoSomErHoveddokumentPåJournalpostSomHarVedleggRelasjoner() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
@@ -139,7 +134,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		var responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, POST, new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_INFO, null, dokumentInfoSomSkalSkjermes.getDokumentInfoId(), null),
-				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)), String.class);
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertDokumentInfoSkjermet(dokumentInfoSomSkalSkjermes.getDokumentInfoId());
@@ -173,7 +168,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSkjermeDokumentInfoSomErGjenbruktSomHoveddokumentPåEnJournalpostOgSomVedleggPåEnAnnen() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost originalJournalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSkjermes = originalJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -192,7 +186,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_INFO, null, dokumentInfoSomSkalSkjermes.getDokumentInfoId(), null),
-				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		var responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, POST, httpEntity, String.class);
 
@@ -246,7 +240,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentFil() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -255,7 +248,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 		assertNull(dokumentInfo.findFilDetaljerByVariantFormat(ARKIV).getSkjermingType());
 
 		var httpEntity = new HttpEntity<>(createSkjermarkivenhetRequest(POL, DOKUMENT_FIL, null, dokumentInfo.getDokumentInfoId(), ARKIV),
-				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		var responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, POST, httpEntity, String.class);
 
@@ -281,7 +274,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeAlleFildetaljerHvisVariantIkkeErSatt() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -292,7 +284,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_FIL, null, dokumentInfo.getDokumentInfoId(), null),
-				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		var responseEntity = restTemplate.exchange(
 				URL_SKJERMARKIVENHET,
@@ -327,7 +319,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentFilHvisDokumentHarSladdetFildetaljer() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, SLADDET));
@@ -339,7 +330,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_FIL, null, dokumentInfo.getDokumentInfoId(), ARKIV),
-				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)
 		);
 
 		var responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, POST, httpEntity, String.class);
@@ -366,7 +357,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalLageAksjonsLoggHvisDokumentInfoErAlleredeSkjermet() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost originalJournalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfo = originalJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -389,7 +379,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_INFO, null, dokumentInfo.getDokumentInfoId(), null),
-				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		var responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, POST, httpEntity, String.class);
 
@@ -407,7 +397,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalLageAksjonsLoggHvisJournalpostErAlleredeSkjermet() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 
 		journalpostTestRepository.persist(journalpost);
@@ -419,7 +408,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, JOURNALPOST, journalpost.getJournalpostId(), null, null),
-				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		var responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, POST, httpEntity, String.class);
 
@@ -435,7 +424,6 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 	@Test
 	public void skalLageAksjonsLoggHvisJDokumentFilErAlleredeSkjermet() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		Journalpost journalpost = journalpostTestRepository.persist(createUniqueJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		skjermingServiceTest.setVariantSkjermet(dokumentInfo.getDokumentInfoId(), ARKIV, POL);
@@ -444,7 +432,7 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_FIL, null, dokumentInfo.getDokumentInfoId(), ARKIV),
-				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)
+				createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)
 		);
 
 		var responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, POST, httpEntity, String.class);
@@ -480,16 +468,15 @@ public class Rjoark100aIT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
-		stubMsGraphMemberOfNotJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+	public void skalReturnereForbiddenHvisKallendeBrukerManglerRiktigGruppe() {
 		var headers = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
 
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SKJERMARKIVENHET, POST,
 				new HttpEntity<>(createSkjermarkivenhetRequest(POL, JOURNALPOST, 1L, null, null), headers), String.class);
 
-		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("NAV-ansatt må være medlem av gruppen");
+		assertThat(responseEntity.getStatusCode()).isEqualTo(FORBIDDEN);
+		assertThat(responseEntity.getBody()).contains("NAV-ansatt må ha gruppen med objectId");
 	}
 
 	private void assertDokumentInfoSkjermet(Long dokumentInfoId) {

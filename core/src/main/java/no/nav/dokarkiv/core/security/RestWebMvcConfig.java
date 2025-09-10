@@ -34,7 +34,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 	public RestWebMvcConfig(TokenValidationContextHolder tokenValidationContextHolder,
 							MultiIssuerConfiguration multiIssuerConfiguration,
 							AzureAdGraphService azureAdGraphService,
-							@Value("${azure.ad.admin.role}") String azureAdAdminRole,
+							@Value("${joark.vedlikehold.group.id}") String azureAdAdminRole,
 							@Lazy HandlerInterceptor basicAuthReadAccessRestInterceptor,
 							MeterRegistry meterRegistry) {
 		this.tokenValidationContextHolder = tokenValidationContextHolder;
@@ -57,16 +57,13 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 		registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, meterRegistry, azureAdGraphService))
 				.addPathPatterns("/rest/**");
 
-		registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(azureAdGraphService, azureAdAdminRole))
+		registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(azureAdAdminRole))
 				.addPathPatterns("/rest/admin/**");
 
-		registry.addInterceptor(new JoarkVedlikeholdInterceptor(azureAdGraphService, azureAdAdminRole))
-				.addPathPatterns(
-						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settUkjentBruker",
-						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settStatusUtgår"
-				);
 		registry.addInterceptor(new JoarkVedlikeholdTokenClaimOnlyInterceptor(azureAdAdminRole))
 				.addPathPatterns(
+						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settUkjentBruker",
+						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settStatusUtgår",
 						"/rest/journalpostapi/v1/journalpost/*/endreJournalstatus");
 
 		registry.addInterceptor(new PopulateMDCHandler())

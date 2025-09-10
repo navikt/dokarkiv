@@ -3,7 +3,6 @@ package no.nav.dokarkiv.core.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
 import org.slf4j.MDC;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -16,11 +15,10 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 
 	public static final String APP_NAME_WITH_NAMESPACE = "teamdokumenthandtering:joarkadmin";
 
-	private final JoarkVedlikeholdInterceptor joarkVedlikeholdInterceptor;
+	private final JoarkVedlikeholdTokenClaimOnlyInterceptor joarkVedlikeholdInterceptor;
 
-	public ValidateAdminConsumerAccessInterceptor(AzureAdGraphService azureAdGraphService,
-												  String joarkVedlikeholdGroupObjectId) {
-		this.joarkVedlikeholdInterceptor = new JoarkVedlikeholdInterceptor(azureAdGraphService, joarkVedlikeholdGroupObjectId);
+	public ValidateAdminConsumerAccessInterceptor(String joarkVedlikeholdGroupObjectId) {
+		this.joarkVedlikeholdInterceptor = new JoarkVedlikeholdTokenClaimOnlyInterceptor(joarkVedlikeholdGroupObjectId);
 	}
 
 	@Override
@@ -28,7 +26,7 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 
 		// To automatiske jobber på joarkadmin kaller admin-endepunktene med client credential token
 		if (erIkkeEtOboToken()) {
-			if (erClientCredentialToken()) {
+			if (erClientCredentialTokenForJoarkadmin()) {
 				return true;
 			} else {
 				log.warn("OIDC-token på Authorization-header inneholder et system-til-system-token som ikke tilhører {}", APP_NAME_WITH_NAMESPACE);
@@ -41,7 +39,7 @@ public class ValidateAdminConsumerAccessInterceptor implements HandlerIntercepto
 		return joarkVedlikeholdInterceptor.preHandle(request, response, handler);
 	}
 
-	private boolean erClientCredentialToken() {
+	private boolean erClientCredentialTokenForJoarkadmin() {
 		return MDC.get(MDC_CONSUMER_ID).contains(APP_NAME_WITH_NAMESPACE);
 	}
 

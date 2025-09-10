@@ -43,6 +43,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -54,8 +55,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteJournalpostMedHoveddokumentOgEttVedlegg() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
@@ -75,7 +74,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThat(journalpostList.size()).isEqualTo(3);
 		assertThatJournalpostIsNotDeleted(journalpost);
 
-		HttpHeaders httpHeaders = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
+		HttpHeaders httpHeaders = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId);
 		httpHeaders.remove(AKSJONS_LOGG_MELDING_HEADER);
 		var responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
 				new HttpEntity<>(SlettArkivenhetRequest.builder()
@@ -260,8 +259,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteJournalpostMedHoveddokumentOgVedleggSomErGjenbruktFraEnAnnenJournalpost() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpostSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
@@ -292,7 +289,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostSomSkalSlettes.getJournalpostId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				String.class);
 
 		reinitTransaction();
@@ -369,8 +366,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileVedSlettingAvJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedlegg() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
@@ -395,7 +390,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpost1.getJournalpostId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				ApplicationProblemDetail.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_ACCEPTABLE);
@@ -423,8 +418,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalIkkeSletteJournalpostSomErSplittet() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpostOriginal = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpostSplit1 = createJournalpostWithSplittetHoveddokument(journalpostOriginal);
 		Journalpost journalpostSplit2 = createJournalpostWithSplittetHoveddokument(journalpostOriginal);
@@ -448,7 +441,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostOriginal.getJournalpostId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				ApplicationProblemDetail.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_ACCEPTABLE);
 
@@ -458,7 +451,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostSplit1.getJournalpostId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				String.class);
 		assertThat(responseEntity1.getStatusCode()).isEqualTo(OK);
 
@@ -467,7 +460,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostSplit2.getJournalpostId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				String.class);
 		assertThat(responseEntity2.getStatusCode()).isEqualTo(OK);
 
@@ -488,8 +481,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteJournalpostMedHoveddokumentSomHarRelasjonTilAndreJournalposterSomVedleggEtterSlettingAvRelasjonene() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpostMedDokumentSomVedlegg = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpostSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
@@ -513,7 +504,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostSomSkalSlettes.getJournalpostId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				ApplicationProblemDetail.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_ACCEPTABLE);
 
@@ -523,7 +514,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(DOKUMENT_INFO)
 						.dokumentInfoId(dokumentInfoHoveddokument.getDokumentInfoId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				String.class);
 		assertThat(responseEntity2.getStatusCode()).isEqualTo(OK);
 
@@ -533,7 +524,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(journalpostSomSkalSlettes.getJournalpostId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				String.class);
 		assertThat(responseEntity3.getStatusCode()).isEqualTo(OK);
 
@@ -557,15 +548,13 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileHvisJournalpostIkkeFinnes() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
 		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
 				new HttpEntity<>(SlettArkivenhetRequest.builder()
 						.arkivenhet(JOURNALPOST)
 						.journalpostId(1L)
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				ApplicationProblemDetail.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
@@ -578,8 +567,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteDokumentInfoSomErBareTilknyttetEnJournalpost() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
@@ -606,7 +593,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		assertThatJournalpostIsNotDeleted(journalpostMedDokumentSomSkalSlettes);
 		assertThat(journalpostDokumentInfoRelasjonTestRepository.findAllByJournalpostJournalpostId(journalpostMedDokumentSomSkalSlettes.getJournalpostId()).size()).isEqualTo(3);
 
-		HttpHeaders httpHeaders = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
+		HttpHeaders httpHeaders = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId);
 		httpHeaders.remove(AKSJONS_LOGG_MELDING_HEADER);
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
@@ -659,8 +646,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteHoveddokumentOgBytteVedleggRelasjonTilHoveddokumentForJournalpostMedFlereRelasjoner() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost1 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
@@ -691,7 +676,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(DOKUMENT_INFO)
 						.dokumentInfoId(dokumentInfoSomSkalSlettes.getDokumentInfoId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
@@ -750,8 +735,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteVedleggOgDeretterHoveddokumentForJournalpostMedEnHoveddokumentOgEnVedlegg() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpostMedDokumentSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSlettes = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
@@ -777,7 +760,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(DOKUMENT_INFO)
 						.dokumentInfoId(vedleggRelasjon.getDokumentInfo().getDokumentInfoId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				String.class);
 		assertThat(responseEntityVedlegg.getStatusCode()).isEqualTo(OK);
 
@@ -798,7 +781,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(DOKUMENT_INFO)
 						.dokumentInfoId(dokumentInfoSomSkalSlettes.getDokumentInfoId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				String.class);
 		assertThat(responseEntityHoveddokument.getStatusCode()).isEqualTo(OK);
 
@@ -858,8 +841,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteDokumentInfoSomErEnesteDokumentPåEnJournalpostOgVedleggPåEnAnnenJournalpost() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpostSomHarDokumentSomVedlegg = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
@@ -884,7 +865,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 						.arkivenhet(DOKUMENT_INFO)
 						.dokumentInfoId(relasjonVedlegg.getDokumentInfo().getDokumentInfoId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
@@ -950,8 +931,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileVedSlettingAvDokumentInfoSomErSplittet() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost origJournalpost = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost = createJournalpostWithSplittetHoveddokument(origJournalpost);
 		saveJournalpost(origJournalpost);
@@ -974,7 +953,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 								.getDokumentInfo()
 								.getDokumentInfoId())
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_ACCEPTABLE);
 
@@ -996,14 +975,12 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileHvisDokumentInfoIkkeFinnes() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
 				new HttpEntity<>(SlettArkivenhetRequest.builder()
 						.arkivenhet(DOKUMENT_INFO)
 						.dokumentInfoId(1L)
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
@@ -1018,8 +995,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalSletteFilOgFildetaljer() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoMedVariantSomSkalSlettes = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		saveJournalpost(journalpost);
@@ -1034,7 +1009,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		List<DokumentInfo> dokumentInfoList = dokumentInfoTestRepository.findAll();
 		assertThat(dokumentInfoList.size()).isEqualTo(1);
 
-		HttpHeaders httpHeaders = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
+		HttpHeaders httpHeaders = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId);
 		httpHeaders.remove(AKSJONS_LOGG_MELDING_HEADER);
 		//Sjekk at tjenesten feiler ved sletting av journalpost med hoveddokument som er brukt som vedlegg i andre journalposter
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE,
@@ -1075,8 +1050,6 @@ public class Rjoark101IT extends AbstractAdminIT {
 	 */
 	@Test
 	public void skalFeileHvisVariantSomSkalSlettesIkkeFinnes() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost = createUniqueJournalpostWithHoveddokument();
 		saveJournalpost(journalpost);
 		reinitTransaction();
@@ -1096,7 +1069,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 								.getDokumentInfoId())
 						.variant(VariantFormatCode.SLADDET)
 						.build(),
-						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)),
+						createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)),
 				ApplicationProblemDetail.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
 
@@ -1135,8 +1108,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	}
 
 	@Test
-	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
-		stubMsGraphMemberOfNotJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
+	public void skalReturnereForbiddenvisKallendeBrukerManglerRiktigGruppe() {
 		var headers = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(URL_SLETTARKIVENHET, DELETE, new HttpEntity<>(SlettArkivenhetRequest.builder()
@@ -1144,8 +1116,8 @@ public class Rjoark101IT extends AbstractAdminIT {
 				.journalpostId(Long.valueOf("123"))
 				.build(), headers), String.class);
 
-		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("NAV-ansatt må være medlem av gruppen");
+		assertThat(responseEntity.getStatusCode()).isEqualTo(FORBIDDEN);
+		assertThat(responseEntity.getBody()).contains("NAV-ansatt må ha gruppen med objectId");
 	}
 
 }

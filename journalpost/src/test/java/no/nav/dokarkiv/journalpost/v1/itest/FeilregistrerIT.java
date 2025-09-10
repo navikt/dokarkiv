@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -124,14 +125,13 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalSetteUkjentBruker() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_USER_ID_WITH_GROUP_ACCESS);
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(U);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId.toString(), FEILREGISTRER, SETT_UKJENT_BRUKER), PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -166,18 +166,16 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalReturnereUnauthorizedForUkjentBrukerHvisSaksbehandlerManglerJoarkVedlikeholdGruppe() {
-		stubMsGraphMemberOfNotJoarkVedlikehold(MS_USER_ID_WITHOUT_GROUP_ACCESS);
 		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS));
 
 		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath("1", FEILREGISTRER, SETT_UKJENT_BRUKER), PATCH, requestEntity, String.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(response.getBody()).contains("NAV-ansatt må være medlem av gruppen med objectId");
+		assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+		assertThat(response.getBody()).contains("NAV-ansatt må ha gruppen med objectId");
 	}
 
 	@Test
 	public void skalSetteStatusUtgaar() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_USER_ID_WITH_GROUP_ACCESS);
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(OD);
 		journalpost.setJournalposttype(I);
@@ -185,7 +183,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId.toString(), FEILREGISTRER, SETT_STATUS_UTGAAR), PATCH, requestEntity, String.class);
 
 		assertEquals(OK, response.getStatusCode());
@@ -220,25 +218,23 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalReturnereUnauthorizedForStatusUtgaarHvisSaksbehandlerManglerJoarkVedlikeholdGruppe() {
-		stubMsGraphMemberOfNotJoarkVedlikehold(MS_USER_ID_WITHOUT_GROUP_ACCESS);
 		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS));
 
 		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath("1", FEILREGISTRER, SETT_STATUS_UTGAAR), PATCH, requestEntity, String.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(response.getBody()).contains("NAV-ansatt må være medlem av gruppen med objectId");
+		assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
+		assertThat(response.getBody()).contains("NAV-ansatt må ha gruppen med objectId");
 	}
 
 	@Test
 	public void skalReturnere405ForSettStatusUtgaarHvisJournalpostHarStatusUtgaaende() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_USER_ID_WITH_GROUP_ACCESS);
 		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(U);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
 
-		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS));
+		var requestEntity = new HttpEntity<>(createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		ResponseEntity<String> response = restTemplate.exchange(apiJournalpostPath(journalpostId.toString(), FEILREGISTRER, SETT_STATUS_UTGAAR), PATCH, requestEntity, String.class);
 
 		assertEquals(METHOD_NOT_ALLOWED, response.getStatusCode());

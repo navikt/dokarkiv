@@ -48,8 +48,8 @@ spec:
       value: {{ DOKPRODMELLOMLAGER_KEYID }}
     - name: SPRINGDOC_ENABLED
       value: "{{ SPRINGDOC_ENABLED }}"
-    - name: AZURE_AD_ADMIN_ROLE
-      value: {{ AZURE_AD_ADMIN_ROLE }}
+    - name: JOARK_VEDLIKEHOLD_GROUP_ID
+      value: {{ JOARK_VEDLIKEHOLD_GROUP_ID }}
     - name: DOKARKIV_ENDPOINTS_PDL_SCOPE
       value: {{ DOKARKIV_ENDPOINTS_PDL_SCOPE }}
     - name: OTEL_RESOURCE_ATTRIBUTES
@@ -107,7 +107,7 @@ spec:
           - "NAVident"
           - "azp_name"
         groups:
-          - id: "{{ AZURE_AD_ADMIN_ROLE }}"
+          - id: "{{ JOARK_VEDLIKEHOLD_GROUP_ID }}"
   accessPolicy:
     inbound:
       rules:
