@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.DuplikatVedleggException;
@@ -13,6 +14,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeMidlertidigException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeEndreJournalstatusException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeFerdigstilleException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeKopiereException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeLeggeTilVedleggException;
@@ -27,6 +29,7 @@ import no.nav.dokarkiv.journalpost.v1.api.KopierJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostResponse;
+import no.nav.dokarkiv.journalpost.v1.api.endrejournalstatus.EndreJournalstatusRequest;
 import no.nav.dokarkiv.journalpost.v1.api.lastOppVedlegg.LastOppVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.lastOppVedlegg.LastOppVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJournalposttypeRequest;
@@ -35,6 +38,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfoId;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
+import no.nav.dokarkiv.journalpost.v1.services.EndreJournalstatusService;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.FjernVedleggTilknyttetJournalpost;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostResult;
@@ -43,6 +47,7 @@ import no.nav.dokarkiv.journalpost.v1.services.LastOppVedleggService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerEndreJournalstatus;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFerdigstillJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFjernVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
@@ -81,6 +86,8 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJournalposttypeValidator.validateOppdaterJournalpostTypeRequest;
+import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
+import static no.nav.dokarkiv.journalpost.v1.validators.EndreJournalstatusValidator.validateAndParseJournalStatus;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateEksternReferanseId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 import static no.nav.dokarkiv.journalpost.v1.validators.LastOppVedleggValidator.validateRequest;
@@ -90,6 +97,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Tag(name = "journalpostapi", description = "Tjenester for å arkivere og journalføre i fagarkiv")
@@ -102,6 +110,7 @@ public class ArkiverOgJournalfoerRestController {
 	private static final String TRUE = "true";
 	private static final String MIDLERTIDIG = "MIDLERTIDIG";
 	private static final String STATUS_ENDELIG = "ENDELIG";
+
 	private final FerdigstillJournalpostService ferdigstillJournalpostService;
 	private final OppdaterJournalpostService oppdaterJournalpostService;
 	private final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService;
@@ -112,15 +121,17 @@ public class ArkiverOgJournalfoerRestController {
 	private final KopierJournalpostService kopierJournalpostService;
 	private final LastOppVedleggService lastOppVedleggService;
 	private final OppdaterJournalposttypeService oppdaterJournalposttypeService;
+	private final EndreJournalstatusService endreJournalstatusService;
 
-	public ArkiverOgJournalfoerRestController(final FerdigstillJournalpostService ferdigstillJournalpostService,
-											  final OppdaterJournalpostService oppdaterJournalpostService,
-											  final OpprettJournalpostService opprettJournalpostService,
-											  final OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
-											  final FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost,
-											  final KopierJournalpostService kopierJournalpostService,
-											  final LastOppVedleggService lastOppVedleggService,
-											  final OppdaterJournalposttypeService oppdaterJournalposttypeService) {
+	public ArkiverOgJournalfoerRestController(FerdigstillJournalpostService ferdigstillJournalpostService,
+											  OppdaterJournalpostService oppdaterJournalpostService,
+											  OpprettJournalpostService opprettJournalpostService,
+											  OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
+											  FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost,
+											  KopierJournalpostService kopierJournalpostService,
+											  LastOppVedleggService lastOppVedleggService,
+											  OppdaterJournalposttypeService oppdaterJournalposttypeService,
+											  EndreJournalstatusService endreJournalstatusService) {
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 		this.oppdaterJournalpostService = oppdaterJournalpostService;
 		this.opprettJournalpostService = opprettJournalpostService;
@@ -131,6 +142,7 @@ public class ArkiverOgJournalfoerRestController {
 		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
 		this.kopierJournalpostService = kopierJournalpostService;
 		this.lastOppVedleggService = lastOppVedleggService;
+		this.endreJournalstatusService = endreJournalstatusService;
 	}
 
 	@Transactional
@@ -455,4 +467,43 @@ public class ArkiverOgJournalfoerRestController {
 		}
 	}
 
+	@Transactional
+	@SwaggerEndreJournalstatus
+	@PostMapping("/{journalpostId}/endreJournalstatus")
+	public ResponseEntity<Void> endreJournalStatus(
+			@Parameter(
+					name = "journalpostId",
+					description = "Angir JournalpostId for journalpost status skal endres på",
+					required = true,
+					example = "467011764"
+			)
+			@PathVariable long journalpostId,
+			@RequestBody EndreJournalstatusRequest request
+	) {
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		MDC.put(MDC_JOURNALPOST_ID, valueOf(journalpostId));
+
+		log.info("endreJournalstatus har mottatt kall om å endre status på journalpost med journalpostId={} til {}",
+				journalpostId, removeUnsafeChars(request.statusEndresTil()));
+
+		try {
+			JournalStatusCode newStatus = validateAndParseJournalStatus(request.statusEndresTil());
+			endreJournalstatusService.endreJournalstatus(journalpostId, newStatus);
+
+			log.info("endreJournalstatus har endret status til {} på journalpost med journalpostId={}",
+					newStatus, journalpostId);
+
+			return ResponseEntity
+					.status(NO_CONTENT).build();
+
+		} catch (InputValideringFeiletException e) {
+			throw new ResponseStatusException(BAD_REQUEST,
+					"Kunne ikke endre status på journalpost med journalpostId=%s. Validering av input feilet: %s"
+							.formatted(journalpostId, e.getMessage()));
+		} catch (KanIkkeEndreJournalstatusException e) {
+			throw new ResponseStatusException(BAD_REQUEST,
+					"Kunne ikke endre status på journalpost med journalpostId=%s. %s"
+							.formatted(journalpostId, e.getMessage()));
+		}
+	}
 }

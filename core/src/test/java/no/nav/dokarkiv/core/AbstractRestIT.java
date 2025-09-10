@@ -89,6 +89,7 @@ public abstract class AbstractRestIT {
 	protected static final String CLAIM_AZP_NAME = "azp_name";
 	protected static final String CLAIM_NAVIDENT = "NAVident";
 	protected static final String CLAIM_NAME = "name";
+	protected static final String GROUPS = "groups";
 	protected static final String ROLES = "roles";
 	protected static final String SCOPES = "scp";
 	protected static final String APP_CLAIM_SUB = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
@@ -96,6 +97,7 @@ public abstract class AbstractRestIT {
 	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
 	protected static final String AZP_NAME_GOSYS = "dev-fss:isa:gosys-q2";
 	protected static final String NAV_USER_ID = "Z990782";
+	protected static final String NAV_USER_NAME = "F_990782 E_990782";
 	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
 	protected static final String MS_USER_ID_WITHOUT_GROUP_ACCESS = "b999c63a-9821-4637-a23d-b706e5b24809";
 	public static final String API_ADMIN_ROLE = "api_admin";
@@ -283,7 +285,7 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
-	protected HttpHeaders createHeadersWithOboToken(String azpName, String msUserId) {
+	protected HttpHeaders createHeadersWithOboToken(String azpName, String msUserId, String... groups) {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
@@ -291,7 +293,8 @@ public abstract class AbstractRestIT {
 				CLAIM_AZP_NAME, azpName,
 				CLAIM_NAVIDENT, NAV_USER_ID,
 				DEFAULT_CLAIM_OID, msUserId,
-				CLAIM_NAME, "F_Z991234 E_Z991234",
+				CLAIM_NAME, NAV_USER_NAME,
+				GROUPS, List.of(groups),
 				SCOPES, "api_admin defaultaccess"
 		)));
 		headers.add(NAV_CALL_ID, "itest");

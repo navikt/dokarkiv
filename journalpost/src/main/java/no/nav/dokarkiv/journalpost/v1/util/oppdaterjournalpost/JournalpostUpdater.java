@@ -95,6 +95,13 @@ public class JournalpostUpdater {
 		return tracker;
 	}
 
+	public ChangeTracker changeJournalstatus(Journalpost journalpost, JournalStatusCode journalStatusCode) {
+		ChangeTracker tracker = new ChangeTracker();
+
+		updateJournalstatus(journalpost, tracker, journalStatusCode);
+		return tracker;
+	}
+
 	private static void updateJournalstatus(Journalpost journalpost, ChangeTracker tracker, JournalStatusCode journalStatusCode) {
 		tracker.setEndretFlagg(true);
 		tracker.add(JOURNALPOST_JOURNALSTATUS, journalpost.getJournalstatus().name(), journalStatusCode.name());
