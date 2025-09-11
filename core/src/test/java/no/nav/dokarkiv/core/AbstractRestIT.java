@@ -102,7 +102,7 @@ public abstract class AbstractRestIT {
 	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
 	protected static final String MS_USER_ID_WITHOUT_GROUP_ACCESS = "b999c63a-9821-4637-a23d-b706e5b24809";
 	public static final String API_ADMIN_ROLE = "api_admin";
-	@Value("${joark.vedlikehold.group.id}")
+	@Value("${dokarkiv.joarkvedlikeholdgroupid}")
 	protected String joarkVedlikeholdGruppeId;
 
 	@Autowired

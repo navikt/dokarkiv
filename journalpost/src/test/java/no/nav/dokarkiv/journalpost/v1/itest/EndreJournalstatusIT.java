@@ -30,7 +30,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class EndreJournalstatusIT extends AbstractJournalpostIT {
 
-	@Value("${joark.vedlikehold.group.id}")
+	@Value("${dokarkiv.joarkvedlikeholdgroupid}")
 	String joarkVedlikeholdGruppeId;
 
 	@ParameterizedTest

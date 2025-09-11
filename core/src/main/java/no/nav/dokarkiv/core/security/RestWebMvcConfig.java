@@ -2,10 +2,10 @@ package no.nav.dokarkiv.core.security;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.dokarkiv.core.consumer.azure.AzureAdGraphService;
+import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.security.token.support.core.configuration.MultiIssuerConfiguration;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -28,13 +28,13 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 	private final AzureAdGraphService azureAdGraphService;
 	private final HandlerInterceptor basicAuthReadAccessRestInterceptor;
 	private final MeterRegistry meterRegistry;
-	private final String azureAdAdminRole;
+	private final DokarkivProperties dokarkivProperties;
 
 
 	public RestWebMvcConfig(TokenValidationContextHolder tokenValidationContextHolder,
 							MultiIssuerConfiguration multiIssuerConfiguration,
 							AzureAdGraphService azureAdGraphService,
-							@Value("${joark.vedlikehold.group.id}") String azureAdAdminRole,
+							DokarkivProperties dokarkivProperties,
 							@Lazy HandlerInterceptor basicAuthReadAccessRestInterceptor,
 							MeterRegistry meterRegistry) {
 		this.tokenValidationContextHolder = tokenValidationContextHolder;
@@ -42,7 +42,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 		this.azureAdGraphService = azureAdGraphService;
 		this.basicAuthReadAccessRestInterceptor = basicAuthReadAccessRestInterceptor;
 		this.meterRegistry = meterRegistry;
-		this.azureAdAdminRole = azureAdAdminRole;
+		this.dokarkivProperties = dokarkivProperties;
 	}
 
 	@Override
@@ -57,10 +57,10 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 		registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, meterRegistry, azureAdGraphService))
 				.addPathPatterns("/rest/**");
 
-		registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(azureAdAdminRole))
+		registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(dokarkivProperties.getJoarkVedlikeholdGroupId()))
 				.addPathPatterns("/rest/admin/**");
 
-		registry.addInterceptor(new JoarkVedlikeholdTokenClaimOnlyInterceptor(azureAdAdminRole))
+		registry.addInterceptor(new JoarkVedlikeholdTokenClaimOnlyInterceptor(dokarkivProperties.getJoarkVedlikeholdGroupId()))
 				.addPathPatterns(
 						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settUkjentBruker",
 						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settStatusUtgår",

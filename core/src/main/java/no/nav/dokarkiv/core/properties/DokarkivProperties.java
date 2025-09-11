@@ -19,6 +19,9 @@ public class DokarkivProperties {
 	private final Endpoints endpoints = new Endpoints();
 	private final EregEndpoint ereg = new EregEndpoint();
 
+	@NotEmpty
+	private String joarkVedlikeholdGroupId;
+
 	@Data
 	@Validated
 	public static class Database {
