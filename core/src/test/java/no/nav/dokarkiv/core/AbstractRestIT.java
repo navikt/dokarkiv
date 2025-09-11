@@ -26,6 +26,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -101,8 +102,8 @@ public abstract class AbstractRestIT {
 	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
 	protected static final String MS_USER_ID_WITHOUT_GROUP_ACCESS = "b999c63a-9821-4637-a23d-b706e5b24809";
 	public static final String API_ADMIN_ROLE = "api_admin";
-	protected static final String NAV_IDENT_SAKSBEHANDLER = "Z990782";
-	protected static final String MS_ID_SAKSBEHANDLER = "a123c63a-9821-4637-a23d-b706e5b24809";
+	@Value("${dokarkiv.joarkvedlikeholdgroupid}")
+	protected String joarkVedlikeholdGruppeId;
 
 	@Autowired
 	protected JournalpostTestRepository journalpostTestRepository;
@@ -340,8 +341,8 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
-	protected HttpHeaders createHeadersWithAksjonslogg(String azpName, String msUserId) {
-		HttpHeaders httpHeaders = createHeadersWithOboToken(azpName, msUserId);
+	protected HttpHeaders createHeadersWithAksjonslogg(String azpName, String msUserId, String... groups) {
+		HttpHeaders httpHeaders = createHeadersWithOboToken(azpName, msUserId, groups);
 		httpHeaders.addAll(createAksjonslogg());
 		return httpHeaders;
 	}
@@ -416,21 +417,6 @@ public abstract class AbstractRestIT {
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("nav/msgraph-users.json")));
-	}
-
-	protected static void stubMsGraphMemberOfJoarkVedlikehold(String msUserId) {
-		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-joark-admin.json");
-	}
-
-	protected static void stubMsGraphMemberOfNotJoarkVedlikehold(String msUserId) {
-		stubMsGraphMemberOf(msUserId, "nav/msgraph-memberof-not-joark-admin.json");
-	}
-
-	protected static void stubMsGraphMemberOf(String msUserId, String bodyFile) {
-		stubFor(get(urlMatching("/msgraph/users/" + msUserId + "/memberOf\\?.*"))
-				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile(bodyFile)));
 	}
 
 	protected void populateInnsyn() {

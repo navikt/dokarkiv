@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -40,7 +41,6 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 	@Test
 	public void shouldSaveFileAsSladdetVariant() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_USER_ID_WITH_GROUP_ACCESS);
 		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -55,7 +55,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(PDF).build();
 
-		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
+		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(URL_ARKIVERVARIANT, POST, httpEntity, ArkiverVariantResponse.class);
 
@@ -110,8 +110,6 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 	@Test
 	public void shouldFailWithBadRequestWhenVariantAlreadyExists() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_USER_ID_WITH_GROUP_ACCESS);
-
 		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
@@ -126,7 +124,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(PDF).build();
 
-		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
+		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		ResponseEntity<ArkiverVariantResponse> responseEntity = restTemplate.exchange(URL_ARKIVERVARIANT, POST, httpEntity, ArkiverVariantResponse.class);
 
@@ -139,7 +137,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(PDF).build();
 
-		var httpEntity2 = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
+		var httpEntity2 = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		ResponseEntity<ApplicationProblemDetail> responseEntity2 = restTemplate.exchange(
 				URL_ARKIVERVARIANT,
@@ -151,8 +149,6 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 	@Test
 	public void shouldFailWithNotFoundWhenDokumentInfoIsNotFound() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_USER_ID_WITH_GROUP_ACCESS);
-
 		ArkiverVariantRequest request = ArkiverVariantRequest.builder()
 				.dokumentInfoId(123456L)
 				.fil(FIL)
@@ -160,7 +156,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(PDF).build();
 
-		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS));
+		var httpEntity = new HttpEntity<>(request, createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		ResponseEntity<ApplicationProblemDetail> responseEntity = restTemplate.exchange(URL_ARKIVERVARIANT, POST, httpEntity, ApplicationProblemDetail.class);
 
@@ -205,7 +201,6 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
-		stubMsGraphMemberOfNotJoarkVedlikehold(MS_USER_ID_WITHOUT_GROUP_ACCESS);
 		var headers = createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS);
 
 		Journalpost journalpost = journalpostTestRepository.persist(opprettHoveddokumentForIT());
@@ -218,8 +213,8 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 				.variant(SLADDET)
 				.filType(PDF).build(), headers), String.class);
 
-		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("NAV-ansatt må være medlem av gruppen");
+		assertThat(responseEntity.getStatusCode()).isEqualTo(FORBIDDEN);
+		assertThat(responseEntity.getBody()).contains("NAV-ansatt må ha gruppen med objectId");
 	}
 
 }

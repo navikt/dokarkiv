@@ -26,6 +26,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -34,8 +35,6 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentForKassering() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
@@ -76,8 +75,6 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentForKasseringForStsTokenFraJoarkadmin() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
@@ -121,8 +118,6 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalOppheveSkjermingDokumentForKassering() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
 		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
@@ -132,7 +127,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(), DELETE, new HttpEntity<>(createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)), String.class);
+		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(), DELETE, new HttpEntity<>(createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
@@ -166,13 +161,11 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalFeileHvisDokumentIkkeFinnes() {
-		stubMsGraphMemberOfJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
-
-		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + 1, POST, new HttpEntity<>(createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)), String.class);
+		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + 1, POST, new HttpEntity<>(createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
 
-		var responseEntityOpphev = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + 1, DELETE, new HttpEntity<>(createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS)), String.class);
+		var responseEntityOpphev = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + 1, DELETE, new HttpEntity<>(createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)), String.class);
 
 		assertThat(responseEntityOpphev.getStatusCode()).isEqualTo(NOT_FOUND);
 	}
@@ -199,13 +192,12 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalReturnereUnauthorizedHvisKallendeBrukerManglerRiktigGruppe() {
-		stubMsGraphMemberOfNotJoarkVedlikehold(MS_ID_SAKSBEHANDLER);
 		var headers = createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS);
 
 		var responseEntity = restTemplate.exchange(URL_KASSERDOKUMENT_SKJERM + "/" + 1, POST, new HttpEntity<>(createKasserDokumentRequest(123L), headers), String.class);
 
-		assertThat(responseEntity.getStatusCode()).isEqualTo(UNAUTHORIZED);
-		assertThat(responseEntity.getBody()).contains("NAV-ansatt må være medlem av gruppen");
+		assertThat(responseEntity.getStatusCode()).isEqualTo(FORBIDDEN);
+		assertThat(responseEntity.getBody()).contains("NAV-ansatt må ha gruppen med objectId");
 	}
 
 	private void assertThatAllFildetaljerIsSkjermet(DokumentInfo dokInfoEtterKall, SkjermingTypeCode skjermingTypeCode) {
