@@ -296,6 +296,12 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "yrkesskade-sikkerhetsnett",
+      "namespace": "yrkesskade",
+      "cluster": "dev-gcp",
+      "roles": ["finn_mottatte_journalposter"]
+    },
+    {
       "app": "k9-punsj",
       "namespace": "k9saksbehandling",
       "cluster": "dev-fss"
