@@ -90,16 +90,6 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldNotThrowExceptionIfMottakskanalTemaCombinationIsValid() {
-		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
-				.tema(TEMA_SER)
-				.kanal("NAV_NO_UINNLOGGET")
-				.build();
-
-		validator.validateRequest(request, FORSOEKFERDIGSTILL);
-	}
-
-	@Test
 	public void shouldValidateWhenNoAvsenderMottaker() {
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.avsenderMottaker(null)
@@ -677,18 +667,6 @@ public class OpprettJournalpostRequestValidatorTest {
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
 				.withMessageContaining("kanal er påkrevd for inngående journalposter");
-	}
-
-	@Test
-	public void shouldThrowExceptionIfMottakskanalTemaCombinationIsInvalid() {
-		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
-				.tema(TEMA_FOR)
-				.kanal("NAV_NO_UINNLOGGET")
-				.build();
-
-		assertThatExceptionOfType(InputValideringFeiletException.class)
-				.isThrownBy(() -> validator.validateRequest(request, FORSOEKFERDIGSTILL))
-				.withMessageContaining("Det er kun mulig å arkivere med mottakskanal=NAV_NO_UINNLOGGET dersom tema=SER");
 	}
 
 	@Test

@@ -25,10 +25,8 @@ import java.util.stream.IntStream;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.String.format;
-import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.SER;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
-import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO_UINNLOGGET;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
@@ -219,13 +217,6 @@ public class OpprettJournalpostRequestValidator {
 						VALIDERER_IKKE_MOT_KODEVERK,
 						Arrays.toString(MottaksKanalCode.values())));
 			}
-
-			if (MottaksKanalCode.valueOf(request.getKanal()) == NAV_NO_UINNLOGGET && !request.getTema().equalsIgnoreCase(SER.name())) {
-				throw new InputValideringFeiletException(format("Det er kun mulig å arkivere med mottakskanal=%s dersom tema=%s",
-						NAV_NO_UINNLOGGET,
-						SER.name()));
-			}
-
 		} else if (isNotBlank(request.getKanal())) {
 			try {
 				UtsendingsKanalCode.valueOf(request.getKanal());
