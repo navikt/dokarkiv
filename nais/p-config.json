@@ -305,6 +305,12 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "yrkesskade-sikkerhetsnett",
+      "namespace": "yrkesskade",
+      "cluster": "prod-gcp",
+      "roles": ["finn_mottatte_journalposter"]
+    },
+    {
       "app": "flex-joark-mottak",
       "namespace": "flex",
       "cluster": "prod-gcp"
