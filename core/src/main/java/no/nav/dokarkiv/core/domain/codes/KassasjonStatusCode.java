@@ -5,18 +5,27 @@ package no.nav.dokarkiv.core.domain.codes;
  */
 public enum KassasjonStatusCode {
 	/*
-	 * Saken har nådd kassasjonstid
+	 * Sakens bevaringstid er passert og kan avleveres
 	 */
-	KASSASJONSTID_NAADD,
+	BEVARINGSTID_PASSERT,
 
 	/*
-	 * Saken kan kasseres
+	 * Sakens bevaringstid er passert og kan avleveres, og kassering av dokumenter på saken er bestilt
+	 */
+	BEVARINGSTID_PASSERT_DOK_KASSASJON_BESTILT,
+
+	/*
+	 * Sakens bevaringstid er passert og kan avleveres, og dokumenter på saken er kassert
+	 */
+	BEVARINGSTID_PASSERT_DOK_KASSERT,
+
+	/*
+	 * Saken er avlevert og kan kasseres
 	 */
 	KLAR_FOR_KASSASJON,
 
 	/*
-	 * Dokumenter på saken er kassert
+	 * Saken er kassert
 	 */
-	DOKUMENTER_KASSERT
-
+	KASSERT
 }
