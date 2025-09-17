@@ -3,7 +3,5 @@ updates:
   - package-ecosystem: maven # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
-      interval: "weekly"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-patch"]
+      interval: "daily"
+      time: "03:00"
