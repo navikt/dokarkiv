@@ -16,13 +16,13 @@ public enum SakStatusCode {
 	AVSLUTTET,
 
 	/**
-	 * Saken er avbrutt.
+	 * Saken er avlevert.
 	 */
-	AVBRUTT,
+	AVLEVERT,
 
 	/**
-	 * Saken kan slettes.
+	 * Saken er avbrutt.
 	 */
-	KAN_SLETTES;
+	AVBRUTT
 
 }
