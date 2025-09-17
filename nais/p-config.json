@@ -725,6 +725,11 @@
       "app": "syfo-oppfolgingsplan-backend",
       "namespace": "team-esyfo",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "historisk-helt-backend",
+      "namespace": "historisk",
+      "cluster": "prod-gcp"
     }
   ]
 }
