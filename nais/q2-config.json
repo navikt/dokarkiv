@@ -567,6 +567,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "tiltakspenger-journalposthendelser",
+      "namespace": "tpts",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "fpformidling",
       "namespace": "teamforeldrepenger",
       "cluster": "dev-fss"
