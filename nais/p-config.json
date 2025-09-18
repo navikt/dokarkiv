@@ -569,6 +569,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "tiltakspenger-journalposthendelser",
+      "namespace": "tpts",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "tilbakemeldingsmottak-api",
       "namespace": "teamserviceklage",
       "cluster": "prod-gcp"
