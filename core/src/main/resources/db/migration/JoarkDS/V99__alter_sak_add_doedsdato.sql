@@ -1,2 +1,2 @@
 ALTER TABLE SAK
-    ADD DOEDSDATO timestamp;
+    ADD DOEDSDATO date;
