@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 )
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "OK"),
-		@ApiResponse(responseCode = "400", description = "Kan ikke oppdatere. Journalposten er enten i feil status, eller den blir forsøkt endret til en ugyldig status.", content = @Content),
+		@ApiResponse(responseCode = "400", description = "Kan ikke oppdatere journalposttype. Journalposten er enten i feil status, eller den blir forsøkt endret til en ugyldig journalposttype.", content = @Content),
 		@ApiResponse(responseCode = "401", description = "Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått.", content = @Content),
 		@ApiResponse(responseCode = "404", description = "Journalpost ikke funnet", content = @Content),
 		@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)

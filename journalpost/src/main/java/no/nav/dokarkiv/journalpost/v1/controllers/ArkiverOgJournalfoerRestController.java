@@ -97,7 +97,6 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Tag(name = "journalpostapi", description = "Tjenester for å arkivere og journalføre i fagarkiv")
@@ -231,36 +230,6 @@ public class ArkiverOgJournalfoerRestController {
 		} catch (InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
 					format("Kunne ikke oppdatere journalpost med journalpostId=%s. %s", journalpostIdParsed, e.getMessage()));
-		}
-	}
-
-	@Transactional
-	@SwaggerOppdaterJournalposttype
-	@PatchMapping(value = "/{journalpostId}/oppdaterJournalposttype")
-	public ResponseEntity<String> oppdaterJournalposttype(
-			@Parameter(
-					name = "journalpostId",
-					description = "Angir JournalpostId som det skal oppdateres journalposttype for.",
-					required = true,
-					example = "467011764"
-			)
-			@PathVariable long journalpostId,
-			@RequestBody OppdaterJournalposttypeRequest request) {
-		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		MDC.put(MDC_JOURNALPOST_ID, String.valueOf(journalpostId));
-		log.info("oppdaterJournalposttype har mottatt kall om å oppdatere journalposttype for journalpost med journalpostId={}", journalpostId);
-
-		try {
-			validateOppdaterJournalpostTypeRequest(request);
-			oppdaterJournalposttypeService.oppdaterJournalpostType(journalpostId, request);
-			log.info("oppdaterJournalposttype har oppdatert journalposttype for journalpost med journalpostId={} i Joark.", journalpostId);
-
-			return ResponseEntity.status(OK)
-					.contentType(APPLICATION_JSON)
-					.body("Journalposttype oppdatert");
-		} catch (InputValideringFeiletException e) {
-			throw new ResponseStatusException(BAD_REQUEST,
-					format("Kunne ikke oppdatere journalposttype for journalpost med journalpostId=%s. %s", journalpostId, e.getMessage()));
 		}
 	}
 
@@ -464,6 +433,36 @@ public class ArkiverOgJournalfoerRestController {
 		} catch (DuplikatVedleggException e) {
 			return ResponseEntity.ok()
 					.body(new LastOppVedleggResponse(String.valueOf(e.getDokumentInfoId())));
+		}
+	}
+
+	@Transactional
+	@SwaggerOppdaterJournalposttype
+	@PatchMapping(value = "/{journalpostId}/oppdaterJournalposttype")
+	public ResponseEntity<String> oppdaterJournalposttype(
+			@Parameter(
+					name = "journalpostId",
+					description = "journalpostId som skal ha journalposttype oppdatert",
+					required = true,
+					example = "467011764"
+			)
+			@PathVariable long journalpostId,
+			@RequestBody OppdaterJournalposttypeRequest request) {
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		MDC.put(MDC_JOURNALPOST_ID, String.valueOf(journalpostId));
+		log.info("oppdaterJournalposttype har mottatt kall om å oppdatere journalposttype for journalpost med journalpostId={}", journalpostId);
+
+		try {
+			validateOppdaterJournalpostTypeRequest(request);
+			oppdaterJournalposttypeService.oppdaterJournalpostType(journalpostId, request);
+			log.info("oppdaterJournalposttype har oppdatert journalposttype for journalpost med journalpostId={} i Joark.", journalpostId);
+
+			return ResponseEntity.status(NO_CONTENT)
+					.contentType(APPLICATION_JSON)
+					.body("Journalposttype oppdatert");
+		} catch (InputValideringFeiletException e) {
+			throw new ResponseStatusException(BAD_REQUEST,
+					format("Kunne ikke oppdatere journalposttype for journalpost med journalpostId=%s. %s", journalpostId, e.getMessage()));
 		}
 	}
 

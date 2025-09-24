@@ -16,11 +16,11 @@ import java.lang.annotation.Target;
 @Documented
 @Operation(
 		summary = """
-			Endre status for en journalpost. Endepunktet er kun tilgjengelig for brukere i Nav Fagpost, autentisert med et EntraID OBO-token.
+			Oppdaterer status for en journalpost. Endepunktet er kun tilgjengelig for brukere i Nav Fagpost, autentisert med et EntraID OBO-token.
 			Brukeren må være medlem i EntraID-gruppe for joark vedlikehold"""
 )
 @ApiResponses(value = {
-		@ApiResponse(responseCode = "204", description = "Status på journalpost er endret."),
+		@ApiResponse(responseCode = "204", description = "Status på journalpost er oppdatert."),
 		@ApiResponse(responseCode = "400", description = "Validering av input feilet.", content = @Content),
 		@ApiResponse(responseCode = "401", description = "Ugyldig EntraID token.", content = @Content),
 		@ApiResponse(responseCode = "403", description = "Manglende claims i token / Manglende EntraID gruppemedlemskap.", content = @Content),
