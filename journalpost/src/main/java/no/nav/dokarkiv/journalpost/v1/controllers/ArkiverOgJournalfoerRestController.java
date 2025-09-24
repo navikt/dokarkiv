@@ -457,9 +457,9 @@ public class ArkiverOgJournalfoerRestController {
 			oppdaterJournalposttypeService.oppdaterJournalpostType(journalpostId, request);
 			log.info("oppdaterJournalposttype har oppdatert journalposttype for journalpost med journalpostId={} i Joark.", journalpostId);
 
-			return ResponseEntity.status(NO_CONTENT)
-					.contentType(APPLICATION_JSON)
-					.body("Journalposttype oppdatert");
+			return ResponseEntity
+					.status(NO_CONTENT)
+					.build();
 		} catch (InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
 					format("Kunne ikke oppdatere journalposttype for journalpost med journalpostId=%s. %s", journalpostId, e.getMessage()));
@@ -493,7 +493,8 @@ public class ArkiverOgJournalfoerRestController {
 					newStatus, journalpostId);
 
 			return ResponseEntity
-					.status(NO_CONTENT).build();
+					.status(NO_CONTENT)
+					.build();
 
 		} catch (InputValideringFeiletException e) {
 			throw new ResponseStatusException(BAD_REQUEST,
