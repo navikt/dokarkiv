@@ -26,5 +26,5 @@ import java.lang.annotation.Target;
 		@ApiResponse(responseCode = "403", description = "Manglende claims i token / Manglende EntraID gruppemedlemskap.", content = @Content),
 		@ApiResponse(responseCode = "500", description = "Internal server error.", content = @Content)
 })
-public @interface SwaggerEndreJournalstatus {
+public @interface SwaggerOppdaterJournalstatus {
 }

@@ -5,7 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.journalpost.v1.api.endrejournalstatus.EndreJournalstatusRequest;
+import no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalstatus.OppdaterJournalstatusRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -22,20 +22,20 @@ import java.util.stream.Stream;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpost;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-public class EndreJournalstatusIT extends AbstractJournalpostIT {
+public class OppdaterJournalstatusIT extends AbstractJournalpostIT {
 
 	@Value("${dokarkiv.joarkvedlikeholdgroupid}")
 	String joarkVedlikeholdGruppeId;
 
 	@ParameterizedTest
 	@MethodSource
-	void successfullyEndreJournalstatusForJournalpost(JournalStatusCode opprinneligJournalStatusCode, String statusEndresTil, JournalStatusCode journalStatusResult, AksjonsTypeCode aksjonsTypeCode) {
+	void successfullyOppdaterJournalstatusForJournalpost(JournalStatusCode opprinneligJournalStatusCode, String statusEndresTil, JournalStatusCode journalStatusResult, AksjonsTypeCode aksjonsTypeCode) {
 		Journalpost journalpost = createJournalpost(null, JournalpostTypeCode.I, opprinneligJournalStatusCode);
 		journalpostTestRepository.persist(journalpost);
 
@@ -43,11 +43,11 @@ public class EndreJournalstatusIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 
 		Long journalpostId = journalpost.getJournalpostId();
-		EndreJournalstatusRequest request = new EndreJournalstatusRequest(statusEndresTil);
+		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest(statusEndresTil);
 
 		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
-		String url = apiJournalpostPath(journalpostId + ENDRE_JOURNALSTATUS);
-		ResponseEntity<Void> response = restTemplate.exchange(url, POST, requestEntity, Void.class);
+		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
+		ResponseEntity<Void> response = restTemplate.exchange(url, PATCH, requestEntity, Void.class);
 
 		assertEquals(NO_CONTENT, response.getStatusCode());
 
@@ -69,7 +69,7 @@ public class EndreJournalstatusIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 	}
 
-	static Stream<Arguments> successfullyEndreJournalstatusForJournalpost() {
+	static Stream<Arguments> successfullyOppdaterJournalstatusForJournalpost() {
 		return Stream.of(
 				Arguments.of(JournalStatusCode.U, "MOTTATT", JournalStatusCode.M, AksjonsTypeCode.TILBAKE_TIL_MOTTATT),
 				Arguments.of(JournalStatusCode.M, "UKJENT_BRUKER", JournalStatusCode.UB, AksjonsTypeCode.UKJENT_BRUKER),
@@ -86,11 +86,11 @@ public class EndreJournalstatusIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 
 		Long journalpostId = journalpost.getJournalpostId();
-		EndreJournalstatusRequest request = new EndreJournalstatusRequest("UKJENT_BRUKER");
+		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest("UKJENT_BRUKER");
 
 		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS));
-		String url = apiJournalpostPath(journalpostId + ENDRE_JOURNALSTATUS);
-		ResponseEntity<Void> response = restTemplate.exchange(url, POST, requestEntity, Void.class);
+		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
+		ResponseEntity<Void> response = restTemplate.exchange(url, PATCH, requestEntity, Void.class);
 
 		assertEquals(FORBIDDEN, response.getStatusCode());
 	}
@@ -104,17 +104,17 @@ public class EndreJournalstatusIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 
 		Long journalpostId = journalpost.getJournalpostId();
-		EndreJournalstatusRequest request = new EndreJournalstatusRequest("UKJENT_BRUKER");
+		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest("UKJENT_BRUKER");
 
 		var requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
-		String url = apiJournalpostPath(journalpostId + ENDRE_JOURNALSTATUS);
-		ResponseEntity<Void> response = restTemplate.exchange(url, POST, requestEntity, Void.class);
+		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
+		ResponseEntity<Void> response = restTemplate.exchange(url, PATCH, requestEntity, Void.class);
 
 		assertEquals(UNAUTHORIZED, response.getStatusCode());
 	}
 	@ParameterizedTest
 	@EnumSource(value = JournalStatusCode.class, names = {"M", "MO", "U", "UB"}, mode = EnumSource.Mode.INCLUDE)
-	void successfullyEndreJournalstatusForJournalpost(JournalStatusCode journalStatusCode) {
+	void successfullyOppdaterJournalstatusForJournalpost(JournalStatusCode journalStatusCode) {
 		Journalpost journalpost = createJournalpost(null, JournalpostTypeCode.I, journalStatusCode);
 		journalpostTestRepository.persist(journalpost);
 
@@ -122,18 +122,18 @@ public class EndreJournalstatusIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 
 		Long journalpostId = journalpost.getJournalpostId();
-		EndreJournalstatusRequest request = new EndreJournalstatusRequest("UKJENT_BRUKER");
+		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest("UKJENT_BRUKER");
 
 		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
-		String url = apiJournalpostPath(journalpostId + ENDRE_JOURNALSTATUS);
-		ResponseEntity<Void> response = restTemplate.exchange(url, POST, requestEntity, Void.class);
+		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
+		ResponseEntity<Void> response = restTemplate.exchange(url, PATCH, requestEntity, Void.class);
 
 		assertEquals(NO_CONTENT, response.getStatusCode());
 	}
 
 	@ParameterizedTest
 	@EnumSource(value = JournalStatusCode.class, names = {"M", "MO", "U", "UB"}, mode = EnumSource.Mode.EXCLUDE)
-	void denyEndreJournalstatusForJournalpostWithInvalidStatus(JournalStatusCode journalStatusCode) {
+	void denyOppdaterJournalstatusForJournalpostWithInvalidStatus(JournalStatusCode journalStatusCode) {
 		Journalpost journalpost = createJournalpost(null, JournalpostTypeCode.I, journalStatusCode);
 		journalpostTestRepository.persist(journalpost);
 
@@ -141,11 +141,11 @@ public class EndreJournalstatusIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 
 		Long journalpostId = journalpost.getJournalpostId();
-		EndreJournalstatusRequest request = new EndreJournalstatusRequest("UKJENT_BRUKER");
+		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest("UKJENT_BRUKER");
 
 		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
-		String url = apiJournalpostPath(journalpostId + ENDRE_JOURNALSTATUS);
-		ResponseEntity<String> response = restTemplate.exchange(url, POST, requestEntity, String.class);
+		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
+		ResponseEntity<String> response = restTemplate.exchange(url, PATCH, requestEntity, String.class);
 
 		assertEquals(BAD_REQUEST, response.getStatusCode());
 		assertThat(response.getBody()).contains("Journalpost har ikke en av gyldige statuser [M, U, MO, UB]");
@@ -153,7 +153,7 @@ public class EndreJournalstatusIT extends AbstractJournalpostIT {
 
 	@ParameterizedTest
 	@EnumSource(value = JournalpostTypeCode.class, names = {"U", "N"})
-	void denyEndreJournalstatusForJournalpostWithInvalidType(JournalpostTypeCode journalpostTypeCode) {
+	void denyOppdaterJournalstatusForJournalpostWithInvalidType(JournalpostTypeCode journalpostTypeCode) {
 		Journalpost journalpost = createJournalpost(null, journalpostTypeCode, JournalStatusCode.M);
 		journalpostTestRepository.persist(journalpost);
 
@@ -161,18 +161,18 @@ public class EndreJournalstatusIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 
 		Long journalpostId = journalpost.getJournalpostId();
-		EndreJournalstatusRequest request = new EndreJournalstatusRequest("UKJENT_BRUKER");
+		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest("UKJENT_BRUKER");
 
 		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
-		String url = apiJournalpostPath(journalpostId + ENDRE_JOURNALSTATUS);
-		ResponseEntity<String> response = restTemplate.exchange(url, POST, requestEntity, String.class);
+		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
+		ResponseEntity<String> response = restTemplate.exchange(url, PATCH, requestEntity, String.class);
 
 		assertEquals(BAD_REQUEST, response.getStatusCode());
 		assertThat(response.getBody()).contains("Journalpost er ikke av type Inngående");
 	}
 
 	@Test
-	void denyEndreJournalstatusForJournalpostWithInvalidEndresTil() {
+	void denyOppdaterJournalstatusForJournalpostWithInvalidEndresTil() {
 		Journalpost journalpost = createJournalpost(null, JournalpostTypeCode.I, JournalStatusCode.M);
 		journalpostTestRepository.persist(journalpost);
 
@@ -180,11 +180,11 @@ public class EndreJournalstatusIT extends AbstractJournalpostIT {
 		TestTransaction.end();
 
 		Long journalpostId = journalpost.getJournalpostId();
-		EndreJournalstatusRequest request = new EndreJournalstatusRequest("BRUKJENT_UKER");
+		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest("BRUKJENT_UKER");
 
 		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId, "Secondary-group"));
-		String url = apiJournalpostPath(journalpostId + ENDRE_JOURNALSTATUS);
-		ResponseEntity<String> response = restTemplate.exchange(url, POST, requestEntity, String.class);
+		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
+		ResponseEntity<String> response = restTemplate.exchange(url, PATCH, requestEntity, String.class);
 
 		assertEquals(BAD_REQUEST, response.getStatusCode());
 		assertThat(response.getBody()).containsIgnoringCase("Ugyldig verdi for Journalstatus: BRUKJENT_UKER");
