@@ -735,6 +735,11 @@
       "app": "historisk-helt-backend",
       "namespace": "historisk",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "tilbakekreving-backend",
+      "namespace": "tilbake",
+      "cluster": "prod-gcp"
     }
   ]
 }
