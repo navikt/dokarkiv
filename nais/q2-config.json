@@ -712,6 +712,11 @@
       "app": "syfo-oppfolgingsplan-backend",
       "namespace": "team-esyfo",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "tilbakekreving-backend",
+      "namespace": "tilbake",
+      "cluster": "dev-gcp"
     }
   ]
 }
