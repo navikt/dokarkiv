@@ -588,6 +588,11 @@
       "roles": ["finn_mottatte_journalposter"]
     },
     {
+      "app": "fpsoknad",
+      "namespace": "teamforeldrepenger",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "fpsoknad-mottak",
       "namespace": "teamforeldrepenger",
       "cluster": "dev-fss"
@@ -711,6 +716,11 @@
     {
       "app": "syfo-oppfolgingsplan-backend",
       "namespace": "team-esyfo",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "tilbakekreving-backend",
+      "namespace": "tilbake",
       "cluster": "dev-gcp"
     }
   ]
