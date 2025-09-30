@@ -600,6 +600,11 @@
       "roles": ["finn_mottatte_journalposter"]
     },
     {
+      "app": "fpsoknad",
+      "namespace": "teamforeldrepenger",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "fpsoknad-mottak",
       "namespace": "teamforeldrepenger",
       "cluster": "prod-fss"
