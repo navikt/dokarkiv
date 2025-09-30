@@ -1,15 +1,15 @@
 package no.nav.dokarkiv.core.domain.validator;
 
-import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.exceptions.InvalidBrukerException;
 import no.nav.dokarkiv.core.exceptions.InvalidOrgnrException;
 
+import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.ORGANISASJON;
+import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
+
 /**
  * Validates that a Bruker has a valid brukerId in the case Bruker is a Person
  * or an Organisasjon.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
  */
 public final class BrukerValidator {
 
@@ -25,16 +25,16 @@ public final class BrukerValidator {
 	 * @param bruker The Bruker.
 	 */
 	public static void validate(Bruker bruker) {
-		verifyBrukerIdIsValid(bruker);
+		validateBrukerId(bruker);
 	}
 
-	private static void verifyBrukerIdIsValid(Bruker gjelderInfo) {
-		validateFnrIfGjelderTypeIsPerson(gjelderInfo);
-		validateOrgnrIfGjelderTypeIsOrg(gjelderInfo);
+	private static void validateBrukerId(Bruker bruker) {
+		validateFnrIfBrukertypeIsPerson(bruker);
+		validateOrgnrIfBrukertypeIsOrg(bruker);
 	}
 
-	private static void validateOrgnrIfGjelderTypeIsOrg(Bruker bruker) {
-		if (bruker.getBrukerType() == BrukerTypeCode.ORGANISASJON) {
+	private static void validateOrgnrIfBrukertypeIsOrg(Bruker bruker) {
+		if (bruker.getBrukerType() == ORGANISASJON) {
 			try {
 				OrgnrValidator.validate(bruker.getBrukerId());
 			} catch (InvalidOrgnrException e) {
@@ -43,9 +43,9 @@ public final class BrukerValidator {
 		}
 	}
 
-	private static void validateFnrIfGjelderTypeIsPerson(Bruker bruker) {
-		if (bruker.getBrukerType() == BrukerTypeCode.PERSON && !FoedselsnummerValidator.isValidPid(bruker.getBrukerId())) {
-			throw new InvalidBrukerException("BrukerId is not a valid fnr: " + bruker.getBrukerId());
+	private static void validateFnrIfBrukertypeIsPerson(Bruker bruker) {
+		if (bruker.getBrukerType() == PERSON && !FoedselsnummerValidator.isValidPid(bruker.getBrukerId())) {
+			throw new InvalidBrukerException("BrukerId is not a valid fnr.");
 		}
 	}
 
