@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
@@ -66,7 +66,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getStatusCode()).isEqualTo(NO_CONTENT);
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
 		List<AksjonsLogg> aksjonsLogg = aksjonsLoggTestRepository.getAksjonsLoggByJournalpostId(journalpostId);
 		validateUpdatedJournalpostNotat(changedJournalpost);
@@ -86,7 +86,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getStatusCode()).isEqualTo(NO_CONTENT);
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
 		validateUpdatedJournalpostUtgaaende(changedJournalpost);
 		List<AksjonsLogg> aksjonsLogg = aksjonsLoggTestRepository.getAksjonsLoggByJournalpostId(journalpostId);
@@ -106,7 +106,7 @@ public class OppdaterJournalpostTypeIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+		assertThat(responseEntity.getStatusCode()).isEqualTo(NO_CONTENT);
 		Journalpost changedJournalpost = journalpostTestRepository.findById(journalpostId).get();
 		validateBaseJournalpost(changedJournalpost, "5678");
 	}

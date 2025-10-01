@@ -49,7 +49,7 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 	static final String INTERNAL_JOURNALPOSTAPI_BASE_PATH = "/rest/internal/journalpostapi/v1/";
 	static final String INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH = "journalpost";
 	static final String FERDIGSTILL = "/ferdigstill";
-	static final String ENDRE_JOURNALSTATUS = "/endreJournalstatus";
+	static final String OPPDATER_JOURNALSTATUS = "/oppdaterJournalstatus";
 	protected static final String NAV_IDENT_SAKSBEHANDLER = "Z990782";
 
 	protected String OIDC_TOKEN_PERSON_USER_TEST;

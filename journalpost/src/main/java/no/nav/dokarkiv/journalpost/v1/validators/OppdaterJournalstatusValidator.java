@@ -4,7 +4,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
-import no.nav.dokarkiv.core.exceptions.KanIkkeEndreJournalstatusException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeOppdatereJournalstatusException;
 
 import java.util.EnumSet;
 import java.util.stream.Collectors;
@@ -17,22 +17,22 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
 import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
-public class EndreJournalstatusValidator {
+public class OppdaterJournalstatusValidator {
 	private static final EnumSet<JournalStatusCode> VALID_STATUSES_BEFORE_CHANGE = EnumSet.of(
 			M, MO, U, UB
 	);
 
-	private EndreJournalstatusValidator() {
+	private OppdaterJournalstatusValidator() {
 	}
 
-	public static void validateEndreJournalstatus(Journalpost journalpost) {
+	public static void validateOppdaterJournalstatus(Journalpost journalpost) {
 		String feilmeldinger = Stream.concat(
 						validateJournalpostInngaaende(journalpost),
 						validateJournalstatusBeforeChange(journalpost))
 				.collect(Collectors.joining(","));
 
 		if (isNotEmpty(feilmeldinger)) {
-			throw new KanIkkeEndreJournalstatusException("Kan ikke endre journalstatus for journalpost: " + feilmeldinger);
+			throw new KanIkkeOppdatereJournalstatusException("Kan ikke oppdatere journalstatus for journalpost: " + feilmeldinger);
 		}
 	}
 
