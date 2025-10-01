@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.domain.validator;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -8,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
  * Modifisert Pid klasse fra Stelvio der all logikk knyttet til persistens er fjernet, da dette ikke blir brukt i joark.
  * <p>
  * Class represents a personal identification number, that can be persistet into a table. Instances of this object can not exist
- * on it's own, they must exist inside an <code>@Entity</code>-object in order to be persisted.
+ * on its own, they must exist inside an <code>@Entity</code>-object in order to be persisted.
  * <p/>
  * There shouldn't exist an instance of this class where <code>getPid</code> doesn't return a valid fnr. Class is final to avoid
  * public implementations of the no-arg constructor.
@@ -26,27 +25,6 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class FoedselsnummerValidator {
 	private FoedselsnummerValidator() {
-	}
-
-	/**
-	 * Gets the day part of a valid FoedselsnummerValidator.
-	 *
-	 * @param validPid - a valid fnr, dnr or bostnr
-	 * @return Day in birth date part of FoedselsnummerValidator
-	 */
-	private static int getDay(String validPid) {
-		return Integer.parseInt(validPid.substring(0, 2));
-	}
-
-	/**
-	 * Gets the Month part of a valid FoedselsnummerValidator.
-	 *
-	 * @param validPid - a valid fnr, dnr or bostnr
-	 * @return Month in birth date part of FoedselsnummerValidator
-	 */
-	private static int getMonth(String validPid) {
-		//Mod20 på måned for å gjøre testnorge-identer gyldige.
-		return Integer.parseInt(validPid.substring(2, 4)) % 20;
 	}
 
 	/**
@@ -74,26 +52,12 @@ public final class FoedselsnummerValidator {
 		if (pid != null) {
 			String value = StringUtils.deleteWhitespace(pid);
 			if (isValidCharacters(value) && isValidFnrLength(value)) {
-				boolean isValid = false;
-
-				// non-strict validation
 				if (acceptSpecialCircumstances) {
-					isValid = isMod11Compliant(value) || isSpecialCircumstance(value);
-
-					// strict validation
+					return isMod11Compliant(value) || isSpecialCircumstance(value);
 				} else if (isDnummer(value)) {
-					isValid = isMod11Compliant(value);
-
+					return isMod11Compliant(value);
 				} else {
-					isValid = isMod11Compliant(value) && !isSpecialCircumstance(value);
-				}
-
-				if (isValid) {
-					String fnr = makeDnrOrBostnrAdjustments(value);
-
-					if (isFnrDateValid(fnr, isDnummer(value))) {
-						return true;
-					}
+					return isMod11Compliant(value) && !isSpecialCircumstance(value);
 				}
 			}
 		}
@@ -108,6 +72,16 @@ public final class FoedselsnummerValidator {
 	 */
 	private static boolean isDnummer(String pidValue) {
 		return isDnrDay(getDay(pidValue));
+	}
+
+	/**
+	 * Gets the day part of a valid FoedselsnummerValidator.
+	 *
+	 * @param validPid - a valid fnr, dnr or bostnr
+	 * @return Day in birth date part of FoedselsnummerValidator
+	 */
+	private static int getDay(String validPid) {
+		return Integer.parseInt(validPid.substring(0, 2));
 	}
 
 	/**
@@ -191,157 +165,4 @@ public final class FoedselsnummerValidator {
 		return (day > 40 && day <= 71);
 	}
 
-	/**
-	 * Validates that the first six digits of a fnr represents a valid birth date.
-	 *
-	 * @param dnrOrBnrAdjustedFnr - 11 digit fødselsnummer, ajdusted if bnr or fnr
-	 * @param isDnummer           indicates if the dnrOrBnrAdjusteFnr is a Dnr
-	 * @return <code>true</code> if fnr can be converted to a valid date, otherwise <code>false</code>
-	 */
-	private static boolean isFnrDateValid(String dnrOrBnrAdjustedFnr, boolean isDnummer) {
-		boolean validDate = true;
-
-		// fnr format is <DDMMAAXXXYY>
-		int day = getDay(dnrOrBnrAdjustedFnr);
-		int month = getMonth(dnrOrBnrAdjustedFnr);
-		int year = get4DigitYearOfBirthWithAdjustedFnr(dnrOrBnrAdjustedFnr, isDnummer);
-
-		boolean isSpecial = isSpecialCircumstance(dnrOrBnrAdjustedFnr);
-
-		// invalid birth year
-		if (year == -1 && !isSpecial) {
-			return false;
-		}
-
-		if (day < 1) {
-			validDate = false;
-		}
-
-		switch (month) {
-			case 1: // january
-			case 3: // march
-			case 5: // may
-			case 7: // july
-			case 8: // august
-			case 10: // october
-			case 12: // december
-				validDate &= (day <= 31);
-				break;
-
-			case 4: // april
-			case 6: // june
-			case 9: // september
-			case 11: // november
-				validDate &= (day <= 30);
-				break;
-
-			case 2: // february
-				/*
-				 * Leap year calculation:
-				 *
-				 * Rule: If year can be devided by 4, it's a leap year
-				 *
-				 * Exeception 1: If also can be divided by 100, it's NOT a leap year Exception 2: If year can be devided by 100 AND
-				 * 400, it IS a leap year
-				 */
-				if (year == -1) {
-					validDate &= (day <= 29);
-				} else {
-					if (year % 100 == 0 && year % 400 == 0) {
-						// leap year
-						validDate &= (day <= 29);
-					} else if (year % 100 != 0 && year % 4 == 0) {
-						// det er skuddår
-						validDate &= (day <= 29);
-					} else {
-						// det er IKKE skuddår
-						validDate &= (day <= 28);
-					}
-				}
-				break;
-
-			default: // invalid month
-				validDate = false;
-		}
-
-		return validDate;
-	}
-
-	/**
-	 * Adjusts DNR and BostNr so that the first 6 numbers represents a valid date In the case wher DNR or BostNr is the input,
-	 * the return value will fail a modulus 11 check.
-	 *
-	 * @param value a personal identification number
-	 * @return the inparam if it wasn't a DNR or BostNr, otherwise the BostNr/DNR where the 6 first digits can be converted to a
-	 * valid date
-	 */
-	private static String makeDnrOrBostnrAdjustments(String value) {
-		if (StringUtils.isBlank(value)) {
-			return value;
-		}
-
-		// fnr format will be <DDMMAAXXXYY>
-		int day = getDay(value);
-		int month = getMonth(value);
-
-		// DNR adjustment
-		if (isDnrDay(day)) {
-			day -= 40;
-			StringBuffer fnr = new StringBuffer(value);
-
-			if (day < 10) {
-				fnr.replace(0, 2, "0" + Integer.toString(day));
-			} else {
-				fnr.replace(0, 2, Integer.toString(day));
-			}
-
-			return fnr.toString();
-		} else if (month > 20 && month <= 32) {
-			// BOST adjustments
-			month -= 20;
-			StringBuffer fnr = new StringBuffer(value);
-
-			if (month < 10) {
-				fnr.replace(2, 4, "0" + Integer.toString(month));
-			} else {
-				fnr.replace(2, 4, Integer.toString(month));
-			}
-
-			return fnr.toString();
-		}
-
-		// value was neither bostnr nor dnr
-		return value;
-	}
-
-	/**
-	 * Returns a 4-digit birth date.
-	 *
-	 * @param dnrOrBnrAdjustedFnr a fnr, adjusted if it's a bnr or dnr
-	 * @param isDnummer           boolean that says wether the dnrOrBnrAdjustedFnr is a Dnr
-	 * @return 4 digit birth date, -1 if invalid
-	 */
-	private static int get4DigitYearOfBirthWithAdjustedFnr(String dnrOrBnrAdjustedFnr, boolean isDnummer) {
-		int year = Integer.parseInt(dnrOrBnrAdjustedFnr.substring(4, 6));
-		int individnr = Integer.parseInt(dnrOrBnrAdjustedFnr.substring(6, 9));
-		// stilborn baby (dødfødt barn)
-		if (!isDnummer && Integer.parseInt(dnrOrBnrAdjustedFnr.substring(6)) < 10) {
-			return -1;
-		} else {
-			// recalculating year
-			if (individnr < 500) {
-				year += 1900;
-			} else if ((individnr < 750) && (54 < year)) {
-				year += 1800;
-			} else if ((individnr < 1000) && (year < 40)) {
-				year += 2000;
-			} else if ((900 <= individnr) && (individnr < 1000) && (39 < year)) {
-				year += 1900;
-			} else {
-				// invalid fnr
-				return -1;
-			}
-		}
-		return year;
-	}
 }
