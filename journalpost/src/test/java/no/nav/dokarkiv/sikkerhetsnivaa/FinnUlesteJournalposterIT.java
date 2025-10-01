@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.sikkerhetsnivaa;
 
-import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
@@ -36,6 +35,7 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 	private static final int BAD_REQUEST = 400;
 	private static final int EN_DAG = 1;
 	private static final int FEM_DAGER = 5;
+	private static final String AARSOPPGAVE_BREV_KODE = "MF_000053";
 
 
 	// Skal finne uleste journalposter med utsendingskanal NAV_NO med ekspederttidspunkt i tidsintervallet [ekspedertFra, ekspedertTil] = [5 dager siden, 1 dager siden]
@@ -52,7 +52,7 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 		Journalpost feilJournalstatus = opprettUlestJournalpost(NAV_NO, 2, FS, U);
 		Journalpost feilJournalposttype = opprettUlestJournalpost(NAV_NO, 2, E, I);
 		Journalpost feilregistrertSaksrelasjon = opprettUlestJournalpost(NAV_NO, 2, E, U);
-		Journalpost ulestAarsoppgave = opprettUlestJournalpost(NAV_NO, 2, E, U, FagomradeCode.STO);
+		Journalpost ulestAarsoppgave = opprettUlestJournalpost(NAV_NO, 2, E, U, AARSOPPGAVE_BREV_KODE);
 		feilregistrertSaksrelasjon.getSaksrelasjon().setFeilregistrert(true);
 
 		journalpostTestRepository.persistAll(asList(alleredeLest, feilKanal, forNyligEkspedert, feilJournalstatus, feilJournalposttype, feilregistrertSaksrelasjon, ulestAarsoppgave));
@@ -92,7 +92,7 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 
 		ResponseEntity<String> response = restTemplate.exchange(buildUri(NAV_NO.name(), 5, 1), GET, requestEntity, String.class);
 
-		assertEquals(response.getStatusCode(), UNAUTHORIZED);
+		assertEquals(UNAUTHORIZED, response.getStatusCode());
 	}
 
 	private String buildUri(String utsendingsKanalCode, int ekspedertFraDagerGamle, int ekspedertTilDagerGamle) {
@@ -107,9 +107,10 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 		return journalpost;
 	}
 
-	private Journalpost opprettUlestJournalpost(UtsendingsKanalCode kanalCode, int dagerSidenEkspedert, JournalStatusCode statusCode, JournalpostTypeCode journalpostTypeCode, FagomradeCode tema) {
+	private Journalpost opprettUlestJournalpost(UtsendingsKanalCode kanalCode, int dagerSidenEkspedert, JournalStatusCode statusCode, JournalpostTypeCode journalpostTypeCode, String brevkode) {
 		Journalpost journalpost = opprettUlestJournalpost(kanalCode, dagerSidenEkspedert, statusCode, journalpostTypeCode);
-		journalpost.setFagomrade(tema);
+		journalpost.getJournalpostDokumentInfoRelasjoner().stream()
+				.forEach(jdir -> jdir.getDokumentInfo().setBrevkode(brevkode));
 		return journalpost;
 	}
 
@@ -129,4 +130,6 @@ public class FinnUlesteJournalposterIT extends AbstractJournalpostIT {
 		journalpost.setLestDato(null);
 		return journalpost;
 	}
+
+
 }
