@@ -13,14 +13,16 @@ public interface SikkerhetsnivaaRepository extends HibernateRepository<Journalpo
 	@Query(value = """
 			select j.journalpostId
 			from Journalpost j
+			left join j.journalpostDokumentInfoRelasjoner jdir
+			left join jdir.dokumentInfo d
 			join j.saksrelasjon s
 			where j.utsendingskanal = :utsendingskanal
 			and j.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U
 			and j.journalstatus = no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E
 			and (j.ekspedertDato >= :ekspedertFra and j.ekspedertDato <= :ekspedertTil)
 			and (j.changeStamp.createdDate >= :datoOpprettetStart and j.changeStamp.createdDate <= :datoOpprettetSlutt)
-			and j.fagomrade <> no.nav.dokarkiv.core.domain.codes.FagomradeCode.STO
 			and j.lestDato is null
+			and d.brevkode <> 'MF_000053'
 			and (s.feilregistrert is null or s.feilregistrert = false)
 			""")
 	List<Long>
