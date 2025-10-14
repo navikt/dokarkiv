@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static org.springframework.http.HttpHeaders.EMPTY;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @ControllerAdvice
@@ -32,6 +34,13 @@ public class ApplicationServletExceptionHandler extends ResponseEntityExceptionH
 		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(BAD_REQUEST, "Klient har sendt inn data som databasen avviser. " + err.getMessage());
 		problemDetail.setTitle("Database Constraint violation");
 		return createResponseEntity(problemDetail, EMPTY, BAD_REQUEST, webRequest);
+	}
+
+	@ExceptionHandler({ObjectOptimisticLockingFailureException.class})
+	public ResponseEntity<Object> handleOptimisticLockingFailureException(Exception err, WebRequest webRequest) {
+		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(TOO_MANY_REQUESTS, "Klient har sendt inn en request om å oppdatere data i databasen samtidig som dataene blir oppdatert. Prøv igjen senere.");
+		problemDetail.setTitle("Optimistic Locking Failure - Retry Later");
+		return createResponseEntity(problemDetail, EMPTY, TOO_MANY_REQUESTS, webRequest);
 	}
 
 	@Override
