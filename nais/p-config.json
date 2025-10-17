@@ -170,6 +170,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "ismeroppfolging",
+      "namespace": "teamsykefravr",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "isoppfolgingsplan",
       "namespace": "teamsykefravr",
       "cluster": "prod-gcp"

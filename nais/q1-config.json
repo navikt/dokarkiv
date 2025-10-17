@@ -181,6 +181,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "ismeroppfolging",
+      "namespace": "teamsykefravr",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "isoppfolgingsplan",
       "namespace": "teamsykefravr",
       "cluster": "dev-gcp"
