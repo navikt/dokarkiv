@@ -26,6 +26,7 @@
     "https://dokarkiv.intern.nav.no"
   ],
   "DOKARKIV_SECRET": "dokarkiv",
+  "DOKARKIV_VAULT": "/kv/prod/fss/dokarkiv/teamdokumenthandtering",
   "DOKARKIV_DATABASE_POOLSIZE": "60",
   "DOKARKIV_DATABASE_PARALLEL_HINT_SUPPORT": "true",
   "SPRINGDOC_ENABLED": "false",

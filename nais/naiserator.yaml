@@ -56,6 +56,8 @@ spec:
       value: {{ DOKARKIV_ENDPOINTS_PDL_SCOPE }}
     - name: OTEL_RESOURCE_ATTRIBUTES
       value: "deployment.environment.name={{ ENVIRONMENT }}"
+    - name: GOOGLE_APPLICATION_CREDENTIALS
+      value: "/var/run/secrets/nais.io/vault/gcloud_serviceaccount"
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -86,6 +88,11 @@ spec:
     requests:
       cpu: 100m
       memory: 4400Mi
+  vault:
+    enabled: true
+    paths:
+      - kvPath: {{ DOKARKIV_VAULT }}
+        mountPath: "/var/run/secrets/nais.io/vault"
   webproxy: true
   azure:
     application:
