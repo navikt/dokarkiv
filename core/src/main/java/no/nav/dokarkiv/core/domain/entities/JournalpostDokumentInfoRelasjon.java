@@ -34,7 +34,7 @@ import static org.hibernate.annotations.CascadeType.PERSIST;
  */
 @Entity
 @Table(name = "T_JP_DOK_INFO_REL")
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @Setter
 @AllArgsConstructor

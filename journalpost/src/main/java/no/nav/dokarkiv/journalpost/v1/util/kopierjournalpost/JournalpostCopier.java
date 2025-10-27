@@ -95,6 +95,10 @@ public class JournalpostCopier {
 	}
 
 	private Saksrelasjon copySaksrelasjon(Journalpost kopiertJournalpost, Saksrelasjon saksrelasjon) {
+		if (saksrelasjon == null) {
+			return null;
+		}
+
 		Saksrelasjon kopiertSaksrelasjon = Saksrelasjon.builder()
 				.fagsystem(saksrelasjon.getFagsystem())
 				.sakId(saksrelasjon.getSakId())

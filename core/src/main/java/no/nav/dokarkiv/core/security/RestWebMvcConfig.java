@@ -64,7 +64,8 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 				.addPathPatterns(
 						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settUkjentBruker",
 						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settStatusUtgår",
-						"/rest/journalpostapi/v1/journalpost/*/oppdaterJournalstatus");
+						"/rest/journalpostapi/v1/journalpost/*/oppdaterJournalstatus",
+						"/rest/journalpostapi/v1/journalpost/*/splitt");
 
 		registry.addInterceptor(new PopulateMDCHandler())
 				.addPathPatterns("/rest/**", "/hentjournalsakinfo/**");
