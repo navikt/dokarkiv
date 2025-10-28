@@ -26,11 +26,8 @@
     "https://dokarkiv-q0.dev.intern.nav.no",
     "https://dokarkiv-q0.intern.dev.nav.no"
   ],
-  "DOKARKIV_DS_CREDS": "/oracle/data/dev/creds/joark_q0-user",
-  "DOKARKIV_DS_CONFIG": "/oracle/data/dev/config/joark_q0",
-  "SRVDOKARKIV": "/serviceuser/data/dev/srvdokarkiv",
+  "DOKARKIV_SECRET": "dokarkiv-q0",
   "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv-q0/teamdokumenthandtering",
-  "SRV_LINUX": "/serviceuser/data/dev/srvssolinux",
   "DOKARKIV_DATABASE_POOLSIZE": "20",
   "DOKARKIV_DATABASE_PARALLEL_HINT_SUPPORT": "false",
   "SPRINGDOC_ENABLED": "true",

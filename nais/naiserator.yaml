@@ -9,6 +9,8 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "512m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
 spec:
+  envFrom:
+    - secret: {{ DOKARKIV_SECRET }}
   env:
     - name: NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL }}
@@ -54,6 +56,8 @@ spec:
       value: {{ DOKARKIV_ENDPOINTS_PDL_SCOPE }}
     - name: OTEL_RESOURCE_ATTRIBUTES
       value: "deployment.environment.name={{ ENVIRONMENT }}"
+    - name: GOOGLE_APPLICATION_CREDENTIALS
+      value: "/var/run/secrets/nais.io/vault/gcloud_serviceaccount"
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -87,16 +91,8 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: {{ DOKARKIV_DS_CREDS }}
-        mountPath: "/var/run/secrets/nais.io/db_creds"
-      - kvPath: {{ DOKARKIV_DS_CONFIG }}
-        mountPath: "/var/run/secrets/nais.io/db_config"
-      - kvPath: {{ SRVDOKARKIV }}
-        mountPath: "/secrets/serviceuser/srvdokarkiv"
       - kvPath: {{ DOKARKIV_VAULT }}
         mountPath: "/var/run/secrets/nais.io/vault"
-      - kvPath: {{ SRV_LINUX }}
-        mountPath: "/var/run/secrets/nais.io/ldap"
   webproxy: true
   azure:
     application:

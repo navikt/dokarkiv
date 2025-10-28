@@ -25,11 +25,8 @@
     "https://dokarkiv.prod-fss-pub.nais.io",
     "https://dokarkiv.intern.nav.no"
   ],
-  "DOKARKIV_DS_CREDS": "/oracle/data/prod/creds/joark-dokarkiv",
-  "DOKARKIV_DS_CONFIG": "/oracle/data/prod/config/joark",
-  "SRVDOKARKIV": "/serviceuser/data/prod/srvdokarkiv",
+  "DOKARKIV_SECRET": "dokarkiv",
   "DOKARKIV_VAULT": "/kv/prod/fss/dokarkiv/teamdokumenthandtering",
-  "SRV_LINUX": "/serviceuser/data/prod/srvssolinux",
   "DOKARKIV_DATABASE_POOLSIZE": "60",
   "DOKARKIV_DATABASE_PARALLEL_HINT_SUPPORT": "true",
   "SPRINGDOC_ENABLED": "false",
