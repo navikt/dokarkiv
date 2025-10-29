@@ -12,6 +12,8 @@ spec:
   envFrom:
     - secret: {{ DOKARKIV_SECRET }}
   env:
+    - name: JDK_JAVA_OPTIONS
+      value: '$(JAVA_PROXY_OPTIONS) -Dspring.profiles.active=nais -XX:MaxRAMPercentage=75'
     - name: NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL }}
     - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL
