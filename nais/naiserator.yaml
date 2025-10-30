@@ -9,9 +9,18 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "512m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
 spec:
+  filesFrom:
+    - secret: {{ DOKARKIV_SECRET }}
+      mountPath: /var/run/secrets/nais_secrets
   envFrom:
     - secret: {{ DOKARKIV_SECRET }}
   env:
+    - name: JAVA_TRUSTSTORE_OPTIONS
+      value: '-Djavax.net.ssl.keyStore=$(NAV_TRUSTSTORE_PATH)
+              -Djavax.net.ssl.keyStorePassword=$(NAV_TRUSTSTORE_PASSWORD)'
+    - name: JDK_JAVA_OPTIONS
+      value: '-Dspring.profiles.active=nais -XX:MaxRAMPercentage=75
+              $(JAVA_PROXY_OPTIONS) $(JAVA_TRUSTSTORE_OPTIONS)'
     - name: NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_AZUREV2_DISCOVERYURL }}
     - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL
@@ -57,7 +66,7 @@ spec:
     - name: OTEL_RESOURCE_ATTRIBUTES
       value: "deployment.environment.name={{ ENVIRONMENT }}"
     - name: GOOGLE_APPLICATION_CREDENTIALS
-      value: "/var/run/secrets/nais.io/vault/gcloud_serviceaccount"
+      value: "/var/run/secrets/nais_secrets/gcloud_serviceaccount.json"
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -88,11 +97,6 @@ spec:
     requests:
       cpu: 100m
       memory: 4400Mi
-  vault:
-    enabled: true
-    paths:
-      - kvPath: {{ DOKARKIV_VAULT }}
-        mountPath: "/var/run/secrets/nais.io/vault"
   webproxy: true
   azure:
     application:
