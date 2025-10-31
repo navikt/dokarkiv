@@ -10,4 +10,4 @@ COPY --from=builder --chown=1069:1069 /build/extracted/dependencies/ ./
 COPY --from=builder --chown=1069:1069 /build/extracted/application/ ./
 
 ENV TZ="Europe/Oslo"
-CMD ["-server", "-cp", ".", "org.springframework.boot.loader.launch.JarLauncher"]
+CMD ["-Dspring.profiles.active=nais", "-server", "-cp", ".", "org.springframework.boot.loader.launch.JarLauncher"]
