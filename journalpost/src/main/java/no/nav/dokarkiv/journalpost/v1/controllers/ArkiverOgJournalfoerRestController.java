@@ -7,8 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.DuplikatVedleggException;
+import no.nav.dokarkiv.core.exceptions.EksternReferanseIdFinnesException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
@@ -38,6 +40,8 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfoId;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
+import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.FjernVedleggTilknyttetJournalpost;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostResult;
@@ -47,6 +51,7 @@ import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalstatusService;
 import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
+import no.nav.dokarkiv.journalpost.v1.services.SplittJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFerdigstillJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFjernVedlegg;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerKopierJournalpost;
@@ -56,6 +61,7 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalpost;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalposttype;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOppdaterJournalstatus;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpprettJournalpost;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSplittJournalpost;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
@@ -121,6 +127,7 @@ public class ArkiverOgJournalfoerRestController {
 	private final LastOppVedleggService lastOppVedleggService;
 	private final OppdaterJournalposttypeService oppdaterJournalposttypeService;
 	private final OppdaterJournalstatusService oppdaterJournalstatusService;
+	private final SplittJournalpostService splittJournalpostService;
 
 	public ArkiverOgJournalfoerRestController(FerdigstillJournalpostService ferdigstillJournalpostService,
 											  OppdaterJournalpostService oppdaterJournalpostService,
@@ -130,7 +137,8 @@ public class ArkiverOgJournalfoerRestController {
 											  KopierJournalpostService kopierJournalpostService,
 											  LastOppVedleggService lastOppVedleggService,
 											  OppdaterJournalposttypeService oppdaterJournalposttypeService,
-											  OppdaterJournalstatusService oppdaterJournalstatusService) {
+											  OppdaterJournalstatusService oppdaterJournalstatusService,
+											  SplittJournalpostService splittJournalpostService) {
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 		this.oppdaterJournalpostService = oppdaterJournalpostService;
 		this.opprettJournalpostService = opprettJournalpostService;
@@ -142,6 +150,7 @@ public class ArkiverOgJournalfoerRestController {
 		this.kopierJournalpostService = kopierJournalpostService;
 		this.lastOppVedleggService = lastOppVedleggService;
 		this.oppdaterJournalstatusService = oppdaterJournalstatusService;
+		this.splittJournalpostService = splittJournalpostService;
 	}
 
 	@Transactional
@@ -504,6 +513,50 @@ public class ArkiverOgJournalfoerRestController {
 			throw new ResponseStatusException(BAD_REQUEST,
 					"Kunne ikke oppdatere status på journalpost med journalpostId=%s. %s"
 							.formatted(journalpostId, e.getMessage()));
+		}
+	}
+
+	@Transactional
+	@PatchMapping("/{journalpostId}/splitt")
+	@SwaggerSplittJournalpost
+	public ResponseEntity<SplittJournalpostResponse> splittJournalpost(
+			@Parameter(
+					name = "journalpostId",
+					description = "journalpostId som skal splittes",
+					required = true,
+					example = "467011764"
+			)
+			@PathVariable long journalpostId,
+			@RequestBody SplittJournalpostRequest request) {
+
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		MDC.put(MDC_JOURNALPOST_ID, valueOf(journalpostId));
+
+		log.info("splittJournalpost har mottatt kall om å splitte journalpost med journalpostId={}", journalpostId);
+
+		try {
+
+			var response = splittJournalpostService.splittJournalpost(journalpostId, request);
+
+			log.info("splittJournalpost har splittet journalpost med journalpostId={} og opprettet ny journalpost med journalpostId={}",
+					journalpostId, response.nyJournalpostId());
+
+			return ResponseEntity
+					.status(CREATED)
+					.body(response);
+
+		} catch (JournalpostIkkeFunnetException | DokumentInfoIkkeFunnetException e) {
+			throw new ResponseStatusException(
+					NOT_FOUND,
+					"Kunne ikke splitte journalpost med journalpostId=%s. Feilmelding=%s".formatted(journalpostId, e.getMessage()));
+		} catch (InputValideringFeiletException e) {
+			throw new ResponseStatusException(
+					BAD_REQUEST,
+					"Kunne ikke splitte journalpost med journalpostId=%s. Feilmelding=%s".formatted(journalpostId, e.getMessage()));
+		} catch (EksternReferanseIdFinnesException e) {
+			throw new ResponseStatusException(
+					CONFLICT,
+					"Kunne ikke splitte journalpost med journalpostId=%s. Feilmelding=%s".formatted(journalpostId, e.getMessage()));
 		}
 	}
 }
