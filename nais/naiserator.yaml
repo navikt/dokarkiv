@@ -14,6 +14,7 @@ spec:
       mountPath: /var/run/secrets/nais_secrets
   envFrom:
     - secret: {{ DOKARKIV_SECRET }}
+    - secret: ldap
   env:
     - name: JAVA_TRUSTSTORE_OPTIONS
       value: "-Djavax.net.ssl.trustStore=$(NAV_TRUSTSTORE_PATH)
@@ -27,8 +28,6 @@ spec:
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_DISCOVERYURL }}
     - name: NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE
       value: {{ NO_NAV_SECURITY_JWT_ISSUER_RESTSTS_ACCEPTED_AUDIENCE }}
-    - name: SPRING_LDAP_URLS
-      value: {{ SPRING_LDAP_URLS }}
     - name: LDAP_NAVUSER_BASEDN
       value: {{ LDAP_NAVUSER_BASEDN }}
     - name: LDAP_SERVICEUSER_BASEDN
