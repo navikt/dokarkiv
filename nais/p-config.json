@@ -751,6 +751,11 @@
       "app": "tilbakekreving-backend",
       "namespace": "tilbake",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "rpa-nrf-api",
+      "namespace": "team-rpa",
+      "cluster": "prod-fss"
     }
   ]
 }
