@@ -47,6 +47,60 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 	private static final String FEILMELDING = "Kunne ikke splitte journalpost med journalpostId=%s. Feilmelding=%s";
 
 	@Test
+	public void shoudSplitJorunalpostWhenJournalforendeEnhetIsNull(){
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		journalpost.setJournalposttype(I);
+		journalpostTestRepository.persist(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		var request = new SplittJournalpostRequest(
+				journalpost.getFagomrade().name(),
+				getBruker(),
+				NY_JOURNALPOST_TITTEL,
+				null,
+				NY_EKSTERN_REFERANSE_ID,
+				createDokumenter(journalpost));
+
+		var requestHttpEntity = new HttpEntity<>(
+				request,
+				createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+
+		var response = restTemplate.exchange(SPLITT_JOURNALPOST_PATH.formatted(journalpost.getJournalpostId()), PATCH, requestHttpEntity, SplittJournalpostResponse.class);
+
+		assertThat(response).isNotNull();
+		assertThat(response.getStatusCode()).isEqualTo(CREATED);
+		assertThat(response.getBody()).isNotNull();
+
+		TestTransaction.start();
+
+		assertThat(journalpostTestRepository.findById(response.getBody().nyJournalpostId()))
+				.isPresent()
+				.get()
+				.satisfies( nyJournalpost -> {
+					assertThat(nyJournalpost.getBehandlingstema()).isEqualTo(journalpost.getBehandlingstema());
+					assertThat(nyJournalpost.getInnhold()).isEqualTo(NY_JOURNALPOST_TITTEL);
+					assertThat(nyJournalpost.getJournalForendeEnhetId()).isEqualTo(null);
+					assertThat(nyJournalpost.getKanalReferanseId()).isEqualTo(NY_EKSTERN_REFERANSE_ID);
+
+					assertThat(nyJournalpost.findAllDokumentInfos())
+							.hasSameSizeAs(request.dokumenter())
+							.satisfies(dokumentInfos -> {
+								var dokumenterFraJournalpost = dokumentInfos.stream()
+										.map(DokumentInfo::getDokumentInfoId)
+										.toList();
+
+								var dokumenterFraRequest = request.dokumenter().stream()
+										.map(SplittDokument::dokumentInfoId)
+										.toList();
+
+								assertThat(dokumenterFraJournalpost).containsExactlyInAnyOrderElementsOf(dokumenterFraRequest);
+							});
+				});
+	}
+
+	@Test
 	public void shouldSplittJournalpost() {
 		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
 		journalpost.setJournalposttype(I);
@@ -335,10 +389,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	private static SplittJournalpostRequest createRequestWithExternReferanseIdAndDokumenter(Journalpost journalpost, String externReferanseId, List<SplittDokument> dokumenter) {
-		var bruker = Bruker.builder()
-				.id(BRUKER_ID)
-				.idType(FNR)
-				.build();
+		Bruker bruker = getBruker();
 
 		return new SplittJournalpostRequest(
 				journalpost.getFagomrade().name(),
@@ -347,6 +398,13 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 				journalpost.getJournalForendeEnhetId(),
 				externReferanseId,
 				dokumenter);
+	}
+
+	private static Bruker getBruker() {
+		return Bruker.builder()
+				.id(BRUKER_ID)
+				.idType(FNR)
+				.build();
 	}
 
 	private static List<SplittDokument> createDokumenter(Journalpost journalpost) {
