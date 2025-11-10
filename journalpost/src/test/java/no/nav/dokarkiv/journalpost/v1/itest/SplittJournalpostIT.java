@@ -217,15 +217,14 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 		assertThat(aksjonsloggNyJournalpost)
 				.flatExtracting(AksjonsLogg::getArkivElementEndringer)
-				.hasSize(6)
-				.extracting(ArkivElementEndring::getArkivElement, ArkivElementEndring::getTilVerdi)
+				.hasSize(5)
+				.extracting(ArkivElementEndring::getArkivElement, ArkivElementEndring::getFraVerdi, ArkivElementEndring::getTilVerdi)
 				.containsExactlyInAnyOrder(
-						tuple("journalpost.fagomrade", nyJournalpost.getFagomrade().name()),
-						tuple("journalpost.innhold", nyJournalpost.getInnhold()),
-						tuple("journalpost.avsend_mottaker", nyJournalpost.getAvsenderMottaker()),
-						tuple("journalpost.avsend_mottaker_id", nyJournalpost.getAvsenderMottakerId()),
-						tuple("journalpost.journalf_enhet", journalpost.getJournalForendeEnhetId()),
-						tuple("bruker.bruker_id", nyJournalpost.getBrukere().iterator().next().getBrukerId()));
+						tuple("journalpost.fagomrade", journalpost.getFagomrade().name(), nyJournalpost.getFagomrade().name()),
+						tuple("journalpost.innhold", journalpost.getInnhold(), nyJournalpost.getInnhold()),
+						tuple("journalpost.avsend_mottaker", journalpost.getAvsenderMottaker(), nyJournalpost.getAvsenderMottaker()),
+						tuple("journalpost.avsend_mottaker_id", journalpost.getAvsenderMottakerId(), nyJournalpost.getAvsenderMottakerId()),
+						tuple("journalpost.journalf_enhet",journalpost.getJournalForendeEnhetId(), nyJournalpost.getJournalForendeEnhetId()));
 	}
 
 	@Test
