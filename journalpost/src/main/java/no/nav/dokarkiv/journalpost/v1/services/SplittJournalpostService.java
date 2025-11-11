@@ -17,10 +17,11 @@ import no.nav.dokarkiv.journalpost.v1.util.splittjournalpost.JournalpostSplitter
 import no.nav.dokarkiv.journalpost.v1.validators.SplittJournalpostValidator;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT_FRA_SPLITT;
@@ -59,8 +60,7 @@ public class SplittJournalpostService {
 
 	private Journalpost hentOgValiderJournalpost(long journalpostId, SplittJournalpostRequest request) {
 		Journalpost journalpost = journalpostRepository.findById(journalpostId)
-				.orElseThrow(() -> new JournalpostIkkeFunnetException(
-						format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
+				.orElseThrow(() -> new JournalpostIkkeFunnetException("Kunne ikke finne journalpost med journalpostId=%s i joark".formatted(journalpostId)));
 
 		validerJournalpostType(journalpost);
 		validerEksternReferanseId(request.eksternReferanseId());
@@ -94,49 +94,61 @@ public class SplittJournalpostService {
 		dokumentFilerDelegate.saveNewDokumentFiler(nyJournalpost);
 		journalpostRepository.persist(nyJournalpost);
 
-		skrivTilAksjonslogg(originalJournalpost.getJournalpostId(), nyJournalpost, splittResultat.aksjoner());
+		skrivTilAksjonslogg(originalJournalpost, nyJournalpost, splittResultat.aksjoner());
 
 		return nyJournalpost.getJournalpostId();
 	}
 
-	private void skrivTilAksjonslogg(Long originalJournalpostId,
+	private void skrivTilAksjonslogg(Journalpost originalJournalpost,
 									 Journalpost nyJournalpost,
 									 List<AksjonsLoggTO> dokumentAksjoner) {
 
 		AksjonsLoggTO splitt = AksjonsLoggTO.builder()
 				.aksjon(SPLITT)
-				.journalpostId(originalJournalpostId)
+				.journalpostId(originalJournalpost.getJournalpostId())
 				.melding("Journalposten ble splittet til %s".formatted(nyJournalpost.getJournalpostId()))
 				.build();
 
 		AksjonsLoggTO utgaar = AksjonsLoggTO.builder()
 				.aksjon(UTGAAR)
-				.journalpostId(originalJournalpostId)
+				.journalpostId(originalJournalpost.getJournalpostId())
 				.melding("Journalposten ble satt til %s etter splitt".formatted(UTGAAR.name()))
 				.build();
-
-		List<ArkivElementEndringTO> arkivElementEndringer = new ArrayList<>(List.of(
-				ArkivElementEndringTO.arkivElementEndringNew("journalpost.fagomrade", nyJournalpost.getFagomrade().name()),
-				ArkivElementEndringTO.arkivElementEndringNew("journalpost.innhold", nyJournalpost.getInnhold()),
-				ArkivElementEndringTO.arkivElementEndringNew("journalpost.avsend_mottaker", nyJournalpost.getAvsenderMottaker()),
-				ArkivElementEndringTO.arkivElementEndringNew("journalpost.avsend_mottaker_id", nyJournalpost.getAvsenderMottakerId()),
-				ArkivElementEndringTO.arkivElementEndringNew("journalpost.journalf_enhet", nyJournalpost.getJournalForendeEnhetId())));
-
-		nyJournalpost.getBrukere().stream().findFirst().ifPresent(bruker ->
-				arkivElementEndringer.add(ArkivElementEndringTO.arkivElementEndringNew("bruker.bruker_id", bruker.getBrukerId())));
 
 		AksjonsLoggTO opprettFraSplitt = AksjonsLoggTO.builder()
 				.aksjon(OPPRETT_FRA_SPLITT)
 				.journalpostId(nyJournalpost.getJournalpostId())
-				.melding("Journalposten ble splittet fra journalpostId=%s".formatted(originalJournalpostId))
+				.melding("Journalposten ble splittet fra journalpostId=%s".formatted(originalJournalpost.getJournalpostId()))
 				.build();
 
 		Map<AksjonsLoggTO, List<ArkivElementEndringTO>> aksjonsMap = new HashMap<>();
 		aksjonsMap.put(splitt, List.of());
 		aksjonsMap.put(utgaar, List.of());
-		aksjonsMap.put(opprettFraSplitt, arkivElementEndringer);
+		aksjonsMap.put(opprettFraSplitt, arkivelementEndringer(originalJournalpost, nyJournalpost));
 		dokumentAksjoner.forEach(aksjon -> aksjonsMap.put(aksjon, List.of()));
 
 		aksjonsMap.forEach(aksjonsLoggService::validateAndSaveAksjonsLogg);
+	}
+
+	private List<ArkivElementEndringTO> arkivelementEndringer(Journalpost originalJournalpost, Journalpost nyJournalpost) {
+		return Stream.of(arkivElementEndringTO("journalpost.fagomrade", originalJournalpost.getFagomrade().name(), nyJournalpost.getFagomrade().name()),
+						arkivElementEndringTO("journalpost.innhold", originalJournalpost.getInnhold(), nyJournalpost.getInnhold()),
+						arkivElementEndringTO("journalpost.avsend_mottaker", originalJournalpost.getAvsenderMottaker(), nyJournalpost.getAvsenderMottaker()),
+						arkivElementEndringTO("journalpost.avsend_mottaker_id", originalJournalpost.getAvsenderMottakerId(), nyJournalpost.getAvsenderMottakerId()),
+						arkivElementEndringTO("journalpost.journalf_enhet", originalJournalpost.getJournalForendeEnhetId(), nyJournalpost.getJournalForendeEnhetId()))
+				.filter(Objects::nonNull)
+				.toList();
+	}
+
+	private ArkivElementEndringTO arkivElementEndringTO(String arkivElement, String fraVerdi, String tilVerdi) {
+		if (fraVerdi == null && tilVerdi == null) {
+			return null;
+		}
+
+		return ArkivElementEndringTO.builder()
+				.arkivElement(arkivElement)
+				.fraVerdi(fraVerdi)
+				.tilVerdi(tilVerdi)
+				.build();
 	}
 }
