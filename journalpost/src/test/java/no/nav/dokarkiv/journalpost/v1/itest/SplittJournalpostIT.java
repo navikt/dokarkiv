@@ -47,60 +47,6 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 	private static final String FEILMELDING = "Kunne ikke splitte journalpost med journalpostId=%s. Feilmelding=%s";
 
 	@Test
-	public void shoudSplitJorunalpostWhenJournalforendeEnhetIsNull(){
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
-		journalpost.setJournalposttype(I);
-		journalpostTestRepository.persist(journalpost);
-
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		var request = new SplittJournalpostRequest(
-				journalpost.getFagomrade().name(),
-				getBruker(),
-				NY_JOURNALPOST_TITTEL,
-				null,
-				NY_EKSTERN_REFERANSE_ID,
-				createDokumenter(journalpost));
-
-		var requestHttpEntity = new HttpEntity<>(
-				request,
-				createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
-
-		var response = restTemplate.exchange(SPLITT_JOURNALPOST_PATH.formatted(journalpost.getJournalpostId()), PATCH, requestHttpEntity, SplittJournalpostResponse.class);
-
-		assertThat(response).isNotNull();
-		assertThat(response.getStatusCode()).isEqualTo(CREATED);
-		assertThat(response.getBody()).isNotNull();
-
-		TestTransaction.start();
-
-		assertThat(journalpostTestRepository.findById(response.getBody().nyJournalpostId()))
-				.isPresent()
-				.get()
-				.satisfies( nyJournalpost -> {
-					assertThat(nyJournalpost.getBehandlingstema()).isEqualTo(journalpost.getBehandlingstema());
-					assertThat(nyJournalpost.getInnhold()).isEqualTo(NY_JOURNALPOST_TITTEL);
-					assertThat(nyJournalpost.getJournalForendeEnhetId()).isEqualTo(null);
-					assertThat(nyJournalpost.getKanalReferanseId()).isEqualTo(NY_EKSTERN_REFERANSE_ID);
-
-					assertThat(nyJournalpost.findAllDokumentInfos())
-							.hasSameSizeAs(request.dokumenter())
-							.satisfies(dokumentInfos -> {
-								var dokumenterFraJournalpost = dokumentInfos.stream()
-										.map(DokumentInfo::getDokumentInfoId)
-										.toList();
-
-								var dokumenterFraRequest = request.dokumenter().stream()
-										.map(SplittDokument::dokumentInfoId)
-										.toList();
-
-								assertThat(dokumenterFraJournalpost).containsExactlyInAnyOrderElementsOf(dokumenterFraRequest);
-							});
-				});
-	}
-
-	@Test
 	public void shouldSplittJournalpost() {
 		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
 		journalpost.setJournalposttype(I);
@@ -172,6 +118,65 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shoudSplitJorunalpostAndZeroJournalfoerendeEnhetWhenJournalforendeEnhetIsNull(){
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		journalpost.setJournalposttype(I);
+		journalpostTestRepository.persist(journalpost);
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		var request = new SplittJournalpostRequest(
+				journalpost.getFagomrade().name(),
+				getBruker(),
+				NY_JOURNALPOST_TITTEL,
+				null,
+				NY_EKSTERN_REFERANSE_ID,
+				createDokumenter(journalpost));
+
+		var requestHttpEntity = new HttpEntity<>(
+				request,
+				createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+
+		var response = restTemplate.exchange(SPLITT_JOURNALPOST_PATH.formatted(journalpost.getJournalpostId()), PATCH, requestHttpEntity, SplittJournalpostResponse.class);
+
+		assertThat(response).isNotNull();
+		assertThat(response.getStatusCode()).isEqualTo(CREATED);
+		assertThat(response.getBody()).isNotNull();
+
+		TestTransaction.start();
+
+		assertThat(journalpostTestRepository.findById(response.getBody().nyJournalpostId()))
+				.isPresent()
+				.get()
+				.satisfies( nyJournalpost -> {
+					assertThat(nyJournalpost.getJournalForendeEnhetId()).isEqualTo(null);
+				});
+
+		var nyJournalpost = journalpostTestRepository.findById(response.getBody().nyJournalpostId())
+				.orElseThrow();
+
+		assertThat(aksjonsLoggTestRepository.getAksjonsLoggByJournalpostId(response.getBody().nyJournalpostId()));
+		var aksjonsloggNyJournalpost = aksjonsLoggTestRepository.getAksjonsLoggByJournalpostId(nyJournalpost.getJournalpostId());
+
+		assertThat(aksjonsloggNyJournalpost)
+				.singleElement()
+				.extracting(AksjonsLogg::getAksjon, AksjonsLogg::getJournalpostId, AksjonsLogg::getDokumentInfoId, AksjonsLogg::getMelding)
+				.containsExactly(AksjonsTypeCode.OPPRETT_FRA_SPLITT, response.getBody().nyJournalpostId(), null, "Journalposten ble splittet fra journalpostId=%s".formatted(journalpost.getJournalpostId()));
+
+		assertThat(aksjonsloggNyJournalpost)
+				.flatExtracting(AksjonsLogg::getArkivElementEndringer)
+				.hasSize(5)
+				.extracting(ArkivElementEndring::getArkivElement, ArkivElementEndring::getFraVerdi, ArkivElementEndring::getTilVerdi)
+				.containsExactlyInAnyOrder(
+						tuple("journalpost.fagomrade", journalpost.getFagomrade().name(), nyJournalpost.getFagomrade().name()),
+						tuple("journalpost.innhold", journalpost.getInnhold(), nyJournalpost.getInnhold()),
+						tuple("journalpost.avsend_mottaker", journalpost.getAvsenderMottaker(), nyJournalpost.getAvsenderMottaker()),
+						tuple("journalpost.avsend_mottaker_id", journalpost.getAvsenderMottakerId(), nyJournalpost.getAvsenderMottakerId()),
+						tuple("journalpost.journalf_enhet",journalpost.getJournalForendeEnhetId(), nyJournalpost.getJournalForendeEnhetId()));
+	}
+
+	@Test
 	public void shouldSplittJournalpostWithNewDokumenter() {
 		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
 		journalpost.setJournalposttype(I);
@@ -187,6 +192,8 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 				new SplittDokument(dokumentSomSkalKopieresUtenEndringer, true, null),
 				new SplittDokument(dokumentSomSkalKopieresMedNyeVarianter, false, List.of(createDokumentvariant()))
 		);
+
+		var dokumentInfoFraDokumentSomErstattes = journalpost.findDokumentInfoById(dokumentSomSkalKopieresMedNyeVarianter);
 
 		var request = createRequestWithDokumenter(journalpost, dokumenter);
 
@@ -210,6 +217,8 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 				.filter(di -> !di.getDokumentInfoId().equals(dokumentSomSkalKopieresUtenEndringer))
 				.findFirst()
 				.orElseThrow();
+
+		assertThat(nyttDokument.getTittel()).contains(journalpost.findDokumentInfoById(dokumentSomSkalKopieresMedNyeVarianter).getTittel());
 
 		assertThat(nyJournalpost.findAllDokumentInfos())
 				.hasSameSizeAs(request.dokumenter())
@@ -411,6 +420,13 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 		return List.of(new SplittDokument(
 				journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId(),
 				true,
+				null));
+	}
+
+	private static List<SplittDokument> createDokumenterMedEndringer(Journalpost journalpost) {
+		return List.of(new SplittDokument(
+				journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId(),
+				false,
 				null));
 	}
 

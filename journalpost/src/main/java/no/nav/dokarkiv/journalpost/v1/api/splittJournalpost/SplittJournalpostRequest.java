@@ -20,8 +20,7 @@ public record SplittJournalpostRequest(
 		@Schema(description = "Tittel på den nye journalposten. Dersom feltet ikke oppgis kopieres det fra den opprinnelige journalposten.")
 		String tittel,
 
-		//TODO: rett opp i beskrivelse
-		@Schema(description = "Nav-enheten som den nye journalposten skal rutes til. Dersom feltet ikke oppgis kopieres det fra den opprinnelige journalposten.", example = "9999")
+		@Schema(description = "Nav-enheten som den nye journalposten skal rutes til. Dersom feltet ikke oppgis blir journalførende Enhet nullet ut.", example = "9999")
 		String journalfoerendeEnhet,
 
 		@Schema(

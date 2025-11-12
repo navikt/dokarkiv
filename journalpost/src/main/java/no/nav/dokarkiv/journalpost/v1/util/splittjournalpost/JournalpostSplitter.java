@@ -50,7 +50,7 @@ public class JournalpostSplitter {
 				.build();
 
 		String tittel = isNotBlank(request.tittel()) ? request.tittel() : originalJournalpost.getInnhold();
-		String journalfoerendeEnhet = isNotBlank(request.journalfoerendeEnhet()) ? request.journalfoerendeEnhet() : originalJournalpost.getJournalForendeEnhetId();
+		String journalfoerendeEnhet = isNotBlank(request.journalfoerendeEnhet()) ? request.journalfoerendeEnhet() : null;
 		FagomradeCode fagomrade = isNotBlank(request.tema()) ? FagomradeCode.valueOf(request.tema()) : originalJournalpost.getFagomrade();
 
 		journalpost.setInnhold(tittel);
@@ -131,8 +131,12 @@ public class JournalpostSplitter {
 			SplittDokument splittDokument,
 			JournalpostDokumentInfoRelasjon eksisterendeRelasjon) {
 
+		DokumentInfo originalDokumentInfo = originalJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(
+				splittDokument.dokumentInfoId());
+
 		DokumentInfo nyDokumentInfo = DokumentInfo.builder()
 				.originalJournalpost(originalJournalpost)
+				.tittel(originalDokumentInfo.getTittel())
 				.build();
 
 		nyDokumentInfo.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
