@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -88,12 +89,8 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 					assertThat(nyJournalpost.getJournalstatus()).isEqualTo(JournalStatusCode.MO);
 
 					assertThat(nyJournalpost.getBrukere())
-							.hasSameSizeAs(journalpost.getBrukere())
-							.extracting(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId)
-							.containsExactlyInAnyOrderElementsOf(
-									journalpost.getBrukere().stream()
-											.map(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId)
-											.toList());
+							.extracting(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId, no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerType)
+							.containsExactly(tuple(request.bruker().getId(), BrukerTypeCode.PERSON));
 
 					assertThat(nyJournalpost.findAllDokumentInfos())
 							.hasSameSizeAs(request.dokumenter())
