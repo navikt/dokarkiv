@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.EksternReferanseIdFinnesException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -131,11 +133,15 @@ public class SplittJournalpostService {
 	}
 
 	private List<ArkivElementEndringTO> arkivelementEndringer(Journalpost originalJournalpost, Journalpost nyJournalpost) {
+		String originaleBrukere = originalJournalpost.getBrukere().stream().map(Bruker::getBrukerId).collect(Collectors.joining(", "));
+		String nyeBrukere = nyJournalpost.getBrukere().stream().map(Bruker::getBrukerId).collect(Collectors.joining(", "));
+
 		return Stream.of(arkivElementEndringTO("journalpost.fagomrade", originalJournalpost.getFagomrade().name(), nyJournalpost.getFagomrade().name()),
 						arkivElementEndringTO("journalpost.innhold", originalJournalpost.getInnhold(), nyJournalpost.getInnhold()),
 						arkivElementEndringTO("journalpost.avsend_mottaker", originalJournalpost.getAvsenderMottaker(), nyJournalpost.getAvsenderMottaker()),
 						arkivElementEndringTO("journalpost.avsend_mottaker_id", originalJournalpost.getAvsenderMottakerId(), nyJournalpost.getAvsenderMottakerId()),
-						arkivElementEndringTO("journalpost.journalf_enhet", originalJournalpost.getJournalForendeEnhetId(), nyJournalpost.getJournalForendeEnhetId()))
+						arkivElementEndringTO("journalpost.journalf_enhet", originalJournalpost.getJournalForendeEnhetId(), nyJournalpost.getJournalForendeEnhetId()),
+						arkivElementEndringTO("journalpost.bruker", originaleBrukere, nyeBrukere))
 				.filter(Objects::nonNull)
 				.toList();
 	}
