@@ -85,7 +85,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 					assertThat(nyJournalpost.getInnhold()).isEqualTo(NY_JOURNALPOST_TITTEL);
 					assertThat(nyJournalpost.getJournalForendeEnhetId()).isEqualTo(journalpost.getJournalForendeEnhetId());
 					assertThat(nyJournalpost.getKanalReferanseId()).isEqualTo(NY_EKSTERN_REFERANSE_ID);
-//					assertThat(nyJournalpost.getJournalstatus()).isEqualTo(JournalStatusCode.MO);
+					assertThat(nyJournalpost.getJournalstatus()).isEqualTo(JournalStatusCode.MO);
 
 					assertThat(nyJournalpost.getBrukere())
 							.hasSameSizeAs(journalpost.getBrukere())
