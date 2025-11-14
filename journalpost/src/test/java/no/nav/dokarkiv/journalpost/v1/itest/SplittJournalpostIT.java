@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
@@ -86,7 +87,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 					assertThat(nyJournalpost.getInnhold()).isEqualTo(NY_JOURNALPOST_TITTEL);
 					assertThat(nyJournalpost.getJournalForendeEnhetId()).isEqualTo(journalpost.getJournalForendeEnhetId());
 					assertThat(nyJournalpost.getKanalReferanseId()).isEqualTo(NY_EKSTERN_REFERANSE_ID);
-					assertThat(nyJournalpost.getJournalstatus()).isEqualTo(JournalStatusCode.MO);
+					assertThat(nyJournalpost.getJournalstatus()).isEqualTo(M);
 
 					assertThat(nyJournalpost.getBrukere())
 							.extracting(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId, no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerType)

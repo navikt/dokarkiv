@@ -28,7 +28,7 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_DOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.KOPIER_DOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.ORGANISASJON;
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
@@ -52,7 +52,7 @@ public class JournalpostSplitter {
 				.kanalReferanseId(request.eksternReferanseId())
 				.saksrelasjon(null)
 				.journalDato(LocalDateTime.now())
-				.journalstatus(MO)
+				.journalstatus(M)
 				.build();
 
 		String tittel = isNotBlank(request.tittel()) ? request.tittel() : originalJournalpost.getInnhold();
