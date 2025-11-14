@@ -152,12 +152,9 @@ public class JournalpostSplitter {
 			SplittDokument splittDokument,
 			JournalpostDokumentInfoRelasjon eksisterendeRelasjon) {
 
-		DokumentInfo originalDokumentInfo = originalJournalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(
-				splittDokument.dokumentInfoId());
-
 		DokumentInfo nyDokumentInfo = DokumentInfo.builder()
 				.originalJournalpost(originalJournalpost)
-				.tittel(originalDokumentInfo.getTittel())
+				.tittel(eksisterendeRelasjon.getDokumentInfo().getTittel())
 				.build();
 
 		nyDokumentInfo.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
