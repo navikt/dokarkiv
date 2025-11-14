@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
+import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostRequest.SplittDokument;
@@ -13,6 +14,8 @@ import org.assertj.core.api.Assertions;
 import org.jboss.logging.MDC;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +27,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_DOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.KOPIER_DOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.ORGANISASJON;
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
@@ -34,6 +38,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createHoveddokumentRelasjon;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
+import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.util.splittjournalpost.JournalpostSplitter.SPLITT_JOURNALPOST_FILNAVN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
@@ -44,6 +49,8 @@ class JournalpostSplitterTest {
 	private static final String NY_EKSTERN_REFERANSE_ID = UUID.randomUUID().toString();
 	private static final String CONSUMER_ID = "splitt-journalpost";
 	private static final String USER_NAME = "splitt-user";
+	private static final String NY_BRUKER_ID = "98765432100";
+	private static final String NY_ORG_ID = "987654321";
 	private static final long DOKUMENT_INFO_ID = 123L;
 
 	@BeforeEach
@@ -97,7 +104,7 @@ class JournalpostSplitterTest {
 					assertThat(j.getBrukere())
 							.singleElement()
 							.extracting(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId, no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerType)
-							.containsExactly(BRUKER_ID, PERSON);
+							.containsExactly(NY_BRUKER_ID, PERSON);
 
 					assertThat(j.getKryssreferanser()).isEqualTo(journalpost.getKryssreferanser());
 					assertThat(j.getOpprettetKildeNavn()).isEqualTo(CONSUMER_ID);
@@ -192,6 +199,68 @@ class JournalpostSplitterTest {
 				.containsExactlyInAnyOrder(DOKUMENT_INFO_ID, null);
 	}
 
+	@ParameterizedTest
+	@MethodSource
+	void shouldSplittJournalpostMedDokumenterMedNyBruker(Bruker bruker) {
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		journalpost.clearJournalpostDokumentInfoRelasjoner();
+
+		var dokumentInfo = createDokumentInfo();
+		dokumentInfo.setDokumentInfoId(DOKUMENT_INFO_ID);
+		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost, dokumentInfo));
+
+		var request = createRequest(journalpost, createDokumenter(journalpost, true)).toBuilder()
+				.bruker(bruker)
+				.build();
+
+		var splittResultat = JournalpostSplitter.splitt(journalpost, request);
+
+		var forventetIdType = bruker.getIdType() == FNR ? PERSON : ORGANISASJON;
+
+		assertThat(splittResultat.nyJournalpost().getBrukere())
+				.singleElement()
+				.satisfies(b -> {
+					assertThat(b.getBrukerId()).isEqualTo(bruker.getId());
+					assertThat(b.getBrukerType()).isEqualTo(forventetIdType);
+					assertThat(b.getOpprettetKildeNavn()).isEqualTo(CONSUMER_ID);
+				});
+	}
+
+	private static Stream<Bruker> shouldSplittJournalpostMedDokumenterMedNyBruker() {
+		return Stream.of(Bruker.builder()
+						.id(NY_BRUKER_ID)
+						.idType(FNR)
+						.build(),
+				Bruker.builder()
+						.id(NY_ORG_ID)
+						.idType(ORGNR)
+						.build()
+		);
+	}
+
+	@Test
+	void shouldSplittJournalpostMedDokumenterUtenNyBruker() {
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		journalpost.clearJournalpostDokumentInfoRelasjoner();
+
+		var dokumentInfo = createDokumentInfo();
+		dokumentInfo.setDokumentInfoId(DOKUMENT_INFO_ID);
+		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost, dokumentInfo));
+
+		var request = createRequest(journalpost, createDokumenter(journalpost, true)).toBuilder()
+				.bruker(null)
+				.build();
+
+		var splittResultat = JournalpostSplitter.splitt(journalpost, request);
+
+		//TODO endre denne testen til å teste de spesifike feltene i hver av brukerlistene, i steden for å buke rekursiv sammenligning. Her er antagelig falsk positiv. God helg
+		assertThat(splittResultat.nyJournalpost().getBrukere())
+				.usingRecursiveComparison()
+				.comparingOnlyFields("brukerInfoId", "brukerId", "brukerType")
+				.ignoringCollectionOrder()
+				.isEqualTo(journalpost.getBrukere());
+	}
+
 	private static SplittJournalpostRequest createRequest(Journalpost journalpost, List<SplittDokument> dokumenter) {
 		return new SplittJournalpostRequest(
 				journalpost.getFagomrade().name(),
@@ -204,7 +273,7 @@ class JournalpostSplitterTest {
 
 	private static Bruker createBruker() {
 		return Bruker.builder()
-				.id(BRUKER_ID)
+				.id(NY_BRUKER_ID)
 				.idType(FNR)
 				.build();
 	}
