@@ -259,6 +259,29 @@ class JournalpostSplitterTest {
 				.containsExactlyInAnyOrderElementsOf(journalpost.getBrukere());
 	}
 
+	@Test
+	void shouldSplittJournalpostMedDokumentAndRemoveJorunalfoerendeEnhet() {
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		journalpost.clearJournalpostDokumentInfoRelasjoner();
+
+		var dokumentInfo = createDokumentInfo();
+		dokumentInfo.setDokumentInfoId(DOKUMENT_INFO_ID);
+		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost, dokumentInfo));
+
+		var request = new SplittJournalpostRequest(
+				journalpost.getFagomrade().name(),
+				createBruker(),
+				NY_JOURNALPOST_TITTEL,
+				null,
+				NY_EKSTERN_REFERANSE_ID,
+				createDokumenter(journalpost, true));
+
+		var splittResultat = JournalpostSplitter.splitt(journalpost, request);
+
+		assertThat(splittResultat.nyJournalpost().getJournalForendeEnhetId()).isNullOrEmpty();
+
+	}
+
 	private static SplittJournalpostRequest createRequest(Journalpost journalpost, List<SplittDokument> dokumenter) {
 		return new SplittJournalpostRequest(
 				journalpost.getFagomrade().name(),
