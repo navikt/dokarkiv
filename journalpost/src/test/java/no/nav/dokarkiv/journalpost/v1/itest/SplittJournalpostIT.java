@@ -157,7 +157,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 				.findFirst()
 				.orElseThrow();
 
-		assertThat(nyttDokument.getTittel()).contains(journalpost.findDokumentInfoById(dokumentSomSkalKopieresMedNyeVarianter).getTittel());
+		assertThat(nyttDokument.getTittel()).isEqualTo(journalpost.findDokumentInfoById(dokumentSomSkalKopieresMedNyeVarianter).getTittel());
 
 		assertThat(nyJournalpost.findAllDokumentInfos())
 				.hasSameSizeAs(request.dokumenter())
@@ -341,18 +341,16 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	private static SplittJournalpostRequest createRequestWithExternReferanseIdAndDokumenter(Journalpost journalpost, String externReferanseId, List<SplittDokument> dokumenter) {
-		Bruker bruker = getBruker();
-
 		return new SplittJournalpostRequest(
 				journalpost.getFagomrade().name(),
-				bruker,
+				createBruker(),
 				NY_JOURNALPOST_TITTEL,
 				journalpost.getJournalForendeEnhetId(),
 				externReferanseId,
 				dokumenter);
 	}
 
-	private static Bruker getBruker() {
+	private static Bruker createBruker() {
 		return Bruker.builder()
 				.id(BRUKER_ID)
 				.idType(FNR)
@@ -363,13 +361,6 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 		return List.of(new SplittDokument(
 				journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId(),
 				true,
-				null));
-	}
-
-	private static List<SplittDokument> createDokumenterMedEndringer(Journalpost journalpost) {
-		return List.of(new SplittDokument(
-				journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId(),
-				false,
 				null));
 	}
 
