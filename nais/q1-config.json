@@ -599,6 +599,11 @@
       "app": "syfo-oppfolgingsplan-backend",
       "namespace": "team-esyfo",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "ekspertbistand-backend",
+      "namespace": "fager",
+      "cluster": "dev-gcp"
     }
   ]
 }
