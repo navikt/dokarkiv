@@ -253,12 +253,10 @@ class JournalpostSplitterTest {
 
 		var splittResultat = JournalpostSplitter.splitt(journalpost, request);
 
-		//TODO endre denne testen til å teste de spesifike feltene i hver av brukerlistene, i steden for å buke rekursiv sammenligning. Her er antagelig falsk positiv. God helg
 		assertThat(splittResultat.nyJournalpost().getBrukere())
-				.usingRecursiveComparison()
-				.comparingOnlyFields("brukerInfoId", "brukerId", "brukerType")
-				.ignoringCollectionOrder()
-				.isEqualTo(journalpost.getBrukere());
+				.hasSameSizeAs(journalpost.getBrukere())
+				.usingRecursiveFieldByFieldElementComparatorOnFields("brukerId")
+				.containsExactlyInAnyOrderElementsOf(journalpost.getBrukere());
 	}
 
 	private static SplittJournalpostRequest createRequest(Journalpost journalpost, List<SplittDokument> dokumenter) {
