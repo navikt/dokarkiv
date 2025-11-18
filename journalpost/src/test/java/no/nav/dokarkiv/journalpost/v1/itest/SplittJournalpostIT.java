@@ -82,7 +82,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 		assertThat(journalpostTestRepository.findById(response.getBody().nyJournalpostId()))
 				.isPresent()
 				.get()
-				.satisfies( nyJournalpost -> {
+				.satisfies(nyJournalpost -> {
 					assertThat(nyJournalpost.getBehandlingstema()).isEqualTo(journalpost.getBehandlingstema());
 					assertThat(nyJournalpost.getInnhold()).isEqualTo(NY_JOURNALPOST_TITTEL);
 					assertThat(nyJournalpost.getJournalForendeEnhetId()).isEqualTo(journalpost.getJournalForendeEnhetId());
@@ -229,7 +229,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 						tuple("journalpost.innhold", journalpost.getInnhold(), nyJournalpost.getInnhold()),
 						tuple("journalpost.avsend_mottaker", journalpost.getAvsenderMottaker(), nyJournalpost.getAvsenderMottaker()),
 						tuple("journalpost.avsend_mottaker_id", journalpost.getAvsenderMottakerId(), nyJournalpost.getAvsenderMottakerId()),
-						tuple("journalpost.journalf_enhet",journalpost.getJournalForendeEnhetId(), nyJournalpost.getJournalForendeEnhetId()),
+						tuple("journalpost.journalf_enhet", journalpost.getJournalForendeEnhetId(), nyJournalpost.getJournalForendeEnhetId()),
 						tuple("journalpost.bruker", gamleBrukere, nyeBrukere));
 	}
 
