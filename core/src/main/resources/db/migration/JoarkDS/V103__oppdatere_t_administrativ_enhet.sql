@@ -1,0 +1,104 @@
+CREATE SEQUENCE ADMINISTRATIV_ENHET_SEQ START WITH 1 INCREMENT BY 1;
+
+CREATE OR REPLACE TRIGGER ADMINISTRATIV_ENHET_BI
+BEFORE INSERT ON T_ADMINISTRATIV_ENHET
+FOR EACH ROW
+BEGIN
+    IF :NEW.ADMINISTRATIV_ENHET_ID IS NULL THEN
+        :NEW.ADMINISTRATIV_ENHET_ID := ADMINISTRATIV_ENHET_SEQ.NEXTVAL;
+END IF;
+END;
+
+
+ALTER SESSION SET NLS_DATE_FORMAT = 'DD.MM.YYYY';
+
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('AAP', '19.11.2009', '01.01.2099', 'Nav-kontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('AAR', '22.06.2010', '01.01.2099', 'Nav Registerforvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('AGR', '22.06.2010', '01.01.2099', 'Nav Økonomi Stønad');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('ARP', '13.12.2022', '01.01.2099', 'Nav Arbeidsrådgivning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('ARS', '13.12.2022', '01.01.2099', 'Nav Arbeidsrådgivning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('BAR', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('BAR', '01.01.2017', '01.01.2099', 'Nav Familie- og pensjonsytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('BID', '00.01.1900', '30.06.2006', 'Trygdekontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('BID', '01.07.2006', '31.05.2010', 'Nav-kontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('BID', '01.06.2010', '31.08.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('BID', '01.09.2016', '01.01.2099', 'Nav Familie- og pensjonsytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('BIL', '14.10.2009', '01.01.2099', 'Nav Hjelpemiddelsentral ');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('DAG', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('DAG', '01.01.2017', '01.01.2099', 'Nav Arbeid- og ytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('ENF', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('ENF', '01.01.2017', '01.01.2099', 'Nav Arbeid- og ytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('ERS', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('ERS', '01.01.2017', '01.01.2099', 'Nav klageinstans');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('EYB', '14.03.2022', '01.01.2099', 'Nav Familie- og pensjonsytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('EYO', '14.03.2022', '01.01.2099', 'Nav Familie- og pensjonsytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FAR', '08.08.2018', '30.06.2006', 'Trygdekontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FAR', '01.07.2006', '31.05.2010', 'Nav-kontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FAR', '01.06.2010', '08.12.2013', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FAR', '09.12.2013', '31.08.2016', 'Nav Farskap');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FAR', '01.09.2016', '01.01.2099', 'Nav familie- og pensjonsytelser Farskap');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FEI', '19.11.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FEI', '01.01.2017', '01.01.2099', 'Nav Arbeid- og ytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FIP', '13.12.2022', '01.01.2099', 'Nav Klageinstans');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FOR', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FOR', '01.01.2017', '07.05.2023', 'Nav Familie- og pensjonsytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FOR', '08.05.2023', '01.01.2099', 'Nav Familie- og pensjonsytelser foreldrepenger');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FOS', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FOS', '01.01.2017', '01.01.2099', 'Nav Arbeid- og ytelser – Karmøy');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FRI', '23.04.2020', '01.01.2099', 'Nav Familie- og pensjonsytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('FUL', '19.11.2009', '01.01.2099', 'Nav-kontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('GEN', '19.11.2009', '01.01.2099', 'Nav-kontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('GRA', '14.10.2009', '08.12.2013', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('GRA', '09.12.2013', '31.12.2016', 'Nav Forvaltning Hordaland');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('GRA', '01.01.2017', '01.01.2099', 'Nav Familie- og pensjonsytelser Bergen');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('GRU', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('GRU', '01.01.2017', '01.01.2099', 'Nav Arbeid- og ytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('HEL', '19.11.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('HEL', '01.01.2017', '01.01.2099', 'Nav Arbeid- og ytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('HJE', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('HJE', '01.01.2017', '01.01.2099', 'Nav Hjelpemiddelsentral');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('IAR', '22.06.2010', '01.01.2099', 'Nav Arbeidslivssentre');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('IND', '14.10.2009', '01.01.2099', 'Nav Fylkeskontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('KLL', '13.12.2022', '01.01.2099', 'Nav Arbeid og ytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('KON', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('KON', '01.01.2017', '01.01.2099', 'Nav Familie- og pensjonsytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('KTA', '13.12.2022', '01.01.2099', 'Nav Kontroll');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('KTR', '22.06.2010', '01.01.2099', 'Nav Kontroll');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('MED', '19.11.2009', '31.12.2015', 'Nav Internasjonalt');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('MED', '01.01.2016', '01.01.2099', 'Nav Medlemskap og avgift');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('MOB', '14.10.2009', '01.01.2099', '');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('OMS', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('OMS', '01.01.2017', '01.01.2099', 'Nav Arbeid og ytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('OPA', '26.05.2011', '30.06.2014', 'Nav Registerforvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('OPA', '01.07.2014', '01.01.2099', 'Nav-kontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('OPP', '14.10.2009', '01.01.2099', 'Nav-kontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('PEN', '09.01.2007', '01.01.2099', 'Nav Pensjon');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('PER', '22.06.2010', '01.01.2099', 'Nav-kontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('REH', '14.10.2009', '01.01.2099', 'Nav Klageinstans');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('REK', '22.06.2010', '01.01.2099', 'Nav-kontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('RPO', '15.08.2017', '01.01.2099', 'Nav Klageinstans');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('RVE', '15.08.2017', '01.01.2099', '');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('SAA', '26.05.2011', '01.01.2099', '');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('SAK', '14.10.2009', '01.01.2099', 'Nav Klageinstans');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('SAP', '26.05.2011', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('SAP', '01.01.2017', '01.01.2099', 'Nav Arbeid og ytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('SER', '26.10.2011', '01.01.2099', 'Nav-kontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('SYK', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('SYK', '01.01.2017', '01.01.2099', 'Nav Arbeid og ytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('SYM', '02.06.2010', '01.01.2099', 'Nav-kontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('TIL', '22.06.2010', '01.01.2099', 'Nav Fylkeskontor');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('TRY', '13.01.2011', '31.12.2015', 'Nav Internasjonalt');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('TRY', '01.01.2016', '01.01.2099', 'Nav Medlemskap og avgift');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('TSO', '29.06.2015', '01.01.2099', 'Nav Arbeid og ytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('TSR', '29.06.2015', '01.01.2099', 'Nav Arbeid og ytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('UFM', '15.01.2015', '31.12.2015', 'Nav Internasjonalt');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('UFM', '01.01.2016', '01.01.2099', 'Nav Medlemskap og avgift');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('UFO', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('UFO', '01.01.2017', '01.01.2099', 'Nav Arbeid og ytelser');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('UKJ', '14.10.2009', '01.01.2099', '');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('VEN', '14.10.2009', '31.12.2015', '');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('VEN', '01.01.2016', '31.12.2019', 'Nav Arbeid of ytelser lønnsgaranti');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('VEN', '01.01.2020', '01.01.2099', 'Nav Arbeid og ytelser Kristiania');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('YRA', '14.10.2009', '01.01.2099', 'Nav Klageinstans');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('YRK', '14.10.2009', '31.12.2016', 'Nav Forvaltning');
+insert into T_ADMINISTRATIV_ENHET(Tema,dato_fom, dato_tom, enhet_navn) values ('YRK', '01.01.2017', '01.01.2099', 'Nav Familie- og pensjonsytelser');
