@@ -33,7 +33,6 @@ import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createHoveddokumentRelasjon;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
@@ -122,9 +121,9 @@ class JournalpostSplitterTest {
 		assertThat(splittResultat.aksjoner())
 				.singleElement()
 				.satisfies(aksjon -> {
-					Assertions.assertThat(aksjon.getAksjon()).isEqualTo(KOPIER_DOKUMENT);
-					Assertions.assertThat(aksjon.getJournalpostId()).isEqualTo(journalpost.getJournalpostId());
-					Assertions.assertThat(aksjon.getDokumentInfoId()).isEqualTo(request.dokumenter().getFirst().dokumentInfoId());
+					assertThat(aksjon.getAksjon()).isEqualTo(KOPIER_DOKUMENT);
+					assertThat(aksjon.getJournalpostId()).isEqualTo(journalpost.getJournalpostId());
+					assertThat(aksjon.getDokumentInfoId()).isEqualTo(request.dokumenter().getFirst().dokumentInfoId());
 				});
 	}
 
@@ -170,9 +169,9 @@ class JournalpostSplitterTest {
 		assertThat(splittResultat.aksjoner())
 				.singleElement()
 				.satisfies(aksjon -> {
-					Assertions.assertThat(aksjon.getAksjon()).isEqualTo(ENDRE_DOKUMENT);
-					Assertions.assertThat(aksjon.getJournalpostId()).isEqualTo(journalpost.getJournalpostId());
-					Assertions.assertThat(aksjon.getDokumentInfoId()).isEqualTo(request.dokumenter().getFirst().dokumentInfoId());
+					assertThat(aksjon.getAksjon()).isEqualTo(ENDRE_DOKUMENT);
+					assertThat(aksjon.getJournalpostId()).isEqualTo(journalpost.getJournalpostId());
+					assertThat(aksjon.getDokumentInfoId()).isEqualTo(request.dokumenter().getFirst().dokumentInfoId());
 				});
 	}
 
@@ -268,13 +267,10 @@ class JournalpostSplitterTest {
 		dokumentInfo.setDokumentInfoId(DOKUMENT_INFO_ID);
 		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost, dokumentInfo));
 
-		var request = new SplittJournalpostRequest(
-				journalpost.getFagomrade().name(),
-				createBruker(),
-				NY_JOURNALPOST_TITTEL,
-				null,
-				NY_EKSTERN_REFERANSE_ID,
-				createDokumenter(journalpost, true));
+		var request = createRequest(journalpost, createDokumenter(journalpost, true))
+				.toBuilder()
+				.journalfoerendeEnhet(null)
+				.build();
 
 		var splittResultat = JournalpostSplitter.splitt(journalpost, request);
 
