@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
@@ -22,8 +23,10 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
@@ -79,19 +82,16 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 		assertThat(journalpostTestRepository.findById(response.getBody().nyJournalpostId()))
 				.isPresent()
 				.get()
-				.satisfies( nyJournalpost -> {
+				.satisfies(nyJournalpost -> {
 					assertThat(nyJournalpost.getBehandlingstema()).isEqualTo(journalpost.getBehandlingstema());
 					assertThat(nyJournalpost.getInnhold()).isEqualTo(NY_JOURNALPOST_TITTEL);
 					assertThat(nyJournalpost.getJournalForendeEnhetId()).isEqualTo(journalpost.getJournalForendeEnhetId());
 					assertThat(nyJournalpost.getKanalReferanseId()).isEqualTo(NY_EKSTERN_REFERANSE_ID);
+					assertThat(nyJournalpost.getJournalstatus()).isEqualTo(M);
 
 					assertThat(nyJournalpost.getBrukere())
-							.hasSameSizeAs(journalpost.getBrukere())
-							.extracting(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId)
-							.containsExactlyInAnyOrderElementsOf(
-									journalpost.getBrukere().stream()
-											.map(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId)
-											.toList());
+							.extracting(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId, no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerType)
+							.containsExactly(tuple(request.bruker().getId(), BrukerTypeCode.PERSON));
 
 					assertThat(nyJournalpost.findAllDokumentInfos())
 							.hasSameSizeAs(request.dokumenter())
@@ -157,6 +157,8 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 				.findFirst()
 				.orElseThrow();
 
+		assertThat(nyttDokument.getTittel()).isEqualTo(journalpost.findDokumentInfoById(dokumentSomSkalKopieresMedNyeVarianter).getTittel());
+
 		assertThat(nyJournalpost.findAllDokumentInfos())
 				.hasSameSizeAs(request.dokumenter())
 				.satisfies(dokumentInfos -> {
@@ -215,16 +217,20 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 				.extracting(AksjonsLogg::getAksjon, AksjonsLogg::getJournalpostId, AksjonsLogg::getDokumentInfoId, AksjonsLogg::getMelding)
 				.containsExactly(AksjonsTypeCode.OPPRETT_FRA_SPLITT, response.getBody().nyJournalpostId(), null, "Journalposten ble splittet fra journalpostId=%s".formatted(journalpost.getJournalpostId()));
 
+		String gamleBrukere = journalpost.getBrukere().stream().map(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId).collect(Collectors.joining(", "));
+		String nyeBrukere = nyJournalpost.getBrukere().stream().map(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId).collect(Collectors.joining(", "));
+
 		assertThat(aksjonsloggNyJournalpost)
 				.flatExtracting(AksjonsLogg::getArkivElementEndringer)
-				.hasSize(5)
+				.hasSize(6)
 				.extracting(ArkivElementEndring::getArkivElement, ArkivElementEndring::getFraVerdi, ArkivElementEndring::getTilVerdi)
 				.containsExactlyInAnyOrder(
 						tuple("journalpost.fagomrade", journalpost.getFagomrade().name(), nyJournalpost.getFagomrade().name()),
 						tuple("journalpost.innhold", journalpost.getInnhold(), nyJournalpost.getInnhold()),
 						tuple("journalpost.avsend_mottaker", journalpost.getAvsenderMottaker(), nyJournalpost.getAvsenderMottaker()),
 						tuple("journalpost.avsend_mottaker_id", journalpost.getAvsenderMottakerId(), nyJournalpost.getAvsenderMottakerId()),
-						tuple("journalpost.journalf_enhet",journalpost.getJournalForendeEnhetId(), nyJournalpost.getJournalForendeEnhetId()));
+						tuple("journalpost.journalf_enhet", journalpost.getJournalForendeEnhetId(), nyJournalpost.getJournalForendeEnhetId()),
+						tuple("journalpost.bruker", gamleBrukere, nyeBrukere));
 	}
 
 	@Test
@@ -335,18 +341,20 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	private static SplittJournalpostRequest createRequestWithExternReferanseIdAndDokumenter(Journalpost journalpost, String externReferanseId, List<SplittDokument> dokumenter) {
-		var bruker = Bruker.builder()
-				.id(BRUKER_ID)
-				.idType(FNR)
-				.build();
-
 		return new SplittJournalpostRequest(
 				journalpost.getFagomrade().name(),
-				bruker,
+				createBruker(),
 				NY_JOURNALPOST_TITTEL,
 				journalpost.getJournalForendeEnhetId(),
 				externReferanseId,
 				dokumenter);
+	}
+
+	private static Bruker createBruker() {
+		return Bruker.builder()
+				.id(BRUKER_ID)
+				.idType(FNR)
+				.build();
 	}
 
 	private static List<SplittDokument> createDokumenter(Journalpost journalpost) {
