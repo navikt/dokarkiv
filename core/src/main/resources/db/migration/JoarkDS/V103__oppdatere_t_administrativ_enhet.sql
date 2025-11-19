@@ -7,7 +7,7 @@ insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_to
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'ARS', date '2022-12-13',date '2099-01-01', 'Nav Arbeidsrådgivning');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'BAR', date '2009-10-14',date '2016-12-31', 'Nav Forvaltning');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'BAR', date '2017-01-01',date '2099-01-01', 'Nav Familie- og pensjonsytelser');
-insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'BID', date '1900-01-00',date '2006-06-30', 'Trygdekontor');
+insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'BID', date '1900-01-01',date '2006-06-30', 'Trygdekontor');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'BID', date '2006-07-01',date '2010-05-31', 'Nav-kontor');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'BID', date '2010-06-01',date '2016-08-31', 'Nav Forvaltning');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'BID', date '2016-09-01',date '2099-01-01', 'Nav Familie- og pensjonsytelser');
