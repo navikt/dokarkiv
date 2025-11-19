@@ -54,7 +54,7 @@ insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_to
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'KTR', date '2010-06-22',date '2099-01-01', 'Nav Kontroll');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'MED', date '2009-11-19',date '2015-12-31', 'Nav Internasjonalt');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'MED', date '2016-01-01',date '2099-01-01', 'Nav Medlemskap og avgift');
-insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'MOB', date '2009-10-14',date '2099-01-01', '');
+insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'MOB', date '2009-10-14',date '2099-01-01', 'U/A - Avsluttet');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'OMS', date '2009-10-14',date '2016-12-31', 'Nav Forvaltning');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'OMS', date '2017-01-01',date '2099-01-01', 'Nav Arbeid og ytelser');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'OPA', date '2011-05-26',date '2014-06-30', 'Nav Registerforvaltning');
@@ -65,8 +65,8 @@ insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_to
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'REH', date '2009-10-14',date '2099-01-01', 'Nav Klageinstans');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'REK', date '2010-06-22',date '2099-01-01', 'Nav-kontor');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'RPO', date '2017-08-15',date '2099-01-01', 'Nav Klageinstans');
-insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'RVE', date '2017-08-15',date '2099-01-01', '');
-insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'SAA', date '2011-05-26',date '2099-01-01', '');
+insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'RVE', date '2017-08-15',date '2099-01-01', 'U/A - Avsluttet');
+insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'SAA', date '2011-05-26',date '2099-01-01', 'U/A - Avsluttet');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'SAK', date '2009-10-14',date '2099-01-01', 'Nav Klageinstans');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'SAP', date '2011-05-26',date '2016-12-31', 'Nav Forvaltning');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'SAP', date '2017-01-01',date '2099-01-01', 'Nav Arbeid og ytelser');
@@ -83,8 +83,8 @@ insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_to
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'UFM', date '2016-01-01',date '2099-01-01', 'Nav Medlemskap og avgift');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'UFO', date '2009-10-14',date '2016-12-31', 'Nav Forvaltning');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'UFO', date '2017-01-01',date '2099-01-01', 'Nav Arbeid og ytelser');
-insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'UKJ', date '2009-10-14',date '2099-01-01', '');
-insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'VEN', date '2009-10-14',date '2015-12-31', '');
+insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'UKJ', date '2009-10-14',date '2099-01-01', 'UA');
+insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'VEN', date '2009-10-14',date '2015-12-31', 'Nav Kontroll til og med 2015');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'VEN', date '2016-01-01',date '2019-12-31', 'Nav Arbeid of ytelser lønnsgaranti');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'VEN', date '2020-01-01',date '2099-01-01', 'Nav Arbeid og ytelser Kristiania');
 insert into T_ADMINISTRATIV_ENHET(administrativ_enhet_id, Tema,dato_fom, dato_tom, enhet_navn) values (ADMINISTRATIV_ENHET_SEQ.nextval , 'YRA', date '2009-10-14',date '2099-01-01', 'Nav Klageinstans');
