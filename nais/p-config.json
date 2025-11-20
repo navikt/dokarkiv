@@ -611,9 +611,9 @@
       "cluster": "prod-gcp"
     },
     {
-      "app": "fpsoknad-mottak",
+      "app": "fpmottak",
       "namespace": "teamforeldrepenger",
-      "cluster": "prod-fss"
+      "cluster": "prod-gcp"
     },
     {
       "app": "fpinntektsmelding",
