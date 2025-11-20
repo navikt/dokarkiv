@@ -289,7 +289,8 @@
     {
       "app": "yrkesskade-saksbehandling-backend",
       "namespace": "yrkesskade",
-      "cluster": "dev-gcp"
+      "cluster": "dev-gcp",
+      "roles": ["finn_mottatte_journalposter"]
     },
     {
       "app": "yrkesskade-sikkerhetsnett",
