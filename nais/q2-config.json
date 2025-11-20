@@ -649,11 +649,6 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "lydia-api",
-      "namespace": "pia",
-      "cluster": "dev-gcp"
-    },
-    {
       "app": "fia-dokument-publisering",
       "namespace": "pia",
       "cluster": "dev-gcp"
