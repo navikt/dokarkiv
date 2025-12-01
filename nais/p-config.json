@@ -689,6 +689,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "su-se-bakover",
+      "namespace": "supstonad",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "fia-dokument-publisering",
       "namespace": "pia",
       "cluster": "prod-gcp"
