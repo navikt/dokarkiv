@@ -644,6 +644,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "su-se-bakover",
+      "namespace": "supstonad",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "tilbakemeldingsmottak-api",
       "namespace": "teamserviceklage",
       "cluster": "dev-gcp"
