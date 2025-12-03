@@ -48,6 +48,7 @@ public class JournalpostSplitter {
 		Journalpost journalpost = originalJournalpost.toBuilder()
 				.journalpostId(null)
 				.opprettetAvNavn(MDC.get(MDC_USER_NAME))
+				.journalfortAvNavn(null)
 				.tilleggsopplysninger(new HashMap<>(originalJournalpost.getTilleggsopplysninger()))
 				.kanalReferanseId(request.eksternReferanseId())
 				.saksrelasjon(null)
