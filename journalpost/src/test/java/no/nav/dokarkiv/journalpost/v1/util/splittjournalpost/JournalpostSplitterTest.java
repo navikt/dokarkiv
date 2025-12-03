@@ -80,6 +80,7 @@ class JournalpostSplitterTest {
 						"brukere",
 						"kryssreferanser",
 						"opprettetAvNavn",
+						"journalfortAvNavn",
 						"opprettetKildeNavn",
 						"journalpostDokumentInfoRelasjoner")
 				.isEqualTo(journalpost);
@@ -89,6 +90,7 @@ class JournalpostSplitterTest {
 				.satisfies(j -> {
 					assertThat(j.getJournalpostId()).isNull();
 					assertThat(j.getOpprettetAvNavn()).isEqualTo(USER_NAME);
+					assertThat(j.getJournalfortAvNavn()).isNull();
 					assertThat(j.getTilleggsopplysninger()).isEqualTo(journalpost.getTilleggsopplysninger());
 					assertThat(j.getKanalReferanseId()).isEqualTo(request.eksternReferanseId());
 					assertThat(j.getSaksrelasjon()).isNull();
