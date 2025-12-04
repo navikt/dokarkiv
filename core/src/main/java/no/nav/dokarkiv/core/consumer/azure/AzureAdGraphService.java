@@ -5,6 +5,8 @@ import com.azure.identity.ClientSecretCredentialBuilder;
 import com.microsoft.graph.models.DirectoryObject;
 import com.microsoft.graph.models.Entity;
 import com.microsoft.graph.models.User;
+import com.microsoft.graph.models.odataerrors.MainError;
+import com.microsoft.graph.models.odataerrors.ODataError;
 import com.microsoft.graph.serviceclient.GraphServiceClient;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
@@ -56,33 +58,45 @@ public class AzureAdGraphService {
 
 	@Retryable(noRetryFor = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
 	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId) {
-		List<DirectoryObject> result = graphServiceClient
-				.users()
-				.byUserId(userObjectId)
-				.memberOf()
-				.get(requestConfig -> {
-					requestConfig.queryParameters.filter = "id eq '" + groupObjectId + "'";
-				})
-				.getValue();
+		try {
+			List<DirectoryObject> result = graphServiceClient
+					.users()
+					.byUserId(userObjectId)
+					.memberOf()
+					.get(requestConfig -> {
+						requestConfig.queryParameters.filter = "id eq '" + groupObjectId + "'";
+					})
+					.getValue();
 
-		return result != null && result.stream()
-				.map(Entity::getId)
-				.anyMatch(groupObjectId::equalsIgnoreCase);
+			return result != null && result.stream()
+					.map(Entity::getId)
+					.anyMatch(groupObjectId::equalsIgnoreCase);
+		} catch (ODataError e) {
+			MainError mainError = e.getError();
+			log.error("Auth-feil mot msgraph: {} ; target: {} ; details: {}", mainError.getMessage(), mainError.getTarget(), mainError.getDetails(), e);
+			throw e;
+		}
 	}
 
 	private User getUser(String navIdent) {
-		List<User> users = graphServiceClient.users()
-				.get(requestConfig -> {
-					requestConfig.headers.add("ConsistencyLevel", "eventual");
-					requestConfig.queryParameters.filter = "onPremisesSamAccountName eq '" + navIdent + "'";
-					requestConfig.queryParameters.count = true;
-					requestConfig.queryParameters.select = new String[]{"givenname", "surname"};
-				}).getValue();
+		try {
+			List<User> users = graphServiceClient.users()
+					.get(requestConfig -> {
+						requestConfig.headers.add("ConsistencyLevel", "eventual");
+						requestConfig.queryParameters.filter = "onPremisesSamAccountName eq '" + navIdent + "'";
+						requestConfig.queryParameters.count = true;
+						requestConfig.queryParameters.select = new String[]{"givenname", "surname"};
+					}).getValue();
 
-		if (users.size() != 1) {
-			log.warn("Azure AD finner ikke bruker med ident={}. {}", SafeLoggingUtil.removeUnsafeChars(navIdent), BRUKER_IKKE_FUNNET);
-			return null;
+			if (users.size() != 1) {
+				log.warn("Azure AD finner ikke bruker med ident={}. {}", SafeLoggingUtil.removeUnsafeChars(navIdent), BRUKER_IKKE_FUNNET);
+				return null;
+			}
+			return users.get(0);
+		} catch (ODataError e) {
+			MainError mainError = e.getError();
+			log.error("Auth-feil mot msgraph: {} ; target: {} ; details: {}", mainError.getMessage(), mainError.getTarget(), mainError.getDetails(), e);
+			throw e;
 		}
-		return users.get(0);
 	}
 }
