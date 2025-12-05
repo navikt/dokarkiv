@@ -470,6 +470,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "testnav-dolly-proxy-trygdeetaten",
+      "namespace": "dolly",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "joarkadmin-q1",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
