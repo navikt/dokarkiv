@@ -47,6 +47,11 @@
       "app": "pensjon-selvbetjening-soknad-alder-backend-q0",
       "namespace": "pensjonselvbetjening",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "testnav-dolly-proxy-trygdeetaten",
+      "namespace": "dolly",
+      "cluster": "dev-fss"
     }
   ]
 }
