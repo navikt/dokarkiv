@@ -601,12 +601,6 @@
       "cluster": "prod-fss"
     },
     {
-      "app": "fpfordel",
-      "namespace": "teamforeldrepenger",
-      "cluster": "prod-fss",
-      "roles": ["finn_mottatte_journalposter"]
-    },
-    {
       "app": "fpsoknad",
       "namespace": "teamforeldrepenger",
       "cluster": "prod-gcp"
@@ -614,7 +608,8 @@
     {
       "app": "fpmottak",
       "namespace": "teamforeldrepenger",
-      "cluster": "prod-gcp"
+      "cluster": "prod-gcp",
+      "roles": ["finn_mottatte_journalposter"]
     },
     {
       "app": "fpinntektsmelding",
