@@ -393,6 +393,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "dp-meldekortregister",
+      "namespace": "teamdagpenger",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "dp-mottak",
       "namespace": "teamdagpenger",
       "cluster": "prod-gcp"
