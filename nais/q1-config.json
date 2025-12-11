@@ -610,6 +610,11 @@
       "app": "ekspertbistand-backend",
       "namespace": "fager",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "translatore-backend",
+      "namespace": "ki-oversetter",
+      "cluster": "dev-gcp"
     }
   ]
 }
