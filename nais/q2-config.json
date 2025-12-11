@@ -710,6 +710,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "superhelt",
+      "namespace": "historisk",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "journey",
       "namespace": "tsm",
       "cluster": "dev-gcp"
