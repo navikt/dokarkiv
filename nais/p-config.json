@@ -719,6 +719,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "saas-proxy",
+      "namespace": "platforce",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "rpa-nos-gosys",
       "namespace": "team-rpa",
       "cluster": "prod-fss"
