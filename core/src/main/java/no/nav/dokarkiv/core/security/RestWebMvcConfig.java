@@ -62,6 +62,7 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
 		registry.addInterceptor(new JoarkVedlikeholdTokenClaimOnlyInterceptor(dokarkivProperties.getJoarkVedlikeholdGroupId()))
 				.addPathPatterns(
+						"/rest/journalpostapi/v1/bestillSletting",
 						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settUkjentBruker",
 						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settStatusUtgår",
 						"/rest/journalpostapi/v1/journalpost/*/oppdaterJournalstatus",

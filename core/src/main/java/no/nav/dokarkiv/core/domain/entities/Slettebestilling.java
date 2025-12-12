@@ -21,6 +21,7 @@ import no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
@@ -32,12 +33,13 @@ import static jakarta.persistence.GenerationType.SEQUENCE;
 @Table(name = "t_slettebestilling")
 public class Slettebestilling extends AbstractPersistentVersionedDomainObjectWithKilde {
 
+	public static final int SLETTEBESTILLING_BEGRUNNELSE_MAX_LENGTH = 512;
 	private static final String SLETTEBESTILLING_SEQUENCE = "slettebestilling_seq";
 	private static final String DATABASE_SLETTEBESTILLING_SEQUENCE = "t_slettebestilling_seq";
 
 	@Id
 	@GeneratedValue(strategy = SEQUENCE, generator = SLETTEBESTILLING_SEQUENCE)
-	@SequenceGenerator(name = SLETTEBESTILLING_SEQUENCE, sequenceName = DATABASE_SLETTEBESTILLING_SEQUENCE, initialValue = 200000000, allocationSize = 1)
+	@SequenceGenerator(name = SLETTEBESTILLING_SEQUENCE, sequenceName = DATABASE_SLETTEBESTILLING_SEQUENCE)
 	@Column(name = "slettebestilling_id", nullable = false)
 	private long slettebestillingId;
 	@Enumerated(EnumType.STRING)
@@ -52,7 +54,7 @@ public class Slettebestilling extends AbstractPersistentVersionedDomainObjectWit
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_slettebestilling_arsak", nullable = false)
 	private SlettebestillingArsakCode slettebestillingArsak;
-	@Column(name = "begrunnelse")
+	@Column(name = "begrunnelse", length = SLETTEBESTILLING_BEGRUNNELSE_MAX_LENGTH)
 	private String begrunnelse;
 	@Column(name = "dokument_info_id")
 	private Long dokumentInfoId;
@@ -61,7 +63,12 @@ public class Slettebestilling extends AbstractPersistentVersionedDomainObjectWit
 	@Column(name = "dato_utfores")
 	private LocalDate datoUtfores;
 	@Column(name = "dato_utfort")
-	private Instant datoUtfort;
+	private LocalDateTime datoUtfort;
+	@Column(name = "opprettet_av_navn", length = 512)
+	private String opprettetAvNavn;
+	@Column(name = "endret_av_navn", length = 512)
+	private String endretAvNavn;
+
 
 	@Override
 	public Long getId() {

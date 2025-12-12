@@ -11,53 +11,48 @@ public record SlettebestillingRequest(
 
 		@Schema(
 				description = """
-					Type slette-bestilling. Må være en av DOKUMENT, DOKUMENTER_PA_SAK, eller SAK
+					Type bestilling. En av følgende: DOKUMENT.
 					""",
 				requiredMode = REQUIRED,
 				example = "DOKUMENT"
 		)
-		SlettebestillingTypeCode slettebestillingType,
+		String slettebestillingType,
 
 		@Schema(
 				description = """
-					DokumentInfoId for dokument som skal slettes. Påkrevd om slettebestillingtype = DOKUMENT. Ellers skal den ikke settes.
+					DokumentInfoId for dokument som skal slettes. Settes kun om slettebestillingType = DOKUMENT. Påkrevd om slettebestillingType = DOKUMENT.
 					""",
+				requiredMode = REQUIRED,
 				example = "12345"
 		)
 		Long dokumentInfoId,
 
 		@Schema(
 				description = """
-					Id for sak som skal slettes / sak som har dokumenter som skal slettes. Påkrevd om slettebestillingtype er SAK eller DOKUMENTER_PA_SAK. Ellers skal den ikke settes.
-					""",
-				example = "54321"
-		)
-		Long sakId,
-
-		@Schema(
-				description = """
-					Hjemmel for sletting. POL for sletting hjemlet i Personopplysningsloven, ARK for slettinger hjemlet i Arkivloven.
-					""",
-				requiredMode = REQUIRED,
-				example = "POL"
-		)
-		SlettebestillingHjemmelCode hjemmel,
-
-		@Schema(
-				description = """
-					Årsak for sletting. BEVARINGSTID eller ENKELTSLETTING. 
+					Årsak for slettingen. En av følgende: ENKELTSLETTING.
 					""",
 				requiredMode = REQUIRED,
 				example = "ENKELTSLETTING"
 		)
-		SlettebestillingArsakCode arsak,
+		String arsak,
 
 		@Schema(
 				description = """
-					Begrunnelse for hvorfor slettingen gjøres. Maks 512 tegn.
+					Hjemmel for sletting. En av følgende:
+					 - POL - for sletting hjemlet i Personopplysningsloven
+					 - ARK - for slettinger hjemlet i Arkivloven
 					""",
 				requiredMode = REQUIRED,
-				example = "Dette dokumentet skal slettes fordi..."
+				example = "POL"
+		)
+		String hjemmel,
+
+		@Schema(
+				description = """
+					Begrunnelse for sletting gjøres. Maks 512 tegn. Kan f.eks være referanse til oppgave eller jira-sak.
+					""",
+				requiredMode = REQUIRED,
+				example = "Jira: SLETT-1234"
 		)
 		String begrunnelse
 ) {
