@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingArsakCode;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingHjemmelCode;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode;
@@ -65,5 +66,9 @@ public class Slettebestilling extends AbstractPersistentVersionedDomainObjectWit
 	@Override
 	public Long getId() {
 		return slettebestillingId;
+	}
+
+	public void setOpprettetAvOgChangestamp(String navn) {
+		setChangeStamp(new ChangeStamp(navn));
 	}
 }

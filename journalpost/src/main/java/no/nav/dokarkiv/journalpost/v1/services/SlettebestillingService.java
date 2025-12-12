@@ -90,6 +90,7 @@ public class SlettebestillingService {
 				.datoUtfores(determineDatoUtfores(request))
 				.build();
 		slettebestilling.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		slettebestilling.setOpprettetAvOgChangestamp(MDC.get(MDC_CONSUMER_ID));
 		return slettebestilling;
 	}
 
