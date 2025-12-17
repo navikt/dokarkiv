@@ -767,6 +767,11 @@
       "app": "rpa-nrf-api",
       "namespace": "team-rpa",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "translatore-backend",
+      "namespace": "ki-oversetter",
+      "cluster": "prod-gcp"
     }
   ]
 }
