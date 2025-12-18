@@ -743,7 +743,7 @@
       "app": "tilbakekreving-backend",
       "namespace": "tilbake",
       "cluster": "dev-gcp"
-    }
+    },
     {
       "app": "rpa-nos-robot",
       "namespace": "team-rpa",
