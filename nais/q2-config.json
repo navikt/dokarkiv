@@ -91,12 +91,57 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "kabal-api-neon",
+      "namespace": "klage",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "kabal-api-argon",
+      "namespace": "klage",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "kabal-api-e2e",
+      "namespace": "klage",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "kabin-api",
       "namespace": "klage",
       "cluster": "dev-gcp"
     },
     {
+      "app": "kabin-api-neon",
+      "namespace": "klage",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "kabin-api-argon",
+      "namespace": "klage",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "kabin-api-e2e",
+      "namespace": "klage",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "kabal-document",
+      "namespace": "klage",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "kabal-document-neon",
+      "namespace": "klage",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "kabal-document-argon",
+      "namespace": "klage",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "kabal-document-e2e",
       "namespace": "klage",
       "cluster": "dev-gcp"
     },
@@ -657,7 +702,7 @@
       "app": "fia-dokument-publisering",
       "namespace": "pia",
       "cluster": "dev-gcp"
-    },    
+    },
     {
       "app": "tiltak-vedtaksbrev",
       "namespace": "arbeidsgiver",
