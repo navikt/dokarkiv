@@ -15,6 +15,7 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.ZoneId;
 
@@ -36,5 +37,10 @@ public class CoreConfig {
 		return webClientBuilder.clone()
 				.clientConnector(new ReactorClientHttpConnector(httpClient))
 				.build();
+	}
+
+	@Bean
+	Clock clock() {
+		return Clock.system(ZONEID_NORGE);
 	}
 }

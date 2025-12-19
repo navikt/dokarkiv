@@ -15,12 +15,10 @@ import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 public class JoarkVedlikeholdTokenClaimOnlyInterceptor implements HandlerInterceptor {
 
-	private final HeaderTokenExtractor headerTokenExtractor = new HeaderTokenExtractor();
 	private final String joarkVedlikeholdGroupObjectId;
 
 	public JoarkVedlikeholdTokenClaimOnlyInterceptor(String joarkVedlikeholdGroupObjectId) {
@@ -37,7 +35,7 @@ public class JoarkVedlikeholdTokenClaimOnlyInterceptor implements HandlerInterce
 			return false;
 		}
 
-		String authorizationToken = headerTokenExtractor.getIdToken(request);
+		String authorizationToken = HeaderTokenExtractor.getIdToken(request);
 
 		if (!isMemberOfGroupJoarkVedlikehold(authorizationToken, joarkVedlikeholdGroupObjectId)) {
 			log.error(format("NAV-ansatt har ikke gruppen med objectId=\"%s\" i Entra ID token claims", joarkVedlikeholdGroupObjectId));

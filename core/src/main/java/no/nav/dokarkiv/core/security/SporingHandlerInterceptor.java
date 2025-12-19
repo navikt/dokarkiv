@@ -52,7 +52,6 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 	public static final String ISSUER_RESTSTS = "reststs";
 	private final MeterRegistry meterRegistry;
 	private static final String UKJENT = "UKJENT";
-	private final HeaderTokenExtractor headerTokenExtractor;
 	private final AzureAdFlowSporingHandler azureAdFlowSporingHandler;
 	private final NavSystemkontekstHandler navSystemkontekstHandler;
 	private final NavCombinedBrukerSystemkontekstHandler navCombinedBrukerSystemkontekstHandler;
@@ -64,7 +63,6 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 									 AzureAdGraphService azureAdGraphService) {
 		this.tokenValidationContextHolder = tokenValidationContextHolder;
 		this.meterRegistry = meterRegistry;
-		this.headerTokenExtractor = new HeaderTokenExtractor();
 		this.azureAdFlowSporingHandler = new AzureAdFlowSporingHandler(azureAdGraphService);
 		this.navSystemkontekstHandler = new NavSystemkontekstHandler(azureAdGraphService);
 		this.navCombinedBrukerSystemkontekstHandler = new NavCombinedBrukerSystemkontekstHandler(azureAdGraphService,
@@ -73,8 +71,8 @@ public class SporingHandlerInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		String authorizationToken = headerTokenExtractor.getIdToken(request);
-		String navConsumerToken = headerTokenExtractor.getConsumerToken(request);
+		String authorizationToken = HeaderTokenExtractor.getIdToken(request);
+		String navConsumerToken = HeaderTokenExtractor.getConsumerToken(request);
 		String navUserIdHeader = request.getHeader(NavHeaders.NAV_USER_ID);
 
 		if (isEmpty(authorizationToken)) {
