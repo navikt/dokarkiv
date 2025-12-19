@@ -36,7 +36,7 @@ public class SlettebestillingService {
 	}
 
 	@Transactional
-	public Long bestillSletting(SlettebestillingRequest slettebestillingRequest) {
+	public long bestillSletting(SlettebestillingRequest slettebestillingRequest) {
 		validerSlettebestilling(slettebestillingRequest);
 		Slettebestilling slettebestilling = mapSlettebestilling(slettebestillingRequest);
 		return slettebestillingRepository.persist(slettebestilling).getId();
