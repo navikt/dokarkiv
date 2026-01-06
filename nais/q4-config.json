@@ -45,6 +45,12 @@
       "roles" : ["api_intern"]
     },
     {
+      "app": "brevserver-nais-q4",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss",
+      "roles": ["api_intern_brevserver"]
+    },
+    {
       "app": "testnav-dokarkiv-proxy-trygdeetaten",
       "namespace": "dolly",
       "cluster": "dev-fss"
