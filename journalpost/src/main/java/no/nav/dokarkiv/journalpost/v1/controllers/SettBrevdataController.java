@@ -22,7 +22,7 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.valueOf;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUsername;
 import static no.nav.dokarkiv.journalpost.v1.controllers.SettBrevdataController.INTERN_ROLE_BREVSERVER;
-import static no.nav.dokarkiv.journalpost.v1.validators.SettBrevdataValidator.validate;
+import static no.nav.dokarkiv.journalpost.v1.validators.SettBrevdataValidator.validateRequest;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -49,7 +49,7 @@ public class SettBrevdataController {
 															 @PathVariable String variantFormat,
 															 @RequestBody byte[] brevdata) {
 		createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		validate(contentType, variantFormat, brevdata);
+		validateRequest(contentType, variantFormat, brevdata);
 		log.info("settBrevdata har mottatt kall for å sette brevdata på journalpostId={}, variantFormat={}", journalpostId, variantFormat);
 
 		SettBrevdata settBrevdata = settBrevdataService.settBrevdata(journalpostId, valueOf(variantFormat), brevdata);

@@ -15,7 +15,7 @@ public class SettBrevdataValidator {
 	private static final Set<String> GYLDIGE_CONTENT_TYPES = Set.of(APPLICATION_RTF, APPLICATION_PDF_VALUE);
 	private static final Set<String> GYLDIGE_VARIANT_FORMAT = Set.of(VARIANT_FORMAT_PRODUKSJON, VARIANT_FORMAT_ARKIV);
 
-	public static void validate(String contentType, String variantFormat, byte[] brevdata) {
+	public static void validateRequest(String contentType, String variantFormat, byte[] brevdata) {
 		if (!GYLDIGE_CONTENT_TYPES.contains(contentType)) {
 			throw new UgyldigMediaTypeException("Content-Type header må være en av " + GYLDIGE_CONTENT_TYPES);
 		}
