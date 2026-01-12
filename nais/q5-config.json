@@ -39,6 +39,12 @@
       "roles" : ["api_intern_safintern"]
     },
     {
+      "app": "brevserver-nais-q5",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss",
+      "roles": ["api_intern_brevserver"]
+    },
+    {
       "app": "pensjon-pen-q5",
       "namespace": "pensjon-q5",
       "cluster": "dev-fss"

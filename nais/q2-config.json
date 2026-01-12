@@ -219,6 +219,12 @@
       "roles": ["api_intern_skanning"]
     },
     {
+      "app": "brevserver-nais",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss",
+      "roles": ["api_intern_brevserver"]
+    },
+    {
       "app": "padm2",
       "namespace": "teamsykefravr",
       "cluster": "dev-gcp"

@@ -126,6 +126,12 @@
       "roles": ["api_intern"]
     },
     {
+      "app": "brevserver-nais",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "prod-fss",
+      "roles": ["api_intern_brevserver"]
+    },
+    {
       "app": "arenaondemandtojoark",
       "namespace": "teamdokumenthandtering",
       "cluster": "prod-fss"

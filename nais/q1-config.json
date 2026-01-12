@@ -132,6 +132,12 @@
       "roles": ["api_intern_sikkerhetsnivaa"]
     },
     {
+      "app": "brevserver-nais-q1",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss",
+      "roles": ["api_intern_brevserver"]
+    },
+    {
       "app": "arenaondemandtojoark-q1",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"

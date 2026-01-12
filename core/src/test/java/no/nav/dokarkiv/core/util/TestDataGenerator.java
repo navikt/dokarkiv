@@ -237,6 +237,28 @@ public class TestDataGenerator {
 		return journalpost;
 	}
 
+	// Opprettes for brevserver brev av pensjon
+	public static Journalpost createReservertPensjonJournalpost(String arkivFilUuid, String produksjonFilUuid) {
+		Journalpost journalpost = Journalpost.builder()
+				.journalposttype(JournalpostTypeCode.U)
+				.journalstatus(JournalStatusCode.D)
+				.journalForendeEnhetId(JOURNALFOERENDE_ENHET)
+				.innhold(INNHOLD)
+				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
+				.dokumentDato(LocalDateTime.now())
+				.opprettetAvNavn(OPPRETTET_AV_NAVN)
+				.endretAvNavn(ENDRET_AV_NAVN)
+				.fagomrade(PEN)
+				.build();
+
+		journalpost.addBruker(createBruker());
+		journalpost.setSaksrelasjon(createPsakSaksrelasjon());
+		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+
+		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost, createUnderRedigeringPensjonDokumentInfo(arkivFilUuid, produksjonFilUuid)));
+		return journalpost;
+	}
+
 	public static Map<String, String> createTilleggsopplysninger() {
 		Map<String, String> tilleggsopplysninger = new HashMap<>();
 		tilleggsopplysninger.put(TILLEGGOPPLYSNINGER_KEY, TILLEGGOPPLYSNINGER_VAL);
@@ -415,6 +437,29 @@ public class TestDataGenerator {
 		return dokumentInfo;
 	}
 
+	// Opprettes for brevserver brev av pensjon
+	public static DokumentInfo createUnderRedigeringPensjonDokumentInfo(String arkivFilUuid, String produksjonFilUuid) {
+		DokumentInfo dokumentInfo = DokumentInfo.builder()
+				.dokumentstatus(DokumentStatusCode.UNDER_REDIGERING)
+				.tittel(DOKUMENT_INFO_TITTEL)
+				.brevkode(BREVKODE)
+				.kassert(false)
+				.kategori(DokumentKategoriCode.B)
+				.build();
+		if (produksjonFilUuid != null) {
+			FilDetaljer produksjonFilDetaljer = createFildetaljerOgFil(dokumentInfo, FilTypeCode.RTF, VariantFormatCode.PRODUKSJON, produksjonFilUuid, null);
+			produksjonFilDetaljer.setEndretKildeNavn("PP01");
+			dokumentInfo.addFilDetaljer(produksjonFilDetaljer);
+		}
+		if (arkivFilUuid != null) {
+			FilDetaljer arkivFilDetaljer = createFildetaljerOgFil(dokumentInfo, FilTypeCode.PDF, VariantFormatCode.ARKIV, arkivFilUuid, null);
+			arkivFilDetaljer.setEndretKildeNavn("PP01");
+			dokumentInfo.addFilDetaljer(arkivFilDetaljer);
+		}
+		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+		return dokumentInfo;
+	}
+
 	public static SkannetInnhold createSkannetInnhold() {
 		SkannetInnhold skannetInnhold = SkannetInnhold.builder()
 				.vedleggInnhold(SKANNET_INNHOLD_TITTEL)
@@ -425,23 +470,23 @@ public class TestDataGenerator {
 	}
 
 	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode) {
-		return createFildetaljerOgFil(dokumentInfo, variantFormatCode, FilDetaljer.generateUuid(), FIL_NAVN);
+		return createFildetaljerOgFil(dokumentInfo, FilTypeCode.PDF, variantFormatCode, FilDetaljer.generateUuid(), FIL_NAVN);
 	}
 
 	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, String uuid) {
-		return createFildetaljerOgFil(dokumentInfo, variantFormatCode, uuid, FIL_NAVN);
+		return createFildetaljerOgFil(dokumentInfo, FilTypeCode.PDF, variantFormatCode, uuid, FIL_NAVN);
 	}
 
 	public static FilDetaljer createFildetaljerOgFilMedFilnavn(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, String filnavn) {
-		return createFildetaljerOgFil(dokumentInfo, variantFormatCode, FilDetaljer.generateUuid(), filnavn);
+		return createFildetaljerOgFil(dokumentInfo, FilTypeCode.PDF, variantFormatCode, FilDetaljer.generateUuid(), filnavn);
 	}
 
-	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, String filUuid, String filnavn) {
+	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, FilTypeCode filTypeCode, VariantFormatCode variantFormatCode, String filUuid, String filnavn) {
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.dokumentInfo(dokumentInfo)
 				.fileContent(FIL)
 				.filnavn(filnavn)
-				.filtype(FilTypeCode.PDF)
+				.filtype(filTypeCode)
 				.filUuid(filUuid)
 				.filstorrelse(String.valueOf(FIL.length))
 				.variantFormat(variantFormatCode)
