@@ -799,6 +799,11 @@
       "app": "rpa-nos-robot",
       "namespace": "team-rpa",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "ekspertbistand-backend",
+      "namespace": "fager",
+      "cluster": "dev-gcp"
     }
   ]
 }
