@@ -11,8 +11,8 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
-import no.nav.dokarkiv.journalpost.v1.api.settbrevdata.SettBrevdataResponse;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +20,7 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
 import static no.nav.dokarkiv.journalpost.v1.services.SettBrevdata.Handling.INGEN;
@@ -63,6 +64,7 @@ public class SettBrevdataService {
 			return SettBrevdata.from(filDetaljer, INGEN);
 		}
 
+		filDetaljer.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		filDetaljer.setFileContent(brevdata);
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 		if (dokumentFilEksisterer) {
