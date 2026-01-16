@@ -448,12 +448,10 @@ public class TestDataGenerator {
 				.build();
 		if (produksjonFilUuid != null) {
 			FilDetaljer produksjonFilDetaljer = createFildetaljerOgFil(dokumentInfo, FilTypeCode.RTF, VariantFormatCode.PRODUKSJON, produksjonFilUuid, null);
-			produksjonFilDetaljer.setEndretKildeNavn("PP01");
 			dokumentInfo.addFilDetaljer(produksjonFilDetaljer);
 		}
 		if (arkivFilUuid != null) {
 			FilDetaljer arkivFilDetaljer = createFildetaljerOgFil(dokumentInfo, FilTypeCode.PDF, VariantFormatCode.ARKIV, arkivFilUuid, null);
-			arkivFilDetaljer.setEndretKildeNavn("PP01");
 			dokumentInfo.addFilDetaljer(arkivFilDetaljer);
 		}
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
