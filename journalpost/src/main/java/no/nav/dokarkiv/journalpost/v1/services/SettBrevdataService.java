@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
+import no.nav.dokarkiv.core.sporing.SporingPopulator;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,8 @@ import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
 import static no.nav.dokarkiv.journalpost.v1.services.SettBrevdata.Handling.INGEN;
@@ -34,13 +37,16 @@ public class SettBrevdataService {
 	private final JournalpostRepository journalpostRepository;
 	private final DokumentFilRepository dokumentFilRepository;
 	private final DokumentFilerDelegate dokumentFilerDelegate;
+	private final SporingPopulator sporingPopulator;
 
 	public SettBrevdataService(JournalpostRepository journalpostRepository,
 							   DokumentFilRepository dokumentFilRepository,
-							   DokumentFilerDelegate dokumentFilerDelegate) {
+							   DokumentFilerDelegate dokumentFilerDelegate,
+							   SporingPopulator sporingPopulator) {
 		this.journalpostRepository = journalpostRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.dokumentFilerDelegate = dokumentFilerDelegate;
+		this.sporingPopulator = sporingPopulator;
 	}
 
 	@Transactional
@@ -66,6 +72,7 @@ public class SettBrevdataService {
 
 		filDetaljer.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		filDetaljer.setFileContent(brevdata);
+		sporingPopulator.populateSporingInfo(journalpost, MDC.get(MDC_USER_NAME));
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);
 		if (dokumentFilEksisterer) {
 			return SettBrevdata.from(filDetaljer, OPPDATERT_DOKUMENT);

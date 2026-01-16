@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +34,7 @@ public class SettBrevdataIT extends AbstractJournalpostIT {
 	private static final String BREVSERVER = "itest:teamdokumenthandtering:brevserver";
 	private static final byte[] OPPDATERT_FIL = "Oppdatert dokument".getBytes();
 	private static final String SETT_BREVDATA_PATH = "settBrevdata";
+	public static final String ENDRET_AV_BREVSERVER = "teamdokumenthandtering:brevserver";
 
 	@Test
 	void shouldSettBrevdataForArkiv() {
@@ -51,6 +53,7 @@ public class SettBrevdataIT extends AbstractJournalpostIT {
 		assertThat(arkivDokumentFil.getFil()).isEqualTo(FIL);
 		DokumentFil produksjonDokumentFil = dokumentFilTestRepository.findByFilUuid(produksjonFilUuid);
 		assertThat(produksjonDokumentFil).isNull();
+		validateJoarkOppdaterJournalLegacyMandatoryFields(journalpostId);
 	}
 
 	@Test
@@ -70,6 +73,7 @@ public class SettBrevdataIT extends AbstractJournalpostIT {
 		assertThat(arkivDokumentFil).isNull();
 		DokumentFil produksjonDokumentFil = dokumentFilTestRepository.findByFilUuid(produksjonFilUuid);
 		assertThat(produksjonDokumentFil.getFil()).isEqualTo(FIL);
+		validateJoarkOppdaterJournalLegacyMandatoryFields(journalpostId);
 	}
 
 	@Test
@@ -93,6 +97,7 @@ public class SettBrevdataIT extends AbstractJournalpostIT {
 		assertThat(arkivDokumentFil).isNull();
 		DokumentFil produksjonDokumentFil = dokumentFilTestRepository.findByFilUuid(produksjonFilUuid);
 		assertThat(produksjonDokumentFil.getFil()).isEqualTo(OPPDATERT_FIL);
+		validateJoarkOppdaterJournalLegacyMandatoryFields(journalpostId);
 	}
 
 	@Test
@@ -152,6 +157,19 @@ public class SettBrevdataIT extends AbstractJournalpostIT {
 		var requestEntity = new HttpEntity<>(FIL, settBrevdataHeaders("application/json"));
 		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath("9876", SETT_BREVDATA_PATH, VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(UNSUPPORTED_MEDIA_TYPE);
+	}
+
+	private void validateJoarkOppdaterJournalLegacyMandatoryFields(Long journalpostId) {
+		Journalpost journalpost = journalpostTestRepository.findById(journalpostId).orElseThrow(JournalpostIkkeFunnetException::new);
+
+		assertThat(journalpost.getEndretAvNavn()).isEqualTo(ENDRET_AV_BREVSERVER);
+		assertThat(journalpost.getEndretKildeNavn()).isEqualTo(ENDRET_AV_BREVSERVER);
+		assertThat(journalpost.getSaksrelasjon().getEndretAvNavn()).isEqualTo(ENDRET_AV_BREVSERVER);
+		assertThat(journalpost.getSaksrelasjon().getEndretKildeNavn()).isEqualTo(ENDRET_AV_BREVSERVER);
+		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> {
+			assertThat(journalpostDokumentInfoRelasjon.getDokumentInfo().getEndretAvNavn()).isEqualTo(ENDRET_AV_BREVSERVER);
+			assertThat(journalpostDokumentInfoRelasjon.getDokumentInfo().getEndretKildeNavn()).isEqualTo(ENDRET_AV_BREVSERVER);
+		});
 	}
 
 	private HttpHeaders settBrevdataHeaders() {
