@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Operation(
-		summary = "Oppretter en journalpost i fagarkivet, med eller uten dokumenter"
+		summary = "Oppretter en journalpost med dokumenter i fagarkivet"
 )
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "201", description = "Journalpost opprettet"),
