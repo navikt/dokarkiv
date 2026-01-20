@@ -48,6 +48,11 @@
       "app": "testnav-dokarkiv-proxy-trygdeetaten",
       "namespace": "dolly",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "testnav-dolly-proxy-trygdeetaten",
+      "namespace": "dolly",
+      "cluster": "dev-fss"
     }
   ]
 }
