@@ -251,9 +251,9 @@ public class ArkiverOgJournalfoerRestController {
 					name = "forsoekFerdigstill",
 					description = """
 							Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Når journalposten ferdigstilles, blir den låst for senere endringer.
-														
+							
 							Dersom ferdigstilling ikke lykkes, returnerer tjenesten journalpostFerdigstilt=false
-														
+							
 							Journalposten blir opprettet i alle tilfeller, men kan bare ferdigstilles dersom (minst) følgende er satt på input:
 							* bruker
 							* sak
@@ -263,7 +263,7 @@ public class ArkiverOgJournalfoerRestController {
 							* avsenderMottaker.navn
 							* tittel på journalpostnivå
 							* tittel på alle dokumentene
-														
+							
 							NB: Dersom dokumentene skal være mulig å distribuere via Dokdist, eller skal kunne vises til brukeren på nav.no, må i tillegg avsenderMottaker.id og avsenderMottaker.idType settes.
 							""",
 					schema = @Schema(type = "boolean", allowableValues = {"true", "false"})
