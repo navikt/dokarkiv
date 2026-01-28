@@ -8,7 +8,9 @@ import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
 import no.nav.dokarkiv.safintern.SafinternConstants;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -22,13 +24,15 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendin
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 public class JournalpostIT extends AbstractSafinternTest {
 
 	@Test
-	void shouldGetJournalpostByJournalpostId() {
+	void shouldGetJournalpostByJournalpostId() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
 		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
@@ -43,7 +47,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(journalpostIdPath(actualJournalpost.getJournalpostId()), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
-		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse("/journalpost/journalpost-response.json", persistedJournalpost));
+		assertEquals(responseEntity.getBody(), mapStringResponse("/journalpost/journalpost-response.json", persistedJournalpost), NON_EXTENSIBLE);
 	}
 
 	@Test
@@ -63,7 +67,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 	}
 
 	@Test
-	void shouldGetJournalpostByEksternReferanseId() {
+	void shouldGetJournalpostByEksternReferanseId() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
 		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
@@ -78,11 +82,12 @@ public class JournalpostIT extends AbstractSafinternTest {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(eksternReferanseIdPath(KANAL_REFERANSE_ID), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
-		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse("/journalpost/journalpost-response.json", persistedJournalpost));
+		assertEquals(responseEntity.getBody(), mapStringResponse("/journalpost/journalpost-response.json", persistedJournalpost), NON_EXTENSIBLE);
 	}
 
+
 	@Test
-	void shouldGetJournalpostByIdAndDokumentInfoId() {
+	void shouldGetJournalpostByIdAndDokumentInfoId() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
 		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
@@ -97,7 +102,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(journalpostIdDokumentInfoIdPath(actualJournalpost.getJournalpostId(), dokumentInfoId), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
-		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse("/journalpost/journalpost-dokument-response.json", persistedJournalpost));
+		assertEquals(responseEntity.getBody(), mapStringResponse("/journalpost/journalpost-dokument-response.json", persistedJournalpost), NON_EXTENSIBLE);
 	}
 
 	/**

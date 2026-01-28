@@ -8,7 +8,9 @@ import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
 import no.nav.dokarkiv.safintern.SafinternConstants;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -24,6 +26,8 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createHoveddokumentRelasjonGjenbruktDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -31,7 +35,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 
 	@Test
-	void shouldGetJournalposterTilknyttetDokumentInfoId() {
+	void shouldGetJournalposterTilknyttetDokumentInfoId() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
 		Journalpost opprinneligJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
@@ -53,7 +57,7 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(tilknyttedeJournalposterPath(dokumentInfoId), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
-		assertThat(responseEntity.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(persistedJournalpost, gjenbrukendeJournalpost, classpathResourceToString("/tilknyttetjournalpost/journalpost-dokumenter-response.json")));
+		assertEquals(responseEntity.getBody(), mapStringResponse(persistedJournalpost, gjenbrukendeJournalpost, classpathResourceToString("/tilknyttetjournalpost/journalpost-dokumenter-response.json")), NON_EXTENSIBLE);
 	}
 
 	@Test
