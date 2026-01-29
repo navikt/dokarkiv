@@ -11,7 +11,10 @@ import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
 import no.nav.dokarkiv.safintern.KeysetPageSerializerDeserializer;
 import no.nav.dokarkiv.safintern.views.PaginatedAnyViewForTest;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -33,6 +36,8 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
 
 public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	private static final String FINNJOURNALPOSTER_STATUS = "/rest/internal/safintern/finnjournalposterstatus";
@@ -47,7 +52,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	}
 
 	@Test
-	public void shouldPaginateResultsCoherentlyAndIdempotently() {
+	public void shouldPaginateResultsCoherentlyAndIdempotently() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
 		Journalpost utgaattJournalpost1 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
@@ -66,19 +71,19 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		ResponseEntity<String> responseAll = finnJournalposterStatusRest(finnJournalposterAllStatusRequest);
 
 		assertThat(responseAll.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(responseAll.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost1, utgaattJournalpost2, classpathResourceToString("/journalstatus/journalpost-journalstatus-response-2-journalposter.json"), 2, 2, 1, 1, ""));
+		assertEquals(responseAll.getBody(), mapStringResponse(utgaattJournalpost1, utgaattJournalpost2, classpathResourceToString("/journalstatus/journalpost-journalstatus-response-2-journalposter.json"), 2, 2, 1, 1, ""), NON_EXTENSIBLE);
 
 		FinnJournalposterStatusRequest finnJournalposterStatusPage1Request = createRequest(JournalStatusCode.U, 1, null);
 		ResponseEntity<String> responsePage1 = finnJournalposterStatusRest(finnJournalposterStatusPage1Request);
 
 		assertThat(responsePage1.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(responsePage1.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost2, null, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2, 1, 2, null));
+		assertEquals(responsePage1.getBody(), mapStringResponse(utgaattJournalpost2, null, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2, 1, 2, null), NON_EXTENSIBLE);
 
 		FinnJournalposterStatusRequest finnJournalposterStatusPage2Request = createRequest(JournalStatusCode.U, 1, generateNextPage(1, utgaattJournalpost2));
 		ResponseEntity<String> responsePage2 = finnJournalposterStatusRest(finnJournalposterStatusPage2Request);
 
 		assertThat(responsePage2.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(responsePage2.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost1, null, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2, 2, 2, ""));
+		assertEquals(responsePage2.getBody(), mapStringResponse(utgaattJournalpost1, null, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2, 2, 2, ""), NON_EXTENSIBLE);
 	}
 
 	@Test
@@ -138,7 +143,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 
 
 	@Test
-	public void shouldFindJournalpostWithJournalstatusU() {
+	public void shouldFindJournalpostWithJournalstatusU() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
 		Journalpost utgaattJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
@@ -155,11 +160,11 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		ResponseEntity<String> response = finnJournalposterStatusRest(finnJournalposterStatusRequestTo);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(utgaattJournalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json")));
+		assertEquals(response.getBody(), mapStringResponse(utgaattJournalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json")), NON_EXTENSIBLE);
 	}
 
 	@Test
-	public void shouldFindJournalpostWithJournalstatusUB() {
+	public void shouldFindJournalpostWithJournalstatusUB() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
 		Journalpost ukjentbrukerJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
@@ -176,11 +181,11 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		var response = finnJournalposterStatusRest(finnJournalposterStatusRequestTo);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(ukjentbrukerJournalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json")));
+		assertEquals(response.getBody(), mapStringResponse(ukjentbrukerJournalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json")), NON_EXTENSIBLE);
 	}
 
 	@Test
-	public void shouldReturnVedleggOrderedByRekkefoelgeAndRelasjonId() {
+	public void shouldReturnVedleggOrderedByRekkefoelgeAndRelasjonId() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
 		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
@@ -196,7 +201,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		ResponseEntity<String> response = finnJournalposterStatusRest(finnJournalposterStatusRequestTo);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getBody()).isEqualToIgnoringWhitespace(mapStringResponse(journalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-4-vedlegg-response.json")));
+		assertEquals(response.getBody(), mapStringResponse(journalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-4-vedlegg-response.json")), NON_EXTENSIBLE);
 	}
 
 	private FinnJournalposterStatusRequest createRequest(JournalStatusCode journalStatusCode) {
