@@ -375,22 +375,12 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "syfosmsak",
-      "namespace": "teamsykmelding",
-      "cluster": "dev-gcp"
-    },
-    {
       "app": "pale-2-sak",
       "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
     },
     {
       "app": "syfosmpapirmottak",
-      "namespace": "teamsykmelding",
-      "cluster": "dev-gcp"
-    },
-    {
-      "app": "smregistrering-backend",
       "namespace": "teamsykmelding",
       "cluster": "dev-gcp"
     },
