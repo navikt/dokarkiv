@@ -763,6 +763,11 @@
       "app": "translatore-backend",
       "namespace": "ki-oversetter",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "ekspertbistand-backend",
+      "namespace": "fager",
+      "cluster": "prod-gcp"
     }
   ]
 }
