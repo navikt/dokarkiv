@@ -720,6 +720,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "lydia-api",
+      "namespace": "pia",
+      "cluster": "dev-gcp"
+    },    
+    {
       "app": "tiltak-vedtaksbrev",
       "namespace": "arbeidsgiver",
       "cluster": "dev-gcp"
