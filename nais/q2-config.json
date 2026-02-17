@@ -370,6 +370,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "gjenlevende-bs-sak",
+      "namespace": "etterlatte",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "spinnsyn-arkivering",
       "namespace": "flex",
       "cluster": "dev-gcp"
