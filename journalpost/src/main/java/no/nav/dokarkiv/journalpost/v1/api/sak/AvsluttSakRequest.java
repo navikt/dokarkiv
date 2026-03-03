@@ -64,6 +64,7 @@ public class AvsluttSakRequest {
 					* HELT
 					* UNG_SAK
 					* REMEDY
+					* EKSPERTBISTAND
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",

@@ -65,6 +65,7 @@ public class Sak {
 					* HELT
 					* UNG_SAK
 					* REMEDY
+					* EKSPERTBISTAND
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",
@@ -76,7 +77,7 @@ public class Sak {
 	@Schema(
 			description = """
 					Saksnummeret i PSAK eller GSAK/SAK. Skal kun settes dersom sakstype = ARKIVSAK. Feltet må være et numerisk heltall.
-					
+
 					Feltet skal kun brukes etter avtale.
 					"""
 	)

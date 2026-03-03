@@ -61,6 +61,7 @@ public class GjenaapneSakRequest {
 					* HELT
 					* UNG_SAK
 					* REMEDY
+					* EKSPERTBISTAND
 					""",
 			example = "AO01", requiredMode = REQUIRED
 	)
