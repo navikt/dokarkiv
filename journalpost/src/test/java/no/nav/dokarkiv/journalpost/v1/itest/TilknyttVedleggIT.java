@@ -61,6 +61,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -190,7 +191,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		//Assert 2 sladdet
 		Journalpost journalpostTilknyttetVedlegg2 = journalpostTestRepository.findById(targetJournalpostId).get();
-		DokumentInfo sourceDokumentInfo2 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		DokumentInfo sourceDokumentInfo2 = sourceJournalpost2.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		DokumentInfo dokumentInfoKopi2 = journalpostTilknyttetVedlegg2.getJournalpostDokumentInfoRelasjoner()
 				.stream()
 				.filter(j -> j.getDokumentInfo().getTilleggsopplysninger().containsKey(TILLEGGOPPLYSNINGER_KEY))
@@ -288,7 +289,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		//Assert 2 sladdet
 		Journalpost journalpostTilknyttetVedlegg2 = journalpostTestRepository.findById(journalpostIdVedlegg).get();
-		DokumentInfo sourceDokumentInfo2 = sourceJournalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		DokumentInfo sourceDokumentInfo2 = sourceJournalpost2.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		DokumentInfo dokumentInfoKopi2 = journalpostTilknyttetVedlegg2.getJournalpostDokumentInfoRelasjoner()
 				.stream()
 				.filter(j -> j.getDokumentInfo().getTilleggsopplysninger().containsKey(TILLEGGOPPLYSNINGER_KEY))
@@ -540,7 +541,8 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		assertEquals(sourceDokumentInfo.getBrevkode(), dokumentInfoKopi.getBrevkode());
 		assertEquals(sourceDokumentInfo.getDokumenttypeId(), dokumentInfoKopi.getDokumenttypeId());
 		assertEquals(sourceDokumentInfo.getBrevgruppe(), dokumentInfoKopi.getBrevgruppe());
-		assertNull(dokumentInfoKopi.getOriginalJournalpost());
+		assertNotNull(dokumentInfoKopi.getOriginalJournalpost());
+		assertEquals(sourceDokumentInfo.getOriginalJournalpost().getJournalpostId(), dokumentInfoKopi.getOriginalJournalpost().getJournalpostId());
 		assertEquals(sourceDokumentInfo.getSensitivt(), dokumentInfoKopi.getSensitivt());
 		assertEquals(sourceDokumentInfo.getKonvertertFraSystem(), dokumentInfoKopi.getKonvertertFraSystem());
 		assertNull(dokumentInfoKopi.getEndretAvNavn());

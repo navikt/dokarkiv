@@ -79,7 +79,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 		headers = createHeadersWithUserAndServiceUserToken();
 		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 	}
-	
+
 	@Test
 	void shouldLastOppVedlegg() {
 		Journalpost journalpost = createJournalpostUnderArbeid();
@@ -110,6 +110,8 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 		assertThat(dokumentInfo.getKategori()).isEqualTo(IS);
 		assertThat(dokumentInfo.getDokumentstatus()).isEqualTo(FERDIGSTILT);
 		assertThat(dokumentInfo.getOpprettetKildeNavn()).isEqualTo(SERVICE_USER_ID);
+		assertThat(dokumentInfo.getOriginalJournalpost()).isNotNull();
+		assertThat(dokumentInfo.getOriginalJournalpost().getJournalpostId()).isEqualTo(journalpostId);
 
 		//Fildetaljer & DokumentFil
 		var fildetaljerListe = dokumentInfo.getFildetaljerListe();
@@ -266,7 +268,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 		Long journalpostId = saveJournalpost(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
-		
+
 		var request = new HttpEntity<>(LAST_OPP_VEDLEGG_REQUEST, headers);
 		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(journalpostId), PATCH, request, String.class);
 
@@ -283,7 +285,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 		Long journalpostId = saveJournalpost(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
-		
+
 		var request = new HttpEntity<>(LAST_OPP_VEDLEGG_REQUEST, headers);
 		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(journalpostId), PATCH, request, String.class);
 
@@ -306,7 +308,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 		Long journalpostId = saveJournalpost(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
-		
+
 		var requestBody = new LastOppVedleggRequest(
 				Dokument.builder()
 						.tittel(TITTEL)

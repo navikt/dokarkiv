@@ -136,7 +136,6 @@ public class TilknyttVedleggService {
 		DokumentInfo dokumentInfoCopy = shallowDokumentInfoCopier.copy(dokumentInfo);
 		dokumentInfoCopy.setOpprettetKildeNavn(consumerId);
 		dokumentInfoCopy.setEndretAvNavn(null);
-		dokumentInfoCopy.setOriginalJournalpost(null);
 		dokumentInfoCopy.getTilleggsopplysninger().put(TILLEGGOPPLYSNINGER_KEY, dokumentInfo.getDokumentInfoId().toString());
 
 		return dokumentInfoCopy;
