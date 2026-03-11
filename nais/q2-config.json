@@ -490,6 +490,16 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "dp-behov-journalforing",
+      "namespace": "teamdagpenger",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "dp-meldekortregister",
+      "namespace": "teamdagpenger",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "dp-rapportering",
       "namespace": "teamdagpenger",
       "cluster": "dev-gcp"
