@@ -97,13 +97,17 @@
       "app": "safselvbetjening-q1",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles" : ["api_intern_safintern"]
+      "roles": [
+        "api_intern_safintern"
+      ]
     },
     {
       "app": "saf-q1",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles" : ["api_intern_safintern"]
+      "roles": [
+        "api_intern_safintern"
+      ]
     },
     {
       "app": "dokmotaltinn",
@@ -129,13 +133,17 @@
       "app": "dokdistdpv-q1",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles": ["api_intern_sikkerhetsnivaa"]
+      "roles": [
+        "api_intern_sikkerhetsnivaa"
+      ]
     },
     {
       "app": "brevserver-nais-q1",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles": ["api_intern_brevserver"]
+      "roles": [
+        "api_intern_brevserver"
+      ]
     },
     {
       "app": "arenaondemandtojoark-q1",
@@ -296,13 +304,17 @@
       "app": "yrkesskade-saksbehandling-backend",
       "namespace": "yrkesskade",
       "cluster": "dev-gcp",
-      "roles": ["finn_mottatte_journalposter"]
+      "roles": [
+        "finn_mottatte_journalposter"
+      ]
     },
     {
       "app": "yrkesskade-sikkerhetsnett",
       "namespace": "yrkesskade",
       "cluster": "dev-gcp",
-      "roles": ["finn_mottatte_journalposter"]
+      "roles": [
+        "finn_mottatte_journalposter"
+      ]
     },
     {
       "app": "k9-punsj",
@@ -339,7 +351,7 @@
       "namespace": "eessibasis",
       "cluster": "dev-fss"
     },
-     {
+    {
       "app": "eux-neessi-q1",
       "namespace": "eessibasis",
       "cluster": "dev-gcp"
@@ -400,11 +412,6 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "dp-mottak",
-      "namespace": "teamdagpenger",
-      "cluster": "dev-gcp"
-    },
-    {
       "app": "dp-rapportering",
       "namespace": "teamdagpenger",
       "cluster": "dev-gcp"
@@ -448,7 +455,9 @@
       "app": "doksikkerhetsnett-q1",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles": ["finn_mottatte_journalposter"]
+      "roles": [
+        "finn_mottatte_journalposter"
+      ]
     },
     {
       "app": "esyfovarsel",
@@ -479,8 +488,12 @@
       "app": "joarkadmin-q1",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
-      "roles": ["api_admin"],
-      "scopes": ["api_admin"]
+      "roles": [
+        "api_admin"
+      ],
+      "scopes": [
+        "api_admin"
+      ]
     },
     {
       "app": "syk-dig-backend",
