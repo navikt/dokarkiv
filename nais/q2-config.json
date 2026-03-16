@@ -669,6 +669,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "fpformidling",
+      "namespace": "teamforeldrepenger",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "fptilbake",
       "namespace": "teamforeldrepenger",
       "cluster": "dev-fss"
