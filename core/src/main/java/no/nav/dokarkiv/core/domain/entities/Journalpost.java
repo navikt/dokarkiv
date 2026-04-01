@@ -198,7 +198,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	@Column(name = "k_skjerming_type", length = 50)
 	@Enumerated(EnumType.STRING)
-	@Setter(AccessLevel.NONE)
 	private SkjermingTypeCode skjermingType;
 
 	@Column(name = "k_innsyn", length = 50)
