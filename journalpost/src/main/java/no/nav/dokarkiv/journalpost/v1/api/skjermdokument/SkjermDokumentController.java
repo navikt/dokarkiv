@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerAngreSkjermDokument;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSkjermDokument;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
@@ -40,6 +41,16 @@ public class SkjermDokumentController {
 			dokumentInfoId, request.hjemmel());
 
 		skjermDokumentService.skjermDokumentMedDokumentInfoId(dokumentInfoId, request.hjemmel());
+		return ResponseEntity.noContent().build();
+	}
+
+	@SwaggerAngreSkjermDokument
+	@PatchMapping("/angre")
+	public ResponseEntity<String> angreSkjermDokument(@PathVariable long dokumentInfoId) {
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		log.info("angreSkjermDokument har mottatt kall om å fjerne skjerming fra dokument med dokumentInfoId={}", dokumentInfoId);
+
+		skjermDokumentService.angreSkjermDokumentMedDokumentInfoId(dokumentInfoId);
 		return ResponseEntity.noContent().build();
 	}
 }

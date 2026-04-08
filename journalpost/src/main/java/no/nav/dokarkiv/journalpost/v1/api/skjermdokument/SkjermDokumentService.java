@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeAngreSkjermingException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.springframework.stereotype.Service;
@@ -68,9 +69,56 @@ public class SkjermDokumentService {
 		log.info("skjermdokument har skjermet dokument med dokumentInfoId={}", dokumentInfoId);
 	}
 
+	@Transactional
+	public void angreSkjermDokumentMedDokumentInfoId(long dokumentInfoId) {
+
+		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
+
+		if (relasjoner.isEmpty()) {
+			throw new DocumentNotFoundException("Fant ikke dokument og dokumentrelasjon for id=%d".formatted(dokumentInfoId));
+		}
+
+		Optional<SkjermingTypeCode> forrigeSkjermingType = relasjoner.stream().map(JournalpostDokumentInfoRelasjon::getSkjermingType).filter(Objects::nonNull).findAny();
+		if (forrigeSkjermingType.isEmpty()) {
+			throw new KanIkkeAngreSkjermingException("Kan ikke angre skjerming for dokument som ikke er skjermet");
+		}
+
+		relasjoner.forEach(relasjon -> relasjon.setSkjermingType(null));
+
+		aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
+			.dokumentInfoId(dokumentInfoId)
+			.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
+			.build(), List.of(ArkivElementEndringTO.builder()
+			.arkivElement("k_skjerming_t")
+			.fraVerdi(forrigeSkjermingType.get().name())
+			.tilVerdi(null)
+			.build()));
+
+		relasjoner.stream()
+			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
+			.map(journalpostRepository::fetchByIdWithJournalpostDokumentInfoRelasjoner)
+
+			.filter(Optional::isPresent)
+			.map(Optional::get)
+
+			.filter(jp -> null != jp.getSkjermingType())
+			.filter(SkjermDokumentService::journalpostHasOnlyRelationsThatAreNotSkjermet)
+			.forEach(journalpost -> {
+				skrivAksjonsloggForJournalpost(journalpost, null);
+				journalpost.setSkjermingType(null);
+			});
+
+		log.info("angreSkjermDokument har fjernet skjerming fra dokument med dokumentInfoId={}", dokumentInfoId);
+	}
+
 	private static boolean journalpostHasOnlyRelationsThatAreSkjermet(Journalpost journalpost) {
 		return journalpost.getJournalpostDokumentInfoRelasjoner().stream()
 			.allMatch(relasjon -> null != relasjon.getSkjermingType());
+	}
+
+	private static boolean journalpostHasOnlyRelationsThatAreNotSkjermet(Journalpost journalpost) {
+		return journalpost.getJournalpostDokumentInfoRelasjoner().stream()
+			.allMatch(relasjon -> null == relasjon.getSkjermingType());
 	}
 
 	private void skrivAksjonsloggForJournalpost(Journalpost journalpost, SkjermDokumentHjemmelCode hjemmelCode) {
