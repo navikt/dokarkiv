@@ -10,7 +10,7 @@ import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
-import no.nav.dokarkiv.core.exceptions.KanIkkeAngreSkjermingException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeOpphevSkjermingException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.springframework.stereotype.Service;
@@ -70,7 +70,7 @@ public class SkjermDokumentService {
 	}
 
 	@Transactional
-	public void angreSkjermDokumentMedDokumentInfoId(long dokumentInfoId) {
+	public void opphevSkjermDokumentMedDokumentInfoId(long dokumentInfoId) {
 
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
 
@@ -80,7 +80,7 @@ public class SkjermDokumentService {
 
 		Optional<SkjermingTypeCode> forrigeSkjermingType = relasjoner.stream().map(JournalpostDokumentInfoRelasjon::getSkjermingType).filter(Objects::nonNull).findAny();
 		if (forrigeSkjermingType.isEmpty()) {
-			throw new KanIkkeAngreSkjermingException("Kan ikke angre skjerming for dokument som ikke er skjermet");
+			throw new KanIkkeOpphevSkjermingException("Kan ikke oppheve skjerming for dokument som ikke er skjermet");
 		}
 
 		relasjoner.forEach(relasjon -> relasjon.setSkjermingType(null));
@@ -108,7 +108,7 @@ public class SkjermDokumentService {
 				journalpost.setSkjermingType(null);
 			});
 
-		log.info("angreSkjermDokument har fjernet skjerming fra dokument med dokumentInfoId={}", dokumentInfoId);
+		log.info("opphevSkjermDokument har fjernet skjerming fra dokument med dokumentInfoId={}", dokumentInfoId);
 	}
 
 	private static boolean journalpostHasOnlyRelationsThatAreSkjermet(Journalpost journalpost) {

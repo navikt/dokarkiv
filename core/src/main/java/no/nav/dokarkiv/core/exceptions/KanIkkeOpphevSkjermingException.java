@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class KanIkkeAngreSkjermingException extends DokarkivFunctionalException {
-	public KanIkkeAngreSkjermingException(String message) {
+public class KanIkkeOpphevSkjermingException extends DokarkivFunctionalException {
+	public KanIkkeOpphevSkjermingException(String message) {
 		super(message);
 	}
 }

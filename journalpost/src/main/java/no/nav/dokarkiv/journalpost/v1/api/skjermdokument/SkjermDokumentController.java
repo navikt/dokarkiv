@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerAngreSkjermDokument;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpphevSkjermDokument;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSkjermDokument;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
@@ -22,7 +22,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 @Slf4j
 @Protected
 @RestController
-@RequestMapping("/rest/journalpostapi/v1/dokumentInfo/{dokumentInfoId}/skjermDokument")
+@RequestMapping("/rest/journalpostapi/v1/dokumentInfo/{dokumentInfoId}")
 public class SkjermDokumentController {
 
 	private final SkjermDokumentService skjermDokumentService;
@@ -32,7 +32,7 @@ public class SkjermDokumentController {
 	}
 
 	@SwaggerSkjermDokument
-	@PatchMapping
+	@PatchMapping("/skjermDokument")
 	public ResponseEntity<String> skjermDokument(
 		@PathVariable long dokumentInfoId,
 		@RequestBody @Valid SkjermDokumentRequest request) {
@@ -44,13 +44,13 @@ public class SkjermDokumentController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@SwaggerAngreSkjermDokument
-	@PatchMapping("/angre")
-	public ResponseEntity<String> angreSkjermDokument(@PathVariable long dokumentInfoId) {
+	@SwaggerOpphevSkjermDokument
+	@PatchMapping("/opphevSkjermDokument")
+	public ResponseEntity<String> opphevSkjermDokument(@PathVariable long dokumentInfoId) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		log.info("angreSkjermDokument har mottatt kall om å fjerne skjerming fra dokument med dokumentInfoId={}", dokumentInfoId);
+		log.info("opphevSkjermDokument har mottatt kall om å fjerne skjerming fra dokument med dokumentInfoId={}", dokumentInfoId);
 
-		skjermDokumentService.angreSkjermDokumentMedDokumentInfoId(dokumentInfoId);
+		skjermDokumentService.opphevSkjermDokumentMedDokumentInfoId(dokumentInfoId);
 		return ResponseEntity.noContent().build();
 	}
 }

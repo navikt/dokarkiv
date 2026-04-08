@@ -22,10 +22,10 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-class AngreSkjermDokumentIT extends AbstractJournalpostIT {
+class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 
 	private static final String SKJERM_DOKUMENT = "skjermDokument";
-	private static final String ANGRE_SKJERM_DOKUMENT = "skjermDokument/angre";
+	private static final String OPPHEV_SKJERM_DOKUMENT = "opphevSkjermDokument";
 
 	@Test
 	void skalFjerneSkjermingFraAlleRelasjoner() {
@@ -42,12 +42,12 @@ class AngreSkjermDokumentIT extends AbstractJournalpostIT {
 		List<JournalpostDokumentInfoRelasjon> relasjonerEtterSkjerming = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
 		assertThat(relasjonerEtterSkjerming).allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.POL);
 
-		angreSkjermDokument(dokumentInfoId);
+		opphevSkjermDokument(dokumentInfoId);
 
 		commitAndStartNewTransaction();
 
-		List<JournalpostDokumentInfoRelasjon> relasjonerEtterAngre = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
-		assertThat(relasjonerEtterAngre).allMatch(r -> r.getSkjermingType() == null);
+		List<JournalpostDokumentInfoRelasjon> relasjonerEtterOpphev = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
+		assertThat(relasjonerEtterOpphev).allMatch(r -> r.getSkjermingType() == null);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
@@ -72,7 +72,7 @@ class AngreSkjermDokumentIT extends AbstractJournalpostIT {
 		Journalpost skjermetJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow();
 		assertThat(skjermetJournalpost.getSkjermingType()).isEqualTo(SkjermingTypeCode.POL);
 
-		angreSkjermDokument(dokumentInfoId);
+		opphevSkjermDokument(dokumentInfoId);
 
 		commitAndStartNewTransaction();
 
@@ -96,7 +96,7 @@ class AngreSkjermDokumentIT extends AbstractJournalpostIT {
 
 		var requestEntity = new HttpEntity<>(null, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		ResponseEntity<String> response = restTemplate.exchange(
-			apiDokumentInfoPath(dokumentInfoId.toString(), ANGRE_SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
+			apiDokumentInfoPath(dokumentInfoId.toString(), OPPHEV_SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
 
 		commitAndStartNewTransaction();
@@ -109,7 +109,7 @@ class AngreSkjermDokumentIT extends AbstractJournalpostIT {
 	void skalReturnereNotFoundNaarDokumentIkkeFinnes() {
 		var requestEntity = new HttpEntity<>(null, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		ResponseEntity<String> response = restTemplate.exchange(
-			apiDokumentInfoPath("1234", ANGRE_SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
+			apiDokumentInfoPath("1234", OPPHEV_SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
 	}
@@ -119,7 +119,7 @@ class AngreSkjermDokumentIT extends AbstractJournalpostIT {
 		var requestEntity = new HttpEntity<>(null, createHeadersWithClientCredentialToken());
 
 		ResponseEntity<String> response = restTemplate.exchange(
-			apiDokumentInfoPath("1", ANGRE_SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
+			apiDokumentInfoPath("1", OPPHEV_SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
 	}
@@ -129,7 +129,7 @@ class AngreSkjermDokumentIT extends AbstractJournalpostIT {
 		var requestEntity = new HttpEntity<>(null, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS));
 
 		ResponseEntity<String> response = restTemplate.exchange(
-			apiDokumentInfoPath("1", ANGRE_SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
+			apiDokumentInfoPath("1", OPPHEV_SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN);
 	}
@@ -142,10 +142,10 @@ class AngreSkjermDokumentIT extends AbstractJournalpostIT {
 		assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
 	}
 
-	private ResponseEntity<String> angreSkjermDokument(Long dokumentInfoId) {
+	private ResponseEntity<String> opphevSkjermDokument(Long dokumentInfoId) {
 		var requestEntity = new HttpEntity<>(null, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		ResponseEntity<String> response = restTemplate.exchange(
-			apiDokumentInfoPath(dokumentInfoId.toString(), ANGRE_SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
+			apiDokumentInfoPath(dokumentInfoId.toString(), OPPHEV_SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
 		return response;
 	}

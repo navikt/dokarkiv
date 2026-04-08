@@ -21,11 +21,11 @@ import java.lang.annotation.Target;
 )
 @ApiResponses(value = {
 	@ApiResponse(responseCode = "204", description = "Skjermingen ble fjernet"),
-	@ApiResponse(responseCode = "400", description = "Dokumentet er ikke skjermet så skjerming kan ikke angres", content = @Content),
+	@ApiResponse(responseCode = "400", description = "Dokumentet er ikke skjermet så skjerming kan ikke oppheves", content = @Content),
 	@ApiResponse(responseCode = "401", description = "Konsument har ikke tilgang til å kalle tjenesten.", content = @Content),
 	@ApiResponse(responseCode = "403", description = "Konsument har ikke tilgang til å kalle tjenesten", content = @Content),
 	@ApiResponse(responseCode = "404", description = "Dokumentet finnes ikke eller er utilgjengelig", content = @Content),
 	@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
 })
-public @interface SwaggerAngreSkjermDokument {
+public @interface SwaggerOpphevSkjermDokument {
 }
