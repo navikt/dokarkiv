@@ -3,7 +3,6 @@ package no.nav.dokarkiv.journalpost.v1.api.skjermdokument;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSkjermDokument;
 import no.nav.security.token.support.core.api.Protected;

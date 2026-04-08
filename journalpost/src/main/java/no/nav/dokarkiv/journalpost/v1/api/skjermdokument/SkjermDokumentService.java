@@ -15,7 +15,10 @@ import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+
+import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
 
 @Slf4j
 @Service
@@ -56,11 +59,11 @@ public class SkjermDokumentService {
 			.filter(Optional::isPresent)
 			.map(Optional::get)
 
-			.filter(jp -> null == jp.getSkjermingType())
 			.filter(SkjermDokumentService::journalpostHasOnlyRelationsThatAreSkjermet)
-			.peek(journalpost -> journalpost.setSkjermingType(skjermingTypeCode))
-			.forEach(journalpost -> skrivAksjonsloggForJournalpost(journalpost, hjemmelCode)
-			);
+			.forEach(journalpost -> {
+				skrivAksjonsloggForJournalpost(journalpost, hjemmelCode);
+				journalpost.setSkjermingType(skjermingTypeCode);
+			});
 
 		log.info("skjermdokument har skjermet dokument med dokumentInfoId={}", dokumentInfoId);
 	}
@@ -73,8 +76,13 @@ public class SkjermDokumentService {
 	private void skrivAksjonsloggForJournalpost(Journalpost journalpost, SkjermDokumentHjemmelCode hjemmelCode) {
 			aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
 				.journalpostId(journalpost.getJournalpostId())
-				.hjemmel(hjemmelCode.name())
+				.hjemmel(enumToString(hjemmelCode))
 				.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
-				.build(), List.of(ArkivElementEndringTO.arkivElementEndringNew("k_skjerming_t", hjemmelCode.asSkjermingTypeCode().name())));
+				.build(),
+				List.of(ArkivElementEndringTO.builder()
+					.arkivElement("k_skjerming_t")
+					.fraVerdi(enumToString(journalpost.getSkjermingType()))
+					.tilVerdi(enumToString(hjemmelCode == null ? null : hjemmelCode.asSkjermingTypeCode()))
+					.build()));
 	}
 }
