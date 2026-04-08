@@ -624,6 +624,11 @@
       "app": "translatore-backend",
       "namespace": "ki-oversetter",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "tiltak-tilsagnsbrev",
+      "namespace": "arbeidsgiver",
+      "cluster": "dev-fss"
     }
   ]
 }

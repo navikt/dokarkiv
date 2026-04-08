@@ -693,12 +693,12 @@
       "app": "lydia-api",
       "namespace": "pia",
       "cluster": "prod-gcp"
-    },    
+    },
     {
       "app": "fia-dokument-publisering",
       "namespace": "pia",
       "cluster": "prod-gcp"
-    },    
+    },
     {
       "app": "tiltak-vedtaksbrev",
       "namespace": "arbeidsgiver",
@@ -778,6 +778,11 @@
       "app": "ekspertbistand-backend",
       "namespace": "fager",
       "cluster": "prod-gcp"
+    },
+    {
+      "app": "tiltak-tilsagnsbrev",
+      "namespace": "arbeidsgiver",
+      "cluster": "prod-fss"
     }
   ]
 }
