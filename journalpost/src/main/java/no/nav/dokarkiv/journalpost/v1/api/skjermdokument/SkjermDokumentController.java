@@ -33,7 +33,7 @@ public class SkjermDokumentController {
 
 	@SwaggerSkjermDokument
 	@PatchMapping("/skjermDokument")
-	public ResponseEntity<String> skjermDokument(
+	public ResponseEntity<Void> skjermDokument(
 		@PathVariable long dokumentInfoId,
 		@RequestBody @Valid SkjermDokumentRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
@@ -46,7 +46,7 @@ public class SkjermDokumentController {
 
 	@SwaggerOpphevSkjermDokument
 	@PatchMapping("/opphevSkjermDokument")
-	public ResponseEntity<String> opphevSkjermDokument(@PathVariable long dokumentInfoId) {
+	public ResponseEntity<Void> opphevSkjermDokument(@PathVariable long dokumentInfoId) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		log.info("opphevSkjermDokument har mottatt kall om å fjerne skjerming fra dokument med dokumentInfoId={}", dokumentInfoId);
 

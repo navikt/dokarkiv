@@ -16,6 +16,8 @@ import java.util.List;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoVedleggRelasjon;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentHjemmelCode.ARK;
+import static no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentHjemmelCode.POL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -49,9 +51,11 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
-			.anyMatch(al -> dokumentInfoId.equals(al.getDokumentInfoId())
-				&& al.getAksjon() == AksjonsTypeCode.ENDRE_SKJERMING
-				&& SkjermDokumentHjemmelCode.POL.name().equals(al.getHjemmel()));
+			.filteredOn(AksjonsLogg::getDokumentInfoId, dokumentInfoId)
+			.filteredOn(AksjonsLogg::getAksjon, AksjonsTypeCode.ENDRE_SKJERMING)
+			.extracting(AksjonsLogg::getHjemmel)
+			.satisfiesExactlyInAnyOrder(
+				hjemmel -> assertThat(hjemmel).isEqualTo(POL.name()));
 	}
 
 	@Test
@@ -62,7 +66,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var request = new SkjermDokumentRequest(SkjermDokumentHjemmelCode.ARK);
+		var request = new SkjermDokumentRequest(ARK);
 		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		ResponseEntity<String> response = restTemplate.exchange(
 			apiDokumentInfoPath(dokumentInfoId.toString(), SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
@@ -76,9 +80,11 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
-			.anyMatch(al -> dokumentInfoId.equals(al.getDokumentInfoId())
-				&& al.getAksjon() == AksjonsTypeCode.ENDRE_SKJERMING
-				&& SkjermDokumentHjemmelCode.ARK.name().equals(al.getHjemmel()));
+			.filteredOn(AksjonsLogg::getDokumentInfoId, dokumentInfoId)
+			.filteredOn(AksjonsLogg::getAksjon, AksjonsTypeCode.ENDRE_SKJERMING)
+			.extracting(AksjonsLogg::getHjemmel)
+			.satisfiesExactlyInAnyOrder(
+				hjemmel -> assertThat(hjemmel).isEqualTo(ARK.name()));
 	}
 
 	@Test
@@ -98,7 +104,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var requestEntity2 = new HttpEntity<>(new SkjermDokumentRequest(SkjermDokumentHjemmelCode.ARK), createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var requestEntity2 = new HttpEntity<>(new SkjermDokumentRequest(ARK), createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		ResponseEntity<String> response2 = restTemplate.exchange(
 			apiDokumentInfoPath(dokumentInfoId.toString(), SKJERM_DOKUMENT), PATCH, requestEntity2, String.class);
 
@@ -111,13 +117,12 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
-			.anyMatch(al -> dokumentInfoId.equals(al.getDokumentInfoId())
-				&& al.getAksjon() == AksjonsTypeCode.ENDRE_SKJERMING
-				&& SkjermDokumentHjemmelCode.POL.name().equals(al.getHjemmel()));
-		assertThat(aksjonsLoggList)
-			.anyMatch(al -> dokumentInfoId.equals(al.getDokumentInfoId())
-				&& al.getAksjon() == AksjonsTypeCode.ENDRE_SKJERMING
-				&& SkjermDokumentHjemmelCode.ARK.name().equals(al.getHjemmel()));
+			.filteredOn(AksjonsLogg::getDokumentInfoId, dokumentInfoId)
+			.filteredOn(AksjonsLogg::getAksjon, AksjonsTypeCode.ENDRE_SKJERMING)
+			.extracting(AksjonsLogg::getHjemmel)
+			.satisfiesExactlyInAnyOrder(
+				hjemmel -> assertThat(hjemmel).isEqualTo(POL.name()),
+				hjemmel -> assertThat(hjemmel).isEqualTo(ARK.name()));
 	}
 
 	@Test
@@ -147,8 +152,11 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
-			.anyMatch(al -> journalpostId.equals(al.getJournalpostId())
-				&& al.getAksjon() == AksjonsTypeCode.ENDRE_SKJERMING);
+			.filteredOn(AksjonsLogg::getDokumentInfoId, dokumentInfoId)
+			.filteredOn(AksjonsLogg::getAksjon, AksjonsTypeCode.ENDRE_SKJERMING)
+			.extracting(AksjonsLogg::getHjemmel)
+			.satisfiesExactlyInAnyOrder(
+				hjemmel -> assertThat(hjemmel).isEqualTo(POL.name()));
 	}
 
 	@Test
@@ -163,7 +171,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var request = new SkjermDokumentRequest(SkjermDokumentHjemmelCode.ARK);
+		var request = new SkjermDokumentRequest(ARK);
 		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		ResponseEntity<String> response = restTemplate.exchange(
 			apiDokumentInfoPath(dokumentInfoId.toString(), SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
@@ -207,8 +215,9 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
-		assertThat(relasjoner).hasSize(2);
-		assertThat(relasjoner).allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.POL);
+		assertThat(relasjoner)
+			.hasSize(2)
+			.allSatisfy(r -> assertThat(r.getSkjermingType()).isEqualTo(SkjermingTypeCode.POL));
 	}
 
 	@Test

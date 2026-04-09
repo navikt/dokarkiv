@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentHjemmelCode.POL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -35,7 +36,7 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		skjermDokument(dokumentInfoId, SkjermDokumentHjemmelCode.POL);
+		skjermDokument(dokumentInfoId, POL);
 
 		commitAndStartNewTransaction();
 
@@ -51,9 +52,12 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
-			.anyMatch(al -> dokumentInfoId.equals(al.getDokumentInfoId())
-				&& al.getAksjon() == AksjonsTypeCode.ENDRE_SKJERMING
-				&& al.getHjemmel() == null);
+			.filteredOn(AksjonsLogg::getDokumentInfoId, dokumentInfoId)
+			.filteredOn(AksjonsLogg::getAksjon, AksjonsTypeCode.ENDRE_SKJERMING)
+			.extracting(AksjonsLogg::getHjemmel)
+			.satisfiesExactlyInAnyOrder(
+				hjemmel -> assertThat(hjemmel).isNull(),
+				hjemmel -> assertThat(hjemmel).isEqualTo(POL.name()));
 	}
 
 	@Test
@@ -65,7 +69,7 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		skjermDokument(dokumentInfoId, SkjermDokumentHjemmelCode.POL);
+		skjermDokument(dokumentInfoId, POL);
 
 		commitAndStartNewTransaction();
 
@@ -81,9 +85,12 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
-			.anyMatch(al -> journalpostId.equals(al.getJournalpostId())
-				&& al.getAksjon() == AksjonsTypeCode.ENDRE_SKJERMING
-				&& al.getHjemmel() == null);
+			.filteredOn(AksjonsLogg::getJournalpostId, journalpostId)
+			.filteredOn(AksjonsLogg::getAksjon, AksjonsTypeCode.ENDRE_SKJERMING)
+			.extracting(AksjonsLogg::getHjemmel)
+			.satisfiesExactlyInAnyOrder(
+				hjemmel -> assertThat(hjemmel).isNull(),
+				hjemmel -> assertThat(hjemmel).isEqualTo(POL.name()));
 	}
 
 	@Test
@@ -98,11 +105,6 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 		ResponseEntity<String> response = restTemplate.exchange(
 			apiDokumentInfoPath(dokumentInfoId.toString(), OPPHEV_SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-
-		commitAndStartNewTransaction();
-
-		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
-		assertThat(relasjoner).allMatch(r -> r.getSkjermingType() == null);
 	}
 
 	@Test

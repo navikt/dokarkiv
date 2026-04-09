@@ -17,7 +17,8 @@ import java.lang.annotation.Target;
 @Operation(
 	summary = """
 	Fjerner skjerming fra et dokument som er skjermet, og alle journalposter dokumentet er knyttet til
-	gitt at de journalpostene ikke har andre skjermede dokumenter"""
+	gitt at de journalpostene ikke har andre skjermede dokumenter
+	"""
 )
 @ApiResponses(value = {
 	@ApiResponse(responseCode = "204", description = "Skjermingen ble fjernet"),
