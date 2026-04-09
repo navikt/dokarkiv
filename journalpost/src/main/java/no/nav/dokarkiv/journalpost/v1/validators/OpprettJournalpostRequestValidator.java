@@ -25,6 +25,7 @@ import java.util.stream.IntStream;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_SIKKERHET;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
@@ -51,7 +52,7 @@ public class OpprettJournalpostRequestValidator {
 	private static final int AKTOERID_LENGTH = 13;
 	private static final int ORGNR_LENGTH = 9;
 	public static final String MASKINELL_JOURNALFOERENDE_ENHET = "9999";
-	public static final Set<String> LOVLIGE_INNSYNSKODER = Set.of(VISES_MASKINELT_GODKJENT.name(), VISES_MANUELT_GODKJENT.name());
+	public static final Set<String> LOVLIGE_INNSYNSKODER = Set.of(VISES_MASKINELT_GODKJENT.name(), VISES_MANUELT_GODKJENT.name(), SKJULES_BRUKERS_SIKKERHET.name());
 
 	private static final String VALIDERER_IKKE_MOT_KODEVERK = "validerer ikke mot kodeverk";
 	private static final Pattern JOURNALFOERENDE_ENHET_PATTERN = Pattern.compile("^\\d{4}$");

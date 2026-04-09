@@ -1110,7 +1110,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = InnsynCode.class, mode = EXCLUDE, names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT"})
+	@EnumSource(value = InnsynCode.class, mode = EXCLUDE, names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT", "SKJULES_BRUKERS_SIKKERHET"})
 	void shouldThrowExceptionIfOverstyrInnsynsreglerIsInvalid(InnsynCode overstyrInnsynsregler) {
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.bruker(Bruker.builder().idType(BrukerIdType.FNR).id(BRUKER_ID_PERSON).build())
@@ -1126,7 +1126,7 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = InnsynCode.class, names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT"})
+	@EnumSource(value = InnsynCode.class, names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT", "SKJULES_BRUKERS_SIKKERHET"})
 	@NullSource
 	void shouldNotThrowExceptionWhenOverstyrInnsynsreglerIsValid(InnsynCode overstyrInnsynsregler) {
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)

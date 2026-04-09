@@ -188,7 +188,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = InnsynCode.class, names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT"})
+	@EnumSource(value = InnsynCode.class, names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT", "SKJULES_BRUKERS_SIKKERHET"})
 	public void happyPathOpprettInngaaendeMedOverstyringAvInnsynsregler(InnsynCode overstyrInnsynsregler) {
 		restStsToken();
 
