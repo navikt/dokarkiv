@@ -407,7 +407,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	@ParameterizedTest
 	@EnumSource(value = InnsynCode.class, mode = INCLUDE, names = {
 			"BRUK_STANDARDREGLER", "VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT",
-			"SKJULES_FEILSENDT", /*"SKJULES_BRUKERS_SIKKERHET",*/ "SKJULES_BRUKERS_ONSKE"
+			"SKJULES_FEILSENDT", "SKJULES_BRUKERS_SIKKERHET", "SKJULES_BRUKERS_ONSKE"
 	})
 	@NullSource
 	public void shouldNotFailIfOverstyrInnsynsreglerIsValid(InnsynCode overstyrInnsynsregler) {
@@ -422,7 +422,7 @@ public class OppdaterFerdigstillJournalpostValidatorTest {
 	@ParameterizedTest
 	@EnumSource(value = InnsynCode.class, mode = EXCLUDE, names = {
 			"BRUK_STANDARDREGLER", "VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT",
-			"SKJULES_FEILSENDT", /*"SKJULES_BRUKERS_SIKKERHET",*/ "SKJULES_BRUKERS_ONSKE"
+			"SKJULES_FEILSENDT", "SKJULES_BRUKERS_SIKKERHET", "SKJULES_BRUKERS_ONSKE"
 	})
 	public void shouldFailIfOverstyrInnsynsreglerIsInvalid(InnsynCode overstyrInnsynsregler) {
 		oppdaterJournalpostRequest = OppdaterJournalpostRequest.builder()

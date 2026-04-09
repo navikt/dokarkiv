@@ -48,6 +48,7 @@ import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode.ORGNR;
+import static no.nav.dokarkiv.core.domain.codes.InnsynCode.SKJULES_BRUKERS_SIKKERHET;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MANUELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJENT;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
@@ -218,8 +219,9 @@ public class OpprettJournalpostApiRequestMapperTest {
 		return Stream.of(
 				Arguments.of(null, null),
 				Arguments.of("VISES_MASKINELT_GODKJENT", VISES_MASKINELT_GODKJENT),
-				Arguments.of("VISES_MANUELT_GODKJENT", VISES_MANUELT_GODKJENT)
-		);
+				Arguments.of("VISES_MANUELT_GODKJENT", VISES_MANUELT_GODKJENT),
+                Arguments.of("SKJULES_BRUKERS_SIKKERHET", SKJULES_BRUKERS_SIKKERHET)
+        );
 	}
 
 	@Test
