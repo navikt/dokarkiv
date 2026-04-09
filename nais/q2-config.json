@@ -36,6 +36,20 @@
   "JOARK_VEDLIKEHOLD_GROUP_ID": "9732f7dd-550f-4aba-b64a-e1db5428604b",
   "AZURE_IAC_RULES": [
     {
+      "app": "azure-token-generator",
+      "namespace": "nais",
+      "cluster": "dev-gcp",
+      "roles" : [
+        "api_admin",
+        "api_intern",
+        "api_intern_brevserver",
+        "api_intern_safintern",
+        "api_intern_sikkerhetsnivaa",
+        "api_intern_skanning",
+        "finn_mottatte_journalposter"
+      ]
+    },
+    {
       "app": "spre-gosys",
       "namespace": "tbd",
       "cluster": "dev-gcp"
@@ -743,7 +757,7 @@
       "app": "lydia-api",
       "namespace": "pia",
       "cluster": "dev-gcp"
-    },    
+    },
     {
       "app": "tiltak-vedtaksbrev",
       "namespace": "arbeidsgiver",
