@@ -420,6 +420,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "k9-sak",
+      "namespace": "k9saksbehandling",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "k9-brukerdialog-prosessering",
       "namespace": "dusseldorf",
       "cluster": "dev-gcp"
