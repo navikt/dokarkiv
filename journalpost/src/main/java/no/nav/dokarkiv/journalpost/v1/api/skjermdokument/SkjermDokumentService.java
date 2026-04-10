@@ -13,12 +13,16 @@ import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeOpphevSkjermingException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
+import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
 
 @Slf4j
@@ -45,7 +49,7 @@ public class SkjermDokumentService {
 			throw new DocumentNotFoundException("Fant ikke dokument og dokumentrelasjon for id=%d".formatted(dokumentInfoId));
 		}
 
-		relasjoner.forEach(relasjon -> relasjon.setSkjermingType(skjermingTypeCode));
+		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, skjermingTypeCode));
 
 		aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
 			.dokumentInfoId(dokumentInfoId)
@@ -62,9 +66,9 @@ public class SkjermDokumentService {
 
 			.filter(SkjermDokumentService::journalpostHasOnlyRelationsThatAreSkjermet)
 			.forEach(journalpost -> {
-				skrivAksjonsloggForJournalpost(journalpost, hjemmelCode);
-				journalpost.setSkjermingType(skjermingTypeCode);
+				oppdaterSkjermingForJournalpost(hjemmelCode, journalpost, skjermingTypeCode);
 			});
+		// TODO: må manuelt legge til sporing av endret_avXXX i relasjon og journalpost
 
 		log.info("skjermdokument har skjermet dokument med dokumentInfoId={}", dokumentInfoId);
 	}
@@ -83,7 +87,7 @@ public class SkjermDokumentService {
 			throw new KanIkkeOpphevSkjermingException("Kan ikke oppheve skjerming for dokument som ikke er skjermet");
 		}
 
-		relasjoner.forEach(relasjon -> relasjon.setSkjermingType(null));
+		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, null));
 
 		aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
 			.dokumentInfoId(dokumentInfoId)
@@ -104,11 +108,15 @@ public class SkjermDokumentService {
 			.filter(jp -> null != jp.getSkjermingType())
 			.filter(SkjermDokumentService::journalpostHasOnlyRelationsThatAreNotSkjermet)
 			.forEach(journalpost -> {
-				skrivAksjonsloggForJournalpost(journalpost, null);
-				journalpost.setSkjermingType(null);
+				oppdaterSkjermingForJournalpost(null, journalpost, null);
 			});
 
 		log.info("opphevSkjermDokument har fjernet skjerming fra dokument med dokumentInfoId={}", dokumentInfoId);
+	}
+
+	private static void oppdaterSkjermingForJournalpostDokumentRelasjon(JournalpostDokumentInfoRelasjon relasjon, SkjermingTypeCode skjermingTypeCode) {
+		relasjon.setSkjermingType(skjermingTypeCode);
+		relasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 
 	private static boolean journalpostHasOnlyRelationsThatAreSkjermet(Journalpost journalpost) {
@@ -119,6 +127,13 @@ public class SkjermDokumentService {
 	private static boolean journalpostHasOnlyRelationsThatAreNotSkjermet(Journalpost journalpost) {
 		return journalpost.getJournalpostDokumentInfoRelasjoner().stream()
 			.allMatch(relasjon -> null == relasjon.getSkjermingType());
+	}
+
+	private void oppdaterSkjermingForJournalpost(SkjermDokumentHjemmelCode hjemmelCode, Journalpost journalpost, SkjermingTypeCode skjermingTypeCode) {
+		skrivAksjonsloggForJournalpost(journalpost, hjemmelCode);
+		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
+		journalpost.setSkjermingType(skjermingTypeCode);
 	}
 
 	private void skrivAksjonsloggForJournalpost(Journalpost journalpost, SkjermDokumentHjemmelCode hjemmelCode) {
