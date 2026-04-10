@@ -1,6 +1,6 @@
 package no.nav.dokarkiv.core.properties;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
@@ -19,7 +19,7 @@ public class DokarkivProperties {
 	private final Endpoints endpoints = new Endpoints();
 	private final EregEndpoint ereg = new EregEndpoint();
 
-	@NotEmpty
+	@NotBlank
 	private String joarkVedlikeholdGroupId;
 
 	@Data
@@ -81,13 +81,13 @@ public class DokarkivProperties {
 		/**
 		 * Url til tjeneste som har azure autorisasjon
 		 */
-		@NotEmpty
+		@NotBlank
 		private String url;
 
 		/**
 		 * Scope til azure client credential flow
 		 */
-		@NotEmpty
+		@NotBlank
 		private String scope;
 	}
 
@@ -97,7 +97,7 @@ public class DokarkivProperties {
 		/**
 		 * URL til Ereg API.
 		 */
-		@NotEmpty
+		@NotBlank
 		private String url;
 
 	}
