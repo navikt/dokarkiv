@@ -721,11 +721,6 @@
     },
     {
       "app": "saas-proxy",
-      "namespace": "teamcrm",
-      "cluster": "prod-gcp"
-    },
-    {
-      "app": "saas-proxy",
       "namespace": "platforce",
       "cluster": "prod-gcp"
     },
