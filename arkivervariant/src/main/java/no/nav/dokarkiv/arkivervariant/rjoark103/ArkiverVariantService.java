@@ -40,8 +40,7 @@ public class ArkiverVariantService {
 
 	public ArkiverVariantResponse arkiverVariant(ArkiverVariantRequest request, String melding, String utfoertAv, String hjemmel) {
 		DokumentInfo dokumentInfo = dokumentInfoRepository.findById(request.getDokumentInfoId())
-				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(format("Kan ikke finne dokumentInfo med dokumentInfoId=%s",
-						request.getDokumentInfoId())));
+				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(request.getDokumentInfoId()));
 
 		sjekkOmVariantFinnes(dokumentInfo, request.getVariant());
 		FilDetaljer filDetaljer = lagreVariantFormat(dokumentInfo, request.getVariant(), request.getFil(), request.getFilnavn(), request.getFilType());

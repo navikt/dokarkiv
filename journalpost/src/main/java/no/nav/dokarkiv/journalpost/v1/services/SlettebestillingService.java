@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.SlettebestillingHjemmelCode;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Slettebestilling;
-import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.SlettebestillingRepository;
 import no.nav.dokarkiv.journalpost.v1.api.SlettebestillingRequest;
@@ -45,7 +45,7 @@ public class SlettebestillingService {
 	private void validerSlettebestilling(SlettebestillingRequest slettebestilling) {
 		SlettebestillingValidator.validerSlettebestilling(slettebestilling);
 		if (!dokumentInfoRepository.existsById(slettebestilling.dokumentInfoId())) {
-			throw new DocumentNotFoundException("Kunne ikke bestille sletting av dokument med Id " + slettebestilling.dokumentInfoId() + " fordi det ikke ble funnet.");
+			throw new DokumentInfoIkkeFunnetException("Kunne ikke bestille sletting av dokument med Id " + slettebestilling.dokumentInfoId() + " fordi det ikke ble funnet.");
 		}
 	}
 

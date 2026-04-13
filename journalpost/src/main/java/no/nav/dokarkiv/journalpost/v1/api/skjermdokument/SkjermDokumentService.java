@@ -9,11 +9,10 @@ import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeOpphevSkjermingException;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
-import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +45,7 @@ public class SkjermDokumentService {
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
 
 		if (relasjoner.isEmpty()) {
-			throw new DocumentNotFoundException("Fant ikke dokument og dokumentrelasjon for id=%d".formatted(dokumentInfoId));
+			throw new DokumentInfoIkkeFunnetException("Fant ikke dokument og dokumentrelasjon for id=%d".formatted(dokumentInfoId));
 		}
 
 		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, skjermingTypeCode));
@@ -68,7 +67,6 @@ public class SkjermDokumentService {
 			.forEach(journalpost -> {
 				oppdaterSkjermingForJournalpost(hjemmelCode, journalpost, skjermingTypeCode);
 			});
-		// TODO: må manuelt legge til sporing av endret_avXXX i relasjon og journalpost
 
 		log.info("skjermdokument har skjermet dokument med dokumentInfoId={}", dokumentInfoId);
 	}
@@ -79,7 +77,7 @@ public class SkjermDokumentService {
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
 
 		if (relasjoner.isEmpty()) {
-			throw new DocumentNotFoundException("Fant ikke dokument og dokumentrelasjon for id=%d".formatted(dokumentInfoId));
+			throw new DokumentInfoIkkeFunnetException("Fant ikke dokument og dokumentrelasjon for id=%d".formatted(dokumentInfoId));
 		}
 
 		Optional<SkjermingTypeCode> forrigeSkjermingType = relasjoner.stream().map(JournalpostDokumentInfoRelasjon::getSkjermingType).filter(Objects::nonNull).findAny();

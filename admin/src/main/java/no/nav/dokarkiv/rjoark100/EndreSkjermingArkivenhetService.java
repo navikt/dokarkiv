@@ -197,14 +197,14 @@ public class EndreSkjermingArkivenhetService {
 
 	private DokumentInfo hentDokumentInfo(Long dokumentInfoId) {
 		return dokumentInfoRepository.findById(dokumentInfoId).orElseThrow(() ->
-				new JournalpostIkkeFunnetException("Fant ikke DokumentInfo med dokumentInfoId=" + dokumentInfoId));
+				new DokumentInfoIkkeFunnetException(dokumentInfoId));
 	}
 
 
 	private FilDetaljer hentFildetaljerByVariantFormat(Long dokumentInfoId, VariantFormatCode variantFormatCode) {
 		return dokumentInfoRepository.findById(dokumentInfoId)
 				.orElseThrow(() ->
-						new DokumentInfoIkkeFunnetException(String.format("Fant ikke dokumentInfo med dokumentInfoId=%s", dokumentInfoId)))
+						new DokumentInfoIkkeFunnetException(dokumentInfoId))
 				.findFilDetaljerByVariantFormatAdmin(variantFormatCode);
 	}
 

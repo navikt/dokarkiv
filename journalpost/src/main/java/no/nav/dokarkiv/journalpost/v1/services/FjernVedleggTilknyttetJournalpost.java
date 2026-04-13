@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostDokumentInfoRelasjonIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
@@ -61,7 +61,7 @@ public class FjernVedleggTilknyttetJournalpost {
 
 	private DokumentInfo hentDokumentInfo(long dokumentId, long journalpostId) {
 		return dokumentInfoRepository.findById(dokumentId)
-				.orElseThrow(() -> new DokumentIkkeFunnetException(format(
+				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(format(
 						"Fant ikke dokument med dokumentId=%s, og kan ikke fjerne dette som vedlegg fra journalpost med journalpostId=%s", dokumentId, journalpostId)));
 	}
 }
