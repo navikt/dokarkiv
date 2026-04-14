@@ -8,8 +8,8 @@ import com.blazebit.persistence.view.EntityViewSetting;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.InvalidFieldRequestedException;
+import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.safintern.KeysetPageSerializerDeserializer;
 import no.nav.dokarkiv.safintern.UgyldigJournalpostQueryStartDatoException;
 import no.nav.dokarkiv.safintern.UgyldigQueryPageSizeException;
@@ -61,7 +61,7 @@ public class SafinternJournalStatusService {
 					currentPage, journalpostViews.getTotalPages(),
 					keysetPageSerializerDeserializer.serializeKeysetPage(journalpostViews.getKeysetPage(), journalpostViews.getTotalPages(), currentPage));
 		} catch (EmptyResultDataAccessException | NoResultException e) {
-			throw new DokumentInfoIkkeFunnetException("Fant ingen Journalposter med status=" + journalstatus);
+			throw new JournalpostIkkeFunnetException("Fant ingen Journalposter med status=" + journalstatus);
 		}
 	}
 

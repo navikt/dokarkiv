@@ -2,7 +2,7 @@ package no.nav.dokarkiv.safintern.hentdokument;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.exceptions.DocumentNotFoundException;
+import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,12 +35,12 @@ class HentDokumentService {
 			} else {
 				String message = "safintern/hentDokument finner metadata og ikke dokument med dokumentInfoId=" + dokumentInfoId + ", variant=" + variant;
 				log.warn(message);
-				throw new DocumentNotFoundException(message);
+				throw new DokumentIkkeFunnetException(message);
 			}
 		} else {
 			String message = "safintern/hentDokument finner ikke dokument med dokumentInfoId=" + dokumentInfoId + ", variant=" + variant;
 			log.info(message);
-			throw new DocumentNotFoundException(message);
+			throw new DokumentIkkeFunnetException(message);
 		}
 	}
 

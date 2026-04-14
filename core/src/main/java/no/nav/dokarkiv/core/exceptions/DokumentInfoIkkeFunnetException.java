@@ -9,6 +9,10 @@ public final class DokumentInfoIkkeFunnetException extends DokarkivFunctionalExc
         super(message);
     }
 
+	public DokumentInfoIkkeFunnetException(long dokumentInfoId) {
+		this("Fant ikke dokumentInfo med dokumentInfoId=%d".formatted(dokumentInfoId));
+	}
+
     public DokumentInfoIkkeFunnetException(String message, Throwable throwable) {
         super(message, throwable);
     }

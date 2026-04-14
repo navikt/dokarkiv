@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.exceptions.DokumentIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.DuplikatVedleggException;
@@ -251,9 +250,9 @@ public class ArkiverOgJournalfoerRestController {
 					name = "forsoekFerdigstill",
 					description = """
 							Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Når journalposten ferdigstilles, blir den låst for senere endringer.
-							
+
 							Dersom ferdigstilling ikke lykkes, returnerer tjenesten journalpostFerdigstilt=false
-							
+
 							Journalposten blir opprettet i alle tilfeller, men kan bare ferdigstilles dersom (minst) følgende er satt på input:
 							* bruker
 							* sak
@@ -263,7 +262,7 @@ public class ArkiverOgJournalfoerRestController {
 							* avsenderMottaker.navn
 							* tittel på journalpostnivå
 							* tittel på alle dokumentene
-							
+
 							NB: Dersom dokumentene skal være mulig å distribuere via Dokdist, eller skal kunne vises til brukeren på nav.no, må i tillegg avsenderMottaker.id og avsenderMottaker.idType settes.
 							""",
 					schema = @Schema(type = "boolean", allowableValues = {"true", "false"})
@@ -345,7 +344,7 @@ public class ArkiverOgJournalfoerRestController {
 			String message = format("Kunne ikke fjerne vedlegg med dokumentinfoId=%s fra journalpost med journalpostId=%s. %s",
 					request.getDokumentId(), journalpostIdParsed, e.getMessage());
 			throw new ResponseStatusException(BAD_REQUEST, message);
-		} catch (JournalpostIkkeFunnetException | DokumentIkkeFunnetException |
+		} catch (JournalpostIkkeFunnetException | DokumentInfoIkkeFunnetException |
 				 JournalpostDokumentInfoRelasjonIkkeFunnetException e) {
 			String message = format("Kunne ikke fjerne vedlegg med dokumentinfoId=%s fra journalpost med journalpostId=%s. %s",
 					request.getDokumentId(), journalpostIdParsed, e.getMessage());

@@ -52,7 +52,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 				createKasserDokumentRequest(dokumentInfoId), createHeadersWithAksjonslogg(AZP_NAME_JOARKADMIN, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId)), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(NOT_FOUND);
-		assertTrue(responseEntity.getBody().contains("Fant ikke dokument med dokumentInfoId=" + dokumentInfoId));
+		assertThat(responseEntity.getBody()).contains("Fant ikke dokumentInfo med dokumentInfoId=" + dokumentInfoId);
 	}
 
 	@Test

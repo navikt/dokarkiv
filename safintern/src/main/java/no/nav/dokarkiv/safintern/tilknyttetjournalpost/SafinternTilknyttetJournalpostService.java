@@ -36,7 +36,7 @@ public class SafinternTilknyttetJournalpostService {
 			}
 			return journalpostViews;
 		} catch (EmptyResultDataAccessException|NoResultException e) {
-			throw new DokumentInfoIkkeFunnetException("Fant ingen DokumentInfo med DokumentInfoId=" + dokumentInfoId);
+			throw new DokumentInfoIkkeFunnetException(dokumentInfoId);
 		}
 	}
 
