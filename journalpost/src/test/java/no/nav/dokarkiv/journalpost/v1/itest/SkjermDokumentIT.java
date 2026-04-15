@@ -81,7 +81,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
 		assertThat(relasjoner)
-			.allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.FEIL)
+			.allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.ARK)
 			.extracting(JournalpostDokumentInfoRelasjon::getEndretKildeNavn)
 			.allSatisfy(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(ENDRET_KILDE_NAVN));
 
@@ -120,7 +120,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
-		assertThat(relasjoner).allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.FEIL);
+		assertThat(relasjoner).allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.ARK);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
