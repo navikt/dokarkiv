@@ -3,7 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.api.skjermdokument;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 
 public enum SkjermDokumentHjemmelCode {
-	ARK(SkjermingTypeCode.FEIL),
+	ARK(SkjermingTypeCode.ARK),
 	POL(SkjermingTypeCode.POL);
 
 	private SkjermingTypeCode skjermingTypeCode;
