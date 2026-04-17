@@ -53,7 +53,7 @@ public class LastOppVedleggService {
 
 		validateJournalpostAndDokument(journalpost, request.dokument());
 
-		var dokumentInfo = opprettDokumentInfo(journalpost, request);
+		var dokumentInfo = opprettDokumentInfoAndResolveOriginalJournalpostId(journalpost, request);
 		var journalpostDokumentInfoRelasjon = opprettJournalpostDokumentInfoRelasjon(journalpost, dokumentInfo, request);
 
 		journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
@@ -68,6 +68,21 @@ public class LastOppVedleggService {
 		populerAksjonslogg(journalpost, dokumentInfo);
 
 		return new LastOppVedleggResponse(dokumentInfo.getDokumentInfoId().toString());
+	}
+
+	private DokumentInfo opprettDokumentInfoAndResolveOriginalJournalpostId(Journalpost journalpost, LastOppVedleggRequest request) {
+		var originalJournalpost = resolveOverrideOriginalJournalpost(journalpost, request.dokument().getOriginalJournalpostId());
+		return opprettDokumentInfo(originalJournalpost, request);
+	}
+
+	private Journalpost resolveOverrideOriginalJournalpost(Journalpost journalpost, Long overridingOriginalJournalpostId) {
+		if (overridingOriginalJournalpostId == null || overridingOriginalJournalpostId.equals(journalpost.getJournalpostId())) {
+			return journalpost;
+		}
+
+		return journalpostRepository.findById(overridingOriginalJournalpostId)
+				.orElseThrow(() -> new JournalpostIkkeFunnetException("Kunne ikke finne journalpost med journalpostId=%s (overstyrt originalJournalpostId) i joark"
+						.formatted(overridingOriginalJournalpostId)));
 	}
 
 	private void populerAksjonslogg(Journalpost journalpost, DokumentInfo dokumentInfo) {

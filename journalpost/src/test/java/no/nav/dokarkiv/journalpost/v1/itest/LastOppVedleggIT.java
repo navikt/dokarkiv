@@ -155,6 +155,95 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	void shouldLastOppVedleggWithOverriddenOriginalJournalpostId() {
+		Journalpost targetJournalpost = saveJournalpost(createJournalpostUnderArbeid());
+		Journalpost overridingOriginalJournalpost = saveJournalpost(createJournalpostUnderArbeid());
+		commitAndStartNewTransaction();
+
+		long overridingOriginalJournalpostId = overridingOriginalJournalpost.getJournalpostId();
+
+		var requestBody = new LastOppVedleggRequest(
+				Dokument.builder()
+						.tittel(TITTEL)
+						.brevkode(BREVKODE)
+						.dokumentvarianter(List.of(DOCUMENT_PDF))
+						.rekkefoelge(1)
+						.originalJournalpostId(overridingOriginalJournalpostId)
+						.build());
+
+		var request = new HttpEntity<>(requestBody, headers);
+		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(targetJournalpost.getJournalpostId()), PATCH, request, LastOppVedleggResponse.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(CREATED);
+
+		var updatedJournalpost = journalpostTestRepository.findById(targetJournalpost.getJournalpostId());
+		assertThat(updatedJournalpost).isPresent();
+		assertThat(updatedJournalpost.get().findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG)).hasSize(1);
+
+		var vedleggRelasjon = updatedJournalpost.get().findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG).iterator().next();
+		assertThat(vedleggRelasjon.getDokumentInfo().getOriginalJournalpost()).isNotNull();
+		assertThat(vedleggRelasjon.getDokumentInfo().getOriginalJournalpost().getJournalpostId())
+				.isEqualTo(overridingOriginalJournalpostId);
+	}
+
+	@Test
+	void shouldLastOppVedleggWhenOverriddenOriginalJournalpostIdEqualsTargetJournalpostId() {
+		Journalpost journalpost = saveJournalpost(createJournalpostUnderArbeid());
+		commitAndStartNewTransaction();
+
+		long journalpostId = journalpost.getJournalpostId();
+
+		var requestBody = new LastOppVedleggRequest(
+				Dokument.builder()
+						.tittel(TITTEL)
+						.brevkode(BREVKODE)
+						.dokumentvarianter(List.of(DOCUMENT_PDF))
+						.rekkefoelge(1)
+						.originalJournalpostId(journalpostId)
+						.build());
+
+		var request = new HttpEntity<>(requestBody, headers);
+		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(journalpostId), PATCH, request, LastOppVedleggResponse.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(CREATED);
+
+		var updatedJournalpost = journalpostTestRepository.findById(journalpostId);
+		assertThat(updatedJournalpost).isPresent();
+		assertThat(updatedJournalpost.get().findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG)).hasSize(1);
+
+		var vedleggRelasjon = updatedJournalpost.get().findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG).iterator().next();
+		assertThat(vedleggRelasjon.getDokumentInfo().getOriginalJournalpost()).isNotNull();
+		assertThat(vedleggRelasjon.getDokumentInfo().getOriginalJournalpost().getJournalpostId())
+				.isEqualTo(journalpostId);
+	}
+
+	@Test
+	void shouldReturnNotFoundWhenOverriddenOriginalJournalpostDoesNotExist() {
+		Journalpost journalpost = saveJournalpost(createJournalpostUnderArbeid());
+		commitAndStartNewTransaction();
+
+		long journalpostId = journalpost.getJournalpostId();
+		long overridingOriginalJournalpostId = 4L;
+
+		var requestBody = new LastOppVedleggRequest(
+			Dokument.builder()
+				.tittel(TITTEL)
+				.brevkode(BREVKODE)
+				.dokumentvarianter(List.of(DOCUMENT_PDF))
+				.rekkefoelge(1)
+				.originalJournalpostId(overridingOriginalJournalpostId)
+				.build());
+
+		var request = new HttpEntity<>(requestBody, headers);
+		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(journalpostId), PATCH, request, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
+		assertThat(response.getBody())
+			.contains("Kunne ikke finne journalpost med journalpostId=%s (overstyrt originalJournalpostId) i joark"
+				.formatted(overridingOriginalJournalpostId));
+	}
+
+	@Test
 	void shouldLastOppVedleggWhenMultipleDokumentvarianter() {
 		Journalpost journalpost = createJournalpostUnderArbeid();
 		Long journalpostId = saveJournalpost(journalpost).getJournalpostId();
