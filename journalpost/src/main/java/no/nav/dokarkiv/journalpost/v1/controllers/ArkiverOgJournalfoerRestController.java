@@ -65,6 +65,8 @@ import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator
 import no.nav.dokarkiv.journalpost.v1.validators.OppdaterDistribusjonsinfoValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValidator;
 import no.nav.security.token.support.core.api.Protected;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
+import no.nav.security.token.support.core.jwt.JwtToken;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
@@ -83,6 +85,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
@@ -114,6 +117,8 @@ public class ArkiverOgJournalfoerRestController {
 	private static final String TRUE = "true";
 	private static final String MIDLERTIDIG = "MIDLERTIDIG";
 	private static final String STATUS_ENDELIG = "ENDELIG";
+	public static final String BREV_ADMIN_SCOPE = "brev_admin";
+	public static final String SCOPE = "scp";
 
 	private final FerdigstillJournalpostService ferdigstillJournalpostService;
 	private final OppdaterJournalpostService oppdaterJournalpostService;
@@ -127,23 +132,26 @@ public class ArkiverOgJournalfoerRestController {
 	private final OppdaterJournalposttypeService oppdaterJournalposttypeService;
 	private final OppdaterJournalstatusService oppdaterJournalstatusService;
 	private final SplittJournalpostService splittJournalpostService;
+	private final TokenValidationContextHolder tokenValidationContextHolder;
 
 	public ArkiverOgJournalfoerRestController(FerdigstillJournalpostService ferdigstillJournalpostService,
-											  OppdaterJournalpostService oppdaterJournalpostService,
-											  OpprettJournalpostService opprettJournalpostService,
-											  OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
-											  FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost,
-											  KopierJournalpostService kopierJournalpostService,
-											  LastOppVedleggService lastOppVedleggService,
-											  OppdaterJournalposttypeService oppdaterJournalposttypeService,
-											  OppdaterJournalstatusService oppdaterJournalstatusService,
-											  SplittJournalpostService splittJournalpostService) {
+	                                          OppdaterJournalpostService oppdaterJournalpostService,
+	                                          OpprettJournalpostService opprettJournalpostService,
+	                                          OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
+	                                          FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost,
+	                                          KopierJournalpostService kopierJournalpostService,
+	                                          LastOppVedleggService lastOppVedleggService,
+	                                          OppdaterJournalposttypeService oppdaterJournalposttypeService,
+	                                          OppdaterJournalstatusService oppdaterJournalstatusService,
+	                                          SplittJournalpostService splittJournalpostService,
+	                                          TokenValidationContextHolder tokenValidationContextHolder) {
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 		this.oppdaterJournalpostService = oppdaterJournalpostService;
 		this.opprettJournalpostService = opprettJournalpostService;
 		this.fjernVedleggTilknyttJournalpost = fjernVedleggTilknyttJournalpost;
 		this.oppdaterDistribusjonsinfoService = oppdaterDistribusjonsinfoService;
 		this.oppdaterJournalposttypeService = oppdaterJournalposttypeService;
+		this.tokenValidationContextHolder = tokenValidationContextHolder;
 		this.opprettJournalpostRequestValidator = new OpprettJournalpostRequestValidator();
 		this.ferdigstillJournalpostValidator = new FerdigstillJournalpostValidator();
 		this.kopierJournalpostService = kopierJournalpostService;
@@ -415,13 +423,14 @@ public class ArkiverOgJournalfoerRestController {
 		MDC.put(MDC_REQUEST_ID, "lastOppVedlegg");
 		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
 		MDC.put(MDC_JOURNALPOST_ID, String.valueOf(journalpostIdParsed));
+		boolean authorizedForOriginalJournalpostOverride = tokenHasBrevAdminScope();
 
 		log.info("lastOppVedlegg har mottatt kall om å legge til vedlegg på journalpost med journalpostId={}", journalpostIdParsed);
 
 		try {
 			validateRequest(request);
 
-			LastOppVedleggResponse response = lastOppVedleggService.lastOppVedlegg(journalpostIdParsed, request);
+			LastOppVedleggResponse response = lastOppVedleggService.lastOppVedlegg(journalpostIdParsed, request, authorizedForOriginalJournalpostOverride);
 
 			log.info("lastOppVedlegg har lagt til vedlegg med dokumentInfoId={} på journalpost med journalpostId={}",
 					response.dokumentInfoId(), journalpostIdParsed);
@@ -557,5 +566,15 @@ public class ArkiverOgJournalfoerRestController {
 					CONFLICT,
 					"Kunne ikke splitte journalpost med journalpostId=%s. Feilmelding=%s".formatted(journalpostId, e.getMessage()));
 		}
+	}
+
+	private boolean tokenHasBrevAdminScope() {
+		JwtToken firstValidToken = tokenValidationContextHolder.getTokenValidationContext().getFirstValidToken();
+		if (firstValidToken != null) {
+			if (firstValidToken.getJwtTokenClaims().get(SCOPE) instanceof String scopes) {
+				return Stream.of(scopes.split(" ")).anyMatch(scope -> scope.equalsIgnoreCase(BREV_ADMIN_SCOPE));
+			}
+		}
+		return false;
 	}
 }

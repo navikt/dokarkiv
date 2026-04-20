@@ -287,6 +287,10 @@ public abstract class AbstractRestIT {
 	}
 
 	protected HttpHeaders createHeadersWithOboToken(String azpName, String msUserId, String... groups) {
+		return createHeadersWithOboTokenWithExtraScope(azpName, msUserId, null, groups);
+	}
+
+	protected HttpHeaders createHeadersWithOboTokenWithExtraScope(String azpName, String msUserId, String extraScope, String... groups) {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
@@ -296,7 +300,7 @@ public abstract class AbstractRestIT {
 				DEFAULT_CLAIM_OID, msUserId,
 				CLAIM_NAME, NAV_USER_NAME,
 				GROUPS, List.of(groups),
-				SCOPES, "api_admin defaultaccess"
+				SCOPES, ( extraScope == null ? "" : extraScope + " " ) + "defaultaccess"
 		)));
 		headers.add(NAV_CALL_ID, "itest");
 
@@ -342,7 +346,7 @@ public abstract class AbstractRestIT {
 	}
 
 	protected HttpHeaders createHeadersWithAksjonslogg(String azpName, String msUserId, String... groups) {
-		HttpHeaders httpHeaders = createHeadersWithOboToken(azpName, msUserId, groups);
+		HttpHeaders httpHeaders = createHeadersWithOboTokenWithExtraScope(azpName, msUserId, "api_admin", groups);
 		httpHeaders.addAll(createAksjonslogg());
 		return httpHeaders;
 	}

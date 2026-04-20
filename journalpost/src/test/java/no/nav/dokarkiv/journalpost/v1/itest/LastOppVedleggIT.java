@@ -32,6 +32,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFilMedFilnavn;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
+import static no.nav.dokarkiv.journalpost.v1.controllers.ArkiverOgJournalfoerRestController.BREV_ADMIN_SCOPE;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createJournalpostUnderArbeid;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILNAVN_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILNAVN_VEDLEGG;
@@ -171,7 +172,8 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 						.originalJournalpostId(overridingOriginalJournalpostId)
 						.build());
 
-		var request = new HttpEntity<>(requestBody, headers);
+		var headersWithOboTokenBrevAdminScope = createHeadersWithOboTokenWithExtraScope(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, BREV_ADMIN_SCOPE);
+		var request = new HttpEntity<>(requestBody, headersWithOboTokenBrevAdminScope);
 		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(targetJournalpost.getJournalpostId()), PATCH, request, LastOppVedleggResponse.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(CREATED);
@@ -184,6 +186,30 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 		assertThat(vedleggRelasjon.getDokumentInfo().getOriginalJournalpost()).isNotNull();
 		assertThat(vedleggRelasjon.getDokumentInfo().getOriginalJournalpost().getJournalpostId())
 				.isEqualTo(overridingOriginalJournalpostId);
+	}
+
+	@Test
+	void shouldDenyLastOppVedleggWithOverriddenOriginalJournalpostIdWhenCorrectRoleIsMissing() {
+		Journalpost targetJournalpost = saveJournalpost(createJournalpostUnderArbeid());
+		commitAndStartNewTransaction();
+
+		long overridingOriginalJournalpostId = 4L;
+
+		var requestBody = new LastOppVedleggRequest(
+			Dokument.builder()
+				.tittel(TITTEL)
+				.brevkode(BREVKODE)
+				.dokumentvarianter(List.of(DOCUMENT_PDF))
+				.rekkefoelge(1)
+				.originalJournalpostId(overridingOriginalJournalpostId)
+				.build());
+
+		var request = new HttpEntity<>(requestBody, headers);
+		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(targetJournalpost.getJournalpostId()), PATCH, request, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getBody())
+			.contains("Du har ikke tilgang til å overstyre verdien for originalJournalpostId");
 	}
 
 	@Test
@@ -234,7 +260,8 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 				.originalJournalpostId(overridingOriginalJournalpostId)
 				.build());
 
-		var request = new HttpEntity<>(requestBody, headers);
+		var headersWithOboTokenBrevAdminScope = createHeadersWithOboTokenWithExtraScope(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, BREV_ADMIN_SCOPE);
+		var request = new HttpEntity<>(requestBody, headersWithOboTokenBrevAdminScope);
 		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(journalpostId), PATCH, request, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);

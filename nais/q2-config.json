@@ -281,7 +281,8 @@
     {
       "app": "brev-administrasjon-q2",
       "namespace": "isa",
-      "cluster": "dev-gcp"
+      "cluster": "dev-gcp",
+      "scopes": ["brev_admin"]
     },
     {
       "app": "journalforing-frontend-q1",
