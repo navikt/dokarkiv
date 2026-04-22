@@ -48,9 +48,13 @@ public enum Fagsaksystem {
      */
     FIA,
     /**
-     * Fagsystem for helsetjenester
+     * Fagsystem for ortopediske hjelpemidler
      */
     HELT,
+    /**
+     * Fagsystem for diverse hjelpemidler
+     */
+    SUPERHELT,
     /**
      * Fagsystem for å saksbehandling av ungdomsprogramytelsen
      */

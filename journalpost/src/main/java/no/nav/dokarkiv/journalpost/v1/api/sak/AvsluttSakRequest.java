@@ -62,6 +62,7 @@ public class AvsluttSakRequest {
 					* TILTAKSADMINISTRASJON
 					* FIA
 					* HELT
+					* SUPERHELT
 					* UNG_SAK
 					* REMEDY
 					* EKSPERTBISTAND

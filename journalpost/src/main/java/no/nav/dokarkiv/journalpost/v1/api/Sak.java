@@ -63,6 +63,7 @@ public class Sak {
 					* TILTAKSADMINISTRASJON
 					* FIA
 					* HELT
+					* SUPERHELT
 					* UNG_SAK
 					* REMEDY
 					* EKSPERTBISTAND
