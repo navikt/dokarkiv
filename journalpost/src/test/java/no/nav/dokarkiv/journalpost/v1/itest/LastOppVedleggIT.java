@@ -32,6 +32,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFilMedFilnavn;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
+import static no.nav.dokarkiv.journalpost.v1.controllers.ArkiverOgJournalfoerRestController.BREV_ADMIN_SCOPE;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createJournalpostUnderArbeid;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILNAVN_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILNAVN_VEDLEGG;
@@ -152,6 +153,121 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 				.isNotNull()
 				.extracting(LastOppVedleggResponse::dokumentInfoId)
 				.isEqualTo(dokumentInfo.getDokumentInfoId().toString());
+	}
+
+	@Test
+	void shouldLastOppVedleggWithOverriddenOriginalJournalpostId() {
+		Journalpost targetJournalpost = saveJournalpost(createJournalpostUnderArbeid());
+		Journalpost overridingOriginalJournalpost = saveJournalpost(createJournalpostUnderArbeid());
+		commitAndStartNewTransaction();
+
+		long overridingOriginalJournalpostId = overridingOriginalJournalpost.getJournalpostId();
+
+		var requestBody = new LastOppVedleggRequest(
+				Dokument.builder()
+						.tittel(TITTEL)
+						.brevkode(BREVKODE)
+						.dokumentvarianter(List.of(DOCUMENT_PDF))
+						.rekkefoelge(1)
+						.originalJournalpostId(overridingOriginalJournalpostId)
+						.build());
+
+		var headersWithOboTokenBrevAdminScope = createHeadersWithOboTokenWithExtraScope(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, BREV_ADMIN_SCOPE);
+		var request = new HttpEntity<>(requestBody, headersWithOboTokenBrevAdminScope);
+		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(targetJournalpost.getJournalpostId()), PATCH, request, LastOppVedleggResponse.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(CREATED);
+
+		var updatedJournalpost = journalpostTestRepository.findById(targetJournalpost.getJournalpostId());
+		assertThat(updatedJournalpost).isPresent();
+		assertThat(updatedJournalpost.get().findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG)).hasSize(1);
+
+		var vedleggRelasjon = updatedJournalpost.get().findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG).iterator().next();
+		assertThat(vedleggRelasjon.getDokumentInfo().getOriginalJournalpost()).isNotNull();
+		assertThat(vedleggRelasjon.getDokumentInfo().getOriginalJournalpost().getJournalpostId())
+				.isEqualTo(overridingOriginalJournalpostId);
+	}
+
+	@Test
+	void shouldDenyLastOppVedleggWithOverriddenOriginalJournalpostIdWhenCorrectRoleIsMissing() {
+		Journalpost targetJournalpost = saveJournalpost(createJournalpostUnderArbeid());
+		commitAndStartNewTransaction();
+
+		long overridingOriginalJournalpostId = 4L;
+
+		var requestBody = new LastOppVedleggRequest(
+			Dokument.builder()
+				.tittel(TITTEL)
+				.brevkode(BREVKODE)
+				.dokumentvarianter(List.of(DOCUMENT_PDF))
+				.rekkefoelge(1)
+				.originalJournalpostId(overridingOriginalJournalpostId)
+				.build());
+
+		var request = new HttpEntity<>(requestBody, headers);
+		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(targetJournalpost.getJournalpostId()), PATCH, request, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getBody())
+			.contains("Du har ikke tilgang til å overstyre verdien for originalJournalpostId");
+	}
+
+	@Test
+	void shouldLastOppVedleggWhenOverriddenOriginalJournalpostIdEqualsTargetJournalpostId() {
+		Journalpost journalpost = saveJournalpost(createJournalpostUnderArbeid());
+		commitAndStartNewTransaction();
+
+		long journalpostId = journalpost.getJournalpostId();
+
+		var requestBody = new LastOppVedleggRequest(
+				Dokument.builder()
+						.tittel(TITTEL)
+						.brevkode(BREVKODE)
+						.dokumentvarianter(List.of(DOCUMENT_PDF))
+						.rekkefoelge(1)
+						.originalJournalpostId(journalpostId)
+						.build());
+
+		var request = new HttpEntity<>(requestBody, headers);
+		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(journalpostId), PATCH, request, LastOppVedleggResponse.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(CREATED);
+
+		var updatedJournalpost = journalpostTestRepository.findById(journalpostId);
+		assertThat(updatedJournalpost).isPresent();
+		assertThat(updatedJournalpost.get().findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG)).hasSize(1);
+
+		var vedleggRelasjon = updatedJournalpost.get().findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG).iterator().next();
+		assertThat(vedleggRelasjon.getDokumentInfo().getOriginalJournalpost()).isNotNull();
+		assertThat(vedleggRelasjon.getDokumentInfo().getOriginalJournalpost().getJournalpostId())
+				.isEqualTo(journalpostId);
+	}
+
+	@Test
+	void shouldReturnNotFoundWhenOverriddenOriginalJournalpostDoesNotExist() {
+		Journalpost journalpost = saveJournalpost(createJournalpostUnderArbeid());
+		commitAndStartNewTransaction();
+
+		long journalpostId = journalpost.getJournalpostId();
+		long overridingOriginalJournalpostId = 4L;
+
+		var requestBody = new LastOppVedleggRequest(
+			Dokument.builder()
+				.tittel(TITTEL)
+				.brevkode(BREVKODE)
+				.dokumentvarianter(List.of(DOCUMENT_PDF))
+				.rekkefoelge(1)
+				.originalJournalpostId(overridingOriginalJournalpostId)
+				.build());
+
+		var headersWithOboTokenBrevAdminScope = createHeadersWithOboTokenWithExtraScope(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, BREV_ADMIN_SCOPE);
+		var request = new HttpEntity<>(requestBody, headersWithOboTokenBrevAdminScope);
+		var response = restTemplate.exchange(LAST_OPP_VEDLEGG_URL.formatted(journalpostId), PATCH, request, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
+		assertThat(response.getBody())
+			.contains("Kunne ikke finne journalpost med journalpostId=%s (overstyrt originalJournalpostId) i joark"
+				.formatted(overridingOriginalJournalpostId));
 	}
 
 	@Test

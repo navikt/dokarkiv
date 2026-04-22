@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
@@ -44,7 +45,7 @@ public class LastOppVedleggService {
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
-	public LastOppVedleggResponse lastOppVedlegg(long journalpostId, LastOppVedleggRequest request) {
+	public LastOppVedleggResponse lastOppVedlegg(long journalpostId, LastOppVedleggRequest request, boolean authorizedForOriginalJournalpostOverride) {
 		validateDokument(request.dokument());
 
 		var journalpost = journalpostRepository.fetchByIdWithJournalpostDokumentInfoRelasjoner(journalpostId)
@@ -53,7 +54,7 @@ public class LastOppVedleggService {
 
 		validateJournalpostAndDokument(journalpost, request.dokument());
 
-		var dokumentInfo = opprettDokumentInfo(journalpost, request);
+		var dokumentInfo = opprettDokumentInfoAndResolveOriginalJournalpostId(journalpost, request, authorizedForOriginalJournalpostOverride);
 		var journalpostDokumentInfoRelasjon = opprettJournalpostDokumentInfoRelasjon(journalpost, dokumentInfo, request);
 
 		journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
@@ -68,6 +69,24 @@ public class LastOppVedleggService {
 		populerAksjonslogg(journalpost, dokumentInfo);
 
 		return new LastOppVedleggResponse(dokumentInfo.getDokumentInfoId().toString());
+	}
+
+	private DokumentInfo opprettDokumentInfoAndResolveOriginalJournalpostId(Journalpost journalpost, LastOppVedleggRequest request, boolean authorizedForOriginalJournalpostOverride) {
+		var originalJournalpost = resolveOverrideOriginalJournalpost(journalpost, request.dokument().getOriginalJournalpostId(), authorizedForOriginalJournalpostOverride);
+		return opprettDokumentInfo(originalJournalpost, request);
+	}
+
+	private Journalpost resolveOverrideOriginalJournalpost(Journalpost journalpost, Long overridingOriginalJournalpostId, boolean authorizedForOriginalJournalpostOverride) {
+		if (overridingOriginalJournalpostId == null || overridingOriginalJournalpostId.equals(journalpost.getJournalpostId())) {
+			return journalpost;
+		}
+		if (authorizedForOriginalJournalpostOverride) {
+			return journalpostRepository.findById(overridingOriginalJournalpostId)
+					.orElseThrow(() -> new JournalpostIkkeFunnetException("Kunne ikke finne journalpost med journalpostId=%s (overstyrt originalJournalpostId) i joark"
+							.formatted(overridingOriginalJournalpostId)));
+		} else {
+			throw new InputValideringFeiletException("Du har ikke tilgang til å overstyre verdien for originalJournalpostId!");
+		}
 	}
 
 	private void populerAksjonslogg(Journalpost journalpost, DokumentInfo dokumentInfo) {

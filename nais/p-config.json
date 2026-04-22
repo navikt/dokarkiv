@@ -451,7 +451,8 @@
     {
       "app": "brev-administrasjon",
       "namespace": "isa",
-      "cluster": "prod-gcp"
+      "cluster": "prod-gcp",
+      "scopes": ["brev_admin"]
     },
     {
       "app": "doksikkerhetsnett",

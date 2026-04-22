@@ -28,9 +28,9 @@ public class Dokument {
 	@Schema(
 			description = """
 					Kode som sier noe om dokumentets innhold og oppbygning.
-					
+
 					For inngående dokumenter kan brevkoden være en NAV-skjemaID f.eks. 'NAV 14-05.09' eller en SED-id.
-					
+
 					Utgående dokumenter og notater bør ha brevkode, og verdien bestemmes av konsument. Bruk gjerne brevets intern kode i fagsystemet.
 					Brevkode skal ikke settes for ustrukturert, uklassifisert dokumentasjon, f.eks. brukeropplastede vedlegg.
 					""",
@@ -41,14 +41,25 @@ public class Dokument {
 	@Schema(
 			description = """
 					Dokumentets plassering i listen. Kun relevant for vedlegg.
-					
+
 					Første dokument i meldingen blir tilknyttet journalposten som hoveddokument (og vil få rekkefoelge=null). Dette feltet styrer rekkefølgen på de øvrige dokumentene ved uthenting av journalposten.
-					
+
 					Tjenesten verifiserer ikke at duplikater ikke forekommer. Dersom flere vedlegg har samme rekkefoelge, vil rekkefølgen på disse være vilkårlig.
 					""",
 			example = "1"
 	)
 	private Integer rekkefoelge;
+
+	@Hidden
+	@Schema(
+		description = """
+					Brukes for å peke tilbake på journalposten som dokumentet kommer fra.
+
+					Feltet skal kun brukes etter avtale med Team Dokumentløsninger. Korrekt måte å gjenbruke vedlegg er vanligvis tjenesten tilknyttVedlegg.
+					""",
+		example = "123456"
+	)
+	private Long originalJournalpostId;
 
 	@Hidden
 	@Schema(
