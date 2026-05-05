@@ -51,7 +51,6 @@ public class GjenaapneSakRequest {
 					* KELVIN
 					* DAGPENGER
 					* KOMPYS
-					* ARGUS
 					* NEESSI
 					* TILLEGGSSTONADER
 					* ARBEIDSOPPFOLGING
@@ -63,6 +62,7 @@ public class GjenaapneSakRequest {
 					* UNG_SAK
 					* REMEDY
 					* EKSPERTBISTAND
+					* WATSON
 					""",
 			example = "AO01", requiredMode = REQUIRED
 	)

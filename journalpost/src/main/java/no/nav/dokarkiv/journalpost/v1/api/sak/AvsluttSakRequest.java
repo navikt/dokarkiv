@@ -54,7 +54,6 @@ public class AvsluttSakRequest {
 					* KELVIN
 					* DAGPENGER
 					* KOMPYS
-					* ARGUS
 					* NEESSI
 					* TILLEGGSSTONADER
 					* ARBEIDSOPPFOLGING
@@ -66,6 +65,7 @@ public class AvsluttSakRequest {
 					* UNG_SAK
 					* REMEDY
 					* EKSPERTBISTAND
+					* WATSON
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",

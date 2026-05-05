@@ -55,7 +55,6 @@ public class Sak {
 					* KELVIN
 					* DAGPENGER
 					* KOMPYS
-					* ARGUS
 					* NEESSI
 					* TILLEGGSSTONADER
 					* ARBEIDSOPPFOLGING
@@ -67,6 +66,7 @@ public class Sak {
 					* UNG_SAK
 					* REMEDY
 					* EKSPERTBISTAND
+					* WATSON
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",
