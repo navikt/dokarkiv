@@ -34,10 +34,10 @@ public enum Fagsaksystem {
      */
     KOMPYS,
 
-    /**
-     * DSOP Kontroll
-     */
-    ARGUS,
+	/**
+	 * WATSON - fagsystem for Nav Kontroll
+	 */
+	WATSON,
     NEESSI,
     TILLEGGSSTONADER,
     ARBEIDSOPPFOLGING,
