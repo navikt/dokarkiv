@@ -38,7 +38,7 @@ import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.validators.AvsenderMottakerValidator.validateAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateEksternReferanseId;
+import static no.nav.dokarkiv.core.domain.validator.EksternReferanseIdValidator.validateEksternReferanseId;
 import static no.nav.dokarkiv.journalpost.v1.validators.DokumentValidator.validateDokument;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;

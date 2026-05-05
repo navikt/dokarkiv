@@ -3,15 +3,11 @@ package no.nav.dokarkiv.journalpost.v1.validators;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.regex.Pattern;
-
 import static java.lang.String.format;
-import static no.nav.dokarkiv.core.domain.entities.Journalpost.KANAL_REFERANSE_ID_LENGTH;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public final class CommonValidator {
 	public static final String SKJULT_TITTEL = "*****";
-	public static final Pattern EKSTERN_REFERANSE_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9-._~!$&\"\\\\*+,;=:@]+$");
 
 	private CommonValidator() {
 		//no-op
@@ -53,16 +49,13 @@ public final class CommonValidator {
 		}
 	}
 
-	public static void validateEksternReferanseId(String eksternReferanseId) {
-		if (isBlank(eksternReferanseId)) {
-			throw new InputValideringFeiletException("eksternReferanseId kan ikke være null eller tomt");
-		} else {
-			if (eksternReferanseId.length() > KANAL_REFERANSE_ID_LENGTH) {
-				throw new InputValideringFeiletException(format("eksternReferanseId kan ikke være over %d tegn. Mottatt eksternReferanseId=%s", KANAL_REFERANSE_ID_LENGTH, eksternReferanseId));
-			}
-			if (!EKSTERN_REFERANSE_ID_PATTERN.matcher(eksternReferanseId).matches()) {
-				throw new InputValideringFeiletException(format("eksternReferanseId kan bare inneholde alfanumeriske tegn og følgende spesialtegn :;,.=-_~$&+*\"\\@! Mottatt eksternReferanseId=%s", eksternReferanseId));
-			}
+	public static void validateNotNull(Object o, String feltnavn) {
+		validateNotNull(o, feltnavn, null);
+	}
+
+	public static void validateNotNull(Object o, String feltnavn, String ekstraInformasjon) {
+		if (o == null) {
+			throw new InputValideringFeiletException(feltnavn + " kan ikke være null" + (ekstraInformasjon != null ? ", " + ekstraInformasjon : "") + "!");
 		}
 	}
 
@@ -75,16 +68,6 @@ public final class CommonValidator {
 	private static void isNumeric(String input, String feltnavn) {
 		if (!StringUtils.isNumeric(input)) {
 			throw new IllegalArgumentException(format("Feltet %s må være et heltall. Mottatt verdi=%s", feltnavn, input));
-		}
-	}
-
-	public static void validateNotNull(Object o, String feltnavn) {
-		validateNotNull(o, feltnavn, null);
-	}
-
-	public static void validateNotNull(Object o, String feltnavn, String ekstraInformasjon) {
-		if (o == null) {
-			throw new InputValideringFeiletException(feltnavn + " kan ikke være null" + (ekstraInformasjon != null ? ", " + ekstraInformasjon : "") + "!");
 		}
 	}
 }

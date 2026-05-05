@@ -4,7 +4,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan({"no.nav.dokarkiv.journalpost.v1"})
-public class JournalpostConfig {
+@ComponentScan("no.nav.dokarkiv.internal")
+public class InternalConfig {
 
 }
