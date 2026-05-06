@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.validator.EksternReferanseIdValidator;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
@@ -46,7 +47,7 @@ public class SplittJournalpostValidator {
 
 	private static List<String> validerEksternReferanseId(String eksternReferanseId) {
 		try {
-			CommonValidator.validateEksternReferanseId(eksternReferanseId);
+			EksternReferanseIdValidator.validateEksternReferanseId(eksternReferanseId);
 		} catch (InputValideringFeiletException e) {
 			return List.of("Feltet %s".formatted(e.getMessage()));
 		}

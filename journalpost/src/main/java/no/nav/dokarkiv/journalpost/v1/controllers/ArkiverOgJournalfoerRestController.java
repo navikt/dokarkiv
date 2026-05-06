@@ -95,7 +95,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
 import static no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJournalposttypeValidator.validateOppdaterJournalpostTypeRequest;
-import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateEksternReferanseId;
+import static no.nav.dokarkiv.core.domain.validator.EksternReferanseIdValidator.validateEksternReferanseId;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 import static no.nav.dokarkiv.journalpost.v1.validators.LastOppVedleggValidator.validateRequest;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalstatusValidator.validateAndParseJournalStatus;

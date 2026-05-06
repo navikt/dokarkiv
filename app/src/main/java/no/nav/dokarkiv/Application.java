@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 		ArkiverVariantConfig.class,
 		AdminConfig.class,
 		JournalpostConfig.class,
+		InternalConfig.class,
 		SafinternConfig.class
 })
 public class Application {
