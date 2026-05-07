@@ -7,10 +7,13 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeOpphevSkjermingException;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.slf4j.MDC;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
@@ -31,11 +35,13 @@ public class SkjermDokumentService {
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final AksjonsLoggService aksjonsLoggService;
 	private final JournalpostRepository journalpostRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 
-	public SkjermDokumentService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AksjonsLoggService aksjonsLoggService, JournalpostRepository journalpostRepository) {
+	public SkjermDokumentService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AksjonsLoggService aksjonsLoggService, JournalpostRepository journalpostRepository, DokumentInfoRepository dokumentInfoRepository) {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.journalpostRepository = journalpostRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 	}
 
 	@Transactional
@@ -45,7 +51,7 @@ public class SkjermDokumentService {
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
 
 		if (relasjoner.isEmpty()) {
-			throw new DokumentInfoIkkeFunnetException("Fant ikke dokument og dokumentrelasjon for id=%d".formatted(dokumentInfoId));
+			throw new DokumentInfoIkkeFunnetException("Fant ikke dokument og dokumentrelasjon for dokumentInfoId=%d".formatted(dokumentInfoId));
 		}
 
 		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, skjermingTypeCode));
@@ -55,6 +61,11 @@ public class SkjermDokumentService {
 			.hjemmel(hjemmelCode.name())
 			.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
 			.build(), List.of(ArkivElementEndringTO.arkivElementEndringNew("k_skjerming_t", skjermingTypeCode.name())));
+
+		dokumentInfoRepository.findById(dokumentInfoId)
+			.map(DokumentInfo::getFildetaljerListeAdmin)
+			.orElseThrow(() -> new DokumentInfoIkkeFunnetException("Fant ikke filer for dokumentInfoId=%d".formatted(dokumentInfoId)))
+			.forEach(variant -> oppdaterSkjermingForVariant(variant, skjermingTypeCode));
 
 		relasjoner.stream()
 			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
@@ -77,12 +88,21 @@ public class SkjermDokumentService {
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
 
 		if (relasjoner.isEmpty()) {
-			throw new DokumentInfoIkkeFunnetException("Fant ikke dokument og dokumentrelasjon for id=%d".formatted(dokumentInfoId));
+			throw new DokumentInfoIkkeFunnetException("Fant ikke dokument og dokumentrelasjon for dokumentInfoId=%d".formatted(dokumentInfoId));
 		}
 
 		Optional<SkjermingTypeCode> forrigeSkjermingType = relasjoner.stream().map(JournalpostDokumentInfoRelasjon::getSkjermingType).filter(Objects::nonNull).findAny();
 		if (forrigeSkjermingType.isEmpty()) {
 			throw new KanIkkeOpphevSkjermingException("Kan ikke oppheve skjerming for dokument som ikke er skjermet");
+		}
+
+		Set<FilDetaljer> filDetaljer = dokumentInfoRepository.findById(dokumentInfoId)
+			.map(DokumentInfo::getFildetaljerListeAdmin)
+			.orElseThrow(() -> new DokumentInfoIkkeFunnetException("Fant ikke filer for dokumentInfoId=%d".formatted(dokumentInfoId)));
+
+		if (filDetaljer.stream().anyMatch(FilDetaljer::isSladdetVariant)) {
+			log.warn("opphevSkjermDokument dokument med dokumentInfoId={} har fil med variant=SLADDET, avbryter opphevSkjermDokument", dokumentInfoId);
+			throw new KanIkkeOpphevSkjermingException("Kan ikke oppheve skjerming for dokument med dokumentInfoId=%d, dokument har fil med variantformat=SLADDET. Skjerming skal ha blitt opphevet av sladdDokument".formatted(dokumentInfoId));
 		}
 
 		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, null));
@@ -95,6 +115,8 @@ public class SkjermDokumentService {
 			.fraVerdi(forrigeSkjermingType.get().name())
 			.tilVerdi(null)
 			.build()));
+
+		filDetaljer.forEach(variant -> oppdaterSkjermingForVariant(variant, null));
 
 		relasjoner.stream()
 			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
@@ -129,9 +151,7 @@ public class SkjermDokumentService {
 
 	private void oppdaterSkjermingForJournalpost(SkjermDokumentHjemmelCode hjemmelCode, Journalpost journalpost, SkjermingTypeCode skjermingTypeCode) {
 		skrivAksjonsloggForJournalpost(journalpost, hjemmelCode);
-		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
-		journalpost.setSkjermingType(skjermingTypeCode);
+		journalpost.setSkjermingType(skjermingTypeCode, MDC.get(MDC_CONSUMER_ID), MDC.get(MDC_USER_NAME));
 	}
 
 	private void skrivAksjonsloggForJournalpost(Journalpost journalpost, SkjermDokumentHjemmelCode hjemmelCode) {
@@ -145,5 +165,9 @@ public class SkjermDokumentService {
 					.fraVerdi(enumToString(journalpost.getSkjermingType()))
 					.tilVerdi(enumToString(hjemmelCode == null ? null : hjemmelCode.asSkjermingTypeCode()))
 					.build()));
+	}
+
+	private void oppdaterSkjermingForVariant(FilDetaljer variant, SkjermingTypeCode skjermingTypeCode) {
+		variant.setSkjermingType(skjermingTypeCode, MDC.get(MDC_CONSUMER_ID));
 	}
 }

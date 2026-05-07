@@ -198,6 +198,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	@Column(name = "k_skjerming_type", length = 50)
 	@Enumerated(EnumType.STRING)
+	@Setter(AccessLevel.NONE)
 	private SkjermingTypeCode skjermingType;
 
 	@Column(name = "k_innsyn", length = 50)
@@ -281,6 +282,12 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		verifyAlwaysRequiredFields();
 		verifyFieldsForNonLenientStatuses();
 		verifyFieldsForEndeligJournalforing();
+	}
+
+	public void setSkjermingType(SkjermingTypeCode skjermingTypeCode, String endretKildeNavn, String endretAvNavn) {
+		this.skjermingType = skjermingTypeCode;
+		this.setEndretKildeNavn(endretKildeNavn);
+		this.setEndretAvNavn(endretAvNavn);
 	}
 
 	private void verifyAlwaysRequiredFields() {

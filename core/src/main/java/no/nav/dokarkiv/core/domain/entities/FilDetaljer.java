@@ -220,6 +220,11 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 		}
 	}
 
+	public void setSkjermingType(SkjermingTypeCode skjermingTypeCode, String endretKildeNavn) {
+		this.skjermingType = skjermingTypeCode;
+		this.setEndretKildeNavn(endretKildeNavn);
+	}
+
 	public boolean isSkjermet() {
 		return Objects.nonNull(skjermingType);
 	}

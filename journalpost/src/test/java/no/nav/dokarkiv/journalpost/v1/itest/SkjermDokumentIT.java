@@ -53,6 +53,10 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 			.extracting(JournalpostDokumentInfoRelasjon::getEndretKildeNavn)
 			.allSatisfy(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(ENDRET_KILDE_NAVN));
 
+		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(dokumentInfo.getFildetaljerListeAdmin())
+			.allSatisfy(filDetaljer -> assertThat(filDetaljer.getSkjermingType()).isEqualTo(SkjermingTypeCode.POL));
+
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
 			.filteredOn(AksjonsLogg::getDokumentInfoId, dokumentInfoId)
@@ -84,6 +88,10 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 			.allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.ARK)
 			.extracting(JournalpostDokumentInfoRelasjon::getEndretKildeNavn)
 			.allSatisfy(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(ENDRET_KILDE_NAVN));
+
+		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(dokumentInfo.getFildetaljerListeAdmin())
+			.allSatisfy(filDetaljer -> assertThat(filDetaljer.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK));
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
@@ -121,6 +129,10 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
 		assertThat(relasjoner).allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.ARK);
+
+		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(dokumentInfo.getFildetaljerListeAdmin())
+			.allSatisfy(fd -> assertThat(fd.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK));
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
@@ -232,6 +244,10 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		assertThat(relasjoner)
 			.hasSize(2)
 			.allSatisfy(r -> assertThat(r.getSkjermingType()).isEqualTo(SkjermingTypeCode.POL));
+
+		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(dokumentInfo.getFildetaljerListeAdmin())
+			.allSatisfy(fd -> assertThat(fd.getSkjermingType()).isEqualTo(SkjermingTypeCode.POL));
 	}
 
 	@Test
