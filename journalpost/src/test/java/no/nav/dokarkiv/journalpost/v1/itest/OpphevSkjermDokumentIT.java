@@ -55,7 +55,10 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 
 		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
 		assertThat(dokumentInfo.getFildetaljerListeAdmin())
-			.allSatisfy(filDetaljer -> assertThat(filDetaljer.getSkjermingType()).isNull());
+			.allSatisfy(filDetaljer -> {
+				assertThat(filDetaljer.getSkjermingType()).isNull();
+				assertThat(filDetaljer.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
+			});
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
@@ -92,7 +95,10 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 
 		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
 		assertThat(dokumentInfo.getFildetaljerListeAdmin())
-			.allSatisfy(filDetaljer -> assertThat(filDetaljer.getSkjermingType()).isNull());
+			.allSatisfy(filDetaljer -> {
+				assertThat(filDetaljer.getSkjermingType()).isNull();
+				assertThat(filDetaljer.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
+			});
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)

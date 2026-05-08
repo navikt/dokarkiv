@@ -96,7 +96,8 @@ public abstract class AbstractRestIT {
 	protected static final String APP_CLAIM_SUB = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 
 	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
-	protected static final String AZP_NAME_GOSYS = "dev-fss:isa:gosys-q2";
+	protected static final String KILDENAVN_GOSYS = "isa:gosys-q2";
+	protected static final String AZP_NAME_GOSYS = "dev-fss:" + KILDENAVN_GOSYS;
 	protected static final String NAV_USER_ID = "Z990782";
 	protected static final String NAV_USER_NAME = "F_990782 E_990782";
 	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";

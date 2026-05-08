@@ -7,13 +7,11 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.KanIkkeOpphevSkjermingException;
-import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.slf4j.MDC;
@@ -35,13 +33,11 @@ public class SkjermDokumentService {
 	private final JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository;
 	private final AksjonsLoggService aksjonsLoggService;
 	private final JournalpostRepository journalpostRepository;
-	private final DokumentInfoRepository dokumentInfoRepository;
 
-	public SkjermDokumentService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AksjonsLoggService aksjonsLoggService, JournalpostRepository journalpostRepository, DokumentInfoRepository dokumentInfoRepository) {
+	public SkjermDokumentService(JournalpostDokumentInfoRelasjonRepository journalpostDokumentInfoRelasjonRepository, AksjonsLoggService aksjonsLoggService, JournalpostRepository journalpostRepository) {
 		this.journalpostDokumentInfoRelasjonRepository = journalpostDokumentInfoRelasjonRepository;
 		this.aksjonsLoggService = aksjonsLoggService;
 		this.journalpostRepository = journalpostRepository;
-		this.dokumentInfoRepository = dokumentInfoRepository;
 	}
 
 	@Transactional
@@ -62,9 +58,10 @@ public class SkjermDokumentService {
 			.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
 			.build(), List.of(ArkivElementEndringTO.arkivElementEndringNew("k_skjerming_t", skjermingTypeCode.name())));
 
-		dokumentInfoRepository.findById(dokumentInfoId)
-			.map(DokumentInfo::getFildetaljerListeAdmin)
-			.orElseThrow(() -> new DokumentInfoIkkeFunnetException("Fant ikke filer for dokumentInfoId=%d".formatted(dokumentInfoId)))
+		// alle relasjonene peker på samme dokumentInfo, så vi kan bruke første og beste
+		relasjoner.getFirst()
+			.getDokumentInfo()
+			.getFildetaljerListeAdmin()
 			.forEach(variant -> oppdaterSkjermingForVariant(variant, skjermingTypeCode));
 
 		relasjoner.stream()
@@ -96,9 +93,9 @@ public class SkjermDokumentService {
 			throw new KanIkkeOpphevSkjermingException("Kan ikke oppheve skjerming for dokument som ikke er skjermet");
 		}
 
-		Set<FilDetaljer> filDetaljer = dokumentInfoRepository.findById(dokumentInfoId)
-			.map(DokumentInfo::getFildetaljerListeAdmin)
-			.orElseThrow(() -> new DokumentInfoIkkeFunnetException("Fant ikke filer for dokumentInfoId=%d".formatted(dokumentInfoId)));
+		Set<FilDetaljer> filDetaljer = relasjoner.getFirst()
+			.getDokumentInfo()
+			.getFildetaljerListeAdmin();
 
 		if (filDetaljer.stream().anyMatch(FilDetaljer::isSladdetVariant)) {
 			log.warn("opphevSkjermDokument dokument med dokumentInfoId={} har fil med variant=SLADDET, avbryter opphevSkjermDokument", dokumentInfoId);
