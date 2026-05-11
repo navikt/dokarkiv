@@ -28,7 +28,6 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 class SkjermDokumentIT extends AbstractJournalpostIT {
 
 	private static final String SKJERM_DOKUMENT = "skjermDokument";
-	private static final String ENDRET_KILDE_NAVN = "isa:gosys-q2";
 
 	@Test
 	void skalSkjermeRelasjonerOgLoggeAksjonsloggForPOL() {
@@ -51,7 +50,14 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		assertThat(relasjoner)
 			.allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.POL)
 			.extracting(JournalpostDokumentInfoRelasjon::getEndretKildeNavn)
-			.allSatisfy(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(ENDRET_KILDE_NAVN));
+			.allSatisfy(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(KILDENAVN_GOSYS));
+
+		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(dokumentInfo.getFildetaljerListeAdmin())
+			.allSatisfy(filDetaljer -> {
+				assertThat(filDetaljer.getSkjermingType()).isEqualTo(SkjermingTypeCode.POL);
+				assertThat(filDetaljer.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
+			});
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
@@ -83,7 +89,14 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		assertThat(relasjoner)
 			.allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.ARK)
 			.extracting(JournalpostDokumentInfoRelasjon::getEndretKildeNavn)
-			.allSatisfy(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(ENDRET_KILDE_NAVN));
+			.allSatisfy(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(KILDENAVN_GOSYS));
+
+		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(dokumentInfo.getFildetaljerListeAdmin())
+			.allSatisfy(filDetaljer -> {
+				assertThat(filDetaljer.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
+				assertThat(filDetaljer.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
+			});
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
@@ -122,6 +135,13 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
 		assertThat(relasjoner).allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.ARK);
 
+		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(dokumentInfo.getFildetaljerListeAdmin())
+			.allSatisfy(fd -> {
+				assertThat(fd.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
+				assertThat(fd.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
+			});
+
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
 			.filteredOn(AksjonsLogg::getDokumentInfoId, dokumentInfoId)
@@ -157,12 +177,12 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow();
 		assertThat(oppdatertJournalpost.getSkjermingType()).isEqualTo(SkjermingTypeCode.POL);
 		assertThat(oppdatertJournalpost.getEndretAvNavn()).isEqualTo("F_990782 E_990782");
-		assertThat(oppdatertJournalpost.getEndretKildeNavn()).isEqualTo(ENDRET_KILDE_NAVN);
+		assertThat(oppdatertJournalpost.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
 
 		assertThat(oppdatertJournalpost.getJournalpostDokumentInfoRelasjonerAdmin())
 			.filteredOn(JournalpostDokumentInfoRelasjon::isHoveddokument)
 			.extracting(JournalpostDokumentInfoRelasjon::getEndretKildeNavn)
-			.satisfiesExactlyInAnyOrder(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(ENDRET_KILDE_NAVN));
+			.satisfiesExactlyInAnyOrder(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(KILDENAVN_GOSYS));
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
@@ -232,6 +252,13 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		assertThat(relasjoner)
 			.hasSize(2)
 			.allSatisfy(r -> assertThat(r.getSkjermingType()).isEqualTo(SkjermingTypeCode.POL));
+
+		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(dokumentInfo.getFildetaljerListeAdmin())
+			.allSatisfy(fd -> {
+				assertThat(fd.getSkjermingType()).isEqualTo(SkjermingTypeCode.POL);
+				assertThat(fd.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
+			});
 	}
 
 	@Test
