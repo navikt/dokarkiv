@@ -1,11 +1,14 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode;
+import no.nav.dokarkiv.core.exceptions.UgyldigSlettebestillingException;
 import no.nav.dokarkiv.core.domain.entities.Slettebestilling;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.SlettebestillingRepository;
 import no.nav.dokarkiv.journalpost.v1.api.SlettebestillingRequest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -15,13 +18,16 @@ import org.mockito.Mock;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingArsakCode.ENKELTSLETTING;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingHjemmelCode.ARK;
+import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.*;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode.DOKUMENT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,12 +62,76 @@ public class SlettebestillingServiceTest {
 		when(slettebestillingRepository.persist(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
 		ArgumentCaptor<Slettebestilling> slettebestillingArgumentCaptor = ArgumentCaptor.forClass(Slettebestilling.class);
 
-		var request = new SlettebestillingRequest(type.name(), 12L, ENKELTSLETTING.name(), ARK.name(), "begrunnelse");
+		long dokumentInfoId = 12L;
+		var request = new SlettebestillingRequest(ARK.name(), "begrunnelse");
 
-		slettebestillingService.bestillSletting(request);
+		slettebestillingService.bestillSletting(dokumentInfoId, request);
 
 		verify(slettebestillingRepository).persist(slettebestillingArgumentCaptor.capture());
 		assertThat(slettebestillingArgumentCaptor.getValue().getDatoUtfores()).isEqualTo(expectedDate);
+	}
+
+	@Test
+	void shouldAvbrytOpprettetSlettebestilling() {
+		var slettebestilling = lagSlettebestilling(OPPRETTET);
+		when(slettebestillingRepository.findByDokumentInfoId(1L)).thenReturn(List.of(slettebestilling));
+
+		slettebestillingService.opphevBestillSletting(1L);
+
+		assertThat(slettebestilling.getSlettebestillingStatus()).isEqualTo(AVBRUTT);
+	}
+
+	@Test
+	void shouldThrowWhenFerdigstiltExists() {
+		var slettebestilling = lagSlettebestilling(FERDIGSTILT);
+		when(slettebestillingRepository.findByDokumentInfoId(1L)).thenReturn(List.of(slettebestilling));
+
+		assertThatThrownBy(() -> slettebestillingService.opphevBestillSletting(1L))
+				.isInstanceOf(UgyldigSlettebestillingException.class)
+				.hasMessageContaining("Kan ikke oppheve sletting som allerede er gjennomført");
+	}
+
+	@Test
+	void shouldIgnoreAvbruttSlettebestilling() {
+		var slettebestilling = lagSlettebestilling(AVBRUTT);
+		when(slettebestillingRepository.findByDokumentInfoId(1L)).thenReturn(List.of(slettebestilling));
+
+		slettebestillingService.opphevBestillSletting(1L);
+
+		assertThat(slettebestilling.getSlettebestillingStatus()).isEqualTo(AVBRUTT);
+	}
+
+	@Test
+	void shouldOnlyAvbrytOpprettetWhenMixedStatuses() {
+		var opprettet = lagSlettebestilling(OPPRETTET);
+		var avbrutt = lagSlettebestilling(AVBRUTT);
+		when(slettebestillingRepository.findByDokumentInfoId(1L)).thenReturn(List.of(opprettet, avbrutt));
+
+		slettebestillingService.opphevBestillSletting(1L);
+
+		assertThat(opprettet.getSlettebestillingStatus()).isEqualTo(AVBRUTT);
+		assertThat(avbrutt.getSlettebestillingStatus()).isEqualTo(AVBRUTT);
+	}
+
+	@Test
+	void shouldHandleEmptyList() {
+		when(slettebestillingRepository.findByDokumentInfoId(1L)).thenReturn(List.of());
+
+		slettebestillingService.opphevBestillSletting(1L);
+	}
+
+	private static Slettebestilling lagSlettebestilling(SlettebestillingStatusCode status) {
+		return Slettebestilling.builder()
+				.slettebestillingType(DOKUMENT)
+				.slettebestillingStatus(status)
+				.slettebestillingHjemmel(ARK)
+				.slettebestillingArsak(ENKELTSLETTING)
+				.dokumentInfoId(1L)
+				.begrunnelse("test")
+				.datoUtfores(LocalDate.now())
+				.opprettetAvNavn("test")
+				.endretAvNavn("test")
+				.build();
 	}
 
 }

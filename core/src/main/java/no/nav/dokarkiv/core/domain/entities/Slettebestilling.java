@@ -88,4 +88,9 @@ public class Slettebestilling extends AbstractPersistentVersionedDomainObjectWit
 	public void setOpprettetAvOgChangestamp(String navn) {
 		setChangeStamp(new ChangeStamp(navn));
 	}
+
+	public void endreSlettebestillingStatus(SlettebestillingStatusCode nyStatus, String endretKildeNavn) {
+		this.setEndretKildeNavn(endretKildeNavn);
+		this.slettebestillingStatus = nyStatus;
+	}
 }

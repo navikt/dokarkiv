@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Operation(
-		summary = "Bestill sletting av et dokument, en sak, eller dokumenter tilhørende en sak"
+		summary = "Bestill sletting av et dokument"
 )
 @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "OK"),

@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Slettebestilling;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.UgyldigSlettebestillingException;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.SlettebestillingRepository;
 import no.nav.dokarkiv.journalpost.v1.api.SlettebestillingRequest;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.List;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -36,26 +38,44 @@ public class SlettebestillingService {
 	}
 
 	@Transactional
-	public long bestillSletting(SlettebestillingRequest slettebestillingRequest) {
-		validerSlettebestilling(slettebestillingRequest);
-		Slettebestilling slettebestilling = mapSlettebestilling(slettebestillingRequest);
+	public long bestillSletting(long dokumentInfoId, SlettebestillingRequest slettebestillingRequest) {
+		validerSlettebestilling(dokumentInfoId, slettebestillingRequest);
+		Slettebestilling slettebestilling = mapSlettebestilling(dokumentInfoId, slettebestillingRequest);
 		return slettebestillingRepository.persist(slettebestilling).getId();
 	}
 
-	private void validerSlettebestilling(SlettebestillingRequest slettebestilling) {
+	@Transactional
+	public void opphevBestillSletting(long dokumentInfoId) {
+		List<Slettebestilling> slettebestillinger = slettebestillingRepository.findByDokumentInfoId(dokumentInfoId);
+
+		if (slettebestillinger.stream().anyMatch(slettebestilling -> slettebestilling.getSlettebestillingStatus() == SlettebestillingStatusCode.FERDIGSTILT)) {
+			throw new UgyldigSlettebestillingException("Kan ikke oppheve sletting som allerede er gjennomført!");
+		}
+
+		slettebestillinger
+			.stream()
+			.filter(slettebestilling -> slettebestilling.getSlettebestillingStatus() == SlettebestillingStatusCode.OPPRETTET)
+			.forEach(this::avbrytSletting);
+	}
+
+	private void avbrytSletting(Slettebestilling slettebestilling) {
+		slettebestilling.endreSlettebestillingStatus(SlettebestillingStatusCode.AVBRUTT, MDC.get(MDC_CONSUMER_ID));
+	}
+
+	private void validerSlettebestilling(long dokumentInfoId, SlettebestillingRequest slettebestilling) {
 		SlettebestillingValidator.validerSlettebestilling(slettebestilling);
-		if (!dokumentInfoRepository.existsById(slettebestilling.dokumentInfoId())) {
-			throw new DokumentInfoIkkeFunnetException("Kunne ikke bestille sletting av dokument med Id " + slettebestilling.dokumentInfoId() + " fordi det ikke ble funnet.");
+		if (!dokumentInfoRepository.existsById(dokumentInfoId)) {
+			throw new DokumentInfoIkkeFunnetException("Kunne ikke bestille sletting av dokument med dokumentInfoId=%d fordi det ikke ble funnet.".formatted(dokumentInfoId));
 		}
 	}
 
-	private Slettebestilling mapSlettebestilling(SlettebestillingRequest request) {
+	private Slettebestilling mapSlettebestilling(long dokumentInfoId, SlettebestillingRequest request) {
 		Slettebestilling slettebestilling = Slettebestilling.builder()
-				.slettebestillingType(SlettebestillingTypeCode.valueOf(request.slettebestillingType()))
-				.dokumentInfoId(request.dokumentInfoId())
+				.slettebestillingType(SlettebestillingTypeCode.DOKUMENT)
+				.dokumentInfoId(dokumentInfoId)
 				.slettebestillingStatus(SlettebestillingStatusCode.OPPRETTET)
 				.slettebestillingHjemmel(SlettebestillingHjemmelCode.valueOf(request.hjemmel()))
-				.slettebestillingArsak(SlettebestillingArsakCode.valueOf(request.arsak()))
+				.slettebestillingArsak(SlettebestillingArsakCode.ENKELTSLETTING)
 				.begrunnelse(request.begrunnelse())
 				.datoUtfores(determineDatoUtforesForBestillingstypeDokument())
 				.opprettetAvNavn(MDC.get(MDC_USER_NAME))

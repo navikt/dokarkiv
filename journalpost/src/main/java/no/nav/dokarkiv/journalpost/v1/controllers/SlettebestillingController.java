@@ -5,8 +5,12 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.SlettebestillingRequest;
 import no.nav.dokarkiv.journalpost.v1.services.SlettebestillingService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerBestillSletting;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpphevBestillSletting;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +24,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 @Protected
 @RestController
-@RequestMapping(path = "/rest/journalpostapi/v1/bestillSletting", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/rest/journalpostapi/v1/dokumentInfo/", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 public class SlettebestillingController {
 
 	private final SlettebestillingService slettebestillingService;
@@ -30,10 +34,19 @@ public class SlettebestillingController {
 	}
 
 	@SwaggerBestillSletting
-	@PostMapping
-	public Long bestillSletting(@RequestBody SlettebestillingRequest slettebestillingRequest) {
+	@PostMapping("{dokumentInfoId}/bestillSletting")
+	public Long bestillSletting(@PathVariable long dokumentInfoId, @RequestBody SlettebestillingRequest slettebestillingRequest) {
 		MDC.put(MDC_REQUEST_ID, "bestillsletting");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		return slettebestillingService.bestillSletting(slettebestillingRequest);
+		return slettebestillingService.bestillSletting(dokumentInfoId, slettebestillingRequest);
+	}
+
+	@SwaggerOpphevBestillSletting
+	@PatchMapping("{dokumentInfoId}/opphevBestillSletting")
+	public ResponseEntity<Void> opphevBestillSletting(@PathVariable long dokumentInfoId) {
+		MDC.put(MDC_REQUEST_ID, "opphevBestillsletting");
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		slettebestillingService.opphevBestillSletting(dokumentInfoId);
+		return ResponseEntity.noContent().build();
 	}
 }

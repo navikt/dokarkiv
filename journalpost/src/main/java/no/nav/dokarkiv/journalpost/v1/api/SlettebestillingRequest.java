@@ -11,33 +11,6 @@ public record SlettebestillingRequest(
 
 		@Schema(
 				description = """
-					Type bestilling. En av følgende: DOKUMENT.
-					""",
-				requiredMode = REQUIRED,
-				example = "DOKUMENT"
-		)
-		String slettebestillingType,
-
-		@Schema(
-				description = """
-					DokumentInfoId for dokument som skal slettes. Settes kun om slettebestillingType = DOKUMENT. Påkrevd om slettebestillingType = DOKUMENT.
-					""",
-				requiredMode = REQUIRED,
-				example = "12345"
-		)
-		Long dokumentInfoId,
-
-		@Schema(
-				description = """
-					Årsak for slettingen. En av følgende: ENKELTSLETTING.
-					""",
-				requiredMode = REQUIRED,
-				example = "ENKELTSLETTING"
-		)
-		String arsak,
-
-		@Schema(
-				description = """
 					Hjemmel for sletting. En av følgende:
 					 - POL - for sletting hjemlet i Personopplysningsloven
 					 - ARK - for slettinger hjemlet i Arkivloven

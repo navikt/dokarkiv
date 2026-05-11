@@ -8,22 +8,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import static no.nav.dokarkiv.core.domain.codes.SlettebestillingArsakCode.BEVARINGSTID;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingArsakCode.ENKELTSLETTING;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingHjemmelCode.ARK;
+import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.*;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode.DOKUMENT;
-import static no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode.DOKUMENTER_PA_SAK;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
+
 
 public class SlettebestillingIT extends AbstractJournalpostIT {
 
 	private static final String SLETTEBESTILLING_URL = "bestillSletting";
+	private static final String OPPHEV_SLETTEBESTILLING_URL = "opphevBestillSletting";
 
 	@Autowired
 	private SlettebestillingTestRepository slettebestillingTestRepository;
@@ -52,15 +55,16 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var request1 = new SlettebestillingRequest(DOKUMENT.name(), journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId(), ENKELTSLETTING.name(), ARK.name(), "her skal det slettes");
+		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
+		var request1 = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
 		var requestEntity1 = new HttpEntity<>(request1, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
-		var result1 = restTemplate.exchange(apiPath(SLETTEBESTILLING_URL), POST, requestEntity1, String.class);
+		var result1 = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity1, String.class);
 		assertThat(result1.getStatusCode()).isEqualTo(OK);
 		assertThat(result1.getBody()).isNotNull();
 
-		var request2 = new SlettebestillingRequest(DOKUMENT.name(), journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId(), ENKELTSLETTING.name(), ARK.name(), "her skal det slettes omigjen");
+		var request2 = new SlettebestillingRequest(ARK.name(), "her skal det slettes omigjen");
 		var requestEntity2 = new HttpEntity<>(request2, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
-		var result2 = restTemplate.exchange(apiPath(SLETTEBESTILLING_URL), POST, requestEntity2, String.class);
+		var result2 = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity2, String.class);
 		assertThat(result2.getStatusCode()).isEqualTo(OK);
 		assertThat(result2.getBody()).isNotNull();
 
@@ -74,26 +78,6 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldRejectWhenSlettebestillingTypeIsNotDokument() {
-		var sak = createGsak();
-		sakTestRepository.persist(sak);
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
-		journalpostTestRepository.persist(journalpost);
-
-		commitAndStartNewTransaction();
-
-		var request = new SlettebestillingRequest(DOKUMENTER_PA_SAK.name(), sak.getSakId(), BEVARINGSTID.name(), ARK.name(), "her skal det slettes");
-		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken("itest:teamdokumenthandtering:system", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
-		var result = restTemplate.exchange(apiPath(SLETTEBESTILLING_URL), POST, requestEntity, String.class);
-		assertThat(result.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(result.getBody()).isNotNull();
-		assertThat(result.getBody()).contains("DOKUMENTER_PA_SAK er ikke en gyldig verdi");
-
-		var slettebestillingsInDb = slettebestillingTestRepository.findAll();
-		assertThat(slettebestillingsInDb).isEmpty();
-	}
-
-	@Test
 	public void shouldFailIfNoDocument() {
 		var slettebestillingIterator = slettebestillingTestRepository.findAll().iterator();
 		assertThat(slettebestillingIterator.hasNext()).isFalse();
@@ -102,13 +86,78 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		var request = new SlettebestillingRequest(DOKUMENT.name(), 2L, ENKELTSLETTING.name(), ARK.name(), "her skal det slettes");
+		var request = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
 		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
-		var result = restTemplate.exchange(apiPath(SLETTEBESTILLING_URL), POST, requestEntity, String.class);
+		var result = restTemplate.exchange(apiDokumentInfoPath("2", SLETTEBESTILLING_URL), POST, requestEntity, String.class);
 		assertThat(result.getStatusCode()).isEqualTo(NOT_FOUND);
 		assertThat(result.getBody()).contains("ikke ble funnet");
 
 		var slettebestillingsInDb = slettebestillingTestRepository.findAll();
 		assertThat(slettebestillingsInDb).isEmpty();
 	}
+
+	@Test
+	public void shouldOpphevBestillSletting() {
+		var sak = createGsak();
+		sakTestRepository.persist(sak);
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		journalpostTestRepository.persist(journalpost);
+
+		commitAndStartNewTransaction();
+
+		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
+
+		var request = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
+		var headers = createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId);
+		var requestEntity = new HttpEntity<>(request, headers);
+		var bestillResult = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity, String.class);
+		assertThat(bestillResult.getStatusCode()).isEqualTo(OK);
+
+		var opphevEntity = new HttpEntity<>(null, headers);
+		var opphevResult = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), OPPHEV_SLETTEBESTILLING_URL), PATCH, opphevEntity, Void.class);
+		assertThat(opphevResult.getStatusCode()).isEqualTo(NO_CONTENT);
+
+		commitAndStartNewTransaction();
+
+		var slettebestilling = slettebestillingTestRepository.findById(Long.valueOf(bestillResult.getBody()));
+		assertThat(slettebestilling).isPresent();
+		assertThat(slettebestilling.get().getSlettebestillingStatus()).isEqualTo(AVBRUTT);
+	}
+
+	@Test
+	public void shouldReturnBadRequestWhenBegrunnelseIsBlank() {
+		var sak = createGsak();
+		sakTestRepository.persist(sak);
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		journalpostTestRepository.persist(journalpost);
+
+		commitAndStartNewTransaction();
+
+		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
+		var request = new SlettebestillingRequest(ARK.name(), "   ");
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var result = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity, String.class);
+
+		assertThat(result.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(slettebestillingTestRepository.findAll()).isEmpty();
+	}
+
+	@Test
+	public void shouldReturnBadRequestWhenHjemmelIsInvalid() {
+		var sak = createGsak();
+		sakTestRepository.persist(sak);
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		journalpostTestRepository.persist(journalpost);
+
+		commitAndStartNewTransaction();
+
+		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
+		var request = new SlettebestillingRequest("UGYLDIG_HJEMMEL", "gyldig begrunnelse");
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var result = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity, String.class);
+
+		assertThat(result.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(slettebestillingTestRepository.findAll()).isEmpty();
+	}
 }
+
