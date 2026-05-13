@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.SlettebestillingRequest;
@@ -35,7 +36,9 @@ public class SlettebestillingController {
 
 	@SwaggerBestillSletting
 	@PostMapping("{dokumentInfoId}/bestillSletting")
-	public Long bestillSletting(@PathVariable long dokumentInfoId, @RequestBody SlettebestillingRequest slettebestillingRequest) {
+	public Long bestillSletting(
+			@PathVariable @Parameter(description = "DokumentInfoId for dokumentet som skal slettes", required = true, example = "12345") long dokumentInfoId,
+			@RequestBody SlettebestillingRequest slettebestillingRequest) {
 		MDC.put(MDC_REQUEST_ID, "bestillsletting");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		return slettebestillingService.bestillSletting(dokumentInfoId, slettebestillingRequest);
@@ -43,7 +46,8 @@ public class SlettebestillingController {
 
 	@SwaggerOpphevBestillSletting
 	@PatchMapping("{dokumentInfoId}/opphevBestillSletting")
-	public ResponseEntity<Void> opphevBestillSletting(@PathVariable long dokumentInfoId) {
+	public ResponseEntity<Void> opphevBestillSletting(
+			@PathVariable @Parameter(description = "DokumentInfoId for dokumentet der bestilt sletting skal oppheves", required = true, example = "12345") long dokumentInfoId) {
 		MDC.put(MDC_REQUEST_ID, "opphevBestillsletting");
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		slettebestillingService.opphevBestillSletting(dokumentInfoId);
