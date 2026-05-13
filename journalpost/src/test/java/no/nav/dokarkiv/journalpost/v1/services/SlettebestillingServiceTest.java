@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.services;
 
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode;
+import no.nav.dokarkiv.core.exceptions.SlettebestillingIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigSlettebestillingException;
 import no.nav.dokarkiv.core.domain.entities.Slettebestilling;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
@@ -50,15 +51,8 @@ public class SlettebestillingServiceTest {
 		slettebestillingService = new SlettebestillingService(dokumentInfoRepository, slettebestillingRepository, clock);
 	}
 
-	public static Stream<Arguments> shouldCreateCorrectDeletiontime() {
-		return Stream.of(
-				Arguments.of(DOKUMENT, LocalDate.of(2025, 12, 30))
-		);
-	}
-
-	@ParameterizedTest
-	@MethodSource
-	public void shouldCreateCorrectDeletiontime(SlettebestillingTypeCode type, LocalDate expectedDate) {
+	@Test
+	public void shouldCreateCorrectDeletiontime() {
 		when(slettebestillingRepository.persist(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
 		ArgumentCaptor<Slettebestilling> slettebestillingArgumentCaptor = ArgumentCaptor.forClass(Slettebestilling.class);
 
@@ -68,7 +62,7 @@ public class SlettebestillingServiceTest {
 		slettebestillingService.bestillSletting(dokumentInfoId, request);
 
 		verify(slettebestillingRepository).persist(slettebestillingArgumentCaptor.capture());
-		assertThat(slettebestillingArgumentCaptor.getValue().getDatoUtfores()).isEqualTo(expectedDate);
+		assertThat(slettebestillingArgumentCaptor.getValue().getDatoUtfores()).isEqualTo(LocalDate.of(2025, 12, 30));
 	}
 
 	@Test
@@ -92,13 +86,13 @@ public class SlettebestillingServiceTest {
 	}
 
 	@Test
-	void shouldIgnoreAvbruttSlettebestilling() {
+	void shouldThrowWhenOnlyAvbruttSlettebestillingerExists() {
 		var slettebestilling = lagSlettebestilling(AVBRUTT);
 		when(slettebestillingRepository.findByDokumentInfoId(1L)).thenReturn(List.of(slettebestilling));
 
-		slettebestillingService.opphevBestillSletting(1L);
-
-		assertThat(slettebestilling.getSlettebestillingStatus()).isEqualTo(AVBRUTT);
+		assertThatThrownBy(() -> slettebestillingService.opphevBestillSletting(1L))
+				.isInstanceOf(SlettebestillingIkkeFunnetException.class)
+				.hasMessageContaining("Fant ingen slettebestillinger som kunne avbrytes");
 	}
 
 	@Test
@@ -114,10 +108,12 @@ public class SlettebestillingServiceTest {
 	}
 
 	@Test
-	void shouldHandleEmptyList() {
+	void shouldThrowWhenNoSlettebestillingerExists() {
 		when(slettebestillingRepository.findByDokumentInfoId(1L)).thenReturn(List.of());
 
-		slettebestillingService.opphevBestillSletting(1L);
+		assertThatThrownBy(() -> slettebestillingService.opphevBestillSletting(1L))
+				.isInstanceOf(SlettebestillingIkkeFunnetException.class)
+				.hasMessageContaining("Fant ingen slettebestillinger som kunne avbrytes");
 	}
 
 	private static Slettebestilling lagSlettebestilling(SlettebestillingStatusCode status) {

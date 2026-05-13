@@ -8,10 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import static no.nav.dokarkiv.core.domain.codes.SlettebestillingArsakCode.ENKELTSLETTING;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingHjemmelCode.ARK;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.*;
-import static no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode.DOKUMENT;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -125,6 +123,62 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shouldReturnBadRequestWhenOpphevingFerdigstiltSlettebestilling() {
+		var sak = createGsak();
+		sakTestRepository.persist(sak);
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		journalpostTestRepository.persist(journalpost);
+
+		commitAndStartNewTransaction();
+
+		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
+		var request = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
+		var headers = createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId);
+		var requestEntity = new HttpEntity<>(request, headers);
+		var bestillResult = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity, String.class);
+		assertThat(bestillResult.getStatusCode()).isEqualTo(OK);
+
+		commitAndStartNewTransaction();
+
+		var slettebestilling = slettebestillingTestRepository.findById(Long.valueOf(bestillResult.getBody()));
+		assertThat(slettebestilling).isPresent();
+		slettebestilling.get().endreSlettebestillingStatus(FERDIGSTILT, "itest");
+
+		commitAndStartNewTransaction();
+
+		var opphevEntity = new HttpEntity<>(null, headers);
+		var opphevResult = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), OPPHEV_SLETTEBESTILLING_URL), PATCH, opphevEntity, String.class);
+
+		assertThat(opphevResult.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(opphevResult.getBody()).contains("allerede er gjennomført");
+	}
+
+	@Test
+	public void shouldReturnNotFoundWhenOpphevingAlreadyAvbruttSlettebestilling() {
+		var sak = createGsak();
+		sakTestRepository.persist(sak);
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		journalpostTestRepository.persist(journalpost);
+
+		commitAndStartNewTransaction();
+
+		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
+		var request = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
+		var headers = createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId);
+		var requestEntity = new HttpEntity<>(request, headers);
+		var bestillResult = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity, String.class);
+		assertThat(bestillResult.getStatusCode()).isEqualTo(OK);
+
+		var opphevEntity = new HttpEntity<>(null, headers);
+		var firstOpphevResult = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), OPPHEV_SLETTEBESTILLING_URL), PATCH, opphevEntity, Void.class);
+		assertThat(firstOpphevResult.getStatusCode()).isEqualTo(NO_CONTENT);
+
+		var secondOpphevResult = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), OPPHEV_SLETTEBESTILLING_URL), PATCH, opphevEntity, String.class);
+		assertThat(secondOpphevResult.getStatusCode()).isEqualTo(NOT_FOUND);
+		assertThat(secondOpphevResult.getBody()).contains("kunne avbrytes");
+	}
+
+	@Test
 	public void shouldReturnBadRequestWhenBegrunnelseIsBlank() {
 		var sak = createGsak();
 		sakTestRepository.persist(sak);
@@ -160,4 +214,3 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 		assertThat(slettebestillingTestRepository.findAll()).isEmpty();
 	}
 }
-

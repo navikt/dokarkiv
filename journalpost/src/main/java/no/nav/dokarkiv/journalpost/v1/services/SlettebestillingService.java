@@ -1,12 +1,14 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingArsakCode;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingHjemmelCode;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.Slettebestilling;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.SlettebestillingIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigSlettebestillingException;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.SlettebestillingRepository;
@@ -23,6 +25,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 
+@Slf4j
 @Service
 public class SlettebestillingService {
 	private static final int DOKUMENT_SLETTING_VENTETID_DAGER = 21;
@@ -52,14 +55,24 @@ public class SlettebestillingService {
 			throw new UgyldigSlettebestillingException("Kan ikke oppheve sletting som allerede er gjennomført!");
 		}
 
-		slettebestillinger
+		var avbrutteSlettebestillinger = slettebestillinger
 			.stream()
 			.filter(slettebestilling -> slettebestilling.getSlettebestillingStatus() == SlettebestillingStatusCode.OPPRETTET)
-			.forEach(this::avbrytSletting);
+			.map(this::avbrytSletting)
+			.toList()
+			.size();
+
+		if (avbrutteSlettebestillinger < 1) {
+			throw new SlettebestillingIkkeFunnetException("Fant ingen slettebestillinger som kunne avbrytes for dokument med dokumentInfoId=%d".formatted(dokumentInfoId));
+		}
+		if (avbrutteSlettebestillinger > 1) {
+			log.warn("Kall resulterte i avbrytning av mer enn én slettebestilling for dokumentInfoId={}: Avbrøt {} slettebestillinger", dokumentInfoId, avbrutteSlettebestillinger);
+		}
 	}
 
-	private void avbrytSletting(Slettebestilling slettebestilling) {
+	private Slettebestilling avbrytSletting(Slettebestilling slettebestilling) {
 		slettebestilling.endreSlettebestillingStatus(SlettebestillingStatusCode.AVBRUTT, MDC.get(MDC_CONSUMER_ID));
+		return slettebestilling;
 	}
 
 	private void validerSlettebestilling(long dokumentInfoId, SlettebestillingRequest slettebestilling) {
