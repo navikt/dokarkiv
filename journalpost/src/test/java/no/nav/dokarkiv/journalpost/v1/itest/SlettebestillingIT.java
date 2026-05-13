@@ -9,7 +9,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingHjemmelCode.ARK;
-import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.*;
+import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.AVBRUTT;
+import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.FERDIGSTILT;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static org.assertj.core.api.Assertions.assertThat;

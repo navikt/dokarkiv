@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
@@ -45,7 +46,7 @@ public class SlettebestillingController {
 	}
 
 	@SwaggerOpphevBestillSletting
-	@PatchMapping("{dokumentInfoId}/opphevBestillSletting")
+	@PatchMapping(value = "{dokumentInfoId}/opphevBestillSletting", consumes = ALL_VALUE)
 	public ResponseEntity<Void> opphevBestillSletting(
 			@PathVariable @Parameter(description = "DokumentInfoId for dokumentet der bestilt sletting skal oppheves", required = true, example = "12345") long dokumentInfoId) {
 		MDC.put(MDC_REQUEST_ID, "opphevBestillsletting");

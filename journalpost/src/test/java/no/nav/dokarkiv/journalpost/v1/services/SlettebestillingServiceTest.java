@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode;
-import no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode;
 import no.nav.dokarkiv.core.exceptions.SlettebestillingIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.UgyldigSlettebestillingException;
 import no.nav.dokarkiv.core.domain.entities.Slettebestilling;
@@ -10,9 +9,6 @@ import no.nav.dokarkiv.core.repository.SlettebestillingRepository;
 import no.nav.dokarkiv.journalpost.v1.api.SlettebestillingRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
@@ -20,12 +16,13 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingArsakCode.ENKELTSLETTING;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingHjemmelCode.ARK;
-import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.*;
+import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.AVBRUTT;
+import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.FERDIGSTILT;
+import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.OPPRETTET;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode.DOKUMENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

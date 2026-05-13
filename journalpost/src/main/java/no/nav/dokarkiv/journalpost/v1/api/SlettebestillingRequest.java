@@ -1,9 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import no.nav.dokarkiv.core.domain.codes.SlettebestillingArsakCode;
-import no.nav.dokarkiv.core.domain.codes.SlettebestillingHjemmelCode;
-import no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
@@ -22,7 +19,7 @@ public record SlettebestillingRequest(
 
 		@Schema(
 				description = """
-					Begrunnelse for sletting gjøres. Maks 512 tegn. Kan f.eks være referanse til oppgave eller jira-sak.
+					Begrunnelse for hvorfor sletting gjøres. Maks 512 tegn. Kan f.eks være referanse til oppgave eller jira-sak.
 					""",
 				requiredMode = REQUIRED,
 				example = "Jira: SLETT-1234"
