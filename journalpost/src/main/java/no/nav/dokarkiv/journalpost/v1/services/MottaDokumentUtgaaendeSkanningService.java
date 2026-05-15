@@ -62,7 +62,6 @@ public class MottaDokumentUtgaaendeSkanningService {
 
 			journalpost.setMottakskanal(MottaksKanalCode.valueOf(request.getMottakskanal()));
 
-			journalpost.setEndretKildeNavn(KILDENAVN);
 			if (request.getDatoMottatt() != null) {
 				journalpost.setMottattDato(request.getDatoMottatt().atStartOfDay());
 			}

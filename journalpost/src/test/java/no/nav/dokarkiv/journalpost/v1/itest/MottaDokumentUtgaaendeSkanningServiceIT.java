@@ -87,7 +87,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		assertEquals(mockTilleggsopplysninger.get(0).getVerdi(),
 				tilleggsopplysninger.get(mockTilleggsopplysninger.get(0).getNokkel()));
 		assertEquals(MottaksKanalCode.SKAN_NETS, oppdatertJP.getMottakskanal());
-		assertEquals(KILDE, oppdatertJP.getEndretKildeNavn());
+		assertEquals(GYLDIG_CONSUMER, oppdatertJP.getEndretKildeNavn());
 		assertEquals(mockDate.atStartOfDay(), oppdatertJP.getMottattDato());
 		assertThat(oppdatertJP.getJournalDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 		assertEquals(FilTypeCode.PDF, filDetaljer.getFiltype());

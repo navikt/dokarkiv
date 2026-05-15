@@ -17,8 +17,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
-import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
-import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import no.nav.dokarkiv.core.storage.BucketStorage;
 import no.nav.dokarkiv.core.storage.DoksysDokument;
 import no.nav.dokarkiv.core.util.JsonSerializer;
@@ -43,12 +41,10 @@ import static org.apache.commons.lang3.StringUtils.trim;
 @Component
 public class OpprettJournalpostArkiverDokumenterRequestMapper {
 
-	private final KildeNavnPopulator kildeNavnPopulator;
 	private final BucketStorage dokprodMellomlagerStorage;
 
 	@Autowired
-	public OpprettJournalpostArkiverDokumenterRequestMapper(KildeNavnPopulator kildeNavnPopulator, BucketStorage dokprodMellomlagerStorage) {
-		this.kildeNavnPopulator = kildeNavnPopulator;
+	public OpprettJournalpostArkiverDokumenterRequestMapper(BucketStorage dokprodMellomlagerStorage) {
 		this.dokprodMellomlagerStorage = dokprodMellomlagerStorage;
 	}
 
@@ -72,8 +68,6 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 		addJournalpostDokumentInfoRelasjon(domainJournalpost, dokumentInfoHoveddokument, TilknyttetJournalpostSomCode.HOVEDDOKUMENT, bestillingsId);
 		dokumentInfoVedleggList.forEach(dokumentInfo -> addJournalpostDokumentInfoRelasjon(domainJournalpost, dokumentInfo, TilknyttetJournalpostSomCode.VEDLEGG, bestillingsId));
 		domainJournalpost.setKanalReferanseId(bestillingsId);
-		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder
-				.currentRequestContext().getComponentId());
 
 		return new OpprettJournalpostArkiverDokumenterRequestTo(domainJournalpost);
 	}
