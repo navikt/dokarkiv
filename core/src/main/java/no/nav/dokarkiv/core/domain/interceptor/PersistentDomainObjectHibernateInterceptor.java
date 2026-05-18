@@ -10,6 +10,8 @@ import org.hibernate.type.Type;
 
 import java.time.LocalDateTime;
 
+import static no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde.KILDE_NAVN_LENGTH;
+
 /**
  * Hibernate interceptor to update change stamp of persistent domain objects.
  */
@@ -102,10 +104,10 @@ public class PersistentDomainObjectHibernateInterceptor implements Interceptor {
 		}
 
 		if (isOpprettetNow && entity instanceof AbstractPersistentVersionedDomainObjectWithKilde) {
-			response |= setPropertyValueForName(currentState, propertyNames, "opprettetKildeNavn", kildeNavn);
+			response |= setPropertyValueForKey(currentState, propertyNames, "opprettetKildeNavn", truncateToMaxSize(kildeNavn, KILDE_NAVN_LENGTH));
 		}
 		if (!isOpprettetNow && entity instanceof AbstractPersistentVersionedDomainObjectWithKilde) {
-			response |= setPropertyValueForName(currentState, propertyNames, "endretKildeNavn", kildeNavn);
+			response |= setPropertyValueForKey(currentState, propertyNames, "endretKildeNavn", truncateToMaxSize(kildeNavn, KILDE_NAVN_LENGTH));
 		}
 		return response;
 	}
@@ -115,17 +117,24 @@ public class PersistentDomainObjectHibernateInterceptor implements Interceptor {
 	 *
 	 * @param currentState  The values of the object's variables
 	 * @param propertyNames The names of the object's variables
-	 * @param propertyName  The name of the property to set to the given value
-	 * @param value         The value to set the given propertyName to
+	 * @param key  The name of the property to set to the given value
+	 * @param value         The value to set the given key to
 	 * @return true if the change stamp is updated, false otherwise
 	 */
-	private static boolean setPropertyValueForName(Object[] currentState, String[] propertyNames, String propertyName, String value) {
+	private static boolean setPropertyValueForKey(Object[] currentState, String[] propertyNames, String key, String value) {
 		for (int i = 0; i < currentState.length; i++) {
-			if (propertyName.equals(propertyNames[i])) {
+			if (key.equals(propertyNames[i])) {
 				currentState[i] = value;
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private static String truncateToMaxSize(String string, int size) {
+		if (string != null && string.length() > size) {
+			return string.substring(0, size - 1);
+		}
+		return string;
 	}
 }
