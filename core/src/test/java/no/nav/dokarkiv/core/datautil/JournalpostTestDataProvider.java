@@ -9,12 +9,12 @@ import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.UUID;
 
-import static no.nav.dokarkiv.core.datautil.DokumentFilTestDataProvider.FIL_UUID_SLADDET;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createDokumentInfo;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createHovedDokumentInfoFP;
 import static no.nav.dokarkiv.core.datautil.DokumentInfoTestDataProvider.createVedleggDokumentInfo;
@@ -53,11 +53,11 @@ public final class JournalpostTestDataProvider {
 	}
 
 	public static JournalpostBuilder createJournalpost(String dokumentTittel, String filuid) {
-		return createJournalpost(createDokumentInfo(dokumentTittel, filuid, FIL_UUID_SLADDET));
+		return createJournalpost(createDokumentInfo(dokumentTittel, filuid, FilDetaljer.generateUuid()));
 	}
 
 	public static JournalpostBuilder createJournalpost(String dokumentTittel, String filuid, LocalDateTime hoveddokumentFerdigDato) {
-		return createJournalpost(createDokumentInfo(dokumentTittel, filuid, FIL_UUID_SLADDET).dokumentFerdigDato(hoveddokumentFerdigDato));
+		return createJournalpost(createDokumentInfo(dokumentTittel, filuid, FilDetaljer.generateUuid()).dokumentFerdigDato(hoveddokumentFerdigDato));
 	}
 
 	public static JournalpostBuilder createJournalpost(DokumentKategoriCode hoveddokumentKategori) {
@@ -80,9 +80,7 @@ public final class JournalpostTestDataProvider {
 				.fagomrade(fagomradeCode)
 				.avsenderMottaker(JP_AVSENDER_MOTTAKER)
 				.avsenderMottakerId(JP_AVSENDER_MOTTAKER_ID)
-				.changeStamp(new ChangeStamp("test"))
 				.opprettetAvNavn("testuser")
-				.opprettetKildeNavn("test")
 				.mottakskanal(NAV_NO)
 				.mottattDato(JANUARY_1_2020)
 				.journalDato(JANUARY_1_2020)
@@ -110,17 +108,14 @@ public final class JournalpostTestDataProvider {
 				.journalForendeEnhetId("SesamStasjon")
 				.avsenderMottaker("Bjarne Betjent")
 				.opprettetAvNavn("Leonora Dorothea Dahl")
-				.opprettetKildeNavn("itest")
 				.dokumentDato(LocalDateTime.now())
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
-								.opprettetKildeNavn("itest")
 								.tilknyttetAvNavn("itest")
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 								.dokumentInfo(createHovedDokumentInfoFP().build())
 								.build(),
 						getJournalpostDokumentInfoRelasjonBuilder()
-								.opprettetKildeNavn("itest")
 								.tilknyttetAvNavn("itest")
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 								.dokumentInfo(createVedleggDokumentInfo().build())

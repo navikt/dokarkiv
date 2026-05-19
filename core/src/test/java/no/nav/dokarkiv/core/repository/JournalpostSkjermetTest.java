@@ -16,12 +16,10 @@ import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import static no.nav.dokarkiv.core.util.TestDataUtils.createJournalpost;
@@ -124,36 +122,29 @@ public class JournalpostSkjermetTest {
 
 		journalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.opprettetKildeNavn("test")
 				.tilknyttetAvNavn("test")
 				.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
 						.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-						.opprettetKildeNavn("test")
 						.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
 								.filtype(FilTypeCode.PDF)
 								.filUuid("uuid")
 								.variantFormat(VariantFormatCode.PRODUKSJON)
-								.opprettetKildeNavn("test")
 								.build()
 						)
 						.build()).build());
 
 		journalpost.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.opprettetKildeNavn("test")
 				.tilknyttetAvNavn("test")
 				.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
 						.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-						.opprettetKildeNavn("test")
 						.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
 								.filtype(FilTypeCode.PDF)
 								.filUuid("uuid")
 								.variantFormat(VariantFormatCode.PRODUKSJON)
-								.opprettetKildeNavn("test")
 								.build()
 						)
 						.build()).build());
-
 
 		return journalpost;
 	}

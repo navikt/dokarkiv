@@ -10,7 +10,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.journalbehandling.DokumentFilerDelegate;
 import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
-import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -128,16 +127,9 @@ public class OpprettUtgaaendeJournalpostArkiverDokumentService {
 					.tilknyttetAvNavn(journalpost.getOpprettetAvNavn())
 					.dokumentInfo(dokumentInfo)
 					.build());
-
-			populateDokumentInfoRelasjonWithOpprettetKildeNavn(journalpost);
 		}
 	}
 
-	public void populateDokumentInfoRelasjonWithOpprettetKildeNavn(Journalpost journalpost) {
-		journalpost.getJournalpostDokumentInfoRelasjoner()
-				.forEach(relasjon -> relasjon.setOpprettetKildeNavn(RequestContextHolder
-						.currentRequestContext().getComponentId()));
-	}
 
 	private void updateJournalpostAfterValidation(Journalpost journalpost, String journalforendeEnhet) {
 		if (JournalStatusCode.FS == journalpost.getJournalstatus()) {

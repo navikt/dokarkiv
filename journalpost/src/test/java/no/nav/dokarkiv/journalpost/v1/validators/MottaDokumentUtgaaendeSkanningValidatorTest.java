@@ -301,14 +301,12 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 	private Journalpost generateJournalpost(JournalpostTypeCode journalpostTypeCode, JournalStatusCode journalstatuscode, TilknyttetJournalpostSomCode tilknyttetJournalpostSomCode) {
 		return JournalpostBuilder.getJournalpostBuilder()
 				.journalpostId(0L)
-				.opprettetKildeNavn("unitTest")
 				.journalpostType(journalpostTypeCode)
 				.journalStatus(journalstatuscode)
 				.dokumentInfoRelasjoner(
 						JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
-								.opprettetKildeNavn("unitTest")
 								.tilknyttetAvNavn("unitTest")
-								.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder().opprettetKildeNavn("unitTest").build())
+								.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder().build())
 								.tilknyttetJournalpostSom(tilknyttetJournalpostSomCode)
 								.build())
 				.build();
@@ -317,12 +315,10 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 	private Journalpost generateJournalpostNoDokumentInfo() {
 		return JournalpostBuilder.getJournalpostBuilder()
 				.journalpostId(0L)
-				.opprettetKildeNavn("unitTest")
 				.journalpostType(VALID_JOURNALPOSTTYPECODE)
 				.journalStatus(VALID_JOURNALSTATUSCODE)
 				.dokumentInfoRelasjoner(
 						JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
-								.opprettetKildeNavn("unitTest")
 								.tilknyttetAvNavn("unitTest")
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 								.build())
@@ -332,20 +328,17 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 	private Journalpost generateJournalpostTwoDokumentInfo() {
 		return JournalpostBuilder.getJournalpostBuilder()
 				.journalpostId(0L)
-				.opprettetKildeNavn("unitTest")
 				.journalpostType(VALID_JOURNALPOSTTYPECODE)
 				.journalStatus(VALID_JOURNALSTATUSCODE)
 				.dokumentInfoRelasjoner(
 						JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
-								.opprettetKildeNavn("unitTest")
 								.tilknyttetAvNavn("unitTest")
-								.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder().opprettetKildeNavn("unitTest").build())
+								.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder().build())
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 								.build(),
 						JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
-								.opprettetKildeNavn("unitTest")
 								.tilknyttetAvNavn("unitTest")
-								.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder().opprettetKildeNavn("unitTest").build())
+								.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder().build())
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 								.build())
 				.build();
@@ -360,19 +353,16 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 				.batchNavn("mock")
 				.filUuid(FilDetaljer.generateUuid())
 				.build();
-		filDetaljer.setOpprettetKildeNavn("unitTest");
 
 		Journalpost journalpost = JournalpostBuilder.getJournalpostBuilder()
 				.journalpostId(0L)
-				.opprettetKildeNavn("unitTest")
 				.journalpostType(INVALID_JOURNALPOSTTYPECODE)
 				.journalStatus(INVALID_JOURNALSTATUSCODE)
 				.dokumentInfoRelasjoner(
 						JournalpostDokumentInfoRelasjonBuilder
 								.getJournalpostDokumentInfoRelasjonBuilder()
-								.opprettetKildeNavn("unitTest")
 								.tilknyttetAvNavn("unitTest")
-								.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder().opprettetKildeNavn("unitTest").filDetaljerList(filDetaljer).build())
+								.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder().filDetaljerList(filDetaljer).build())
 								.tilknyttetJournalpostSom(VEDLEGG)
 								.build())
 				.build();
@@ -380,7 +370,6 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 		DokumentInfo dokumentInfo = DokumentInfo.builder()
 				.fildetaljerListe(Set.of(filDetaljer))
 				.build();
-		dokumentInfo.setOpprettetKildeNavn("unitTest");
 
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
 				.tilknyttetJournalpostSom(VEDLEGG)
@@ -391,9 +380,6 @@ public class MottaDokumentUtgaaendeSkanningValidatorTest {
 				)
 				.tilknyttetAvNavn("unitTest")
 				.build();
-
-		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn("unitTest");
-
 
 		journalpost.addJournalpostDokumentInfoRelasjon(
 				journalpostDokumentInfoRelasjon

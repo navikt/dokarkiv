@@ -130,31 +130,25 @@ public class HentDokumentIT extends AbstractSafinternTest {
 				.journalpostType(JournalpostTypeCode.U)
 				.fagomrade(FagomradeCode.FOR)
 				.opprettetAvNavn("testuser")
-				.opprettetKildeNavn("test")
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
 								.tilknyttetAvNavn("testuser")
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-								.opprettetKildeNavn("test")
 								.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
-										.opprettetKildeNavn("test")
 										.filDetaljerList(getFilDetaljerBuilder()
 														.filUuid(PDF_UUID)
 														.filtype(PDF)
 														.variantFormat(ARKIV)
-														.opprettetKildeNavn("test")
 														.build(),
 												getFilDetaljerBuilder()
 														.filUuid(XML_UUID)
 														.filtype(XML)
 														.variantFormat(SKANNING_META)
-														.opprettetKildeNavn("test")
 														.build(),
 												getFilDetaljerBuilder()
 														.filUuid(JSON_UUID)
 														.filtype(JSON)
 														.variantFormat(ORIGINAL)
-														.opprettetKildeNavn("test")
 														.build())
 										.build())
 								.build())
@@ -167,19 +161,15 @@ public class HentDokumentIT extends AbstractSafinternTest {
 		dokumentFilTestRepository.persist(getDokumentFilBuilder()
 				.filUuid(PDF_UUID)
 				.fil(TEST_FILE_CONTENT.getBytes())
-				.opprettetKildeNavn("test")
 				.build());
 		dokumentFilTestRepository.persist(getDokumentFilBuilder()
 				.filUuid(XML_UUID)
 				.fil(TEST_FILE_CONTENT_XML.getBytes())
-				.opprettetKildeNavn("test")
 				.build());
 		dokumentFilTestRepository.persist(getDokumentFilBuilder()
 				.filUuid(JSON_UUID)
 				.fil(TEST_FILE_CONTENT_JSON.getBytes())
-				.opprettetKildeNavn("test")
 				.build());
-
 	}
 }
 

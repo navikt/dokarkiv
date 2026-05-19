@@ -21,7 +21,6 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.R;
@@ -69,7 +68,6 @@ public class SettBrevdataService {
 			return SettBrevdata.from(filDetaljer, INGEN);
 		}
 
-		filDetaljer.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		filDetaljer.setFileContent(brevdata);
 		sporingPopulator.populateSporingInfo(journalpost, MDC.get(MDC_USER_NAME));
 		dokumentFilerDelegate.saveUpdateDokumentFiler(journalpost);

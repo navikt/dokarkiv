@@ -25,7 +25,6 @@ import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjo
 public class TestUtils {
 
 
-	private static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	private static final String OPPRETTET_AV_NAVN = "Opprettet navn";
 	private static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	private static final String ENDRET_AV_NAVN = "Endret av navn";
@@ -58,9 +57,7 @@ public class TestUtils {
 				.utsendingskanal(UtsendingsKanalCode.NAV_NO)
 				.journalStatus(JournalStatusCode.FS)
 				.journalpostType(JournalpostTypeCode.U)
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.addOriginalJournalpost(true)
 				.fagomrade(FagomradeCode.RPO)
 				.saksrelasjon(
@@ -72,7 +69,6 @@ public class TestUtils {
 
 	private static JournalpostDokumentInfoRelasjonBuilder getBaseJournalpostDokumentInfoRelasjonBuilder() {
 		return getJournalpostDokumentInfoRelasjonBuilder()
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.tilknyttetAvNavn(TILKNYTTET_AV_NAVN);
 	}
 
@@ -83,21 +79,15 @@ public class TestUtils {
 				.endretAvNavn(ENDRET_AV_NAVN)
 				.brevgruppe(BREVGRUPPE)
 				.brevkode(BREVKODE)
-				.filDetaljerList(createFildetaljer())
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN);
+				.filDetaljerList(createFildetaljer());
 	}
 
 	private static FilDetaljer createFildetaljer() {
-		return createFildetaljer(FilDetaljer.generateUuid());
-	}
-
-	private static FilDetaljer createFildetaljer(String filUuid) {
 		return FilDetaljerBuilder.getFilDetaljerBuilder()
-				.filUuid(filUuid)
+				.filUuid(FilDetaljer.generateUuid())
 				.filnavn(FILNAVN)
 				.filtype(FilTypeCode.PDF)
 				.variantFormat(VariantFormatCode.ARKIV)
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.fileContent("ARKIV variant".getBytes())
 				.build();
 	}

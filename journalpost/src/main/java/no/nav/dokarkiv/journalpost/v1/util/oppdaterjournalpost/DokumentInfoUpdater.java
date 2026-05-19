@@ -4,7 +4,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_BREVKODE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_SENSITIVT;
@@ -23,7 +22,6 @@ public class DokumentInfoUpdater {
 
 		if (tracker.isEndretFlagg()) {
 			dokumentJoark.setEndretAvNavn(MDC.get(MDC_USER_ID));
-			dokumentJoark.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		}
 		return tracker;
 	}

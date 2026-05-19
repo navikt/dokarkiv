@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_DOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.KOPIER_DOKUMENT;
@@ -71,14 +70,11 @@ public class JournalpostSplitter {
 				var nyBruker = bruker.toBuilder()
 						.brukerInfoId(null)
 						.build();
-				nyBruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 				journalpost.addBruker(nyBruker);
 			});
 		}
 
 		originalJournalpost.getKryssreferanser().forEach(journalpost::addKryssReferanse);
-
-		journalpost.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 
 		List<Pair<JournalpostDokumentInfoRelasjon, AksjonsLoggTO>> dokumentRelasjonerMedAksjoner = opprettDokumentInfoRelasjoner(originalJournalpost, request.dokumenter());
 
@@ -96,8 +92,6 @@ public class JournalpostSplitter {
 				.brukerId(request.bruker().getId())
 				.brukerType(request.bruker().getIdType() == FNR ? PERSON : ORGANISASJON)
 				.build();
-
-		bruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 
 		return bruker;
 	}
@@ -133,8 +127,6 @@ public class JournalpostSplitter {
 				.tilknyttetJournalpostSom(tilknyttetSom)
 				.build();
 
-		nyRelasjon.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
-
 		if (!splittDokument.kopierUtenEndringer()) {
 			nyRelasjon.setDokumentInfo(opprettDokumentInfo(journalpost, splittDokument, eksisterendeRelasjon));
 		}
@@ -158,8 +150,6 @@ public class JournalpostSplitter {
 				.tittel(eksisterendeRelasjon.getDokumentInfo().getTittel())
 				.build();
 
-		nyDokumentInfo.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
-
 		splittDokument.dokumentvarianter().stream()
 				.map(variant -> mapDokumentvariant(variant, eksisterendeRelasjon))
 				.forEach(nyDokumentInfo::addFilDetaljer);
@@ -168,17 +158,13 @@ public class JournalpostSplitter {
 	}
 
 	private static FilDetaljer mapDokumentvariant(DokumentVariant variant, JournalpostDokumentInfoRelasjon eksisterendeRelasjon) {
-		FilDetaljer fildetaljer = FilDetaljer.builder()
+		return FilDetaljer.builder()
 				.filtype(FilTypeCode.valueOf(variant.getFiltype()))
 				.variantFormat(VariantFormatCode.valueOf(variant.getVariantformat()))
 				.fileContent(variant.getFysiskDokument())
 				.filUuid(FilDetaljer.generateUuid())
 				.filnavn(genererFilnavn(eksisterendeRelasjon, variant.getFiltype()))
 				.build();
-
-		fildetaljer.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
-
-		return fildetaljer;
 	}
 
 	private static String genererFilnavn(JournalpostDokumentInfoRelasjon eksisterendeRelasjon, String filtype) {

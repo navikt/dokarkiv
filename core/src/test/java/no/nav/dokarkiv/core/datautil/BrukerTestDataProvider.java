@@ -8,8 +8,6 @@ import no.nav.dokarkiv.core.domain.entities.Bruker;
 
 /**
  * Provides helpers for building Bruker-instances
- *
- * @author Roar Bjurstrom, Visma Consulting.
  */
 public final class BrukerTestDataProvider {
 
@@ -23,15 +21,13 @@ public final class BrukerTestDataProvider {
 	public static BrukerBuilder createBruker() {
 		return getBrukerBuilder()
 				.brukerId(BRUKER_ID)
-				.brukerType(BrukerTypeCode.PERSON)
-				.opprettetKildeNavn("test");
+				.brukerType(BrukerTypeCode.PERSON);
 	}
 
 	public static Bruker createBruker(String id, BrukerTypeCode brukerTypeCode) {
 		return getBrukerBuilder()
 				.brukerId(id)
 				.brukerType(brukerTypeCode)
-				.opprettetKildeNavn("itest")
 				.build();
 	}
 }

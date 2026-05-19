@@ -196,7 +196,6 @@ public class JournalpostRepositorySkjermetTest {
 		//Legg til dokumentInfo som vedlegg til skjermet journalpost
 		journalpostSkjermet.addJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
-				.opprettetKildeNavn("test")
 				.tilknyttetAvNavn("test")
 				.dokumentInfo(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo())
 				.build());

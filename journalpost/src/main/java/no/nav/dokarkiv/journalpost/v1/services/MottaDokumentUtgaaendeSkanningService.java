@@ -38,7 +38,6 @@ public class MottaDokumentUtgaaendeSkanningService {
 	private final DokumentFilRepository dokumentFilRepository;
 	private final MottaDokumentUtgaaendeSkanningValidator validator = new MottaDokumentUtgaaendeSkanningValidator();
 
-	private final String KILDENAVN = "skanmotutgaaende";
 	private final String JOURNALPOST = "journalpost";
 	private final String REQUEST = "request";
 
@@ -113,7 +112,7 @@ public class MottaDokumentUtgaaendeSkanningService {
 	}
 
 	private FilDetaljer mapDokumentVariantToFildetaljer(DokumentVariant dokumentVariant, String batchnavn) {
-		FilDetaljer filDetaljer = FilDetaljer
+		return FilDetaljer
 				.builder()
 				.filtype(FilTypeCode.valueOf(dokumentVariant.getFiltype()))
 				.filnavn(dokumentVariant.getFilnavn())
@@ -122,8 +121,6 @@ public class MottaDokumentUtgaaendeSkanningService {
 				.batchNavn(batchnavn)
 				.filUuid(FilDetaljer.generateUuid())
 				.build();
-		filDetaljer.setOpprettetKildeNavn(KILDENAVN);
-		return filDetaljer;
 	}
 
 }

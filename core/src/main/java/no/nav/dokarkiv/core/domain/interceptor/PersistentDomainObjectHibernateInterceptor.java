@@ -36,7 +36,9 @@ public class PersistentDomainObjectHibernateInterceptor implements Interceptor {
 	 */
 	@Override
 	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) throws CallbackException {
-		return updateChangeStamp(entity, currentState, propertyNames, types);
+		boolean response = updateChangeStamp(entity, currentState, propertyNames, types);
+		response |= updateKildeNavn(entity, currentState, propertyNames, "endretKildeNavn");
+		return response;
 	}
 
 	/**
@@ -56,7 +58,9 @@ public class PersistentDomainObjectHibernateInterceptor implements Interceptor {
 	 */
 	@Override
 	public boolean onPersist(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
-		return updateChangeStamp(entity, state, propertyNames, types);
+		boolean response = updateChangeStamp(entity, state, propertyNames, types);
+		response |= updateKildeNavn(entity, state, propertyNames, "opprettetKildeNavn");
+		return response;
 	}
 
 	/**
@@ -75,14 +79,11 @@ public class PersistentDomainObjectHibernateInterceptor implements Interceptor {
 	 * @return true if the change stamp is updated, false otherwise
 	 */
 	private boolean updateChangeStamp(Object entity, Object[] currentState, String[] propertyNames, Type[] types) {
-		boolean response = false;
 		// Get the current user from the request context:
 		String userId = RequestContextHolder.currentRequestContext().getUserId();
 		if (userId == null) {
 			userId = "DEFAULT_USER_ID";
 		}
-		String kildeNavn = RequestContextHolder.currentRequestContext().getComponentId();
-		boolean isOpprettetNow = false;
 
 		if (entity instanceof AbstractPersistentDomainObject) {
 			for (int i = 0; i < currentState.length; i++) {
@@ -94,22 +95,25 @@ public class PersistentDomainObjectHibernateInterceptor implements Interceptor {
 						current.updatedBy(userId);
 					} else {
 						//Only set created fields for new objects
-						isOpprettetNow = true;
 						currentState[i] = new ChangeStamp(userId, LocalDateTime.now(), null, null);
 					}
-					response = true;
-					break;
+					return true;
 				}
 			}
 		}
+		return false;
+	}
 
-		if (isOpprettetNow && entity instanceof AbstractPersistentVersionedDomainObjectWithKilde) {
-			response |= setPropertyValueForKey(currentState, propertyNames, "opprettetKildeNavn", truncateToMaxSize(kildeNavn, KILDE_NAVN_LENGTH));
+	private static boolean updateKildeNavn(Object entity, Object[] state, String[] propertyNames, String kildeNavnFelt) {
+		if (entity instanceof AbstractPersistentVersionedDomainObjectWithKilde) {
+			String kildeNavn = RequestContextHolder.currentRequestContext().getComponentId();
+			if (kildeNavn == null) {
+				kildeNavn = "DEFAULT_KILDE_NAVN";
+			}
+			return setPropertyValueForKey(state, propertyNames, kildeNavnFelt, truncateToMaxSize(kildeNavn, KILDE_NAVN_LENGTH));
+		} else {
+			return false;
 		}
-		if (!isOpprettetNow && entity instanceof AbstractPersistentVersionedDomainObjectWithKilde) {
-			response |= setPropertyValueForKey(currentState, propertyNames, "endretKildeNavn", truncateToMaxSize(kildeNavn, KILDE_NAVN_LENGTH));
-		}
-		return response;
 	}
 
 	/**

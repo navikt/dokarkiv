@@ -142,7 +142,6 @@ public class TestdataFactory {
 		journalpost.addBruker(createBruker());
 		journalpost.addKryssReferanse(createKryssreferanse());
 		journalpost.setTilleggsopplysninger(createTilleggsopplysninger());
-		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 
 		if (saksrelasjon != null) {
 			journalpost.setSaksrelasjon(saksrelasjon);
@@ -174,7 +173,6 @@ public class TestdataFactory {
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 				.build();
 
-		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(OPPRETTET_KILDE_NAVN);
 		return journalpostDokumentInfoRelasjon;
 	}
@@ -186,7 +184,6 @@ public class TestdataFactory {
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 				.build();
 
-		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(OPPRETTET_KILDE_NAVN);
 		return journalpostDokumentInfoRelasjon;
 	}
@@ -207,7 +204,6 @@ public class TestdataFactory {
 				.skjermingType(null)
 				.build();
 
-		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(OPPRETTET_KILDE_NAVN);
 		journalpost.addJournalpostDokumentInfoRelasjon(journalpostDokumentInfoRelasjon);
 		return journalpostDokumentInfoRelasjon;
@@ -223,27 +219,22 @@ public class TestdataFactory {
 		if (journalpost.length > 0) {
 			saksrelasjon.setJournalpost(journalpost[0]);
 		}
-		saksrelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		return saksrelasjon;
 	}
 
 	static Bruker createBruker() {
-		Bruker bruker = Bruker.builder()
+		return Bruker.builder()
 				.brukerType(BrukerTypeCode.PERSON)
 				.brukerId(BRUKER_ID)
 				.build();
-		bruker.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		return bruker;
 	}
 
 	static Kryssreferanse createKryssreferanse() {
-		Kryssreferanse kryssreferanse = Kryssreferanse.builder()
+		return Kryssreferanse.builder()
 				.referanseType(ReferanseTypeCode.SPOERSMAAL)
 				.referanseId(KRYSSREFERANSE_ID)
 				.referanseNr(1L)
 				.build();
-		kryssreferanse.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		return kryssreferanse;
 	}
 
 
@@ -261,23 +252,20 @@ public class TestdataFactory {
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV, FilTypeCode.PDF, filUuidArkiv));
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.PRODUKSJON, FilTypeCode.JSON, filUuidProduksjon));
 		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
-		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());
 		return dokumentInfo;
 	}
 
 	static SkannetInnhold createSkannetInnhold() {
-		SkannetInnhold skannetInnhold = SkannetInnhold.builder()
+		return SkannetInnhold.builder()
 				.vedleggInnhold(SKANNET_INNHOLD_TITTEL)
 				.dokumenttypeid(DOKUMENT_TYPE_ID)
 				.build();
-		skannetInnhold.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		return skannetInnhold;
 	}
 
 
 	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, VariantFormatCode variantFormatCode, FilTypeCode filTypeCode, String filUuid) {
-		FilDetaljer filDetaljer = FilDetaljer.builder()
+		return FilDetaljer.builder()
 				.dokumentInfo(dokumentInfo)
 				.fileContent(FIL)
 				.filnavn(FIL_NAVN)
@@ -287,8 +275,6 @@ public class TestdataFactory {
 				.variantFormat(variantFormatCode)
 				.skjermingType(POL)
 				.build();
-		filDetaljer.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
-		return filDetaljer;
 	}
 
 	public static Sak createGsak() {

@@ -18,13 +18,11 @@ import no.nav.dokarkiv.core.util.TestDataGenerator;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -32,7 +30,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVELEMENT;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_FRA_VERDI;
@@ -125,7 +122,6 @@ public class AksjonsLoggIT {
 				.brukerId(nyBrukerId)
 				.brukerType(BrukerTypeCode.PERSON)
 				.build();
-		nyBruker.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		journalpost.addBruker(nyBruker);
 		journalpostTestRepository.persist(journalpost);
 
