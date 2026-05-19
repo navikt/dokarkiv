@@ -7,9 +7,11 @@ import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import org.hibernate.CallbackException;
 import org.hibernate.Interceptor;
 import org.hibernate.type.Type;
+import org.slf4j.MDC;
 
 import java.time.LocalDateTime;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde.KILDE_NAVN_LENGTH;
 
 /**
@@ -106,7 +108,10 @@ public class PersistentDomainObjectHibernateInterceptor implements Interceptor {
 
 	private static boolean updateKildeNavn(Object entity, Object[] state, String[] propertyNames, String kildeNavnFelt) {
 		if (entity instanceof AbstractPersistentVersionedDomainObjectWithKilde) {
-			String kildeNavn = RequestContextHolder.currentRequestContext().getComponentId();
+			String kildeNavn = MDC.get(MDC_CONSUMER_ID);
+			if (kildeNavn == null) {
+				kildeNavn = RequestContextHolder.currentRequestContext().getComponentId();
+			}
 			if (kildeNavn == null) {
 				kildeNavn = "DEFAULT_KILDE_NAVN";
 			}
