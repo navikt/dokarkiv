@@ -126,7 +126,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Column(name = "kassert", length = 1)
 	private Boolean kassert;
 
-	@Column(name = "k_skjerming_type", length = 50)
+	@Column(name = "k_skjerming_type", length = 128)
 	@Enumerated(EnumType.STRING)
 	@Setter(AccessLevel.NONE)
 	private SkjermingTypeCode skjermingType;
