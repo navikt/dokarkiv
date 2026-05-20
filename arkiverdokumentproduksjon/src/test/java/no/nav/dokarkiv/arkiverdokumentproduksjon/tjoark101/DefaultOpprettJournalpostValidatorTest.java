@@ -38,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class DefaultOpprettJournalpostValidatorTest {
 	private static final boolean SENSITIVT_REQUEST = true;
 	private static final String OPPRETTET_AV_NAVN = "Saksbehandler";
-	private static final String OPPRETTET_KILDE_NAVN = "dokumentproduksjon";
 
 	private Journalpost journalpost;
 
@@ -301,13 +300,11 @@ public class DefaultOpprettJournalpostValidatorTest {
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
 								.sakId(1L)
-								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.fagsystem(FagsystemCode.FS22).build())
 				.journalStatus(JournalStatusCode.D)
 				.journalpostType(JournalpostTypeCode.U)
 				.fagomrade(FagomradeCode.UKJ)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.journalForendeEnhetId("309480dfk")
 				.innhold("innhold")
 				.avsenderMottakerId("01054512313")
@@ -316,18 +313,15 @@ public class DefaultOpprettJournalpostValidatorTest {
 				.brukere(
 						getBrukerBuilder()
 								.brukerId("01054512313")
-								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.brukerType(BrukerTypeCode.PERSON).build())
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.tilknyttetAvNavn("Tester")
 								.dokumentInfo(
 										getDokumentInfoBuilder()
 												.dokumentstatus(DokumentStatusCode.UNDER_REDIGERING)
 												.kategori(DokumentKategoriCode.SED)
-												.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 												.tittel("Brev")
 												.dokumenttypeId("dokumenttypeId")
 												.sensitivt(SENSITIVT_REQUEST)
@@ -336,7 +330,6 @@ public class DefaultOpprettJournalpostValidatorTest {
 														getFilDetaljerBuilder()
 																.filtype(FilTypeCode.AXML)
 																.metaforceInstanceId(123L)
-																.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 																.variantFormat(
 																		VariantFormatCode.ARKIV)
 																.build())

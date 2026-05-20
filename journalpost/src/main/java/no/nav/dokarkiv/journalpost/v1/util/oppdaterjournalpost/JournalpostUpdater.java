@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_BRUKER;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_FAGOMRADE;
@@ -70,7 +69,6 @@ public class JournalpostUpdater {
 
 		if (tracker.isEndretFlagg()) {
 			journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
-			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		}
 
 		return tracker;
@@ -108,7 +106,6 @@ public class JournalpostUpdater {
 		journalpost.setJournalstatus(journalStatusCode);
 		journalpost.setEkspedertDato(journalStatusCode == E ? LocalDateTime.now() : null);
 		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
-		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 
 	private void updateJournalfoerendeEnhet(Journalpost journalpost, OppdaterJournalpostRequest oppdaterJournalpostRequest, ChangeTracker endret) {
@@ -247,7 +244,6 @@ public class JournalpostUpdater {
 	}
 
 	private void addBruker(String oldBrukerId, Bruker nyBruker, Journalpost journalpost, ChangeTracker endret) {
-		nyBruker.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		endret.add(JOURNALPOST_BRUKER, oldBrukerId, nyBruker.getBrukerId());
 		journalpost.addBruker(nyBruker);
 	}

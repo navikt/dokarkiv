@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 import static java.lang.Long.parseLong;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_FAGSYSTEM;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJON_SAKID;
@@ -41,7 +40,6 @@ public class SaksrelasjonUpdater {
 
 			if (journalpost.getSaksrelasjon() == null) {
 				saksrelasjon = new Saksrelasjon();
-				saksrelasjon.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 				newSak = true;
 			} else {
 				saksrelasjon = journalpost.getSaksrelasjon();
@@ -56,7 +54,6 @@ public class SaksrelasjonUpdater {
 
 			if (endret.isEndretFlagg() && !newSak) {
 				saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_NAME));
-				saksrelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 			} else if (!endret.isEndretFlagg() && !newSak) {
 				MDC.put("mma-6992", "request.sak=samme_sak");
 				vurderResetSaksrelasjon(journalpost, request, endret);

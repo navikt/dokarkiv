@@ -87,7 +87,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		assertEquals(mockTilleggsopplysninger.get(0).getVerdi(),
 				tilleggsopplysninger.get(mockTilleggsopplysninger.get(0).getNokkel()));
 		assertEquals(MottaksKanalCode.SKAN_NETS, oppdatertJP.getMottakskanal());
-		assertEquals(KILDE, oppdatertJP.getEndretKildeNavn());
+		assertEquals(GYLDIG_CONSUMER, oppdatertJP.getEndretKildeNavn());
 		assertEquals(mockDate.atStartOfDay(), oppdatertJP.getMottattDato());
 		assertThat(oppdatertJP.getJournalDato()).isCloseTo(LocalDateTime.now(), within(3, SECONDS));
 		assertEquals(FilTypeCode.PDF, filDetaljer.getFiltype());
@@ -186,7 +186,6 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		DokumentInfo dokumentInfo = DokumentInfo
 				.builder()
 				.build();
-		dokumentInfo.setOpprettetKildeNavn("Itest");
 
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon
 				.builder()
@@ -197,9 +196,6 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 				)
 				.tilknyttetAvNavn("Itest")
 				.build();
-
-		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn("Itest");
-
 
 		journalpost.addJournalpostDokumentInfoRelasjon(
 				journalpostDokumentInfoRelasjon
@@ -336,15 +332,13 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 		return JournalpostBuilder
 				.getJournalpostBuilder()
 				.fagomrade(FagomradeCode.FOR)
-				.opprettetKildeNavn("ITest")
 				.journalpostType(journalpostTypeCode)
 				.journalStatus(journalStatusCode)
 				.dokumentInfoRelasjoner(
 						JournalpostDokumentInfoRelasjonBuilder
 								.getJournalpostDokumentInfoRelasjonBuilder()
-								.opprettetKildeNavn("ITest")
 								.tilknyttetAvNavn("ITest")
-								.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder().opprettetKildeNavn("ITest").filDetaljerList(filDetaljer).build())
+								.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder().filDetaljerList(filDetaljer).build())
 								.tilknyttetJournalpostSom(tilknyttetJournalpostSomCode)
 								.build());
 	}

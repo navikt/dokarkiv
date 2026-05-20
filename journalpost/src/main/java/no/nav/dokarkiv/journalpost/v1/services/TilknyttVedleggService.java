@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.DOKUMENT_TILLATES_IKKE_GJENBRUKT;
@@ -117,13 +116,11 @@ public class TilknyttVedleggService {
 	private void tilknyttDokumentInfoCopySomVedleggPaaJournalpost(String tilKnyttetAvNavn, Long targetJournalpostId, DokumentInfo sourceDokumentInfo, FilDetaljer filDetaljerSladdet, DokumentVedlegg dokumentVedlegg, Journalpost journalpost, List<FeiledeDokumenter> feiledeDokumenterList) {
 		log.info("{} legger til en kopi av dokumentinfo med dokumentInfoId={} på journalpost journalpostId={} da variant=SLADDET. Kopi av dokumentinfo vil få variant=ARKIV",
 				MDC.get(MDC_REQUEST_ID), sourceDokumentInfo.getDokumentInfoId(), targetJournalpostId);
-		String consumerId = MDC.get(MDC_CONSUMER_ID);
-		DokumentInfo dokumentInfoCopy = createDokumentInfoCopy(sourceDokumentInfo, consumerId);
+		DokumentInfo dokumentInfoCopy = createDokumentInfoCopy(sourceDokumentInfo);
 
-		FilDetaljer fildetaljerCopy = createFildetaljerCopy(filDetaljerSladdet, dokumentInfoCopy, consumerId);
+		FilDetaljer fildetaljerCopy = createFildetaljerCopy(filDetaljerSladdet, dokumentInfoCopy);
 
 		DokumentFil dokumentFilCopy = fildetaljerCopy.createDokumentFil();
-		dokumentFilCopy.setOpprettetKildeNavn(consumerId);
 		dokumentInfoCopy.addFilDetaljer(fildetaljerCopy);
 
 		dokumentFilRepository.persist(dokumentFilCopy);
@@ -132,16 +129,15 @@ public class TilknyttVedleggService {
 		tilknyttDokumentInfoSomVedleggPaaJournalpost(tilKnyttetAvNavn, dokumentInfoCopy, dokumentVedlegg, journalpost, feiledeDokumenterList);
 	}
 
-	private DokumentInfo createDokumentInfoCopy(DokumentInfo dokumentInfo, String consumerId) {
+	private DokumentInfo createDokumentInfoCopy(DokumentInfo dokumentInfo) {
 		DokumentInfo dokumentInfoCopy = shallowDokumentInfoCopier.copy(dokumentInfo);
-		dokumentInfoCopy.setOpprettetKildeNavn(consumerId);
 		dokumentInfoCopy.setEndretAvNavn(null);
 		dokumentInfoCopy.getTilleggsopplysninger().put(TILLEGGOPPLYSNINGER_KEY, dokumentInfo.getDokumentInfoId().toString());
 
 		return dokumentInfoCopy;
 	}
 
-	private FilDetaljer createFildetaljerCopy(FilDetaljer filDetaljer, DokumentInfo dokumentInfo, String consumerId) {
+	private FilDetaljer createFildetaljerCopy(FilDetaljer filDetaljer, DokumentInfo dokumentInfo) {
 		FilDetaljer filDetaljerCopy = FilDetaljer.builder()
 				.dokumentInfo(dokumentInfo)
 				.fileContent(filDetaljer.getFileContent())
@@ -156,7 +152,6 @@ public class TilknyttVedleggService {
 				.filstorrelse(filDetaljer.getFilstorrelse())
 				.build();
 
-		filDetaljerCopy.setOpprettetKildeNavn(consumerId);
 		byte[] fil = dokumentFilRepository.findByFilUuid(filDetaljer.getFilUuid()).getFil();
 		filDetaljerCopy.setFileContent(fil);
 
@@ -186,15 +181,13 @@ public class TilknyttVedleggService {
 	}
 
 	private JournalpostDokumentInfoRelasjon createJournalpostDokumentInfoRelasjon(String tilKnyttetAvNavn, Integer rekkefoelge, DokumentInfo dokumentInfo, Journalpost journalpost) {
-		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
+		return JournalpostDokumentInfoRelasjon.builder()
 				.journalpost(journalpost)
 				.dokumentInfo(dokumentInfo)
 				.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.VEDLEGG)
 				.tilknyttetAvNavn(tilKnyttetAvNavn)
 				.rekkefoelge(rekkefoelge)
 				.build();
-		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		return journalpostDokumentInfoRelasjon;
 	}
 
 	private FilDetaljer finnSladdetFildetaljer(DokumentInfo dokumentInfo) {

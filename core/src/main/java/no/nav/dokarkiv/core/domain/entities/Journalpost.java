@@ -284,9 +284,8 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		verifyFieldsForEndeligJournalforing();
 	}
 
-	public void setSkjermingType(SkjermingTypeCode skjermingTypeCode, String endretKildeNavn, String endretAvNavn) {
+	public void setSkjermingType(SkjermingTypeCode skjermingTypeCode, String endretAvNavn) {
 		this.skjermingType = skjermingTypeCode;
-		this.setEndretKildeNavn(endretKildeNavn);
 		this.setEndretAvNavn(endretAvNavn);
 	}
 

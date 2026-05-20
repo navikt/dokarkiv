@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.domain.builder;
 
-import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -20,9 +19,6 @@ import java.util.Set;
 
 /**
  * Builder for {@link DokumentInfo}.
- *
- * @author Thomas Eugen Bjørge, Sirius IT
- * @author Thomas Kåsene, Visma Consulting AS
  */
 @Deprecated // bruk lombok builder istedet
 public class DokumentInfoBuilder extends Builder<DokumentInfo> {
@@ -46,13 +42,10 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	private LocalDateTime dokumentFerdigDato;
 	private String tittel;
 	private String brukeroppgittTittel;
-	private String opprettetKildeNavn;
-	private String endretKildeNavn;
 	private String dokumenttypeId;
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 	private List<SkannetInnhold> skannetInnholdList = new ArrayList<>();
 	private Set<FilDetaljer> filDetaljerList = new HashSet<>();
-	private ChangeStamp changeStamp;
 
 	public DokumentInfoBuilder dokumentInfoId(Long value) { this.dokumentInfoId = value; return this; }
 	public DokumentInfoBuilder brevkode(String value) { this.brevkode = value; return this; }
@@ -67,15 +60,12 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 	public DokumentInfoBuilder tittel(String value) { this.tittel = value; return this; }
 	public DokumentInfoBuilder brukeroppgittTittel(String value) { this.brukeroppgittTittel = value; return this; }
 	public DokumentInfoBuilder dokumenttypeId(String value) { this.dokumenttypeId = value; return this; }
-	public DokumentInfoBuilder opprettetKildeNavn(String value) { this.opprettetKildeNavn = value; return this; }
-	public DokumentInfoBuilder endretKildeNavn(String value) { this.endretKildeNavn = value; return this; }
 	public DokumentInfoBuilder skannetInnhold(SkannetInnhold... value) {
 		this.skannetInnholdList = Arrays.asList(value); return this; }
 	public DokumentInfoBuilder filDetaljerList(FilDetaljer... value) {
 		this.filDetaljerList.addAll(Arrays.asList(value)); return this; }
 	public DokumentInfoBuilder tilleggsopplysninger(Map<String, String> value) {
 		this.tilleggsopplysninger = value; return this; }
-	public DokumentInfoBuilder changeStamp(ChangeStamp changeStamp) { this.changeStamp = changeStamp; return this; }
 
 	@Override
 	public DokumentInfo build() {
@@ -90,8 +80,6 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 		dokumentInfo.setDokumentstatus(dokumentstatus);
 		dokumentInfo.setDokumentFerdigDato(dokumentFerdigDato);
 		dokumentInfo.setTittel(StringUtils.isEmpty(brukeroppgittTittel) ? tittel: brukeroppgittTittel);
-		dokumentInfo.setOpprettetKildeNavn(opprettetKildeNavn);
-		dokumentInfo.setEndretKildeNavn(endretKildeNavn);
 		dokumentInfo.setTilleggsopplysninger(tilleggsopplysninger);
 		dokumentInfo.setDokumenttypeId(dokumenttypeId);
 		for (SkannetInnhold skannetInnhold : skannetInnholdList) {
@@ -100,7 +88,6 @@ public class DokumentInfoBuilder extends Builder<DokumentInfo> {
 		for (FilDetaljer filDetaljer : filDetaljerList) {
 			dokumentInfo.addFilDetaljer(filDetaljer);
 		}
-		dokumentInfo.setChangeStamp(changeStamp);
 
 		return dokumentInfo;
 	}

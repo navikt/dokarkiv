@@ -3,7 +3,6 @@ package no.nav.dokarkiv.core.domain.builder;
 import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.OnDemandInstansCode;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import org.apache.commons.lang3.StringUtils;
@@ -21,11 +20,11 @@ public class FilDetaljerBuilder extends Builder<FilDetaljer> {
 
 	private FilDetaljerBuilder(){
 	}
-	
+
 	public static FilDetaljerBuilder getFilDetaljerBuilder(){
 		return new FilDetaljerBuilder();
 	}
-	
+
 	private Long fildetaljerId;
 	private String filUuid;
 	private String onDemandId;
@@ -36,8 +35,6 @@ public class FilDetaljerBuilder extends Builder<FilDetaljer> {
 	private String filnavn;
 	private String filstorrelse;
 	private Long metaforceInstanceId;
-	private String opprettetKildeNavn;
-	private String endretKildeNavn;
 	private byte[] fileContent; //transient field
 	private ChangeStamp changeStamp;
 
@@ -51,8 +48,6 @@ public class FilDetaljerBuilder extends Builder<FilDetaljer> {
 	public FilDetaljerBuilder filnavn(String value){ this.filnavn = value; return this; }
 	public FilDetaljerBuilder filstorrelse(String value){ this.filstorrelse = value; return this; }
 	public FilDetaljerBuilder metaforceInstanceId(Long value){ this.metaforceInstanceId = value; return this; }
-	public FilDetaljerBuilder opprettetKildeNavn(String value) { this.opprettetKildeNavn = value; return this; }
-	public FilDetaljerBuilder endretKildeNavn(String value) { this.endretKildeNavn = value; return this; }
 	public FilDetaljerBuilder fileContent(byte[] value) { this.fileContent = value; return this; }
 	public FilDetaljerBuilder changeStamp(ChangeStamp value) { this.changeStamp = value; return this; }
 
@@ -68,8 +63,6 @@ public class FilDetaljerBuilder extends Builder<FilDetaljer> {
 		filDetaljer.setFilnavn(filnavn);
 		filDetaljer.setFilstorrelse(filstorrelse);
 		filDetaljer.setMetaforceInstanceId(metaforceInstanceId);
-		filDetaljer.setOpprettetKildeNavn(opprettetKildeNavn);
-		filDetaljer.setEndretKildeNavn(endretKildeNavn);
 		filDetaljer.setFileContent(fileContent);
 		filDetaljer.setChangeStamp(changeStamp);
 		return filDetaljer;
@@ -86,5 +79,5 @@ public class FilDetaljerBuilder extends Builder<FilDetaljer> {
 			ReflectionUtils.setField(filUuidField, filDetaljer, filUuid);
 		}
 	}
-	
+
 }

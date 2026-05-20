@@ -37,8 +37,6 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 
 /**
  * Class for generating test data for Joark repository tests
- *
- * @author Martin Burheim Tingstad, Visma Consulting AS
  */
 public class TestDataUtils {
 
@@ -114,7 +112,6 @@ public class TestDataUtils {
 				.mottakskanal(MottaksKanalCode.NAV_NO)
 				.tilleggsopplysninger(tilleggsopplysninger)
 				.saksrelasjon(SaksrelasjonBuilder.getSaksrelasjonBuilder()
-						.opprettetKildeNavn("test")
 						.sakId(parseLong(saksNr))
 						.fagsystem(fagsystem)
 						.feilregistrert(isFeilregistrert)
@@ -122,31 +119,25 @@ public class TestDataUtils {
 				.brukere(BrukerBuilder.getBrukerBuilder()
 						.brukerId("1")
 						.brukerType(brukerType)
-						.opprettetKildeNavn("test")
 						.build())
 				.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder()
 						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
-						.opprettetKildeNavn("test")
 						.tilknyttetAvNavn("test")
 						.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
 								.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
-								.opprettetKildeNavn("test")
 								.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
 										.filtype(FilTypeCode.PDF)
 										.filUuid("uuid")
 										.variantFormat(VariantFormatCode.ARKIV)
-										.opprettetKildeNavn("test")
 										.build()
 								)
 								.tilleggsopplysninger(tilleggsopplysninger)
 								.build())
 						.build())
 				.journalDato(journalDato)
-				.changeStamp(new ChangeStamp("test"))
 				.fagomrade(fagomrade == null ? TestDataUtils.fagomrade : fagomrade)
 				.journalStatus(journalStatusCode == null ? TestDataUtils.journalStatus : journalStatusCode)
 				.journalpostType(journalpostType)
-				.opprettetKildeNavn("test")
 				.journalForendeEnhetId(journalfEnhet);
 	}
 

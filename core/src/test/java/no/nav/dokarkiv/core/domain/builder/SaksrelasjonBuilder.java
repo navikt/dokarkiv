@@ -5,8 +5,6 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 
 /**
  * Builder for Saksrelasjon.
- *
- * @author Thomas Eugen Bjørge, Sirius IT
  */
 @Deprecated // bruk lombok builder istedet
 public class SaksrelasjonBuilder extends Builder<Saksrelasjon> {
@@ -23,8 +21,6 @@ public class SaksrelasjonBuilder extends Builder<Saksrelasjon> {
 	private Boolean feilregistrert;
 	private String endretAvNavn;
 	private FagsystemCode fagsystem;
-	private String opprettetKildeNavn;
-	private String endretKildeNavn;
 
 	public SaksrelasjonBuilder saksrelasjonId(Long value) {
 		this.saksrelasjonId = value;
@@ -51,16 +47,6 @@ public class SaksrelasjonBuilder extends Builder<Saksrelasjon> {
 		return this;
 	}
 
-	public SaksrelasjonBuilder opprettetKildeNavn(String value) {
-		this.opprettetKildeNavn = value;
-		return this;
-	}
-
-	public SaksrelasjonBuilder endretKildeNavn(String value) {
-		this.endretKildeNavn = value;
-		return this;
-	}
-
 	@Override
 	public Saksrelasjon build() {
 		Saksrelasjon saksrelasjon = new Saksrelasjon(saksrelasjonId, 1);
@@ -68,8 +54,6 @@ public class SaksrelasjonBuilder extends Builder<Saksrelasjon> {
 		saksrelasjon.setFeilregistrert(feilregistrert);
 		saksrelasjon.setEndretAvNavn(endretAvNavn);
 		saksrelasjon.setFagsystem(fagsystem);
-		saksrelasjon.setOpprettetKildeNavn(opprettetKildeNavn);
-		saksrelasjon.setEndretKildeNavn(endretKildeNavn);
 		return saksrelasjon;
 	}
 

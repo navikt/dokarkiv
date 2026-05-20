@@ -4,7 +4,6 @@ import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.sporing.DefaultKildeNavnPopulator;
 import no.nav.dokarkiv.core.sporing.DefaultSporingPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +25,7 @@ public class DefaultAvbrytJournalpostUpdaterTest {
 	@BeforeEach
 	public void setUp() {
 		RequestContextSetter.setRequestContextForUnitTest();
-		DefaultSporingPopulator sporingPopulator = new DefaultSporingPopulator(new DefaultKildeNavnPopulator());
+		DefaultSporingPopulator sporingPopulator = new DefaultSporingPopulator();
 		avbrytJournalpostUpdater = new DefaultAvbrytJournalpostUpdater(sporingPopulator);
 	}
 

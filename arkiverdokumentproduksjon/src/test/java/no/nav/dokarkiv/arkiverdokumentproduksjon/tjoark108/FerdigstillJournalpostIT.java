@@ -127,11 +127,9 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 				.journalStatus(JournalStatusCode.D)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.fagomrade(FagomradeCode.PEN)
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
-								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 								.dokumentInfo(createDokumentInfo(dokumentStatusCode))
@@ -147,7 +145,6 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 		return getDokumentInfoBuilder()
 				.dokumentstatus(dokumentStatusCode)
 				.dokumentFerdigDato(LocalDateTime.now())
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.filDetaljerList(createPDFFilDetaljerArkiv(), createPDFFilDetaljerProduksjon())
 				.build();
 	}
@@ -158,7 +155,6 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 				.filUuid(FilDetaljer.generateUuid())
 				.filtype(FilTypeCode.PDF)
 				.variantFormat(VariantFormatCode.ARKIV)
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.build();
 	}
 
@@ -168,7 +164,6 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 				.filUuid(FilDetaljer.generateUuid())
 				.filtype(FilTypeCode.PDF)
 				.variantFormat(VariantFormatCode.PRODUKSJON)
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.metaforceInstanceId(123L)
 				.build();
 	}

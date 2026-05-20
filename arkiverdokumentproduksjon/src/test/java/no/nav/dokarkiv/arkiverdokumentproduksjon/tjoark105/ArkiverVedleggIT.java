@@ -36,8 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Integration tests for the arkiverVedlegg operation
  * in the ArkiverDokumentProduksjon webservices.
- *
- * @author Roar Bjurstrom - (Visma Consulting)
  */
 public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 
@@ -158,7 +156,6 @@ public class ArkiverVedleggIT extends AbstractArkiverdokumentproduksjonItest {
 				.journalStatus(journalStatusCode)
 				.journalpostType(JournalpostTypeCode.U)
 				.fagomrade(FagomradeCode.FOR)
-				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.build();
 	}
 

@@ -3,14 +3,12 @@ package no.nav.dokarkiv.core.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Abstrakt klasse som alle JPA entiteter arver fra.
  */
 @SuppressWarnings("serial")
 @Getter
-@Setter
 @MappedSuperclass
 public abstract class AbstractPersistentVersionedDomainObjectWithKilde extends AbstractPersistentVersionedDomainObject
 		implements Identifiable {

@@ -1258,7 +1258,6 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 				.journalDato(LOCAL_DATE_TIME)
 				.fagomrade(FagomradeCode.PEN)
 				.build();
-		journalpostDraft.setOpprettetKildeNavn("itest");
 
 		Journalpost journalpost = journalpostTestRepository.persist(journalpostDraft);
 

@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112;
 
-import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.storage.BucketStorage;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokumenter.Journalpost;
@@ -26,10 +25,9 @@ import static org.mockito.Mockito.when;
  */
 public class OpprettJournalpostArkiverDokumenterRequestMapperTest {
 
-	private final KildeNavnPopulator kildeNavnPopulatorMock = mock(KildeNavnPopulator.class);
 	private final BucketStorage storageMock = mock(BucketStorage.class);
 
-	private final OpprettJournalpostArkiverDokumenterRequestMapper requestMapper = new OpprettJournalpostArkiverDokumenterRequestMapper(kildeNavnPopulatorMock, storageMock);
+	private final OpprettJournalpostArkiverDokumenterRequestMapper requestMapper = new OpprettJournalpostArkiverDokumenterRequestMapper(storageMock);
 
 	@BeforeEach
 	public void setUp() throws Exception {

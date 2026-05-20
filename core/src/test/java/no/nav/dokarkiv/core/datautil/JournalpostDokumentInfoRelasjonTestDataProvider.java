@@ -9,8 +9,6 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 
 /**
  * Provides helpers for building JournalpostDokumentInfoRelasjon-instances.
- *
- * @author Thomas Kåsene, Visma Consulting AS
  */
 public class JournalpostDokumentInfoRelasjonTestDataProvider {
 
@@ -24,8 +22,7 @@ public class JournalpostDokumentInfoRelasjonTestDataProvider {
     public static JournalpostDokumentInfoRelasjonBuilder createHoveddokumentRelasjon() {
         return getJournalpostDokumentInfoRelasjonBuilder()
                 .tilknyttetAvNavn("testuser")
-                .tilknyttetJournalpostSom(HOVEDDOKUMENT)
-                .opprettetKildeNavn("test");
+                .tilknyttetJournalpostSom(HOVEDDOKUMENT);
     }
 
     public static JournalpostDokumentInfoRelasjonBuilder createVedleggRelasjon(DokumentInfo dokumentInfo) {
@@ -35,7 +32,6 @@ public class JournalpostDokumentInfoRelasjonTestDataProvider {
     public static JournalpostDokumentInfoRelasjonBuilder createVedleggRelasjon() {
         return getJournalpostDokumentInfoRelasjonBuilder()
                 .tilknyttetAvNavn("testuser")
-                .tilknyttetJournalpostSom(VEDLEGG)
-                .opprettetKildeNavn("test");
+                .tilknyttetJournalpostSom(VEDLEGG);
     }
 }

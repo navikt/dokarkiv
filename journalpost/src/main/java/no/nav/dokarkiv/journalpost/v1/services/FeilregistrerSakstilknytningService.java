@@ -46,7 +46,6 @@ public class FeilregistrerSakstilknytningService {
 
 		if (saksrelasjon.getFeilregistrert() == null || !saksrelasjon.getFeilregistrert()) {
 			saksrelasjon.setFeilregistrert(true);
-			saksrelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 			saksrelasjon.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 		} else {
 			throw new SaksrelasjonAlleredeFeilregistrertException("Saksrelasjonen er allerede feilregistrert");

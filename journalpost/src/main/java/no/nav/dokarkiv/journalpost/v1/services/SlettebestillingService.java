@@ -21,8 +21,6 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 
 @Slf4j
@@ -71,7 +69,7 @@ public class SlettebestillingService {
 	}
 
 	private Slettebestilling avbrytSletting(Slettebestilling slettebestilling) {
-		slettebestilling.endreSlettebestillingStatus(SlettebestillingStatusCode.AVBRUTT, MDC.get(MDC_CONSUMER_ID));
+		slettebestilling.endreSlettebestillingStatus(SlettebestillingStatusCode.AVBRUTT);
 		return slettebestilling;
 	}
 
@@ -94,9 +92,6 @@ public class SlettebestillingService {
 				.opprettetAvNavn(MDC.get(MDC_USER_NAME))
 				.endretAvNavn(MDC.get(MDC_USER_NAME))
 				.build();
-		slettebestilling.setOpprettetAvOgChangestamp(MDC.get(MDC_USER_ID));
-		slettebestilling.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		slettebestilling.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		return slettebestilling;
 	}
 

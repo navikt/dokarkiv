@@ -6,10 +6,6 @@ import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static no.nav.dokarkiv.core.domain.builder.BrukerBuilder.getBrukerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
@@ -23,14 +19,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
 public class DefaultSporingPopulatorTest {
 
-	@Mock
-	private KildeNavnPopulator kildeNavnPopulatorMock;
-
-	@InjectMocks
-	private DefaultSporingPopulator sporingPopulator;
+	private DefaultSporingPopulator sporingPopulator = new DefaultSporingPopulator();
 
 	private final String kildeNavn = "Unittest";
 	private final String endretAvNavn = "Siri Saksbehandler";
@@ -58,15 +49,6 @@ public class DefaultSporingPopulatorTest {
 		sporingPopulator.populateSporingInfo(journalpost, opprettetAvNavn);
 
 		assertThat(journalpost.getOpprettetAvNavn(), is(opprettetAvNavn));
-	}
-
-	@Test
-	public void shouldCallKildeNavnPopulator() {
-		Journalpost journalpost = createCompleteJournalpostStructure();
-
-		sporingPopulator.populateSporingInfo(journalpost, opprettetAvNavn);
-
-		verify(kildeNavnPopulatorMock).populateKildeNavnForEntireJournalStructure(journalpost, kildeNavn);
 	}
 
 	private void assertEndretAvNavnSet(Journalpost journalpost) {
