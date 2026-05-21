@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Version;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
@@ -14,7 +15,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  */
 @SuppressWarnings("serial")
 @Getter
-@Setter
+@Setter(AccessLevel.PROTECTED)
 @MappedSuperclass
 public abstract class AbstractPersistentVersionedDomainObject extends AbstractPersistentDomainObject {
 

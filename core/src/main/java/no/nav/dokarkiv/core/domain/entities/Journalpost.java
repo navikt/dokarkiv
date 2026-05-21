@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
@@ -763,6 +764,14 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 			kryssreferanser.add(kryssreferanse);
 			kryssreferanse.setJournalpost(this);
 		}
+	}
+
+	/**
+	 * Set changestamp explicitly. For test use only.
+	 * @param changeStamp
+	 */
+	public void setChangeStamp(ChangeStamp changeStamp) {
+		super.setChangeStamp(changeStamp);
 	}
 
 	public Optional<TilknyttetJournalpostSomCode> findTilknyttetSomByDokumentinfoId(long dokumentinfoId) {

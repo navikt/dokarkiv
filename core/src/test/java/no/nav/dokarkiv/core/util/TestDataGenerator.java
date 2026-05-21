@@ -181,7 +181,7 @@ public class TestDataGenerator {
 
 		journalpost.addBruker(bruker);
 		journalpost.setSaksrelasjon(saksrelasjon);
-		journalpost.setChangeStamp(new ChangeStamp("createdBy", dateTime, "String updatedBy", dateTime));
+		journalpost.setChangeStamp(new ChangeStamp("createdBy", dateTime, "updatedBy", dateTime));
 
 		return journalpost;
 	}

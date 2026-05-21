@@ -36,7 +36,6 @@ public class FilDetaljerBuilder extends Builder<FilDetaljer> {
 	private String filstorrelse;
 	private Long metaforceInstanceId;
 	private byte[] fileContent; //transient field
-	private ChangeStamp changeStamp;
 
 	public FilDetaljerBuilder fildetaljerId(Long value){ this.fildetaljerId = value; return this; }
 	public FilDetaljerBuilder filUuid(String value){ this.filUuid = value; return this; }
@@ -49,7 +48,6 @@ public class FilDetaljerBuilder extends Builder<FilDetaljer> {
 	public FilDetaljerBuilder filstorrelse(String value){ this.filstorrelse = value; return this; }
 	public FilDetaljerBuilder metaforceInstanceId(Long value){ this.metaforceInstanceId = value; return this; }
 	public FilDetaljerBuilder fileContent(byte[] value) { this.fileContent = value; return this; }
-	public FilDetaljerBuilder changeStamp(ChangeStamp value) { this.changeStamp = value; return this; }
 
 	@Override
 	public FilDetaljer build() {
@@ -64,7 +62,6 @@ public class FilDetaljerBuilder extends Builder<FilDetaljer> {
 		filDetaljer.setFilstorrelse(filstorrelse);
 		filDetaljer.setMetaforceInstanceId(metaforceInstanceId);
 		filDetaljer.setFileContent(fileContent);
-		filDetaljer.setChangeStamp(changeStamp);
 		return filDetaljer;
 	}
 
