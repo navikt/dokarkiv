@@ -49,21 +49,20 @@ public class SlettebestillingService {
 	public void opphevBestillSletting(long dokumentInfoId) {
 		List<Slettebestilling> slettebestillinger = slettebestillingRepository.findByDokumentInfoId(dokumentInfoId);
 
-		if (slettebestillinger.stream().anyMatch(slettebestilling -> slettebestilling.getSlettebestillingStatus() == SlettebestillingStatusCode.FERDIGSTILT)) {
+		if (slettebestillinger.stream().anyMatch(SlettebestillingStatusCode.FERDIGSTILT)) {
 			throw new UgyldigSlettebestillingException("Kan ikke oppheve sletting som allerede er gjennomført!");
 		}
 
 		var avbrutteSlettebestillinger = slettebestillinger
 			.stream()
-			.filter(slettebestilling -> slettebestilling.getSlettebestillingStatus() == SlettebestillingStatusCode.OPPRETTET)
+			.filter(SlettebestillingStatusCode.OPPRETTET)
 			.map(this::avbrytSletting)
-			.toList()
-			.size();
+			.toList();
 
-		if (avbrutteSlettebestillinger < 1) {
+		if (avbrutteSlettebestillinger.isEmpty()) {
 			throw new SlettebestillingIkkeFunnetException("Fant ingen slettebestillinger som kunne avbrytes for dokument med dokumentInfoId=%d".formatted(dokumentInfoId));
 		}
-		if (avbrutteSlettebestillinger > 1) {
+		if (avbrutteSlettebestillinger.size() > 1) {
 			log.warn("Kall resulterte i avbrytning av mer enn én slettebestilling for dokumentInfoId={}: Avbrøt {} slettebestillinger", dokumentInfoId, avbrutteSlettebestillinger);
 		}
 	}

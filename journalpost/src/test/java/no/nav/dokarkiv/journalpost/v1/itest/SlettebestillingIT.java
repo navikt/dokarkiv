@@ -14,6 +14,7 @@ import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.FERDI
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -120,7 +121,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 
 		var slettebestilling = slettebestillingTestRepository.findById(Long.valueOf(bestillResult.getBody()));
 		assertThat(slettebestilling).isPresent();
-		assertThat(slettebestilling.get().getSlettebestillingStatus()).isEqualTo(AVBRUTT);
+		assertEquals(AVBRUTT, slettebestilling.get().getSlettebestillingStatus());
 	}
 
 	@Test

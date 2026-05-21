@@ -9,6 +9,8 @@ import no.nav.dokarkiv.core.repository.SlettebestillingRepository;
 import no.nav.dokarkiv.journalpost.v1.api.SlettebestillingRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
@@ -26,6 +28,7 @@ import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.OPPRE
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode.DOKUMENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,7 +72,7 @@ public class SlettebestillingServiceTest {
 
 		slettebestillingService.opphevBestillSletting(1L);
 
-		assertThat(slettebestilling.getSlettebestillingStatus()).isEqualTo(AVBRUTT);
+		assertEquals(AVBRUTT, slettebestilling.getSlettebestillingStatus());
 	}
 
 	@Test
@@ -100,8 +103,8 @@ public class SlettebestillingServiceTest {
 
 		slettebestillingService.opphevBestillSletting(1L);
 
-		assertThat(opprettet.getSlettebestillingStatus()).isEqualTo(AVBRUTT);
-		assertThat(avbrutt.getSlettebestillingStatus()).isEqualTo(AVBRUTT);
+		assertEquals(AVBRUTT, opprettet.getSlettebestillingStatus());
+		assertEquals(AVBRUTT, avbrutt.getSlettebestillingStatus());
 	}
 
 	@Test
@@ -126,5 +129,4 @@ public class SlettebestillingServiceTest {
 				.endretAvNavn("test")
 				.build();
 	}
-
 }
