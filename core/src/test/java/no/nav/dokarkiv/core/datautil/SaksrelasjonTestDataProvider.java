@@ -8,6 +8,8 @@ import static no.nav.dokarkiv.core.domain.builder.SaksrelasjonBuilder.getSaksrel
 
 /**
  * Provides helpers for building SaksRelasjon-instances
+ *
+ * @author Roar Bjurstrom, Visma Consulting.
  */
 public final class SaksrelasjonTestDataProvider {
 
@@ -25,28 +27,32 @@ public final class SaksrelasjonTestDataProvider {
 				.getSaksrelasjonBuilder()
 				.sakId(SAK_ID)
 				.fagsystem(SAK_FAGSYSTEM)
-				.feilregistrert(false);
+				.feilregistrert(false)
+				.opprettetKildeNavn(SAK_KILDE_NAVN);
 	}
-
+	
 	public static SaksrelasjonBuilder createSaksrelasjon(boolean feilregistrert) {
 		return SaksrelasjonBuilder
 				.getSaksrelasjonBuilder()
 				.sakId(SAK_ID)
 				.fagsystem(SAK_FAGSYSTEM)
-				.feilregistrert(feilregistrert);
+				.feilregistrert(feilregistrert)
+				.opprettetKildeNavn(SAK_KILDE_NAVN);
 	}
 	public static SaksrelasjonBuilder createSaksrelasjonWithSak(Long sakId) {
 		return SaksrelasjonBuilder
 				.getSaksrelasjonBuilder()
 				.sakId(sakId)
 				.fagsystem(SAK_FAGSYSTEM)
-				.feilregistrert(false);
+				.feilregistrert(false)
+				.opprettetKildeNavn(SAK_KILDE_NAVN);
 	}
 
 	public static Saksrelasjon createPENSaksrelasjonWithSak(Long sakId) {
 		return getSaksrelasjonBuilder()
 				.sakId(sakId)
 				.fagsystem(FagsystemCode.PEN)
+				.opprettetKildeNavn("itest")
 				.build();
 	}
 }

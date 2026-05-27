@@ -11,12 +11,14 @@ import no.nav.dokarkiv.core.repository.SkannetInnholdRepository;
 import no.nav.dokarkiv.journalpost.v1.api.BulkOppdaterLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.EndreLogiskVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.LeggTilLogiskVedleggRequest;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
 @Slf4j
 @Service
@@ -38,6 +40,7 @@ public class LogiskVedleggService {
 					.vedleggInnhold(request.getTittel())
 					.dokumentInfo(dokumentInfo)
 					.build();
+			skannetInnhold.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 			skannetInnholdRepository.persist(skannetInnhold);
 			return skannetInnhold.getSkannetInnholdId();
 		} catch (EntityNotFoundException e) {
@@ -51,6 +54,7 @@ public class LogiskVedleggService {
 				.orElseThrow(() -> new LogiskVedleggIkkeFunnetException(format("Kunne ikke finne logisk vedlegg med logiskVedleggId=%s i joark", logiskVedleggId)));
 
 		skannetInnhold.setVedleggInnhold(request.getTittel());
+		skannetInnhold.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 
 	@Transactional
@@ -71,6 +75,7 @@ public class LogiskVedleggService {
 				SkannetInnhold skannetInnhold = SkannetInnhold.builder()
 						.vedleggInnhold(t)
 						.build();
+				skannetInnhold.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 				dokumentInfo.addSkannetInnhold(skannetInnhold);
 			});
 		}

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.UUID;
 
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.TILKNYTT_NYTT_DOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode.IS;
@@ -107,6 +108,7 @@ public class LastOppVedleggService {
 				.build();
 
 		relasjon.setDokumentInfo(dokumentInfo);
+		relasjon.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 
 		return relasjon;
 	}
@@ -123,17 +125,22 @@ public class LastOppVedleggService {
 		request.dokument().getDokumentvarianter().forEach(dokumentVariant ->
 				dokumentInfo.addFilDetaljer(opprettFildetaljer(dokumentVariant)));
 
+		dokumentInfo.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
+
 		return dokumentInfo;
 	}
 
 	private FilDetaljer opprettFildetaljer(DokumentVariant dokumentVariant) {
-
-		return FilDetaljer.builder()
+		var fildetaljer = FilDetaljer.builder()
 				.filnavn(dokumentVariant.getFilnavn())
 				.filtype(FilTypeCode.valueOf(dokumentVariant.getFiltype()))
 				.variantFormat(VariantFormatCode.valueOf(dokumentVariant.getVariantformat()))
 				.fileContent(dokumentVariant.getFysiskDokument())
 				.filUuid(UUID.randomUUID().toString())
 				.build();
+
+		fildetaljer.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
+
+		return fildetaljer;
 	}
 }

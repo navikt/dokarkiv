@@ -11,12 +11,14 @@ import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import org.slf4j.MDC;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALPOSTTYPE;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_JOURNALPOSTTYPE;
@@ -93,5 +95,6 @@ public class OppdaterJournalposttypeService {
 		}
 
 		journalpostToUpdate.setEndretAvNavn(MDC.get(MDC_USER_NAME));
+		journalpostToUpdate.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 }

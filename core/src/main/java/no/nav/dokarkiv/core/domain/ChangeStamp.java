@@ -51,6 +51,25 @@ public class ChangeStamp implements Serializable {
 	@Column(name = "dato_endret")
 	private LocalDateTime updatedDate;
 
+	/**
+	 * Constructs a new ChangeStamp. The constructor should only be called once, when the object embedding this
+	 * <code>ChangeStamp</code> object is actually created for the first time.
+	 *
+	 * @param userId the user id that creates object embedding this <code>ChangeStamp</code> object
+	 */
+	public ChangeStamp(String userId) {
+		this.createdBy = userId;
+		this.updatedBy = userId;
+
+		// Updated and Created times are equal at first
+		LocalDateTime now = LocalDateTime.now();
+		this.createdDate = now;
+		this.updatedDate = now;
+	}
+
+	/**
+	 * No-arg constructor should only be used by persistence provider. The application should use the parameterized constructor.
+	 */
 	protected ChangeStamp() {
 	}
 
@@ -75,7 +94,7 @@ public class ChangeStamp implements Serializable {
 	 *
 	 * @param userId user id that made the update
 	 */
-	void updatedBy(String userId) {
+	public void updatedBy(String userId) {
 		updatedBy = userId;
 		updatedDate = LocalDateTime.now();
 	}

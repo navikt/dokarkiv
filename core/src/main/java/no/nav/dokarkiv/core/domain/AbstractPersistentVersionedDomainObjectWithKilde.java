@@ -2,19 +2,15 @@ package no.nav.dokarkiv.core.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import lombok.Getter;
-import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
-import org.slf4j.MDC;
-
-import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import lombok.Setter;
 
 /**
  * Abstrakt klasse som alle JPA entiteter arver fra.
  */
 @SuppressWarnings("serial")
 @Getter
+@Setter
 @MappedSuperclass
 public abstract class AbstractPersistentVersionedDomainObjectWithKilde extends AbstractPersistentVersionedDomainObject
 		implements Identifiable {
@@ -25,32 +21,6 @@ public abstract class AbstractPersistentVersionedDomainObjectWithKilde extends A
 
 	@Column(name = "endret_kilde_navn", length = KILDE_NAVN_LENGTH)
 	private String endretKildeNavn;
-
-	@PrePersist
-	void setOpprettetKildeNavnPrePersist() {
-		if (opprettetKildeNavn == null) {
-			opprettetKildeNavn = resolveKildeNavn();
-		}
-	}
-
-	@PreUpdate
-	void setEndretKildeNavnPreUpdate() {
-		endretKildeNavn = resolveKildeNavn();
-	}
-
-	private static String resolveKildeNavn() {
-		String kildeNavn = MDC.get(MDC_CONSUMER_ID);
-		if (kildeNavn == null && RequestContextHolder.isRequestContextSet()) {
-			kildeNavn = RequestContextHolder.currentRequestContext().getComponentId();
-		}
-		if (kildeNavn == null) {
-			kildeNavn = "DEFAULT_KILDE_NAVN";
-		}
-		if (kildeNavn.length() > KILDE_NAVN_LENGTH) {
-			kildeNavn = kildeNavn.substring(0, KILDE_NAVN_LENGTH - 1);
-		}
-		return kildeNavn;
-	}
 
 	/**
 	 * Checks if the Id is set.

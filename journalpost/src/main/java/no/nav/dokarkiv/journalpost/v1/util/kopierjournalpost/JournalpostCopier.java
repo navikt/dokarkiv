@@ -33,6 +33,8 @@ public class JournalpostCopier {
 		kopiertJournalpost.setJournalDato(LocalDateTime.now());
 		kopiertJournalpost.setEndretAvNavn(MDC.get(MDC_USER_ID));
 		kopiertJournalpost.setJournalfortAvNavn(MDC.get(MDC_USER_ID));
+		kopiertJournalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		kopiertJournalpost.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 
 		kopiertJournalpost.setSaksrelasjon(copySaksrelasjon(kopiertJournalpost, journalpost.getSaksrelasjon()));
 
@@ -79,7 +81,11 @@ public class JournalpostCopier {
 	}
 
 	private Bruker cloneBruker(Bruker originalBruker) {
-		return originalBruker.toBuilder().brukerInfoId(null).build();
+		Bruker nyBruker = originalBruker.toBuilder().brukerInfoId(null).build();
+		String consumerId = MDC.get(MDC_CONSUMER_ID);
+		nyBruker.setEndretKildeNavn(consumerId);
+		nyBruker.setOpprettetKildeNavn(consumerId);
+		return nyBruker;
 	}
 
 	private Map<String, String> copyTilleggsopplysninger(Map<String, String> tilleggsopplysninger) {
@@ -100,6 +106,8 @@ public class JournalpostCopier {
 				.endretAvNavn(MDC.get(MDC_USER_ID))
 				.feilregistrert(saksrelasjon.getFeilregistrert())
 				.build();
+		kopiertSaksrelasjon.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		kopiertSaksrelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		return kopiertSaksrelasjon;
 	}
 
@@ -120,6 +128,8 @@ public class JournalpostCopier {
 				.tilknyttetJournalpostSom(tilknyttetJournalpostSom != null ? tilknyttetJournalpostSom : journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom())
 				.tilknyttetAvNavn(MDC.get(MDC_CONSUMER_ID))
 				.build();
+		kopiertJournalpostdokumentInfoRelasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		kopiertJournalpostdokumentInfoRelasjon.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		return kopiertJournalpostdokumentInfoRelasjon;
 	}
 }

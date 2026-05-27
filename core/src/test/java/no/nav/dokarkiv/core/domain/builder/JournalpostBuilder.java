@@ -71,7 +71,10 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	private LocalDateTime ekspedertDato;
 	private LocalDateTime lestDato;
 	private InnsynCode innsyn;
+	private String opprettetKildeNavn;
+	private String endretKildeNavn;
 	private JournalpostTypeCode journalpostType;
+	private ChangeStamp changeStamp;
     private boolean addOriginalJournalpost;
 
 	public JournalpostBuilder journalpostId(Long value) { this.journalpostId = value; return this; }
@@ -110,7 +113,10 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 	public JournalpostBuilder ekspedertDato(LocalDateTime value) { this.ekspedertDato = value; return this; }
 	public JournalpostBuilder lestDato(LocalDateTime value) { this.lestDato = value; return this; }
 	public JournalpostBuilder innsyn(InnsynCode value) { this.innsyn = value; return this; }
+	public JournalpostBuilder opprettetKildeNavn(String value) { this.opprettetKildeNavn = value; return this; }
+	public JournalpostBuilder endretKildeNavn(String value) { this.endretKildeNavn = value; return this; }
 	public JournalpostBuilder journalpostType(JournalpostTypeCode value) { this.journalpostType = value; return this; }
+	public JournalpostBuilder changeStamp(ChangeStamp value) { this.changeStamp = value; return this; }
 	public JournalpostBuilder signatur(Boolean value) {this.signatur = value; return this; }
 
     public JournalpostBuilder addOriginalJournalpost(boolean value) {
@@ -162,7 +168,10 @@ public class JournalpostBuilder extends Builder<Journalpost> {
 		journalpost.setEkspedertDato(ekspedertDato);
 		journalpost.setLestDato(lestDato);
 		journalpost.setInnsyn(innsyn);
+		journalpost.setOpprettetKildeNavn(opprettetKildeNavn);
+		journalpost.setEndretKildeNavn(endretKildeNavn);
 		journalpost.setJournalposttype(journalpostType);
+		journalpost.setChangeStamp(changeStamp);
 		journalpost.setSignatur(signatur);
 		return journalpost;
 	}

@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import no.nav.dokarkiv.core.domain.ChangeStamp;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingArsakCode;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingHjemmelCode;
 import no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode;
@@ -84,7 +85,12 @@ public class Slettebestilling extends AbstractPersistentVersionedDomainObjectWit
 		return slettebestillingId;
 	}
 
-	public void endreSlettebestillingStatus(SlettebestillingStatusCode nyStatus) {
+	public void setOpprettetAvOgChangestamp(String navn) {
+		setChangeStamp(new ChangeStamp(navn));
+	}
+
+	public void endreSlettebestillingStatus(SlettebestillingStatusCode nyStatus, String endretKildeNavn) {
+		this.setEndretKildeNavn(endretKildeNavn);
 		this.slettebestillingStatus = nyStatus;
 	}
 }

@@ -2,6 +2,7 @@ package no.nav.dokarkiv.arkivervariant.rjoark103;
 
 
 import no.nav.dokarkiv.arkivervariant.exception.VariantFormatAlreadyExistsException;
+import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
@@ -12,6 +13,7 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.DokumentFilRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -81,6 +83,7 @@ public class ArkiverVariantService {
 				.fileContent(fil)
 				.dokumentInfo(dokumentInfo)
 				.build();
+		filDetaljer.setOpprettetKildeNavn(MDC.get(MDCConstants.MDC_CONSUMER_ID));
 		dokumentInfo.addFilDetaljer(filDetaljer);
 
 		dokumentFilRepository.persist(filDetaljer.createDokumentFil());

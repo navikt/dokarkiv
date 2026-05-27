@@ -144,7 +144,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 
 		var slettebestilling = slettebestillingTestRepository.findById(Long.valueOf(bestillResult.getBody()));
 		assertThat(slettebestilling).isPresent();
-		slettebestilling.get().endreSlettebestillingStatus(FERDIGSTILT);
+		slettebestilling.get().endreSlettebestillingStatus(FERDIGSTILT, "itest");
 
 		commitAndStartNewTransaction();
 

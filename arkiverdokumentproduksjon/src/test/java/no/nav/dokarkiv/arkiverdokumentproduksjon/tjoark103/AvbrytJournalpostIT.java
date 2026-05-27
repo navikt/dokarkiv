@@ -27,9 +27,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Integration tests for the avbrytJournalpost operation
  * in the ArkiverDokumentproduksjon webservice.
+ *
+ * @author Torgeir Cook
  */
 public class AvbrytJournalpostIT extends AbstractArkiverdokumentproduksjonItest {
 
+	private static final String OPPRETTET_KILDE_NAVN = "opprettet kilde";
 	private static final String OPPRETTET_AV_NAVN = "Tester";
 	private static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	private static final String ENDRET_AV_NAVN = "Tester2";
@@ -118,14 +121,17 @@ public class AvbrytJournalpostIT extends AbstractArkiverdokumentproduksjonItest 
 				.journalStatus(journalStatusCode)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.fagomrade(FagomradeCode.PEN)
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
 								.sakId(1L)
 								.fagsystem(FagsystemCode.PEN)
+								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.build())
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
+								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
 								.dokumentInfo(createDokumentInfo(dokumentStatusCode))
@@ -137,6 +143,7 @@ public class AvbrytJournalpostIT extends AbstractArkiverdokumentproduksjonItest 
 		return getDokumentInfoBuilder()
 				.dokumentstatus(dokumentStatusCode)
 				.endretAvNavn(ENDRET_AV_NAVN)
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.build();
 	}
 }

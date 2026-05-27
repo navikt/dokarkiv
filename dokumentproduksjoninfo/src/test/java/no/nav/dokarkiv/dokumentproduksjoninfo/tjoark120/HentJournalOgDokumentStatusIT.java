@@ -29,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration test for HentJournalOgDokumentStatus.
+ *
+ * @author Thomas Eugen Bjørge, Visma Consulting
  */
 public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninfoItest {
 
@@ -105,15 +107,19 @@ public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninf
 				.journalStatus(JOURNAL_STATUS)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn("testuser")
+				.opprettetKildeNavn("test")
 				.dokumentInfoRelasjoner(JournalpostDokumentInfoRelasjonBuilder
 						.getJournalpostDokumentInfoRelasjonBuilder()
 						.tilknyttetAvNavn("testuser")
 						.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
+						.opprettetKildeNavn("test")
 						.dokumentInfo(DokumentInfoBuilder.getDokumentInfoBuilder()
+								.opprettetKildeNavn("test")
 								.dokumentstatus(DOKUMENT_INFO_STATUS)
 								.filDetaljerList(FilDetaljerBuilder.getFilDetaljerBuilder()
 										.filtype(FilTypeCode.PDF)
 										.variantFormat(VariantFormatCode.PRODUKSJON)
+										.opprettetKildeNavn("test")
 										.metaforceInstanceId(METAFORCE_INSTANCE_ID)
 										.build())
 								.build())

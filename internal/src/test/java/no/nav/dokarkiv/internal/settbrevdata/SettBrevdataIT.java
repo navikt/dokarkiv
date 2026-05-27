@@ -84,6 +84,7 @@ public class SettBrevdataIT extends AbstractInternalIT {
 		Journalpost journalpost = createReservertPensjonJournalpost(arkivFilUuid, produksjonFilUuid);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 		FilDetaljer filDetaljer = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(PRODUKSJON);
+		filDetaljer.setEndretKildeNavn("itest");
 		filDetaljer.setFileContent(FIL);
 		dokumentFilTestRepository.persist(filDetaljer.createDokumentFil());
 
@@ -107,6 +108,7 @@ public class SettBrevdataIT extends AbstractInternalIT {
 		Journalpost journalpost = createReservertPensjonJournalpost(arkivFilUuid, produksjonFilUuid);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 		FilDetaljer filDetaljer = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
+		filDetaljer.setEndretKildeNavn("itest");
 		dokumentFilTestRepository.persist(filDetaljer.createDokumentFil());
 
 		commitAndStartNewTransaction();

@@ -1,16 +1,26 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100;
 
+import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark100.OpprettJournalpostArkiverDokumentDataUtil.PERSONIDENT;
 
+@ExtendWith(MockitoExtension.class)
 public class OpprettJournalpostArkiverDokumentRequestMapperTest {
 
-	private OpprettJournalpostArkiverDokumentRequestMapper requestMapper = new OpprettJournalpostArkiverDokumentRequestMapper();
+	@Mock
+	private KildeNavnPopulator kildeNavnPopulator;
+
+	@InjectMocks
+	private OpprettJournalpostArkiverDokumentRequestMapper requestMapper;
 
 	@BeforeEach
 	public void setUp() throws Exception {

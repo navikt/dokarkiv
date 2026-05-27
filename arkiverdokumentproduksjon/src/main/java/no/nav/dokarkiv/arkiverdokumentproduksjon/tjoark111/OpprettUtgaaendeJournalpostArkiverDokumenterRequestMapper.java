@@ -16,6 +16,8 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
+import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Tilleggsopplysning;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettutgaaendejournalpostarkiverdokument.Vedlegg;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
@@ -35,12 +37,21 @@ import static org.apache.commons.lang3.StringUtils.trim;
 @Component
 public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper {
 
+	private final KildeNavnPopulator kildeNavnPopulator;
+
+	public OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper(KildeNavnPopulator kildeNavnPopulator) {
+		this.kildeNavnPopulator = kildeNavnPopulator;
+	}
+
 	public OpprettUtgaaendeJournalpostArkiverDokumentRequestTo map(OpprettUtgaaendeJournalpostArkiverDokumentRequest wsRequest) {
 
 		Journalpost domainJournalpost = createDomainJournalpostBase(wsRequest.getJournalpost());
 		addBruker(domainJournalpost, wsRequest.getBruker());
 		setSaksrelasjon(domainJournalpost, wsRequest.getSaksrelasjon());
 		addJournalpostDokumentInfoRelasjon(domainJournalpost, wsRequest.getJournalpostDokumentInfoRelasjon());
+
+		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder
+				.currentRequestContext().getComponentId());
 
 		return OpprettUtgaaendeJournalpostArkiverDokumentRequestTo.builder()
 				.journalpost(domainJournalpost)

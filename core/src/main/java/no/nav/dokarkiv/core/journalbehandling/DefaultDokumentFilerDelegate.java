@@ -73,6 +73,7 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 			saveDokumentFil(filDetaljer.createDokumentFil());
 		} else {
 			existingDokumentFil.setFil(filDetaljer.getFileContent());
+			existingDokumentFil.setEndretKildeNavn(filDetaljer.getEndretKildeNavn());
 			filDetaljer.setFilstorrelse(String.valueOf(filDetaljer.getFileContent().length));
 		}
 	}

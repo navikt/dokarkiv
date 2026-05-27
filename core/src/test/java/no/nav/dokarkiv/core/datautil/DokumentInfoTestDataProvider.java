@@ -13,10 +13,12 @@ import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
-import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 
 /**
  * Provides helpers for building {@link DokumentInfoBuilder}-instances
+ *
+ * @author Roar Bjurstrom, Visma Consulting.
+ * @author Thomas Kåsene, Visma Consulting AS
  */
 public final class DokumentInfoTestDataProvider {
 
@@ -26,22 +28,23 @@ public final class DokumentInfoTestDataProvider {
 	public static final String DOKUMENT_TITTEL = "Dokumenttittel";
 
 	public static DokumentInfoBuilder createDokumentInfo() {
-		return createDokumentInfo(DOKUMENT_TITTEL, FilDetaljer.generateUuid(), FilDetaljer.generateUuid());
+		return createDokumentInfo(DOKUMENT_TITTEL, DokumentFilTestDataProvider.FIL_UUID, DokumentFilTestDataProvider.FIL_UUID_SLADDET);
 	}
 
 	public static DokumentInfoBuilder createDokumentInfo(String dokumentTittel, String filuid, String filuidSladdet) {
 		return createDokumentInfo(dokumentTittel,
 				getFilDetaljerBuilder().filtype(PDF)
-						.filUuid(filuid).variantFormat(ARKIV),
-						filuidSladdet);
+						.filUuid(filuid).variantFormat(ARKIV)
+						.opprettetKildeNavn("test"), filuidSladdet);
 	}
 
 	public static DokumentInfoBuilder createDokumentInfo(String dokumentTittel, FilDetaljerBuilder filDetaljerBuilder, String filuidSladdet) {
 		return getDokumentInfoBuilder()
+				.opprettetKildeNavn("test")
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.tittel(dokumentTittel)
 				.skannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build())
-				.filDetaljerList(filDetaljerBuilder.build(), getFilDetaljerBuilder().variantFormat(SLADDET).filUuid(filuidSladdet).filtype(PDF).build());
+				.filDetaljerList(filDetaljerBuilder.build(), getFilDetaljerBuilder().variantFormat(SLADDET).filUuid(filuidSladdet).filtype(PDF).opprettetKildeNavn("test").build());
 	}
 
 	public static DokumentInfoBuilder createDokumentInfo(DokumentKategoriCode kategori) {
@@ -55,6 +58,7 @@ public final class DokumentInfoTestDataProvider {
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.dokumenttypeId("I0001")
 				.tittel("Gi meg foreldrepenger")
+				.opprettetKildeNavn("itest")
 				.filDetaljerList(createFilDetaljerArkivPDFA(), createFilDetaljerProduksjonXML(),createFilDetaljerSladdetPDFA())
 				.skannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
 	}
@@ -65,6 +69,7 @@ public final class DokumentInfoTestDataProvider {
 				.dokumentstatus(DokumentStatusCode.FERDIGSTILT)
 				.dokumenttypeId("I0002")
 				.tittel("Takk skal du ha")
+				.opprettetKildeNavn("itest")
 				.filDetaljerList(createFilDetaljerArkivPDFA(), createFilDetaljerProduksjonXML(), createFilDetaljerSladdetPDFA())
 				.skannetInnhold(SkannetInnholdTestDataProvider.createSkannetInnhold().build());
 	}

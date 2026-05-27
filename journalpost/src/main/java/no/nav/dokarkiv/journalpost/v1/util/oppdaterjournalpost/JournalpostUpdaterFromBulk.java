@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import static java.util.Collections.emptyList;
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
 
@@ -90,6 +91,7 @@ public class JournalpostUpdaterFromBulk {
 				journalpost.setEkspedertDato(request.getEkspedertDato().atZoneSameInstant(ZONEID_NORGE).toLocalDateTime());
 			}
 			journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
+			journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		}
 		return tracker;
 	}

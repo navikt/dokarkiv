@@ -583,6 +583,8 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		journalpostSladdet.setJournalstatus(J);
 		journalpostSladdet.setJournalposttype(U);
 		journalpostSladdet.setOpprettetAvNavn("opprettetAvNavn");
+		journalpostSladdet.setOpprettetKildeNavn("opprettetKildeNavn");
+		journalpostSladdet.setEndretKildeNavn("endretKildeNavn");
 		journalpostSladdet.setEndretAvNavn("endretAvNavn");
 		journalpostSladdet.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
 
@@ -596,6 +598,10 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		Journalpost journalpostArkiv = createJournalpostWithHoveddokument();
 		journalpostArkiv.setJournalstatus(D);
 		journalpostArkiv.setJournalposttype(journalpostTypeCode);
+		journalpostArkiv.setOpprettetAvNavn("opprettetAvNavn");
+		journalpostArkiv.setOpprettetKildeNavn("opprettetKildeNavn");
+		journalpostArkiv.setEndretKildeNavn("endretKildeNavn");
+		journalpostArkiv.setEndretAvNavn("endretAvNavn");
 		journalpostArkiv.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
 
 		DokumentInfo dokumentInfo = journalpostArkiv.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();

@@ -110,6 +110,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 
 		kopiertJournalpost.getJournalpostDokumentInfoRelasjoner().forEach(jpdok -> {
 			assertThat(jpdok.getOpprettetKildeNavn()).isEqualTo(SERVICE_USER_ID);
+			assertThat(jpdok.getEndretKildeNavn()).isEqualTo(SERVICE_USER_ID);
 		});
 		assertThat(kopiertJournalpost.getBrukere().size()).isEqualTo(originalJournalpost.getBrukere().size());
 

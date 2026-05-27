@@ -15,6 +15,8 @@ import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
+import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Tilleggsopplysning;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentRequest;
 import org.springframework.stereotype.Component;
@@ -30,6 +32,12 @@ import static org.apache.commons.lang3.StringUtils.trim;
 @Component
 public class OpprettJournalpostArkiverDokumentRequestMapper {
 
+	private final KildeNavnPopulator kildeNavnPopulator;
+
+	public OpprettJournalpostArkiverDokumentRequestMapper(KildeNavnPopulator kildeNavnPopulator) {
+		this.kildeNavnPopulator = kildeNavnPopulator;
+	}
+
 	public OpprettJournalpostArkiverDokumentRequestTo map(OpprettJournalpostArkiverDokumentRequest wsRequest) {
 		no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettjournalpostarkiverdokument.Journalpost journalpost = wsRequest
 				.getJournalpost();
@@ -41,6 +49,9 @@ public class OpprettJournalpostArkiverDokumentRequestMapper {
 		setSaksrelasjon(domainJournalpost, journalpost);
 		addJournalpostDokumentInfoRelasjon(domainJournalpost, dokumentInfo);
 		addFildetaljer(domainJournalpost, dokumentInfo);
+
+		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(domainJournalpost, RequestContextHolder
+				.currentRequestContext().getComponentId());
 
 		return new OpprettJournalpostArkiverDokumentRequestTo(domainJournalpost, wsRequest.isFerdigstillJournalpost());
 	}

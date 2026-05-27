@@ -8,10 +8,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultSporingPopulator implements SporingPopulator {
 
+	private KildeNavnPopulator kildeNavnPopulator;
+
+	public DefaultSporingPopulator(KildeNavnPopulator kildeNavnPopulator) {
+		this.kildeNavnPopulator = kildeNavnPopulator;
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public void populateSporingInfo(Journalpost journalpost, String opprettetEndretNavn) {
 		populateOpprettetEndretAvNavn(journalpost, opprettetEndretNavn);
+		
+		String kildeNavn = RequestContextHolder.currentRequestContext().getComponentId();
+		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(journalpost, kildeNavn);		
 	}
 
 	private void populateOpprettetEndretAvNavn(Journalpost journalpost, String navn) {
@@ -29,4 +38,14 @@ public class DefaultSporingPopulator implements SporingPopulator {
 			}
 		}
 	}
+
+	/**
+	 * Setter for the kildeNavnPopulator property.
+	 *
+	 * @param kildeNavnPopulator the kildeNavnPopulator to set
+	 */
+	public void setKildeNavnPopulator(KildeNavnPopulator kildeNavnPopulator) {
+		this.kildeNavnPopulator = kildeNavnPopulator;
+	}
+
 }

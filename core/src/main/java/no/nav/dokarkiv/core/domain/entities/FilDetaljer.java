@@ -94,6 +94,7 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_skjerming_type", length = 50)
+	@Setter(AccessLevel.NONE)
 	private SkjermingTypeCode skjermingType;
 
 	@JsonIgnore
@@ -151,10 +152,19 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public DokumentFil createDokumentFil() {
 		DokumentFil dokumentFil = new DokumentFil(this.getFilUuid(), this.getFileContent());
+		dokumentFil.setOpprettetKildeNavn(getOpprettetKildeNavnForDokumentFil());
 		if (isBlank(this.getFilstorrelse())) {
 			this.setFilstorrelse(String.valueOf(this.getFileContent().length));
 		}
 		return dokumentFil;
+	}
+
+	private String getOpprettetKildeNavnForDokumentFil() {
+		if (this.hasId()) {
+			return getEndretKildeNavn();
+		} else {
+			return getOpprettetKildeNavn();
+		}
 	}
 
 	/**
@@ -212,6 +222,7 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 
 	public void setSkjermingType(SkjermingTypeCode skjermingTypeCode, String endretKildeNavn) {
 		this.skjermingType = skjermingTypeCode;
+		this.setEndretKildeNavn(endretKildeNavn);
 	}
 
 	public boolean isSkjermet() {

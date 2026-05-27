@@ -358,6 +358,7 @@ public abstract class AbstractRestIT {
 		newJp.getJournalpostDokumentInfoRelasjoner().forEach(rel -> rel.getDokumentInfo().getFildetaljerListe().forEach(filDetaljer -> {
 			if (Objects.isNull(dokumentFilTestRepository.findByFilUuid(filDetaljer.getFilUuid()))) {
 				DokumentFil dokumentFil = filDetaljer.createDokumentFil();
+				dokumentFil.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 				dokumentFilTestRepository.persist(dokumentFil);
 			}
 		}));

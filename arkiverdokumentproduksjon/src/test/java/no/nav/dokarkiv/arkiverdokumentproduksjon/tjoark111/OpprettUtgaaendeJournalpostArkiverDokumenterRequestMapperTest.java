@@ -3,6 +3,7 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark111;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.sporing.DefaultKildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextSetter;
 import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.opprettutgaaendejournalpostarkiverdokument.Vedlegg;
@@ -39,7 +40,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper.class})
+@ContextConfiguration(classes = {OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapper.class,
+		DefaultKildeNavnPopulator.class})
 public class OpprettUtgaaendeJournalpostArkiverDokumenterRequestMapperTest {
 
 	@Autowired

@@ -106,12 +106,14 @@ class JournalpostSplitterTest {
 							.containsExactly(NY_BRUKER_ID, PERSON);
 
 					assertThat(j.getKryssreferanser()).isEqualTo(journalpost.getKryssreferanser());
+					assertThat(j.getOpprettetKildeNavn()).isEqualTo(CONSUMER_ID);
 				});
 
 		assertThat(splittResultat.nyJournalpost().getJournalpostDokumentInfoRelasjoner())
 				.singleElement()
 				.satisfies(relasjon -> {
 					assertThat(relasjon.getTilknyttetJournalpostSom()).isEqualTo(HOVEDDOKUMENT);
+					assertThat(relasjon.getOpprettetKildeNavn()).isEqualTo(CONSUMER_ID);
 
 					assertThat(relasjon.getDokumentInfo().getDokumentInfoId()).isEqualTo(request.dokumenter().getFirst().dokumentInfoId());
 				});
@@ -142,6 +144,7 @@ class JournalpostSplitterTest {
 				.singleElement()
 				.satisfies(relasjon -> {
 					assertThat(relasjon.getTilknyttetJournalpostSom()).isEqualTo(HOVEDDOKUMENT);
+					assertThat(relasjon.getOpprettetKildeNavn()).isEqualTo(CONSUMER_ID);
 					assertThat(relasjon.getDokumentInfo())
 							.satisfies(d -> {
 								assertThat(d.getDokumentInfoId()).isNull();
@@ -218,6 +221,7 @@ class JournalpostSplitterTest {
 				.satisfies(b -> {
 					assertThat(b.getBrukerId()).isEqualTo(bruker.getId());
 					assertThat(b.getBrukerType()).isEqualTo(forventetIdType);
+					assertThat(b.getOpprettetKildeNavn()).isEqualTo(CONSUMER_ID);
 				});
 	}
 

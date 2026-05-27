@@ -223,6 +223,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 
 	private Journalpost createJournalpost(Long journalpostId, Long dokumentinfoId) {
 		return getJournalpostBuilder()
+				.endretKildeNavn("sd")
 				.journalpostId(journalpostId)
 				.avsenderMottakerId("01054512313")
 				.avsenderMottaker("avsender")

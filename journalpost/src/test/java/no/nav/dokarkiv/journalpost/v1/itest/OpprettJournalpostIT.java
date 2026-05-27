@@ -980,6 +980,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNull(journalpost.getJournalDato());
 		assertNull(journalpost.getJournalfortAvNavn());
 		assertNull(journalpost.getEndretAvNavn());
+		assertNull(journalpost.getEndretKildeNavn());
 	}
 
 	@Test

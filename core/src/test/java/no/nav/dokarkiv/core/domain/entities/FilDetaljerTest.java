@@ -48,27 +48,31 @@ public class FilDetaljerTest {
 
 	@Test
 	public void shouldCreateDokumentFilCorrectlyForNewFilDetaljer() {
+		String kildeNavn = "Opprettet Kilde";
 		FilDetaljer filDetaljer = getFilDetaljerBuilder()
 				.fileContent("Test".getBytes())
 				.filUuid(FilDetaljer.generateUuid())
+				.opprettetKildeNavn(kildeNavn)
 				.build();
 
 		DokumentFil dokumentFil = filDetaljer.createDokumentFil();
 
-		assertDokumentFil(filDetaljer, dokumentFil);
+		assertDokumentFil(kildeNavn, filDetaljer, dokumentFil);
 	}
 
 	@Test
 	public void shouldCreateDokumentFilCorrectlyForExistingFilDetaljer() {
+		String kildeNavn = "Opprettet Kilde";
 		FilDetaljer filDetaljer = getFilDetaljerBuilder()
 				.fildetaljerId(10L)
 				.fileContent("Test".getBytes())
 				.filUuid(FilDetaljer.generateUuid())
+				.endretKildeNavn(kildeNavn)
 				.build();
 
 		DokumentFil dokumentFil = filDetaljer.createDokumentFil();
 
-		assertDokumentFil(filDetaljer, dokumentFil);
+		assertDokumentFil(kildeNavn, filDetaljer, dokumentFil);
 	}
 
 	@Test
@@ -111,9 +115,10 @@ public class FilDetaljerTest {
 		assertFalse(f.isAPdf());
 	}
 
-	private void assertDokumentFil(FilDetaljer filDetaljer, DokumentFil dokumentFil) {
+	private void assertDokumentFil(String kildeNavn, FilDetaljer filDetaljer, DokumentFil dokumentFil) {
 		assertThat(dokumentFil.getFil(), is(filDetaljer.getFileContent()));
 		assertThat(dokumentFil.getFilUuid(), is(filDetaljer.getFilUuid()));
+		assertThat(dokumentFil.getOpprettetKildeNavn(), is(kildeNavn));
 	}
 
 	@Test

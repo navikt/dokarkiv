@@ -133,6 +133,7 @@ public class SkjermDokumentService {
 
 	private static void oppdaterSkjermingForJournalpostDokumentRelasjon(JournalpostDokumentInfoRelasjon relasjon, SkjermingTypeCode skjermingTypeCode) {
 		relasjon.setSkjermingType(skjermingTypeCode);
+		relasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 
 	private static boolean journalpostHasOnlyRelationsThatAreSkjermet(Journalpost journalpost) {
@@ -147,7 +148,7 @@ public class SkjermDokumentService {
 
 	private void oppdaterSkjermingForJournalpost(SkjermDokumentHjemmelCode hjemmelCode, Journalpost journalpost, SkjermingTypeCode skjermingTypeCode) {
 		skrivAksjonsloggForJournalpost(journalpost, hjemmelCode);
-		journalpost.setSkjermingType(skjermingTypeCode, MDC.get(MDC_USER_NAME));
+		journalpost.setSkjermingType(skjermingTypeCode, MDC.get(MDC_CONSUMER_ID), MDC.get(MDC_USER_NAME));
 	}
 
 	private void skrivAksjonsloggForJournalpost(Journalpost journalpost, SkjermDokumentHjemmelCode hjemmelCode) {

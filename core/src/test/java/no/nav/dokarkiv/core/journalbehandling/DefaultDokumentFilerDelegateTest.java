@@ -101,6 +101,7 @@ public class DefaultDokumentFilerDelegateTest {
 		return getFilDetaljerBuilder()
 				.fildetaljerId(99L)
 				.fileContent(fileContent)
+				.endretKildeNavn("Test")
 				.build();
 	}
 

@@ -164,6 +164,7 @@ public class FerdigstillJournalpostService {
 		journalpost.setJournalfortAvNavn(
 				ferdigstillJournalpostRequest.getJournalfortAvNavn() != null ? ferdigstillJournalpostRequest.getJournalfortAvNavn() : MDC.get(MDC_USER_NAME)
 		);
+		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		if (!isBlank(ferdigstillJournalpostRequest.getOpprettetAvNavn())) {
 			journalpost.setOpprettetAvNavn(ferdigstillJournalpostRequest.getOpprettetAvNavn());
 		}
@@ -177,6 +178,7 @@ public class FerdigstillJournalpostService {
 		journalpost.setJournalForendeEnhetId(journalfoerendeEnhet);
 		journalpost.setEndretAvNavn(MDC.get(MDC_USER_NAME));
 		journalpost.setJournalfortAvNavn(MDC.get(MDC_USER_NAME));
+		journalpost.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 
 	private void setJournalpostStatus(Journalpost journalpost) {

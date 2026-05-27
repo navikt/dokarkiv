@@ -39,15 +39,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Integration tests for the arkiverDokumentOgFerdigstillJournalpost operation
  * in the ArkiverDokumentproduksjon webservice.
+ *
+ * @author Torgeir Cook
  */
 public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumentproduksjonItest {
 
 	private static final Long METAFORCE_INSTANCE_ID = 2738L;
 	private static final FilTypeCode FILTYPE = FilTypeCode.PDF;
+	private static final String OPPRETTET_KILDE_NAVN = "opprettet kilde";
 	private static final String OPPRETTET_AV_NAVN = "Tester";
 	private static final String TILKNYTTET_AV_NAVN = "Tilknyttetnavn";
 	private static final String ENDRET_AV_NAVN = "Tester2";
 	private static final byte[] DOKUMENTINNHOLD = "DOKUMENT".getBytes();
+	private static final String OPPRETTETKILDENAVN = "NAV";
 	private static final String UTSENDINGS_KANAL_CODE = UtsendingsKanalCode.NAV_NO.name();
 	private OppdaterJournalpostArkiverDokumentRequest request;
 	private Journalpost journalpost;
@@ -155,14 +159,17 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 				.journalStatus(JournalStatusCode.D)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn(OPPRETTET_AV_NAVN)
+				.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 				.fagomrade(FagomradeCode.PEN)
 				.saksrelasjon(
 						getSaksrelasjonBuilder()
 								.sakId(1L)
 								.fagsystem(FagsystemCode.PEN)
+								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.build())
 				.dokumentInfoRelasjoner(
 						getJournalpostDokumentInfoRelasjonBuilder()
+								.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 								.tilknyttetAvNavn(TILKNYTTET_AV_NAVN)
 								.dokumentInfo(createDokumentInfo())
 								.tilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT)
@@ -179,10 +186,12 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 		return getDokumentInfoBuilder()
 				.dokumentstatus(DokumentStatusCode.UNDER_REDIGERING)
 				.endretAvNavn(ENDRET_AV_NAVN)
+				.opprettetKildeNavn(OPPRETTETKILDENAVN)
 				.filDetaljerList(getFilDetaljerBuilder()
 						.filtype(FilTypeCode.AXML)
 						.fileContent("test".getBytes())
 						.metaforceInstanceId(METAFORCE_INSTANCE_ID)
+						.opprettetKildeNavn(OPPRETTET_KILDE_NAVN)
 						.variantFormat(VariantFormatCode.PRODUKSJON)
 						.build())
 				.build();
