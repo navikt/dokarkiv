@@ -1,7 +1,16 @@
 package no.nav.dokarkiv.core.domain.codes;
 
-public enum SlettebestillingStatusCode {
+import no.nav.dokarkiv.core.domain.entities.Slettebestilling;
+
+import java.util.function.Predicate;
+
+public enum SlettebestillingStatusCode implements Predicate<Slettebestilling> {
 	OPPRETTET,
 	FERDIGSTILT,
-	AVBRUTT
+	AVBRUTT;
+
+	@Override
+	public boolean test(Slettebestilling slettebestilling) {
+		return slettebestilling.getSlettebestillingStatus() == this;
+	}
 }

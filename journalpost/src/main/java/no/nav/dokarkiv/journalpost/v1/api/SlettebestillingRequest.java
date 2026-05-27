@@ -1,40 +1,10 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import no.nav.dokarkiv.core.domain.codes.SlettebestillingArsakCode;
-import no.nav.dokarkiv.core.domain.codes.SlettebestillingHjemmelCode;
-import no.nav.dokarkiv.core.domain.codes.SlettebestillingTypeCode;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 public record SlettebestillingRequest(
-
-		@Schema(
-				description = """
-					Type bestilling. En av følgende: DOKUMENT.
-					""",
-				requiredMode = REQUIRED,
-				example = "DOKUMENT"
-		)
-		String slettebestillingType,
-
-		@Schema(
-				description = """
-					DokumentInfoId for dokument som skal slettes. Settes kun om slettebestillingType = DOKUMENT. Påkrevd om slettebestillingType = DOKUMENT.
-					""",
-				requiredMode = REQUIRED,
-				example = "12345"
-		)
-		Long dokumentInfoId,
-
-		@Schema(
-				description = """
-					Årsak for slettingen. En av følgende: ENKELTSLETTING.
-					""",
-				requiredMode = REQUIRED,
-				example = "ENKELTSLETTING"
-		)
-		String arsak,
 
 		@Schema(
 				description = """
@@ -49,7 +19,7 @@ public record SlettebestillingRequest(
 
 		@Schema(
 				description = """
-					Begrunnelse for sletting gjøres. Maks 512 tegn. Kan f.eks være referanse til oppgave eller jira-sak.
+					Begrunnelse for hvorfor sletting gjøres. Maks 512 tegn. Kan f.eks være referanse til oppgave eller jira-sak.
 					""",
 				requiredMode = REQUIRED,
 				example = "Jira: SLETT-1234"
