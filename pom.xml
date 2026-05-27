@@ -132,12 +132,6 @@
 				<groupId>org.verapdf</groupId>
 				<artifactId>validation-model-jakarta</artifactId>
 				<version>${verapdf.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>javax.activation</groupId>
-						<artifactId>javax.activation-api</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
