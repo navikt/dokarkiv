@@ -31,11 +31,11 @@ import static no.nav.dokarkiv.core.domain.codes.InnsynCode.VISES_MASKINELT_GODKJ
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
-import static no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem.PP01;
+import static no.nav.dokarkiv.core.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
-import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.ARKIVSAK;
-import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
-import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.GENERELL_SAK;
+import static no.nav.dokarkiv.core.api.Sakstype.ARKIVSAK;
+import static no.nav.dokarkiv.core.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.core.api.Sakstype.GENERELL_SAK;
 import static no.nav.dokarkiv.journalpost.v1.validators.AvsenderMottakerValidator.validateAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;
 import static no.nav.dokarkiv.core.domain.validator.EksternReferanseIdValidator.validateEksternReferanseId;

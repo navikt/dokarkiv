@@ -7,9 +7,9 @@ import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
-import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
+import no.nav.dokarkiv.core.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
+import no.nav.dokarkiv.core.api.Sakstype;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +23,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJO
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_APPLIKASJON;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_FAGSAKNR;
 import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
-import static no.nav.dokarkiv.journalpost.v1.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.core.api.Sakstype.FAGSAK;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j

@@ -3,7 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.api.sak;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
-import no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem;
+import no.nav.dokarkiv.core.api.Fagsaksystem;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.journalpost.v1.api;
+package no.nav.dokarkiv.core.api;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
