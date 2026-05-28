@@ -5,13 +5,13 @@ import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import com.google.common.io.Resources;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.web.util.UriComponentsBuilder;
-import wiremock.com.google.common.io.Resources;
+import org.wiremock.spring.EnableWireMock;
 
 import java.io.IOException;
 import java.net.URL;
@@ -39,7 +39,7 @@ import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 		classes = {CoreConfig.class, JournalpostConfig.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles({"itest", "wiremock"})
-@AutoConfigureWireMock(port = 0)
+@EnableWireMock
 public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	static final String JOURNALPOSTAPI_BASE_PATH = "/rest/journalpostapi/v1/";

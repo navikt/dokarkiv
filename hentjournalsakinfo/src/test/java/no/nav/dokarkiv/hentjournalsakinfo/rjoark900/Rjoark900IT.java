@@ -327,7 +327,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		HttpEntity<FinnJournalposterRequestTo> requestEntity = new HttpEntity<>(finnJournalposterRequestTo, createDefaultHeaders());
 		ResponseEntity<Object> exchange = restTemplate.exchange(FINNJOURNALPOSTER_STATUS, HttpMethod.POST, requestEntity, Object.class);
 		if (exchange.getStatusCode() == HttpStatus.OK) {
-			return objectMapper.convertValue(exchange.getBody(), FinnJournalposterResponseTo.class);
+			return jsonMapper.convertValue(exchange.getBody(), FinnJournalposterResponseTo.class);
 		} else {
 			throw new HttpClientErrorException(exchange.getStatusCode());
 		}

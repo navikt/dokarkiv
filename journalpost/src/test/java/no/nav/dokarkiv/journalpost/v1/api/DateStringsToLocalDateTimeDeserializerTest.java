@@ -1,14 +1,13 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
@@ -18,21 +17,21 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class DateStringsToLocalDateTimeDeserializerTest {
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	private static final JsonMapper JSON_MAPPER = new JsonMapper();
 	private static final String EXPECTED_LOCAL_DATETIME_SECONDS = "2025-04-09T09:12:55";
 	private static final String EXPECTED_LOCAL_DATETIME = "2025-04-09T09:12:55.271";
 	private static final String EXPECTED_LOCALDATETIME_STARTOFDAY = "2025-04-09T00:00";
 
 	@ParameterizedTest
 	@MethodSource("deserializeToLocalDateTimeProvider")
-	void shouldDeserializeToLocalDateTime(String dateVal, String expectedLocalDateTime) throws JsonProcessingException {
+	void shouldDeserializeToLocalDateTime(String dateVal, String expectedLocalDateTime) throws Exception {
 		String json = """
 				{
 				  "legacyDate": $legacyDate$
 				}
 				""".replace("$legacyDate$", dateVal);
 
-		ApiModell apiModell = OBJECT_MAPPER.readValue(json, ApiModell.class);
+		ApiModell apiModell = JSON_MAPPER.readValue(json, ApiModell.class);
 		assertThat(apiModell.getLegacyDate().toString()).isEqualTo(expectedLocalDateTime);
 	}
 
@@ -63,8 +62,8 @@ class DateStringsToLocalDateTimeDeserializerTest {
 				  "legacyDate": "01.01.2025"
 				}
 				""";
-		assertThatThrownBy(() -> OBJECT_MAPPER.readValue(json, ApiModell.class))
-				.isInstanceOf(JsonMappingException.class)
+		assertThatThrownBy(() -> JSON_MAPPER.readValue(json, ApiModell.class))
+				.isInstanceOf(DatabindException.class)
 				.hasMessageContaining("Klarte ikke parse tekst=01.01.2025 til LocalDateTime");
 	}
 }

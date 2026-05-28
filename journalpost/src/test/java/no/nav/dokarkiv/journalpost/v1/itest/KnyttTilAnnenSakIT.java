@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
@@ -284,7 +283,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 				)
 		);
 
-		String jsonResponse = new ObjectMapper().writeValueAsString(responseMap);
+		String jsonResponse = mapper.writeValueAsString(responseMap);
 
 		stubFor(post(urlMatching("/safgraphql"))
 				.willReturn(aResponse()

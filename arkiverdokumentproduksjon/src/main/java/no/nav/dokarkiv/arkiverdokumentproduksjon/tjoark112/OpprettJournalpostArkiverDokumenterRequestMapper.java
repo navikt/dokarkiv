@@ -21,11 +21,11 @@ import no.nav.dokarkiv.core.sporing.KildeNavnPopulator;
 import no.nav.dokarkiv.core.stelvio.RequestContextHolder;
 import no.nav.dokarkiv.core.storage.BucketStorage;
 import no.nav.dokarkiv.core.storage.DoksysDokument;
-import no.nav.dokarkiv.core.util.JsonSerializer;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkiverdokumentproduksjon.Tilleggsopplysning;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,11 +45,13 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 
 	private final KildeNavnPopulator kildeNavnPopulator;
 	private final BucketStorage dokprodMellomlagerStorage;
+	private final JsonMapper jsonMapper;
 
 	@Autowired
-	public OpprettJournalpostArkiverDokumenterRequestMapper(KildeNavnPopulator kildeNavnPopulator, BucketStorage dokprodMellomlagerStorage) {
+	public OpprettJournalpostArkiverDokumenterRequestMapper(KildeNavnPopulator kildeNavnPopulator, BucketStorage dokprodMellomlagerStorage, JsonMapper jsonMapper) {
 		this.kildeNavnPopulator = kildeNavnPopulator;
 		this.dokprodMellomlagerStorage = dokprodMellomlagerStorage;
+		this.jsonMapper = jsonMapper;
 	}
 
 	public OpprettJournalpostArkiverDokumenterRequestTo map(OpprettJournalpostArkiverDokumenterRequest wsRequest) {
@@ -174,6 +176,6 @@ public class OpprettJournalpostArkiverDokumenterRequestMapper {
 			throw new DokarkivTechnicalException(format("tjoark112 fant ingen dokument i Google Cloud Storage med objectName=%s ", objectName));
 		}
 
-		return JsonSerializer.deserialize(jsonPayload.get(), DoksysDokument.class);
+		return jsonMapper.readValue(jsonPayload.get(), DoksysDokument.class);
 	}
 }

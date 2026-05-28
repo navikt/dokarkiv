@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.datautil.SakTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
@@ -129,7 +128,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 	private static final Map<String, List<String>> FERDIGSTILL_QUERY = Map.of("forsoekFerdigstill", List.of("true"));
-	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Test
 	public void happyPathOpprettInngaaende() {

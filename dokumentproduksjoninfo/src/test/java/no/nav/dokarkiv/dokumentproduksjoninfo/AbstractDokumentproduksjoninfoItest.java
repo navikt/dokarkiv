@@ -11,11 +11,11 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import no.nav.tjeneste.domene.brevogarkiv.dokumentproduksjoninfo.v1.DokumentproduksjonInfoV1;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.jpa.test.autoconfigure.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
+import org.wiremock.spring.EnableWireMock;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		classes = {CoreConfig.class, DokumentproduksjonInfoConfig.class})
@@ -24,7 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 @AutoConfigureTestEntityManager
 @EnableMockOAuth2Server
 @Transactional
-@AutoConfigureWireMock(port = 0)
+@EnableWireMock
 public abstract class AbstractDokumentproduksjoninfoItest {
 
 	@Autowired

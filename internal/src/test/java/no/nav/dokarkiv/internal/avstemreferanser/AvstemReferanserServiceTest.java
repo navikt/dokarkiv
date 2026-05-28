@@ -3,10 +3,6 @@ package no.nav.dokarkiv.internal.avstemreferanser;
 import no.nav.dokarkiv.core.repository.AvstemReferanseRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Set;
 
@@ -14,16 +10,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@ActiveProfiles("itest")
 class AvstemReferanserServiceTest {
 	public static final String EKSISTERENDE_EKSTERN_REFERANSE = "en_ekstern_referanse_id";
 	public static final String MANGLENDE_EKSTERN_REFERANSE = "enikkeeksisterendeid";
 
-	@MockBean
-	private AvstemReferanseRepository avstemReferanseRepository;
+	private final AvstemReferanseRepository avstemReferanseRepository = mock(AvstemReferanseRepository.class);
 
 	private AvstemReferanserService avstemReferanserService;
 

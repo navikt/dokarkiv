@@ -3,9 +3,9 @@ package no.nav.dokarkiv.safintern.views;
 import com.blazebit.persistence.view.EntityView;
 import com.blazebit.persistence.view.Mapping;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.safintern.serializers.LocalDateTimeToOffsetDateTimeUTCSerializer;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import java.time.LocalDateTime;
 

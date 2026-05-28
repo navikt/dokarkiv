@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.core.consumer.azure;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.AzureTokenException;
 import no.nav.dokarkiv.core.exceptions.DokarkivFunctionalException;
@@ -9,14 +7,15 @@ import no.nav.dokarkiv.core.security.azure.AzureConfig;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.core.jwt.JwtTokenClaims;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE;
 import static no.nav.dokarkiv.core.cache.CacheConfig.AZURE_ON_BEHALF_OF_TOKEN_CACHE;
@@ -34,27 +33,27 @@ public class AzureToken {
 	static final String DEFAULT_CLAIM_SUB = "sub";
 
 	private final AzureConfig azureConfig;
-	private final ObjectMapper objectMapper;
+	private final JsonMapper jsonMapper;
 	private final WebClient azureClient;
 
 	public AzureToken(AzureConfig azureConfig,
-					  ObjectMapper objectMapper,
+					  JsonMapper jsonMapper,
 					  WebClient azureClient) {
 		this.azureConfig = azureConfig;
-		this.objectMapper = objectMapper;
+		this.jsonMapper = jsonMapper;
 		this.azureClient = azureClient.mutate()
 				.baseUrl(azureConfig.getOpenidConfigTokenEndpoint())
 				.defaultHeader(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
 	}
 
-	@Retryable(retryFor = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
+	@Retryable(includes = DokarkivFunctionalException.class, delay = 2000)
 	@Cacheable(value = AZURE_ON_BEHALF_OF_TOKEN_CACHE, keyGenerator = "onBehalfOfTokenKeyGenerator")
 	public String onBehalfOfAccessToken(String token, String scope) {
 		return fetchAccessToken(token, scope);
 	}
 
-	@Retryable(retryFor = DokarkivFunctionalException.class, backoff = @Backoff(delay = 2000))
+	@Retryable(includes = DokarkivFunctionalException.class, delay = 2000)
 	@Cacheable(value = AZURE_CLIENT_CREDENTIAL_GRAPH_TOKEN_CACHE, key = "#scope")
 	public String clientCredentialAccessToken(String scope) {
 		return fetchAccessToken(null, scope);
@@ -83,8 +82,8 @@ public class AzureToken {
 				.block();
 
 		try {
-			return objectMapper.readValue(responseJson, TokenResponse.class).accessToken();
-		} catch (JsonProcessingException e) {
+			return jsonMapper.readValue(responseJson, TokenResponse.class).accessToken();
+		} catch (JacksonException e) {
 			throw new AzureTokenException(String.format("Klarte ikke parse token fra Azure. Feilmelding=%s", e.getMessage()), e);
 		}
 	}

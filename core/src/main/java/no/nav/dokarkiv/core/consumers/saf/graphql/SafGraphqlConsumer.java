@@ -8,13 +8,10 @@ import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.util.NavHeadersFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-
-import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
 
 @Component
 public class SafGraphqlConsumer {
@@ -32,7 +29,7 @@ public class SafGraphqlConsumer {
 				.build();
 	}
 
-	@Retryable(retryFor = SafJournalpostQueryTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT))
+	@Retryable(includes = SafJournalpostQueryTechnicalException.class)
 	public ResponseEntity<String> performQuery(GraphQLRequest graphQLRequest) {
 
 		return webClient

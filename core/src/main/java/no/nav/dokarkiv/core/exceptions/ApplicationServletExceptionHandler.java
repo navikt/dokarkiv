@@ -1,8 +1,8 @@
 package no.nav.dokarkiv.core.exceptions;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException.Reference;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JacksonException.Reference;
+import tools.jackson.databind.exc.InvalidFormatException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -47,8 +47,8 @@ public class ApplicationServletExceptionHandler extends ResponseEntityExceptionH
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 		if (ex.getCause() instanceof InvalidFormatException ife) {
 			return handleInvalidFormatException(ex, ife);
-		} else if (ex.getCause() instanceof JsonProcessingException jpe) {
-			return handleJsonProcessingException(jpe, request);
+		} else if (ex.getCause() instanceof JacksonException jpe) {
+			return handleJacksonException(jpe, request);
 		}
 		return handleExceptionInternal(ex, ex.getMessage(), headers, BAD_REQUEST, request);
 	}
@@ -58,7 +58,7 @@ public class ApplicationServletExceptionHandler extends ResponseEntityExceptionH
 		var verdi = invalidFormatException.getValue();
 		var feltType = invalidFormatException.getTargetType();
 		var feltNavn = invalidFormatException.getPath().stream()
-				.map(Reference::getFieldName)
+				.map(Reference::getPropertyName)
 				.collect(Collectors.joining("."));
 
 		if (feltType.isEnum()) {
@@ -71,7 +71,7 @@ public class ApplicationServletExceptionHandler extends ResponseEntityExceptionH
 				.body(format("\"%s\"", feilmelding));
 	}
 
-	private ResponseEntity<Object> handleJsonProcessingException(JsonProcessingException error, WebRequest webRequest) {
+	private ResponseEntity<Object> handleJacksonException(JacksonException error, WebRequest webRequest) {
 		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(BAD_REQUEST, error.getMessage());
 		problemDetail.setTitle("JSON Parse error");
 		return createResponseEntity(problemDetail, EMPTY, BAD_REQUEST, webRequest);

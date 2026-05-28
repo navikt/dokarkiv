@@ -1,7 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostBuilder;
 import no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder;
@@ -27,6 +25,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -58,8 +58,6 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 	private final byte[] mockData = "mockData".getBytes();
 	private final String mockFilnavn = "mockFilnavn";
 	private final String mockEksternReferanse = "mockEksternReferanse";
-
-	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Test
 	public void mottaDokumentHappy() {
@@ -220,7 +218,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 			assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
 			assertEquals(String.format(errorMessage, journalpostId), responseBody.get("message").textValue());
 
-		} catch (IOException e) {
+		} catch (JacksonException e) {
 			fail();
 		}
 	}
@@ -251,7 +249,7 @@ public class MottaDokumentUtgaaendeSkanningServiceIT extends AbstractJournalpost
 			assertEquals(String.format(errorMessage, journalpostId, journalpostId), responseBody.get("message").textValue());
 			assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
 
-		} catch (IOException e) {
+		} catch (JacksonException e) {
 			fail();
 		}
 	}

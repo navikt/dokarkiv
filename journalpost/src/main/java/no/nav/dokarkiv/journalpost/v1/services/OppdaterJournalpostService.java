@@ -28,8 +28,7 @@ import no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.SaksrelasjonUpdat
 import org.hibernate.StaleObjectStateException;
 import org.slf4j.MDC;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -45,8 +44,6 @@ import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.ALTINN;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.EESSI;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO_CHAT;
-import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_DELAY;
-import static no.nav.dokarkiv.journalpost.v1.JournalpostApiConfig.RETRY_MULTIPLIER;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static no.nav.dokarkiv.core.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.core.api.Sakstype.FAGSAK;
@@ -91,10 +88,7 @@ public class OppdaterJournalpostService {
 		this.meterRegistry = meterRegistry;
 	}
 
-	@Retryable(
-			retryFor = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
-			backoff = @Backoff(delay = RETRY_DELAY, multiplier = RETRY_MULTIPLIER)
-	)
+	@Retryable(includes = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class})
 	public void oppdaterJournalpost(Long journalpostId, OppdaterJournalpostRequest oppdaterJournalpostRequest) {
 		Long sakId = null;
 

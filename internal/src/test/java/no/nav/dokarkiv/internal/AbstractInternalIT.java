@@ -4,8 +4,8 @@ import no.nav.dokarkiv.InternalConfig;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
+import org.wiremock.spring.EnableWireMock;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -16,7 +16,7 @@ import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 		classes = {CoreConfig.class, InternalConfig.class},
 		properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ActiveProfiles({"itest", "wiremock"})
-@AutoConfigureWireMock(port = 0)
+@EnableWireMock
 public abstract class AbstractInternalIT extends AbstractRestIT {
 
 	static final String JOURNALPOSTAPI_BASE_PATH = "/rest/journalpostapi/v1/";

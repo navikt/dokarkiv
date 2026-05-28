@@ -1,12 +1,11 @@
 package no.nav.dokarkiv.journalpost.v1.api;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,8 +14,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 
-import static com.fasterxml.jackson.core.JsonToken.VALUE_NUMBER_INT;
-import static com.fasterxml.jackson.core.JsonToken.VALUE_STRING;
+import static tools.jackson.core.JsonToken.VALUE_NUMBER_INT;
+import static tools.jackson.core.JsonToken.VALUE_STRING;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 
@@ -45,18 +44,18 @@ public class DateStringsToLocalDateTimeDeserializer extends StdDeserializer<Loca
 	}
 
 	@Override
-	public LocalDateTime deserialize(JsonParser parser, DeserializationContext context) throws IOException, JacksonException {
+	public LocalDateTime deserialize(JsonParser parser, DeserializationContext context) throws JacksonException {
 		if (parser.hasToken(VALUE_STRING)) {
 			return parseString(parser);
 		} else if (parser.hasToken(VALUE_NUMBER_INT)) {
-			long epochTimeMillis = _parseLongPrimitive(context, parser.getText());
+			long epochTimeMillis = _parseLongPrimitive(parser, context, parser.getText());
 			return Instant.ofEpochMilli(epochTimeMillis).atZone(ZONEID_NORGE).toLocalDateTime();
 		}
 		String message = "Klarte ikke parse token=%s til LocalDateTime".formatted(parser.getText());
-		throw JsonMappingException.from(parser, message);
+		throw DatabindException.from(parser, message);
 	}
 
-	private static LocalDateTime parseString(JsonParser jsonParser) throws IOException {
+	private static LocalDateTime parseString(JsonParser jsonParser) throws JacksonException {
 		String text = jsonParser.getText().trim();
 		if (text.isEmpty()) {
 			return null;
@@ -64,7 +63,7 @@ public class DateStringsToLocalDateTimeDeserializer extends StdDeserializer<Loca
 		return parseDateString(jsonParser, text);
 	}
 
-	private static LocalDateTime parseDateString(JsonParser jsonParser, String dateString) throws JsonMappingException {
+	private static LocalDateTime parseDateString(JsonParser jsonParser, String dateString) throws DatabindException {
 		try {
 			return LocalDate.parse(dateString).atStartOfDay();
 		} catch (DateTimeParseException ignored) {
@@ -87,7 +86,7 @@ public class DateStringsToLocalDateTimeDeserializer extends StdDeserializer<Loca
 			return LocalDateTime.parse(dateString);
 		} catch (DateTimeParseException e) {
 			String message = "Klarte ikke parse tekst=%s til LocalDateTime".formatted(dateString);
-			throw JsonMappingException.from(jsonParser, message);
+			throw DatabindException.from(jsonParser, message);
 		}
 	}
 }

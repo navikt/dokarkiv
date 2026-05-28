@@ -1,11 +1,11 @@
 package no.nav.dokarkiv.safintern.serializers;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
@@ -28,7 +28,7 @@ public class LocalDateTimeToOffsetDateTimeUTCSerializer extends StdSerializer<Lo
 	}
 
 	@Override
-	public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+	public void serialize(LocalDateTime value, JsonGenerator gen, SerializationContext provider) throws JacksonException {
 		OffsetDateTime offsetDateTime = value.atZone(ZONEID_NORGE).withZoneSameInstant(ZONEID_UTC).toOffsetDateTime();
 		gen.writeString(offsetDateTime.toString());
 	}
