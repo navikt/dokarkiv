@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import no.nav.dokarkiv.core.api.Fagsaksystem;
+import no.nav.dokarkiv.core.api.Sakstype;
 
 @Builder
 @Getter

@@ -2,7 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.util;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.dokarkiv.journalpost.v1.api.Sakstype;
+import no.nav.dokarkiv.core.api.Sakstype;
 import org.slf4j.MDC;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
