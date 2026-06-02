@@ -37,6 +37,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "sporhund",
+      "namespace": "tbd",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "salesforce",
       "namespace": "teamcrm",
       "cluster": "prod-external"

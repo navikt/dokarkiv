@@ -55,6 +55,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "sporhund",
+      "namespace": "tbd",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "salesforce",
       "namespace": "teamcrm",
       "cluster": "dev-external"
