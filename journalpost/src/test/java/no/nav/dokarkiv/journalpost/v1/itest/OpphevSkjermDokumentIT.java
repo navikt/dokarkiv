@@ -2,11 +2,8 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentHjemmelCode;
 import no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentRequest;
 import org.junit.jupiter.api.Test;
@@ -15,9 +12,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentHjemmelCode.POL;
+import static no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentHjemmelCode.ARK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -32,45 +28,6 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 	private static final String OPPHEV_SKJERM_DOKUMENT = "opphevSkjermDokument";
 
 	@Test
-	void skalFjerneSkjermingFraAlleRelasjoner() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
-		journalpostTestRepository.persist(journalpost);
-		Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
-
-		commitAndStartNewTransaction();
-
-		skjermDokument(dokumentInfoId, POL);
-
-		commitAndStartNewTransaction();
-
-		List<JournalpostDokumentInfoRelasjon> relasjonerEtterSkjerming = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
-		assertThat(relasjonerEtterSkjerming).allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.POL);
-
-		opphevSkjermDokument(dokumentInfoId);
-
-		commitAndStartNewTransaction();
-
-		List<JournalpostDokumentInfoRelasjon> relasjonerEtterOpphev = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
-		assertThat(relasjonerEtterOpphev).allMatch(r -> r.getSkjermingType() == null);
-
-		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
-		assertThat(dokumentInfo.getFildetaljerListeAdmin())
-			.allSatisfy(filDetaljer -> {
-				assertThat(filDetaljer.getSkjermingType()).isNull();
-				assertThat(filDetaljer.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
-			});
-
-		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList)
-			.filteredOn(AksjonsLogg::getDokumentInfoId, dokumentInfoId)
-			.filteredOn(AksjonsLogg::getAksjon, AksjonsTypeCode.ENDRE_SKJERMING)
-			.extracting(AksjonsLogg::getHjemmel)
-			.satisfiesExactlyInAnyOrder(
-				hjemmel -> assertThat(hjemmel).isNull(),
-				hjemmel -> assertThat(hjemmel).isEqualTo(POL.name()));
-	}
-
-	@Test
 	void skalFjerneSkjermingFraJournalpostNaarJournalpostenErSkjermet() {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
@@ -79,12 +36,12 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		skjermDokument(dokumentInfoId, POL);
+		skjermDokument(dokumentInfoId, ARK);
 
 		commitAndStartNewTransaction();
 
 		Journalpost skjermetJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow();
-		assertThat(skjermetJournalpost.getSkjermingType()).isEqualTo(SkjermingTypeCode.POL);
+		assertThat(skjermetJournalpost.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
 
 		opphevSkjermDokument(dokumentInfoId);
 
@@ -93,13 +50,6 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow();
 		assertThat(oppdatertJournalpost.getSkjermingType()).isNull();
 
-		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
-		assertThat(dokumentInfo.getFildetaljerListeAdmin())
-			.allSatisfy(filDetaljer -> {
-				assertThat(filDetaljer.getSkjermingType()).isNull();
-				assertThat(filDetaljer.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
-			});
-
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList)
 			.filteredOn(AksjonsLogg::getJournalpostId, journalpostId)
@@ -107,37 +57,7 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 			.extracting(AksjonsLogg::getHjemmel)
 			.satisfiesExactlyInAnyOrder(
 				hjemmel -> assertThat(hjemmel).isNull(),
-				hjemmel -> assertThat(hjemmel).isEqualTo(POL.name()));
-	}
-
-	@Test
-	void skalGiBadRequestNaarDokumentHarSladdetVariant() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
-		DokumentInfo hoveddokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		hoveddokumentInfo.addFilDetaljer(createFildetaljerOgFil(hoveddokumentInfo, VariantFormatCode.ARKIV));
-		hoveddokumentInfo.addFilDetaljer(createFildetaljerOgFil(hoveddokumentInfo, VariantFormatCode.SLADDET));
-		journalpostTestRepository.persist(journalpost);
-		Long dokumentInfoId = hoveddokumentInfo.getDokumentInfoId();
-
-		commitAndStartNewTransaction();
-
-		skjermDokument(dokumentInfoId, POL);
-
-		commitAndStartNewTransaction();
-
-		var requestEntity = new HttpEntity<>(null, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
-		ResponseEntity<String> response = restTemplate.exchange(
-			apiDokumentInfoPath(dokumentInfoId.toString(), OPPHEV_SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
-		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-
-		commitAndStartNewTransaction();
-
-		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
-		assertThat(relasjoner).allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.POL);
-
-		DokumentInfo dokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
-		assertThat(dokumentInfo.getFildetaljerListeAdmin())
-			.allSatisfy(filDetaljer -> assertThat(filDetaljer.getSkjermingType()).isEqualTo(SkjermingTypeCode.POL));
+				hjemmel -> assertThat(hjemmel).isEqualTo(ARK.name()));
 	}
 
 	@Test

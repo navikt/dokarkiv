@@ -33,12 +33,15 @@ public class SkjermDokumentController {
 
 	@SwaggerSkjermDokument
 	@PatchMapping("/skjermDokument")
-	public ResponseEntity<Void> skjermDokument(
+	public ResponseEntity<?> skjermDokument(
 		@PathVariable long dokumentInfoId,
 		@RequestBody @Valid SkjermDokumentRequest request) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		log.info("skjermdokument har mottatt kall om å skjerme dokument med dokumentInfoId={} med hjemmel={}",
 			dokumentInfoId, request.hjemmel());
+		if (request.hjemmel() != SkjermDokumentHjemmelCode.ARK) {
+			return ResponseEntity.badRequest().body("Kan ikke bruke dette endepunktet for å skjerme dokument med hjemmel %s, kun hjemmel ARK er støttet".formatted(request.hjemmel()));
+		}
 
 		skjermDokumentService.skjermDokumentMedDokumentInfoId(dokumentInfoId, request.hjemmel());
 		return ResponseEntity.noContent().build();

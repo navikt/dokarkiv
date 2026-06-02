@@ -7,7 +7,6 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
-import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
@@ -58,12 +56,6 @@ public class SkjermDokumentService {
 			.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
 			.build(), List.of(ArkivElementEndringTO.arkivElementEndringNew("k_skjerming_t", skjermingTypeCode.name())));
 
-		// alle relasjonene peker på samme dokumentInfo, så vi kan bruke første og beste
-		relasjoner.getFirst()
-			.getDokumentInfo()
-			.getFildetaljerListeAdmin()
-			.forEach(variant -> oppdaterSkjermingForVariant(variant, skjermingTypeCode));
-
 		relasjoner.stream()
 			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
 			.map(journalpostRepository::fetchByIdWithJournalpostDokumentInfoRelasjoner)
@@ -93,15 +85,6 @@ public class SkjermDokumentService {
 			throw new KanIkkeOpphevSkjermingException("Kan ikke oppheve skjerming for dokument som ikke er skjermet");
 		}
 
-		Set<FilDetaljer> filDetaljer = relasjoner.getFirst()
-			.getDokumentInfo()
-			.getFildetaljerListeAdmin();
-
-		if (filDetaljer.stream().anyMatch(FilDetaljer::isSladdetVariant)) {
-			log.warn("opphevSkjermDokument dokument med dokumentInfoId={} har fil med variant=SLADDET, avbryter opphevSkjermDokument", dokumentInfoId);
-			throw new KanIkkeOpphevSkjermingException("Kan ikke oppheve skjerming for dokument med dokumentInfoId=%d, dokument har fil med variantformat=SLADDET. Skjerming skal ha blitt opphevet av sladdDokument".formatted(dokumentInfoId));
-		}
-
 		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, null));
 
 		aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
@@ -112,8 +95,6 @@ public class SkjermDokumentService {
 			.fraVerdi(forrigeSkjermingType.get().name())
 			.tilVerdi(null)
 			.build()));
-
-		filDetaljer.forEach(variant -> oppdaterSkjermingForVariant(variant, null));
 
 		relasjoner.stream()
 			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
@@ -162,9 +143,5 @@ public class SkjermDokumentService {
 					.fraVerdi(enumToString(journalpost.getSkjermingType()))
 					.tilVerdi(enumToString(hjemmelCode == null ? null : hjemmelCode.asSkjermingTypeCode()))
 					.build()));
-	}
-
-	private void oppdaterSkjermingForVariant(FilDetaljer variant, SkjermingTypeCode skjermingTypeCode) {
-		variant.setSkjermingType(skjermingTypeCode, MDC.get(MDC_CONSUMER_ID));
 	}
 }
