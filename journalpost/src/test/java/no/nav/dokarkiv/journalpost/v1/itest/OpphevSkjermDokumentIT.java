@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentHjemmelCode.ARK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -36,7 +35,7 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		skjermDokument(dokumentInfoId, ARK);
+		skjermDokument(dokumentInfoId, SkjermDokumentHjemmelCode.ARK);
 
 		commitAndStartNewTransaction();
 
@@ -57,7 +56,7 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 			.extracting(AksjonsLogg::getHjemmel)
 			.satisfiesExactlyInAnyOrder(
 				hjemmel -> assertThat(hjemmel).isNull(),
-				hjemmel -> assertThat(hjemmel).isEqualTo(ARK.name()));
+				hjemmel -> assertThat(hjemmel).isEqualTo(SkjermingTypeCode.ARK.name()));
 	}
 
 	@Test
