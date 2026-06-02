@@ -20,6 +20,7 @@ import java.lang.annotation.Target;
 )
 @ApiResponses(value = {
 	@ApiResponse(responseCode = "204", description = "Dokumentet ble skjermet"),
+	@ApiResponse(responseCode = "400", description = "Ugyldig request. Se feilmelding", content = @Content),
 	@ApiResponse(responseCode = "401", description = "Konsument har ikke tilgang til å kalle tjenesten.", content = @Content),
 	@ApiResponse(responseCode = "403", description = "Konsument har ikke tilgang til å kalle tjenesten", content = @Content),
 	@ApiResponse(responseCode = "404", description = "Dokumentet finnes ikke eller er utilgjengelig", content = @Content),

@@ -3,6 +3,7 @@ package no.nav.dokarkiv.journalpost.v1.api.skjermdokument;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.exceptions.UgyldigSkjermDokumentHjemmelException;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpphevSkjermDokument;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSkjermDokument;
@@ -39,6 +40,11 @@ public class SkjermDokumentController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		log.info("skjermdokument har mottatt kall om å skjerme dokument med dokumentInfoId={} med hjemmel={}",
 			dokumentInfoId, request.hjemmel());
+		if (request.hjemmel() != SkjermDokumentHjemmelCode.ARK) {
+			throw new UgyldigSkjermDokumentHjemmelException(
+				"skjermdokument-endepunktet støtter kun hjemmel ARK for skjerming, hjemmel %s kan ikke brukes for å skjerme dokument her"
+					.formatted(request.hjemmel()));
+		}
 
 		skjermDokumentService.skjermDokumentMedDokumentInfoId(dokumentInfoId, request.hjemmel());
 		return ResponseEntity.noContent().build();
