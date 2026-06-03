@@ -17,6 +17,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
 import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUsername;
 import static no.nav.dokarkiv.internal.dokvaktmester.DokVaktmesterController.INTERN_ROLE;
+import static no.nav.dokarkiv.internal.dokvaktmester.EndreFerdigstiltJournalpostValidator.validate;
 
 @Slf4j
 @RestController
@@ -26,14 +27,11 @@ public class DokVaktmesterController {
 	public static final String INTERN_ROLE = "api_intern";
 
 	private final SettAvbruttJournalpostRedigerbarService settAvbruttJournalpostRedigerbarService;
-	private final EndreFerdigstiltJournalpostValidator endreFerdigstiltJournalpostValidator;
 	private final EndreFerdigstiltJournalpostService endreFerdigstiltJournalpostService;
 
 	public DokVaktmesterController(SettAvbruttJournalpostRedigerbarService settAvbruttJournalpostRedigerbarService,
-								   EndreFerdigstiltJournalpostValidator endreFerdigstiltJournalpostValidator,
 								   EndreFerdigstiltJournalpostService endreFerdigstiltJournalpostService) {
 		this.settAvbruttJournalpostRedigerbarService = settAvbruttJournalpostRedigerbarService;
-		this.endreFerdigstiltJournalpostValidator = endreFerdigstiltJournalpostValidator;
 		this.endreFerdigstiltJournalpostService = endreFerdigstiltJournalpostService;
 	}
 
@@ -55,7 +53,7 @@ public class DokVaktmesterController {
 		createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
 		log.info("{} skal endre ferdigstilt journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostId);
-		endreFerdigstiltJournalpostValidator.validate(request);
+		validate(request);
 		endreFerdigstiltJournalpostService.endreFerdigstiltJournalpost(journalpostId, request);
 		log.info("{} har endret ferdigstilt journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostId);
 

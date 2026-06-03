@@ -1,19 +1,23 @@
 package no.nav.dokarkiv.internal.dokvaktmester;
 
 import no.nav.dokarkiv.core.api.Sakstype;
+import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
 
+import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
+import static no.nav.dokarkiv.internal.dokvaktmester.EndreFerdigstiltJournalpostService.FERDIGSTILTE_STATUSER;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
-@Component
 public class EndreFerdigstiltJournalpostValidator {
 	private static final Pattern TEMA_PATTERN = Pattern.compile("^[A-Z]{3}$");
 
-	void validate(EndreFerdigstiltJournalpostRequest request) {
+	static void validate(EndreFerdigstiltJournalpostRequest request) {
 		if (isBlank(request.brukerId()) && request.sak() == null && isBlank(request.tema())) {
 			throw new InputValideringFeiletException("En av brukerId, sak og tema må være satt");
 		}
@@ -23,7 +27,7 @@ public class EndreFerdigstiltJournalpostValidator {
 		validateBegrunnelseNokkel(request.begrunnelseNokkel());
 	}
 
-	private void validateTema(String tema) {
+	private static void validateTema(String tema) {
 		if (tema == null) {
 			return;
 		}
@@ -64,12 +68,24 @@ public class EndreFerdigstiltJournalpostValidator {
 		}
 	}
 
-	private void validateBegrunnelseNokkel(String begrunnelseNokkel) {
+	private static void validateBegrunnelseNokkel(String begrunnelseNokkel) {
 		if (isBlank(begrunnelseNokkel)) {
 			throw new InputValideringFeiletException("begrunnelseNokkel må være satt");
 		}
 		if (begrunnelseNokkel.length() > 40) {
 			throw new InputValideringFeiletException("begrunnelseNokkel må være kortere enn 40 tegn");
+		}
+	}
+
+	static void validateJournalpostIsFerdigstilt(Journalpost journalpost) {
+		if (!FERDIGSTILTE_STATUSER.contains(journalpost.getJournalstatus())) {
+			throw new UgyldigJournalStatusException("Journalstatus er ikke en av " + FERDIGSTILTE_STATUSER);
+		}
+	}
+
+	static void validateSakIsAapen(Sak tilknyttetSak) {
+		if (tilknyttetSak.getSakStatus() != null && tilknyttetSak.getSakStatus() != AAPEN) {
+			throw new InputValideringFeiletException("Endrer ikke sakstilknytning siden sak har sakStatus=" + tilknyttetSak.getSakStatus());
 		}
 	}
 }

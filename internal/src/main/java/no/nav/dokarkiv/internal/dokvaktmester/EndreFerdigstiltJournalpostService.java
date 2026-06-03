@@ -4,20 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.aksjonslogg.LagreAksjonsLoggService;
 import no.nav.dokarkiv.core.consumer.pdl.PdlIdentConsumer;
-import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
-import no.nav.dokarkiv.core.exceptions.InputValideringBadMetadataException;
-import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.exceptions.InvalidBrukerException;
 import no.nav.dokarkiv.core.exceptions.JournalpostIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.SakIkkeFunnetException;
-import no.nav.dokarkiv.core.exceptions.UgyldigInputException;
-import no.nav.dokarkiv.core.exceptions.UgyldigJournalStatusException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
@@ -39,14 +33,15 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
-import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
+import static no.nav.dokarkiv.internal.dokvaktmester.EndreFerdigstiltJournalpostValidator.validateJournalpostIsFerdigstilt;
+import static no.nav.dokarkiv.internal.dokvaktmester.EndreFerdigstiltJournalpostValidator.validateSakIsAapen;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
 @Component
 public class EndreFerdigstiltJournalpostService {
-	private static final EnumSet<JournalStatusCode> FERDIGSTILTE_STATUSER = EnumSet.of(J, FS, FL, E);
-	private static final int FOLKEREGISTERIDENT_LENGTH = 11;
+	static final EnumSet<JournalStatusCode> FERDIGSTILTE_STATUSER = EnumSet.of(J, FS, FL, E);
+	static final int FOLKEREGISTERIDENT_LENGTH = 11;
 
 	private final JournalpostRepository journalpostRepository;
 	private final SakRepository sakRepository;
@@ -70,28 +65,16 @@ public class EndreFerdigstiltJournalpostService {
 	public void endreFerdigstiltJournalpost(long journalpostId, EndreFerdigstiltJournalpostRequest request) {
 		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException("Fant ikke journalpostId=" + journalpostId));
-		validateJournalpost(journalpost);
+		validateJournalpostIsFerdigstilt(journalpost);
 		Sak tilknyttetSak = hentSakerRepository.hentSak(journalpost.getSaksrelasjon().getSakId())
 				.orElseThrow(() -> new SakIkkeFunnetException("Fant ikke tilknyttetSak for journalpostId=" + journalpostId));
-		validateSak(tilknyttetSak);
+		validateSakIsAapen(tilknyttetSak);
 		String aktoerId = hentAktoerId(request.brukerId(), tilknyttetSak);
 		SakEndring sakEndring = SakEndring.opprett(request, aktoerId, tilknyttetSak);
 		Sak nySak = brukEksisterendeSak(sakEndring)
 				.orElse(opprettNySak(sakEndring));
 		tilknyttNySak(journalpost, nySak, sakEndring.begrunnelseNokkel());
 		oppdaterBruker(journalpost, sakEndring);
-	}
-
-	private void validateJournalpost(Journalpost journalpost) {
-		if (!FERDIGSTILTE_STATUSER.contains(journalpost.getJournalstatus())) {
-			throw new UgyldigJournalStatusException("Journalstatus er ikke en av " + FERDIGSTILTE_STATUSER);
-		}
-	}
-
-	private void validateSak(Sak tilknyttetSak) {
-		if (tilknyttetSak.getSakStatus() != null && tilknyttetSak.getSakStatus() != AAPEN) {
-			throw new InputValideringFeiletException("Endrer ikke sakstilknytning siden sak har sakStatus=" + tilknyttetSak.getSakStatus());
-		}
 	}
 
 	private Optional<Sak> brukEksisterendeSak(SakEndring sakEndring) {
