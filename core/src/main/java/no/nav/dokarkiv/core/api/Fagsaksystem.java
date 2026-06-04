@@ -51,5 +51,7 @@ public enum Fagsaksystem {
     /// Identstyring, ifm avvikling av Remedy migreres dokumentasjon til Joark
     REMEDY,
     /// Arbeidsgiver kan sende inn søknad om tilskudd til EKSPERTBISTAND og se svaret på søknaden.
-    EKSPERTBISTAND
+    EKSPERTBISTAND,
+    /// Fagsystem for sykepenger
+    SPEIL
 }
