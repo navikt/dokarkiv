@@ -69,6 +69,7 @@ public class Sak {
 					* REMEDY
 					* EKSPERTBISTAND
 					* WATSON
+					* SPEIL
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",

@@ -66,6 +66,7 @@ public class AvsluttSakRequest {
 					* REMEDY
 					* EKSPERTBISTAND
 					* WATSON
+					* SPEIL
 
 					Skal kun settes dersom sakstype = FAGSAK.
 					""",

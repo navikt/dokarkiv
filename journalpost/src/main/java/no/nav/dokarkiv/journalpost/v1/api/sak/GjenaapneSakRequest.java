@@ -63,6 +63,7 @@ public class GjenaapneSakRequest {
 					* REMEDY
 					* EKSPERTBISTAND
 					* WATSON
+					* SPEIL
 					""",
 			example = "AO01", requiredMode = REQUIRED
 	)
