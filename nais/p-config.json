@@ -42,6 +42,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "spredning",
+      "namespace": "tbd",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "salesforce",
       "namespace": "teamcrm",
       "cluster": "prod-external"
