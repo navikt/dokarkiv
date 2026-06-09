@@ -27,7 +27,6 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.springframework.http.RequestEntity.patch;
-import static org.springframework.http.RequestEntity.post;
 
 @SpringBootTest(classes = {Application.class},
 		webEnvironment = RANDOM_PORT,
@@ -55,21 +54,6 @@ public class ApplicationIT {
 		var liveness = testRestTemplate.getForEntity(LIVENESS_PATH, String.class);
 		assertThat(liveness.getStatusCode()).isEqualTo(OK);
 		assertThat(liveness.getBody()).contains("UP");
-	}
-
-	/**
-	 * <a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide#spring-mvc-and-webflux-url-matching-changes">Spring Boot 3.0 Migration Guide</a>
-	 * Fjernes/endres etter at alle klienter i prod er tilpasset. Bruk Elastic APM for oversikt.
-	 * Denne returnerer 404 Not Found som default
-	 *
-	 * @see no.nav.dokarkiv.core.security.RestWebMvcConfig
-	 */
-	@Test
-	void shouldSupportTrailingSlash() {
-		var response = testRestTemplate.exchange(post(JOURNALPOSTAPI_JOURNALPOST_PATH + "/")
-				.headers(httpHeaders -> httpHeaders.setBearerAuth(token("azurev2", "itest", Map.of("oid", "itest"))))
-				.build(), String.class);
-		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
 	}
 
 	/**
