@@ -60,6 +60,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "spredning",
+      "namespace": "tbd",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "salesforce",
       "namespace": "teamcrm",
       "cluster": "dev-external"
