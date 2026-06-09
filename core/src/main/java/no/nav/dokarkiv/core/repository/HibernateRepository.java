@@ -69,28 +69,4 @@ public interface HibernateRepository<T> {
 	 */
 	<S extends T> S mergeAndFlush(S entity);
 
-	/**
-	 * Tvinger kopi av tilstanden fra detached entitet til entitet som er managed.
-	 * <p>
-	 * Bruk denne metoden hvis du vil tvinge endringer til databasen fra en detached entitet, uten dirty checking.
-	 * Gjør en select før update.
-	 *
-	 * @param entity som skal persisteres
-	 * @param <S>    entitetstype
-	 * @return managed entitet
-	 */
-	<S extends T> S update(S entity);
-
-	/**
-	 * Tvinger kopi av tilstanden fra detached entitet til entitet som er managed.
-	 * <p>
-	 * Bruk denne metoden hvis du vil tvinge endringer til databasen fra en detached entitet, uten dirty checking.
-	 * Gjør en select før update.
-	 * Denne metoden committer ikke endringene. Det er det transaksjonen som gjør!
-	 *
-	 * @param entity som skal persisteres
-	 * @param <S>    entitetstype
-	 * @return managed entitet
-	 */
-	<S extends T> S updateAndFlush(S entity);
 }

@@ -2,7 +2,6 @@ package no.nav.dokarkiv.core.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.hibernate.Session;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,23 +48,5 @@ public class HibernateRepositoryImpl<T> implements HibernateRepository<T> {
 		S result = merge(entity);
 		entityManager.flush();
 		return result;
-	}
-
-	@Override
-	public <S extends T> S update(S entity) {
-		session().update(entity);
-		return entity;
-	}
-
-	@Override
-	public <S extends T> S updateAndFlush(S entity) {
-		update(entity);
-		entityManager.flush();
-		return entity;
-	}
-
-
-	protected Session session() {
-		return entityManager.unwrap(Session.class);
 	}
 }
