@@ -50,11 +50,16 @@ public class SkjermDokumentService {
 
 		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, skjermingTypeCode));
 
-		aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
-			.dokumentInfoId(dokumentInfoId)
-			.hjemmel(hjemmelCode.name())
-			.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
-			.build(), List.of(ArkivElementEndringTO.arkivElementEndringNew("k_skjerming_t", skjermingTypeCode.name())));
+		relasjoner.stream()
+			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
+			.forEach(journalpostId ->
+				aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
+					.journalpostId(journalpostId)
+					.dokumentInfoId(dokumentInfoId)
+					.hjemmel(hjemmelCode.name())
+					.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
+					.build(), List.of(ArkivElementEndringTO.arkivElementEndringNew("k_skjerming_t", skjermingTypeCode.name())))
+			);
 
 		relasjoner.stream()
 			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
@@ -87,14 +92,18 @@ public class SkjermDokumentService {
 
 		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, null));
 
-		aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
-			.dokumentInfoId(dokumentInfoId)
-			.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
-			.build(), List.of(ArkivElementEndringTO.builder()
-			.arkivElement("k_skjerming_t")
-			.fraVerdi(forrigeSkjermingType.get().name())
-			.tilVerdi(null)
-			.build()));
+		relasjoner.stream()
+			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
+			.forEach(journalpostId ->
+				aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
+					.dokumentInfoId(dokumentInfoId)
+					.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
+					.build(), List.of(ArkivElementEndringTO.builder()
+					.arkivElement("k_skjerming_t")
+					.fraVerdi(forrigeSkjermingType.get().name())
+					.tilVerdi(null)
+				.build()))
+			);
 
 		relasjoner.stream()
 			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)

@@ -3,12 +3,14 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
+import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentHjemmelCode;
 import no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentRequest;
 import org.junit.jupiter.api.Test;
+import org.assertj.core.groups.Tuple;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 
@@ -17,6 +19,7 @@ import java.util.List;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoVedleggRelasjon;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -77,12 +80,12 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 			.allSatisfy(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(KILDENAVN_GOSYS));
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList)
-			.filteredOn(AksjonsLogg::getDokumentInfoId, dokumentInfoId)
-			.filteredOn(AksjonsLogg::getAksjon, AksjonsTypeCode.ENDRE_SKJERMING)
-			.extracting(AksjonsLogg::getHjemmel)
-			.satisfiesExactlyInAnyOrder(
-				hjemmel -> assertThat(hjemmel).isEqualTo(SkjermingTypeCode.ARK.name()));
+		assertAksjonsloggEntries(aksjonsLoggList,
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()),
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), null, SkjermingTypeCode.ARK.name()));
+		assertArkivElementEndringer(aksjonsLoggList,
+			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
+			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()));
 	}
 
 	@Test
@@ -114,13 +117,16 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		assertThat(relasjoner).allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.ARK);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList)
-			.filteredOn(AksjonsLogg::getDokumentInfoId, dokumentInfoId)
-			.filteredOn(AksjonsLogg::getAksjon, AksjonsTypeCode.ENDRE_SKJERMING)
-			.extracting(AksjonsLogg::getHjemmel)
-			.satisfiesExactlyInAnyOrder(
-				hjemmel -> assertThat(hjemmel).isEqualTo(SkjermingTypeCode.ARK.name()),
-				hjemmel -> assertThat(hjemmel).isEqualTo(SkjermingTypeCode.ARK.name()));
+		assertAksjonsloggEntries(aksjonsLoggList,
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()),
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), null, SkjermingTypeCode.ARK.name()),
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()),
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), null, SkjermingTypeCode.ARK.name()));
+		assertArkivElementEndringer(aksjonsLoggList,
+			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
+			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
+			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
+			tuple("k_skjerming_t", SkjermingTypeCode.ARK.name(), SkjermingTypeCode.ARK.name()));
 	}
 
 	@Test
@@ -156,12 +162,12 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 			.satisfiesExactlyInAnyOrder(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(KILDENAVN_GOSYS));
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList)
-			.filteredOn(AksjonsLogg::getDokumentInfoId, dokumentInfoId)
-			.filteredOn(AksjonsLogg::getAksjon, AksjonsTypeCode.ENDRE_SKJERMING)
-			.extracting(AksjonsLogg::getHjemmel)
-			.satisfiesExactlyInAnyOrder(
-				hjemmel -> assertThat(hjemmel).isEqualTo(SkjermingTypeCode.ARK.name()));
+		assertAksjonsloggEntries(aksjonsLoggList,
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId, SkjermingTypeCode.ARK.name()),
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, null, SkjermingTypeCode.ARK.name()));
+		assertArkivElementEndringer(aksjonsLoggList,
+			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
+			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()));
 	}
 
 	@Test
@@ -190,9 +196,10 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		assertThat(oppdatertJournalpost.getSkjermingType()).isNull();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-
-		assertThat(aksjonsLoggList).hasSize(1);
-		assertThat(aksjonsLoggList.getFirst().getDokumentInfoId()).isEqualTo(dokumentInfoId);
+		assertAksjonsloggEntries(aksjonsLoggList,
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId, SkjermingTypeCode.ARK.name()));
+		assertArkivElementEndringer(aksjonsLoggList,
+			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()));
 	}
 
 	@Test
@@ -223,6 +230,16 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		assertThat(relasjoner)
 			.hasSize(2)
 			.allSatisfy(r -> assertThat(r.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK));
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assertAksjonsloggEntries(aksjonsLoggList,
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost1.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()),
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost1.getJournalpostId(), null, SkjermingTypeCode.ARK.name()),
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost2.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()));
+		assertArkivElementEndringer(aksjonsLoggList,
+			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
+			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
+			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()));
 	}
 
 	@Test
@@ -255,5 +272,18 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 			apiDokumentInfoPath("1234", SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
+	}
+
+	private void assertAksjonsloggEntries(List<AksjonsLogg> aksjonsLoggList, Tuple... expectedEntries) {
+		assertThat(aksjonsLoggList)
+			.extracting(AksjonsLogg::getAksjon, AksjonsLogg::getJournalpostId, AksjonsLogg::getDokumentInfoId, AksjonsLogg::getHjemmel)
+			.containsExactlyInAnyOrder(expectedEntries);
+	}
+
+	private void assertArkivElementEndringer(List<AksjonsLogg> aksjonsLoggList, Tuple... expectedEndringer) {
+		assertThat(aksjonsLoggList)
+			.flatExtracting(AksjonsLogg::getArkivElementEndringer)
+			.extracting(ArkivElementEndring::getArkivElement, ArkivElementEndring::getFraVerdi, ArkivElementEndring::getTilVerdi)
+			.containsExactlyInAnyOrder(expectedEndringer);
 	}
 }
