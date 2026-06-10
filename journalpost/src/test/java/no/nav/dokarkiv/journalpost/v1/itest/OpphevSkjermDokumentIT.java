@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -56,13 +58,13 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 		assertAksjonsloggEntries(aksjonsLoggList,
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId, SkjermingTypeCode.ARK.name()),
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, null, SkjermingTypeCode.ARK.name()),
-			tuple(AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfoId, null),
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId, null),
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, null, null));
 		assertArkivElementEndringer(aksjonsLoggList,
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
-			tuple("k_skjerming_t", SkjermingTypeCode.ARK.name(), null),
-			tuple("k_skjerming_t", SkjermingTypeCode.ARK.name(), null));
+			tuple(JOURNALPOST_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()),
+			tuple(RELASJON_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()),
+			tuple(RELASJON_SKJERMING_TYPE, SkjermingTypeCode.ARK.name(), null),
+			tuple(JOURNALPOST_SKJERMING_TYPE, SkjermingTypeCode.ARK.name(), null));
 	}
 
 	@Test

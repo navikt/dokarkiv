@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoVedleggRelasjon;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,8 +86,8 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()),
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), null, SkjermingTypeCode.ARK.name()));
 		assertArkivElementEndringer(aksjonsLoggList,
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()));
+			tuple(RELASJON_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()),
+			tuple(JOURNALPOST_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()));
 	}
 
 	@Test
@@ -123,10 +125,10 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()),
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), null, SkjermingTypeCode.ARK.name()));
 		assertArkivElementEndringer(aksjonsLoggList,
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
-			tuple("k_skjerming_t", SkjermingTypeCode.ARK.name(), SkjermingTypeCode.ARK.name()));
+			tuple(RELASJON_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()),
+			tuple(RELASJON_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()),
+			tuple(JOURNALPOST_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()),
+			tuple(JOURNALPOST_SKJERMING_TYPE, SkjermingTypeCode.ARK.name(), SkjermingTypeCode.ARK.name()));
 	}
 
 	@Test
@@ -166,8 +168,8 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId, SkjermingTypeCode.ARK.name()),
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, null, SkjermingTypeCode.ARK.name()));
 		assertArkivElementEndringer(aksjonsLoggList,
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()));
+			tuple(JOURNALPOST_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()),
+			tuple(RELASJON_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()));
 	}
 
 	@Test
@@ -199,7 +201,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		assertAksjonsloggEntries(aksjonsLoggList,
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId, SkjermingTypeCode.ARK.name()));
 		assertArkivElementEndringer(aksjonsLoggList,
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()));
+			tuple(RELASJON_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()));
 	}
 
 	@Test
@@ -237,9 +239,9 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost1.getJournalpostId(), null, SkjermingTypeCode.ARK.name()),
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost2.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()));
 		assertArkivElementEndringer(aksjonsLoggList,
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()),
-			tuple("k_skjerming_t", null, SkjermingTypeCode.ARK.name()));
+			tuple(RELASJON_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()),
+			tuple(RELASJON_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()),
+			tuple(JOURNALPOST_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()));
 	}
 
 	@Test
