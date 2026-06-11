@@ -55,11 +55,6 @@
       "cluster": "dev-gcp"
     },
     {
-      "app": "sporhund",
-      "namespace": "tbd",
-      "cluster": "dev-gcp"
-    },
-    {
       "app": "spredning",
       "namespace": "tbd",
       "cluster": "dev-gcp"
