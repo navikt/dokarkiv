@@ -22,6 +22,8 @@ import java.util.Optional;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
 
 @Slf4j
@@ -50,11 +52,16 @@ public class SkjermDokumentService {
 
 		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, skjermingTypeCode));
 
-		aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
-			.dokumentInfoId(dokumentInfoId)
-			.hjemmel(hjemmelCode.name())
-			.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
-			.build(), List.of(ArkivElementEndringTO.arkivElementEndringNew("k_skjerming_t", skjermingTypeCode.name())));
+		relasjoner.stream()
+			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
+			.forEach(journalpostId ->
+				aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
+					.journalpostId(journalpostId)
+					.dokumentInfoId(dokumentInfoId)
+					.hjemmel(hjemmelCode.name())
+					.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
+					.build(), List.of(ArkivElementEndringTO.arkivElementEndringNew(RELASJON_SKJERMING_TYPE, skjermingTypeCode.name())))
+			);
 
 		relasjoner.stream()
 			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
@@ -87,14 +94,19 @@ public class SkjermDokumentService {
 
 		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, null));
 
-		aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
-			.dokumentInfoId(dokumentInfoId)
-			.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
-			.build(), List.of(ArkivElementEndringTO.builder()
-			.arkivElement("k_skjerming_t")
-			.fraVerdi(forrigeSkjermingType.get().name())
-			.tilVerdi(null)
-			.build()));
+		relasjoner.stream()
+			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
+			.forEach(journalpostId ->
+				aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
+					.journalpostId(journalpostId)
+					.dokumentInfoId(dokumentInfoId)
+					.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
+					.build(), List.of(ArkivElementEndringTO.builder()
+					.arkivElement(RELASJON_SKJERMING_TYPE)
+					.fraVerdi(forrigeSkjermingType.get().name())
+					.tilVerdi(null)
+				.build()))
+			);
 
 		relasjoner.stream()
 			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
@@ -139,7 +151,7 @@ public class SkjermDokumentService {
 				.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
 				.build(),
 				List.of(ArkivElementEndringTO.builder()
-					.arkivElement("k_skjerming_t")
+					.arkivElement(JOURNALPOST_SKJERMING_TYPE)
 					.fraVerdi(enumToString(journalpost.getSkjermingType()))
 					.tilVerdi(enumToString(hjemmelCode == null ? null : hjemmelCode.asSkjermingTypeCode()))
 					.build()));
