@@ -69,10 +69,35 @@ public class LogiskVedleggIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		LeggTilLogiskVedleggRequest request = LeggTilLogiskVedleggRequest.builder()
+			.tittel(NY_TITTEL)
+			.build();
+		HttpEntity<LeggTilLogiskVedleggRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<LeggTilLogiskVedleggResponse> response = restTemplate.exchange(apiDokumentInfoPath(dokumentInfoId.toString(), LOGISK_VEDLEGG_PATH), POST, requestEntity, LeggTilLogiskVedleggResponse.class);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		commitAndStartNewTransaction();
+
+		SkannetInnhold skannetInnhold = skannetInnholdTestRepository.findById(parseLong(response.getBody().getLogiskVedleggId()))
+			.orElse(null);
+
+		assertThat(skannetInnhold).isNotNull();
+		assertEquals(skannetInnhold.getVedleggInnhold(), NY_TITTEL);
+	}
+
+	@Test
+	public void shouldLeggeTilLogiskVedleggAcceptTrailingSlash() {
+		Journalpost journalpost = createJournalpostWithHoveddokument();
+		journalpostTestRepository.persist(journalpost);
+		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
+
+		commitAndStartNewTransaction();
+
+		LeggTilLogiskVedleggRequest request = LeggTilLogiskVedleggRequest.builder()
 				.tittel(NY_TITTEL)
 				.build();
 		HttpEntity<LeggTilLogiskVedleggRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
-		ResponseEntity<LeggTilLogiskVedleggResponse> response = restTemplate.exchange(apiDokumentInfoPath(dokumentInfoId.toString(), LOGISK_VEDLEGG_PATH), POST, requestEntity, LeggTilLogiskVedleggResponse.class);
+		ResponseEntity<LeggTilLogiskVedleggResponse> response = restTemplate.exchange(apiDokumentInfoPath(dokumentInfoId.toString(), LOGISK_VEDLEGG_PATH + "/"), POST, requestEntity, LeggTilLogiskVedleggResponse.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 

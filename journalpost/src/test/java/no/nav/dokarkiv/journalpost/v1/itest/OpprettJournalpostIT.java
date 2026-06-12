@@ -185,6 +185,63 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 				);
 	}
 
+	@Test
+	public void happyPathOpprettInngaaendeMedTrailingSlash() {
+		restStsToken();
+
+		OpprettJournalpostRequest request = createRequest(INNGAAENDE);
+
+		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
+		ResponseEntity<OpprettJournalpostResponse> response = restTemplate.exchange(apiJournalpostPath("/"), POST, requestEntity, OpprettJournalpostResponse.class);
+
+		assertEquals(CREATED, response.getStatusCode());
+
+		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
+		assertNotNull(journalpost.getJournalpostId());
+		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
+		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
+		assertEquals(FILNAVN, journalpost.findAllDokumentInfos()
+			.stream()
+			.filter(dokumentInfo -> BREVKODE1.equals(dokumentInfo.getBrevkode()))
+			.findAny()
+			.get()
+			.getFildetaljerListe()
+			.stream()
+			.filter(filDetaljer -> FILNAVN.equals(filDetaljer.getFilnavn()))
+			.filter(filDetaljer -> BATCHNAVN.equals(filDetaljer.getBatchNavn()))
+			.findAny()
+			.get()
+			.getFilnavn());
+
+		assertEquals(AvsenderMottakerIdTypeCode.FNR, journalpost.getAvsenderMottakerIdType());
+		assertEquals(AVSENDER_NAVN, journalpost.getAvsenderMottaker());
+		assertEquals(AVSENDER_ID_PERSON, journalpost.getAvsenderMottakerId());
+		assertEquals(AVSENDER_MOTTAKER_LAND, journalpost.getLand());
+		assertNotNull(journalpost.getDokumentDato());
+
+		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
+		assertThat(aksjonsLoggList).hasSize(1);
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
+		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(5);
+
+		ArrayList<DokumentFil> dokumentFilList = Lists.newArrayList(dokumentFilTestRepository.findAll());
+		assertEquals(3, dokumentFilList.size());
+		dokumentFilList.forEach(dokumentFil -> assertNotNull(dokumentFil.getFil()));
+		assertEquals(2, dokumentFilList.stream()
+			.filter(dokumentFil -> Arrays.equals(FYSISK_DOKUMENT, dokumentFil.getFil())).count());
+		assertEquals(1, dokumentFilList.stream()
+			.filter(dokumentFil -> Arrays.equals(FYSISK_DOKUMENT_2, dokumentFil.getFil())).count());
+
+		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner())
+			.extracting(JournalpostDokumentInfoRelasjon::getTilknyttetJournalpostSom, JournalpostDokumentInfoRelasjon::getRekkefoelge)
+			.containsExactly(
+				tuple(TilknyttetJournalpostSomCode.HOVEDDOKUMENT, null),
+				tuple(TilknyttetJournalpostSomCode.VEDLEGG, 2)
+			);
+	}
+
+
 	@ParameterizedTest
 	@EnumSource(value = InnsynCode.class, names = {"VISES_MASKINELT_GODKJENT", "VISES_MANUELT_GODKJENT", "SKJULES_BRUKERS_SIKKERHET"})
 	public void happyPathOpprettInngaaendeMedOverstyringAvInnsynsregler(InnsynCode overstyrInnsynsregler) {

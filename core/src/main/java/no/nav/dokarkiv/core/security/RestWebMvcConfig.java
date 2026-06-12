@@ -46,7 +46,6 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-
 		registry.addInterceptor(new ClearMDCHandler())
 				.addPathPatterns("/rest/**", "/hentjournalsakinfo/**");
 
@@ -55,6 +54,9 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
 		registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, meterRegistry, azureAdGraphService))
 				.addPathPatterns("/rest/**");
+
+		registry.addInterceptor(new TrailingSlashRequestLoggingInterceptor())
+			.addPathPatterns("/**");
 
 		registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(dokarkivProperties.getJoarkVedlikeholdGroupId()))
 				.addPathPatterns("/rest/admin/**");

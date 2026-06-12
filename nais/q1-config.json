@@ -53,6 +53,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "sporhund",
+      "namespace": "tbd",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "arbeid-og-inntekt-q1",
       "namespace": "team-inntekt",
       "cluster": "dev-fss"
