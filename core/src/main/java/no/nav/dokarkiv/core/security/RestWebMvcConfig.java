@@ -46,6 +46,8 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new TrailingSlashRequestLoggingInterceptor())
+				.addPathPatterns("/**");
 
 		registry.addInterceptor(new ClearMDCHandler())
 				.addPathPatterns("/rest/**", "/hentjournalsakinfo/**");
