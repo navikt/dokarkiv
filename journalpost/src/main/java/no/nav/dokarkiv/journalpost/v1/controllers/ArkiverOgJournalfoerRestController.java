@@ -111,7 +111,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Slf4j
 @Protected
 @RestController
-@RequestMapping("/rest/journalpostapi/v1/journalpost")
+@RequestMapping({ "/rest/journalpostapi/v1/journalpost", "/rest/journalpostapi/v1/journalpost/" })
 public class ArkiverOgJournalfoerRestController {
 
 	private static final String TRUE = "true";
