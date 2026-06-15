@@ -73,19 +73,20 @@ public class AzureToken {
 			formData.add("grant_type", CLIENT_CREDENTIALS);
 		}
 
-		String responseJson = azureClient
+		return azureClient
 				.post()
 				.body(BodyInserters.fromFormData(formData))
 				.retrieve()
 				.bodyToMono(String.class)
+				.map(responseJson -> {
+					try {
+						return jsonMapper.readValue(responseJson, TokenResponse.class).accessToken();
+					} catch (JacksonException e) {
+						throw new AzureTokenException(String.format("Klarte ikke parse token fra Azure. Feilmelding=%s", e.getMessage()), e);
+					}
+				})
 				.doOnError(this::handleError)
 				.block();
-
-		try {
-			return jsonMapper.readValue(responseJson, TokenResponse.class).accessToken();
-		} catch (JacksonException e) {
-			throw new AzureTokenException(String.format("Klarte ikke parse token fra Azure. Feilmelding=%s", e.getMessage()), e);
-		}
 	}
 
 	private void handleError(Throwable error) {
