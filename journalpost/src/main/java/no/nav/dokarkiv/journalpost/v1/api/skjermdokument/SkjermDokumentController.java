@@ -9,12 +9,15 @@ import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerOpphevSkjermDokument;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerSkjermDokument;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.EnumSet;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
@@ -27,9 +30,11 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 public class SkjermDokumentController {
 
 	private final SkjermDokumentService skjermDokumentService;
+	private final EnumSet<SkjermDokumentHjemmelCode> tillatteHjemler;
 
-	public SkjermDokumentController(SkjermDokumentService skjermDokumentService) {
+	public SkjermDokumentController(SkjermDokumentService skjermDokumentService, @Value("${dokarkiv.skjermdokument.tillattehjemler}") EnumSet<SkjermDokumentHjemmelCode> tillatteHjemler) {
 		this.skjermDokumentService = skjermDokumentService;
+		this.tillatteHjemler = tillatteHjemler;
 	}
 
 	@SwaggerSkjermDokument
@@ -40,10 +45,10 @@ public class SkjermDokumentController {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 		log.info("skjermdokument har mottatt kall om å skjerme dokument med dokumentInfoId={} med hjemmel={}",
 			dokumentInfoId, request.hjemmel());
-		if (request.hjemmel() != SkjermDokumentHjemmelCode.ARK) {
+		if (!tillatteHjemler.contains(request.hjemmel())) {
 			throw new UgyldigSkjermDokumentHjemmelException(
-				"skjermdokument-endepunktet støtter kun hjemmel ARK for skjerming, hjemmel %s kan ikke brukes for å skjerme dokument her"
-					.formatted(request.hjemmel()));
+				"skjermdokument-endepunktet støtter kun følgende hjemler for skjerming: %s. hjemmel %s kan ikke brukes for å skjerme dokument her"
+					.formatted(tillatteHjemler, request.hjemmel()));
 		}
 
 		skjermDokumentService.skjermDokumentMedDokumentInfoId(dokumentInfoId, request.hjemmel());
