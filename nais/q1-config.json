@@ -26,6 +26,7 @@
     "https://dokarkiv-q1.dev.intern.nav.no",
     "https://dokarkiv-q1.intern.dev.nav.no"
   ],
+  "DOKARKIV_SKJERMDOKUMENT_TILLATTEHJEMLER": "ARK,POL",
   "DOKARKIV_SECRET": "dokarkiv-q1",
   "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv-q1/teamdokumenthandtering",
   "DOKARKIV_DATABASE_POOLSIZE": "20",
