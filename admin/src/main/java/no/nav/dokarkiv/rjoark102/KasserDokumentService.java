@@ -52,7 +52,7 @@ public class KasserDokumentService {
 		arkivElementEndringTOList.addAll(slettFildetaljerIkkeArkivVariant(dokumentInfoId, dokumentInfoForKassering
 				.getFildetaljerListeAdmin()));
 
-		FilDetaljer arkiv = dokumentInfoForKassering.findFilDetaljerByVariantFormatAdmin(ARKIV);
+		FilDetaljer arkiv = dokumentInfoForKassering.findFilDetaljerByVariantFormatAdmin(ARKIV).orElse(null);
 		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFil(dokumentInfoId, arkiv.getFilUuid()));
 
 		return arkivElementEndringTOList;

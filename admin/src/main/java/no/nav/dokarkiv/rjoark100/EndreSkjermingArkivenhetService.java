@@ -105,8 +105,7 @@ public class EndreSkjermingArkivenhetService {
 	}
 
 	private boolean dokumentHarSladdetVariant(DokumentInfo dokumentInfo) {
-		FilDetaljer sladdet = dokumentInfo.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.SLADDET);
-		return sladdet != null;
+		return dokumentInfo.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.SLADDET).isPresent();
 	}
 
 	public Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> endreSkjermingDokumentInfo(Long dokumentInfoId, SkjermingTypeCode tilSkjerming) {
@@ -205,7 +204,7 @@ public class EndreSkjermingArkivenhetService {
 		return dokumentInfoRepository.findById(dokumentInfoId)
 				.orElseThrow(() ->
 						new DokumentInfoIkkeFunnetException(dokumentInfoId))
-				.findFilDetaljerByVariantFormatAdmin(variantFormatCode);
+				.findFilDetaljerByVariantFormatAdmin(variantFormatCode).orElse(null);
 	}
 
 

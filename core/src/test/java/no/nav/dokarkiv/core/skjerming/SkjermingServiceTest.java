@@ -82,8 +82,8 @@ public class SkjermingServiceTest {
 	public boolean isVariantSkjermet(Long dokumentInfoId, VariantFormatCode variant, SkjermingTypeCode skjermingTypeCode) {
 		Optional<DokumentInfo> dokumentInfo = dokumentInfoRepository.findById(dokumentInfoId);
 		if (dokumentInfo.isPresent()) {
-			FilDetaljer filDetaljer = dokumentInfo.get().findFilDetaljerByVariantFormatAdmin(variant);
-			if (nonNull(filDetaljer) && skjermingTypeCode.equals(filDetaljer.getSkjermingType())) {
+			Optional<FilDetaljer> filDetaljer = dokumentInfo.get().findFilDetaljerByVariantFormatAdmin(variant);
+			if ((filDetaljer.isPresent()) && skjermingTypeCode.equals(filDetaljer.get().getSkjermingType())) {
 				return true;
 			}
 		}

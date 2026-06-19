@@ -363,7 +363,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		//Return SLADDET if ARKIV is skjermet
 		//Return ARKIV if SLADDET doesn't exist or is skjermet. In case ARKIV variant is skjermet DokumentFilSkjermetRepository will return a dummy document
 		if (filDetaljer.filter(FilDetaljer::isArkivVariant).filter(FilDetaljer::isSkjermet).isPresent()) {
-			return Optional.ofNullable(findFilDetaljerByVariantFormatAdmin(SLADDET))
+			return findFilDetaljerByVariantFormatAdmin(SLADDET)
 					.filter(f -> isFalse(f.isSkjermet()))
 					.orElse(filDetaljer.get());
 		}
@@ -393,12 +393,10 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	/**
 	 * Returnerer fildetaljer med gitt variantFormat inkludert skjermet
 	 */
-	public FilDetaljer findFilDetaljerByVariantFormatAdmin(final VariantFormatCode variantFormat) {
+	public Optional<FilDetaljer> findFilDetaljerByVariantFormatAdmin(final VariantFormatCode variantFormat) {
 		return fildetaljerListe.stream()
 				.filter(filDetaljer -> variantFormat.equals(filDetaljer.getVariantFormat()))
-				.findAny()
-				.orElse(null);
-
+				.findAny();
 	}
 
 	/**
