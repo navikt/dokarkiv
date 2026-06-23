@@ -128,7 +128,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 
 	@Column(name = "k_skjerming_type", length = 128)
 	@Enumerated(EnumType.STRING)
-	@Setter(AccessLevel.NONE)
 	private SkjermingTypeCode skjermingType;
 
 	@ElementCollection

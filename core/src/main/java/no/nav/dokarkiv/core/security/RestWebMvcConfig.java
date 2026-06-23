@@ -66,6 +66,8 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 						"/rest/journalpostapi/v1/bestillSletting",
 						"/rest/journalpostapi/v1/dokumentInfo/*/skjermDokument",
 						"/rest/journalpostapi/v1/dokumentInfo/*/opphevSkjermDokument",
+						"/rest/journalpostapi/v1/dokumentInfo/*/sladdDokument",
+						"/rest/journalpostapi/v1/dokumentInfo/*/opphevSladdDokument",
 						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settUkjentBruker",
 						"/rest/journalpostapi/v1/journalpost/*/feilregistrer/settStatusUtgår",
 						"/rest/journalpostapi/v1/journalpost/*/oppdaterJournalstatus",
