@@ -183,11 +183,6 @@
       "roles" : ["api_intern_safintern"]
     },
     {
-      "app": "dokmotaltinn",
-      "namespace": "teamdokumenthandtering",
-      "cluster": "dev-fss"
-    },
-    {
       "app": "dokdistfordeling",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss"
