@@ -86,10 +86,13 @@ class SladdDokumentIT extends AbstractJournalpostIT {
 		assertThat(sladdetVariantOptional).isPresent();
 		FilDetaljer sladdetVariant = sladdetVariantOptional.get();
 		assertThat(sladdetVariant.getFiltype()).isEqualTo(FilTypeCode.PDF);
+		assertThat(sladdetVariant.getOpprettetKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
+		assertThat(sladdetVariant.getChangeStamp().getCreatedBy()).isEqualTo(NAV_IDENT_SAKSBEHANDLER);
 
 		DokumentFil sladdetDokumentFil = dokumentFilTestRepository.findByFilUuid(sladdetVariant.getFilUuid());
 		assertThat(sladdetDokumentFil).isNotNull();
 		assertThat(sladdetDokumentFil.getFil()).isEqualTo(SLADDET_FIL);
+		assertThat(sladdetDokumentFil.getOpprettetKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
 
 		assertThat(oppdatertDokumentInfo.findFilDetaljerByVariantFormatAdmin(ARKIV).get().getSkjermingType())
 			.isEqualTo(SkjermingTypeCode.ARK);
@@ -131,6 +134,15 @@ class SladdDokumentIT extends AbstractJournalpostIT {
 		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
 		var sladdetVariantOptional = oppdatertDokumentInfo.findFilDetaljerByVariantFormatAdmin(SLADDET);
 		assertThat(sladdetVariantOptional).isPresent();
+		FilDetaljer sladdetVariant = sladdetVariantOptional.get();
+		assertThat(sladdetVariant.getOpprettetKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
+		assertThat(sladdetVariant.getChangeStamp().getCreatedBy()).isEqualTo(NAV_IDENT_SAKSBEHANDLER);
+
+		DokumentFil sladdetDokumentFil = dokumentFilTestRepository.findByFilUuid(sladdetVariant.getFilUuid());
+		assertThat(sladdetDokumentFil).isNotNull();
+		assertThat(sladdetDokumentFil.getFil()).isEqualTo(SLADDET_FIL);
+		assertThat(sladdetDokumentFil.getOpprettetKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
+
 		assertThat(oppdatertDokumentInfo.findFilDetaljerByVariantFormatAdmin(ARKIV).get().getSkjermingType())
 			.isEqualTo(SkjermingTypeCode.ARK);
 

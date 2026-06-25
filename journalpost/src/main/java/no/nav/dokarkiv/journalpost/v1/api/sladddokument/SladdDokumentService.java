@@ -175,7 +175,6 @@ public class SladdDokumentService {
 
 		dokumentInfo.addFilDetaljer(sladdetVariant);
 		dokumentFilRepository.persist(sladdetVariant.createDokumentFil());
-		dokumentInfoRepository.persist(dokumentInfo);
 		return sladdetVariant;
 	}
 
