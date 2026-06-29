@@ -7,6 +7,8 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasj
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumenterRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Optional;
 
@@ -28,8 +30,9 @@ public class OpprettJournalpostArkiverDokumenterRequestMapperTest {
 
 	private final KildeNavnPopulator kildeNavnPopulatorMock = mock(KildeNavnPopulator.class);
 	private final BucketStorage storageMock = mock(BucketStorage.class);
+	private final JsonMapper jsonMapper = new JsonMapper();
 
-	private final OpprettJournalpostArkiverDokumenterRequestMapper requestMapper = new OpprettJournalpostArkiverDokumenterRequestMapper(kildeNavnPopulatorMock, storageMock);
+	private final OpprettJournalpostArkiverDokumenterRequestMapper requestMapper = new OpprettJournalpostArkiverDokumenterRequestMapper(kildeNavnPopulatorMock, storageMock, jsonMapper);
 
 	@BeforeEach
 	public void setUp() throws Exception {

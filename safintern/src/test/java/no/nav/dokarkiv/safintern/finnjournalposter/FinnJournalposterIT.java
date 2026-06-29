@@ -377,7 +377,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 		HttpEntity<FinnJournalposterRequest> requestEntity = new HttpEntity<>(finnJournalposterRequestTo, createHeadersWithServiceUserTokenAndRolesClaim(ROLE_CLAIM_TILGANG));
 		ResponseEntity<Object> exchange = restTemplate.exchange(FINNJOURNALPOSTER, HttpMethod.POST, requestEntity, Object.class);
 		if (exchange.getStatusCode() == HttpStatus.OK) {
-			return objectMapper.convertValue(exchange.getBody(), PaginatedAnyViewForTest.class);
+			return jsonMapper.convertValue(exchange.getBody(), PaginatedAnyViewForTest.class);
 		} else {
 			throw new HttpClientErrorException(exchange.getStatusCode());
 		}

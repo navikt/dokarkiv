@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.exceptions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import org.springframework.http.ProblemDetail;
 
@@ -26,8 +27,9 @@ public class ApplicationProblemDetail extends ProblemDetail {
 	protected ApplicationProblemDetail() {
 	}
 
+	@JsonIgnore
 	public ApplicationProblemDetail(ProblemDetail other, URI instance) {
-		super(other);
+		super(other != null ? other : ProblemDetail.forStatus(500));
 		this.timestamp = ZonedDateTime.now(ZONEID_NORGE);
 		this.error = getTitle();
 		this.message = getDetail();

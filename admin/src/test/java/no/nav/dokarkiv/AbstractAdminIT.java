@@ -12,8 +12,8 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
+import org.wiremock.spring.EnableWireMock;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 		classes = {CoreConfig.class, AdminConfig.class})
 @ActiveProfiles({"itest", "wiremock"})
 @EnableMockOAuth2Server
-@AutoConfigureWireMock(port = 0)
+@EnableWireMock
 public abstract class AbstractAdminIT extends AbstractRestIT {
 
 	protected static final String URL_KASSERDOKUMENT = "/rest/admin/kasserdokument";

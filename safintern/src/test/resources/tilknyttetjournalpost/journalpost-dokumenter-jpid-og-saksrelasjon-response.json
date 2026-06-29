@@ -14,9 +14,7 @@
         "tema": "RPO"
       },
       "sakId": sakId_replace
-    },
-    "dokumenter": [],
-    "tilleggsopplysninger": {}
+    }
   },
   {
     "journalpostId": journalpostId_b_replace,
@@ -33,8 +31,6 @@
         "tema": "RPO"
       },
       "sakId": sakId_replace
-    },
-    "dokumenter": [],
-    "tilleggsopplysninger": {}
+    }
   }
 ]

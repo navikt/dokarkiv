@@ -62,12 +62,10 @@
       ],
       "kassert": false,
       "kategori": "ES",
-      "logiskVedlegg": [],
       "skjerming": "POL",
       "tilknyttetSom": "HOVEDDOKUMENT"
     }
   ],
   "mottakskanal": "NAV_NO",
-  "tilleggsopplysninger": {},
   "utsendingskanal": "S"
 }

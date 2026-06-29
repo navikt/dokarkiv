@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.hentjournalsakinfo;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -13,8 +12,9 @@ import no.nav.dokarkiv.core.stelvio.SimpleRequestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.servlet.HandlerInterceptor;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -39,6 +40,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 		properties = {"spring.main.allow-bean-definition-overriding=true"}
 )
 @ActiveProfiles({"itest", "wiremock", "ldap"})
+@AutoConfigureTestRestTemplate
 public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 
 	@Configuration
@@ -66,7 +68,7 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 	protected DokumentFilTestRepository DokumentFilTestRepository;
 
 	@Autowired
-	protected ObjectMapper objectMapper;
+	protected JsonMapper jsonMapper;
 
 	@BeforeEach
 	public void setUpItest() {

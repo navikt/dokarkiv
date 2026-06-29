@@ -6,8 +6,7 @@ import no.nav.dokarkiv.core.exceptions.PdlTechnicalException;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import no.nav.dokarkiv.core.util.NavHeadersFilter;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,8 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import static no.nav.dokarkiv.core.storage.RetryConstants.DELAY_SHORT;
-import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -49,10 +46,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.build();
 	}
 
-	@Retryable(
-			retryFor = HttpServerErrorException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
-	)
+	@Retryable(includes = HttpServerErrorException.class)
 	@Override
 	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
 
@@ -83,10 +77,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.build();
 	}
 
-	@Retryable(
-			retryFor = HttpServerErrorException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
-	)
+	@Retryable(includes = HttpServerErrorException.class)
 	@Override
 	public String hentFolkeregisterIdent(String aktoerId) throws PersonIkkeFunnetException {
 
@@ -117,10 +108,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.build();
 	}
 
-	@Retryable(
-			retryFor = HttpServerErrorException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
-	)
+	@Retryable(includes = HttpServerErrorException.class)
 	@Override
 	public List<String> hentAlleAktoerIdsForIdent(final String ident) throws PersonIkkeFunnetException {
 		String trimmedIdent = validateAndTrimIdent(ident);
@@ -143,10 +131,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 		}
 	}
 
-	@Retryable(
-			retryFor = HttpServerErrorException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
-	)
+	@Retryable(includes = HttpServerErrorException.class)
 	@Override
 	public String hentPersonnavn(String ident) {
 

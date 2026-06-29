@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.api.knytttilannensak;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,6 +32,25 @@ public class KnyttTilAnnenSakRequest {
     @JsonSetter(contentNulls = Nulls.SKIP, nulls = Nulls.AS_EMPTY)
     @Builder.Default
     List<Long> dokumenter = List.of();
+
+    @JsonCreator
+    public KnyttTilAnnenSakRequest(
+            @JsonProperty("sakstype") String sakstype,
+            @JsonProperty("fagsakId") String fagsakId,
+            @JsonProperty("fagsaksystem") String fagsaksystem,
+            @JsonProperty("tema") String tema,
+            @JsonProperty("bruker") Bruker bruker,
+            @JsonProperty("journalfoerendeEnhet") String journalfoerendeEnhet,
+            @JsonProperty("dokumenter") List<Long> dokumenter
+    ) {
+        this.sakstype = sakstype;
+        this.fagsakId = fagsakId;
+        this.fagsaksystem = fagsaksystem;
+        this.tema = tema;
+        this.bruker = bruker;
+        this.journalfoerendeEnhet = journalfoerendeEnhet;
+        this.dokumenter = dokumenter == null ? List.of() : dokumenter;
+    }
 
     @JsonIgnore
     public String getLogFriendlyString(){

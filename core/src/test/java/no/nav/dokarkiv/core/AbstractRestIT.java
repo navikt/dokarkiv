@@ -27,18 +27,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
-import org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.cache.test.autoconfigure.AutoConfigureCache;
+import org.springframework.boot.data.jpa.test.autoconfigure.AutoConfigureDataJpa;
+import org.springframework.boot.data.ldap.test.autoconfigure.AutoConfigureDataLdap;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.jpa.test.autoconfigure.AutoConfigureTestEntityManager;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -74,6 +74,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @AutoConfigureTestEntityManager
 @AutoConfigureCache
 @AutoConfigureDataLdap
+@AutoConfigureTestRestTemplate
 @Transactional
 @EnableMockOAuth2Server
 public abstract class AbstractRestIT {
@@ -133,6 +134,8 @@ public abstract class AbstractRestIT {
 	protected InnsynTestRepository innsynTestRepository;
 	@Autowired
 	private MockOAuth2Server server;
+	@Autowired
+	protected JsonMapper mapper;
 
 	@BeforeAll
 	public static void setupRequestContext() {
@@ -264,14 +267,13 @@ public abstract class AbstractRestIT {
 		return headers;
 	}
 
-	protected MultiValueMap<String, String> createAksjonslogg() {
-		MultiValueMap<String, String> valueMap = new LinkedMultiValueMap<>();
-		valueMap.add(AKSJONS_LOGG_BRUKER_HEADER, AKSJON_BRUKER);
-		valueMap.add(AKSJONS_LOGG_HJEMMEL_HEADER, AKSJON_HJEMMEL);
-		valueMap.add(AKSJONS_LOGG_MELDING_HEADER, AKSJON_MELDING);
-		valueMap.add(AKSJONS_LOGG_UTFOERT_AV_HEADER, AKSJON_UTFOERT_AV);
-
-		return valueMap;
+	protected HttpHeaders createAksjonslogg() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(AKSJONS_LOGG_BRUKER_HEADER, AKSJON_BRUKER);
+		headers.add(AKSJONS_LOGG_HJEMMEL_HEADER, AKSJON_HJEMMEL);
+		headers.add(AKSJONS_LOGG_MELDING_HEADER, AKSJON_MELDING);
+		headers.add(AKSJONS_LOGG_UTFOERT_AV_HEADER, AKSJON_UTFOERT_AV);
+		return headers;
 	}
 
 	protected HttpHeaders createHeadersWithServiceUserTokenAndRolesClaim(String role) {

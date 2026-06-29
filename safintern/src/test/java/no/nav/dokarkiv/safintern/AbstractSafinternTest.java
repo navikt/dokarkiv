@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.safintern;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.test.context.ActiveProfiles;
+import tools.jackson.databind.json.JsonMapper;
 
 import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -24,7 +24,7 @@ public abstract class AbstractSafinternTest extends AbstractRestIT {
 	protected DokumentInfoRepository dokumentInfoRepository;
 
 	@Autowired
-	protected ObjectMapper objectMapper;
+	protected JsonMapper jsonMapper;
 
 	protected HttpEntity<?> createHeaderEntityMedTilgang() {
 		return new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim(ROLE_CLAIM_TILGANG));

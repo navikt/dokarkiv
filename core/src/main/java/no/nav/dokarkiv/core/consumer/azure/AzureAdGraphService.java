@@ -15,8 +15,7 @@ import no.nav.dokarkiv.core.security.azure.AzureConfig;
 import no.nav.dokarkiv.core.util.SafeLoggingUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -45,7 +44,7 @@ public class AzureAdGraphService {
 	}
 
 	@Cacheable(value = NAVUSER_CACHE, key = "#navIdent")
-	@Retryable(noRetryFor = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(excludes = DokarkivFunctionalException.class)
 	public String hentFulltNavn(String navIdent) {
 		User user = getUser(navIdent);
 
@@ -56,7 +55,7 @@ public class AzureAdGraphService {
 		return user.getGivenName() + " " + user.getSurname();
 	}
 
-	@Retryable(noRetryFor = DokarkivFunctionalException.class, maxAttempts = 5, backoff = @Backoff(delay = 200))
+	@Retryable(excludes = DokarkivFunctionalException.class)
 	public Boolean isUserMemberOfGroup(String userObjectId, String groupObjectId) {
 		try {
 			List<DirectoryObject> result = graphServiceClient
