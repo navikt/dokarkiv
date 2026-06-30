@@ -104,7 +104,7 @@ public class DokumentInfoTest {
 
 		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getVariantFormat(), is(SLADDET));
 		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
-		assertThat(dokumentInfo.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV).getVariantFormat(), is(ARKIV));
+		assertThat(dokumentInfo.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV).get().getVariantFormat(), is(ARKIV));
 
 	}
 

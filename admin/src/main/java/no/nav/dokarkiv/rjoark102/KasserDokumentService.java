@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.KanIkkeSlettetVedleggKnyttetTilJournalpostException;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JoarkDeleteRepository;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,9 @@ public class KasserDokumentService {
 		arkivElementEndringTOList.addAll(slettFildetaljerIkkeArkivVariant(dokumentInfoId, dokumentInfoForKassering
 				.getFildetaljerListeAdmin()));
 
-		FilDetaljer arkiv = dokumentInfoForKassering.findFilDetaljerByVariantFormatAdmin(ARKIV);
+		FilDetaljer arkiv = dokumentInfoForKassering.findFilDetaljerByVariantFormatAdmin(ARKIV)
+			.orElseThrow(() -> new KanIkkeSlettetVedleggKnyttetTilJournalpostException(
+					"Kan ikke finne dokumentvariant med variantformat=%s for dokumentInfo med dokumentInfoId=%d".formatted(ARKIV, dokumentInfoId)));
 		arkivElementEndringTOList.addAll(slettArkivVariantDokumentFil(dokumentInfoId, arkiv.getFilUuid()));
 
 		return arkivElementEndringTOList;

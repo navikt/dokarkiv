@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.nonNull;
@@ -100,8 +101,8 @@ public class SlettArkivenhetService {
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(String.format("Fant ikke dokument med dokumentInfoId=%s i Joark databasen", dokumentInfoId)));
 
 		//Sjekk om fildetaljer eksisterer
-		FilDetaljer filDetaljerSomSkalSlettes = dokumentInfo.findFilDetaljerByVariantFormatAdmin(variant);
-		if (Objects.isNull(filDetaljerSomSkalSlettes)) {
+		Optional<FilDetaljer> filDetaljerSomSkalSlettes = dokumentInfo.findFilDetaljerByVariantFormatAdmin(variant);
+		if (filDetaljerSomSkalSlettes.isEmpty()) {
 			throw new ArkivVariantkkeFunnetException(String.format("Dokument med dokumentInfoId=%s har ingen fildetaljer med variantFormat=%s", dokumentInfoId, variant));
 		}
 

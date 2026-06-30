@@ -289,7 +289,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		skjermingServiceTest.setVariantSkjermet(dokumentInfo.getDokumentInfoId(), ARKIV, POL);
 		reinitTransaction();
 
-		assertThat(dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId()).get().findFilDetaljerByVariantFormatAdmin(ARKIV).getSkjermingType()).isEqualTo(POL);
+		assertThat(dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId()).get().findFilDetaljerByVariantFormatAdmin(ARKIV).get().getSkjermingType()).isEqualTo(POL);
 
 		var httpEntity = new HttpEntity<>(
 				createSkjermarkivenhetRequest(POL, DOKUMENT_FIL, null, dokumentInfo.getDokumentInfoId(), ARKIV),
@@ -379,9 +379,9 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
-		assertThat(dokInfoEtterKall.get().findFilDetaljerByVariantFormatAdmin(ARKIV).getSkjermingType()).isEqualTo(POL);
-		assertThat(dokInfoEtterKall.get().findFilDetaljerByVariantFormatAdmin(PRODUKSJON).getSkjermingType()).isEqualTo(POL);
-		assertThat(dokInfoEtterKall.get().findFilDetaljerByVariantFormatAdmin(SLADDET).getSkjermingType()).isNull();
+		assertThat(dokInfoEtterKall.get().findFilDetaljerByVariantFormatAdmin(ARKIV).get().getSkjermingType()).isEqualTo(POL);
+		assertThat(dokInfoEtterKall.get().findFilDetaljerByVariantFormatAdmin(PRODUKSJON).get().getSkjermingType()).isEqualTo(POL);
+		assertThat(dokInfoEtterKall.get().findFilDetaljerByVariantFormatAdmin(SLADDET).get().getSkjermingType()).isNull();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size()).isEqualTo(1);

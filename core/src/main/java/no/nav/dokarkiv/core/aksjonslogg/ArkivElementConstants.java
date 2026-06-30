@@ -40,6 +40,7 @@ public class ArkivElementConstants {
 	public static final String SAK_APPLIKASJON = "Sak.applikasjon";
 
 	public static final String RELASJON_SKJERMING_TYPE = "JournalpostDokumentInfoRelasjon.skjermingType";
+	public static final String DOKUMENT_INFO_SKJERMING_TYPE = "DokumentInfo.skjermingType";
 
 	public static final String FILDETALJER_VARIANTFORMAT = "FilDetaljer.variantFormat";
 	public static final String FILDETALJER_FILUUID = "Fildetaljer.filUuid";
