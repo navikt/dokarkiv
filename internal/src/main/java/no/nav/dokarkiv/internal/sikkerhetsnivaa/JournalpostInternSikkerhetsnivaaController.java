@@ -18,7 +18,6 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
-import static no.nav.dokarkiv.internal.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaController.SIKKERHETSNIVAA_PATH;
 import static no.nav.dokarkiv.internal.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaController.SIKKERHETSNIVAA_ROLE;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
@@ -26,12 +25,11 @@ import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME
 @Slf4j
 @RestController
 @Transactional(readOnly = true)
-@RequestMapping(SIKKERHETSNIVAA_PATH)
+@RequestMapping("/rest/internal")
 @ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + SIKKERHETSNIVAA_ROLE})
 public class JournalpostInternSikkerhetsnivaaController {
 
 	public static final String SIKKERHETSNIVAA_ROLE = "api_intern_sikkerhetsnivaa";
-	public static final String SIKKERHETSNIVAA_PATH = "/rest/internal/sikkerhetsnivaa";
 
 	private final FinnUlesteJournalposterService finnUlesteJournalposterService;
 
@@ -40,11 +38,13 @@ public class JournalpostInternSikkerhetsnivaaController {
 	}
 
 	@SwaggerFinnUlesteJournalposter
-	@GetMapping("/finnUlesteJournalposter/{utsendingskanal}/{ekspedertFra}/{ekspedertTil}")
+	@GetMapping(value = {
+			"/finnUlesteJournalposter/{utsendingskanal}/{ekspedertFra}/{ekspedertTil}",
+			"/sikkerhetsnivaa/finnUlesteJournalposter/{utsendingskanal}/{ekspedertFra}/{ekspedertTil}"
+	})
 	public ResponseEntity<List<Long>> finnUlesteJournalposter(@PathVariable @NotBlank(message = "Sti-parameter utsendingskanal må ha en verdi") String utsendingskanal,
 															  @PathVariable @NotNull(message = "Sti-parameter ekspedertFra må ha en verdi") @DateTimeFormat(iso = DATE_TIME) LocalDateTime ekspedertFra,
 															  @PathVariable @NotNull(message = "Sti-parameter ekspedertTil må ha en verdi") @DateTimeFormat(iso = DATE_TIME) LocalDateTime ekspedertTil) {
-
 		log.info(format("finnUlesteJournalposter har mottatt kall for å hente alle uleste journalposter i tidsrommet ekspedertFra=%s og ekspedertTil=%s med utsendingskanal=%s", ekspedertFra, ekspedertTil, utsendingskanal));
 
 		List<Long> journalpostIder = finnUlesteJournalposterService.finnUlesteJournalposter(utsendingskanal, ekspedertFra, ekspedertTil);
