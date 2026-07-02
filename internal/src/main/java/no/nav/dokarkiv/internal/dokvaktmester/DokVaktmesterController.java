@@ -49,7 +49,7 @@ public class DokVaktmesterController {
 
 	@PatchMapping("/journalpost/{journalpostId}/endreFerdigstiltJournalpost")
 	public ResponseEntity<String> endreFerdigstiltJournalpost(@PathVariable long journalpostId, @RequestBody EndreFerdigstiltJournalpostRequest request) {
-		MDC.put(MDC_REQUEST_ID, "settAvbruttJournalpostRedigerbar");
+		MDC.put(MDC_REQUEST_ID, "endreFerdigstiltJournalpost");
 		createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
 
 		log.info("{} skal endre ferdigstilt journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostId);
