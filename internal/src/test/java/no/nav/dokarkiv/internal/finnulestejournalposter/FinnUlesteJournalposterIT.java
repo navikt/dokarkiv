@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.internal.sikkerhetsnivaa;
+package no.nav.dokarkiv.internal.finnulestejournalposter;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -22,7 +22,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.SDP;
-import static no.nav.dokarkiv.internal.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaController.SIKKERHETSNIVAA_ROLE;
+import static no.nav.dokarkiv.internal.finnulestejournalposter.FinnUlesteJournalposterController.SIKKERHETSNIVAA_ROLE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpMethod.GET;

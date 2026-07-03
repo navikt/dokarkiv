@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.internal.sikkerhetsnivaa;
+package no.nav.dokarkiv.internal.finnulestejournalposter;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,22 +17,21 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
-import static no.nav.dokarkiv.internal.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaController.SIKKERHETSNIVAA_ROLE;
+import static no.nav.dokarkiv.internal.finnulestejournalposter.FinnUlesteJournalposterController.SIKKERHETSNIVAA_ROLE;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
-@Tag(name = "journalpostapi - internt", description = "Interne tjenester mot journalpost for sikkerhetsnivaa")
 @Slf4j
+@Tag(name = "journalpostapi - internt", description = "Interne tjenester mot journalpost for dokdistavstemming")
 @RestController
-@Transactional(readOnly = true)
 @RequestMapping("/rest/internal")
 @ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + SIKKERHETSNIVAA_ROLE})
-public class JournalpostInternSikkerhetsnivaaController {
+public class FinnUlesteJournalposterController {
 
 	public static final String SIKKERHETSNIVAA_ROLE = "api_intern_sikkerhetsnivaa";
 
 	private final FinnUlesteJournalposterService finnUlesteJournalposterService;
 
-	public JournalpostInternSikkerhetsnivaaController(FinnUlesteJournalposterService finnUlesteJournalposterService) {
+	public FinnUlesteJournalposterController(FinnUlesteJournalposterService finnUlesteJournalposterService) {
 		this.finnUlesteJournalposterService = finnUlesteJournalposterService;
 	}
 
