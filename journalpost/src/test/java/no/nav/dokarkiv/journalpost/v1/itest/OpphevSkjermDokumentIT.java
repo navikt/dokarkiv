@@ -4,6 +4,7 @@ import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.assertj.core.groups.Tuple;
 import no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentHjemmelCode;
@@ -47,12 +48,18 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 		Journalpost skjermetJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow();
 		assertThat(skjermetJournalpost.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
 
+		DokumentInfo skjermetDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(skjermetDokumentInfo.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
+
 		opphevSkjermDokument(dokumentInfoId);
 
 		commitAndStartNewTransaction();
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow();
 		assertThat(oppdatertJournalpost.getSkjermingType()).isNull();
+
+		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(oppdatertDokumentInfo.getSkjermingType()).isNull();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,

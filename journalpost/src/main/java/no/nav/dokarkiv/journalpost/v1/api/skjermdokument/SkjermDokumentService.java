@@ -127,6 +127,7 @@ public class SkjermDokumentService {
 	private static void oppdaterSkjermingForJournalpostDokumentRelasjon(JournalpostDokumentInfoRelasjon relasjon, SkjermingTypeCode skjermingTypeCode) {
 		relasjon.setSkjermingType(skjermingTypeCode);
 		relasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
+		relasjon.getDokumentInfo().setSkjermingType(skjermingTypeCode);
 	}
 
 	private static boolean journalpostHasOnlyRelationsThatAreSkjermet(Journalpost journalpost) {
