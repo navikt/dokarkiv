@@ -1,4 +1,4 @@
-package no.nav.dokarkiv.internal.sikkerhetsnivaa;
+package no.nav.dokarkiv.internal.finnulestejournalposter;
 
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
@@ -9,6 +9,7 @@ import no.nav.dokarkiv.internal.AbstractInternalIT;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 
@@ -21,8 +22,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.SDP;
-import static no.nav.dokarkiv.internal.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaController.SIKKERHETSNIVAA_PATH;
-import static no.nav.dokarkiv.internal.sikkerhetsnivaa.JournalpostInternSikkerhetsnivaaController.SIKKERHETSNIVAA_ROLE;
+import static no.nav.dokarkiv.internal.finnulestejournalposter.FinnUlesteJournalposterController.SIKKERHETSNIVAA_ROLE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpMethod.GET;
@@ -36,11 +36,13 @@ public class FinnUlesteJournalposterIT extends AbstractInternalIT {
 	private static final int EN_DAG = 1;
 	private static final int FEM_DAGER = 5;
 	private static final String AARSOPPGAVE_BREV_KODE = "MF_000053";
+	private static final String FINNULESTEJOURNALPOSTER_PATH = "/rest/internal/finnUlesteJournalposter";
+	private static final String FINNULESTEJOURNALPOSTER_GAMMEL_PATH = "/rest/internal/sikkerhetsnivaa/finnUlesteJournalposter";
 
 	// Skal finne uleste journalposter med utsendingskanal NAV_NO med ekspederttidspunkt i tidsintervallet [ekspedertFra, ekspedertTil] = [5 dager siden, 1 dager siden]
-	@Test
-	public void skalFinneUlesteJournalposter() {
-
+	@ParameterizedTest
+	@ValueSource(strings = {FINNULESTEJOURNALPOSTER_PATH, FINNULESTEJOURNALPOSTER_GAMMEL_PATH})
+	public void skalFinneUlesteJournalposterForBaadeGammelOgNyPath(String path) {
 		//Journalpost som skal bli plukket opp
 		Journalpost aktuellUlestJournalpost = opprettUlestJournalpost(NAV_NO, 2, E, U);
 
@@ -60,7 +62,7 @@ public class FinnUlesteJournalposterIT extends AbstractInternalIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim(SIKKERHETSNIVAA_ROLE));
-		var response = restTemplate.exchange(buildUri(NAV_NO.toString(), 5, 1), GET, requestEntity, Long[].class);
+		var response = restTemplate.exchange(buildUri(path, NAV_NO.toString(), 5, 1), GET, requestEntity, Long[].class);
 
 		assertEquals(OK, response.getStatusCode());
 		var ulesteJournalposter = response.getBody();
@@ -78,7 +80,7 @@ public class FinnUlesteJournalposterIT extends AbstractInternalIT {
 	public void skalReturnereBadRequestForUgyldigInput(String utsendingsKanalCode, int ekspedertFra, int ekspedertTil, int expectedStatusCode, String feilmelding) {
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserTokenAndRolesClaim(SIKKERHETSNIVAA_ROLE));
 
-		var response = restTemplate.exchange(buildUri(utsendingsKanalCode, ekspedertFra, ekspedertTil), GET, requestEntity, String.class);
+		var response = restTemplate.exchange(buildUri(FINNULESTEJOURNALPOSTER_PATH, utsendingsKanalCode, ekspedertFra, ekspedertTil), GET, requestEntity, String.class);
 
 		assertThat(response.getStatusCode().value()).isEqualTo(expectedStatusCode);
 		assertThat(response.getBody()).isNotNull();
@@ -89,15 +91,15 @@ public class FinnUlesteJournalposterIT extends AbstractInternalIT {
 	public void skalReturnereUnauthorizedHvisSikkerhetsnivaaRoleMangler() {
 		var requestEntity = new HttpEntity<>(createHeadersWithServiceUserToken());
 
-		ResponseEntity<String> response = restTemplate.exchange(buildUri(NAV_NO.name(), 5, 1), GET, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(buildUri(FINNULESTEJOURNALPOSTER_PATH, NAV_NO.name(), 5, 1), GET, requestEntity, String.class);
 
 		assertEquals(UNAUTHORIZED, response.getStatusCode());
 	}
 
-	private String buildUri(String utsendingsKanalCode, int ekspedertFraDagerGamle, int ekspedertTilDagerGamle) {
+	private String buildUri(String path, String utsendingsKanalCode, int ekspedertFraDagerGamle, int ekspedertTilDagerGamle) {
 		LocalDateTime now = LocalDateTime.now();
 		String utsendingskanalUri = utsendingsKanalCode == null ? "" : utsendingsKanalCode;
-		return SIKKERHETSNIVAA_PATH + "/finnUlesteJournalposter/" + utsendingskanalUri + "/" + now.minusDays(ekspedertFraDagerGamle) + "/" + now.minusDays(ekspedertTilDagerGamle);
+		return path + "/" + utsendingskanalUri + "/" + now.minusDays(ekspedertFraDagerGamle) + "/" + now.minusDays(ekspedertTilDagerGamle);
 	}
 
 	private Journalpost opprettLestJournalpost() {
