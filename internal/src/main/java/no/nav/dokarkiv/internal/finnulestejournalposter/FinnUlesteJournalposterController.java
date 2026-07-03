@@ -36,10 +36,7 @@ public class FinnUlesteJournalposterController {
 	}
 
 	@SwaggerFinnUlesteJournalposter
-	@GetMapping(value = {
-			"/finnUlesteJournalposter/{utsendingskanal}/{ekspedertFra}/{ekspedertTil}",
-			"/sikkerhetsnivaa/finnUlesteJournalposter/{utsendingskanal}/{ekspedertFra}/{ekspedertTil}"
-	})
+	@GetMapping("/finnUlesteJournalposter/{utsendingskanal}/{ekspedertFra}/{ekspedertTil}")
 	public ResponseEntity<List<Long>> finnUlesteJournalposter(@PathVariable @NotBlank(message = "Sti-parameter utsendingskanal må ha en verdi") String utsendingskanal,
 															  @PathVariable @NotNull(message = "Sti-parameter ekspedertFra må ha en verdi") @DateTimeFormat(iso = DATE_TIME) LocalDateTime ekspedertFra,
 															  @PathVariable @NotNull(message = "Sti-parameter ekspedertTil må ha en verdi") @DateTimeFormat(iso = DATE_TIME) LocalDateTime ekspedertTil) {
