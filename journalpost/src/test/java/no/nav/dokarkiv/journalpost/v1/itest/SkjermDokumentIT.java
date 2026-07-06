@@ -53,6 +53,9 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		assertThat(relasjoner)
 			.allMatch(r -> r.getSkjermingType() == null);
 
+		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(oppdatertDokumentInfo.getSkjermingType()).isNull();
+
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).isEmpty();
 	}
@@ -118,6 +121,9 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonTestRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
 		assertThat(relasjoner).allMatch(r -> r.getSkjermingType() == SkjermingTypeCode.ARK);
 
+		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(oppdatertDokumentInfo.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
+
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()),
@@ -159,6 +165,9 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 			.extracting(JournalpostDokumentInfoRelasjon::getEndretKildeNavn)
 			.satisfiesExactlyInAnyOrder(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(KILDENAVN_GOSYS));
 
+		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(oppdatertDokumentInfo.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
+
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId, SkjermingTypeCode.ARK.name()));
@@ -190,6 +199,9 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow();
 
 		assertThat(oppdatertJournalpost.getSkjermingType()).isNull();
+
+		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(oppdatertDokumentInfo.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,
@@ -226,6 +238,9 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 		assertThat(relasjoner)
 			.hasSize(2)
 			.allSatisfy(r -> assertThat(r.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK));
+
+		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(oppdatertDokumentInfo.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,
