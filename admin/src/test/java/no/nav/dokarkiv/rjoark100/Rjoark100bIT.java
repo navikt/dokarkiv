@@ -511,6 +511,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 								.allMatch(f -> f.getSkjermingType() == null)).isTrue();
 					} else {
 						assertThat(rel.getSkjermingType()).isNull();
+						assertThat(rel.getDokumentInfo().getSkjermingType()).isNull();
 					}
 				});
 	}

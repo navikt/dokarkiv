@@ -76,6 +76,9 @@ public class SkjermingServiceTest {
 				.setParameter("relId", journalpostDokumentInfoRelasjonId)
 				.setParameter("skjermingTypeCode", skjermingTypeCode);
 		q.executeUpdate();
+		journalpostDokumentInfoRelasjonRepository.findById(journalpostDokumentInfoRelasjonId)
+				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
+				.ifPresent(dokumentInfo -> dokumentInfo.setSkjermingType(skjermingTypeCode));
 	}
 
 

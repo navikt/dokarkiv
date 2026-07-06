@@ -81,6 +81,9 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 			.extracting(JournalpostDokumentInfoRelasjon::getEndretKildeNavn)
 			.allSatisfy(endretKildeNavn -> assertThat(endretKildeNavn).isEqualTo(KILDENAVN_GOSYS));
 
+		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
+		assertThat(oppdatertDokumentInfo.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
+
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()),

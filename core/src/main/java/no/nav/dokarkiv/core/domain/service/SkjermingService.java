@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +19,13 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 public class SkjermingService {
 
 	private final JournalpostRepository journalpostRepository;
+	private final DokumentInfoRepository dokumentInfoRepository;
 
 	private final EntityManager entityManager;
 
-	public SkjermingService(JournalpostRepository journalpostRepository, EntityManager entityManager) {
+	public SkjermingService(JournalpostRepository journalpostRepository, DokumentInfoRepository dokumentInfoRepository, EntityManager entityManager) {
 		this.journalpostRepository = journalpostRepository;
+		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.entityManager = entityManager;
 	}
 
@@ -72,6 +75,9 @@ public class SkjermingService {
 				.setParameter("jpId", jpId)
 				.setParameter("dokInfoId", dokInfoId)
 				.setParameter("skjermingTypeCode", skjermingTypeCode);
+		dokumentInfoRepository.findById(dokInfoId)
+			// denne er alltid present, men det gjøres som dette for convenience
+			.ifPresent(dokumentInfo -> dokumentInfo.setSkjermingType(skjermingTypeCode));
 		q.executeUpdate();
 	}
 
