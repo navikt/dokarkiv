@@ -23,8 +23,6 @@ import java.util.Optional;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
-import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
 
 @Slf4j
 @Service
@@ -72,7 +70,7 @@ public class SkjermDokumentService {
 
 			.filter(SkjermDokumentService::journalpostHasOnlyRelationsThatAreSkjermet)
 			.forEach(journalpost -> {
-				oppdaterSkjermingForJournalpost(hjemmelCode, journalpost, skjermingTypeCode);
+				oppdaterSkjermingForJournalpost(journalpost, skjermingTypeCode);
 			});
 
 		log.info("skjermdokument har skjermet dokument med dokumentInfoId={}", dokumentInfoId);
@@ -118,7 +116,7 @@ public class SkjermDokumentService {
 			.filter(jp -> null != jp.getSkjermingType())
 			.filter(SkjermDokumentService::journalpostHasOnlyRelationsThatAreNotSkjermet)
 			.forEach(journalpost -> {
-				oppdaterSkjermingForJournalpost(null, journalpost, null);
+				oppdaterSkjermingForJournalpost(journalpost, null);
 			});
 
 		log.info("opphevSkjermDokument har fjernet skjerming fra dokument med dokumentInfoId={}", dokumentInfoId);
@@ -140,21 +138,7 @@ public class SkjermDokumentService {
 			.allMatch(relasjon -> null == relasjon.getSkjermingType());
 	}
 
-	private void oppdaterSkjermingForJournalpost(SkjermDokumentHjemmelCode hjemmelCode, Journalpost journalpost, SkjermingTypeCode skjermingTypeCode) {
-		skrivAksjonsloggForJournalpost(journalpost, hjemmelCode);
+	private void oppdaterSkjermingForJournalpost(Journalpost journalpost, SkjermingTypeCode skjermingTypeCode) {
 		journalpost.setSkjermingType(skjermingTypeCode, MDC.get(MDC_CONSUMER_ID), MDC.get(MDC_USER_NAME));
-	}
-
-	private void skrivAksjonsloggForJournalpost(Journalpost journalpost, SkjermDokumentHjemmelCode hjemmelCode) {
-			aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
-				.journalpostId(journalpost.getJournalpostId())
-				.hjemmel(enumToString(hjemmelCode))
-				.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
-				.build(),
-				List.of(ArkivElementEndringTO.builder()
-					.arkivElement(JOURNALPOST_SKJERMING_TYPE)
-					.fraVerdi(enumToString(journalpost.getSkjermingType()))
-					.tilVerdi(enumToString(hjemmelCode == null ? null : hjemmelCode.asSkjermingTypeCode()))
-					.build()));
 	}
 }
