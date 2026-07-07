@@ -184,6 +184,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "isutenlandsopphold",
+      "namespace": "teamsykefravr",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "journalforing-frontend",
       "namespace": "isa",
       "cluster": "prod-gcp"
