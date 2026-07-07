@@ -48,8 +48,13 @@ public class SkjermDokumentService {
 			throw new DokumentInfoIkkeFunnetException("Fant ikke dokument og dokumentrelasjon for dokumentInfoId=%d".formatted(dokumentInfoId));
 		}
 
-		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, skjermingTypeCode));
+		setSkjermingForDokumentInfo(relasjoner, skjermingTypeCode);
+		setSkjermingForJournalposter(dokumentInfoId, hjemmelCode, relasjoner, skjermingTypeCode);
 
+		log.info("skjermdokument har skjermet dokument med dokumentInfoId={}", dokumentInfoId);
+	}
+
+	private void setSkjermingForJournalposter(long dokumentInfoId, SkjermDokumentHjemmelCode hjemmelCode, List<JournalpostDokumentInfoRelasjon> relasjoner, SkjermingTypeCode skjermingTypeCode) {
 		relasjoner.stream()
 			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
 			.forEach(journalpostId ->
@@ -72,8 +77,12 @@ public class SkjermDokumentService {
 			.forEach(journalpost -> {
 				oppdaterSkjermingForJournalpost(journalpost, skjermingTypeCode);
 			});
+	}
 
-		log.info("skjermdokument har skjermet dokument med dokumentInfoId={}", dokumentInfoId);
+	private void setSkjermingForDokumentInfo(List<JournalpostDokumentInfoRelasjon> relasjoner, SkjermingTypeCode skjermingTypeCode) {
+		var dokumentInfo = relasjoner.getFirst().getDokumentInfo();
+		dokumentInfo.setSkjermingType(skjermingTypeCode);
+		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, skjermingTypeCode));
 	}
 
 	@Transactional
@@ -90,8 +99,13 @@ public class SkjermDokumentService {
 			throw new KanIkkeOpphevSkjermingException("Kan ikke oppheve skjerming for dokument som ikke er skjermet");
 		}
 
-		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, null));
+		opphevSkjermingForDokumentInfo(relasjoner);
+		opphevSkjermingForJournalposter(dokumentInfoId, relasjoner, forrigeSkjermingType);
 
+		log.info("opphevSkjermDokument har fjernet skjerming fra dokument med dokumentInfoId={}", dokumentInfoId);
+	}
+
+	private void opphevSkjermingForJournalposter(long dokumentInfoId, List<JournalpostDokumentInfoRelasjon> relasjoner, Optional<SkjermingTypeCode> forrigeSkjermingType) {
 		relasjoner.stream()
 			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
 			.forEach(journalpostId ->
@@ -118,8 +132,12 @@ public class SkjermDokumentService {
 			.forEach(journalpost -> {
 				oppdaterSkjermingForJournalpost(journalpost, null);
 			});
+	}
 
-		log.info("opphevSkjermDokument har fjernet skjerming fra dokument med dokumentInfoId={}", dokumentInfoId);
+	private void opphevSkjermingForDokumentInfo(List<JournalpostDokumentInfoRelasjon> relasjoner) {
+		var dokumentInfo = relasjoner.getFirst().getDokumentInfo();
+		dokumentInfo.setSkjermingType(null);
+		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, null));
 	}
 
 	private static void oppdaterSkjermingForJournalpostDokumentRelasjon(JournalpostDokumentInfoRelasjon relasjon, SkjermingTypeCode skjermingTypeCode) {
