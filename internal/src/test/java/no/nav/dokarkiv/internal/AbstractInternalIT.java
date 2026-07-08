@@ -19,13 +19,8 @@ import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 @EnableWireMock
 public abstract class AbstractInternalIT extends AbstractRestIT {
 
-	static final String JOURNALPOSTAPI_BASE_PATH = "/rest/journalpostapi/v1/";
 	static final String INTERNAL_JOURNALPOSTAPI_BASE_PATH = "/rest/internal/journalpostapi/v1/";
 	static final String INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH = "journalpost";
-
-	protected static String apiPath(String path) {
-		return fromPath(JOURNALPOSTAPI_BASE_PATH).path(path).build().toUriString();
-	}
 
 	protected static String apiInternalJournalpostPath(String... path) {
 		return fromPath(INTERNAL_JOURNALPOSTAPI_BASE_PATH)

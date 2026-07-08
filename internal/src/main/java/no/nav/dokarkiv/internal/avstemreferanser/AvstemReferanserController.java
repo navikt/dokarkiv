@@ -20,7 +20,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 @ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + SKANNING_ROLE_CLAIM_TILGANG})
 @RestController
-@RequestMapping(path = "/rest/journalpostapi/v1/avstemReferanser", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/rest/internal/avstemReferanser", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 public class AvstemReferanserController {
 	public static final String SKANNING_ROLE_CLAIM_TILGANG = "api_intern_skanning";
 
@@ -49,4 +49,5 @@ public class AvstemReferanserController {
 		}
 		referanser.forEach(EksternReferanseIdValidator::validateEksternReferanseId);
 	}
+
 }

@@ -23,7 +23,7 @@ import static org.springframework.http.HttpMethod.POST;
 
 public class AvstemReferanseIT extends AbstractInternalIT {
 
-	private static final String AVSTEM_REFERANSER_PATH = "/avstemReferanser";
+	private static final String AVSTEM_REFERANSER_PATH = "/rest/internal/avstemReferanser";
 
 	@Test
 	void shouldReturnNoContentWhenAllReferencesMatch() {
@@ -65,7 +65,7 @@ public class AvstemReferanseIT extends AbstractInternalIT {
 		HttpHeaders headers = createHeadersWithServiceUserTokenAndRolesClaim("skanmothelse", "some_other_role");
 		HttpEntity<AvstemmingReferanser> requestHttpEntity = new HttpEntity<>(new AvstemmingReferanser(Set.of(journalpost.getKanalReferanseId())), headers);
 		ResponseEntity<FeilendeAvstemmingReferanser> response = restTemplate.exchange(
-				apiPath(AVSTEM_REFERANSER_PATH), POST, requestHttpEntity, FeilendeAvstemmingReferanser.class);
+				AVSTEM_REFERANSER_PATH, POST, requestHttpEntity, FeilendeAvstemmingReferanser.class);
 
 		assertThat(response.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 	}
@@ -95,6 +95,6 @@ public class AvstemReferanseIT extends AbstractInternalIT {
 	private ResponseEntity<FeilendeAvstemmingReferanser> doRequestWithReferanser(Set<String> referanser) {
 		HttpHeaders headers = createHeadersWithServiceUserTokenAndRolesClaim("skanmothelse", "api_intern_skanning");
 		HttpEntity<AvstemmingReferanser> requestHttpEntity = new HttpEntity<>(new AvstemmingReferanser(referanser), headers);
-		return restTemplate.exchange(apiPath(AVSTEM_REFERANSER_PATH), POST, requestHttpEntity, FeilendeAvstemmingReferanser.class);
+		return restTemplate.exchange(AVSTEM_REFERANSER_PATH, POST, requestHttpEntity, FeilendeAvstemmingReferanser.class);
 	}
 }
