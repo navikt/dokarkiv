@@ -61,6 +61,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createPsakSaksrelasjon
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createSakForAktoerId;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createSaksrelasjon;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -244,7 +245,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		DokumentInfo vedlegg2 = createDokumentInfo();
 		dokumentInfoRepository.persist(vedlegg2);
 		Journalpost journalpost = createUniqueJournalpost();
-		DokumentInfo hoveddokument = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0);
+		DokumentInfo hoveddokument = getDokumentInfoFromJpDokInfoRelasjoner(journalpost, 0);
 		createVedleggRelasjon(journalpost, vedlegg3);
 		journalpostTestRepository.persist(journalpost);
 		createVedleggRelasjon(journalpost, vedlegg4);

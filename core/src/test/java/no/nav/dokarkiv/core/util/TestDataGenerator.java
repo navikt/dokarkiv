@@ -528,4 +528,16 @@ public class TestDataGenerator {
 						.beskrivelse("beskrivelse av " + code.name())
 						.build());
 	}
+
+	public static DokumentInfo getDokumentInfoFromJpDokInfoRelasjoner(Journalpost journalpost, int nr) {
+		JournalpostDokumentInfoRelasjon dokumentInfoRel;
+		java.util.Iterator<JournalpostDokumentInfoRelasjon> dokInfoRelIterator = journalpost.getJournalpostDokumentInfoRelasjoner().iterator();
+		for (int i = 0; dokInfoRelIterator.hasNext(); i++) {
+			dokumentInfoRel = dokInfoRelIterator.next();
+			if (i == nr) {
+				return dokumentInfoRel.getDokumentInfo();
+			}
+		}
+		return null;
+	}
 }

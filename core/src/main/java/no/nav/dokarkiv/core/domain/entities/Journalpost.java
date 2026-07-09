@@ -339,7 +339,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * varianter.
 	 */
 	public void verifyNoDokumentVariantDuplicates() {
-		for (DokumentInfo dokumentInfo : findAllDokumentInfos()) {
+		for (DokumentInfo dokumentInfo : findAllDokumentInfosAdmin()) {
 			dokumentInfo.verifyNoVariantDuplicates();
 		}
 	}
@@ -360,7 +360,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	private Map<Long, Integer> getDokumentInfoIdsCount() {
 		Map<Long, Integer> dokumentInfoIdsCount = new HashMap<>();
-		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : getJournalpostDokumentInfoRelasjoner()) {
+		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : getJournalpostDokumentInfoRelasjonerAdmin()) {
 			DokumentInfo dokumentInfo = dokumentInfoRelasjon.getDokumentInfo();
 			if (dokumentInfo != null && dokumentInfo.getDokumentInfoId() != null) {
 				Integer count = dokumentInfoIdsCount.get(dokumentInfo.getDokumentInfoId());
@@ -406,7 +406,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	public void verifyOnlyOneHoveddokument() {
-		int hovedDokumentCount = getTilknyttetSomCount(getJournalpostDokumentInfoRelasjoner(),
+		int hovedDokumentCount = getTilknyttetSomCount(getJournalpostDokumentInfoRelasjonerAdmin(),
 				TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
 
 		if (hovedDokumentCount == 0) {
@@ -430,7 +430,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	public void verifyArkivVariantOfAllDocuments() {
-		for (DokumentInfo dokumentInfo : findAllDokumentInfos()) {
+		for (DokumentInfo dokumentInfo : findAllDokumentInfosAdmin()) {
 			if (!dokumentInfo.hasArkivFormat()) {
 				throwExceptionForFailedVerificationForEndeligJournalforing(
 						"All the Journalpost's DokumentInfos must contain an arkiv variant");
@@ -439,7 +439,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	public void verifyNoDokumentInfosUnderRedigering() {
-		for (DokumentInfo dokumentInfo : findAllDokumentInfos()) {
+		for (DokumentInfo dokumentInfo : findAllDokumentInfosAdmin()) {
 			if (dokumentInfo.isUnderRedigering()) {
 				throwExceptionForFailedVerificationForEndeligJournalforing(
 						"Journalpost cannot contain DokumentInfos with status 'under redigering'");
@@ -515,13 +515,13 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 * @return An Iterable of DokumentInfo
 	 */
 	public Iterable<DokumentInfo> findDokumentInfoByDokumentStatus(final DokumentStatusCode dokumentStatusCode) {
-		return findAllDokumentInfos().stream()
+		return findAllDokumentInfosAdmin().stream()
 				.filter(dokumentInfo -> dokumentStatusCode.equals(dokumentInfo.getDokumentstatus()))
 				.collect(Collectors.toList());
 	}
 
 	/**
-	 * Finds a JournalpostDokumentInfoRelasjon by TilknyttetJournalpostSomCode.
+	 * Finds a JournalpostDokumentInfoRelasjon by TilknyttetJournalpostSomCode, except any that are skjermet
 	 *
 	 * @param tilknyttetJournalpostSom The code.
 	 * @return The JournalpostDokumentInfoRelasjon.
@@ -531,6 +531,19 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 		return getJournalpostDokumentInfoRelasjoner().stream()
 				.filter(journalpostDokumentInfoRelasjon -> tilknyttetJournalpostSom.equals(journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom()))
 				.collect(Collectors.toSet());
+	}
+
+	/**
+	 * Finds a JournalpostDokumentInfoRelasjon by TilknyttetJournalpostSomCode. This one includes all Relations
+	 *
+	 * @param tilknyttetJournalpostSom The code.
+	 * @return The JournalpostDokumentInfoRelasjon.
+	 */
+	public Set<JournalpostDokumentInfoRelasjon> findDokumentInfoRelasjonByTilknyttetJournalpostSomAdmin(
+		final TilknyttetJournalpostSomCode tilknyttetJournalpostSom) {
+		return getJournalpostDokumentInfoRelasjonerAdmin().stream()
+			.filter(journalpostDokumentInfoRelasjon -> tilknyttetJournalpostSom.equals(journalpostDokumentInfoRelasjon.getTilknyttetJournalpostSom()))
+			.collect(Collectors.toSet());
 	}
 
 	/**
@@ -546,7 +559,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	/**
-	 * Finds all DokumentInfos that belongs to this Journalpost.
+	 * Finds all DokumentInfos that belongs to this Journalpost, except those that are skjermet.
 	 *
 	 * @return A List with all DokumentInfos
 	 */
@@ -561,7 +574,22 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	}
 
 	/**
-	 * Finds a DokumentInfo that belongs to this Journalpost by dokumentInfoId.
+	 * Finds all DokumentInfos that belongs to this Journalpost.
+	 *
+	 * @return A List with all DokumentInfos
+	 */
+	public List<DokumentInfo> findAllDokumentInfosAdmin() {
+		List<DokumentInfo> allDokumentInfos = new ArrayList<>();
+		for (JournalpostDokumentInfoRelasjon relasjon : getJournalpostDokumentInfoRelasjonerAdmin()) {
+			if (relasjon.getDokumentInfo() != null) {
+				allDokumentInfos.add(relasjon.getDokumentInfo());
+			}
+		}
+		return allDokumentInfos;
+	}
+
+	/**
+	 * Finds a DokumentInfo that belongs to this Journalpost by dokumentInfoId, as long as it is not skjermet
 	 *
 	 * @param dokumentInfoId The Id.
 	 * @return The DokumentInfo.
@@ -703,23 +731,6 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjonerAdmin() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner);
-	}
-
-	/**
-	 * Getter for the journalpostDokumentInfoRelasjoner property.
-	 *
-	 * @return the journalpostDokumentInfoRelasjoner
-	 */
-	public DokumentInfo getDokumentInfoFromJpDokInfoRelasjoner(int nr) {
-		JournalpostDokumentInfoRelasjon dokumentInfoRel;
-		java.util.Iterator<JournalpostDokumentInfoRelasjon> dokInfoRelIterator = getJournalpostDokumentInfoRelasjoner().iterator();
-		for (int i = 0; dokInfoRelIterator.hasNext(); i++) {
-			dokumentInfoRel = dokInfoRelIterator.next();
-			if (i == nr) {
-				return dokumentInfoRel.getDokumentInfo();
-			}
-		}
-		return null;
 	}
 
 	/**

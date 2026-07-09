@@ -5,6 +5,7 @@ import jakarta.persistence.Query;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
@@ -50,9 +51,9 @@ public class SkjermingService {
 	}
 
 	public boolean isAllFildetaljerSkjermet(DokumentInfo dokumentInfo) {
-		return dokumentInfo.getFildetaljerListeAdmin()
+		return dokumentInfo.getFildetaljerListe()
 				.stream()
-				.allMatch(filDetaljer -> nonNull(filDetaljer.getSkjermingType()));
+				.allMatch(FilDetaljer::isSkjermet);
 	}
 
 	public boolean isFildetaljerSkjermetByFilUuid(String filUuid) {

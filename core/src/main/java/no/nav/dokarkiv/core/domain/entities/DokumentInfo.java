@@ -16,7 +16,6 @@ import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,7 +43,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
-import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static java.util.stream.Collectors.groupingBy;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.hibernate.annotations.CascadeType.DETACH;
@@ -233,8 +232,8 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * represented by this DokumentInfos FilDetaljer list.
 	 */
 	public void verifyNoVariantDuplicates() {
-		Map<VariantFormatCode, Integer> variantCounters = countVariants();
-		for (Entry<VariantFormatCode, Integer> variantCount : variantCounters.entrySet()) {
+		Map<VariantFormatCode, Long> variantCounters = countVariants();
+		for (Entry<VariantFormatCode, Long> variantCount : variantCounters.entrySet()) {
 			if (variantCount.getValue() > 1) {
 				throw new InvalidJournalpostStructureException(this.getClass().getSimpleName()
 															   + " cannot contain dokumentvariant duplicates, found " + variantCount.getValue()
@@ -251,20 +250,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	public boolean hasArkivFormat() {
 		for (FilDetaljer filDetaljer : getFildetaljerListe()) {
 			if (filDetaljer.getVariantFormat() == VariantFormatCode.ARKIV) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Check if this DokumentInfo has a document with VariantFormatCode ORIGINAL.
-	 *
-	 * @return true if there is a document with variant ORIGINAL, false otherwise.
-	 */
-	public boolean hasOriginalFormat() {
-		for (FilDetaljer filDetaljer : getFildetaljerListe()) {
-			if (filDetaljer.getVariantFormat() == VariantFormatCode.ORIGINAL) {
 				return true;
 			}
 		}
@@ -298,23 +283,11 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		return dokumentstatus == DokumentStatusCode.AVBRUTT;
 	}
 
-	private Map<VariantFormatCode, Integer> countVariants() {
-		Map<VariantFormatCode, Integer> variantCounters = getVariantCounters();
-		for (FilDetaljer filDetaljer : getFildetaljerListe()) {
-			VariantFormatCode variantFormat = filDetaljer.getVariantFormat();
-			if (variantFormat != null) {
-				variantCounters.put(variantFormat, variantCounters.get(variantFormat) + 1);
-			}
-		}
-		return variantCounters;
-	}
-
-	private Map<VariantFormatCode, Integer> getVariantCounters() {
-		Map<VariantFormatCode, Integer> variantCounters = new HashMap<>();
-		for (VariantFormatCode variantFormat : VariantFormatCode.values()) {
-			variantCounters.put(variantFormat, 0);
-		}
-		return variantCounters;
+	private Map<VariantFormatCode, Long> countVariants() {
+		Map<VariantFormatCode,Long> counted = fildetaljerListe.stream()
+			.filter(fd -> Objects.nonNull(fd.getVariantFormat()))
+			.collect(groupingBy(FilDetaljer::getVariantFormat, Collectors.counting()));
+		return counted;
 	}
 
 	/**
@@ -491,22 +464,9 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	}
 
 	/**
-	 * Getter for the fildetaljerListe property.
-	 * Filterer ut fildetaljer som er skjermet og sladdet
-	 *
-	 * @return the fildetaljerListe
-	 */
-	public Set<FilDetaljer> getFildetaljerListe() {
-		return Collections.unmodifiableSet(fildetaljerListe.stream()
-				.filter(filDetaljer -> filDetaljer.getVariantFormat() == ARKIV || Objects.isNull(filDetaljer.getSkjermingType()))
-				.collect(Collectors.toSet())
-		);
-	}
-
-	/**
 	 * Returnerer alle Fildetaljer inkludert skjermet
 	 */
-	public Set<FilDetaljer> getFildetaljerListeAdmin() {
+	public Set<FilDetaljer> getFildetaljerListe() {
 		return Collections.unmodifiableSet(fildetaljerListe);
 	}
 
@@ -515,14 +475,6 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 */
 	public void clearFildetaljerListe() {
 		fildetaljerListe.clear();
-	}
-
-	/**
-	 * Removes a JournalpostDokumentInfoRelasjon
-	 */
-	public void removeJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjonToRemove) {
-		journalpostRelasjoner.remove(relasjonToRemove);
-		relasjonToRemove.setDokumentInfo(null);
 	}
 
 	public void setKassert(boolean kassert) {

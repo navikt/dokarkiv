@@ -17,9 +17,6 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_IN
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.util.ConverterUtils.enumToString;
 
-/**
- * @author Ugur Alpay Cenar, Visma Consulting.
- */
 @Service
 public class KasserSkjermDokumentService {
 
@@ -69,7 +66,7 @@ public class KasserSkjermDokumentService {
 		DokumentInfo dokumentInfoForSkjerming = dokumentInfoRepository.findById(dokumentInfoId)
 				.orElseThrow(() -> new DokumentInfoIkkeFunnetException(dokumentInfoId));
 
-		dokumentInfoForSkjerming.getFildetaljerListeAdmin()
+		dokumentInfoForSkjerming.getFildetaljerListe()
 				.forEach(filDetaljer -> arkivElementEndringTOList.addAll(endreSkjermingFildetaljer(dokumentInfoId, filDetaljer.getVariantFormat(), filDetaljer
 						.getSkjermingType(), skjermingTypeCode)));
 

@@ -276,7 +276,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidatorTest {
 
 		journalpost.setJournalstatus(JournalStatusCode.D);
 		addDokumentInfo(journalpost, request.getDokumentInfoId());
-		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfos()) {
+		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfosAdmin()) {
 			dokumentInfo.setDokumentstatus(DokumentStatusCode.FERDIGSTILT);
 		}
 

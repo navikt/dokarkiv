@@ -29,8 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration test for HentJournalOgDokumentStatus.
- *
- * @author Thomas Eugen Bjørge, Visma Consulting
  */
 public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninfoItest {
 
@@ -47,7 +45,7 @@ public class HentJournalOgDokumentStatusIT extends AbstractDokumentproduksjoninf
 	public void setUp() {
 		Journalpost journalpost = journalpostTestRepository.persist(buildAndPersistJournalpost());
 		journalpostId = journalpost.getId();
-		dokumentInfoId = journalpost.findAllDokumentInfos().iterator().next().getId();
+		dokumentInfoId = journalpost.findAllDokumentInfosAdmin().iterator().next().getId();
 		createRequest();
 	}
 

@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Implementation of <code>MandatoryFieldsVerifier</code>.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
  */
 @Component
 public class DefaultMandatoryFieldsVerifier implements MandatoryFieldsVerifier {
@@ -62,7 +60,7 @@ public class DefaultMandatoryFieldsVerifier implements MandatoryFieldsVerifier {
 	}
 
 	private void verifyDokumentInfoRelasjon(Journalpost journalpost) {
-		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : journalpost.getJournalpostDokumentInfoRelasjoner()) {
+		for (JournalpostDokumentInfoRelasjon dokumentInfoRelasjon : journalpost.getJournalpostDokumentInfoRelasjonerAdmin()) {
 			dokumentInfoRelasjon.verifyMandatoryFields();
 
 			DokumentInfo dokumentInfo = dokumentInfoRelasjon.getDokumentInfo();

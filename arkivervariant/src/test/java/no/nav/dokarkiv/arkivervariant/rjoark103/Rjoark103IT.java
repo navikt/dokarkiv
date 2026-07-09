@@ -64,7 +64,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		TestTransaction.start();
 		assertTrue(dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId()).isPresent());
 		DokumentInfo persistedDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId()).get();
-		assertThat(persistedDokumentInfo.getFildetaljerListeAdmin().size()).isEqualTo(2);
+		assertThat(persistedDokumentInfo.getFildetaljerListe()).hasSize(2);
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(ARKIV)).isNotNull();
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET)).isNotNull();
 		assertThat(persistedDokumentInfo.findFilDetaljerByVariantFormat(SLADDET).getFiltype()).isEqualTo(PDF);
@@ -78,7 +78,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 
 		TestTransaction.start();
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList.size()).isEqualTo(1);
+		assertThat(aksjonsLoggList).hasSize(1);
 
 		AksjonsLogg aksjonsLogg = aksjonsLoggList.get(0);
 		assertThat(aksjonsLogg.getAksjon()).isEqualTo(ARKIVERING);
@@ -88,7 +88,7 @@ public class Rjoark103IT extends AbstractArkiverVariantIT {
 		assertThat(aksjonsLogg.getJournalpostId()).isEqualTo(journalpost.getJournalpostId());
 		assertThat(aksjonsLogg.getDokumentInfoId()).isEqualTo(dokumentInfo.getDokumentInfoId());
 		assertThat(aksjonsLogg.getApplikasjon()).isEqualTo(APP_NAME_WITH_NAMESPACE);
-		assertThat(aksjonsLogg.getArkivElementEndringer().size()).isEqualTo(2);
+		assertThat(aksjonsLogg.getArkivElementEndringer()).hasSize(2);
 
 		List<ArkivElementEndring> arkivElementEndringList = new ArrayList<>(aksjonsLogg.getArkivElementEndringer());
 		assertThat(arkivElementEndringList.stream()

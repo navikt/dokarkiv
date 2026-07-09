@@ -22,7 +22,7 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.util.TestUtil.createKasserDokumentRequest;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.POST;
@@ -51,7 +51,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 		assertThat(dokInfoEtterKall.get().isKassert()).isTrue();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList.size()).isEqualTo(1);
+		assertThat(aksjonsLoggList).hasSize(1);
 		assertAksjonsLogg(aksjonsLoggList.get(0), ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(),
 				asList(
 						ArkivElementEndring.builder()
@@ -94,7 +94,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 		assertThat(dokInfoEtterKall.get().isKassert()).isTrue();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList.size()).isEqualTo(1);
+		assertThat(aksjonsLoggList).hasSize(1);
 		assertAksjonsLoggSts(aksjonsLoggList.get(0), ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(),
 				asList(
 						ArkivElementEndring.builder()
@@ -122,7 +122,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
 		dokumentInfoSomSkalSkjermesSomKassert.setKassert(true);
-		dokumentInfoSomSkalSkjermesSomKassert.getFildetaljerListeAdmin()
+		dokumentInfoSomSkalSkjermesSomKassert.getFildetaljerListe()
 				.forEach(filDetaljer -> skjermingService.setFildetaljerSkjerming(dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(), filDetaljer.getVariantFormat(), POL));
 
 		reinitTransaction();
@@ -137,7 +137,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 		assertThat(dokInfoEtterKall.get().isKassert()).isFalse();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList.size()).isEqualTo(1);
+		assertThat(aksjonsLoggList).hasSize(1);
 		assertAksjonsLogg(aksjonsLoggList.get(0), ENDRE_SKJERMING, journalpost.getJournalpostId(), dokumentInfoSomSkalSkjermesSomKassert.getDokumentInfoId(),
 				asList(
 						ArkivElementEndring.builder()
@@ -202,7 +202,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	private void assertThatAllFildetaljerIsSkjermet(DokumentInfo dokInfoEtterKall, SkjermingTypeCode skjermingTypeCode) {
 
-		dokInfoEtterKall.getFildetaljerListeAdmin().forEach(
+		dokInfoEtterKall.getFildetaljerListe().forEach(
 				filDetaljer -> assertThat(filDetaljer.getSkjermingType()).isEqualTo(skjermingTypeCode));
 	}
 }

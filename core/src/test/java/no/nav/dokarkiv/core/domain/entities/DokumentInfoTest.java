@@ -29,30 +29,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class DokumentInfoTest {
 
-
-	@Test
-	public void getFildetaljerListeShouldFilterSkjermetOnlyReturnSkjermetArkivVariant() {
-		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
-				.filDetaljerList(
-						FilDetaljer.builder()
-								.fildetaljerId(1L)
-								.filUuid("test")
-								.variantFormat(ARKIV)
-								.skjermingType(POL)
-								.build(),
-						FilDetaljer.builder()
-								.fildetaljerId(2L)
-								.filUuid("test2")
-								.variantFormat(SLADDET)
-								.skjermingType(POL)
-								.build())
-				.build();
-
-		assertThat(dokumentInfo.getFildetaljerListe().size(), is(1));
-		assertThat(dokumentInfo.getFildetaljerListe().iterator().next().getVariantFormat(), is(ARKIV));
-		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
-	}
-
 	@Test
 	public void shouldReturnFildetaljerWhenNotSkjermet() {
 		DokumentInfo dokumentInfo = getDokumentInfoBuilder()
@@ -75,7 +51,7 @@ public class DokumentInfoTest {
 				.build();
 
 		assertThat(dokumentInfo.getFildetaljerListe().size(), is(3));
-		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(3));
+		assertThat(dokumentInfo.getFildetaljerListe().size(), is(3));
 		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.PRODUKSJON).getVariantFormat(), is(PRODUKSJON));
 		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET).getVariantFormat(), is(SLADDET));
 		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getVariantFormat(), is(ARKIV));
@@ -103,7 +79,7 @@ public class DokumentInfoTest {
 				.build();
 
 		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getVariantFormat(), is(SLADDET));
-		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+		assertThat(dokumentInfo.getFildetaljerListe().size(), is(2));
 		assertThat(dokumentInfo.findFilDetaljerByVariantFormatAdmin(VariantFormatCode.ARKIV).get().getVariantFormat(), is(ARKIV));
 
 	}
@@ -150,7 +126,7 @@ public class DokumentInfoTest {
 
 		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.ARKIV).getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfo.findFilDetaljerByVariantFormat(VariantFormatCode.SLADDET).getVariantFormat(), is(SLADDET));
-		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+		assertThat(dokumentInfo.getFildetaljerListe().size(), is(2));
 	}
 
 	@Test
@@ -172,7 +148,7 @@ public class DokumentInfoTest {
 
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getVariantFormat(), is(SLADDET));
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getFilUuid(), is("test2"));
-		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+		assertThat(dokumentInfo.getFildetaljerListe().size(), is(2));
 	}
 
 	@Test
@@ -194,7 +170,7 @@ public class DokumentInfoTest {
 
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getFilUuid(), is("test"));
-		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+		assertThat(dokumentInfo.getFildetaljerListe().size(), is(2));
 	}
 
 	@Test
@@ -215,7 +191,7 @@ public class DokumentInfoTest {
 
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getVariantFormat(), is(ARKIV));
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getFilUuid(), is("test"));
-		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+		assertThat(dokumentInfo.getFildetaljerListe().size(), is(2));
 	}
 
 	@Test
@@ -239,7 +215,7 @@ public class DokumentInfoTest {
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test2"), nullValue());
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test"), notNullValue());
 		assertThat(dokumentInfo.findFilDetaljerByFilUuid("test").getVariantFormat(), is(ARKIV));
-		assertThat(dokumentInfo.getFildetaljerListeAdmin().size(), is(2));
+		assertThat(dokumentInfo.getFildetaljerListe().size(), is(2));
 	}
 
 	@Test

@@ -72,7 +72,7 @@ public class DefaultSporingPopulatorTest {
 	private void assertEndretAvNavnSet(Journalpost journalpost) {
 		assertThat(journalpost.getEndretAvNavn(), is(endretAvNavn));
 		assertThat(journalpost.getSaksrelasjon().getEndretAvNavn(), is(endretAvNavn));
-		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfos()) {
+		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfosAdmin()) {
 			assertThat(dokumentInfo.getEndretAvNavn(), is(endretAvNavn));
 		}
 	}

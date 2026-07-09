@@ -133,7 +133,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentServiceTest {
 	public void shouldAddFileDetaljerToDokumentInfo() {
 		service.updateJournalpost(journalpost, requestTo);
 		DokumentInfo dokumentInfo = journalpost.findDokumentInfoById(DOKUMENTINFO_ID);
-		Set<FilDetaljer> filDetaljer = dokumentInfo.getFildetaljerListeAdmin();
+		Set<FilDetaljer> filDetaljer = dokumentInfo.getFildetaljerListe();
 		assertTrue(containsVariantFormat(filDetaljer, VariantFormatCode.SLADDET));
 		assertTrue(containsVariantFormat(filDetaljer, VariantFormatCode.ORIGINAL));
 		assertThat(filDetaljer.size(), is(4));

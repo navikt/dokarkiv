@@ -39,8 +39,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Integration tests for the arkiverDokumentOgFerdigstillJournalpost operation
  * in the ArkiverDokumentproduksjon webservice.
- *
- * @author Torgeir Cook
  */
 public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumentproduksjonItest {
 
@@ -60,7 +58,7 @@ public class OppdaterJournalpostArkiverDokumentIT extends AbstractArkiverdokumen
 	public void setUp() throws Exception {
 		journalpost = buildAndPersistJournalpost();
 		Long journalpostId = journalpost.getJournalpostId();
-		Long dokumentInfoId = journalpost.findAllDokumentInfos().get(0).getDokumentInfoId();
+		Long dokumentInfoId = journalpost.findAllDokumentInfosAdmin().get(0).getDokumentInfoId();
 		request = createWsRequest(journalpostId, dokumentInfoId);
 	}
 
