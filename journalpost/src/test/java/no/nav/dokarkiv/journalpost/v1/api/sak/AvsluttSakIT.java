@@ -92,6 +92,16 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 	}
 
 	@Test
+	public void shouldReturnBadRequestWhenNoSakFound() {
+		setupStubs();
+
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
+		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(BAD_REQUEST));
+		assertThat(response.getBody(), containsString("Fant ingen saker for fagsakID=0123A21 og fagsaksystem=IT01"));
+	}
+
+	@Test
 	public void shouldAvbryteSakWhenNoTilknyttedeJournalposter() {
 		setupStubs();
 		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID, FAGSAK_SYSTEM, FAGSAK_ID);
@@ -106,18 +116,8 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 		assertAvbruttSak(updatedSak);
 	}
 
-	@Test
-	public void shouldReturnBadRequestWhenNoSakFound() {
-		setupStubs();
-
-		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
-		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
-		assertThat(response.getStatusCode(), is(BAD_REQUEST));
-		assertThat(response.getBody(), containsString("Fant ingen saker for fagsakID=0123A21 og fagsaksystem=IT01"));
-	}
-
 	@ParameterizedTest
-	@EnumSource(value = JournalStatusCode.class, names = {"R", "D", "M", "MO", "OD"})
+	@EnumSource(value = JournalStatusCode.class, names = {"D", "M", "MO", "OD"})
 	public void shouldReturnBadRequestWhenJournalpostUnderRedigering(JournalStatusCode journalStatusCode) {
 		setupStubs();
 		persistSakAndJournalpostForAktoerId(journalStatusCode);
@@ -129,7 +129,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	public void shouldAvbryteSakWhenNoFerdigstilteJournalposter() {
+	public void shouldAvbryteSakWhenIngenFerdigstilteJournalposter() {
 		setupStubs();
 		long sakId = persistSakAndJournalpostForAktoerId(A);
 
@@ -139,6 +139,20 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 
 		Sak updatedSak = sakTestRepository.findById(sakId).get();
 		assertAvbruttSak(updatedSak);
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = JournalStatusCode.class, names = {"FL", "FS", "E", "R", "J"})
+	public void shouldAvslutteSakWhenEnAvJournalposteneErFerdigstilt(JournalStatusCode journalStatusCode) {
+		setupStubs();
+		long sakId = persistSakAndJournalpostForAktoerId(journalStatusCode);
+
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
+		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
+		assertThat(response.getStatusCode(), is(OK));
+
+		Sak updatedSak = sakTestRepository.findById(sakId).get();
+		assertAvsluttetSak(updatedSak);
 	}
 
 	@Test

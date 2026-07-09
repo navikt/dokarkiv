@@ -40,13 +40,14 @@ import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVSLUTTET;
 @Component
 public class AvsluttSakService {
 
+	private static final String AVBRUTT_STRING = "avbrutt";
+	private static final String AVSLUTTET_STRING = "avsluttet";
+	private static final EnumSet<JournalStatusCode> MIDLERTIDIGE_JOURNALPOSTSTATUSER = EnumSet.of(D, M, MO, OD);
+	private static final EnumSet<JournalStatusCode> FERDIGSTILTE_JOURNALPOSTSTATUSER = EnumSet.of(FL, FS, E, R, J);
+
 	private final HentSakerRepository hentSakerRepository;
 	private final JournalpostRepository journalpostRepository;
 	private final PdlIdentConsumer pdlIdentConsumer;
-	private final EnumSet<JournalStatusCode> midlertidigeJournalpostStatuser = EnumSet.of(R, D, M, MO, OD);
-	private final EnumSet<JournalStatusCode> ferdigstilteJournalpostStatuser = EnumSet.of(FL, FS, E, J);
-	private static final String AVSLUTTET_STRING = "avsluttet";
-	private static final String AVBRUTT_STRING = "avbrutt";
 
 	public AvsluttSakService(HentSakerRepository hentSakerRepository, JournalpostRepository journalpostRepository, PdlIdentConsumer pdlIdentConsumer) {
 		this.hentSakerRepository = hentSakerRepository;
@@ -66,14 +67,17 @@ public class AvsluttSakService {
 			avbrytSaker(saker);
 			return AVBRUTT_STRING;
 		}
+
 		if (harSakenAapneJournalposterUnderRedigering(tilknyttedeJournalposter)) {
 			throw new SakHarJournalposterUnderRedigeringException("Fagsystemsaken har en eller flere journalposter under redigering og kan ikke avsluttes.");
 		}
+
 		if (manglerSakenFerdigstilteJournalposter(tilknyttedeJournalposter)) {
 			log.info("Fagsystemsaken har ingen ferdigstilte journalposter. Avbryter joark-saker.");
 			avbrytSaker(saker);
 			return AVBRUTT_STRING;
 		}
+
 		avsluttSaker(saker, avsluttSakRequest);
 		return AVSLUTTET_STRING;
 	}
@@ -122,17 +126,14 @@ public class AvsluttSakService {
 				sakAnsvarlig;
 	}
 
-	private boolean manglerSakenFerdigstilteJournalposter(List<Journalpost> journalposts) {
-		return journalposts.stream()
-				.noneMatch(journalpost ->
-						ferdigstilteJournalpostStatuser.contains(journalpost.getJournalstatus()));
-	}
-
 	private boolean harSakenAapneJournalposterUnderRedigering(List<Journalpost> journalposts) {
 		return journalposts.stream()
-				.anyMatch(journalpost ->
-						midlertidigeJournalpostStatuser.contains(journalpost.getJournalstatus())
-						&& !journalpost.isFeilregistrert());
+				.anyMatch(journalpost -> MIDLERTIDIGE_JOURNALPOSTSTATUSER.contains(journalpost.getJournalstatus()) && !journalpost.isFeilregistrert());
+	}
+
+	private boolean manglerSakenFerdigstilteJournalposter(List<Journalpost> journalposts) {
+		return journalposts.stream()
+				.noneMatch(journalpost -> FERDIGSTILTE_JOURNALPOSTSTATUSER.contains(journalpost.getJournalstatus()));
 	}
 
 	private List<Sak> getSakerForRequest(AvsluttSakRequest avsluttSakRequest) {
