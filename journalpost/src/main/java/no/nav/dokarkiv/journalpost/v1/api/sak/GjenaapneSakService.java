@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.consumer.pdl.PdlIdentConsumer;
 import no.nav.dokarkiv.core.domain.entities.Sak;
-import no.nav.dokarkiv.core.exceptions.SakIkkeFunnetException;
+import no.nav.dokarkiv.core.exceptions.ArkivsakHarIngenSakerException;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import org.slf4j.MDC;
@@ -54,9 +54,11 @@ public class GjenaapneSakService {
 	private List<Sak> finnSakerSomSkalGjenaapnes(GjenaapneSakRequest gjenaapneSakRequest) {
 		SakSearchCriteria criteria = generateSakSearchCriteria(gjenaapneSakRequest);
 		var saker = hentSakerRepository.finnSakerForGjenaapneSak(criteria);
+
 		if (saker.isEmpty()) {
-			throw new SakIkkeFunnetException(String.format("Fant ingen arkivsak for fagsakId=%s og fagsaksystem=%s", gjenaapneSakRequest.getFagsakId(), gjenaapneSakRequest.getFagsaksystem()));
+			throw new ArkivsakHarIngenSakerException("Fant ingen arkivsak for fagsakId=%s og fagsaksystem=%s".formatted(gjenaapneSakRequest.getFagsakId(), gjenaapneSakRequest.getFagsaksystem()));
 		}
+
 		return saker;
 	}
 

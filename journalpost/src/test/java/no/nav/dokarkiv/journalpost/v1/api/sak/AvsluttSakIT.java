@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.api.sak;
 
 import no.nav.dokarkiv.core.domain.codes.AvleveringStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
@@ -34,6 +35,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 public class AvsluttSakIT extends AbstractJournalpostIT {
@@ -91,14 +94,31 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 		assertAvsluttetSak(updatedSak);
 	}
 
-	@Test
-	public void shouldReturnBadRequestWhenNoSakFound() {
+	@ParameterizedTest
+	@EnumSource(value = SakStatusCode.class, names = {"AVSLUTTET", "AVBRUTT", "AVLEVERT"})
+	public void shouldReturnConflictDersomDetFinstSakerSomAlleredeErAvsluttetAvbruttEllerAvlevert(SakStatusCode saksstatus) {
 		setupStubs();
-
+		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID, FAGSAK_SYSTEM, FAGSAK_ID);
+		sak.setSakStatus(saksstatus);
+		Long sakId = sakTestRepository.persist(sak).getSakId();
+		persistJournalpost(sakId, FS);
 		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
+
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
-		assertThat(response.getStatusCode(), is(BAD_REQUEST));
-		assertThat(response.getBody(), containsString("Fant ingen saker for fagsakID=0123A21 og fagsaksystem=IT01"));
+
+		assertThat(response.getStatusCode(), is(CONFLICT));
+		assertThat(response.getBody(), containsString("Arkivsak med fagsakID=0123A21 og fagsaksystem=IT01 er allerede i status AVBRUTT, AVLEVERT eller AVSLUTTET"));
+	}
+
+	@Test
+	public void shouldReturnNotFoundDersomArkivsakIkkeInneholderSaker() {
+		setupStubs();
+		var requestEntity = new HttpEntity<>(createAktoerIdAvsluttSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
+
+		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
+
+		assertThat(response.getStatusCode(), is(NOT_FOUND));
+		assertThat(response.getBody(), containsString("Fant ingen saker for arkivsak med fagsakID=0123A21 og fagsaksystem=IT01"));
 	}
 
 	@Test

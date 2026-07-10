@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.http.HttpMethod.PATCH;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 public class GjenaapneSakIT extends AbstractJournalpostIT {
@@ -110,12 +110,13 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 		sak.setDatoAvsluttet(LocalDateTime.now());
 		sak.setAvleveringStatus(AvleveringStatusCode.AVLEVERT);
 		sakTestRepository.persist(sak);
-
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createAktoerIdGjenaapneSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
+
 		ResponseEntity<String> response = restTemplate.exchange(URL_GJENAAPNE_SAK, PATCH, requestEntity, String.class);
-		assertThat(response.getStatusCode(), is(BAD_REQUEST));
+
+		assertThat(response.getStatusCode(), is(NOT_FOUND));
 		assertThat(response.getBody(), containsString("Fant ingen arkivsak for fagsakId=0123A21 og fagsaksystem=IT01"));
 	}
 
@@ -127,22 +128,25 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 		sak.setSakStatus(AVSLUTTET);
 		sak.setDatoAvsluttet(LocalDateTime.now());
 		sakTestRepository.persist(sak);
-
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(createAktoerIdGjenaapneSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
+
 		ResponseEntity<String> response = restTemplate.exchange(URL_GJENAAPNE_SAK, PATCH, requestEntity, String.class);
-		assertThat(response.getStatusCode(), is(BAD_REQUEST));
+
+		assertThat(response.getStatusCode(), is(NOT_FOUND));
 		assertThat(response.getBody(), containsString("Fant ingen arkivsak for fagsakId=0123A21 og fagsaksystem=IT01"));
 	}
 
 	@Test
-	public void shouldReturnBadRequestWhenNoArkivsakSakFound() {
+	public void shouldReturnNotFoundWhenNoArkivsakSakFound() {
 		setupStubs();
 
 		var requestEntity = new HttpEntity<>(createAktoerIdGjenaapneSakRequest(), createHeadersWithClientCredentialTokenAndNavUserId());
+
 		ResponseEntity<String> response = restTemplate.exchange(URL_GJENAAPNE_SAK, PATCH, requestEntity, String.class);
-		assertThat(response.getStatusCode(), is(BAD_REQUEST));
+
+		assertThat(response.getStatusCode(), is(NOT_FOUND));
 		assertThat(response.getBody(), containsString("Fant ingen arkivsak for fagsakId=0123A21 og fagsaksystem=IT01"));
 	}
 
