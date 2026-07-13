@@ -4,6 +4,7 @@ import no.nav.dokarkiv.AbstractAdminIT;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.util.TestDataGenerator;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithGjenbruktHoveddokument;
 import static no.nav.dokarkiv.util.TestUtil.createSkjermarkivenhetRequest;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -68,7 +69,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		Optional<Journalpost> jpEtterKall = journalpostTestRepository.findById(journalpost.getJournalpostId());
 		assertTrue(jpEtterKall.isPresent());
-		assertThat(jpEtterKall.get().getSkjermingType()).isNull();
+		assertThat(jpEtterKall.get().isSkjermet()).isFalse();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size()).isEqualTo(1);
@@ -106,7 +107,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		Optional<Journalpost> jpEtterKall = journalpostTestRepository.findById(journalpost.getJournalpostId());
 		assertTrue(jpEtterKall.isPresent());
-		assertThat(jpEtterKall.get().getSkjermingType()).isNull();
+		assertThat(jpEtterKall.get().isSkjermet()).isFalse();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size()).isEqualTo(1);
@@ -187,12 +188,12 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		Journalpost journalpostEtter = journalpostTestRepository.findById(journalpostMedDokumentSomErSkjermet.getJournalpostId()).get();
 
-		assertThat(journalpostEtter.getSkjermingType()).isNull();
+		assertThat(journalpostEtter.isSkjermet()).isFalse();
 		assertThat(journalpostEtter.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
 				.getFildetaljerListe()
 				.stream()
-				.allMatch(f -> f.getSkjermingType() != null)).isTrue();
+				.allMatch(FilDetaljer::isSkjermet)).isTrue();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size()).isEqualTo(1);
@@ -238,7 +239,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
 		assertDokumentInfoIkkeSkjermet(dokumentInfo.getDokumentInfoId());
-		assertThat(journalpostTestRepository.findById(originalJournalpost.getJournalpostId()).get().getSkjermingType()).isNull();
+		assertThat(journalpostTestRepository.findById(originalJournalpost.getJournalpostId()).get().isSkjermet()).isFalse();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size()).isEqualTo(3);
@@ -303,7 +304,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
-		assertNull(dokInfoEtterKall.get().findFilDetaljerByVariantFormat(ARKIV).getSkjermingType());
+		assertFalse(dokInfoEtterKall.get().findFilDetaljerByVariantFormat(ARKIV).isSkjermet());
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size()).isEqualTo(1);
@@ -336,8 +337,8 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		Optional<DokumentInfo> dokInfoEtterKall = dokumentInfoTestRepository.findById(dokumentInfo.getDokumentInfoId());
 		assertTrue(dokInfoEtterKall.isPresent());
-		assertNull(dokInfoEtterKall.get().findFilDetaljerByVariantFormat(ARKIV).getSkjermingType());
-		assertNull(dokInfoEtterKall.get().findFilDetaljerByVariantFormat(PRODUKSJON).getSkjermingType());
+		assertFalse(dokInfoEtterKall.get().findFilDetaljerByVariantFormat(ARKIV).isSkjermet());
+		assertFalse(dokInfoEtterKall.get().findFilDetaljerByVariantFormat(PRODUKSJON).isSkjermet());
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size()).isEqualTo(1);
@@ -381,7 +382,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		assertTrue(dokInfoEtterKall.isPresent());
 		assertThat(dokInfoEtterKall.get().findFilDetaljerByVariantFormatAdmin(ARKIV).get().getSkjermingType()).isEqualTo(POL);
 		assertThat(dokInfoEtterKall.get().findFilDetaljerByVariantFormatAdmin(PRODUKSJON).get().getSkjermingType()).isEqualTo(POL);
-		assertThat(dokInfoEtterKall.get().findFilDetaljerByVariantFormatAdmin(SLADDET).get().getSkjermingType()).isNull();
+		assertThat(dokInfoEtterKall.get().findFilDetaljerByVariantFormatAdmin(SLADDET).get().isSkjermet()).isFalse();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size()).isEqualTo(1);
@@ -418,7 +419,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 		assertDokumentInfoIkkeSkjermet(dokumentInfo.getDokumentInfoId());
-		assertThat(journalpostTestRepository.findById(originalJournalpost.getJournalpostId()).get().getSkjermingType()).isNull();
+		assertThat(journalpostTestRepository.findById(originalJournalpost.getJournalpostId()).get().isSkjermet()).isFalse();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size()).isEqualTo(3);
@@ -508,10 +509,10 @@ public class Rjoark100bIT extends AbstractAdminIT {
 						assertThat(rel.getDokumentInfo()
 								.getFildetaljerListe()
 								.stream()
-								.allMatch(f -> f.getSkjermingType() == null)).isTrue();
+								.allMatch(FilDetaljer::isSkjermet)).isFalse();
 					} else {
-						assertThat(rel.getSkjermingType()).isNull();
-						assertThat(rel.getDokumentInfo().getSkjermingType()).isNull();
+						assertThat(rel.getDokumentInfo().isSkjermet()).isFalse();
+						assertThat(rel.getDokumentInfo().isSkjermet()).isFalse();
 					}
 				});
 	}

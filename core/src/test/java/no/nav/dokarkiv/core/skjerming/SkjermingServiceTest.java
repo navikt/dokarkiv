@@ -70,10 +70,6 @@ public class SkjermingServiceTest {
 	}
 
 	public void setJpDokInfoRelSkjerming(Long journalpostDokumentInfoRelasjonId, SkjermingTypeCode skjermingTypeCode) {
-		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :skjermingTypeCode where journalpostDokumentInfoRelasjonId = :relId")
-				.setParameter("relId", journalpostDokumentInfoRelasjonId)
-				.setParameter("skjermingTypeCode", skjermingTypeCode);
-		q.executeUpdate();
 		journalpostDokumentInfoRelasjonRepository.findById(journalpostDokumentInfoRelasjonId)
 				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
 				.ifPresent(dokumentInfo -> dokumentInfo.setSkjermingType(skjermingTypeCode));

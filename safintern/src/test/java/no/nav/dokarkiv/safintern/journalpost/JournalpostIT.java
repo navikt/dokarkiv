@@ -114,7 +114,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
 		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
-		actualJournalpost.findHoveddokumentDokumentInfoRelasjon().setSkjermingType(POL);
+		actualJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSkjermingType(POL);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
 		TestTransaction.flagForCommit();
@@ -137,7 +137,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
 		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
-		actualJournalpost.findHoveddokumentDokumentInfoRelasjon().setSkjermingType(POL);
+		actualJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSkjermingType(POL);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
 		TestTransaction.flagForCommit();

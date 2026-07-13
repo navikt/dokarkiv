@@ -85,11 +85,15 @@ public class JournalpostTest {
 		Journalpost journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
 				JournalpostDokumentInfoRelasjon.builder()
 						.tilknyttetJournalpostSom(HOVEDDOKUMENT)
-						.skjermingType(SkjermingTypeCode.POL)
+						.dokumentInfo(DokumentInfo.builder()
+							.skjermingType(SkjermingTypeCode.POL)
+						.build())
 						.build(),
 				JournalpostDokumentInfoRelasjon.builder()
 						.tilknyttetJournalpostSom(VEDLEGG)
-						.skjermingType(SkjermingTypeCode.POL)
+						.dokumentInfo(DokumentInfo.builder()
+							.skjermingType(SkjermingTypeCode.POL)
+						.build())
 						.build()
 		).build();
 
@@ -107,7 +111,9 @@ public class JournalpostTest {
 						.build(),
 				JournalpostDokumentInfoRelasjon.builder()
 						.tilknyttetJournalpostSom(VEDLEGG)
-						.skjermingType(SkjermingTypeCode.POL)
+						.dokumentInfo(DokumentInfo.builder()
+							.skjermingType(SkjermingTypeCode.POL)
+						.build())
 						.build()
 		).build();
 
@@ -140,7 +146,9 @@ public class JournalpostTest {
 						.build(),
 				JournalpostDokumentInfoRelasjon.builder()
 						.tilknyttetJournalpostSom(VEDLEGG)
-						.skjermingType(SkjermingTypeCode.POL)
+						.dokumentInfo(DokumentInfo.builder()
+							.skjermingType(SkjermingTypeCode.POL)
+						.build())
 						.build()
 		).build();
 

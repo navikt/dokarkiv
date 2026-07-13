@@ -70,7 +70,7 @@ public class JournalpostRepositorySkjermet {
 		Optional<Journalpost> journalpost = journalpostRepository.findByKanalReferanseId(kanalReferanseId);
 
 		if (journalpost.isPresent()) {
-			return skjermingService.isJournalpostSkjermet(journalpost.get()) ? Optional.empty() : journalpost;
+			return journalpost.get().isSkjermet() ? Optional.empty() : journalpost;
 		}
 
 		return Optional.empty();

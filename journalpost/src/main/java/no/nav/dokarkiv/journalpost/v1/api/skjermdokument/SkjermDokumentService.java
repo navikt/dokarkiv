@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
@@ -17,9 +18,10 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 
+import static java.util.function.Predicate.not;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
@@ -73,7 +75,7 @@ public class SkjermDokumentService {
 			.filter(Optional::isPresent)
 			.map(Optional::get)
 
-			.filter(SkjermDokumentService::journalpostHasOnlyRelationsThatAreSkjermet)
+			.filter(SkjermDokumentService::journalpostHasOnlyDocumentsThatAreSkjermet)
 			.forEach(journalpost -> {
 				oppdaterSkjermingForJournalpost(journalpost, skjermingTypeCode);
 			});
@@ -83,7 +85,6 @@ public class SkjermDokumentService {
 		var dokumentInfo = relasjoner.getFirst().getDokumentInfo();
 		dokumentInfo.setSkjermingType(skjermingTypeCode);
 		dokumentInfo.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, skjermingTypeCode));
 	}
 
 	@Transactional
@@ -95,8 +96,8 @@ public class SkjermDokumentService {
 			throw new DokumentInfoIkkeFunnetException("Fant ikke dokument og dokumentrelasjon for dokumentInfoId=%d".formatted(dokumentInfoId));
 		}
 
-		Optional<SkjermingTypeCode> forrigeSkjermingType = relasjoner.stream().map(JournalpostDokumentInfoRelasjon::getSkjermingType).filter(Objects::nonNull).findAny();
-		if (forrigeSkjermingType.isEmpty()) {
+		SkjermingTypeCode forrigeSkjermingType = relasjoner.getFirst().getDokumentInfo().getSkjermingType();
+		if (forrigeSkjermingType == null) {
 			throw new KanIkkeOpphevSkjermingException("Kan ikke oppheve skjerming for dokument som ikke er skjermet");
 		}
 
@@ -106,7 +107,7 @@ public class SkjermDokumentService {
 		log.info("opphevSkjermDokument har fjernet skjerming fra dokument med dokumentInfoId={}", dokumentInfoId);
 	}
 
-	private void opphevSkjermingForJournalposter(long dokumentInfoId, List<JournalpostDokumentInfoRelasjon> relasjoner, Optional<SkjermingTypeCode> forrigeSkjermingType) {
+	private void opphevSkjermingForJournalposter(long dokumentInfoId, List<JournalpostDokumentInfoRelasjon> relasjoner, SkjermingTypeCode forrigeSkjermingType) {
 		relasjoner.stream()
 			.map(JournalpostDokumentInfoRelasjon::getJournalpostId)
 			.forEach(journalpostId ->
@@ -116,7 +117,7 @@ public class SkjermDokumentService {
 					.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
 					.build(), List.of(ArkivElementEndringTO.builder()
 					.arkivElement(RELASJON_SKJERMING_TYPE)
-					.fraVerdi(forrigeSkjermingType.get().name())
+					.fraVerdi(forrigeSkjermingType.name())
 					.tilVerdi(null)
 				.build()))
 			);
@@ -128,8 +129,8 @@ public class SkjermDokumentService {
 			.filter(Optional::isPresent)
 			.map(Optional::get)
 
-			.filter(jp -> null != jp.getSkjermingType())
-			.filter(SkjermDokumentService::journalpostHasOnlyRelationsThatAreNotSkjermet)
+			.filter(Journalpost::isSkjermet)
+			.filter(SkjermDokumentService::journalpostHasOnlyDocumentsThatAreNotSkjermet)
 			.forEach(journalpost -> {
 				oppdaterSkjermingForJournalpost(journalpost, null);
 			});
@@ -139,23 +140,18 @@ public class SkjermDokumentService {
 		var dokumentInfo = relasjoner.getFirst().getDokumentInfo();
 		dokumentInfo.setSkjermingType(null);
 		dokumentInfo.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, null));
 	}
 
-	private static void oppdaterSkjermingForJournalpostDokumentRelasjon(JournalpostDokumentInfoRelasjon relasjon, SkjermingTypeCode skjermingTypeCode) {
-		relasjon.setSkjermingType(skjermingTypeCode);
-		relasjon.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
-		relasjon.getDokumentInfo().setSkjermingType(skjermingTypeCode);
+	private static boolean journalpostHasOnlyDocumentsThatAreSkjermet(Journalpost journalpost) {
+		return journalpost.getJournalpostDokumentInfoRelasjonerAdmin().stream()
+			.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
+			.allMatch(DokumentInfo::isSkjermet);
 	}
 
-	private static boolean journalpostHasOnlyRelationsThatAreSkjermet(Journalpost journalpost) {
-		return journalpost.getJournalpostDokumentInfoRelasjoner().stream()
-			.allMatch(relasjon -> null != relasjon.getSkjermingType());
-	}
-
-	private static boolean journalpostHasOnlyRelationsThatAreNotSkjermet(Journalpost journalpost) {
-		return journalpost.getJournalpostDokumentInfoRelasjoner().stream()
-			.allMatch(relasjon -> null == relasjon.getSkjermingType());
+	private static boolean journalpostHasOnlyDocumentsThatAreNotSkjermet(Journalpost journalpost) {
+		return journalpost.getJournalpostDokumentInfoRelasjonerAdmin().stream()
+			.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
+			.allMatch(not(DokumentInfo::isSkjermet));
 	}
 
 	private void oppdaterSkjermingForJournalpost(Journalpost journalpost, SkjermingTypeCode skjermingTypeCode) {

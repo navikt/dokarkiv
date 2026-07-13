@@ -62,7 +62,7 @@ public final class SqlProjections {
 					d.kassert                       AS dokumenter_kassert,
 					d.k_kategori_t                  AS dokumenter_kategori,
 					d.sensitivt                     AS dokumenter_sensitivt,
-					rel.k_skjerming_type            AS dokumenter_skjerming,
+					d.k_skjerming_type              AS dokumenter_skjerming,
 					d.orig_journalpost_id           AS dokumenter_origjournalpostid,
 					fd.k_skjerming_type             AS dokumenter_varianter_skjerming,
 					fd.k_variant_format             AS dokumenter_varianter_variantf,

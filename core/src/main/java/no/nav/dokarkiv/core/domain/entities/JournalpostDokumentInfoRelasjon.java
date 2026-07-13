@@ -18,7 +18,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
-import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import org.hibernate.annotations.Cascade;
 
@@ -61,10 +60,6 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@Enumerated(EnumType.STRING)
 	@Column(name = "k_tilkn_jp_som", nullable = false, length = 20)
 	private TilknyttetJournalpostSomCode tilknyttetJournalpostSom;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "k_skjerming_type", length = 50)
-	private SkjermingTypeCode skjermingType;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dokument_info_id", nullable = false)

@@ -44,9 +44,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.groupingBy;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.hibernate.annotations.CascadeType.DETACH;
 import static org.hibernate.annotations.CascadeType.MERGE;
 import static org.hibernate.annotations.CascadeType.PERSIST;
@@ -320,7 +320,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 				.filter(f -> filUuid.equals(f.getFilUuid()))
 				.findAny();
 
-		return filterSkjermetFildetaljer(filDetaljerIkkeSkjermet);
+		return filterSkjermetFildetaljer(filDetaljerIkkeSkjermet).orElse(null);
 
 	}
 
@@ -331,36 +331,34 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	 * Hvis ARKIV variant er skjermet og SLADDET variant ikke eksisterer eller er skjermet så vil ARKIV variant bli returnert
 	 * -> Når ARKIV variant er skjermet så vil det bli returnert en dummy dokument i HentDokument kall. Sjekk DokumentFilSkjermetRepository
 	 */
-	private FilDetaljer filterSkjermetFildetaljer(Optional<FilDetaljer> filDetaljer) {
+	private Optional<FilDetaljer> filterSkjermetFildetaljer(Optional<FilDetaljer> filDetaljer) {
 
 		//Return SLADDET if ARKIV is skjermet
 		//Return ARKIV if SLADDET doesn't exist or is skjermet. In case ARKIV variant is skjermet DokumentFilSkjermetRepository will return a dummy document
 		if (filDetaljer.filter(FilDetaljer::isArkivVariant).filter(FilDetaljer::isSkjermet).isPresent()) {
 			return findFilDetaljerByVariantFormatAdmin(SLADDET)
-					.filter(f -> isFalse(f.isSkjermet()))
-					.orElse(filDetaljer.get());
+					.filter(not(FilDetaljer::isSkjermet))
+					.or(() -> filDetaljer);
 		}
 
-		return filDetaljer.filter(f -> isFalse(f.isSkjermet())).orElse(null);
+		return filDetaljer.filter(not(FilDetaljer::isSkjermet));
 	}
 
 	/**
 	 * Finds all FilDetaljer with the given variantFormat.
 	 * <p>
-	 * Filterer ut fildetaljer som er skjermet
-	 * Returnerer SLADDET variant hvis ARKIV variant er skjermet
-	 * Hvis ARKIV variant er skjermet og SLADDET variant ikke eksisterer eller er skjermet så vil ARKIV variant bli returnert
+	 * Hvis forespurt variant er ARKIV, og ikke er skjermet, returneres den
+	 * ellers skjer følgende:
+	 *  - hvis det finnes en SLADDET-variant som ikke er skjermet, returneres denne
+	 *  - ellers returneres forespurt variant om den finnes, uavhengig av om den er skjermet
+	 *
 	 * Når ARKIV variant er skjermet så vil det bli returnert en dummy dokument i HentDokument kall. SjekkDokumentFilSkjermetRepository
 	 *
 	 * @param variantFormat The VariantFormatCode.
 	 * @return A list of Fildetaljer with the given VariantFormatCode.
 	 */
 	public FilDetaljer findFilDetaljerByVariantFormat(final VariantFormatCode variantFormat) {
-		Optional<FilDetaljer> filDetaljer = fildetaljerListe.stream()
-				.filter(fd -> variantFormat.equals(fd.getVariantFormat()))
-				.findAny();
-
-		return filterSkjermetFildetaljer(filDetaljer);
+		return filterSkjermetFildetaljer(findFilDetaljerByVariantFormatAdmin(variantFormat)).orElse(null);
 	}
 
 	/**
@@ -486,4 +484,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 		return this.kassert != null && this.kassert;
 	}
 
+	public boolean isSkjermet() {
+		return skjermingType != null;
+	}
 }

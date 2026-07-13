@@ -329,7 +329,7 @@ public class TestdataFactory {
 		actualJournalpost.getJournalpostDokumentInfoRelasjoner().stream()
 				.filter(JournalpostDokumentInfoRelasjon::isVedlegg)
 				.forEach(vedlegg ->
-						vedlegg.setSkjermingType(POL)
+						vedlegg.getDokumentInfo().setSkjermingType(POL)
 				);
 	}
 }

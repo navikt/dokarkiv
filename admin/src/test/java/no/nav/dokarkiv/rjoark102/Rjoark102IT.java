@@ -92,7 +92,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid()).isEqualTo(FIL_UUID_ARKIV);
 		;
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat()).isEqualTo(ARKIV);
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType()).isNull();
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().isSkjermet()).isFalse();
 
 		assertThat(journalpostTestRepository.count()).isEqualTo(2); // Feil antall journalposter etter kall
 		assertThat(dokumentInfoTestRepository.count()).isEqualTo(2); // Feil antall dokumenter etter kall
@@ -195,7 +195,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe()).hasSize(1);
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid()).isEqualTo(FIL_UUID_ARKIV);
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat()).isEqualTo(ARKIV);
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType()).isNull();
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().isSkjermet()).isFalse();
 
 		assertThat(journalpostTestRepository.count()).isEqualTo(1); // Feil antall journalposter etter kall
 		assertThat(dokumentInfoTestRepository.count()).isEqualTo(1); // Feil antall dokumenter etter kall
@@ -237,7 +237,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe()).hasSize(1);
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid()).isEqualTo(FIL_UUID_ARKIV);
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat()).isEqualTo(ARKIV);
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType()).isNull();
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().isSkjermet()).isFalse();
 
 		assertThat(journalpostTestRepository.count()).isEqualTo(1); // Feil antall journalposter etter kall
 		assertThat(dokumentInfoTestRepository.count()).isEqualTo(1); // Feil antall dokumenter etter kall

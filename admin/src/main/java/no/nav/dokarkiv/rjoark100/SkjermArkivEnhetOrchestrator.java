@@ -39,9 +39,8 @@ public class SkjermArkivEnhetOrchestrator {
 				break;
 			case DOKUMENT_INFO:
 				assertNotNullOrEmpty(request.getDokumentInfoId(), "dokumentInfoId");
-				Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMapDokInfo = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(request
-						.getDokumentInfoId(), request
-						.getSkjerming());
+				Map<JournalpostDokumentInfoPair, List<ArkivElementEndringTO>> aksjonsLoggMapDokInfo = endreSkjermingArkivenhetService.endreSkjermingDokumentInfo(
+					request.getDokumentInfoId(), request.getSkjerming());
 				lagreAksjonsLoggService.lagreAksjonsLogg(AksjonsTypeCode.ENDRE_SKJERMING, aksjonsLoggMapDokInfo, hjemmel, melding, utfoertAv);
 				break;
 			case DOKUMENT_FIL:
