@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import no.nav.dokarkiv.journalpost.v1.api.SlettebestillingRequest;
 
 import java.lang.annotation.Documented;
@@ -23,8 +22,6 @@ import java.lang.annotation.Target;
 		summary = "Bestill sletting av et dokument",
 		description = "Bestiller sletting av dokumentet identifisert med dokumentInfoId i URL.",
 		operationId = "bestillSletting",
-		tags = {"Slettebestilling"},
-		security = @SecurityRequirement(name = "bearer-token"),
 		requestBody = @RequestBody(
 				required = true,
 				description = "Payload for bestilling av sletting.",

@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.SlettebestillingRequest;
@@ -23,6 +24,7 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Tag(name = "journalpostapi - slettebestilling", description = "Tjeneste for å lage eller oppheve sletting av et dokument")
 @Slf4j
 @Protected
 @RestController

@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -18,9 +17,7 @@ import java.lang.annotation.Target;
 @Operation(
 		summary = "Opphev bestilt sletting av dokument",
 		description = "Opphever aktiv slettebestilling for dokumentet identifisert med dokumentInfoId i URL.",
-		operationId = "opphevBestillSletting",
-		tags = {"Slettebestilling"},
-		security = @SecurityRequirement(name = "bearer-token")
+		operationId = "opphevBestillSletting"
 )
 @ApiResponses(value = {
 	@ApiResponse(responseCode = "204", description = "Slettebestillingen ble avbrutt", content = @Content),

@@ -18,9 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 
 public class SlettebestillingIT extends AbstractJournalpostIT {
@@ -57,13 +59,13 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 
 		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
 		var request1 = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
-		var requestEntity1 = new HttpEntity<>(request1, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var requestEntity1 = new HttpEntity<>(request1, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		var result1 = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity1, String.class);
 		assertThat(result1.getStatusCode()).isEqualTo(OK);
 		assertThat(result1.getBody()).isNotNull();
 
 		var request2 = new SlettebestillingRequest(ARK.name(), "her skal det slettes omigjen");
-		var requestEntity2 = new HttpEntity<>(request2, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var requestEntity2 = new HttpEntity<>(request2, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		var result2 = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity2, String.class);
 		assertThat(result2.getStatusCode()).isEqualTo(OK);
 		assertThat(result2.getBody()).isNotNull();
@@ -87,7 +89,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		var request = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
-		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		var result = restTemplate.exchange(apiDokumentInfoPath("2", SLETTEBESTILLING_URL), POST, requestEntity, String.class);
 		assertThat(result.getStatusCode()).isEqualTo(NOT_FOUND);
 		assertThat(result.getBody()).contains("ikke ble funnet");
@@ -108,7 +110,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
 
 		var request = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
-		var headers = createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId);
+		var headers = createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId);
 		var requestEntity = new HttpEntity<>(request, headers);
 		var bestillResult = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity, String.class);
 		assertThat(bestillResult.getStatusCode()).isEqualTo(OK);
@@ -135,7 +137,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 
 		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
 		var request = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
-		var headers = createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId);
+		var headers = createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId);
 		var requestEntity = new HttpEntity<>(request, headers);
 		var bestillResult = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity, String.class);
 		assertThat(bestillResult.getStatusCode()).isEqualTo(OK);
@@ -166,7 +168,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 
 		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
 		var request = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
-		var headers = createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId);
+		var headers = createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId);
 		var requestEntity = new HttpEntity<>(request, headers);
 		var bestillResult = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity, String.class);
 		assertThat(bestillResult.getStatusCode()).isEqualTo(OK);
@@ -191,7 +193,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 
 		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
 		var request = new SlettebestillingRequest(ARK.name(), "   ");
-		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		var result = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity, String.class);
 
 		assertThat(result.getStatusCode()).isEqualTo(BAD_REQUEST);
@@ -209,10 +211,51 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 
 		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
 		var request = new SlettebestillingRequest("UGYLDIG_HJEMMEL", "gyldig begrunnelse");
-		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		var result = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity, String.class);
 
 		assertThat(result.getStatusCode()).isEqualTo(BAD_REQUEST);
 		assertThat(slettebestillingTestRepository.findAll()).isEmpty();
 	}
+
+	@Test
+	public void shouldReturnUnauthorizedWhenTokenIsNotOnBehalfOf() {
+		var sak = createGsak();
+		sakTestRepository.persist(sak);
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		journalpostTestRepository.persist(journalpost);
+
+		commitAndStartNewTransaction();
+
+		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
+		var request = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
+		var requestEntity = new HttpEntity<>(request, createHeadersWithClientCredentialToken());
+
+		var result = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity, String.class);
+
+		assertThat(result.getStatusCode()).isEqualTo(UNAUTHORIZED);
+		assertThat(result.getBody()).contains("OIDC-token på Authorization-header må være et on behalf of-token");
+		assertThat(slettebestillingTestRepository.findAll()).isEmpty();
+	}
+
+	@Test
+	public void shouldReturnForbiddenWhenGruppenJoarkVedlikeholdIsMissing() {
+		var sak = createGsak();
+		sakTestRepository.persist(sak);
+		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		journalpostTestRepository.persist(journalpost);
+
+		commitAndStartNewTransaction();
+
+		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
+		var request = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITH_GROUP_ACCESS, "FEIL_GRUPPE"));
+
+		var result = restTemplate.exchange(apiDokumentInfoPath(String.valueOf(dokumentInfoId), SLETTEBESTILLING_URL), POST, requestEntity, String.class);
+
+		assertThat(result.getStatusCode()).isEqualTo(FORBIDDEN);
+		assertThat(result.getBody()).contains("NAV-ansatt må ha gruppen med objectId=\\\"abcd163a-9821-4637-a23d-b706e5b24809\\\" i Entra ID token claims");
+		assertThat(slettebestillingTestRepository.findAll()).isEmpty();
+	}
+
 }
