@@ -228,7 +228,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
+		long dokumentInfoId = getDokumentInfoFromJpDokInfoRelasjoner(journalpost, 0).getDokumentInfoId();
 		var request = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
 		var requestEntity = new HttpEntity<>(request, createHeadersWithClientCredentialToken());
 
@@ -248,7 +248,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 
 		commitAndStartNewTransaction();
 
-		long dokumentInfoId = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
+		long dokumentInfoId = getDokumentInfoFromJpDokInfoRelasjoner(journalpost, 0).getDokumentInfoId();
 		var request = new SlettebestillingRequest(ARK.name(), "her skal det slettes");
 		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken("itest:isa:gosys", MS_USER_ID_WITH_GROUP_ACCESS, "FEIL_GRUPPE"));
 
