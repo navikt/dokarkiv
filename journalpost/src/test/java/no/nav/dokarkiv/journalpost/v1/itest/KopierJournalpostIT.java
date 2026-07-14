@@ -21,7 +21,6 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static java.lang.Long.valueOf;
@@ -42,7 +41,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.entities.Journalpost.KANAL_REFERANSE_ID_LENGTH;
-import static no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.TestdataFactory.createJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.TestdataFactory.createJournalpostWithHoveddokumentAndSkjermetVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -61,7 +60,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 		restStsToken();
 		final String eksternReferanseId = UUID.randomUUID().toString();
 
-		Journalpost journalpost = createJournalpostWithHoveddokumentAndVedlegg(journalpostType, journalStatus);
+		Journalpost journalpost = createJournalpostWithHoveddokumentAndSkjermetVedlegg(journalpostType, journalStatus);
 		Journalpost originalJournalpost = buildAndCommit(journalpost);
 
 		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(apiJournalpostPath(KOPIER_QUERY, KOPIER_JOURNALPOST_PATH),
@@ -139,8 +138,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 				.toList();
 
 		kopierDokumentInfos.forEach(kopierDokumentInfo -> {
-			AtomicInteger atomicInteger = new AtomicInteger();
-			DokumentInfo orgDokumentInfo = originalDokumentInfo.get(atomicInteger.get());
+			DokumentInfo orgDokumentInfo = originalDokumentInfo.getFirst();
 			assertThat(kopierDokumentInfo.getDokumentInfoId()).isEqualTo(orgDokumentInfo.getDokumentInfoId());
 			assertThat(kopierDokumentInfo.getDokumentstatus()).isEqualTo(orgDokumentInfo.getDokumentstatus());
 			assertThat(kopierDokumentInfo.getBrevkode()).isEqualTo(orgDokumentInfo.getBrevkode());
@@ -152,9 +150,14 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 			assertThat(kopierDokumentInfo.getSensitivt()).isEqualTo(orgDokumentInfo.getSensitivt());
 			assertThat(kopierDokumentInfo.getDokumenttypeId()).isEqualTo(orgDokumentInfo.getDokumenttypeId());
 
-			assertThat(kopierDokumentInfo.getFildetaljerListe().size()).isEqualTo(orgDokumentInfo.getFildetaljerListe().size());
-			FilDetaljer originalFilDetaljer = orgDokumentInfo.getFildetaljerListe().iterator().next();
-			kopierDokumentInfo.getFildetaljerListe().forEach(fd -> {
+			assertThat(kopierDokumentInfo.getFildetaljerListe()).hasSize(orgDokumentInfo.getFildetaljerListe().size());
+			orgDokumentInfo.getFildetaljerListe().stream()
+				.map(FilDetaljer::getVariantFormat)
+			.forEach(variantFormat -> {
+				var originalFilDetaljer = orgDokumentInfo.findFilDetaljerByVariantFormatAdmin(variantFormat).get();
+				var fdOptional = kopierDokumentInfo.findFilDetaljerByVariantFormatAdmin(variantFormat);
+				assertThat(fdOptional).isPresent();
+				var fd = fdOptional.get();
 				assertThat(fd.getId()).isEqualTo(originalFilDetaljer.getId());
 				assertThat(fd.getFilnavn()).isEqualTo(originalFilDetaljer.getFilnavn());
 				assertThat(fd.getFilUuid()).isEqualTo(originalFilDetaljer.getFilUuid());
@@ -192,7 +195,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 	public void shouldThrowBadRequestExceptionWhenJournalpostHaveInvalidStatus(JournalpostTypeCode journalpostType, JournalStatusCode journalStatus) {
 		restStsToken();
 
-		Journalpost journalpost = createJournalpostWithHoveddokumentAndVedlegg(journalpostType, journalStatus);
+		Journalpost journalpost = createJournalpostWithHoveddokumentAndSkjermetVedlegg(journalpostType, journalStatus);
 		Journalpost originalJournalpost = buildAndCommit(journalpost);
 
 		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(apiJournalpostPath(KOPIER_QUERY, KOPIER_JOURNALPOST_PATH),
@@ -285,7 +288,7 @@ public class KopierJournalpostIT extends AbstractJournalpostIT {
 	public void shouldThrowConflictWhenDuplicateEksternReferanseId() {
 		restStsToken();
 
-		Journalpost journalpost = createJournalpostWithHoveddokumentAndVedlegg(I, J);
+		Journalpost journalpost = createJournalpostWithHoveddokumentAndSkjermetVedlegg(I, J);
 		Journalpost originalJournalpost = buildAndCommit(journalpost);
 
 		RequestEntity<KopierJournalpostRequest> kopierRequestEntity = RequestEntity.post(apiJournalpostPath(KOPIER_QUERY, KOPIER_JOURNALPOST_PATH),

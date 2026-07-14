@@ -30,6 +30,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.splittjournalpost.JournalpostSplitter.SPLITT_JOURNALPOST_FILNAVN;
@@ -93,7 +94,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 							.extracting(no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerId, no.nav.dokarkiv.core.domain.entities.Bruker::getBrukerType)
 							.containsExactly(tuple(request.bruker().getId(), BrukerTypeCode.PERSON));
 
-					assertThat(nyJournalpost.findAllDokumentInfos())
+					assertThat(nyJournalpost.findAllDokumentInfosAdmin())
 							.hasSameSizeAs(request.dokumenter())
 							.satisfies(dokumentInfos -> {
 								var dokumenterFraJournalpost = dokumentInfos.stream()
@@ -114,7 +115,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 				.containsExactlyInAnyOrder(
 						tuple(AksjonsTypeCode.SPLITT, journalpost.getJournalpostId(), null),
 						tuple(AksjonsTypeCode.UTGAAR, journalpost.getJournalpostId(), null),
-						tuple(AksjonsTypeCode.KOPIER_DOKUMENT, journalpost.getJournalpostId(), journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId()));
+						tuple(AksjonsTypeCode.KOPIER_DOKUMENT, journalpost.getJournalpostId(), getDokumentInfoFromJpDokInfoRelasjoner(journalpost, 0).getDokumentInfoId()));
 	}
 
 	@Test
@@ -126,8 +127,8 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		var dokumentSomSkalKopieresUtenEndringer = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId();
-		var dokumentSomSkalKopieresMedNyeVarianter = journalpost.getDokumentInfoFromJpDokInfoRelasjoner(1).getDokumentInfoId();
+		var dokumentSomSkalKopieresUtenEndringer = getDokumentInfoFromJpDokInfoRelasjoner(journalpost, 0).getDokumentInfoId();
+		var dokumentSomSkalKopieresMedNyeVarianter = getDokumentInfoFromJpDokInfoRelasjoner(journalpost, 1).getDokumentInfoId();
 
 		var dokumenter = List.of(
 				new SplittDokument(dokumentSomSkalKopieresUtenEndringer, true, null),
@@ -152,14 +153,14 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 				.orElseThrow();
 
 		// Finn det nye dokumentet som er opprettet for dokumentSomSkalKopieresMedNyeVarianter
-		var nyttDokument = nyJournalpost.findAllDokumentInfos().stream()
+		var nyttDokument = nyJournalpost.findAllDokumentInfosAdmin().stream()
 				.filter(di -> !di.getDokumentInfoId().equals(dokumentSomSkalKopieresUtenEndringer))
 				.findFirst()
 				.orElseThrow();
 
 		assertThat(nyttDokument.getTittel()).isEqualTo(journalpost.findDokumentInfoById(dokumentSomSkalKopieresMedNyeVarianter).getTittel());
 
-		assertThat(nyJournalpost.findAllDokumentInfos())
+		assertThat(nyJournalpost.findAllDokumentInfosAdmin())
 				.hasSameSizeAs(request.dokumenter())
 				.satisfies(dokumentInfos -> {
 					var dokumenterFraNyJournapost = dokumentInfos.stream()
@@ -359,7 +360,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	private static List<SplittDokument> createDokumenter(Journalpost journalpost) {
 		return List.of(new SplittDokument(
-				journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId(),
+				getDokumentInfoFromJpDokInfoRelasjoner(journalpost, 0).getDokumentInfoId(),
 				true,
 				null));
 	}

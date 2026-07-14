@@ -214,7 +214,7 @@ public class DefaultOppdaterJournalpostArkiverDokumentValidator implements Oppda
 	 */
 	void validateJournalpostContainsOneRelatedDokumenInfoOfTypeHoveddokument(Journalpost journalpost) throws FeilStrukturException {
 		Set<JournalpostDokumentInfoRelasjon> infoRels =
-				journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
+				journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSomAdmin(TilknyttetJournalpostSomCode.HOVEDDOKUMENT);
 		int count = infoRels.size();
 
 		if (count == 0 || count > 1) {

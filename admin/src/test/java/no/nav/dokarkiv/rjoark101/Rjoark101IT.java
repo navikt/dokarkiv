@@ -318,7 +318,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList.size()).isEqualTo(2);
 
-		Long dokInfoIdVedlegg = journalpostSomSkalSlettes.findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG)
+		Long dokInfoIdVedlegg = journalpostSomSkalSlettes.findDokumentInfoRelasjonByTilknyttetJournalpostSomAdmin(VEDLEGG)
 				.iterator()
 				.next()
 				.getDokumentInfo()

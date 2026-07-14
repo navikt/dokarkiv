@@ -190,7 +190,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 		assertThat(journalpostEtter.getSkjermingType()).isNull();
 		assertThat(journalpostEtter.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
-				.getFildetaljerListeAdmin()
+				.getFildetaljerListe()
 				.stream()
 				.allMatch(f -> f.getSkjermingType() != null)).isTrue();
 
@@ -506,7 +506,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 				.forEach(rel -> {
 					if (rel.getTilknyttetJournalpostSom() == HOVEDDOKUMENT) {
 						assertThat(rel.getDokumentInfo()
-								.getFildetaljerListeAdmin()
+								.getFildetaljerListe()
 								.stream()
 								.allMatch(f -> f.getSkjermingType() == null)).isTrue();
 					} else {

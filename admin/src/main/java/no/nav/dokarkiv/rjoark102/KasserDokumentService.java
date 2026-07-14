@@ -51,7 +51,7 @@ public class KasserDokumentService {
 		//Fildetaljer for ARKIV variant beholdes fordi noen tjenester i Joark forventer at DokumentInfo har minst en fildetaljer objekt.
 		//DokumentFil for ARKIV variant slettes
 		arkivElementEndringTOList.addAll(slettFildetaljerIkkeArkivVariant(dokumentInfoId, dokumentInfoForKassering
-				.getFildetaljerListeAdmin()));
+				.getFildetaljerListe()));
 
 		FilDetaljer arkiv = dokumentInfoForKassering.findFilDetaljerByVariantFormatAdmin(ARKIV)
 			.orElseThrow(() -> new KanIkkeSlettetVedleggKnyttetTilJournalpostException(

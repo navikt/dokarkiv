@@ -33,6 +33,7 @@ import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOV
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createHoveddokumentRelasjon;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
@@ -148,7 +149,7 @@ class JournalpostSplitterTest {
 					assertThat(relasjon.getDokumentInfo())
 							.satisfies(d -> {
 								assertThat(d.getDokumentInfoId()).isNull();
-								assertThat(d.getTittel()).isEqualTo(journalpost.findAllDokumentInfos().getFirst().getTittel());
+								assertThat(d.getTittel()).isEqualTo(journalpost.findAllDokumentInfosAdmin().getFirst().getTittel());
 							});
 
 					assertThat(relasjon.getDokumentInfo().getFildetaljerListe())
@@ -160,7 +161,7 @@ class JournalpostSplitterTest {
 								assertThat(filDetaljer.getVariantFormat()).isEqualTo(VariantFormatCode.valueOf(variant.getVariantformat()));
 								assertThat(filDetaljer.getFileContent()).isEqualTo(variant.getFysiskDokument());
 								assertThat(filDetaljer.getFilnavn()).isEqualTo(SPLITT_JOURNALPOST_FILNAVN.formatted(
-										journalpost.findAllDokumentInfos().getFirst().getDokumentInfoId(),
+										journalpost.findAllDokumentInfosAdmin().getFirst().getDokumentInfoId(),
 										journalpost.getJournalpostId(),
 										FilTypeCode.valueOf(variant.getFiltype()).name().toLowerCase()));
 							});
@@ -303,7 +304,7 @@ class JournalpostSplitterTest {
 				.build());
 
 		return List.of(new SplittDokument(
-				journalpost.getDokumentInfoFromJpDokInfoRelasjoner(0).getDokumentInfoId(),
+				getDokumentInfoFromJpDokInfoRelasjoner(journalpost, 0).getDokumentInfoId(),
 				kopierUtenEndringer,
 				kopierUtenEndringer ? null : varianter));
 	}

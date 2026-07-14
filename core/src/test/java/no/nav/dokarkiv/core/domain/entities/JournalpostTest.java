@@ -17,7 +17,6 @@ import java.util.HashSet;
 import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumentInfoBuilder;
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
-import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.AVBRUTT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
@@ -32,9 +31,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for Journalpost.
- *
- * @author Per Kristian Foss, Visma Sirius
- * @author Thomas Eugen Bjørge, Visma Sirius
  */
 @ExtendWith(MockitoExtension.class)
 public class JournalpostTest {
@@ -64,15 +60,15 @@ public class JournalpostTest {
 		Journalpost journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
 				JournalpostDokumentInfoRelasjon.builder()
 						.tilknyttetJournalpostSom(HOVEDDOKUMENT)
-						.dokumentInfo(new DokumentInfo())
+						.tilknyttetAvNavn("testnavn")
+						.dokumentInfo(DokumentInfo.builder()
+							.dokumentstatus(AVBRUTT)
+							.build())
 						.build(),
 				JournalpostDokumentInfoRelasjon.builder()
 						.tilknyttetJournalpostSom(VEDLEGG)
 						.build()
 		).build();
-
-		journalpost.findHoveddokumentDokumentInfoRelasjon().setTilknyttetAvNavn("testnavn");
-		journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setDokumentstatus(AVBRUTT);
 
 		assertThat(journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentstatus(), is(AVBRUTT));
 		assertThat(journalpost.findHoveddokumentDokumentInfoRelasjon().getTilknyttetAvNavn(), is("testnavn"));
@@ -165,7 +161,7 @@ public class JournalpostTest {
 	@Test
 	public void shouldSetDokumentInfoRelasjonBothWays() {
 		journalpost = new Journalpost();
-		JournalpostDokumentInfoRelasjon relasjon = new JournalpostDokumentInfoRelasjon();
+		JournalpostDokumentInfoRelasjon relasjon = JournalpostDokumentInfoRelasjon.builder().build();
 
 		journalpost.addJournalpostDokumentInfoRelasjon(relasjon);
 		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner().size(), is(1));
@@ -208,9 +204,9 @@ public class JournalpostTest {
 	public void shouldThrowExceptionForNonUniqueDokumentInfoRelasjoner() {
 		long dokumentInfoId = 200;
 		journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
-				getJournalpostDokumentInfoRelasjonBuilder().dokumentInfo(
+				JournalpostDokumentInfoRelasjon.builder().dokumentInfo(
 						getDokumentInfoBuilder().dokumentInfoId(dokumentInfoId).build()).build(),
-				getJournalpostDokumentInfoRelasjonBuilder().dokumentInfo(
+				JournalpostDokumentInfoRelasjon.builder().dokumentInfo(
 						getDokumentInfoBuilder().dokumentInfoId(dokumentInfoId).build()).build()).build();
 		try {
 			journalpost.verifyUniqueDokumentInfoRelasjoner();
@@ -224,10 +220,10 @@ public class JournalpostTest {
 	public void shouldThrowExceptionForDuplicateDokumentVarianter() {
 		VariantFormatCode arkiv = VariantFormatCode.ARKIV;
 		journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
-				getJournalpostDokumentInfoRelasjonBuilder().dokumentInfo(
+				JournalpostDokumentInfoRelasjon.builder().dokumentInfo(
 								getDokumentInfoBuilder().filDetaljerList(getFilDetaljerBuilder().variantFormat(arkiv).build()).build())
 						.build(),
-				getJournalpostDokumentInfoRelasjonBuilder().dokumentInfo(
+				JournalpostDokumentInfoRelasjon.builder().dokumentInfo(
 						getDokumentInfoBuilder().filDetaljerList(getFilDetaljerBuilder().variantFormat(arkiv).build(),
 								getFilDetaljerBuilder().variantFormat(arkiv).build()).build()).build()).build();
 		try {
@@ -242,7 +238,7 @@ public class JournalpostTest {
 	public void shouldNotThrowNPEWhenCoutingIfVariantFormatIsNull() {
 		VariantFormatCode arkiv = VariantFormatCode.ARKIV;
 		journalpost = getJournalpostBuilder().dokumentInfoRelasjoner(
-				getJournalpostDokumentInfoRelasjonBuilder().dokumentInfo(
+				JournalpostDokumentInfoRelasjon.builder().dokumentInfo(
 						getDokumentInfoBuilder().filDetaljerList(getFilDetaljerBuilder().variantFormat(arkiv).build(),
 								getFilDetaljerBuilder().variantFormat(null).build()).build()).build()).build();
 		journalpost.verifyNoDokumentVariantDuplicates();
@@ -287,13 +283,13 @@ public class JournalpostTest {
 		journalpost = getJournalpostBuilder()
 				.journalStatus(JournalStatusCode.J)
 				.dokumentInfoRelasjoner(
-						getJournalpostDokumentInfoRelasjonBuilder()
+						JournalpostDokumentInfoRelasjon.builder()
 								.tilknyttetJournalpostSom(HOVEDDOKUMENT)
 								.dokumentInfo(
 										getDokumentInfoBuilder().filDetaljerList(
 												getFilDetaljerBuilder().variantFormat(VariantFormatCode.ARKIV).build()).build())
 								.build(),
-						getJournalpostDokumentInfoRelasjonBuilder()
+						JournalpostDokumentInfoRelasjon.builder()
 								.tilknyttetJournalpostSom(VEDLEGG)
 								.dokumentInfo(
 										getDokumentInfoBuilder().filDetaljerList(
@@ -308,7 +304,7 @@ public class JournalpostTest {
 		journalpost = getJournalpostBuilder()
 				.journalStatus(JournalStatusCode.FS)
 				.dokumentInfoRelasjoner(
-						getJournalpostDokumentInfoRelasjonBuilder()
+						JournalpostDokumentInfoRelasjon.builder()
 								.tilknyttetJournalpostSom(HOVEDDOKUMENT)
 								.dokumentInfo(
 										getDokumentInfoBuilder()
@@ -316,7 +312,7 @@ public class JournalpostTest {
 												.filDetaljerList(
 														getFilDetaljerBuilder().variantFormat(VariantFormatCode.ARKIV).build())
 												.build()).build(),
-						getJournalpostDokumentInfoRelasjonBuilder()
+						JournalpostDokumentInfoRelasjon.builder()
 								.tilknyttetJournalpostSom(VEDLEGG)
 								.dokumentInfo(
 										getDokumentInfoBuilder()
@@ -353,8 +349,8 @@ public class JournalpostTest {
 		return getJournalpostBuilder()
 				.journalStatus(journalstatus)
 				.dokumentInfoRelasjoner(
-						getJournalpostDokumentInfoRelasjonBuilder().tilknyttetJournalpostSom(tilknyttet1).build(),
-						getJournalpostDokumentInfoRelasjonBuilder().tilknyttetJournalpostSom(tilknyttet2).build()).build();
+						JournalpostDokumentInfoRelasjon.builder().tilknyttetJournalpostSom(tilknyttet1).build(),
+						JournalpostDokumentInfoRelasjon.builder().tilknyttetJournalpostSom(tilknyttet2).build()).build();
 	}
 
 	private void assertExceptionThrownWithMessage(Journalpost journalpost, String... messages) {

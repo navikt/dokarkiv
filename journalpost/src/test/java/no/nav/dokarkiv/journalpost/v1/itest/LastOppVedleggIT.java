@@ -303,7 +303,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 		assertThat(fildetaljerListe)
 				.hasSize(2)
 				.extracting(FilDetaljer::getVariantFormat)
-				.containsExactly(ARKIV, ORIGINAL);
+				.containsExactlyInAnyOrder(ARKIV, ORIGINAL);
 
 		assertThat(dokumentInfo.getFildetaljerListe())
 				.filteredOn(fildetaljer -> fildetaljer.getVariantFormat().equals(ARKIV))

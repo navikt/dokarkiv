@@ -32,7 +32,7 @@ public class DefaultSporingPopulator implements SporingPopulator {
 		if (journalpost.getSaksrelasjon() != null && journalpost.getSaksrelasjon().hasId()) {
 			journalpost.getSaksrelasjon().setEndretAvNavn(navn);
 		}
-		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfos()) {
+		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfosAdmin()) {
 			if (dokumentInfo.hasId()) {
 				dokumentInfo.setEndretAvNavn(navn);
 			}

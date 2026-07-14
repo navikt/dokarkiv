@@ -78,7 +78,7 @@ public class TestdataFactory {
 	static final Long SAK_ID = 12223344L;
 	private static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2023-08-11T12:01:01.001Z"), ZONEID_NORGE);
 
-	public static Journalpost createJournalpostWithHoveddokumentAndVedlegg(JournalpostTypeCode journalposttTypeCode, JournalStatusCode journalStatus) {
+	public static Journalpost createJournalpostWithHoveddokumentAndSkjermetVedlegg(JournalpostTypeCode journalposttTypeCode, JournalStatusCode journalStatus) {
 		Journalpost journalpost = Journalpost.builder()
 				.avsenderMottakerId(AVSENDER_MOTTAKER_ID)
 				.avsenderMottaker(AVSENDER_MOTTAKER_NAVN)
@@ -115,7 +115,7 @@ public class TestdataFactory {
 		journalpost.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 
 		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost));
-		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjon(journalpost));
+		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjonSkjermetPOL(journalpost));
 		return journalpost;
 	}
 
@@ -145,7 +145,7 @@ public class TestdataFactory {
 		return journalpostDokumentInfoRelasjon;
 	}
 
-	static JournalpostDokumentInfoRelasjon createDokumentInfoVedleggRelasjon(Journalpost journalpost) {
+	static JournalpostDokumentInfoRelasjon createDokumentInfoVedleggRelasjonSkjermetPOL(Journalpost journalpost) {
 		DokumentInfo dokumentInfo = createDokumentInfo(FIL_UUID_ARKIV_VEDLEGG, FIL_UUID_PRODUKSJON_VEDLEGG);
 		dokumentInfo.setOriginalJournalpost(journalpost);
 

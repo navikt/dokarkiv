@@ -144,7 +144,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNotNull(journalpost.getJournalpostId());
 		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
 		assertEquals(JournalStatusCode.M, journalpost.getJournalstatus());
-		assertEquals(FILNAVN, journalpost.findAllDokumentInfos()
+		assertEquals(FILNAVN, journalpost.findAllDokumentInfosAdmin()
 				.stream()
 				.filter(dokumentInfo -> BREVKODE1.equals(dokumentInfo.getBrevkode()))
 				.findAny()

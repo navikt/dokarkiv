@@ -204,7 +204,6 @@ public class TestdataFactory {
 				.dokumentInfo(dokumentInfo)
 				.rekkefoelge(rekkefoelge)
 				.tilknyttetJournalpostSom(VEDLEGG)
-				.skjermingType(null)
 				.build();
 
 		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);

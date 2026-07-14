@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static java.util.Objects.nonNull;
-
 @Component
 @Transactional
 public class SkjermingServiceTest {
@@ -43,7 +41,7 @@ public class SkjermingServiceTest {
 	 * Brukes bare i test
 	 */
 	public void skjermAllFildetaljer(DokumentInfo dokumentInfo, SkjermingTypeCode skjermingTypeCode) {
-		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListeAdmin()) {
+		for (FilDetaljer filDetaljer : dokumentInfo.getFildetaljerListe()) {
 			skjermingService.setFildetaljerSkjerming(dokumentInfo.getDokumentInfoId(), filDetaljer.getVariantFormat(), skjermingTypeCode);
 		}
 	}

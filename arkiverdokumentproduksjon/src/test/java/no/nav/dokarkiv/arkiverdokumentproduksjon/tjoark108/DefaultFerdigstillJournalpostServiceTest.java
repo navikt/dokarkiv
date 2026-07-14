@@ -99,7 +99,7 @@ public class DefaultFerdigstillJournalpostServiceTest {
 		when(journalpostRepositorySkjermetMock.findById(JOURNALPOST_ID)).thenReturn(Optional.of(journalpost));
 		service.ferdigstillJournalpost(request);
 
-		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfos()) {
+		for (DokumentInfo dokumentInfo : journalpost.findAllDokumentInfosAdmin()) {
 			FilDetaljer produksjonFilDetaljer = dokumentInfo.findFilDetaljerByVariantFormat(
 					VariantFormatCode.PRODUKSJON);
 			assertThat(produksjonFilDetaljer.getMetaforceInstanceId(), nullValue());

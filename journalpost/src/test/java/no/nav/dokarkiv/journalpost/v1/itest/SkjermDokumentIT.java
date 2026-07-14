@@ -85,6 +85,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
 		assertThat(oppdatertDokumentInfo.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
+		assertThat(oppdatertDokumentInfo.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,
@@ -123,6 +124,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
 		assertThat(oppdatertDokumentInfo.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
+		assertThat(oppdatertDokumentInfo.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,
@@ -167,6 +169,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
 		assertThat(oppdatertDokumentInfo.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
+		assertThat(oppdatertDokumentInfo.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,
@@ -202,6 +205,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
 		assertThat(oppdatertDokumentInfo.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
+		assertThat(oppdatertDokumentInfo.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,
@@ -241,6 +245,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
 		assertThat(oppdatertDokumentInfo.getSkjermingType()).isEqualTo(SkjermingTypeCode.ARK);
+		assertThat(oppdatertDokumentInfo.getEndretKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,

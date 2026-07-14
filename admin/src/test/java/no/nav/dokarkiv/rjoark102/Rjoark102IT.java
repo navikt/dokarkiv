@@ -70,7 +70,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		reinitTransaction();
 
-		assertThat(dokumentInfoSomSkalKasseres.getFildetaljerListeAdmin().size()).isEqualTo(2);
+		assertThat(dokumentInfoSomSkalKasseres.getFildetaljerListe()).hasSize(2);
 		assertThat(journalpostTestRepository.count()).isEqualTo(2); // Feil antall journalposter
 		assertThat(dokumentInfoTestRepository.count()).isEqualTo(2); // Feil antall dokumenter
 		assertTrue(dokumentInfoTestRepository.findById(dokumentInfoSomSkalKasseres.getDokumentInfoId()).get().isRelatedToMultipleJournalposts());
@@ -88,7 +88,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertTrue(dokumentInfoAfter.isPresent());
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn()).isEqualTo(KASSERT_AV_NAVN);
 		assertThat(Duration.between(dokumentInfoAfter.get().getDatoKassert(), now()).toMillis()).isLessThan(10000L);
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size()).isEqualTo(1);
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe()).hasSize(1);
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid()).isEqualTo(FIL_UUID_ARKIV);
 		;
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat()).isEqualTo(ARKIV);
@@ -98,7 +98,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertThat(dokumentInfoTestRepository.count()).isEqualTo(2); // Feil antall dokumenter etter kall
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
-		assertThat(aksjonsLoggList.size()).isEqualTo(2);
+		assertThat(aksjonsLoggList).hasSize(2);
 
 		assertAksjonsLogg(getAksjonsLoggByJournalpostIdAndDokumentInfoId(aksjonsLoggList, journalpost1.getJournalpostId(), dokumentInfoSomSkalKasseres.getDokumentInfoId()), KASSERING, journalpost1.getJournalpostId(), dokumentInfoSomSkalKasseres.getDokumentInfoId(),
 				asList(
@@ -175,7 +175,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		Optional<DokumentInfo> dokumentInfoRep = dokumentInfoTestRepository.findById(dokumentInfoSomSkalKasseres.getDokumentInfoId());
 		assertTrue(dokumentInfoRep.isPresent());
-		assertThat(dokumentInfoRep.get().getFildetaljerListeAdmin().size()).isEqualTo(2);
+		assertThat(dokumentInfoRep.get().getFildetaljerListe()).hasSize(2);
 		assertThat(journalpostTestRepository.count()).isEqualTo(1); // Feil antall journalposter
 		assertThat(dokumentInfoTestRepository.count()).isEqualTo(1); // Feil antall dokumenter
 		assertFalse(dokumentInfoSomSkalKasseres.isRelatedToMultipleJournalposts());
@@ -192,7 +192,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertTrue(dokumentInfoAfter.isPresent());
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn()).isEqualTo(KASSERT_AV_NAVN);
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size()).isEqualTo(1);
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe()).hasSize(1);
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid()).isEqualTo(FIL_UUID_ARKIV);
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat()).isEqualTo(ARKIV);
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType()).isNull();
@@ -215,7 +215,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 		Optional<DokumentInfo> dokumentInfoRep = dokumentInfoTestRepository.findById(dokumentInfoSomSkalKasseres.getDokumentInfoId());
 		assertTrue(dokumentInfoRep.isPresent());
-		assertThat(dokumentInfoRep.get().getFildetaljerListeAdmin().size()).isEqualTo(2);
+		assertThat(dokumentInfoRep.get().getFildetaljerListe()).hasSize(2);
 		assertThat(journalpostTestRepository.count()).isEqualTo(1); // Feil antall journalposter
 		assertThat(dokumentInfoTestRepository.count()).isEqualTo(1); // Feil antall dokumenter
 		assertFalse(dokumentInfoSomSkalKasseres.isRelatedToMultipleJournalposts());
@@ -234,7 +234,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 		assertTrue(dokumentInfoAfter.isPresent());
 		assertThat(dokumentInfoAfter.get().getKassertAvNavn()).isEqualTo(KASSERT_AV_NAVN);
 		assertNotNull(dokumentInfoAfter.get().getDatoKassert());
-		assertThat(dokumentInfoAfter.get().getFildetaljerListe().size()).isEqualTo(1);
+		assertThat(dokumentInfoAfter.get().getFildetaljerListe()).hasSize(1);
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getFilUuid()).isEqualTo(FIL_UUID_ARKIV);
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getVariantFormat()).isEqualTo(ARKIV);
 		assertThat(dokumentInfoAfter.get().getFildetaljerListe().iterator().next().getSkjermingType()).isNull();

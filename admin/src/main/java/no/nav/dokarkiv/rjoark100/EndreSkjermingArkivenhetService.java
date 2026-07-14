@@ -141,8 +141,8 @@ public class EndreSkjermingArkivenhetService {
 		if (relasjon.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT) {
 			arkivElementEndringTOList.addAll(endreSkjermingAlleFildetaljer(relasjon.getDokumentInfo(), tilSkjerming));
 		} else {
-			arkivElementEndringTOList.addAll(endreSkjermingJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId, relasjon
-					.getSkjermingType(), tilSkjerming));
+			arkivElementEndringTOList.addAll(endreSkjermingJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId,
+				relasjon.getDokumentInfo().getSkjermingType(), tilSkjerming));
 		}
 
 		return arkivElementEndringTOList;
@@ -167,7 +167,7 @@ public class EndreSkjermingArkivenhetService {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
 		//Skal ikke fjerne skjerming fra Fildetaljer hvis dokumentet er kassert. I det tilfellet så må kassering tjenesten kalles for å kunne gjøre endring på fildetaljer skjerming
 		if (isFalse(dokumentInfo.isKassert())) {
-			dokumentInfo.getFildetaljerListeAdmin().forEach(filDetaljer -> {
+			dokumentInfo.getFildetaljerListe().forEach(filDetaljer -> {
 				arkivElementEndringTOList.addAll(endreSkjermingFildetaljer(filDetaljer, tilSkjerming));
 					entityManager.refresh(filDetaljer);
 			});

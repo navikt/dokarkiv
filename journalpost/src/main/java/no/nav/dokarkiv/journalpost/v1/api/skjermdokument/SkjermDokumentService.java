@@ -82,6 +82,7 @@ public class SkjermDokumentService {
 	private void setSkjermingForDokumentInfo(List<JournalpostDokumentInfoRelasjon> relasjoner, SkjermingTypeCode skjermingTypeCode) {
 		var dokumentInfo = relasjoner.getFirst().getDokumentInfo();
 		dokumentInfo.setSkjermingType(skjermingTypeCode);
+		dokumentInfo.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, skjermingTypeCode));
 	}
 
@@ -137,6 +138,7 @@ public class SkjermDokumentService {
 	private void opphevSkjermingForDokumentInfo(List<JournalpostDokumentInfoRelasjon> relasjoner) {
 		var dokumentInfo = relasjoner.getFirst().getDokumentInfo();
 		dokumentInfo.setSkjermingType(null);
+		dokumentInfo.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		relasjoner.forEach(relasjon -> oppdaterSkjermingForJournalpostDokumentRelasjon(relasjon, null));
 	}
 
