@@ -19,8 +19,9 @@ import java.lang.annotation.Target;
 )
 @ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "OK"),
-		@ApiResponse(responseCode = "400", description = "Kan ikke gjenåpne sak", content = @Content),
+		@ApiResponse(responseCode = "400", description = "Request feilet validering", content = @Content),
 		@ApiResponse(responseCode = "401", description = "Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått.", content = @Content),
+		@ApiResponse(responseCode = "404", description = "Arkivsaken hadde ingen saker å gjenåpne.", content = @Content),
 		@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
 })
 public @interface SwaggerGjenaapneSak {
