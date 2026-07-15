@@ -72,7 +72,11 @@
         "logiskVedlegg": [
           {
             "tittel": "Henvendelse fra lege",
-            "vedleggId": logiskVedleggId_hoveddokument_replace
+            "vedleggId": logiskVedleggId_hoveddokument_1_replace
+          },
+          {
+            "tittel": "Dokumentasjon",
+            "vedleggId": logiskVedleggId_hoveddokument_2_replace
           }
         ],
         "originalJournalpostId": journalpostId_replace,
@@ -179,7 +183,11 @@
         "logiskVedlegg": [
           {
             "tittel": "Henvendelse fra lege",
-            "vedleggId": logiskVedleggId_hoveddokument_replace
+            "vedleggId": logiskVedleggId_hoveddokument_1_replace
+          },
+          {
+            "tittel": "Dokumentasjon",
+            "vedleggId": logiskVedleggId_hoveddokument_2_replace
           }
         ],
         "originalJournalpostId": journalpostId_replace,

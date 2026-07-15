@@ -8,13 +8,12 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Sak;
+import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
 import no.nav.dokarkiv.safintern.KeysetPageSerializerDeserializer;
 import no.nav.dokarkiv.safintern.views.PaginatedAnyViewForTest;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -24,6 +23,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -71,19 +71,19 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		ResponseEntity<String> responseAll = finnJournalposterStatusRest(finnJournalposterAllStatusRequest);
 
 		assertThat(responseAll.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertEquals(responseAll.getBody(), mapStringResponse(utgaattJournalpost1, utgaattJournalpost2, classpathResourceToString("/journalstatus/journalpost-journalstatus-response-2-journalposter.json"), 2, 2, 1, 1, ""), NON_EXTENSIBLE);
+		assertEquals(mapStringResponse(utgaattJournalpost1, utgaattJournalpost2, classpathResourceToString("/journalstatus/journalpost-journalstatus-response-2-journalposter.json"), 2, 2, 1, 1, ""), responseAll.getBody(), NON_EXTENSIBLE);
 
 		FinnJournalposterStatusRequest finnJournalposterStatusPage1Request = createRequest(JournalStatusCode.U, 1, null);
 		ResponseEntity<String> responsePage1 = finnJournalposterStatusRest(finnJournalposterStatusPage1Request);
 
 		assertThat(responsePage1.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertEquals(responsePage1.getBody(), mapStringResponse(utgaattJournalpost2, null, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2, 1, 2, null), NON_EXTENSIBLE);
+		assertEquals(mapStringResponse(utgaattJournalpost2, null, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2, 1, 2, null), responsePage1.getBody(), NON_EXTENSIBLE);
 
 		FinnJournalposterStatusRequest finnJournalposterStatusPage2Request = createRequest(JournalStatusCode.U, 1, generateNextPage(1, utgaattJournalpost2));
 		ResponseEntity<String> responsePage2 = finnJournalposterStatusRest(finnJournalposterStatusPage2Request);
 
 		assertThat(responsePage2.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertEquals(responsePage2.getBody(), mapStringResponse(utgaattJournalpost1, null, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2, 2, 2, ""), NON_EXTENSIBLE);
+		assertEquals(mapStringResponse(utgaattJournalpost1, null, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json"), 1, 2, 2, 2, ""), responsePage2.getBody(), NON_EXTENSIBLE);
 	}
 
 	@Test
@@ -160,7 +160,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		ResponseEntity<String> response = finnJournalposterStatusRest(finnJournalposterStatusRequestTo);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertEquals(response.getBody(), mapStringResponse(utgaattJournalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json")), NON_EXTENSIBLE);
+		assertEquals(mapStringResponse(utgaattJournalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json")), response.getBody(), NON_EXTENSIBLE);
 	}
 
 	@Test
@@ -181,7 +181,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		var response = finnJournalposterStatusRest(finnJournalposterStatusRequestTo);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertEquals(response.getBody(), mapStringResponse(ukjentbrukerJournalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json")), NON_EXTENSIBLE);
+		assertEquals(mapStringResponse(ukjentbrukerJournalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-response.json")), response.getBody(), NON_EXTENSIBLE);
 	}
 
 	@Test
@@ -201,7 +201,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		ResponseEntity<String> response = finnJournalposterStatusRest(finnJournalposterStatusRequestTo);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertEquals(response.getBody(), mapStringResponse(journalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-4-vedlegg-response.json")), NON_EXTENSIBLE);
+		assertEquals(mapStringResponse(journalpost, classpathResourceToString("/journalstatus/journalpost-journalstatus-4-vedlegg-response.json")), response.getBody(), NON_EXTENSIBLE);
 	}
 
 	private FinnJournalposterStatusRequest createRequest(JournalStatusCode journalStatusCode) {
@@ -245,12 +245,17 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 				.toList();
 		Optional<DokumentInfo> vedlegg2 = ytterligereVedlegg.stream().findFirst();
 		Optional<DokumentInfo> vedlegg3 = ytterligereVedlegg.stream().skip(1).findFirst();
+		Iterator<SkannetInnhold> hovedSkannetInnholdIterator = hoved.getSkannetInnholdListe().iterator();
+		SkannetInnhold hovedSkannetInnhold1 = hovedSkannetInnholdIterator.next();
+		SkannetInnhold hovedSkannetInnhold2 = hovedSkannetInnholdIterator.next();
+		Iterator<SkannetInnhold> vedleggSkannetInnholdIterator = vedlegg.getSkannetInnholdListe().iterator();
+		SkannetInnhold vedleggSkannetInnhold1 = vedleggSkannetInnholdIterator.next();
+		SkannetInnhold vedleggSkannetInnhold2 = vedleggSkannetInnholdIterator.next();
+
 		String replace = responseTemplate
 				.replace("nextpage_replace", nextPage != null ? nextPage : generateNextPage(currentPage, foerste))
 				.replace("dokumentInfoId_vedleggb_replace", vedlegg2.map(DokumentInfo::getDokumentInfoId).map(String::valueOf).orElse(""))
-				.replace("logiskVedleggId_vedleggb_replace", vedlegg2.map(x -> x.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString()).orElse(""))
 				.replace("dokumentInfoId_vedleggc_replace", vedlegg3.map(DokumentInfo::getDokumentInfoId).map(String::valueOf).orElse(""))
-				.replace("logiskVedleggId_vedleggc_replace", vedlegg3.map(x -> x.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString()).orElse(""))
 				.replace("count_total_replace", "" + totalcount)
 				.replace("count_replace", "" + count)
 				.replace("current_page_replace", "" + currentPage)
@@ -261,13 +266,41 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 				.replace("dokumentInfoId_hoveddokument_replace", hoved.getDokumentInfoId().toString())
 				.replace("dokumentInfoId_vedlegg_replace", vedlegg.getDokumentInfoId().toString())
 				.replace("sakId_replace", foerste.getSaksrelasjon() != null ? foerste.getSaksrelasjon().getSakId().toString() : "")
-				.replace("logiskVedleggId_hoveddokument_replace", hoved.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString())
-				.replace("logiskVedleggId_vedlegg_replace", vedlegg.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString());
+				.replace("logiskVedleggId_hoveddokument_1_replace", hovedSkannetInnhold1.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_hoveddokument_2_replace", hovedSkannetInnhold2.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_vedlegg_1_replace", vedleggSkannetInnhold1.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_vedlegg_2_replace", vedleggSkannetInnhold2.getSkannetInnholdId().toString());
+		replace = mapVedlegg2StringResponse(replace, vedlegg2.orElse(null));
+		replace = mapVedlegg3StringResponse(replace, vedlegg3.orElse(null));
 
 		if (andre != null) {
 			return mapStringResponseSecondJournalpost(andre, replace);
 		}
 		return replace;
+	}
+
+	private static String mapVedlegg2StringResponse(String responseTemplate, DokumentInfo vedlegg2) {
+		if(vedlegg2 == null) {
+			return responseTemplate;
+		}
+		Iterator<SkannetInnhold> vedlegg2SkannetInnholdIterator = vedlegg2.getSkannetInnholdListe().iterator();
+		SkannetInnhold vedlegg2SkannetInnhold1 = vedlegg2SkannetInnholdIterator.next();
+		SkannetInnhold vedlegg2SkannetInnhold2 = vedlegg2SkannetInnholdIterator.next();
+		return responseTemplate
+				.replace("logiskVedleggId_vedleggb_1_replace", vedlegg2SkannetInnhold1.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_vedleggb_2_replace", vedlegg2SkannetInnhold2.getSkannetInnholdId().toString());
+	}
+
+	private static String mapVedlegg3StringResponse(String responseTemplate, DokumentInfo vedlegg3) {
+		if(vedlegg3 == null) {
+			return responseTemplate;
+		}
+		Iterator<SkannetInnhold> vedlegg3SkannetInnholdIterator = vedlegg3.getSkannetInnholdListe().iterator();
+		SkannetInnhold vedlegg3SkannetInnhold1 = vedlegg3SkannetInnholdIterator.next();
+		SkannetInnhold vedlegg3SkannetInnhold2 = vedlegg3SkannetInnholdIterator.next();
+		return responseTemplate
+				.replace("logiskVedleggId_vedleggc_1_replace", vedlegg3SkannetInnhold1.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_vedleggc_2_replace", vedlegg3SkannetInnhold2.getSkannetInnholdId().toString());
 	}
 
 	private static String generateNextPage(int currentpage, Journalpost... journalposter) {
@@ -286,6 +319,12 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 		DokumentInfo andreVedlegg = getDokumentInfo(andre, JournalpostDokumentInfoRelasjon::isVedlegg);
 		assertThat(andreHoved).isNotNull();
 		assertThat(andreVedlegg).isNotNull();
+		Iterator<SkannetInnhold> hovedSkannetInnholdIterator = andreHoved.getSkannetInnholdListe().iterator();
+		SkannetInnhold hovedSkannetInnhold1 = hovedSkannetInnholdIterator.next();
+		SkannetInnhold hovedSkannetInnhold2 = hovedSkannetInnholdIterator.next();
+		Iterator<SkannetInnhold> vedleggSkannetInnholdIterator = andreVedlegg.getSkannetInnholdListe().iterator();
+		SkannetInnhold vedleggSkannetInnhold1 = vedleggSkannetInnholdIterator.next();
+		SkannetInnhold vedleggSkannetInnhold2 = vedleggSkannetInnholdIterator.next();
 
 		LocalDateTime createdDateGjenbrukt = andre.getChangeStamp().getCreatedDate();
 		String gjenbruktNowIso = createdDateGjenbrukt.atZone(ZONEID_UTC).toOffsetDateTime().toString();
@@ -295,8 +334,10 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 				.replace("journalpostId_b_replace", andre.getJournalpostId().toString())
 				.replace("dokumentInfoId_hoveddokument_b_replace", andreHoved.getDokumentInfoId().toString())
 				.replace("dokumentInfoId_vedlegg_b_replace", andreVedlegg.getDokumentInfoId().toString())
-				.replace("logiskVedleggId_hoveddokument_b_replace", andreHoved.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString())
-				.replace("logiskVedleggId_vedlegg_b_replace", andreVedlegg.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString());
+				.replace("logiskVedleggId_hoveddokument_b_1_replace", hovedSkannetInnhold1.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_hoveddokument_b_2_replace", hovedSkannetInnhold2.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_vedlegg_b_1_replace", vedleggSkannetInnhold1.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_vedlegg_b_2_replace", vedleggSkannetInnhold2.getSkannetInnholdId().toString());
 	}
 
 	private static DokumentInfo getDokumentInfo(Journalpost foerste, Predicate<JournalpostDokumentInfoRelasjon> isHoveddokument) {

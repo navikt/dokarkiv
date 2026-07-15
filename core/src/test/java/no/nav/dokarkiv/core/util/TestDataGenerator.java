@@ -86,6 +86,7 @@ public class TestDataGenerator {
 	public static final String LANDKODE_NO = "NO";
 	public static final String VARSELTEKST = "{\n          \"epost\": \"Du har fått brev fra NAV\",\n          \"sms\": \"Du har fått brev fra NAV\"\n        }";
 	public static final String SKANNET_INNHOLD_TITTEL = "Henvendelse fra lege";
+	public static final String SKANNET_INNHOLD_TITTEL_2 = "Dokumentasjon";
 	public static final String BEHANDLINGSTEMA = "ab0438";
 	public static final String JOURNALFOERENDE_ENHET = "9999";
 	public static final String JOURNALFOERT_AV_NAVN = "Bjarne Betjent";
@@ -415,7 +416,8 @@ public class TestDataGenerator {
 				.build();
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV));
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.PRODUKSJON));
-		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
+		dokumentInfo.addSkannetInnhold(createSkannetInnhold(SKANNET_INNHOLD_TITTEL));
+		dokumentInfo.addSkannetInnhold(createSkannetInnhold(SKANNET_INNHOLD_TITTEL_2));
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());
 		return dokumentInfo;
@@ -428,7 +430,8 @@ public class TestDataGenerator {
 				.dokumenttypeId(DOKUMENT_TYPE_ID)
 				.build();
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV));
-		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
+		dokumentInfo.addSkannetInnhold(createSkannetInnhold(SKANNET_INNHOLD_TITTEL));
+		dokumentInfo.addSkannetInnhold(createSkannetInnhold(SKANNET_INNHOLD_TITTEL_2));
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());
 		dokumentInfo.setKategori(DokumentKategoriCode.B);
@@ -458,9 +461,9 @@ public class TestDataGenerator {
 		return dokumentInfo;
 	}
 
-	public static SkannetInnhold createSkannetInnhold() {
+	public static SkannetInnhold createSkannetInnhold(String tittel) {
 		SkannetInnhold skannetInnhold = SkannetInnhold.builder()
-				.vedleggInnhold(SKANNET_INNHOLD_TITTEL)
+				.vedleggInnhold(tittel)
 				.dokumenttypeid(DOKUMENT_TYPE_ID)
 				.build();
 		skannetInnhold.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);

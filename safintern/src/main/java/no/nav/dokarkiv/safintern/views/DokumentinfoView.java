@@ -79,7 +79,7 @@ public interface DokumentinfoView {
 	Set<FildetaljerView> getFildetaljer();
 
 	@Mapping("dokumentInfo.skannetInnholdListe")
-	@CollectionMapping
+	@CollectionMapping(comparator = LogiskVedleggView.DefaultComparator.class)
 	Set<LogiskVedleggView> getLogiskVedlegg();
 
 	class DefaultComparator implements Comparator<DokumentinfoView> {

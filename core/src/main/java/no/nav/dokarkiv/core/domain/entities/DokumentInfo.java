@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -139,7 +140,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true)
 	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
 	@Builder.Default
-	private Set<SkannetInnhold> skannetInnholdListe = new HashSet<>();
+	private Set<SkannetInnhold> skannetInnholdListe = new LinkedHashSet<>();
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "dokumentInfo")
