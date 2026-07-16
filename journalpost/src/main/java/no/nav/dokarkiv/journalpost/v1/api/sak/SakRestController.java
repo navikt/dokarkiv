@@ -45,7 +45,7 @@ public class SakRestController {
 
 		validateAvsluttSakRequest(avsluttSakRequest);
 
-		AvsluttSakStatus status = avsluttSakService.avsluttSaker(avsluttSakRequest);
+		AvsluttSakStatus status = avsluttSakService.avsluttArkivsak(avsluttSakRequest);
 
 		switch (status) {
 			case AVBRUTT, AVSLUTTET -> {

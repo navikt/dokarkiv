@@ -32,7 +32,7 @@ public class GjenaapneSakService {
 
 	@Transactional
 	public void gjenaapneFagsak(GjenaapneSakRequest gjenaapneSakRequest) {
-		List<Sak> saker = finnSakerSomSkalGjenaapnes(gjenaapneSakRequest);
+		List<Sak> saker = hentArkivsakForSak(gjenaapneSakRequest);
 		log.info("GjenaapneSak fant {} tilhørende sak-innslag som skal gjenåpnes med sakIds={} for fagsak med fagsakId={}",
 				saker.size(), saker.stream().map(Sak::getSakId).toList(), gjenaapneSakRequest.fagsakId);
 
@@ -51,12 +51,12 @@ public class GjenaapneSakService {
 		});
 	}
 
-	private List<Sak> finnSakerSomSkalGjenaapnes(GjenaapneSakRequest gjenaapneSakRequest) {
+	private List<Sak> hentArkivsakForSak(GjenaapneSakRequest gjenaapneSakRequest) {
 		SakSearchCriteria criteria = generateSakSearchCriteria(gjenaapneSakRequest);
 		var saker = hentSakerRepository.finnSakerForGjenaapneSak(criteria);
 
 		if (saker.isEmpty()) {
-			throw new ArkivsakHarIngenSakerException("Fant ingen arkivsak for fagsakId=%s og fagsaksystem=%s".formatted(gjenaapneSakRequest.getFagsakId(), gjenaapneSakRequest.getFagsaksystem()));
+			throw new ArkivsakHarIngenSakerException("Fant ikke arkivsak for sak med fagsakId=%s og fagsaksystem=%s".formatted(gjenaapneSakRequest.getFagsakId(), gjenaapneSakRequest.getFagsaksystem()));
 		}
 
 		return saker;

@@ -117,7 +117,7 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 		ResponseEntity<String> response = restTemplate.exchange(URL_GJENAAPNE_SAK, PATCH, requestEntity, String.class);
 
 		assertThat(response.getStatusCode(), is(NOT_FOUND));
-		assertThat(response.getBody(), containsString("Fant ingen arkivsak for fagsakId=0123A21 og fagsaksystem=IT01"));
+		assertThat(response.getBody(), containsString("Fant ikke arkivsak for sak med fagsakId=0123A21 og fagsaksystem=IT01"));
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 		ResponseEntity<String> response = restTemplate.exchange(URL_GJENAAPNE_SAK, PATCH, requestEntity, String.class);
 
 		assertThat(response.getStatusCode(), is(NOT_FOUND));
-		assertThat(response.getBody(), containsString("Fant ingen arkivsak for fagsakId=0123A21 og fagsaksystem=IT01"));
+		assertThat(response.getBody(), containsString("Fant ikke arkivsak for sak med fagsakId=0123A21 og fagsaksystem=IT01"));
 	}
 
 	@Test
@@ -147,7 +147,7 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 		ResponseEntity<String> response = restTemplate.exchange(URL_GJENAAPNE_SAK, PATCH, requestEntity, String.class);
 
 		assertThat(response.getStatusCode(), is(NOT_FOUND));
-		assertThat(response.getBody(), containsString("Fant ingen arkivsak for fagsakId=0123A21 og fagsaksystem=IT01"));
+		assertThat(response.getBody(), containsString("Fant ikke arkivsak for sak med fagsakId=0123A21 og fagsaksystem=IT01"));
 	}
 
 	private void assertGjenaapnetSak(Sak updatedSak) {

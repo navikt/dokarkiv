@@ -55,8 +55,8 @@ public class AvsluttSakService {
 	}
 
 	@Transactional
-	public AvsluttSakStatus avsluttSaker(AvsluttSakRequest avsluttSakRequest) {
-		List<Sak> saker = hentSakerForArkivsak(avsluttSakRequest);
+	public AvsluttSakStatus avsluttArkivsak(AvsluttSakRequest avsluttSakRequest) {
+		List<Sak> saker = hentArkivsakForSak(avsluttSakRequest);
 
 		if (saker == null) {
 			return AvsluttSakStatus.ALLEREDE_AVBRUTT_AVSLUTTET_ELLER_AVLEVERT;
@@ -66,8 +66,8 @@ public class AvsluttSakService {
 		var tilknyttedeJournalposter = journalpostRepository.fetchBySakIds(saksIder);
 
 		if (tilknyttedeJournalposter.isEmpty()) {
-			log.info("Fagsystemsaken har ingen tilknyttede journalposter. Avbryter tilhørende joark-saker.");
-			avbrytSaker(saker);
+			log.info("Saken har ingen tilknyttede journalposter. Avbryter tilhørende joark-saker.");
+			avbrytArkivsak(saker);
 			return AvsluttSakStatus.AVBRUTT;
 		}
 
@@ -77,15 +77,15 @@ public class AvsluttSakService {
 
 		if (manglerSakenFerdigstilteJournalposter(tilknyttedeJournalposter)) {
 			log.info("Fagsystemsaken har ingen ferdigstilte journalposter. Avbryter joark-saker.");
-			avbrytSaker(saker);
+			avbrytArkivsak(saker);
 			return AvsluttSakStatus.AVBRUTT;
 		}
 
-		avsluttSaker(saker, avsluttSakRequest);
+		avsluttArkivsak(saker, avsluttSakRequest);
 		return AvsluttSakStatus.AVSLUTTET;
 	}
 
-	private void avbrytSaker(List<Sak> saker) {
+	private void avbrytArkivsak(List<Sak> saker) {
 		saker.forEach(sak -> {
 			sak.setSakStatus(AVBRUTT);
 			sak.setKassasjonStatus(KLAR_FOR_KASSASJON);
@@ -95,7 +95,7 @@ public class AvsluttSakService {
 		});
 	}
 
-	private void avsluttSaker(List<Sak> saker, AvsluttSakRequest avsluttSakRequest) {
+	private void avsluttArkivsak(List<Sak> saker, AvsluttSakRequest avsluttSakRequest) {
 		saker.forEach(sak -> {
 			sak.setSakStatus(AVSLUTTET);
 			sak.setAvleveringStatus(null);
@@ -136,12 +136,12 @@ public class AvsluttSakService {
 				.noneMatch(journalpost -> FERDIGSTILTE_JOURNALPOSTSTATUSER.contains(journalpost.getJournalstatus()));
 	}
 
-	private List<Sak> hentSakerForArkivsak(AvsluttSakRequest avsluttSakRequest) {
+	private List<Sak> hentArkivsakForSak(AvsluttSakRequest avsluttSakRequest) {
 		SakSearchCriteria criteria = generateSakSearchCriteria(avsluttSakRequest);
 		var saker = hentSakerRepository.finnSaker(criteria);
 
 		if (saker.isEmpty()) {
-			throw new ArkivsakHarIngenSakerException("Fant ingen saker for arkivsak med fagsakId=%s og fagsaksystem=%s".formatted(avsluttSakRequest.getFagsakId(), avsluttSakRequest.getFagsaksystem()));
+			throw new ArkivsakHarIngenSakerException("Fant ikke arkivsak for sak med fagsakId=%s og fagsaksystem=%s".formatted(avsluttSakRequest.getFagsakId(), avsluttSakRequest.getFagsaksystem()));
 		}
 
 		if (erArkivsakenAlleredeAvsluttet(saker)) {
