@@ -2,7 +2,6 @@ package no.nav.dokarkiv.journalpost.v1.api.sak;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.exceptions.UgyldigAvsluttSakStatusException;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerAvsluttSak;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerGjenaapneSak;
 import no.nav.security.token.support.core.api.Protected;
@@ -47,20 +46,16 @@ public class SakRestController {
 
 		AvsluttSakStatus status = avsluttSakService.avsluttArkivsak(avsluttSakRequest);
 
-		switch (status) {
+		return switch (status) {
 			case AVBRUTT, AVSLUTTET -> {
 				log.info("AvsluttSak har {} sak med fagsakId={} fra fagsaksystem={}", status.name().toLowerCase(), fagsakId, fagsaksystem);
-				return ResponseEntity.ok().build();
+				yield ResponseEntity.ok().build();
 			}
 			case ALLEREDE_AVBRUTT_AVSLUTTET_ELLER_AVLEVERT -> {
 				log.info("AvsluttSak har allerede avbrutt, avsluttet eller avlevert sak med fagsakId={} fra fagsaksystem={}", fagsakId, fagsaksystem);
-				return ResponseEntity.noContent().build();
+				yield ResponseEntity.noContent().build();
 			}
-			case null -> {
-				log.error("AvsluttSak er i en status som aldri skal skje. Dette må undersøkes.");
-				throw new UgyldigAvsluttSakStatusException("AvsluttSak kan ikke være i denne statusen.");
-			}
-		}
+		};
 	}
 
 	@SwaggerGjenaapneSak
