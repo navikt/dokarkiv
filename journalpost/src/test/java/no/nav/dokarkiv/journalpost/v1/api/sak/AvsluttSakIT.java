@@ -35,8 +35,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
 public class AvsluttSakIT extends AbstractJournalpostIT {
@@ -96,7 +96,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 
 	@ParameterizedTest
 	@EnumSource(value = SakStatusCode.class, names = {"AVSLUTTET", "AVBRUTT", "AVLEVERT"})
-	public void shouldReturnConflictDersomDetFinstSakerSomAlleredeErAvsluttetAvbruttEllerAvlevert(SakStatusCode saksstatus) {
+	public void shouldReturnNoContentDersomDetFinstSakerSomAlleredeErAvsluttetAvbruttEllerAvlevert(SakStatusCode saksstatus) {
 		setupStubs();
 		Sak sak = createSakForAktoerId(TEMA, AKTOER_ID, FAGSAK_SYSTEM, FAGSAK_ID);
 		sak.setSakStatus(saksstatus);
@@ -106,8 +106,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
 
-		assertThat(response.getStatusCode(), is(CONFLICT));
-		assertThat(response.getBody(), containsString("Arkivsak med fagsakID=0123A21 og fagsaksystem=IT01 er allerede i status AVBRUTT, AVLEVERT eller AVSLUTTET"));
+		assertThat(response.getStatusCode(), is(NO_CONTENT));
 	}
 
 	@Test
@@ -118,7 +117,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 		ResponseEntity<String> response = restTemplate.exchange(URL_AVSLUTT_SAK, PATCH, requestEntity, String.class);
 
 		assertThat(response.getStatusCode(), is(NOT_FOUND));
-		assertThat(response.getBody(), containsString("Fant ingen saker for arkivsak med fagsakID=0123A21 og fagsaksystem=IT01"));
+		assertThat(response.getBody(), containsString("Fant ingen saker for arkivsak med fagsakId=0123A21 og fagsaksystem=IT01"));
 	}
 
 	@Test
