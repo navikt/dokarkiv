@@ -7,11 +7,12 @@ import no.nav.dokarkiv.core.domain.codes.AvleveringStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
+import no.nav.dokarkiv.core.exceptions.ArkivsakHarIngenSakerException;
 import no.nav.dokarkiv.core.exceptions.SakHarJournalposterUnderRedigeringException;
-import no.nav.dokarkiv.core.exceptions.SakIkkeFunnetException;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.core.repository.sak.HentSakerRepository;
 import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
+import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria.SakSearchCriteriaBuilder;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -40,8 +41,6 @@ import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVSLUTTET;
 @Component
 public class AvsluttSakService {
 
-	private static final String AVBRUTT_STRING = "avbrutt";
-	private static final String AVSLUTTET_STRING = "avsluttet";
 	private static final EnumSet<JournalStatusCode> MIDLERTIDIGE_JOURNALPOSTSTATUSER = EnumSet.of(D, M, MO, OD);
 	private static final EnumSet<JournalStatusCode> FERDIGSTILTE_JOURNALPOSTSTATUSER = EnumSet.of(FL, FS, E, R, J);
 
@@ -56,16 +55,20 @@ public class AvsluttSakService {
 	}
 
 	@Transactional
-	public String avsluttSaker(AvsluttSakRequest avsluttSakRequest) {
-		List<Sak> saker = getSakerForRequest(avsluttSakRequest);
+	public AvsluttSakStatus avsluttArkivsak(AvsluttSakRequest avsluttSakRequest) {
+		List<Sak> saker = hentArkivsakForSak(avsluttSakRequest);
 
-		List<Long> saksIds = saker.stream().map(Sak::getSakId).toList();
-		var tilknyttedeJournalposter = journalpostRepository.fetchBySakIds(saksIds);
+		if (saker == null) {
+			return AvsluttSakStatus.ALLEREDE_AVBRUTT_AVSLUTTET_ELLER_AVLEVERT;
+		}
+
+		List<Long> saksIder = saker.stream().map(Sak::getSakId).toList();
+		var tilknyttedeJournalposter = journalpostRepository.fetchBySakIds(saksIder);
 
 		if (tilknyttedeJournalposter.isEmpty()) {
-			log.info("Fagsystemsaken har ingen tilknyttede journalposter. Avbryter tilhørende joark-saker.");
-			avbrytSaker(saker);
-			return AVBRUTT_STRING;
+			log.info("Saken har ingen tilknyttede journalposter. Avbryter tilhørende joark-saker.");
+			avbrytArkivsak(saker);
+			return AvsluttSakStatus.AVBRUTT;
 		}
 
 		if (harSakenAapneJournalposterUnderRedigering(tilknyttedeJournalposter)) {
@@ -74,25 +77,25 @@ public class AvsluttSakService {
 
 		if (manglerSakenFerdigstilteJournalposter(tilknyttedeJournalposter)) {
 			log.info("Fagsystemsaken har ingen ferdigstilte journalposter. Avbryter joark-saker.");
-			avbrytSaker(saker);
-			return AVBRUTT_STRING;
+			avbrytArkivsak(saker);
+			return AvsluttSakStatus.AVBRUTT;
 		}
 
-		avsluttSaker(saker, avsluttSakRequest);
-		return AVSLUTTET_STRING;
+		avsluttArkivsak(saker, avsluttSakRequest);
+		return AvsluttSakStatus.AVSLUTTET;
 	}
 
-	private void avbrytSaker(List<Sak> saker) {
+	private void avbrytArkivsak(List<Sak> saker) {
 		saker.forEach(sak -> {
 			sak.setSakStatus(AVBRUTT);
 			sak.setKassasjonStatus(KLAR_FOR_KASSASJON);
 			sak.setAvleveringStatus(AvleveringStatusCode.AVBRUTT);
 			sak.setDatoEndret(LocalDateTime.now());
-			sak.setEndretAv(determineSaksbehandler());
+			sak.setEndretAv(MDC.get(MDC_USER_ID));
 		});
 	}
 
-	private void avsluttSaker(List<Sak> saker, AvsluttSakRequest avsluttSakRequest) {
+	private void avsluttArkivsak(List<Sak> saker, AvsluttSakRequest avsluttSakRequest) {
 		saker.forEach(sak -> {
 			sak.setSakStatus(AVSLUTTET);
 			sak.setAvleveringStatus(null);
@@ -104,15 +107,9 @@ public class AvsluttSakService {
 			sak.setAdministrativEnhet(avsluttSakRequest.getAdministrativEnhet());
 			sak.setDatoSakOpprettet(avsluttSakRequest.getOpprettetDato());
 			sak.setSakAnsvarlig(determineSakAnsvarlig(avsluttSakRequest));
-			sak.setAvsluttetAv(determineSaksbehandler());
+			sak.setAvsluttetAv(MDC.get(MDC_USER_ID));
 			sak.setAvsluttetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 		});
-	}
-
-	private String determineSaksbehandler() {
-		String userId = MDC.get(MDC_USER_ID);
-		return userId == null || userId.isBlank() ?
-				MDC.get(MDC_CONSUMER_ID) : userId;
 	}
 
 	private LocalDateTime determineDatoAvsluttet(AvsluttSakRequest avsluttSakRequest) {
@@ -121,9 +118,12 @@ public class AvsluttSakService {
 
 	private String determineSakAnsvarlig(AvsluttSakRequest avsluttSakRequest) {
 		String sakAnsvarlig = avsluttSakRequest.sakAnsvarlig;
-		return sakAnsvarlig == null || sakAnsvarlig.isBlank() ?
-				avsluttSakRequest.getAdministrativEnhet() :
-				sakAnsvarlig;
+
+		if (sakAnsvarlig == null || sakAnsvarlig.isBlank()) {
+			return avsluttSakRequest.getAdministrativEnhet();
+		} else {
+			return sakAnsvarlig;
+		}
 	}
 
 	private boolean harSakenAapneJournalposterUnderRedigering(List<Journalpost> journalposts) {
@@ -136,13 +136,27 @@ public class AvsluttSakService {
 				.noneMatch(journalpost -> FERDIGSTILTE_JOURNALPOSTSTATUSER.contains(journalpost.getJournalstatus()));
 	}
 
-	private List<Sak> getSakerForRequest(AvsluttSakRequest avsluttSakRequest) {
+	private List<Sak> hentArkivsakForSak(AvsluttSakRequest avsluttSakRequest) {
 		SakSearchCriteria criteria = generateSakSearchCriteria(avsluttSakRequest);
 		var saker = hentSakerRepository.finnSaker(criteria);
+
 		if (saker.isEmpty()) {
-			throw new SakIkkeFunnetException(String.format("Fant ingen saker for fagsakID=%s og fagsaksystem=%s", avsluttSakRequest.getFagsakId(), avsluttSakRequest.getFagsaksystem()));
+			throw new ArkivsakHarIngenSakerException("Fant ikke arkivsak for sak med fagsakId=%s og fagsaksystem=%s".formatted(avsluttSakRequest.getFagsakId(), avsluttSakRequest.getFagsaksystem()));
 		}
+
+		if (erArkivsakenAlleredeAvsluttet(saker)) {
+			return null;
+		}
+
 		return saker;
+	}
+
+	private static boolean erArkivsakenAlleredeAvsluttet(List<Sak> saker) {
+		var antallAapneSaker = saker.stream()
+				.filter(sak -> (sak.getSakStatus() == null || AAPEN == sak.getSakStatus()))
+				.count();
+
+		return antallAapneSaker < saker.size();
 	}
 
 	private SakSearchCriteria generateSakSearchCriteria(AvsluttSakRequest avsluttSakRequest) {
@@ -167,11 +181,9 @@ public class AvsluttSakService {
 				.build();
 	}
 
-	private SakSearchCriteria.SakSearchCriteriaBuilder generateBaseSakSearchCriteria(AvsluttSakRequest avsluttSakRequest) {
+	private SakSearchCriteriaBuilder generateBaseSakSearchCriteria(AvsluttSakRequest avsluttSakRequest) {
 		return SakSearchCriteria.builder()
 				.tema(singletonList(avsluttSakRequest.getTema()))
-				.statuser(List.of(AAPEN))
-				.soekNullStatus(true)
 				.fagsakNr(avsluttSakRequest.fagsakId)
 				.applikasjon(avsluttSakRequest.getFagsaksystem());
 	}

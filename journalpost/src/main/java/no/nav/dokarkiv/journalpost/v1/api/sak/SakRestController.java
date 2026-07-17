@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUsername;
@@ -36,29 +35,43 @@ public class SakRestController {
 
 	@SwaggerAvsluttSak
 	@PatchMapping(value = "/avsluttSak")
-	public ResponseEntity<String> avsluttSak(
-			@RequestBody AvsluttSakRequest avsluttSakRequest
-	) {
+	public ResponseEntity<String> avsluttSak(@RequestBody AvsluttSakRequest avsluttSakRequest) {
 		createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		log.info("AvsluttSak har fått kall om å avslutte sak med fagsakId={} fra fagsaksystem={}", avsluttSakRequest.getFagsakId(), avsluttSakRequest.getFagsaksystem());
+
+		String fagsakId = avsluttSakRequest.getFagsakId();
+		String fagsaksystem = avsluttSakRequest.getFagsaksystem();
+		log.info("AvsluttSak har fått kall om å avslutte sak med fagsakId={} fra fagsaksystem={}", fagsakId, fagsaksystem);
 
 		validateAvsluttSakRequest(avsluttSakRequest);
-		String avsluttetOrAvbrutt = avsluttSakService.avsluttSaker(avsluttSakRequest);
-		log.info("AvsluttSak har {} sak med fagsakId={} fra fagsaksystem={}", avsluttetOrAvbrutt, avsluttSakRequest.getFagsakId(), avsluttSakRequest.getFagsaksystem());
-		return ResponseEntity.ok().build();
+
+		AvsluttSakStatus status = avsluttSakService.avsluttArkivsak(avsluttSakRequest);
+
+		return switch (status) {
+			case AVBRUTT, AVSLUTTET -> {
+				log.info("AvsluttSak har {} sak med fagsakId={} fra fagsaksystem={}", status.name().toLowerCase(), fagsakId, fagsaksystem);
+				yield ResponseEntity.ok().build();
+			}
+			case ALLEREDE_AVBRUTT_AVSLUTTET_ELLER_AVLEVERT -> {
+				log.info("AvsluttSak har allerede avbrutt, avsluttet eller avlevert sak med fagsakId={} fra fagsaksystem={}", fagsakId, fagsaksystem);
+				yield ResponseEntity.noContent().build();
+			}
+		};
 	}
 
 	@SwaggerGjenaapneSak
 	@PatchMapping(value = "/gjenaapneSak")
-	public ResponseEntity<String> gjenaapneSak(
-			@RequestBody GjenaapneSakRequest gjenaapneSakRequest
-	) {
+	public ResponseEntity<String> gjenaapneSak(@RequestBody GjenaapneSakRequest gjenaapneSakRequest) {
 		createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		log.info("GjenaapneSak har fått kall om å gjenåpne sak med fagsakId={} fra fagsaksystem={}", gjenaapneSakRequest.getFagsakId(), gjenaapneSakRequest.getFagsaksystem());
+
+		String fagsakId = gjenaapneSakRequest.getFagsakId();
+		String fagsaksystem = gjenaapneSakRequest.getFagsaksystem();
+		log.info("GjenaapneSak har fått kall om å gjenåpne sak med fagsakId={} fra fagsaksystem={}", fagsakId, fagsaksystem);
+
 		validateGjenaapneSakRequest(gjenaapneSakRequest);
 
 		gjenaapneSakService.gjenaapneFagsak(gjenaapneSakRequest);
-		log.info("GjenaapneSak har gjenåpnet sak med fagsakId={} fra fagsaksystem={}", gjenaapneSakRequest.getFagsakId(), gjenaapneSakRequest.getFagsaksystem());
+		log.info("GjenaapneSak har gjenåpnet sak med fagsakId={} fra fagsaksystem={}", fagsakId, fagsaksystem);
+
 		return ResponseEntity.ok().build();
 	}
 
