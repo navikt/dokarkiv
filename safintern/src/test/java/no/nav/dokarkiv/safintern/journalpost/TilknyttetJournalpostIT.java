@@ -5,6 +5,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Sak;
+import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
 import no.nav.dokarkiv.safintern.SafinternConstants;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
@@ -57,7 +59,7 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(tilknyttedeJournalposterPath(dokumentInfoId), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
-		assertEquals(responseEntity.getBody(), mapStringResponse(persistedJournalpost, gjenbrukendeJournalpost, classpathResourceToString("/tilknyttetjournalpost/journalpost-dokumenter-response.json")), NON_EXTENSIBLE);
+		assertEquals(mapStringResponse(persistedJournalpost, gjenbrukendeJournalpost, classpathResourceToString("/tilknyttetjournalpost/journalpost-dokumenter-response.json")), responseEntity.getBody(), NON_EXTENSIBLE);
 	}
 
 	@Test
@@ -135,6 +137,12 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo).findFirst().get();
 		assertThat(hoved).isNotNull();
 		assertThat(vedlegg).isNotNull();
+		Iterator<SkannetInnhold> hovedSkannetInnholdIterator = hoved.getSkannetInnholdListe().iterator();
+		SkannetInnhold hovedSkannetInnhold1 = hovedSkannetInnholdIterator.next();
+		SkannetInnhold hovedSkannetInnhold2 = hovedSkannetInnholdIterator.next();
+		Iterator<SkannetInnhold> vedleggSkannetInnholdIterator = vedlegg.getSkannetInnholdListe().iterator();
+		SkannetInnhold vedleggSkannetInnhold1 = vedleggSkannetInnholdIterator.next();
+		SkannetInnhold vedleggSkannetInnhold2 = vedleggSkannetInnholdIterator.next();
 		return responseTemplate
 				.replace("referanseId_replace", originalJournalpost.getKanalReferanseId())
 				.replace("referanseId_b_replace", gjenbrukendeJournalpost.getKanalReferanseId())
@@ -143,7 +151,9 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 				.replace("dokumentInfoId_hoveddokument_replace", hoved.getDokumentInfoId().toString())
 				.replace("dokumentInfoId_vedlegg_replace", vedlegg.getDokumentInfoId().toString())
 				.replace("sakId_replace", originalJournalpost.getSaksrelasjon().getSakId().toString())
-				.replace("logiskVedleggId_hoveddokument_replace", hoved.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString())
-				.replace("logiskVedleggId_vedlegg_replace", vedlegg.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString());
+				.replace("logiskVedleggId_hoveddokument_1_replace", hovedSkannetInnhold1.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_hoveddokument_2_replace", hovedSkannetInnhold2.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_vedlegg_1_replace", vedleggSkannetInnhold1.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_vedlegg_2_replace", vedleggSkannetInnhold2.getSkannetInnholdId().toString());
 	}
 }

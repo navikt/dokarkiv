@@ -5,16 +5,17 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Sak;
+import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
 import no.nav.dokarkiv.safintern.SafinternConstants;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
@@ -47,7 +48,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(journalpostIdPath(actualJournalpost.getJournalpostId()), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
-		assertEquals(responseEntity.getBody(), mapStringResponse("/journalpost/journalpost-response.json", persistedJournalpost), NON_EXTENSIBLE);
+		assertEquals(mapStringResponse("/journalpost/journalpost-response.json", persistedJournalpost), responseEntity.getBody(), NON_EXTENSIBLE);
 	}
 
 	@Test
@@ -82,7 +83,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(eksternReferanseIdPath(KANAL_REFERANSE_ID), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
-		assertEquals(responseEntity.getBody(), mapStringResponse("/journalpost/journalpost-response.json", persistedJournalpost), NON_EXTENSIBLE);
+		assertEquals(mapStringResponse("/journalpost/journalpost-response.json", persistedJournalpost), responseEntity.getBody(), NON_EXTENSIBLE);
 	}
 
 
@@ -102,7 +103,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 		ResponseEntity<String> responseEntity = restTemplate.exchange(journalpostIdDokumentInfoIdPath(actualJournalpost.getJournalpostId(), dokumentInfoId), HttpMethod.GET, createHeaderEntityMedTilgang(), String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
-		assertEquals(responseEntity.getBody(), mapStringResponse("/journalpost/journalpost-dokument-response.json", persistedJournalpost), NON_EXTENSIBLE);
+		assertEquals(mapStringResponse("/journalpost/journalpost-dokument-response.json", persistedJournalpost), responseEntity.getBody(), NON_EXTENSIBLE);
 	}
 
 	/**
@@ -162,13 +163,22 @@ public class JournalpostIT extends AbstractSafinternTest {
 				.map(JournalpostDokumentInfoRelasjon::getDokumentInfo).findFirst().get();
 		assertThat(hoved).isNotNull();
 		assertThat(vedlegg).isNotNull();
+		Iterator<SkannetInnhold> hovedSkannetInnholdIterator = hoved.getSkannetInnholdListe().iterator();
+		SkannetInnhold hovedSkannetInnhold1 = hovedSkannetInnholdIterator.next();
+		SkannetInnhold hovedSkannetInnhold2 = hovedSkannetInnholdIterator.next();
+		Iterator<SkannetInnhold> vedleggSkannetInnholdIterator = vedlegg.getSkannetInnholdListe().iterator();
+		SkannetInnhold vedleggSkannetInnhold1 = vedleggSkannetInnholdIterator.next();
+		SkannetInnhold vedleggSkannetInnhold2 = vedleggSkannetInnholdIterator.next();
+
 		return classpathResourceToString(path)
 				.replace("journalpostId_replace", journalpost.getJournalpostId().toString())
 				.replace("dokumentInfoId_hoveddokument_replace", hoved.getDokumentInfoId().toString())
 				.replace("dokumentInfoId_vedlegg_replace", vedlegg.getDokumentInfoId().toString())
 				.replace("sakId_replace", journalpost.getSaksrelasjon().getSakId().toString())
-				.replace("logiskVedleggId_hoveddokument_replace", hoved.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString())
-				.replace("logiskVedleggId_vedlegg_replace", vedlegg.getSkannetInnholdListe().iterator().next().getSkannetInnholdId().toString());
+				.replace("logiskVedleggId_hoveddokument_1_replace", hovedSkannetInnhold1.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_hoveddokument_2_replace", hovedSkannetInnhold2.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_vedlegg_1_replace", vedleggSkannetInnhold1.getSkannetInnholdId().toString())
+				.replace("logiskVedleggId_vedlegg_2_replace", vedleggSkannetInnhold2.getSkannetInnholdId().toString());
 	}
 
 	@Test

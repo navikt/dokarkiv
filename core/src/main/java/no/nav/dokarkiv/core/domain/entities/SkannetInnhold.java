@@ -15,6 +15,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
+import org.jspecify.annotations.NonNull;
+
+import java.util.Objects;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
 

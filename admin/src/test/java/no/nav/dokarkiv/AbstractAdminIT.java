@@ -245,7 +245,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 		assertThat(entityManager.createNativeQuery("select '1' from t_skannet_innhold where dokument_info_id= :dok")
 				.setParameter("dok", dokumentInfoId)
 				.getResultList()
-				.size(), is(1));
+				.size(), is(2));
 
 	}
 

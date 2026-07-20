@@ -73,7 +73,11 @@
           "logiskVedlegg": [
             {
               "tittel": "Henvendelse fra lege",
-              "vedleggId": logiskVedleggId_hoveddokument_b_replace
+              "vedleggId": logiskVedleggId_hoveddokument_b_1_replace
+            },
+            {
+              "tittel": "Dokumentasjon",
+              "vedleggId": logiskVedleggId_hoveddokument_b_2_replace
             }
           ],
           "originalJournalpostId": journalpostId_b_replace,
@@ -110,7 +114,11 @@
           "logiskVedlegg": [
             {
               "tittel": "Henvendelse fra lege",
-              "vedleggId": logiskVedleggId_vedlegg_b_replace
+              "vedleggId": logiskVedleggId_vedlegg_b_1_replace
+            },
+            {
+              "tittel": "Dokumentasjon",
+              "vedleggId": logiskVedleggId_vedlegg_b_2_replace
             }
           ],
           "originalJournalpostId": journalpostId_b_replace,
@@ -208,7 +216,11 @@
           "logiskVedlegg": [
             {
               "tittel": "Henvendelse fra lege",
-              "vedleggId": logiskVedleggId_hoveddokument_replace
+              "vedleggId": logiskVedleggId_hoveddokument_1_replace
+            },
+            {
+              "tittel": "Dokumentasjon",
+              "vedleggId": logiskVedleggId_hoveddokument_2_replace
             }
           ],
           "originalJournalpostId": journalpostId_replace,
@@ -245,7 +257,11 @@
           "logiskVedlegg": [
             {
               "tittel": "Henvendelse fra lege",
-              "vedleggId": logiskVedleggId_vedlegg_replace
+              "vedleggId": logiskVedleggId_vedlegg_1_replace
+            },
+            {
+              "tittel": "Dokumentasjon",
+              "vedleggId": logiskVedleggId_vedlegg_2_replace
             }
           ],
           "originalJournalpostId": journalpostId_replace,

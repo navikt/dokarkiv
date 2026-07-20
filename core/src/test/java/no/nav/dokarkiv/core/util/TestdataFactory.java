@@ -70,6 +70,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.POSTNUMMER;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.POSTSTED;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.SKANNET_INNHOLD_TITTEL;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.SKANNET_INNHOLD_TITTEL_2;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.SKJERMING_TYPE_CODE;
 
 public class TestdataFactory {
@@ -259,15 +260,16 @@ public class TestdataFactory {
 				.build();
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.ARKIV, FilTypeCode.PDF, filUuidArkiv));
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, VariantFormatCode.PRODUKSJON, FilTypeCode.JSON, filUuidProduksjon));
-		dokumentInfo.addSkannetInnhold(createSkannetInnhold());
+		dokumentInfo.addSkannetInnhold(createSkannetInnhold(SKANNET_INNHOLD_TITTEL));
+		dokumentInfo.addSkannetInnhold(createSkannetInnhold(SKANNET_INNHOLD_TITTEL_2));
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
 		dokumentInfo.setTilleggsopplysninger(createTilleggsopplysninger());
 		return dokumentInfo;
 	}
 
-	static SkannetInnhold createSkannetInnhold() {
+	static SkannetInnhold createSkannetInnhold(String tittel) {
 		SkannetInnhold skannetInnhold = SkannetInnhold.builder()
-				.vedleggInnhold(SKANNET_INNHOLD_TITTEL)
+				.vedleggInnhold(tittel)
 				.dokumenttypeid(DOKUMENT_TYPE_ID)
 				.build();
 		skannetInnhold.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);

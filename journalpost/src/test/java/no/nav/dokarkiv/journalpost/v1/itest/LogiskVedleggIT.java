@@ -115,14 +115,14 @@ public class LogiskVedleggIT extends AbstractJournalpostIT {
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 		commitAndStartNewTransaction();
 
-		var oppdatertLogiskeVedleggRequest = new HttpEntity<>(new BulkOppdaterLogiskVedleggRequest(List.of("Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege")), createHeadersWithServiceUserToken());
+		var oppdatertLogiskeVedleggRequest = new HttpEntity<>(new BulkOppdaterLogiskVedleggRequest(List.of("Oversatt medisinsk dokument", "Journalnotat av 01.01.2026", "Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege", "Ettersending av dokumentasjon")), createHeadersWithServiceUserToken());
 		ResponseEntity<Void> oppdatertLogiskeVedleggResponse = restTemplate.exchange(apiDokumentInfoPath(dokumentInfoId.toString(), LOGISK_VEDLEGG_PATH), PUT, oppdatertLogiskeVedleggRequest, Void.class);
 		assertEquals(HttpStatus.NO_CONTENT, oppdatertLogiskeVedleggResponse.getStatusCode());
 
 		List<SkannetInnhold> oppdatertLogiskeVedlegg = skannetInnholdTestRepository.findAllByDokumentInfo(dokumentInfoTestRepository.getReferenceById(dokumentInfoId));
 		assertThat(oppdatertLogiskeVedlegg)
 				.extracting(SkannetInnhold::getVedleggInnhold)
-				.containsExactly("Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege");
+				.containsExactly("Oversatt medisinsk dokument", "Journalnotat av 01.01.2026", "Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege", "Ettersending av dokumentasjon");
 
 		var tomLogiskVedleggRequest = new HttpEntity<>(new BulkOppdaterLogiskVedleggRequest(List.of()), createHeadersWithServiceUserToken());
 		ResponseEntity<Void> tomLogiskVedleggResponse = restTemplate.exchange(apiDokumentInfoPath(dokumentInfoId.toString(), LOGISK_VEDLEGG_PATH), PUT, tomLogiskVedleggRequest, Void.class);

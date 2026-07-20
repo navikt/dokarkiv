@@ -53,6 +53,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.INNHOLD;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.JOURNALFOERT_AV_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.SKANNET_INNHOLD_TITTEL;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.SKANNET_INNHOLD_TITTEL_2;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.TILLEGGOPPLYSNINGER_KEY;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.TILLEGGOPPLYSNINGER_VAL;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
@@ -217,6 +218,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 
 		assertNotNull(dokumentInfo.getLogiske().get(0).getVedleggId());
 		assertThat(dokumentInfo.getLogiske().get(0).getTittel(), is(SKANNET_INNHOLD_TITTEL));
+		assertThat(dokumentInfo.getLogiske().get(1).getTittel(), is(SKANNET_INNHOLD_TITTEL_2));
 
 		assertThat(dokumentInfo.getVarianter(), hasSize(2));
 		assertVariant(dokumentInfo.getVarianter(), VariantFormatCode.ARKIV);

@@ -83,7 +83,6 @@ public class LogiskVedleggService {
 
 	private DokumentInfo findDokumentInfo(long dokumentInfoId) {
 		Optional<DokumentInfo> byId = dokumentInfoRepository.findById(dokumentInfoId);
-		DokumentInfo dokumentInfo = byId.orElseThrow(() -> new DokumentInfoIkkeFunnetException("Kan ikke bulkOppdaterLogiskVedlegg. Finner ikke dokumentInfoId=" + dokumentInfoId));
-		return dokumentInfo;
+		return byId.orElseThrow(() -> new DokumentInfoIkkeFunnetException("Kan ikke bulkOppdaterLogiskVedlegg. Finner ikke dokumentInfoId=" + dokumentInfoId));
 	}
 }

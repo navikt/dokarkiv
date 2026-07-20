@@ -82,6 +82,7 @@ import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_AV_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.POSTNUMMER;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.POSTSTED;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.SKANNET_INNHOLD_TITTEL;
+import static no.nav.dokarkiv.core.util.TestDataGenerator.SKANNET_INNHOLD_TITTEL_2;
 import static no.nav.dokarkiv.core.util.TestDataGenerator.SKJERMING_TYPE_CODE;
 import static no.nav.dokarkiv.core.util.TestdataFactory.BEHANDLINGSTEMA_DEKODE;
 import static no.nav.dokarkiv.core.util.TestdataFactory.BRUK_STANDARDREGLER_INNSYNSBESKRIVELSE;
@@ -445,10 +446,10 @@ class SafinternJournalpostRepositoryTest {
 	}
 
 	private static void assertLogiskVedlegg(Set<LogiskVedleggView> logiskVedlegg) {
-		assertThat(logiskVedlegg).hasSize(1);
+		assertThat(logiskVedlegg).hasSize(2);
 		assertThat(logiskVedlegg).extracting(LogiskVedleggView::getVedleggId)
 				.doesNotContainNull();
 		assertThat(logiskVedlegg).extracting(LogiskVedleggView::getTittel)
-				.containsExactly(SKANNET_INNHOLD_TITTEL);
+				.containsExactly(SKANNET_INNHOLD_TITTEL, SKANNET_INNHOLD_TITTEL_2);
 	}
 }
