@@ -29,13 +29,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.function.Predicate.not;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FILUUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_SKJERMING_TYPE;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
@@ -72,14 +72,18 @@ public class SladdDokumentService {
 			.orElseThrow(() -> new DokumentInfoIkkeFunnetException(dokumentInfoId));
 
 		List<JournalpostDokumentInfoRelasjon> relasjoner = journalpostDokumentInfoRelasjonRepository.findAllByDokumentInfoDokumentInfoId(dokumentInfoId);
-		SkjermingTypeCode skjermingType = utledSkjermingType(relasjoner, dokumentInfoId);
+		if (!dokumentInfo.isSkjermet()) {
+			throw new KanIkkeSladdeDokumentException(
+				"Kan ikke sladde dokument med dokumentInfoId=%d som ikke er skjermet".formatted(dokumentInfoId));
+		}
 
+		SkjermingTypeCode skjermingType = dokumentInfo.getSkjermingType();
 		sladdDokumentOgLogg(dokumentInfoId, fil, dokumentInfo, relasjoner, skjermingType);
 
 		Optional<FilDetaljer> arkivVariant = dokumentInfo.findFilDetaljerByVariantFormatAdmin(ARKIV);
 		arkivVariant.ifPresent(variant -> variant.setSkjermingType(skjermingType, MDC.get(MDC_CONSUMER_ID)));
 
-		fjernSkjermingForDokumentInfo(relasjoner, dokumentInfo);
+		fjernSkjermingForDokumentInfo(dokumentInfo);
 		fjernSkjermingForJournalposter(relasjoner);
 
 		log.info("sladdDokument har sladdet dokument med dokumentInfoId={} med skjermingType={}", dokumentInfoId, skjermingType);
@@ -105,7 +109,7 @@ public class SladdDokumentService {
 
 		loggOpphevSladdDokument(relasjoner, dokumentInfoId, forrigeArkivSkjerming, sladdetFilUuid, sladdetVariantSlettet);
 
-		gjenopprettSkjermingForDokumentInfo(relasjoner, dokumentInfo, forrigeArkivSkjerming);
+		gjenopprettSkjermingForDokumentInfo(dokumentInfo, forrigeArkivSkjerming);
 		gjenopprettSkjermingForJournalposter(relasjoner, forrigeArkivSkjerming);
 
 		log.info("opphevSladdDokument har fjernet sladding fra dokument med dokumentInfoId={}", dokumentInfoId);
@@ -154,15 +158,6 @@ public class SladdDokumentService {
 		}
 	}
 
-	private SkjermingTypeCode utledSkjermingType(List<JournalpostDokumentInfoRelasjon> relasjoner, long dokumentInfoId) {
-		return relasjoner.stream()
-			.map(JournalpostDokumentInfoRelasjon::getSkjermingType)
-			.filter(Objects::nonNull)
-			.findFirst()
-			.orElseThrow(() -> new KanIkkeSladdeDokumentException(
-				"Kan ikke sladde dokument med dokumentInfoId=%d som ikke er skjermet".formatted(dokumentInfoId)));
-	}
-
 	private FilDetaljer opprettSladdetVariant(DokumentInfo dokumentInfo, byte[] fil) {
 		FilDetaljer sladdetVariant = FilDetaljer.builder()
 			.filUuid(FilDetaljer.generateUuid())
@@ -195,41 +190,20 @@ public class SladdDokumentService {
 		return true;
 	}
 
-	private void fjernSkjermingForDokumentInfo(List<JournalpostDokumentInfoRelasjon> relasjoner, DokumentInfo dokumentInfo) {
-		SkjermingTypeCode skjermingType = relasjoner.stream().findAny().map(JournalpostDokumentInfoRelasjon::getSkjermingType).orElse(null);
+	private void fjernSkjermingForDokumentInfo(DokumentInfo dokumentInfo) {
+		SkjermingTypeCode skjermingType = dokumentInfo.getSkjermingType();
 
-		long dokumentInfoId = dokumentInfo.getDokumentInfoId();
-
-		// dette fases ut når skjerming settes rett på dokumentinfo
-		relasjoner.stream()
-			.distinct()
-			.forEach(journalpostDokumentInfoRelasjon -> {
-				aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
-					.journalpostId(journalpostDokumentInfoRelasjon.getJournalpostId())
-					.dokumentInfoId(dokumentInfoId)
-					.hjemmel(enumToString(skjermingType))
-					.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
-					.build(), List.of(ArkivElementEndringTO.builder()
-					.arkivElement(RELASJON_SKJERMING_TYPE)
-					.fraVerdi(enumToString(journalpostDokumentInfoRelasjon.getSkjermingType()))
-					.tilVerdi(null)
-					.build())
-				);
-				journalpostDokumentInfoRelasjon.setSkjermingType(null);
-			});
-
-		if (dokumentInfo.getSkjermingType() != null) {
-			aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
-				.dokumentInfoId(dokumentInfoId)
-				.hjemmel(enumToString(skjermingType))
-				.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
-				.build(), List.of(ArkivElementEndringTO.builder()
-				.arkivElement(DOKUMENT_INFO_SKJERMING_TYPE)
-				.fraVerdi(enumToString(dokumentInfo.getSkjermingType()))
-				.tilVerdi(null)
-				.build()));
-			dokumentInfo.setSkjermingType(null);
-		}
+		aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
+			.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+			.hjemmel(enumToString(skjermingType))
+			.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
+			.build(), List.of(ArkivElementEndringTO.builder()
+			.arkivElement(DOKUMENT_INFO_SKJERMING_TYPE)
+			.fraVerdi(enumToString(dokumentInfo.getSkjermingType()))
+			.tilVerdi(null)
+			.build()));
+		dokumentInfo.setSkjermingType(null);
+		dokumentInfo.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 
 	private void fjernSkjermingForJournalposter(List<JournalpostDokumentInfoRelasjon> relasjoner) {
@@ -239,7 +213,7 @@ public class SladdDokumentService {
 			.map(journalpostRepository::fetchByIdWithJournalpostDokumentInfoRelasjoner)
 			.filter(Optional::isPresent)
 			.map(Optional::get)
-			.filter(journalpost -> journalpost.getSkjermingType() != null)
+			.filter(Journalpost::isSkjermet)
 			.forEach(journalpost -> {
 				aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
 						.journalpostId(journalpost.getJournalpostId())
@@ -305,42 +279,22 @@ public class SladdDokumentService {
 			});
 	}
 
-	private void gjenopprettSkjermingForDokumentInfo(List<JournalpostDokumentInfoRelasjon> relasjoner, DokumentInfo dokumentInfo, SkjermingTypeCode skjermingType) {
+	private void gjenopprettSkjermingForDokumentInfo(DokumentInfo dokumentInfo, SkjermingTypeCode skjermingType) {
 		if (skjermingType == null) {
 			return;
 		}
 
-		long dokumentInfoId = dokumentInfo.getDokumentInfoId();
-
-		// dette fases ut når skjerming settes rett på dokumentinfo
-		relasjoner.stream()
-			.distinct()
-			.forEach(relasjon -> {
-				aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
-					.journalpostId(relasjon.getJournalpostId())
-					.dokumentInfoId(dokumentInfoId)
-					.hjemmel(enumToString(skjermingType))
-					.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
-					.build(), List.of(ArkivElementEndringTO.builder()
-					.arkivElement(RELASJON_SKJERMING_TYPE)
-					.fraVerdi(null)
-					.tilVerdi(enumToString(skjermingType))
-					.build()));
-				relasjon.setSkjermingType(skjermingType);
-			});
-
-		if (dokumentInfo.getSkjermingType() == null) {
-			aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
-				.dokumentInfoId(dokumentInfoId)
-				.hjemmel(enumToString(skjermingType))
-				.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
-				.build(), List.of(ArkivElementEndringTO.builder()
-				.arkivElement(DOKUMENT_INFO_SKJERMING_TYPE)
-				.fraVerdi(null)
-				.tilVerdi(enumToString(skjermingType))
-				.build()));
-			dokumentInfo.setSkjermingType(skjermingType);
-		}
+		aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
+			.dokumentInfoId(dokumentInfo.getDokumentInfoId())
+			.hjemmel(enumToString(skjermingType))
+			.aksjon(AksjonsTypeCode.ENDRE_SKJERMING)
+			.build(), List.of(ArkivElementEndringTO.builder()
+			.arkivElement(DOKUMENT_INFO_SKJERMING_TYPE)
+			.fraVerdi(null)
+			.tilVerdi(enumToString(skjermingType))
+			.build()));
+		dokumentInfo.setSkjermingType(skjermingType);
+		dokumentInfo.setEndretKildeNavn(MDC.get(MDC_CONSUMER_ID));
 	}
 
 	private void gjenopprettSkjermingForJournalposter(List<JournalpostDokumentInfoRelasjon> relasjoner, SkjermingTypeCode skjermingType) {
@@ -354,7 +308,7 @@ public class SladdDokumentService {
 			.map(journalpostRepository::fetchByIdWithJournalpostDokumentInfoRelasjoner)
 			.filter(Optional::isPresent)
 			.map(Optional::get)
-			.filter(journalpost -> Objects.isNull(journalpost.getSkjermingType()))
+			.filter(not(Journalpost::isSkjermet))
 			.filter(SladdDokumentService::journalpostHarKunSkjermedeRelasjoner)
 			.forEach(journalpost -> {
 				aksjonsLoggService.validateAndSaveAksjonsLogg(AksjonsLoggTO.builder()
@@ -372,8 +326,9 @@ public class SladdDokumentService {
 	}
 
 	private static boolean journalpostHarKunSkjermedeRelasjoner(Journalpost journalpost) {
-		return journalpost.getJournalpostDokumentInfoRelasjoner().stream()
-			.allMatch(relasjon -> relasjon.getSkjermingType() != null);
+		return journalpost.getJournalpostDokumentInfoRelasjonerAdmin().stream()
+			.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
+			.allMatch(DokumentInfo::isSkjermet);
 	}
 
 }

@@ -55,10 +55,10 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 		commitAndStartNewTransaction();
 
 		Journalpost oppdatertJournalpost = journalpostTestRepository.findById(journalpostId).orElseThrow();
-		assertThat(oppdatertJournalpost.getSkjermingType()).isNull();
+		assertThat(oppdatertJournalpost.isSkjermet()).isFalse();
 
 		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
-		assertThat(oppdatertDokumentInfo.getSkjermingType()).isNull();
+		assertThat(oppdatertDokumentInfo.isSkjermet()).isFalse();
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,

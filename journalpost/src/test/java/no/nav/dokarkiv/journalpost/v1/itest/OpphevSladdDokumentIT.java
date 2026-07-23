@@ -48,7 +48,7 @@ class OpphevSladdDokumentIT extends AbstractJournalpostIT {
 	void skalFjerneSkjermingFraArkivOgSletteSladdetVariant() {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		JournalpostDokumentInfoRelasjon hoveddokumentRelasjon = journalpost.findHoveddokumentDokumentInfoRelasjon();
-		hoveddokumentRelasjon.setSkjermingType(SkjermingTypeCode.ARK);
+		hoveddokumentRelasjon.getDokumentInfo().setSkjermingType(SkjermingTypeCode.ARK);
 		journalpostTestRepository.persist(journalpost);
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = hoveddokumentRelasjon.getDokumentInfo().getDokumentInfoId();
@@ -72,7 +72,7 @@ class OpphevSladdDokumentIT extends AbstractJournalpostIT {
 
 		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
 		assertThat(oppdatertDokumentInfo.findFilDetaljerByVariantFormatAdmin(SLADDET)).isEmpty();
-		assertThat(oppdatertDokumentInfo.findFilDetaljerByVariantFormatAdmin(ARKIV).get().getSkjermingType()).isNull();
+		assertThat(oppdatertDokumentInfo.findFilDetaljerByVariantFormatAdmin(ARKIV).get().isSkjermet()).isFalse();
 
 		DokumentFil slettetDokumentFil = dokumentFilTestRepository.findByFilUuid(sladdetFilUuid);
 		assertThat(slettetDokumentFil).isNull();
@@ -80,20 +80,18 @@ class OpphevSladdDokumentIT extends AbstractJournalpostIT {
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,
 			tuple(AksjonsTypeCode.SLADD_DOKUMENT, journalpostId, dokumentInfoId, SkjermingTypeCode.ARK.name()),
-			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId, SkjermingTypeCode.ARK.name()),
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfoId, SkjermingTypeCode.ARK.name()),
 			tuple(AksjonsTypeCode.SLADD_DOKUMENT, journalpostId, dokumentInfoId, SkjermingTypeCode.ARK.name()),
-			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId, SkjermingTypeCode.ARK.name()),
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfoId, SkjermingTypeCode.ARK.name()),
 			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, null, null));
 		assertArkivElementEndringer(aksjonsLoggList,
 			tuple(FILDETALJER_FILUUID, null, sladdetFilUuid),
 			tuple(FILDETALJER_VARIANTFORMAT, null, SLADDET.name()),
 			tuple(fildetaljerSkjermingTypeVariant(ARKIV), null, SkjermingTypeCode.ARK.name()),
-			tuple(RELASJON_SKJERMING_TYPE, SkjermingTypeCode.ARK.name(), null),
+			tuple(DOKUMENT_INFO_SKJERMING_TYPE, SkjermingTypeCode.ARK.name(), null),
 			tuple(fildetaljerSkjermingTypeVariant(ARKIV), SkjermingTypeCode.ARK.name(), null),
 			tuple(FILDETALJER_FILUUID, sladdetFilUuid, null),
 			tuple(FILDETALJER_VARIANTFORMAT, SLADDET.name(), null),
-			tuple(RELASJON_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()),
 			tuple(DOKUMENT_INFO_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()),
 			tuple(JOURNALPOST_SKJERMING_TYPE, null, SkjermingTypeCode.ARK.name()));
 	}
@@ -102,7 +100,7 @@ class OpphevSladdDokumentIT extends AbstractJournalpostIT {
 	void skalReturnereBadRequestNaarDokumentIkkeErSladdet() {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		JournalpostDokumentInfoRelasjon hoveddokumentRelasjon = journalpost.findHoveddokumentDokumentInfoRelasjon();
-		hoveddokumentRelasjon.setSkjermingType(SkjermingTypeCode.ARK);
+		hoveddokumentRelasjon.getDokumentInfo().setSkjermingType(SkjermingTypeCode.ARK);
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = hoveddokumentRelasjon.getDokumentInfo().getDokumentInfoId();
 
@@ -118,8 +116,7 @@ class OpphevSladdDokumentIT extends AbstractJournalpostIT {
 
 		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
 		assertThat(oppdatertDokumentInfo.findFilDetaljerByVariantFormatAdmin(SLADDET)).isEmpty();
-		assertThat(oppdatertDokumentInfo.findFilDetaljerByVariantFormatAdmin(ARKIV).get().getSkjermingType())
-			.isNull();
+		assertThat(oppdatertDokumentInfo.findFilDetaljerByVariantFormatAdmin(ARKIV).get().isSkjermet()).isFalse();
 		assertThat(aksjonsLoggTestRepository.findAll()).isEmpty();
 	}
 

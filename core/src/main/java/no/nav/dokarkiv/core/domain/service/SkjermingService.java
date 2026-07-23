@@ -7,12 +7,10 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.repository.DokumentInfoRepository;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 @Transactional
@@ -20,27 +18,21 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 public class SkjermingService {
 
 	private final JournalpostRepository journalpostRepository;
-	private final DokumentInfoRepository dokumentInfoRepository;
 
 	private final EntityManager entityManager;
 
-	public SkjermingService(JournalpostRepository journalpostRepository, DokumentInfoRepository dokumentInfoRepository, EntityManager entityManager) {
+	public SkjermingService(JournalpostRepository journalpostRepository, EntityManager entityManager) {
 		this.journalpostRepository = journalpostRepository;
-		this.dokumentInfoRepository = dokumentInfoRepository;
 		this.entityManager = entityManager;
 	}
 
 	public boolean isJournalpostSkjermet(Long journalpostId) {
 		Journalpost journalpost = journalpostRepository.findById(journalpostId).orElse(null);
 		if (journalpost != null) {
-			return nonNull(journalpost.getSkjermingType());
+			return journalpost.isSkjermet();
 		}
 
 		return false;
-	}
-
-	public boolean isJournalpostSkjermet(Journalpost journalpost) {
-		return nonNull(journalpost.getSkjermingType());
 	}
 
 	public boolean isKassertByFilUuid(String filUuid) {
@@ -68,17 +60,6 @@ public class SkjermingService {
 				.setParameter("dokumentInfoId", dokumentInfoId)
 				.setParameter("variantFormat", variantFormatCode)
 				.setParameter("skjermingTypeCode", skjermingTypeCode);
-		q.executeUpdate();
-	}
-
-	public void setJpDokInfoRelSkjerming(Long jpId, Long dokInfoId, SkjermingTypeCode skjermingTypeCode) {
-		Query q = entityManager.createQuery("update JournalpostDokumentInfoRelasjon set skjermingType = :skjermingTypeCode where embeddedId.dokumentInfoId = :dokInfoId and embeddedId.journalpostId=:jpId")
-				.setParameter("jpId", jpId)
-				.setParameter("dokInfoId", dokInfoId)
-				.setParameter("skjermingTypeCode", skjermingTypeCode);
-		dokumentInfoRepository.findById(dokInfoId)
-			// denne er alltid present, men det gjøres som dette for convenience
-			.ifPresent(dokumentInfo -> dokumentInfo.setSkjermingType(skjermingTypeCode));
 		q.executeUpdate();
 	}
 

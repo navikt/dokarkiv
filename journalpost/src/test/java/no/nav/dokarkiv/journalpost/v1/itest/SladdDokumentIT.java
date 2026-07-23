@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
+import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FILUUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
@@ -58,7 +59,7 @@ class SladdDokumentIT extends AbstractJournalpostIT {
 
 		DokumentInfo oppdatertDokumentInfo = dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow();
 		assertThat(oppdatertDokumentInfo.findFilDetaljerByVariantFormatAdmin(SLADDET)).isEmpty();
-		assertThat(oppdatertDokumentInfo.findFilDetaljerByVariantFormatAdmin(ARKIV).get().getSkjermingType()).isNull();
+		assertThat(oppdatertDokumentInfo.findFilDetaljerByVariantFormatAdmin(ARKIV).get().isSkjermet()).isFalse();
 
 		assertThat(aksjonsLoggTestRepository.findAll()).isEmpty();
 	}
@@ -67,7 +68,7 @@ class SladdDokumentIT extends AbstractJournalpostIT {
 	void skalOppretteSladdetVariantOgSkjermeArkivMedSkjermingFraRelasjon() {
 		Journalpost journalpost = createJournalpostWithHoveddokument();
 		JournalpostDokumentInfoRelasjon hoveddokumentRelasjon = journalpost.findHoveddokumentDokumentInfoRelasjon();
-		hoveddokumentRelasjon.setSkjermingType(SkjermingTypeCode.ARK);
+		hoveddokumentRelasjon.getDokumentInfo().setSkjermingType(SkjermingTypeCode.ARK);
 		journalpostTestRepository.persist(journalpost);
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = hoveddokumentRelasjon.getDokumentInfo().getDokumentInfoId();
@@ -100,27 +101,27 @@ class SladdDokumentIT extends AbstractJournalpostIT {
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertAksjonsloggEntries(aksjonsLoggList,
 			tuple(AksjonsTypeCode.SLADD_DOKUMENT, journalpostId, dokumentInfoId, SkjermingTypeCode.ARK.name()),
-			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpostId, dokumentInfoId, SkjermingTypeCode.ARK.name()));
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfoId, SkjermingTypeCode.ARK.name()));
 		assertArkivElementEndringer(aksjonsLoggList,
 			tuple(FILDETALJER_FILUUID, null, sladdetVariant.getFilUuid()),
 			tuple(FILDETALJER_VARIANTFORMAT, null, SLADDET.name()),
 			tuple(fildetaljerSkjermingTypeVariant(ARKIV), null, SkjermingTypeCode.ARK.name()),
-			tuple(RELASJON_SKJERMING_TYPE, SkjermingTypeCode.ARK.name(), null));
+			tuple(DOKUMENT_INFO_SKJERMING_TYPE, SkjermingTypeCode.ARK.name(), null));
 	}
 
 	@Test
 	void skalSladdeDokumentSomErKnyttetTilFlereJournalposter() {
 		Journalpost journalpost1 = createJournalpostWithHoveddokument();
 		JournalpostDokumentInfoRelasjon hoveddokumentRelasjon = journalpost1.findHoveddokumentDokumentInfoRelasjon();
-		hoveddokumentRelasjon.setSkjermingType(SkjermingTypeCode.ARK);
 		journalpostTestRepository.persist(journalpost1);
 		DokumentInfo deltDokumentInfo = hoveddokumentRelasjon.getDokumentInfo();
+		deltDokumentInfo.setSkjermingType(SkjermingTypeCode.ARK);
 		Long dokumentInfoId = deltDokumentInfo.getDokumentInfoId();
 
 		Journalpost journalpost2 = createJournalpostWithHoveddokument();
 		journalpost2.setKanalReferanseId("KANAL_REFERANSE_ID_2");
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon(journalpost2, deltDokumentInfo);
-		vedleggRelasjon.setSkjermingType(SkjermingTypeCode.ARK);
+		vedleggRelasjon.getDokumentInfo().setSkjermingType(SkjermingTypeCode.ARK);
 		journalpostTestRepository.persist(journalpost2);
 
 		commitAndStartNewTransaction();
@@ -150,8 +151,7 @@ class SladdDokumentIT extends AbstractJournalpostIT {
 		assertAksjonsloggEntries(aksjonsLoggList,
 			tuple(AksjonsTypeCode.SLADD_DOKUMENT, journalpost1.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()),
 			tuple(AksjonsTypeCode.SLADD_DOKUMENT, journalpost2.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()),
-			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost1.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name()),
-			tuple(AksjonsTypeCode.ENDRE_SKJERMING, journalpost2.getJournalpostId(), dokumentInfoId, SkjermingTypeCode.ARK.name())
+			tuple(AksjonsTypeCode.ENDRE_SKJERMING, null, dokumentInfoId, SkjermingTypeCode.ARK.name())
 		);
 	}
 

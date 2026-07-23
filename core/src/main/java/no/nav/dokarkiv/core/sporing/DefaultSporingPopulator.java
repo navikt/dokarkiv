@@ -18,9 +18,9 @@ public class DefaultSporingPopulator implements SporingPopulator {
 	@Override
 	public void populateSporingInfo(Journalpost journalpost, String opprettetEndretNavn) {
 		populateOpprettetEndretAvNavn(journalpost, opprettetEndretNavn);
-		
+
 		String kildeNavn = RequestContextHolder.currentRequestContext().getComponentId();
-		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(journalpost, kildeNavn);		
+		kildeNavnPopulator.populateKildeNavnForEntireJournalStructure(journalpost, kildeNavn);
 	}
 
 	private void populateOpprettetEndretAvNavn(Journalpost journalpost, String navn) {

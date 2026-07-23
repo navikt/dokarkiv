@@ -122,7 +122,7 @@ public class EndreSkjermingArkivenhetService {
 			//Hvis tilSkjerming!=null og Journalposten ikke har noen flere dokumentInfo relasjoner som IKKE er skjermet så skal journalposten også skjermes.
 			if (tilSkjerming == null && skjermingService.isJournalpostSkjermet(journalpostId)) {
 				aksjonsLoggMap.putAll(endreSkjermingJournalpost(journalpostId, null));
-			} else if (tilSkjerming != null && !isJournalpostHarDokumentInfoRelasjonerIkkeSkjermet(journalpostId)) {
+			} else if (tilSkjerming != null && !isJournalpostHarDokumentInfoIkkeSkjermet(journalpostId)) {
 				aksjonsLoggMap.putAll(endreSkjermingJournalpost(journalpostId, tilSkjerming));
 			}
 
@@ -134,24 +134,22 @@ public class EndreSkjermingArkivenhetService {
 
 	private List<ArkivElementEndringTO> endreSkjermingJournalpostDokumentInfoRelasjon(JournalpostDokumentInfoRelasjon relasjon, SkjermingTypeCode tilSkjerming) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
-		Long journalpostId = relasjon.getJournalpost().getJournalpostId();
-		Long dokumentInfoId = relasjon.getDokumentInfo().getDokumentInfoId();
 		//Hvis relasjon er HOVEDDOKUMENT så skal bare alle fildetaljer skjermes og ikke selve relasjonen.
 		//Grunnen til det er at Journalpost uten HOVEDDOKUMENT relasjon skaper problemer i gamle Joark tjenester og fagsystemer som bruker de gamle Joark tjenestene.
 		if (relasjon.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT) {
 			arkivElementEndringTOList.addAll(endreSkjermingAlleFildetaljer(relasjon.getDokumentInfo(), tilSkjerming));
 		} else {
-			arkivElementEndringTOList.addAll(endreSkjermingJournalpostDokumentInfoRelasjon(journalpostId, dokumentInfoId,
-				relasjon.getDokumentInfo().getSkjermingType(), tilSkjerming));
+			arkivElementEndringTOList.addAll(endreSkjermingDokumentInfo(relasjon.getDokumentInfo(), tilSkjerming));
 		}
 
 		return arkivElementEndringTOList;
 	}
 
-	private List<ArkivElementEndringTO> endreSkjermingJournalpostDokumentInfoRelasjon(Long journalpostId, Long dokumentInfoId, SkjermingTypeCode forrigeSkjerming, SkjermingTypeCode tilSkjerming) {
+	private List<ArkivElementEndringTO> endreSkjermingDokumentInfo(DokumentInfo dokumentInfo, SkjermingTypeCode tilSkjerming) {
 		List<ArkivElementEndringTO> arkivElementEndringTOList = new ArrayList<>();
+		SkjermingTypeCode forrigeSkjerming = dokumentInfo.getSkjermingType();
 		if (forrigeSkjerming != tilSkjerming) {
-			skjermingService.setJpDokInfoRelSkjerming(journalpostId, dokumentInfoId, tilSkjerming);
+			dokumentInfo.setSkjermingType(tilSkjerming);
 			arkivElementEndringTOList.add(
 					ArkivElementEndringTO.builder()
 							.arkivElement(RELASJON_SKJERMING_TYPE)
@@ -175,7 +173,7 @@ public class EndreSkjermingArkivenhetService {
 		return arkivElementEndringTOList;
 	}
 
-	private boolean isJournalpostHarDokumentInfoRelasjonerIkkeSkjermet(Long journalpostId) {
+	private boolean isJournalpostHarDokumentInfoIkkeSkjermet(Long journalpostId) {
 		List<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjonList = journalpostDokumentInfoRelasjonRepository.findAllByJournalpostJournalpostId(journalpostId);
 		return journalpostDokumentInfoRelasjonList.stream().anyMatch(relasjon -> {
 			if (relasjon.getTilknyttetJournalpostSom() == TilknyttetJournalpostSomCode.HOVEDDOKUMENT) {
@@ -184,7 +182,7 @@ public class EndreSkjermingArkivenhetService {
 				return relasjon.getDokumentInfo()
 						.isKassert() || !skjermingService.isAllFildetaljerSkjermet(relasjon.getDokumentInfo());
 			} else {
-				return Objects.isNull(relasjon.getSkjermingType());
+				return !relasjon.getDokumentInfo().isSkjermet();
 			}
 		});
 	}

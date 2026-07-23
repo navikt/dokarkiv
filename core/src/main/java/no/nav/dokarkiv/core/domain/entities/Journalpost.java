@@ -49,7 +49,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -722,7 +721,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	 */
 	public Set<JournalpostDokumentInfoRelasjon> getJournalpostDokumentInfoRelasjoner() {
 		return Collections.unmodifiableSet(journalpostDokumentInfoRelasjoner.stream()
-				.filter(relasjon -> Objects.isNull(relasjon.getSkjermingType()))
+				.filter(relasjon -> relasjon.getDokumentInfo() == null || !relasjon.getDokumentInfo().isSkjermet())
 				.collect(Collectors.toSet()));
 	}
 
@@ -791,5 +790,9 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 
 	public boolean hasAnyDokumentInfoRelasjonerIncludingSkjermet() {
 		return !journalpostDokumentInfoRelasjoner.isEmpty();
+	}
+
+	public boolean isSkjermet() {
+		return skjermingType != null;
 	}
 }

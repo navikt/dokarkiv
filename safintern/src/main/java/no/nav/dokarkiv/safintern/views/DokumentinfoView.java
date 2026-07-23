@@ -37,7 +37,7 @@ public interface DokumentinfoView {
 	@Mapping("tilknyttetJournalpostSom")
 	TilknyttetJournalpostSomCode getTilknyttetSom();
 
-	@Mapping("skjermingType")
+	@Mapping("dokumentInfo.skjermingType")
 	SkjermingTypeCode getSkjerming();
 
 	@Mapping("dokumentInfo.brevkode")

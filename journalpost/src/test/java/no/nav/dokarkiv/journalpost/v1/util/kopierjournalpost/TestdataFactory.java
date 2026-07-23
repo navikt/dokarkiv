@@ -148,12 +148,12 @@ public class TestdataFactory {
 	static JournalpostDokumentInfoRelasjon createDokumentInfoVedleggRelasjonSkjermetPOL(Journalpost journalpost) {
 		DokumentInfo dokumentInfo = createDokumentInfo(FIL_UUID_ARKIV_VEDLEGG, FIL_UUID_PRODUKSJON_VEDLEGG);
 		dokumentInfo.setOriginalJournalpost(journalpost);
+		dokumentInfo.setSkjermingType(POL);
 
 		JournalpostDokumentInfoRelasjon journalpostDokumentInfoRelasjon = JournalpostDokumentInfoRelasjon.builder()
 				.journalpost(journalpost)
 				.dokumentInfo(dokumentInfo)
 				.tilknyttetJournalpostSom(VEDLEGG)
-				.skjermingType(POL)
 				.build();
 
 		journalpostDokumentInfoRelasjon.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
