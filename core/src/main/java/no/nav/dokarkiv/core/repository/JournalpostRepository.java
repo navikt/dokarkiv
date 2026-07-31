@@ -18,11 +18,13 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 	@Query(value = """
 			select jp
 			from Journalpost jp
+			left join jp.saksrelasjon s
 			where jp.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I
 			and jp.journalstatus in (no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M, no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO)
 			and jp.changeStamp.createdDate >= {d '2020-01-01'}
 			and jp.changeStamp.createdDate <= :tilOgMedDato
 			and jp.fagomrade = :fagomraade
+			and (s.feilregistrert is null or s.feilregistrert = false)
 			""")
 	Set<MottattJournalpostProjection> finnMottatteJournalposterForTemaUtenBruker(@Param("tilOgMedDato") LocalDateTime tilOgMedDato, @Param("fagomraade") FagomradeCode fagomraade);
 
@@ -30,11 +32,13 @@ public interface JournalpostRepository extends HibernateRepository<Journalpost>,
 			select jp
 			from Journalpost jp
 			join fetch jp.brukere
+			left join jp.saksrelasjon s
 			where jp.journalposttype = no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I
 			and jp.journalstatus in (no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M, no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO)
 			and jp.changeStamp.createdDate >= {d '2020-01-01'}
 			and jp.changeStamp.createdDate <= :tilOgMedDato
 			and jp.fagomrade = :fagomraade
+			and (s.feilregistrert is null or s.feilregistrert = false)
 			""")
 	Set<MottattJournalpostProjectionMedBruker> finnMottatteJournalposterForTemaMedBruker(@Param("tilOgMedDato") LocalDateTime tilOgMedDato, @Param("fagomraade") FagomradeCode fagomraade);
 
