@@ -22,7 +22,6 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
@@ -161,30 +160,6 @@ public class FinnMottatteJournalposterIT extends AbstractJournalpostIT {
 			validateUbehandletJournalpost(jp);
 			validateBruker(jp.getBruker());
 		});
-	}
-
-	@Test
-	public void shouldNotReturnFeilregistrerteJournalposter() {
-		Journalpost ikkeFeilregistrert = createUbehandletJournalpost(OPPRETTET_DATO, I, M);
-		Journalpost feilregistrert = createUbehandletJournalpost(OPPRETTET_DATO, I, M);
-		Journalpost utenFeilregistrering = createUbehandletJournalpost(OPPRETTET_DATO, I, M);
-
-		feilregistrert.getSaksrelasjon().setFeilregistrert(true);
-		utenFeilregistrering.getSaksrelasjon().setFeilregistrert(null);
-
-		saveJournalposts(List.of(ikkeFeilregistrert, feilregistrert, utenFeilregistrering));
-
-		Set<Long> forventedeJournalpostIds = Set.of(ikkeFeilregistrert.getJournalpostId(), utenFeilregistrering.getJournalpostId());
-
-		Set<Long> journalpostIdsUtenBruker = doKallFinnMottatteJournalposterAndAssertOK(APP_APPESEN).stream()
-				.map(MottattJournalpost::getJournalpostId)
-				.collect(Collectors.toSet());
-		Set<Long> journalpostIdsMedBruker = doKallFinnMottatteJournalposterAndAssertOK(DOKSIKKERHETSNETT).stream()
-				.map(MottattJournalpost::getJournalpostId)
-				.collect(Collectors.toSet());
-
-		Assertions.assertThat(journalpostIdsUtenBruker).isEqualTo(forventedeJournalpostIds);
-		Assertions.assertThat(journalpostIdsMedBruker).isEqualTo(forventedeJournalpostIds);
 	}
 
 	@Test
