@@ -34,7 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 public class SettBrevdataIT extends AbstractInternalIT {
 	private static final String BREVSERVER = "itest:teamdokumenthandtering:brevserver";
 	private static final byte[] OPPDATERT_FIL = "Oppdatert dokument".getBytes();
-	private static final String SETT_BREVDATA_PATH = "settBrevdata";
+	private static final String SETT_BREVDATA_PATH = "journalpost/%s/settBrevdata";
 	public static final String ENDRET_AV_BREVSERVER = "teamdokumenthandtering:brevserver";
 
 	@Test
@@ -47,7 +47,7 @@ public class SettBrevdataIT extends AbstractInternalIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(FIL, settBrevdataHeaders());
-		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath(journalpostId.toString(), SETT_BREVDATA_PATH, VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalPath(SETT_BREVDATA_PATH.formatted(journalpostId.toString()), VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(CREATED);
 
 		DokumentFil arkivDokumentFil = dokumentFilTestRepository.findByFilUuid(arkivFilUuid);
@@ -67,7 +67,7 @@ public class SettBrevdataIT extends AbstractInternalIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(FIL, settBrevdataHeaders(APPLICATION_RTF));
-		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath(journalpostId.toString(), SETT_BREVDATA_PATH, VARIANT_FORMAT_PRODUKSJON), POST, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalPath(SETT_BREVDATA_PATH.formatted(journalpostId.toString()), VARIANT_FORMAT_PRODUKSJON), POST, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(CREATED);
 
 		DokumentFil arkivDokumentFil = dokumentFilTestRepository.findByFilUuid(arkivFilUuid);
@@ -91,7 +91,7 @@ public class SettBrevdataIT extends AbstractInternalIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(OPPDATERT_FIL, settBrevdataHeaders(APPLICATION_RTF));
-		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath(journalpostId.toString(), SETT_BREVDATA_PATH, VARIANT_FORMAT_PRODUKSJON), POST, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalPath(SETT_BREVDATA_PATH.formatted(journalpostId.toString()), VARIANT_FORMAT_PRODUKSJON), POST, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(OK);
 
 		DokumentFil arkivDokumentFil = dokumentFilTestRepository.findByFilUuid(arkivFilUuid);
@@ -114,7 +114,7 @@ public class SettBrevdataIT extends AbstractInternalIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>("Ny ARKIV payload".getBytes(), settBrevdataHeaders());
-		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath(journalpostId.toString(), SETT_BREVDATA_PATH, VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalPath(SETT_BREVDATA_PATH.formatted(journalpostId.toString()), VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(OK);
 
 		DokumentFil arkivDokumentFil = dokumentFilTestRepository.findByFilUuid(arkivFilUuid);
@@ -126,7 +126,7 @@ public class SettBrevdataIT extends AbstractInternalIT {
 	@Test
 	void shouldReturnNotFoundWhenJournalpostIdNotFound() {
 		var requestEntity = new HttpEntity<>(FIL, settBrevdataHeaders());
-		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath("987654321", SETT_BREVDATA_PATH, VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalPath(SETT_BREVDATA_PATH.formatted("987654321"), VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
 	}
 
@@ -137,7 +137,7 @@ public class SettBrevdataIT extends AbstractInternalIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(FIL, settBrevdataHeaders());
-		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath(journalpostId.toString(), SETT_BREVDATA_PATH, VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalPath(SETT_BREVDATA_PATH.formatted(journalpostId.toString()), VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(CONFLICT);
 	}
 
@@ -149,14 +149,14 @@ public class SettBrevdataIT extends AbstractInternalIT {
 		commitAndStartNewTransaction();
 
 		var requestEntity = new HttpEntity<>(FIL, settBrevdataHeaders());
-		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath(journalpostId.toString(), SETT_BREVDATA_PATH, VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalPath(SETT_BREVDATA_PATH.formatted(journalpostId.toString()), VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
 	}
 
 	@Test
 	void shouldReturnUnknownMediaTypeWhenContentTypeNotPdfOrRtf() {
 		var requestEntity = new HttpEntity<>(FIL, settBrevdataHeaders("application/json"));
-		ResponseEntity<String> response = restTemplate.exchange(apiInternalJournalpostPath("9876", SETT_BREVDATA_PATH, VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(apiInternalPath(SETT_BREVDATA_PATH.formatted("9876"), VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(UNSUPPORTED_MEDIA_TYPE);
 	}
 

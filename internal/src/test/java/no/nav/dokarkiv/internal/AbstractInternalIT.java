@@ -5,8 +5,8 @@ import no.nav.dokarkiv.core.AbstractRestIT;
 import no.nav.dokarkiv.core.CoreConfig;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.wiremock.spring.EnableWireMock;
 import org.springframework.test.context.transaction.TestTransaction;
+import org.wiremock.spring.EnableWireMock;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
@@ -19,8 +19,16 @@ import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 @EnableWireMock
 public abstract class AbstractInternalIT extends AbstractRestIT {
 
-	static final String INTERNAL_JOURNALPOSTAPI_BASE_PATH = "/rest/internal/journalpostapi/v1/";
+	static final String INTERNAL_BASE_PATH = "/rest/internal/";
+	static final String INTERNAL_JOURNALPOSTAPI_BASE_PATH = INTERNAL_BASE_PATH + "journalpostapi/v1/";
 	static final String INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH = "journalpost";
+
+	protected static String apiInternalPath(String... path) {
+		return fromPath(INTERNAL_BASE_PATH)
+				.pathSegment(path)
+				.build()
+				.toUriString();
+	}
 
 	protected static String apiInternalJournalpostPath(String... path) {
 		return fromPath(INTERNAL_JOURNALPOSTAPI_BASE_PATH)

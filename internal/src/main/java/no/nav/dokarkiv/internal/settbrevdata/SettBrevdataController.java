@@ -25,7 +25,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @Tag(name = "journalpostapi - internt", description = "Intern tjeneste for brevserver")
 @Slf4j
 @RestController
-@RequestMapping("/rest/internal/journalpostapi/v1")
+@RequestMapping(path = {"/rest/internal/journalpostapi/v1", "/rest/internal"})
 @ProtectedWithClaims(issuer = ISSUER_AZUREV2, claimMap = {"roles=" + INTERN_ROLE_BREVSERVER})
 public class SettBrevdataController {
 	public static final String INTERN_ROLE_BREVSERVER = "api_intern_brevserver";
