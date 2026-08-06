@@ -48,7 +48,7 @@
 
 		<!-- NAV -->
 		<token-support.version>6.0.11</token-support.version>
-		<verapdf.version>1.28.2</verapdf.version>
+		<verapdf.version>1.30.2</verapdf.version>
 		<dok-legacy-tjenestespesifikasjoner.version>44-7d14e70</dok-legacy-tjenestespesifikasjoner.version>
 
 		<!-- test -->
