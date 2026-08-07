@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static no.nav.dokarkiv.core.pdfValidation.PDFAValidatorUtil.FEM_MB;
+import static org.verapdf.pdfa.flavours.PDFAFlavour.NO_FLAVOUR;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.verapdf.pdfa.flavours.PDFAFlavour.PDFA_1_A;
@@ -50,13 +51,13 @@ public class PDFAValidatorUtilTest {
 	@Test
 	public void shouldValidateBadPDFA() throws IOException {
 		PDFAValidatorResponse response;
-		try (InputStream pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf")) {
+		try (InputStream pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_ugyldig_pdfa.pdf")) {
 			response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes())).get();
 		}
 
-		assertThat(response.getPdfVersion()).isEqualTo(PDFA_1_B);
+		assertThat(response.getPdfVersion()).isEqualTo(NO_FLAVOUR);
 		assertThat(response.validPdfToString()).isEqualTo("ugyldig");
-		assertThat(response.getAssertionResults().size()).isEqualTo(7);
+		assertThat(response.getAssertionResults()).containsExactly("Dokumentet er ikke en PDFA");
 	}
 
 	@ParameterizedTest
@@ -87,6 +88,22 @@ public class PDFAValidatorUtilTest {
 		assertThrows(InvalidPdfException.class, () -> PDFAValidatorUtil.validatePDFA(createFilDetaljer(new byte[0])));
 	}
 
+	@Test
+	void shouldReturnNonCompliantForInvalidPdfa1bDocument() throws IOException {
+		PDFAValidatorResponse response;
+		try (InputStream pdfFile = classpathToInputStream("pdf/pdf/pdfa_1b_non_compliant.pdf")) {
+			response = PDFAValidatorUtil.validatePDFA(createFilDetaljer(pdfFile.readAllBytes())).get();
+		}
+
+		assertThat(response.getPdfVersion()).isEqualTo(PDFA_1_B);
+		assertThat(response.validPdfToString()).isEqualTo("ugyldig");
+		assertThat(response.getAssertionResults())
+				.hasSize(3)
+				.anySatisfy(msg -> assertThat(msg).contains("font programs for all fonts used within a conforming file shall be embedded"))
+				.anySatisfy(msg -> assertThat(msg).contains("file trailer dictionary shall contain the ID keyword"))
+				.anySatisfy(msg -> assertThat(msg).contains("OutputIntent"));
+	}
+
 	private void validatePDFA(PDFAFlavour flavour) throws IOException {
 		PDFAValidatorResponse response;
 		try (InputStream pdfFile = classpathToInputStream("pdf/Arkivverket/" + baseString + flavour.getId() + PDF)) {
@@ -107,7 +124,7 @@ public class PDFAValidatorUtilTest {
 		assertThat(response.validPdfToString()).isEqualTo("ugyldig");
 		assertThat(response.getAssertionResults().size()).isEqualTo(1);
 		List<String> resultList = new ArrayList<>(response.getAssertionResults());
-		assertThat(resultList.get(0)).isEqualTo(faultString);
+		assertThat(resultList.getFirst()).isEqualTo(faultString);
 	}
 
 	private FilDetaljer createFilDetaljer(byte[] fil) {
@@ -119,5 +136,4 @@ public class PDFAValidatorUtilTest {
 	private static InputStream classpathToInputStream(String classpathResource) throws IOException {
 		return new ClassPathResource(classpathResource).getInputStream();
 	}
-
 }
