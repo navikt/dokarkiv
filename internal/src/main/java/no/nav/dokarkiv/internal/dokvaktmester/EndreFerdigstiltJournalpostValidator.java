@@ -82,10 +82,4 @@ public class EndreFerdigstiltJournalpostValidator {
 			throw new UgyldigJournalStatusException("Journalstatus er ikke en av " + FERDIGSTILTE_STATUSER);
 		}
 	}
-
-	static void validateSakIsAapen(Sak tilknyttetSak) {
-		if (tilknyttetSak.getSakStatus() != null && tilknyttetSak.getSakStatus() != AAPEN) {
-			throw new InputValideringFeiletException("Endrer ikke sakstilknytning siden sak har sakStatus=" + tilknyttetSak.getSakStatus());
-		}
-	}
 }
