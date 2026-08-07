@@ -34,7 +34,6 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.internal.dokvaktmester.EndreFerdigstiltJournalpostValidator.validateJournalpostIsFerdigstilt;
-import static no.nav.dokarkiv.internal.dokvaktmester.EndreFerdigstiltJournalpostValidator.validateSakIsAapen;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
@@ -68,7 +67,6 @@ public class EndreFerdigstiltJournalpostService {
 		validateJournalpostIsFerdigstilt(journalpost);
 		Sak tilknyttetSak = hentSakerRepository.hentSak(journalpost.getSaksrelasjon().getSakId())
 				.orElseThrow(() -> new SakIkkeFunnetException("Fant ikke tilknyttetSak for journalpostId=" + journalpostId));
-		validateSakIsAapen(tilknyttetSak);
 		String aktoerId = hentAktoerId(request.brukerId(), tilknyttetSak);
 		SakEndring sakEndring = SakEndring.opprett(request, aktoerId, tilknyttetSak);
 		Sak nySak = brukEksisterendeSak(sakEndring)
