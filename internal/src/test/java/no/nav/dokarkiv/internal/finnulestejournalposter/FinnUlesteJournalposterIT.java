@@ -4,12 +4,11 @@ import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.util.TestDataGenerator;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.internal.AbstractInternalIT;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 
@@ -122,7 +121,7 @@ public class FinnUlesteJournalposterIT extends AbstractInternalIT {
 	}
 
 	private Journalpost generateBaseJp(int dagerSidenEkspedert) {
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Journalpost journalpost = TestdataFactory.createFerdigstiltJournalpostWithHoveddokument();
 		journalpost.setKanalReferanseId(java.util.UUID.randomUUID().toString());
 		journalpost.setEkspedertDato(LocalDateTime.now().minusDays(dagerSidenEkspedert));
 		journalpost.setJournalstatus(E);

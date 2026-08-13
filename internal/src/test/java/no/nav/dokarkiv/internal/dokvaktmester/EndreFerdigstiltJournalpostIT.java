@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.Bruker;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.internal.AbstractInternalIT;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -30,13 +31,11 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.ENDRE_METADATA;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.PERSON;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.AKTOER_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.GSAK_APPLIKASJON;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.GSAK_FAGSAKNR;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.GSAK_OPPRETTET_AV;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.GSAK_TEMA;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.AKTOER_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.BRUKER_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.GSAK_APPLIKASJON;
+import static no.nav.dokarkiv.core.util.TestdataFactory.GSAK_FAGSAKNR;
+import static no.nav.dokarkiv.core.util.TestdataFactory.GSAK_TEMA;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -46,6 +45,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 	private static final String ENDRE_FERDIGSTILT_JOURNALPOST_PATH = "endreFerdigstiltJournalpost";
+	private static final String GSAK_OPPRETTET_AV = "itest";
 	public static final String BEGRUNNELSE_NOKKEL = "MMA-123";
 	public static final String ANNEN_BRUKER_ID = "11111111111";
 	public static final String ANNEN_AKTOER_ID = "1234567890123";
@@ -57,7 +57,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 	public void skalOppretteNySakAnnetTema() {
 		Sak sak = createGsak();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sak.getSakId());
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sak.getSakId());
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
@@ -87,7 +87,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 
 		Sak sak = createGsak();
 		sakTestRepository.persist(sak);
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sak.getSakId());
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sak.getSakId());
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
@@ -118,7 +118,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 		Sak eksisterendeGenerellSak = createEksisterendeGenerellSak();
 		Sak sak = createGsak();
 		sakTestRepository.persistAll(List.of(sak, eksisterendeGenerellSak, eksisterendeFagsak));
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sak.getSakId());
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sak.getSakId());
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
@@ -147,7 +147,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 		Sak eksisterendeGenerellSak = createEksisterendeGenerellSak();
 		Sak sak = createGsak();
 		sakTestRepository.persistAll(List.of(sak, eksisterendeFagsak, eksisterendeGenerellSak));
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sak.getSakId());
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sak.getSakId());
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
@@ -175,7 +175,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 		Sak eksisterendeFagsak = createEksisterendeFagsak();
 		Sak sak = createGsak();
 		sakTestRepository.persistAll(List.of(sak, eksisterendeFagsak));
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sak.getSakId());
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sak.getSakId());
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
@@ -206,7 +206,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 		Sak eksisterendeFagsak = createEksisterendeFagsak();
 		Sak sak = createGsak();
 		sakTestRepository.persistAll(List.of(sak, eksisterendeFagsak));
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sak.getSakId());
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sak.getSakId());
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
@@ -238,7 +238,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 		Sak eksisterendeFagsak = createEksisterendeFagsak();
 		Sak sak = createGsak();
 		sakTestRepository.persistAll(List.of(sak, eksisterendeFagsak));
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sak.getSakId());
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sak.getSakId());
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
@@ -269,7 +269,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 		Sak eksisterendeGenerellSak = createEksisterendeGenerellSak();
 		Sak sak = createGsak();
 		sakTestRepository.persistAll(List.of(sak, eksisterendeGenerellSak));
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sak.getSakId());
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sak.getSakId());
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
@@ -300,7 +300,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 		Sak eksisterendeGenerellSak = createEksisterendeGenerellSak();
 		Sak sak = createGsak();
 		sakTestRepository.persistAll(List.of(sak, eksisterendeGenerellSak));
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sak.getSakId());
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sak.getSakId());
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();

@@ -1,7 +1,7 @@
 package no.nav.dokarkiv.internal.dokvaktmester;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.util.TestDataGenerator;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.internal.AbstractInternalIT;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -91,7 +91,7 @@ public class SettAvbruttJournalpostRedigerbarIT extends AbstractInternalIT {
 	}
 
 	private Long setupAndReturnJournalpostId() {
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Journalpost journalpost = TestdataFactory.createFerdigstiltJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(A);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 

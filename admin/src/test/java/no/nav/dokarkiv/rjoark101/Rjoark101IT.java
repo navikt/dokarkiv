@@ -8,7 +8,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.ApplicationProblemDetail;
-import no.nav.dokarkiv.core.util.TestDataGenerator;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.dto.SlettArkivenhetRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -36,10 +36,10 @@ import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VED
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoVedleggRelasjon;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithSplittetHoveddokument;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createNavNoUtsendingsInfo;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithSplittetHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createNavNoUtsendingsInfo;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createVedleggRelasjon;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpMethod.DELETE;
@@ -845,7 +845,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
 		Journalpost journalpostSomHarDokumentSomHoveddok = createUniqueJournalpostWithHoveddokument();
-		JournalpostDokumentInfoRelasjon relasjonVedlegg = TestDataGenerator.createVedleggRelasjon(journalpostSomHarDokumentSomVedlegg, journalpostSomHarDokumentSomHoveddok.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
+		JournalpostDokumentInfoRelasjon relasjonVedlegg = TestdataFactory.createVedleggRelasjon(journalpostSomHarDokumentSomVedlegg, journalpostSomHarDokumentSomHoveddok.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
 		saveJournalpost(journalpostSomHarDokumentSomHoveddok);
 		saveJournalpost(journalpostSomHarDokumentSomVedlegg);
 		saveJournalpost(journalpost2);

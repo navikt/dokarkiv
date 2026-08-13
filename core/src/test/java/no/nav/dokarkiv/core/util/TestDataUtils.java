@@ -36,9 +36,8 @@ import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.PEN;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 
 /**
- * Class for generating test data for Joark repository tests
- *
- * @author Martin Burheim Tingstad, Visma Consulting AS
+ * @Deprecated
+ * Denne klassen bruker de gamle builderne som er deprecated. For testdata bruk TestDataFactory
  */
 public class TestDataUtils {
 
@@ -54,7 +53,6 @@ public class TestDataUtils {
 	public static final String TILLEGGSOPPLYSNINGER_KEY = "keey";
 	public static final String TILLEGGSOPPLYSNINGER_VALUE = "value";
 
-	public static final String AKSJON_APPLIKASJON = "Dokarkiv";
 	public static final String AKSJON_HJEMMEL = "POL";
 	public static final String AKSJON_UTFOERT_AV = "Z142455";
 	public static final String AKSJON_BRUKER = "144411133";
@@ -66,7 +64,6 @@ public class TestDataUtils {
 	public static final String AKSJON_ARKIVELEMENT = "Journalpost.journalpostId";
 
 	public static final Long JOURNALPOST_ID = 1L;
-	public static final Long DOKUMENT_INFO_ID = 1L;
 
 	public static final LocalDateTime FORTID = now().minusDays(1);
 	public static final LocalDateTime FREMTID = now().plusDays(1);
@@ -80,15 +77,6 @@ public class TestDataUtils {
 				.melding(AKSJON_MELDING)
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)
-				.hjemmel(AKSJON_HJEMMEL)
-				.utfoertAv(AKSJON_UTFOERT_AV)
-				.build();
-	}
-
-	public static AksjonsLoggTO createAksjonsLoggTOHeader() {
-		return AksjonsLoggTO.builder()
-				.bruker(AKSJON_BRUKER)
-				.melding(AKSJON_MELDING)
 				.hjemmel(AKSJON_HJEMMEL)
 				.utfoertAv(AKSJON_UTFOERT_AV)
 				.build();

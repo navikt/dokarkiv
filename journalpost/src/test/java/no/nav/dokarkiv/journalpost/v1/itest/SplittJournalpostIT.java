@@ -11,6 +11,7 @@ import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostRequest;
@@ -29,9 +30,8 @@ import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.getDokumentInfoFromJpDokInfoRelasjoner;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.BRUKER_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.splittjournalpost.JournalpostSplitter.SPLITT_JOURNALPOST_FILNAVN;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +52,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSplittJournalpost() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 
@@ -120,7 +120,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSplittJournalpostWithNewDokumenter() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 
@@ -236,7 +236,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnNotFoundWhenSplittingNonExistingJournalpost() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 
@@ -260,7 +260,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnBadRequestWhenSplittingNonInngaaendeJournalpost() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -281,7 +281,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnConflictWhenSplittingJournalpostWithExistingExternReferanseId() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 
@@ -304,7 +304,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnBadRequestWhenRequestContainsNonExistingDocument() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 

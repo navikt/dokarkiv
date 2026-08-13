@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
 import no.nav.dokarkiv.safintern.views.PaginatedAnyViewForTest;
 import org.junit.jupiter.api.Disabled;
@@ -35,26 +36,25 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.API_GSAK_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.API_PSAK_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoWithMoreData;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createPsakSaksrelasjon;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.getDokumentInfoFromJpDokInfoRelasjoner;
+import static no.nav.dokarkiv.core.util.TestdataFactory.API_GSAK_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.BRUKER_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfo;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoWithMoreData;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createPsakSaksrelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.core.util.TestdataFactory.FIXED_CLOCK;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FinnJournalposterIT extends AbstractSafinternTest {
 	private static final String FINNJOURNALPOSTER = "/rest/internal/safintern/finnjournalposter";
+	private static final String API_PSAK_ID = "90909090";
 
 
 	@Test
 	public void shouldReturnEmptyResponseWhenNotFound_Feilregistrert() {
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(parseLong(API_GSAK_ID));
 		journalpost.getSaksrelasjon().setFeilregistrert(true);
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
@@ -96,7 +96,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 
 	@Test
 	public void shouldReturnEmptyResponseWhenNotFound_FilteredTilDato() {
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(parseLong(API_GSAK_ID));
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -121,7 +121,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 
 	@Test
 	public void shouldReturnEmptyResponseWhenNotFound_Journalposttype() {
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(parseLong(API_GSAK_ID));
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -146,8 +146,8 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 
 	@Test
 	public void shouldFindAllJournalpostWithJournalstatusFS() {
-		Journalpost ferdigstiltJournalpost1 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
-		Journalpost ferdigstiltJournalpost2 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
+		Journalpost ferdigstiltJournalpost1 = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(parseLong(API_GSAK_ID));
+		Journalpost ferdigstiltJournalpost2 = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(parseLong(API_GSAK_ID));
 		ferdigstiltJournalpost2.setKanalReferanseId("REFERANSE_ID_2");
 		journalpostTestRepository.persist(ferdigstiltJournalpost1);
 		journalpostTestRepository.persist(ferdigstiltJournalpost2);
@@ -163,8 +163,8 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 	@Test
 	public void shouldFindAllJournalpostForGsakAndPsak() {
 		Saksrelasjon psakSaksrelasjon = createPsakSaksrelasjon();
-		Journalpost gsakJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
-		Journalpost psakJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(psakSaksrelasjon);
+		Journalpost gsakJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(parseLong(API_GSAK_ID));
+		Journalpost psakJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSaksrelasjon(psakSaksrelasjon);
 		psakJournalpost.setKanalReferanseId("REFERANSE_ID_2");
 		journalpostTestRepository.persist(gsakJournalpost);
 		journalpostTestRepository.persist(psakJournalpost);
@@ -180,8 +180,8 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 	@Test
 	public void shouldFindJournalpostForHugeGsakList() {
 		Saksrelasjon psakSaksrelasjon = createPsakSaksrelasjon();
-		Journalpost gsakJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
-		Journalpost psakJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(psakSaksrelasjon);
+		Journalpost gsakJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(parseLong(API_GSAK_ID));
+		Journalpost psakJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSaksrelasjon(psakSaksrelasjon);
 		psakJournalpost.setKanalReferanseId("REFERANSE_ID_2");
 		journalpostTestRepository.persist(gsakJournalpost);
 		journalpostTestRepository.persist(psakJournalpost);
@@ -200,7 +200,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 		populateInnsyn();
 		DokumentInfo vedlegg2 = createDokumentInfo();
 		dokumentInfoRepository.persist(vedlegg2);
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(parseLong(API_GSAK_ID));
 		DokumentInfo hoveddokument = getDokumentInfoFromJpDokInfoRelasjoner(journalpost, 0);
 		journalpostTestRepository.persist(journalpost);
 		DokumentInfo vedlegg1 = getDokumentInfoFromJpDokInfoRelasjoner(journalpost, 1);
@@ -228,7 +228,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 	@Test
 	public void shouldReturnNewDokumenInfoValues() {
 		DokumentInfo vedlegg = createDokumentInfoWithMoreData();
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(parseLong(API_GSAK_ID));
 		createVedleggRelasjon(journalpost, vedlegg);
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
@@ -245,7 +245,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 
 	@Test
 	public void shouldReturnJournalpostsWithNullSaksrelasjon() {
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		Journalpost journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
 		journalpost.setJournalstatus(M);
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
@@ -277,8 +277,8 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 		dokumentInfoRepository.persist(vedlegg1);
 		dokumentInfoRepository.persist(vedlegg2);
 		dokumentInfoRepository.persist(vedlegg3);
-		Journalpost ferdigstiltJournalpost1 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
-		Journalpost ferdigstiltJournalpost2 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(parseLong(API_GSAK_ID));
+		Journalpost ferdigstiltJournalpost1 = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(parseLong(API_GSAK_ID));
+		Journalpost ferdigstiltJournalpost2 = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(parseLong(API_GSAK_ID));
 		ferdigstiltJournalpost2.setKanalReferanseId("REFERANSE_ID_2");
 		createVedleggRelasjon(ferdigstiltJournalpost1, vedlegg1);
 		createVedleggRelasjon(ferdigstiltJournalpost1, vedlegg2);
@@ -309,7 +309,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 	public void shouldPaginateResultsCorrectlyForVariousPagesizes() {
 
 		IntStream.range(0, 400).mapToObj(i -> {
-			var jp = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+			var jp = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
 			jp.setKanalReferanseId("kanalref" + i);
 			jp.setJournalstatus(JournalStatusCode.U);
 			return jp;

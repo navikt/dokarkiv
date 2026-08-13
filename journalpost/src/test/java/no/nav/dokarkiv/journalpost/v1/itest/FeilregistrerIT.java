@@ -4,7 +4,7 @@ import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
-import no.nav.dokarkiv.core.util.TestDataGenerator;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalFeilregistrereSakstilknytning() {
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Journalpost journalpost = TestdataFactory.createFerdigstiltJournalpostWithHoveddokument();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
@@ -72,7 +72,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	@Test
 	public void skalFeilregistrereSakstilknytningMedSaksbehandlertoken() {
 		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Journalpost journalpost = TestdataFactory.createFerdigstiltJournalpostWithHoveddokument();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();
@@ -94,7 +94,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalOppheveFeilregistrertSakstilknytning() {
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Journalpost journalpost = TestdataFactory.createFerdigstiltJournalpostWithHoveddokument();
 		journalpost.getSaksrelasjon().setFeilregistrert(true);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
@@ -125,7 +125,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalSetteUkjentBruker() {
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Journalpost journalpost = TestdataFactory.createFerdigstiltJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(U);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
@@ -176,7 +176,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalSetteStatusUtgaar() {
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Journalpost journalpost = TestdataFactory.createFerdigstiltJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(OD);
 		journalpost.setJournalposttype(I);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
@@ -228,7 +228,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 
 	@Test
 	public void skalReturnere405ForSettStatusUtgaarHvisJournalpostHarStatusUtgaaende() {
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Journalpost journalpost = TestdataFactory.createFerdigstiltJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(U);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
@@ -243,7 +243,7 @@ public class FeilregistrerIT extends AbstractJournalpostIT {
 	@Test
 	public void skalSetteNavIdentIUtfoertAvHvisSaksbehandlertokenErBrukt() {
 		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
-		Journalpost journalpost = TestDataGenerator.createJournalpostWithHoveddokument();
+		Journalpost journalpost = TestdataFactory.createFerdigstiltJournalpostWithHoveddokument();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
 		commitAndStartNewTransaction();

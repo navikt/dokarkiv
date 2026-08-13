@@ -10,6 +10,7 @@ import no.nav.dokarkiv.core.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.core.api.Sakstype;
+import no.nav.dokarkiv.journalpost.v1.util.TestDataUtils;
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +44,7 @@ public class SaksrelasjonUpdaterTest {
 	public void shouldUpdateSaksrelasjon() throws UgyldigAksjonsLoggException {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
-		Journalpost journalpost = TestUtils.createEnkelJournalpost();
+		Journalpost journalpost = TestDataUtils.createEnkelJournalpost();
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, SAK_ID);
 
@@ -57,7 +58,7 @@ public class SaksrelasjonUpdaterTest {
 	public void shouldUpdateSaksrelasjonWhenSaksrelasjonIsNull() {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
-		Journalpost journalpost = TestUtils.createEnkelJournalpost();
+		Journalpost journalpost = TestDataUtils.createEnkelJournalpost();
 		journalpost.setSaksrelasjon(null);
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
@@ -79,7 +80,7 @@ public class SaksrelasjonUpdaterTest {
 				.build();
 
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
-		Journalpost journalpost = TestUtils.createEnkelJournalpost();
+		Journalpost journalpost = TestDataUtils.createEnkelJournalpost();
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
 		assertEquals(parseLong(PENSJON_FAGSAK_ID), journalpost.getSaksrelasjon().getSakId());
@@ -95,7 +96,7 @@ public class SaksrelasjonUpdaterTest {
 				.build();
 
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
-		Journalpost journalpost = TestUtils.createEnkelJournalpost();
+		Journalpost journalpost = TestDataUtils.createEnkelJournalpost();
 
 		assertThrows(UgyldigInputException.class,
 				() -> updater.updateFields(journalpost, oppdaterJournalpostRequest, null),
@@ -111,7 +112,7 @@ public class SaksrelasjonUpdaterTest {
 				.build();
 
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
-		Journalpost journalpost = TestUtils.createEnkelJournalpost();
+		Journalpost journalpost = TestDataUtils.createEnkelJournalpost();
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, SAK_ID);
 		assertEquals(SAK_ID, journalpost.getSaksrelasjon().getSakId());
@@ -121,7 +122,7 @@ public class SaksrelasjonUpdaterTest {
 	public void shouldUpdateSaksrelasjonWhenSaksrelasjonSakIdIsNull() {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
-		Journalpost journalpost = TestUtils.createEnkelJournalpost();
+		Journalpost journalpost = TestDataUtils.createEnkelJournalpost();
 		journalpost.getSaksrelasjon().setSakId(null);
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
@@ -137,7 +138,7 @@ public class SaksrelasjonUpdaterTest {
 	public void shouldUpdateSaksrelasjonWhenSaksrelasjonFagsystemIsNull() {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
-		Journalpost journalpost = TestUtils.createEnkelJournalpost();
+		Journalpost journalpost = TestDataUtils.createEnkelJournalpost();
 		journalpost.getSaksrelasjon().setFagsystem(null);
 
 		ChangeTracker changeTracker = updater.updateFields(journalpost, oppdaterJournalpostRequest, null);
@@ -159,7 +160,7 @@ public class SaksrelasjonUpdaterTest {
 				.build();
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestSak(createSak);
 
-		Journalpost journalpost = TestUtils.createEnkelJournalpost();
+		Journalpost journalpost = TestDataUtils.createEnkelJournalpost();
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest, SAK_ID);
 

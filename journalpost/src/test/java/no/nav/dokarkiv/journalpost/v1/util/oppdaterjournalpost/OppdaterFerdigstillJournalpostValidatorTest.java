@@ -54,7 +54,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_PEN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.TEMA_UFO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createBrukerPerson;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEnkelJournalpost;
+import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createEnkelJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createSak;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_TITTEL;

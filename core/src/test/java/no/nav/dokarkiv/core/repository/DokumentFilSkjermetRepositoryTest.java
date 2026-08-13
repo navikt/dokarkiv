@@ -8,16 +8,14 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.core.util.TestDataGenerator;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +24,10 @@ import java.time.LocalDateTime;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static no.nav.dokarkiv.core.repository.DokumentFilSkjermetRepository.FIL_UUID_DUMMY_DOKUMENT_SKJERMET;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL_SLADDET;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDummyDokumentKassert;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDummyDokumentSkjermet;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDummyDokumentKassert;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDummyDokumentSkjermet;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFildetaljerOgFil;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -39,6 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Transactional
 @ActiveProfiles("itest")
 public class DokumentFilSkjermetRepositoryTest {
+	private static final byte[] FIL_SLADDET = "Test sladdet dokument".getBytes();
 	@Autowired
 	private JournalpostTestRepository journalpostTestRepository;
 
@@ -74,7 +72,7 @@ public class DokumentFilSkjermetRepositoryTest {
 	@Test
 	public void shouldReturnDummyDokumentWhenKassertAndArkivVariantIsSkjermet() {
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 
 		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
@@ -94,13 +92,13 @@ public class DokumentFilSkjermetRepositoryTest {
 				.getDokumentInfoId(), ARKIV, SkjermingTypeCode.POL);
 
 		DokumentFil dokumentFilAfter = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
-		assertThat(dokumentFilAfter.getFil(), is(TestDataGenerator.FIL_DUMMY_KASSERT));
+		assertThat(dokumentFilAfter.getFil(), is(TestdataFactory.FIL_DUMMY_KASSERT));
 	}
 
 	@Test
 	public void shouldReturnDummyDokumentSkjermetWhenArkivVariantIsSkjermet() {
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 
 		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
@@ -122,13 +120,13 @@ public class DokumentFilSkjermetRepositoryTest {
 
 		DokumentFil dokumentFilAfter = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
 		assertThat(dokumentFilAfter.getFilUuid(), is(FIL_UUID_DUMMY_DOKUMENT_SKJERMET));
-		assertThat(dokumentFilAfter.getFil(), is(TestDataGenerator.FIL_DUMMY_SKJERMET));
+		assertThat(dokumentFilAfter.getFil(), is(createDummyDokumentSkjermet().getFil()));
 	}
 
 	@Test
 	public void shouldReturnDummyDokumentWhenKassert() {
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 
 		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
@@ -146,13 +144,13 @@ public class DokumentFilSkjermetRepositoryTest {
 		dokumentInfoTestRepository.persist(hoveddok);
 
 		DokumentFil dokumentFilAfter = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
-		assertThat(dokumentFilAfter.getFil(), is(TestDataGenerator.FIL_DUMMY_KASSERT));
+		assertThat(dokumentFilAfter.getFil(), is(TestdataFactory.FIL_DUMMY_KASSERT));
 	}
 
 	@Test
 	public void shouldReturnDummySkjermetDokumentWhenSkjermet() {
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 
 		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo()
@@ -172,14 +170,14 @@ public class DokumentFilSkjermetRepositoryTest {
 		dokumentInfoTestRepository.persist(hoveddok);
 
 		DokumentFil dokumentFilAfter = dokumentFilSkjermetRepository.findByFilUuid(arkiv.getFilUuid());
-		assertThat(dokumentFilAfter.getFil(), is(TestDataGenerator.FIL_DUMMY_KASSERT));
+		assertThat(dokumentFilAfter.getFil(), is(TestdataFactory.FIL_DUMMY_KASSERT));
 	}
 
 
 	@Test
 	public void shouldReturnSladdetForSladdetFilUuidVariantWhenArkivVariantIsSkjermet() {
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 
 		DokumentInfo hoveddok = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		FilDetaljer arkiv = hoveddok.findFilDetaljerByVariantFormat(ARKIV);

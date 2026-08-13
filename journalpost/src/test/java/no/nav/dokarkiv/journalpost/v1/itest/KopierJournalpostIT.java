@@ -41,7 +41,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.N;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.entities.Journalpost.KANAL_REFERANSE_ID_LENGTH;
-import static no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.TestdataFactory.createJournalpostWithHoveddokumentAndSkjermetVedlegg;
+import static no.nav.dokarkiv.journalpost.v1.util.kopierjournalpost.TestdataFactory.	createJournalpostWithHoveddokumentAndSkjermetVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;

@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.util.TestDataGenerator;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +30,9 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoVedleggRelasjon;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithGjenbruktHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFildetaljerOgFil;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithGjenbruktHoveddokument;
 import static no.nav.dokarkiv.util.TestUtil.createSkjermarkivenhetRequest;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -216,7 +216,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		Journalpost journalpost1 = createJournalpostWithGjenbruktHoveddokument(originalJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
-		journalpost2.addJournalpostDokumentInfoRelasjon(TestDataGenerator.createVedleggRelasjon(journalpost2, dokumentInfo));
+		journalpost2.addJournalpostDokumentInfoRelasjon(TestdataFactory.createVedleggRelasjon(journalpost2, dokumentInfo));
 
 		journalpostTestRepository.persist(originalJournalpost);
 		journalpostTestRepository.persist(journalpost1);
@@ -402,7 +402,7 @@ public class Rjoark100bIT extends AbstractAdminIT {
 
 		Journalpost journalpost1 = createJournalpostWithGjenbruktHoveddokument(originalJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
-		journalpost2.addJournalpostDokumentInfoRelasjon(TestDataGenerator.createVedleggRelasjon(journalpost2, dokumentInfo));
+		journalpost2.addJournalpostDokumentInfoRelasjon(TestdataFactory.createVedleggRelasjon(journalpost2, dokumentInfo));
 
 		journalpostTestRepository.persist(originalJournalpost);
 		journalpostTestRepository.persist(journalpost1);

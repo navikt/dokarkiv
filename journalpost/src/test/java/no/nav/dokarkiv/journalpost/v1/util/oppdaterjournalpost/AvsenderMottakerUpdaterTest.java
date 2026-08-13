@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.util.TestDataUtils;
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +59,7 @@ class AvsenderMottakerUpdaterTest {
 		when(identConsumerMock.hentPersonnavn(eq(NY_AVSENDER_MOTTAKER_ID))).thenReturn(NY_AVSENDER_MOTTAKER_NAVN);
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithAvsenderMottaker(createAvsenderMottaker(null, NY_AVSENDER_MOTTAKER_ID, FNR));
 
-		Journalpost journalpost = TestUtils.createJournalpostForOppdatering();
+		Journalpost journalpost = TestDataUtils.createJournalpostForOppdatering();
 		ChangeTracker changeTracker = new ChangeTracker();
 
 		avsenderMottakerUpdater.updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, changeTracker);
@@ -81,7 +82,7 @@ class AvsenderMottakerUpdaterTest {
 	public void shouldRemoveAvsenderMottakerIdAndIdType() throws UgyldigAksjonsLoggException {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithAvsenderMottaker(createAvsenderMottaker(null, DELETE_MARKER, FNR, null));
 
-		Journalpost journalpost = TestUtils.createJournalpostForOppdatering();
+		Journalpost journalpost = TestDataUtils.createJournalpostForOppdatering();
 		journalpost.setAvsenderMottakerIdType(AvsenderMottakerIdTypeCode.FNR);
 		ChangeTracker changeTracker = new ChangeTracker();
 
@@ -104,7 +105,7 @@ class AvsenderMottakerUpdaterTest {
 	public void shouldRemoveAvsenderMottakerNavn() throws UgyldigAksjonsLoggException {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithAvsenderMottaker(createAvsenderMottaker(DELETE_MARKER, null, null, null));
 
-		Journalpost journalpost = TestUtils.createJournalpostForOppdatering();
+		Journalpost journalpost = TestDataUtils.createJournalpostForOppdatering();
 		ChangeTracker changeTracker = new ChangeTracker();
 
 		avsenderMottakerUpdater.updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, changeTracker);
@@ -125,7 +126,7 @@ class AvsenderMottakerUpdaterTest {
 	public void shouldNotChangeAvsenderMottaker() throws UgyldigAksjonsLoggException {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithAvsenderMottaker(null);
 
-		Journalpost journalpost = TestUtils.createJournalpostForOppdatering();
+		Journalpost journalpost = TestDataUtils.createJournalpostForOppdatering();
 		ChangeTracker changeTracker = new ChangeTracker();
 
 		avsenderMottakerUpdater.updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, changeTracker);
@@ -141,7 +142,7 @@ class AvsenderMottakerUpdaterTest {
 	public void shouldNotChangeAvsenderMottakerIdWithWrongDeleteMarker() throws UgyldigAksjonsLoggException {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithAvsenderMottaker(createAvsenderMottaker(null, "", null, null));
 
-		Journalpost journalpost = TestUtils.createJournalpostForOppdatering();
+		Journalpost journalpost = TestDataUtils.createJournalpostForOppdatering();
 		ChangeTracker changeTracker = new ChangeTracker();
 
 		avsenderMottakerUpdater.updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, changeTracker);
@@ -157,7 +158,7 @@ class AvsenderMottakerUpdaterTest {
 	public void shouldNotClearBrukerListeVedOppdateringAvLandEksisterende() throws UgyldigAksjonsLoggException {
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostAvsenderMottakerKunLandRequest();
 
-		Journalpost journalpost = TestUtils.createJournalpostForOppdatering();
+		Journalpost journalpost = TestDataUtils.createJournalpostForOppdatering();
 
 		assertNull(journalpost.getLand());
 
@@ -179,7 +180,7 @@ class AvsenderMottakerUpdaterTest {
 
 		OppdaterJournalpostRequest oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithAvsenderMottaker(avsenderMottaker);
 
-		Journalpost journalpost = TestUtils.createJournalpostForOppdatering();
+		Journalpost journalpost = TestDataUtils.createJournalpostForOppdatering();
 		ChangeTracker changeTracker = new ChangeTracker();
 
 		avsenderMottakerUpdater.updateAvsenderMottaker(journalpost, oppdaterJournalpostRequest, changeTracker);

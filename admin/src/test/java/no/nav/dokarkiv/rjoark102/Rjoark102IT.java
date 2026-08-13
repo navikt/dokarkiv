@@ -26,10 +26,9 @@ import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL_UUID_ARKIV;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFildetaljerOgFil;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createVedleggRelasjon;
 import static no.nav.dokarkiv.util.TestUtil.KASSERT_AV_NAVN;
 import static no.nav.dokarkiv.util.TestUtil.createKasserDokumentRequest;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,6 +42,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class Rjoark102IT extends AbstractAdminIT {
+	private static final String FIL_UUID_ARKIV = "filuuid_arkiv";
 
 	@Test
 	public void skalIkkeKassereDokumentNårDokmentInfoIkkeFinnes() {
@@ -163,7 +163,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentMedSomErKnyttetTilEnJournalpost() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
 		dokumentInfoSomSkalKasseres.addFilDetaljer(createFildetaljerOgFil(dokumentInfoSomSkalKasseres, ARKIV, FIL_UUID_ARKIV));
@@ -203,7 +203,7 @@ public class Rjoark102IT extends AbstractAdminIT {
 
 	@Test
 	public void skalKassereDokumentSomErKnyttetTilEnJournalpostMedClientCredentialTokenFraJoarkadmin() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalKasseres = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		dokumentInfoSomSkalKasseres.removeFilDetaljer(dokumentInfoSomSkalKasseres.findFilDetaljerByVariantFormat(ARKIV));
 		dokumentInfoSomSkalKasseres.addFilDetaljer(createFildetaljerOgFil(dokumentInfoSomSkalKasseres, ARKIV, FIL_UUID_ARKIV));

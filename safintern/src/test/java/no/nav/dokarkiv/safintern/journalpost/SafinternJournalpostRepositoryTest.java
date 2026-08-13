@@ -22,6 +22,7 @@ import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.repository.SakTestRepository;
 import no.nav.dokarkiv.core.repository.UtsendingsInfoTestRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.safintern.SafinternConfig;
 import no.nav.dokarkiv.safintern.views.AvsenderMottakerView;
 import no.nav.dokarkiv.safintern.views.DigitalPostadresseView;
@@ -61,31 +62,24 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON_DLF
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SKANNING_META;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static no.nav.dokarkiv.core.stelvio.RequestContextUtil.createAndSetUsername;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.ADRESSELINJE1;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.ADRESSELINJE2;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.ADRESSELINJE3;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.ANTALL_RETUR;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_ID_TYPE;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_LAND;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_NAVN;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.BEHANDLINGSTEMA;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.BREVKODE;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.DOKUMENT_INFO_TITTEL;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.DOKUMENT_TYPE_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.INNHOLD;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.JOURNALFOERENDE_ENHET;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.JOURNALFOERT_AV_NAVN;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.LANDKODE_NO;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_AV_NAVN;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.POSTNUMMER;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.POSTSTED;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.SKANNET_INNHOLD_TITTEL;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.SKANNET_INNHOLD_TITTEL_2;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.SKJERMING_TYPE_CODE;
-import static no.nav.dokarkiv.core.util.TestdataFactory.BEHANDLINGSTEMA_DEKODE;
-import static no.nav.dokarkiv.core.util.TestdataFactory.BRUK_STANDARDREGLER_INNSYNSBESKRIVELSE;
+import static no.nav.dokarkiv.core.util.TestdataFactory.ADRESSELINJE1;
+import static no.nav.dokarkiv.core.util.TestdataFactory.ADRESSELINJE2;
+import static no.nav.dokarkiv.core.util.TestdataFactory.ADRESSELINJE3;
+import static no.nav.dokarkiv.core.util.TestdataFactory.AVSENDER_MOTTAKER_ID_TYPE;
+import static no.nav.dokarkiv.core.util.TestdataFactory.AVSENDER_MOTTAKER_LAND;
+import static no.nav.dokarkiv.core.util.TestdataFactory.AVSENDER_MOTTAKER_NAVN;
+import static no.nav.dokarkiv.core.util.TestdataFactory.BEHANDLINGSTEMA;
+import static no.nav.dokarkiv.core.util.TestdataFactory.BREVKODE;
+import static no.nav.dokarkiv.core.util.TestdataFactory.DOKUMENT_INFO_TITTEL;
+import static no.nav.dokarkiv.core.util.TestdataFactory.DOKUMENT_TYPE_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.INNHOLD;
+import static no.nav.dokarkiv.core.util.TestdataFactory.JOURNALFOERENDE_ENHET;
+import static no.nav.dokarkiv.core.util.TestdataFactory.JOURNALFOERT_AV_NAVN;
+import static no.nav.dokarkiv.core.util.TestdataFactory.KANAL_REFERANSE_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.OPPRETTET_AV_NAVN;
+import static no.nav.dokarkiv.core.util.TestdataFactory.SKANNET_INNHOLD_TITTEL;
+import static no.nav.dokarkiv.core.util.TestdataFactory.SKANNET_INNHOLD_TITTEL_2;
+import static no.nav.dokarkiv.core.util.TestdataFactory.SKJERMING_TYPE_CODE;
 import static no.nav.dokarkiv.core.util.TestdataFactory.FIL_NAVN;
 import static no.nav.dokarkiv.core.util.TestdataFactory.TILLEGGOPPLYSNINGER_KEY_1;
 import static no.nav.dokarkiv.core.util.TestdataFactory.TILLEGGOPPLYSNINGER_KEY_2;
@@ -97,7 +91,6 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.TILLEGGOPPLYSNINGER_VAL_
 import static no.nav.dokarkiv.core.util.TestdataFactory.TILLEGGOPPLYSNINGER_VAL_4;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createDigitalPostUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFildetaljerOgFil;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createNavNoUtsendingsInfo;
@@ -111,6 +104,13 @@ import static org.assertj.core.api.Assertions.tuple;
 @ContextConfiguration(classes = {RepositoryConfig.class, SkjermingService.class, SkjermingServiceTest.class, SafinternConfig.class})
 @ActiveProfiles("itest")
 class SafinternJournalpostRepositoryTest {
+	private static final Integer ANTALL_RETUR = 3;
+	private static final String AVSENDER_MOTTAKER_ID = "02016126007";
+	private static final String LANDKODE_NO = "NO";
+	private static final String POSTNUMMER = "postnummer";
+	private static final String POSTSTED = "poststed";
+	private static final String BEHANDLINGSTEMA_DEKODE = "Lønnskompensasjon";
+	private static final String BRUK_STANDARDREGLER_INNSYNSBESKRIVELSE = "Standardreglene avgjør om dokumentet vises";
 
 	@Autowired
 	private EntityManager entityManager;
@@ -137,7 +137,7 @@ class SafinternJournalpostRepositoryTest {
 	void shouldHentJournalpost() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		setSkjermingVedlegg(actualJournalpost);
 		journalpostTestRepository.persist(actualJournalpost);
@@ -170,7 +170,7 @@ class SafinternJournalpostRepositoryTest {
 	void shouldHentJournalpostByEksternReferanseId() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		setSkjermingVedlegg(actualJournalpost);
 		journalpostTestRepository.persist(actualJournalpost);
@@ -203,7 +203,7 @@ class SafinternJournalpostRepositoryTest {
 	void shouldHentJournalpostByJournalpostIdAndDokumentInfoId() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
@@ -232,7 +232,7 @@ class SafinternJournalpostRepositoryTest {
 	void shouldHentJournalpostWhenNavNo() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createNavNoUtsendingsInfo(actualJournalpost);
 		utsendingsInfoTestRepository.persist(utsendingsInfo);
@@ -245,7 +245,7 @@ class SafinternJournalpostRepositoryTest {
 	void shouldHentJournalpostWhenDigitalpost() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.SDP);
 		journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createDigitalPostUtsendingsInfo(actualJournalpost);
@@ -278,7 +278,7 @@ class SafinternJournalpostRepositoryTest {
 
 	@Test
 	void shouldReturnFiveValidVariantformater() {
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(1L);
 		DokumentInfo dokumentInfo = actualJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, SLADDET, FilTypeCode.XML, UUID.randomUUID().toString()));

@@ -57,8 +57,8 @@ import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_H
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.generateInnsynWithDescription;
+import static no.nav.dokarkiv.core.util.TestdataFactory.OPPRETTET_KILDE_NAVN;
+import static no.nav.dokarkiv.core.util.TestdataFactory.generateInnsynWithDescription;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;

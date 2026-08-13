@@ -17,8 +17,8 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoVedleggRelasjon;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.springframework.http.HttpMethod.PATCH;
@@ -34,7 +34,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	void skalAvviseRequestMedHjemmelPOLMedBadRequest() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -59,7 +59,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	void skalSkjermeRelasjonerOgLoggeAksjonsloggForARK() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -87,7 +87,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	void skalOverskriveSkjermingOmDokumentErSkjermetMenNyVerdiIRequest() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -125,7 +125,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	void skalSkjermeJournalpostNaarAlleRelasjonerErSkjermet() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 
 		JournalpostDokumentInfoRelasjon vedleggRelasjon = createDokumentInfoVedleggRelasjon(journalpost);
 		vedleggRelasjon.getDokumentInfo().setSkjermingType(SkjermingTypeCode.ARK);
@@ -163,7 +163,7 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	void skalIkkeSkjermeJournalpostNaarIkkeAlleRelasjonerErSkjermet() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 
 		createDokumentInfoVedleggRelasjon(journalpost);
 
@@ -199,15 +199,15 @@ class SkjermDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	void skalSkjermeDokumentSomErKnyttetTilFlereJournalposter() {
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost1);
 		DokumentInfo deldDokumentInfo = journalpost1.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		Long dokumentInfoId = deldDokumentInfo.getDokumentInfoId();
 
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createFerdigstiltJournalpostWithHoveddokument();
 		journalpost2.setKanalReferanseId("KANAL_REFERANSE_ID_2");
 
-		JournalpostDokumentInfoRelasjon vedleggRelasjon = no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon(journalpost2, deldDokumentInfo);
+		JournalpostDokumentInfoRelasjon vedleggRelasjon = no.nav.dokarkiv.core.util.TestdataFactory.createVedleggRelasjon(journalpost2, deldDokumentInfo);
 		journalpostTestRepository.persist(journalpost2);
 
 		commitAndStartNewTransaction();

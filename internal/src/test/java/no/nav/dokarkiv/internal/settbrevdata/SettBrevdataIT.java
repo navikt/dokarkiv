@@ -14,9 +14,9 @@ import java.util.UUID;
 
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.FIL;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createReservertPensjonJournalpost;
+import static no.nav.dokarkiv.core.util.TestdataFactory.FIL;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createReservertPensjonJournalpost;
 import static no.nav.dokarkiv.internal.settbrevdata.SettBrevdataController.INTERN_ROLE_BREVSERVER;
 import static no.nav.dokarkiv.internal.settbrevdata.SettBrevdataController.VARIANT_FORMAT_ARKIV;
 import static no.nav.dokarkiv.internal.settbrevdata.SettBrevdataController.VARIANT_FORMAT_PRODUKSJON;
@@ -132,7 +132,7 @@ public class SettBrevdataIT extends AbstractInternalIT {
 
 	@Test
 	void shouldReturnConflictWhenJournalStatusUgyldig() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 		commitAndStartNewTransaction();
 

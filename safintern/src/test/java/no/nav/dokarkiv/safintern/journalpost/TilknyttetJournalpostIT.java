@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
 import no.nav.dokarkiv.safintern.SafinternConstants;
 import org.json.JSONException;
@@ -20,12 +21,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import static java.util.Collections.emptySet;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.getDokumentInfoFromJpDokInfoRelasjoner;
+import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfo;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createHoveddokumentRelasjonGjenbruktDokumentInfo;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createHoveddokumentRelasjon;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
@@ -40,11 +40,11 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 	void shouldGetJournalposterTilknyttetDokumentInfoId() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost opprinneligJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
-		Journalpost gjenbrukendeJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost opprinneligJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
+		Journalpost gjenbrukendeJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		gjenbrukendeJournalpost.setKanalReferanseId("En annen referanseId");
 		gjenbrukendeJournalpost.getJournalpostDokumentInfoRelasjoner().forEach(gjenbrukendeJournalpost::removeJournalpostDokumentInfoRelasjon);
-		gjenbrukendeJournalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjonGjenbruktDokumentInfo(gjenbrukendeJournalpost, getDokumentInfoFromJpDokInfoRelasjoner(opprinneligJournalpost, 0)));
+		gjenbrukendeJournalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(gjenbrukendeJournalpost, getDokumentInfoFromJpDokInfoRelasjoner(opprinneligJournalpost, 0)));
 		opprinneligJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		setSkjermingVedlegg(opprinneligJournalpost);
 		gjenbrukendeJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
@@ -80,11 +80,11 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 	void shouldGetJournalposterTilknyttetDokumentInfoIdWithOnlySelectedFields() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost opprinneligJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
-		Journalpost gjenbrukendeJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost opprinneligJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
+		Journalpost gjenbrukendeJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		gjenbrukendeJournalpost.setKanalReferanseId("En annen referanseId");
 		gjenbrukendeJournalpost.getJournalpostDokumentInfoRelasjoner().forEach(gjenbrukendeJournalpost::removeJournalpostDokumentInfoRelasjon);
-		gjenbrukendeJournalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjonGjenbruktDokumentInfo(gjenbrukendeJournalpost, getDokumentInfoFromJpDokInfoRelasjoner(opprinneligJournalpost, 0)));
+		gjenbrukendeJournalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(gjenbrukendeJournalpost, getDokumentInfoFromJpDokInfoRelasjoner(opprinneligJournalpost, 0)));
 		opprinneligJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		gjenbrukendeJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		Journalpost persistedJournalpost = journalpostTestRepository.persist(opprinneligJournalpost);

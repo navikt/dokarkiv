@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
 import no.nav.dokarkiv.safintern.SafinternConstants;
 import org.json.JSONException;
@@ -19,8 +20,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
@@ -36,7 +36,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 	void shouldGetJournalpostByJournalpostId() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		setSkjermingVedlegg(actualJournalpost);
 		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
@@ -55,7 +55,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 	void shouldGetJournalpostByJournalpostIdWithFields() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -71,7 +71,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 	void shouldGetJournalpostByEksternReferanseId() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		setSkjermingVedlegg(actualJournalpost);
 		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
@@ -91,7 +91,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 	void shouldGetJournalpostByIdAndDokumentInfoId() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
@@ -113,7 +113,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 	void shouldGetJournalpostByIdAndDokumentInfoIdWithSafTilgangFetches() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		actualJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSkjermingType(POL);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);
@@ -136,7 +136,7 @@ public class JournalpostIT extends AbstractSafinternTest {
 	void shouldGetJournalpostByIdAndDokumentInfoIdWithSafselvbetjeningTilgangFetches() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		actualJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().setSkjermingType(POL);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		Journalpost persistedJournalpost = journalpostTestRepository.persist(actualJournalpost);

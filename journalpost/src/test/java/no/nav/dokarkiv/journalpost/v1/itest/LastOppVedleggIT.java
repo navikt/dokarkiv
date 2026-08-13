@@ -26,12 +26,12 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ORIGINAL;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.BREVKODE;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.TITTEL;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFilMedFilnavn;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.BREVKODE;
+import static no.nav.dokarkiv.core.util.TestdataFactory.TITTEL;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfo;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFildetaljerOgFilMedFilnavn;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createVedleggRelasjon;
 import static no.nav.dokarkiv.journalpost.v1.controllers.ArkiverOgJournalfoerRestController.BREV_ADMIN_SCOPE;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createJournalpostUnderArbeid;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILNAVN_PDF;
@@ -379,7 +379,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnConflictWhenJournalpostIsNotUnderProduksjon() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(J);
 		Long journalpostId = saveJournalpost(journalpost).getJournalpostId();
 

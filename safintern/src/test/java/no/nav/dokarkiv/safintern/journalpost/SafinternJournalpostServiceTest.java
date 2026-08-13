@@ -14,6 +14,7 @@ import no.nav.dokarkiv.core.repository.SakTestRepository;
 import no.nav.dokarkiv.core.repository.UtsendingsInfoTestRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
+import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.safintern.SafinternConfig;
 import no.nav.dokarkiv.safintern.views.DokumentinfoView;
 import no.nav.dokarkiv.safintern.views.JournalpostView;
@@ -32,8 +33,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.S;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.SKJERMING_TYPE_CODE;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.SKJERMING_TYPE_CODE;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
@@ -84,7 +84,7 @@ public class SafinternJournalpostServiceTest {
 	void shouldFetch() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(S);
 		journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
@@ -102,7 +102,7 @@ public class SafinternJournalpostServiceTest {
 	void shouldFetchDokumenterPaths() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(S);
 		setSkjermingVedlegg(actualJournalpost);
 		journalpostTestRepository.persist(actualJournalpost);

@@ -45,8 +45,8 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFil;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFildetaljerOgFil;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.IKKE_FUNNET;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.UGYLDIG_STATUS;
@@ -579,7 +579,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	}
 
 	private Journalpost createJournalpostSladdet() {
-		Journalpost journalpostSladdet = createJournalpostWithHoveddokument();
+		Journalpost journalpostSladdet = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostSladdet.setJournalstatus(J);
 		journalpostSladdet.setJournalposttype(U);
 		journalpostSladdet.setOpprettetAvNavn("opprettetAvNavn");
@@ -595,7 +595,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	}
 
 	private Journalpost createJournalpostArkiv(JournalpostTypeCode journalpostTypeCode) {
-		Journalpost journalpostArkiv = createJournalpostWithHoveddokument();
+		Journalpost journalpostArkiv = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostArkiv.setJournalstatus(D);
 		journalpostArkiv.setJournalposttype(journalpostTypeCode);
 		journalpostArkiv.setOpprettetAvNavn("opprettetAvNavn");

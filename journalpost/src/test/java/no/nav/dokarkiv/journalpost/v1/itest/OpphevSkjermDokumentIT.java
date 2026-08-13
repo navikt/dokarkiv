@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.springframework.http.HttpMethod.PATCH;
@@ -33,7 +33,7 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	void skalFjerneSkjermingFraJournalpostNaarJournalpostenErSkjermet() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long journalpostId = journalpost.getJournalpostId();
 		Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
@@ -71,7 +71,7 @@ class OpphevSkjermDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	void skalGiBadRequestNarDokumentIkkeErSkjermet() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
