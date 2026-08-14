@@ -881,6 +881,11 @@
       "app": "watson-admin-api",
       "namespace": "holmes",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "translatore-backend-q2",
+      "namespace": "ki-oversetter",
+      "cluster": "dev-gcp"
     }
   ]
 }
