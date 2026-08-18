@@ -1,21 +1,19 @@
 package no.nav.dokarkiv.core.consumer.pdl;
 
-import no.nav.dokarkiv.core.consumer.azure.AzureToken;
-import no.nav.dokarkiv.core.consumer.azure.WebClientAzureAuthentication;
 import no.nav.dokarkiv.core.exceptions.PdlTechnicalException;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
-import no.nav.dokarkiv.core.util.NavHeadersFilter;
-import org.springframework.http.ResponseEntity;
+import org.springframework.graphql.client.ClientGraphQlResponse;
+import org.springframework.graphql.client.HttpSyncGraphQlClient;
 import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import static no.nav.dokarkiv.core.consumer.texas.NaisTexasRequestInterceptor.TARGET_SCOPE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -29,21 +27,37 @@ public class PdlIdentConsumer implements IdentConsumer {
 	private static final String HEADER_PDL_BEHANDLINGSNUMMER = "behandlingsnummer";
 	// https://behandlingskatalog.nais.adeo.no/process/purpose/ARKIVPLEIE/756fd557-b95e-4b20-9de9-6179fb8317e6
 	private static final String ARKIVPLEIE_BEHANDLINGSNUMMER = "B315";
+	public static final String HENT_AKTOERID_FOR_FOLKEREGISTERIDENT = "query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: AKTORID, historikk: false) {identer { ident gruppe historisk } } }";
+	public static final String HENT_FOLKEREGISTERIDENT_FOR_AKTOERID = "query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: [FOLKEREGISTERIDENT, NPID] historikk: false) {identer { ident gruppe historisk } } }";
+	public static final String HENT_PERSON_IDENT_FOR_ID = """
+		query hentPerson($ident: ID!) {hentPerson(ident: $ident) {
+		  navn(historikk: false) {
+		    fornavn
+		    mellomnavn
+		    etternavn
+		  }
+		}}""";
+	public static final String HENT_ALLE_AKTOERID_FOR_IDENT = """
+		query hentIdenter($ident: ID!) {
+		hentIdenter(ident: $ident, grupper: AKTORID, historikk: true) {
+		identer { ident gruppe historisk } } }
+		""";
+	private final HttpSyncGraphQlClient graphQlClient;
+	private final String pdlScope;
 
-	private final WebClient webClient;
-
-	public PdlIdentConsumer(WebClient webClient,
-							DokarkivProperties dokarkivProperties,
-							AzureToken azureToken) {
-		this.webClient = webClient.mutate()
-				.baseUrl(dokarkivProperties.getEndpoints().getPdl().getUrl())
-				.defaultHeaders((headers) -> {
-					headers.setContentType(APPLICATION_JSON);
-					headers.set(HEADER_PDL_BEHANDLINGSNUMMER, ARKIVPLEIE_BEHANDLINGSNUMMER);
-				})
-				.filter(new NavHeadersFilter())
-				.filter(new WebClientAzureAuthentication(azureToken, dokarkivProperties.getEndpoints().getPdl().getScope()))
-				.build();
+	public PdlIdentConsumer(RestClient restClient,
+							DokarkivProperties dokarkivProperties) {
+		this.pdlScope = dokarkivProperties.getEndpoints().getPdl().getScope();
+		this.graphQlClient = HttpSyncGraphQlClient.builder(
+				restClient.mutate()
+					.baseUrl(dokarkivProperties.getEndpoints().getPdl().getUrl())
+					.defaultHeaders((headers) -> {
+						headers.setContentType(APPLICATION_JSON);
+						headers.set(HEADER_PDL_BEHANDLINGSNUMMER, ARKIVPLEIE_BEHANDLINGSNUMMER);
+					})
+					.build()
+			)
+			.build();
 	}
 
 	@Retryable(includes = HttpServerErrorException.class)
@@ -51,30 +65,23 @@ public class PdlIdentConsumer implements IdentConsumer {
 	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
 
 		String ident = validateAndTrimIdent(folkeregisterIdent);
-		PdlResponse pdlResponse = webClient.post()
-				.bodyValue(mapHentAktoerIdForFolkeregisterident(ident))
-				.retrieve()
-				.bodyToMono(PdlResponse.class)
-				.onErrorMap(this::mapError)
-				.block();
+		ClientGraphQlResponse graphQlResponse = graphQlClient
+			.document(HENT_AKTOERID_FOR_FOLKEREGISTERIDENT)
+			.variable("ident", ident)
+			.attribute(TARGET_SCOPE, pdlScope)
+			.execute()
+			.onErrorMap(this::mapError)
+			.block();
 
-		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-			return isPdlResponseOrIdenterNull(pdlResponse) ? null : pdlResponse.getData().getHentIdenter().getIdenter().get(0).getIdent();
+		if (graphQlResponse.getErrors().isEmpty()) {
+			PdlResponse.PdlHentIdenter pdlResponse = graphQlResponse.toEntity(PdlResponse.PdlHentIdenter.class);
+			return isPdlResponseOrIdenterNull(pdlResponse) ? null : pdlResponse.getHentIdenter().getIdenter().getFirst().getIdent();
 		} else {
-			if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
+			if (PERSON_IKKE_FUNNET_CODE.equals(graphQlResponse.getErrors().getFirst().getExtensions().get("code"))) {
 				throw new PersonIkkeFunnetException("Fant ikke aktørid for person i pdl.");
 			}
-			throw new PdlFunctionalException("Kunne ikke hente aktørid for folkeregisterident i pdl. " + pdlResponse.getErrors());
+			throw new PdlFunctionalException("Kunne ikke hente aktørid for folkeregisterident i pdl. " + graphQlResponse.getErrors());
 		}
-	}
-
-	private PdlRequest mapHentAktoerIdForFolkeregisterident(final String ident) {
-		final HashMap<String, Object> variables = new HashMap<>();
-		variables.put("ident", ident);
-		return PdlRequest.builder()
-				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: AKTORID, historikk: false) {identer { ident gruppe historisk } } }")
-				.variables(variables)
-				.build();
 	}
 
 	@Retryable(includes = HttpServerErrorException.class)
@@ -82,30 +89,23 @@ public class PdlIdentConsumer implements IdentConsumer {
 	public String hentFolkeregisterIdent(String aktoerId) throws PersonIkkeFunnetException {
 
 		String ident = validateAndTrimIdent(aktoerId);
-		final PdlResponse pdlResponse = webClient.post()
-				.bodyValue(mapHentFolkeregisterIdentForAktoerId(ident))
-				.retrieve()
-				.bodyToMono(PdlResponse.class)
-				.onErrorMap(this::mapError)
-				.block();
+		ClientGraphQlResponse graphQlResponse = graphQlClient
+			.document(HENT_FOLKEREGISTERIDENT_FOR_AKTOERID)
+			.variable("ident", ident)
+			.attribute(TARGET_SCOPE, pdlScope)
+			.execute()
+			.onErrorMap(this::mapError)
+			.block();
 
-		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-			return pdlResponse.getData().getHentIdenter().getIdenter().get(0).getIdent();
+		if (graphQlResponse.getErrors().isEmpty()) {
+			PdlResponse.PdlHentIdenter pdlResponse = graphQlResponse.toEntity(PdlResponse.PdlHentIdenter.class);
+			return pdlResponse.getHentIdenter().getIdenter().getFirst().getIdent();
 		} else {
-			if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
+			if (PERSON_IKKE_FUNNET_CODE.equals(graphQlResponse.getErrors().get(0).getExtensions().get("code"))) {
 				throw new PersonIkkeFunnetException("Fant ikke folkeregisterident for person i pdl.");
 			}
-			throw new PdlFunctionalException("Kunne ikke hente folkeregisterident for aktørid i pdl. " + pdlResponse.getErrors());
+			throw new PdlFunctionalException("Kunne ikke hente folkeregisterident for aktørid i pdl. " + graphQlResponse.getErrors());
 		}
-	}
-
-	private PdlRequest mapHentFolkeregisterIdentForAktoerId(final String ident) {
-		final HashMap<String, Object> variables = new HashMap<>();
-		variables.put("ident", ident);
-		return PdlRequest.builder()
-				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: [FOLKEREGISTERIDENT, NPID] historikk: false) {identer { ident gruppe historisk } } }")
-				.variables(variables)
-				.build();
 	}
 
 	@Retryable(includes = HttpServerErrorException.class)
@@ -113,81 +113,57 @@ public class PdlIdentConsumer implements IdentConsumer {
 	public List<String> hentAlleAktoerIdsForIdent(final String ident) throws PersonIkkeFunnetException {
 		String trimmedIdent = validateAndTrimIdent(ident);
 
-		PdlResponse pdlResponse = webClient.post()
-				.bodyValue(mapHentAlleAktoerIdsForIdent(trimmedIdent))
-				.retrieve()
-				.bodyToMono(PdlResponse.class)
-				.onErrorMap(this::mapError)
-				.block();
+		ClientGraphQlResponse graphQlResponse = graphQlClient
+			.document(HENT_ALLE_AKTOERID_FOR_IDENT)
+			.variable("ident", trimmedIdent)
+			.attribute(TARGET_SCOPE, pdlScope)
+			.execute()
+			.onErrorMap(this::mapError)
+			.block();
 
-		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-			return pdlResponse.getData().getHentIdenter().getIdenter()
-					.stream().map(PdlResponse.PdlIdent::getIdent).toList();
+		if (graphQlResponse.getErrors().isEmpty()) {
+			PdlResponse.PdlHentIdenter pdlResponse = graphQlResponse.toEntity(PdlResponse.PdlHentIdenter.class);
+			return pdlResponse.getHentIdenter().getIdenter()
+				.stream().map(PdlResponse.PdlIdent::getIdent).toList();
 		} else {
-			if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
+			if (PERSON_IKKE_FUNNET_CODE.equals(graphQlResponse.getErrors().get(0).getExtensions().get("code"))) {
 				throw new PersonIkkeFunnetException("Fant ikke historiske aktørIder for person i pdl.");
 			}
-			throw new PdlFunctionalException("Kunne ikke hente historiske identer for ident." + pdlResponse.getErrors());
+			throw new PdlFunctionalException("Kunne ikke hente historiske identer for ident." + graphQlResponse.getErrors());
 		}
 	}
 
 	@Retryable(includes = HttpServerErrorException.class)
 	@Override
 	public String hentPersonnavn(String ident) {
+		String validateAndTrimIdent = validateAndTrimIdent(ident);
+		ClientGraphQlResponse graphQlResponse = graphQlClient
+			.document(HENT_PERSON_IDENT_FOR_ID)
+			.variable("ident", validateAndTrimIdent)
+			.attribute(TARGET_SCOPE, pdlScope)
+			.execute()
+			.onErrorMap(this::mapError)
+			.block();
 
-		ResponseEntity<PdlPersonResponse> pdlPersonResponse = webClient.post()
-				.bodyValue(mapHentPersonIdentForId(validateAndTrimIdent(ident)))
-				.retrieve()
-				.toEntity(PdlPersonResponse.class)
-				.onErrorMap(this::mapError)
-				.block();
-
-		if (pdlPersonResponse.getBody().getData().getHentPerson() != null && !pdlPersonResponse.getBody().getData().getHentPerson().getNavn().isEmpty()) {
-			return pdlPersonResponse.getBody().getData().getHentPerson().getNavn().get(0).getFulltNavn();
+		PdlPersonResponse.PdlHentPersoner pdlPersonResponse = graphQlResponse.toEntity(PdlPersonResponse.PdlHentPersoner.class);
+		if (pdlPersonResponse.getHentPerson() != null && !pdlPersonResponse.getHentPerson().getNavn().isEmpty()) {
+			return pdlPersonResponse.getHentPerson().getNavn().getFirst().getFulltNavn();
 		} else {
-			if (pdlPersonResponse.getBody().getErrors() == null || pdlPersonResponse.getBody().getErrors().isEmpty()) {
+			if (graphQlResponse.getErrors().isEmpty()) {
 				throw new PdlFunctionalException("Person har ikke navn i pdl.");
 			} else {
-				if (PERSON_IKKE_FUNNET_CODE.equals(pdlPersonResponse.getBody().getErrors().get(0).getExtensions().getCode())) {
+				if (PERSON_IKKE_FUNNET_CODE.equals(graphQlResponse.getErrors().getFirst().getExtensions().get("code"))) {
 					throw new PersonIkkeFunnetException("Fant ikke navn for person i pdl.");
 				}
 			}
-			throw new PdlFunctionalException("Kunne ikke hente navn for aktørid i pdl. " + pdlPersonResponse.getBody().getErrors());
+			throw new PdlFunctionalException("Kunne ikke hente navn for aktørid i pdl. " + graphQlResponse.getErrors());
 		}
 	}
 
-	private PdlRequest mapHentPersonIdentForId(final String ident) {
-		final HashMap<String, Object> variables = new HashMap<>();
-		variables.put("ident", ident);
-		return PdlRequest.builder()
-				.query("query hentPerson($ident: ID!) {hentPerson(ident: $ident) {\n" +
-					   "navn(historikk: false) {\n" +
-					   "  fornavn\n" +
-					   "  mellomnavn\n" +
-					   "  etternavn\n" +
-					   "}" +
-					   "}}")
-				.variables(variables)
-				.build();
-	}
-
-	private PdlRequest mapHentAlleAktoerIdsForIdent(final String aktoerId) {
-		final HashMap<String, Object> variables = new HashMap<>();
-		variables.put("ident", aktoerId);
-		return PdlRequest.builder()
-				.query("""
-						query hentIdenter($ident: ID!) {
-						hentIdenter(ident: $ident, grupper: AKTORID, historikk: true) {
-						identer { ident gruppe historisk } } }
-						""")
-				.variables(variables)
-				.build();
-	}
-
-	boolean isPdlResponseOrIdenterNull(PdlResponse pdlResponse) {
-		return Objects.isNull(pdlResponse.getData().getHentIdenter()) ||
-			   Objects.isNull(pdlResponse.getData().getHentIdenter().getIdenter()) ||
-			   pdlResponse.getData().getHentIdenter().getIdenter().isEmpty();
+	boolean isPdlResponseOrIdenterNull(PdlResponse.PdlHentIdenter pdlHentIdenter) {
+		return Objects.isNull(pdlHentIdenter) ||
+			Objects.isNull(pdlHentIdenter.getHentIdenter().getIdenter()) ||
+			pdlHentIdenter.getHentIdenter().getIdenter().isEmpty();
 	}
 
 	String validateAndTrimIdent(String ident) {
@@ -211,14 +187,14 @@ public class PdlIdentConsumer implements IdentConsumer {
 	private Throwable mapError(Throwable error) {
 		if (error instanceof WebClientResponseException response && response.getStatusCode().is4xxClientError()) {
 			return new PdlFunctionalException(
-					String.format("Kall mot pdl feilet funksjonelt med statuskode=%s Feilmelding=%s",
-							response.getStatusCode(),
-							response.getMessage()),
-					error);
+				String.format("Kall mot pdl feilet funksjonelt med statuskode=%s Feilmelding=%s",
+					response.getStatusCode(),
+					response.getMessage()),
+				error);
 		} else {
 			return new PdlTechnicalException(
-					String.format("Kall mot pdl feilet teknisk med feilmelding=%s", error.getMessage()),
-					error);
+				String.format("Kall mot pdl feilet teknisk med feilmelding=%s", error.getMessage()),
+				error);
 		}
 	}
 }

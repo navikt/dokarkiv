@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.core.consumer.pdl;
 
-import no.nav.dokarkiv.core.consumer.azure.AzureToken;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.BeforeAll;
@@ -8,20 +7,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class PdlIdentConsumerTest {
 
 	protected PdlIdentConsumer pdlIdentConsumer;
 	private static MockWebServer mockServer;
-	private WebClient webClient;
+	private RestClient restClient;
 
 	@BeforeAll
 	static void setupServer() throws IOException {
@@ -32,10 +30,10 @@ public class PdlIdentConsumerTest {
 	@BeforeEach
 	public void intialize() {
 
-		webClient = WebClient.builder().baseUrl(String.format("http://localhost:%s", mockServer.getPort())).build();
+		restClient = RestClient.builder().baseUrl(String.format("http://localhost:%s", mockServer.getPort())).build();
 
 		pdlIdentConsumer = new PdlIdentConsumer(
-				webClient, dokarkivProperties(), mock(AzureToken.class));
+				restClient, dokarkivProperties());
 	}
 
 	@Test
