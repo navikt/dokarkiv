@@ -53,7 +53,7 @@ public class TestDataGenerator {
 	public static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	public static final String OPPRETTET_AV_NAVN = "Opprettet navn";
 	public static final String ENDRET_AV_NAVN = "Endret av navn";
-	public static final String AVSENDER_MOTTAKER_ID = "02016126007";
+	public static final String AVSENDER_MOTTAKER_ID = "11111111111";
 	public static final String AVSENDER_MOTTAKER_NAVN = "Jim Hopper";
 	public static final String AVSENDER_MOTTAKER_LAND = "NO";
 	public static final AvsenderMottakerIdTypeCode AVSENDER_MOTTAKER_ID_TYPE = AvsenderMottakerIdTypeCode.FNR;

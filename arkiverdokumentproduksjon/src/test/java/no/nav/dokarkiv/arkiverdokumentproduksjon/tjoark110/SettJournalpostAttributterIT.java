@@ -178,7 +178,7 @@ public class SettJournalpostAttributterIT extends AbstractArkiverdokumentproduks
 
 	private Journalpost buildAndPersistJournalpost() {
 		Journalpost journalpost = getJournalpostBuilder()
-				.avsenderMottakerId("02016126007")
+				.avsenderMottakerId("11111111111")
 				.journalStatus(JournalStatusCode.D)
 				.journalpostType(JournalpostTypeCode.U)
 				.opprettetAvNavn("opprettetAvNavn")

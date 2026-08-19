@@ -44,7 +44,7 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 public class TestdataFactory {
 	static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	static final String OPPRETTET_AV_NAVN = "Opprettet navn";
-	static final String AVSENDER_MOTTAKER_ID = "02016126007";
+	static final String AVSENDER_MOTTAKER_ID = "11111111111";
 	static final String AVSENDER_MOTTAKER_NAVN = "Jim Hopper";
 	static final String AVSENDER_MOTTAKER_LAND = "NO";
 	static final AvsenderMottakerIdTypeCode AVSENDER_MOTTAKER_ID_TYPE = FNR;

@@ -122,7 +122,7 @@ public class FerdigstillJournalpostIT extends AbstractArkiverdokumentproduksjonI
 
 	private Journalpost buildAndPersistJournalpost(DokumentStatusCode dokumentStatusCode) {
 		Journalpost journalpost = getJournalpostBuilder()
-				.avsenderMottakerId("02016126007")
+				.avsenderMottakerId("11111111111")
 				.dokumentDato(LocalDateTime.now())
 				.journalStatus(JournalStatusCode.D)
 				.journalpostType(JournalpostTypeCode.U)
