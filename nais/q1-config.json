@@ -28,7 +28,6 @@
   ],
   "DOKARKIV_SKJERMDOKUMENT_TILLATTEHJEMLER": "ARK,POL",
   "DOKARKIV_SECRET": "dokarkiv-q1",
-  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv-q1/teamdokumenthandtering",
   "DOKARKIV_DATABASE_POOLSIZE": "20",
   "DOKARKIV_DATABASE_PARALLEL_HINT_SUPPORT": "false",
   "SPRINGDOC_ENABLED": "true",
