@@ -1,18 +1,16 @@
 package no.nav.dokarkiv.internal.finnulestejournalposter;
 
+import java.time.LocalDateTime;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.internal.AbstractInternalIT;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-
-import java.time.LocalDateTime;
 
 import static java.util.Arrays.asList;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
@@ -21,6 +19,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.SDP;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.internal.finnulestejournalposter.FinnUlesteJournalposterController.SIKKERHETSNIVAA_ROLE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -121,7 +120,7 @@ public class FinnUlesteJournalposterIT extends AbstractInternalIT {
 	}
 
 	private Journalpost generateBaseJp(int dagerSidenEkspedert) {
-		Journalpost journalpost = TestdataFactory.createFerdigstiltJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpost.setKanalReferanseId(java.util.UUID.randomUUID().toString());
 		journalpost.setEkspedertDato(LocalDateTime.now().minusDays(dagerSidenEkspedert));
 		journalpost.setJournalstatus(E);

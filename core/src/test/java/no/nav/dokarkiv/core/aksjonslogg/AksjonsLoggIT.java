@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.core.aksjonslogg;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
@@ -14,7 +17,6 @@ import no.nav.dokarkiv.core.repository.AksjonsLoggTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
 import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
-import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.core.util.TestDataUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,12 +27,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static no.nav.dokarkiv.core.util.TestdataFactory.BRUKER_ID;
-import static no.nav.dokarkiv.core.util.TestdataFactory.OPPRETTET_KILDE_NAVN;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_ARKIVELEMENT;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_FRA_VERDI;
@@ -40,6 +36,10 @@ import static no.nav.dokarkiv.core.util.TestDataUtils.APPLICATION;
 import static no.nav.dokarkiv.core.util.TestDataUtils.USER_ID;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createAksjonsLoggTO;
 import static no.nav.dokarkiv.core.util.TestDataUtils.createArkivElementEndringToList;
+import static no.nav.dokarkiv.core.util.TestdataFactory.API_GSAK_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.BRUKER_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.OPPRETTET_KILDE_NAVN;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
@@ -68,7 +68,7 @@ public class AksjonsLoggIT {
 	public void setUp() {
 		RequestContextUtil.createAndSetUsername(USER_ID, APPLICATION);
 		aksjonsLoggTestRepository.deleteAll();
-		Journalpost journalpost = journalpostTestRepository.persist(TestdataFactory.createFerdigstiltJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostTestRepository.persist(createFerdigstiltJournalpostWithHoveddokument());
 		this.journalpostId = journalpost.getJournalpostId();
 	}
 
@@ -86,7 +86,7 @@ public class AksjonsLoggIT {
 		assertThat(aksjonsLogg.getDokumentInfoId(), is(1L));
 		assertThat(aksjonsLogg.getJournalpostId(), is(journalpostId));
 		assertThat(aksjonsLogg.getHjemmel(), is(TestDataUtils.AKSJON_HJEMMEL));
-		assertThat(aksjonsLogg.getArkivsaksnummer(), is(TestdataFactory.API_GSAK_ID.toString()));
+		assertThat(aksjonsLogg.getArkivsaksnummer(), is(API_GSAK_ID.toString()));
 		assertThat(aksjonsLogg.getArkivsaksystem(), is(FagsystemCode.FS22));
 		assertThat(Duration.between(aksjonsLogg.getTidspunkt(), LocalDateTime.now()).getSeconds(), lessThan(10L));
 

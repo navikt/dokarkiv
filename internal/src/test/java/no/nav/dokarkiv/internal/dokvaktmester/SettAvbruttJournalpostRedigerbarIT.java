@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.internal.dokvaktmester;
 
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.internal.AbstractInternalIT;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -11,6 +10,7 @@ import static no.nav.dokarkiv.core.datautil.JournalpostTestDataProvider.createJo
 import static no.nav.dokarkiv.core.domain.codes.DokumentStatusCode.UNDER_REDIGERING;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.A;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -91,7 +91,7 @@ public class SettAvbruttJournalpostRedigerbarIT extends AbstractInternalIT {
 	}
 
 	private Long setupAndReturnJournalpostId() {
-		Journalpost journalpost = TestdataFactory.createFerdigstiltJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(A);
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 

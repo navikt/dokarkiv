@@ -1,5 +1,9 @@
 package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.IntStream;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
@@ -14,7 +18,6 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
-import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.DokumentInfoDto;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
@@ -27,13 +30,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.IntStream;
-
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AAPEN;
+import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static no.nav.dokarkiv.core.util.TestdataFactory.AKTOER_ID;
 import static no.nav.dokarkiv.core.util.TestdataFactory.API_GSAK_ID;
 import static no.nav.dokarkiv.core.util.TestdataFactory.AVSENDER_MOTTAKER_ID_TYPE;
@@ -49,6 +48,7 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.GSAK_FAGSAKNR;
 import static no.nav.dokarkiv.core.util.TestdataFactory.INNHOLD;
 import static no.nav.dokarkiv.core.util.TestdataFactory.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.core.util.TestdataFactory.JOURNALFOERT_AV_NAVN;
+import static no.nav.dokarkiv.core.util.TestdataFactory.OPPRETTET_AV_NAVN;
 import static no.nav.dokarkiv.core.util.TestdataFactory.SKANNET_INNHOLD_TITTEL;
 import static no.nav.dokarkiv.core.util.TestdataFactory.SKANNET_INNHOLD_TITTEL_2;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfo;
@@ -58,7 +58,6 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.createSakForAktoerId;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createSaksrelasjon;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createVedleggRelasjon;
 import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
-import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -153,7 +152,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertThat(journalpostDto.getAvsenderMottakerLand(), is(AVSENDER_MOTTAKER_LAND));
 		assertThat(journalpostDto.getJournalforendeEnhet(), is(JOURNALFOERENDE_ENHET));
 		assertThat(journalpostDto.getJournalfortAvNavn(), is(JOURNALFOERT_AV_NAVN));
-		assertThat(journalpostDto.getOpprettetAvNavn(), is(TestdataFactory.OPPRETTET_AV_NAVN));
+		assertThat(journalpostDto.getOpprettetAvNavn(), is(OPPRETTET_AV_NAVN));
 		assertThat(journalpostDto.getMottakskanal(), is(MottaksKanalCode.NAV_NO.name()));
 		assertThat(journalpostDto.getUtsendingskanal(), is(UtsendingsKanalCode.NAV_NO.name()));
 		assertThat(journalpostDto.getJournalposttype(), is(JournalpostTypeCode.U.name()));

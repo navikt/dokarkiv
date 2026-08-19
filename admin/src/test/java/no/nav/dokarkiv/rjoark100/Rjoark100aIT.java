@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.rjoark100;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import no.nav.dokarkiv.AbstractAdminIT;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
@@ -8,10 +11,6 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -27,7 +26,7 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjonForJournalpost;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFildetaljerOgFil;
 import static no.nav.dokarkiv.util.TestUtil.createSkjermarkivenhetRequest;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -118,8 +117,8 @@ public class Rjoark100aIT extends AbstractAdminIT {
 
 		Journalpost journalpostMedDokumentSomSkalSkjermes = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSkjermes = journalpostMedDokumentSomSkalSkjermes.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSkjermes);
-		createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSkjermes);
+		createDokumentInfoVedleggRelasjonForJournalpost(journalpostMedDokumentSomSkalSkjermes);
+		createDokumentInfoVedleggRelasjonForJournalpost(journalpostMedDokumentSomSkalSkjermes);
 
 		journalpostTestRepository.persist(journalpostMedDokumentSomSkalSkjermes);
 		journalpostTestRepository.persist(journalpost1);

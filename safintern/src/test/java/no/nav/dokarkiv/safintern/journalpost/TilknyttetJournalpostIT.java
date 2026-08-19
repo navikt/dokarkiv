@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.safintern.journalpost;
 
+import java.util.Iterator;
+import java.util.Set;
+import java.util.UUID;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
@@ -7,7 +10,6 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Sak;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.domain.entities.UtsendingsInfo;
-import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.safintern.AbstractSafinternTest;
 import no.nav.dokarkiv.safintern.SafinternConstants;
 import org.json.JSONException;
@@ -16,16 +18,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.UUID;
-
 import static java.util.Collections.emptySet;
-import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createHoveddokumentRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostForSakId;
+import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
@@ -40,8 +39,8 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 	void shouldGetJournalposterTilknyttetDokumentInfoId() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost opprinneligJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
-		Journalpost gjenbrukendeJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
+		Journalpost opprinneligJournalpost = createJournalpostForSakId(sakId);
+		Journalpost gjenbrukendeJournalpost = createJournalpostForSakId(sakId);
 		gjenbrukendeJournalpost.setKanalReferanseId("En annen referanseId");
 		gjenbrukendeJournalpost.getJournalpostDokumentInfoRelasjoner().forEach(gjenbrukendeJournalpost::removeJournalpostDokumentInfoRelasjon);
 		gjenbrukendeJournalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(gjenbrukendeJournalpost, getDokumentInfoFromJpDokInfoRelasjoner(opprinneligJournalpost, 0)));
@@ -80,8 +79,8 @@ public class TilknyttetJournalpostIT extends AbstractSafinternTest {
 	void shouldGetJournalposterTilknyttetDokumentInfoIdWithOnlySelectedFields() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost opprinneligJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
-		Journalpost gjenbrukendeJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
+		Journalpost opprinneligJournalpost = createJournalpostForSakId(sakId);
+		Journalpost gjenbrukendeJournalpost = createJournalpostForSakId(sakId);
 		gjenbrukendeJournalpost.setKanalReferanseId("En annen referanseId");
 		gjenbrukendeJournalpost.getJournalpostDokumentInfoRelasjoner().forEach(gjenbrukendeJournalpost::removeJournalpostDokumentInfoRelasjon);
 		gjenbrukendeJournalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(gjenbrukendeJournalpost, getDokumentInfoFromJpDokInfoRelasjoner(opprinneligJournalpost, 0)));

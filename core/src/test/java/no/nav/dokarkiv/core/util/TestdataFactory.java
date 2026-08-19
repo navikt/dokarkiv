@@ -116,15 +116,15 @@ public class TestdataFactory {
 
 	// --- Journalpost ---
 
-	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(long sakId) {
-		return createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSaksrelasjon(createSaksrelasjon(sakId));
+	public static Journalpost createJournalpostForSakId(long sakId) {
+		return createJournalpostForSaksrelasjon(createSaksrelasjon(sakId));
 	}
 
-	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak() {
-		return createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSaksrelasjon(null);
+	public static Journalpost createJournalpostWithSak() {
+		return createJournalpostForSaksrelasjon(null);
 	}
 
-	public static Journalpost createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSaksrelasjon(Saksrelasjon saksrelasjon) {
+	public static Journalpost createJournalpostForSaksrelasjon(Saksrelasjon saksrelasjon) {
 		return createJournalpost(saksrelasjon, JournalpostTypeCode.U, FS);
 	}
 
@@ -173,7 +173,7 @@ public class TestdataFactory {
 		}
 
 		journalpost.addJournalpostDokumentInfoRelasjon(createHoveddokumentRelasjon(journalpost));
-		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjon(journalpost));
+		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjonForJournalpost(journalpost));
 		return journalpost;
 	}
 
@@ -310,11 +310,11 @@ public class TestdataFactory {
 		return journalpostDokumentInfoRelasjon;
 	}
 
-	public static JournalpostDokumentInfoRelasjon createDokumentInfoVedleggRelasjon(Journalpost journalpost) {
-		return createDokumentInfoVedleggRelasjon(journalpost, null);
+	public static JournalpostDokumentInfoRelasjon createDokumentInfoVedleggRelasjonForJournalpost(Journalpost journalpost) {
+		return createDokumentInfoVedleggRelasjonForJournalpostWithRekkefoelge(journalpost, null);
 	}
 
-	public static JournalpostDokumentInfoRelasjon createDokumentInfoVedleggRelasjon(Journalpost journalpost, Integer rekkefoelge) {
+	public static JournalpostDokumentInfoRelasjon createDokumentInfoVedleggRelasjonForJournalpostWithRekkefoelge(Journalpost journalpost, Integer rekkefoelge) {
 		DokumentInfo dokumentInfo = createDokumentInfo(FIL_UUID_ARKIV_VEDLEGG, FIL_UUID_PRODUKSJON_VEDLEGG);
 		dokumentInfo.setOriginalJournalpost(journalpost);
 		return createVedleggRelasjon(journalpost, dokumentInfo, rekkefoelge);

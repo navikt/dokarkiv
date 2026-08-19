@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.SneakyThrows;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
@@ -15,10 +18,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -37,7 +36,7 @@ import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOV
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.util.TestdataFactory.AVSENDER_MOTTAKER_NAVN;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjonForJournalpost;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.AVSENDER_MOTTAKER_ID;
@@ -128,8 +127,8 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 		happyAktoerIdStub();
 
 		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
-		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjon(journalpost));
-		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjon(journalpost));
+		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjonForJournalpost(journalpost));
+		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjonForJournalpost(journalpost));
 
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 

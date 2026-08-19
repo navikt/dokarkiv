@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -11,26 +14,22 @@ import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
-import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostRequest.SplittDokument;
+import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ProblemDetail;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.util.TestdataFactory.BRUKER_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithSak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.splittjournalpost.JournalpostSplitter.SPLITT_JOURNALPOST_FILNAVN;
@@ -42,7 +41,6 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-
 @Slf4j
 public class SplittJournalpostIT extends AbstractJournalpostIT {
 	private static final String SPLITT_JOURNALPOST_PATH = JOURNALPOSTAPI_BASE_PATH + JOURNALPOSTAPI_JOURNALPOST_PATH + "/%s/splitt";
@@ -52,7 +50,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSplittJournalpost() {
-		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
+		var journalpost = createJournalpostWithSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 
@@ -120,7 +118,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSplittJournalpostWithNewDokumenter() {
-		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
+		var journalpost = createJournalpostWithSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 
@@ -236,7 +234,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnNotFoundWhenSplittingNonExistingJournalpost() {
-		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
+		var journalpost = createJournalpostWithSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 
@@ -260,7 +258,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnBadRequestWhenSplittingNonInngaaendeJournalpost() {
-		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
+		var journalpost = createJournalpostWithSak();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -281,7 +279,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnConflictWhenSplittingJournalpostWithExistingExternReferanseId() {
-		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
+		var journalpost = createJournalpostWithSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 
@@ -304,7 +302,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnBadRequestWhenRequestContainsNonExistingDocument() {
-		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
+		var journalpost = createJournalpostWithSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 

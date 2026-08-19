@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.rjoark101;
 
+import java.util.List;
 import no.nav.dokarkiv.AbstractAdminIT;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
@@ -8,14 +9,11 @@ import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.exceptions.ApplicationProblemDetail;
-import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.dto.SlettArkivenhetRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -36,7 +34,7 @@ import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VED
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjonForJournalpost;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithSplittetHoveddokument;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createNavNoUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createVedleggRelasjon;
@@ -62,7 +60,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		saveJournalpost(journalpost);
 		utsendingsInfoTestRepository.persist(createNavNoUtsendingsInfo(journalpost));
 
-		createDokumentInfoVedleggRelasjon(journalpost);
+		createDokumentInfoVedleggRelasjonForJournalpost(journalpost);
 		saveJournalpost(journalpost1);
 		saveJournalpost(journalpost2);
 		saveJournalpost(journalpost);
@@ -164,7 +162,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		saveJournalpost(journalpost);
 		utsendingsInfoTestRepository.persist(createNavNoUtsendingsInfo(journalpost));
 
-		createDokumentInfoVedleggRelasjon(journalpost);
+		createDokumentInfoVedleggRelasjonForJournalpost(journalpost);
 		saveJournalpost(journalpost1);
 		saveJournalpost(journalpost2);
 		saveJournalpost(journalpost);
@@ -484,7 +482,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		Journalpost journalpostMedDokumentSomVedlegg = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 		Journalpost journalpostSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
-		createDokumentInfoVedleggRelasjon(journalpostSomSkalSlettes);
+		createDokumentInfoVedleggRelasjonForJournalpost(journalpostSomSkalSlettes);
 
 		DokumentInfo dokumentInfoHoveddokument = journalpostSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		createVedleggRelasjon(journalpostMedDokumentSomVedlegg, dokumentInfoHoveddokument);
@@ -572,8 +570,8 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		Journalpost journalpostMedDokumentSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		JournalpostDokumentInfoRelasjon hoveddokumentRelasjon = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon();
-		JournalpostDokumentInfoRelasjon vedleggRelasjonSomSlettes = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
-		JournalpostDokumentInfoRelasjon vedleggRelasjon2 = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
+		JournalpostDokumentInfoRelasjon vedleggRelasjonSomSlettes = createDokumentInfoVedleggRelasjonForJournalpost(journalpostMedDokumentSomSkalSlettes);
+		JournalpostDokumentInfoRelasjon vedleggRelasjon2 = createDokumentInfoVedleggRelasjonForJournalpost(journalpostMedDokumentSomSkalSlettes);
 
 		saveJournalpost(journalpostMedDokumentSomSkalSlettes);
 		saveJournalpost(journalpost1);
@@ -651,7 +649,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 
 		Journalpost journalpostMedDokumentSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSlettes = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		JournalpostDokumentInfoRelasjon vedleggRelasjon = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
+		JournalpostDokumentInfoRelasjon vedleggRelasjon = createDokumentInfoVedleggRelasjonForJournalpost(journalpostMedDokumentSomSkalSlettes);
 
 		saveJournalpost(journalpostMedDokumentSomSkalSlettes);
 		saveJournalpost(journalpost1);
@@ -737,7 +735,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 	public void skalSletteVedleggOgDeretterHoveddokumentForJournalpostMedEnHoveddokumentOgEnVedlegg() {
 		Journalpost journalpostMedDokumentSomSkalSlettes = createUniqueJournalpostWithHoveddokument();
 		DokumentInfo dokumentInfoSomSkalSlettes = journalpostMedDokumentSomSkalSlettes.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
-		JournalpostDokumentInfoRelasjon vedleggRelasjon = createDokumentInfoVedleggRelasjon(journalpostMedDokumentSomSkalSlettes);
+		JournalpostDokumentInfoRelasjon vedleggRelasjon = createDokumentInfoVedleggRelasjonForJournalpost(journalpostMedDokumentSomSkalSlettes);
 
 		saveJournalpost(journalpostMedDokumentSomSkalSlettes);
 
@@ -845,7 +843,7 @@ public class Rjoark101IT extends AbstractAdminIT {
 		Journalpost journalpost2 = createUniqueJournalpostWithHoveddokument();
 
 		Journalpost journalpostSomHarDokumentSomHoveddok = createUniqueJournalpostWithHoveddokument();
-		JournalpostDokumentInfoRelasjon relasjonVedlegg = TestdataFactory.createVedleggRelasjon(journalpostSomHarDokumentSomVedlegg, journalpostSomHarDokumentSomHoveddok.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
+		JournalpostDokumentInfoRelasjon relasjonVedlegg = createVedleggRelasjon(journalpostSomHarDokumentSomVedlegg, journalpostSomHarDokumentSomHoveddok.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo());
 		saveJournalpost(journalpostSomHarDokumentSomHoveddok);
 		saveJournalpost(journalpostSomHarDokumentSomVedlegg);
 		saveJournalpost(journalpost2);

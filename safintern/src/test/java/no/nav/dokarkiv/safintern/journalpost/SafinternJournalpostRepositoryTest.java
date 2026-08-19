@@ -1,6 +1,12 @@
 package no.nav.dokarkiv.safintern.journalpost;
 
 import jakarta.persistence.EntityManager;
+import java.time.LocalDate;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentStatusCode;
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
@@ -22,7 +28,6 @@ import no.nav.dokarkiv.core.repository.RepositoryConfig;
 import no.nav.dokarkiv.core.repository.SakTestRepository;
 import no.nav.dokarkiv.core.repository.UtsendingsInfoTestRepository;
 import no.nav.dokarkiv.core.skjerming.SkjermingServiceTest;
-import no.nav.dokarkiv.core.util.TestdataFactory;
 import no.nav.dokarkiv.safintern.SafinternConfig;
 import no.nav.dokarkiv.safintern.views.AvsenderMottakerView;
 import no.nav.dokarkiv.safintern.views.DigitalPostadresseView;
@@ -40,13 +45,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.time.LocalDate;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 import static com.blazebit.persistence.view.EntityViewSetting.create;
 import static no.nav.dokarkiv.core.domain.codes.InnsynCode.BRUK_STANDARDREGLER;
@@ -72,6 +70,7 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.BEHANDLINGSTEMA;
 import static no.nav.dokarkiv.core.util.TestdataFactory.BREVKODE;
 import static no.nav.dokarkiv.core.util.TestdataFactory.DOKUMENT_INFO_TITTEL;
 import static no.nav.dokarkiv.core.util.TestdataFactory.DOKUMENT_TYPE_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.FIL_NAVN;
 import static no.nav.dokarkiv.core.util.TestdataFactory.INNHOLD;
 import static no.nav.dokarkiv.core.util.TestdataFactory.JOURNALFOERENDE_ENHET;
 import static no.nav.dokarkiv.core.util.TestdataFactory.JOURNALFOERT_AV_NAVN;
@@ -80,7 +79,6 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.OPPRETTET_AV_NAVN;
 import static no.nav.dokarkiv.core.util.TestdataFactory.SKANNET_INNHOLD_TITTEL;
 import static no.nav.dokarkiv.core.util.TestdataFactory.SKANNET_INNHOLD_TITTEL_2;
 import static no.nav.dokarkiv.core.util.TestdataFactory.SKJERMING_TYPE_CODE;
-import static no.nav.dokarkiv.core.util.TestdataFactory.FIL_NAVN;
 import static no.nav.dokarkiv.core.util.TestdataFactory.TILLEGGOPPLYSNINGER_KEY_1;
 import static no.nav.dokarkiv.core.util.TestdataFactory.TILLEGGOPPLYSNINGER_KEY_2;
 import static no.nav.dokarkiv.core.util.TestdataFactory.TILLEGGOPPLYSNINGER_KEY_3;
@@ -93,6 +91,7 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.createDigitalPostUtsendi
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFildetaljerOgFil;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostForSakId;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createNavNoUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertBruker;
@@ -137,7 +136,7 @@ class SafinternJournalpostRepositoryTest {
 	void shouldHentJournalpost() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
+		Journalpost actualJournalpost = createJournalpostForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		setSkjermingVedlegg(actualJournalpost);
 		journalpostTestRepository.persist(actualJournalpost);
@@ -170,7 +169,7 @@ class SafinternJournalpostRepositoryTest {
 	void shouldHentJournalpostByEksternReferanseId() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
+		Journalpost actualJournalpost = createJournalpostForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		setSkjermingVedlegg(actualJournalpost);
 		journalpostTestRepository.persist(actualJournalpost);
@@ -203,7 +202,7 @@ class SafinternJournalpostRepositoryTest {
 	void shouldHentJournalpostByJournalpostIdAndDokumentInfoId() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
+		Journalpost actualJournalpost = createJournalpostForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.S);
 		journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
@@ -232,7 +231,7 @@ class SafinternJournalpostRepositoryTest {
 	void shouldHentJournalpostWhenNavNo() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
+		Journalpost actualJournalpost = createJournalpostForSakId(sakId);
 		journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createNavNoUtsendingsInfo(actualJournalpost);
 		utsendingsInfoTestRepository.persist(utsendingsInfo);
@@ -245,7 +244,7 @@ class SafinternJournalpostRepositoryTest {
 	void shouldHentJournalpostWhenDigitalpost() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(sakId);
+		Journalpost actualJournalpost = createJournalpostForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(UtsendingsKanalCode.SDP);
 		journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createDigitalPostUtsendingsInfo(actualJournalpost);
@@ -278,7 +277,7 @@ class SafinternJournalpostRepositoryTest {
 
 	@Test
 	void shouldReturnFiveValidVariantformater() {
-		Journalpost actualJournalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggForSakId(1L);
+		Journalpost actualJournalpost = createJournalpostForSakId(1L);
 		DokumentInfo dokumentInfo = actualJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
 		dokumentInfo.addFilDetaljer(createFildetaljerOgFil(dokumentInfo, SLADDET, FilTypeCode.XML, UUID.randomUUID().toString()));

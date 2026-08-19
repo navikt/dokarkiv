@@ -84,7 +84,6 @@ public abstract class AbstractRestIT {
 	protected static final String SERVICE_USER_ID = "srvjoarkadmin";
 	protected static final String SERVICEUSER_IKKE_JOARKADMIN = "srvikkejoarkadmin";
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
-	protected static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
 	protected static final String DEFAULT_CLAIM_OID = "oid";
 	protected static final String DEFAULT_CLAIM_SUB = "sub";
 	protected static final String CLAIM_AZP_NAME = "azp_name";

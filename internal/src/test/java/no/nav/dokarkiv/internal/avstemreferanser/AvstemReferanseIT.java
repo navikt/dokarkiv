@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.internal.avstemreferanser;
 
-import no.nav.dokarkiv.core.util.TestdataFactory;
+import java.util.Set;
+import java.util.stream.Stream;
 import no.nav.dokarkiv.internal.AbstractInternalIT;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.util.Set;
-import java.util.stream.Stream;
-
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithSak;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
@@ -27,9 +26,9 @@ public class AvstemReferanseIT extends AbstractInternalIT {
 
 	@Test
 	void shouldReturnNoContentWhenAllReferencesMatch() {
-		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
+		var journalpost = createJournalpostWithSak();
 		journalpostTestRepository.persist(journalpost);
-		var journalpost2 = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
+		var journalpost2 = createJournalpostWithSak();
 		journalpost2.setKanalReferanseId(journalpost2.getKanalReferanseId() + "2");
 		journalpostTestRepository.persist(journalpost2);
 		TestTransaction.flagForCommit();
@@ -42,7 +41,7 @@ public class AvstemReferanseIT extends AbstractInternalIT {
 
 	@Test
 	void shouldReturnOkWhenSomeReferencesNotMatched() {
-		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
+		var journalpost = createJournalpostWithSak();
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -57,7 +56,7 @@ public class AvstemReferanseIT extends AbstractInternalIT {
 
 	@Test
 	void shouldBeRejectedIfNotAuthorizedWithRoleInternSkanning() {
-		var journalpost = TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggMedSak();
+		var journalpost = createJournalpostWithSak();
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
