@@ -645,6 +645,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "fullmakt",
+      "namespace": "repr",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "ida",
       "namespace": "traktor",
       "cluster": "prod-fss"
