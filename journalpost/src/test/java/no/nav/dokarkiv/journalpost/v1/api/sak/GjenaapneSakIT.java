@@ -162,6 +162,7 @@ public class GjenaapneSakIT extends AbstractJournalpostIT {
 
 	private void setupStubs() {
 		stubAzure();
+		stubNaisTexasToken();
 		happyAktoerIdStub();
 		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 	}
