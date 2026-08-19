@@ -503,6 +503,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "fullmakt",
+      "namespace": "repr",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "skanmotovrig",
       "namespace": "teamdokumenthandtering",
       "cluster": "prod-fss",
