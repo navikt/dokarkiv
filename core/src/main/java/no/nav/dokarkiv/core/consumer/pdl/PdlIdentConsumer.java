@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.consumer.pdl;
 
+import no.nav.dokarkiv.core.consumer.texas.ExplicitTargetScopeNaisTexasRequestInterceptor;
+import no.nav.dokarkiv.core.consumer.texas.NaisTexasConsumer;
 import no.nav.dokarkiv.core.exceptions.PdlTechnicalException;
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
 import org.springframework.graphql.client.ClientGraphQlResponse;
@@ -22,7 +24,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class PdlIdentConsumer implements IdentConsumer {
 
 	private static final String PERSON_IKKE_FUNNET_CODE = "not_found";
-	private static final String HEADER_PDL_TEMA = "Tema";
 	// https://pdldocs-navno.msappproxy.net/ekstern/index.html#_dokumenter_hjemmel_vha_tema
 	private static final String HEADER_PDL_BEHANDLINGSNUMMER = "behandlingsnummer";
 	// https://behandlingskatalog.nais.adeo.no/process/purpose/ARKIVPLEIE/756fd557-b95e-4b20-9de9-6179fb8317e6
@@ -46,6 +47,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	private final String pdlScope;
 
 	public PdlIdentConsumer(RestClient restClient,
+							NaisTexasConsumer naisTexasConsumer,
 							DokarkivProperties dokarkivProperties) {
 		this.pdlScope = dokarkivProperties.getEndpoints().getPdl().getScope();
 		this.graphQlClient = HttpSyncGraphQlClient.builder(
@@ -55,6 +57,16 @@ public class PdlIdentConsumer implements IdentConsumer {
 						headers.setContentType(APPLICATION_JSON);
 						headers.set(HEADER_PDL_BEHANDLINGSNUMMER, ARKIVPLEIE_BEHANDLINGSNUMMER);
 					})
+					// attribute-feltet er av en eller annen grunn ikke
+					// tilgjengelig i HttpRequest når nais-texas-interceptoren
+					// slår inn. Dette skyldes at attributes ikke blir sendt
+					// videre til restclient når man bruker
+					// HttpSyncGraphQlTransport. En fiks har blitt gjort i
+					// spring-graphql nå, som går ut i release 2.0.6. Inntil
+					// videre må interceptoren allerede vite hvilket scope som
+					// skal brukes. Dette kan fjernes når spring-graphql er
+					// oppdatert til versjon 2.0.6
+					.requestInterceptor(new ExplicitTargetScopeNaisTexasRequestInterceptor(naisTexasConsumer, dokarkivProperties.getEndpoints().getPdl().getScope()))
 					.build()
 			)
 			.build();
