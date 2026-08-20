@@ -26,7 +26,6 @@
   ],
   "DOKARKIV_SKJERMDOKUMENT_TILLATTEHJEMLER": "ARK",
   "DOKARKIV_SECRET": "dokarkiv",
-  "DOKARKIV_VAULT": "/kv/prod/fss/dokarkiv/teamdokumenthandtering",
   "DOKARKIV_DATABASE_POOLSIZE": "60",
   "DOKARKIV_DATABASE_PARALLEL_HINT_SUPPORT": "true",
   "SPRINGDOC_ENABLED": "false",
@@ -501,6 +500,11 @@
       "app": "repr-fullmakt",
       "namespace": "repr",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "fullmakt",
+      "namespace": "repr",
+      "cluster": "prod-gcp"
     },
     {
       "app": "skanmotovrig",

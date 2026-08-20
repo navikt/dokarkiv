@@ -13,7 +13,8 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 
 public class BrukerValidatorTest {
 
-	private static final String VALID_FNR = "01014138923";
+	/// Dolly bruker 17434424798 Autentisk Tirsdag
+	private static final String VALID_FNR = "17434424798";
 	private static final String INVALID_FNR = "01014138924";
 	private static final String VALID_ORGNR = "123456785";
 	private static final String SOME_GJELDERID = "aaaaa";

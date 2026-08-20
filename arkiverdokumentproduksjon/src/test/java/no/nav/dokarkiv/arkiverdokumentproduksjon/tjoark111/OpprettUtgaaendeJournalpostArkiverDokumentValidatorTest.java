@@ -54,10 +54,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 		OpprettUtgaaendeJournalpostArkiverDokumentValidator.class,
 		DefaultJournalpostStructureVerifier.class})
 public class OpprettUtgaaendeJournalpostArkiverDokumentValidatorTest {
-	private static final Long DOKUMENTINFO_ID = 1L;
-	private static final boolean SENSITIVT_REQUEST = true;
-	private static final boolean FERDIGSTILL_JOURNALPOST = true;
-	private static final boolean IKKE_FERDIGSTILL_JOURNALPOST = false;
 
 	private static final String OPPRETTET_AV_NAVN = "Saksbehandler";
 
