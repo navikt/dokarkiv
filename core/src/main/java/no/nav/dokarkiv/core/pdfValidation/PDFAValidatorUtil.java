@@ -3,6 +3,7 @@ package no.nav.dokarkiv.core.pdfValidation;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.exceptions.InvalidPdfException;
+import org.verapdf.core.EncryptedPdfException;
 import org.verapdf.core.ModelParsingException;
 import org.verapdf.core.ValidationException;
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
@@ -15,6 +16,7 @@ import org.verapdf.pdfa.results.TestAssertion;
 import org.verapdf.pdfa.results.ValidationResult;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -58,10 +60,14 @@ public class PDFAValidatorUtil {
 		}
 
 		try (VeraPDFFoundry foundry = Foundries.defaultInstance()) {
-			try (PDFAParser parser = foundry.createParser(new ByteArrayInputStream(filDetaljer.getFileContent()))) {
+			try (PDFAParser parser = foundry.createParser(new ByteArrayInputStream(filDetaljer.getFileContent()), NO_FLAVOUR)) {
+				PDFAFlavour parserFlavour = resolveFlavour(parser);
 				// Hvis PDF ikke er på et av de lovlige formatene hopp over valideringen
-				if (!VALID_PDFA_FLAVOURS.contains(parser.getFlavour())) {
-					return Optional.of(returnIncorrectFlavourReponse(filDetaljer, parser.getFlavour()));
+				if (parserFlavour == NO_FLAVOUR) {
+					return Optional.of(returnNotAPdfValidatorResponse(filDetaljer));
+				}
+				if (!VALID_PDFA_FLAVOURS.contains(parserFlavour)) {
+					return Optional.of(returnIncorrectFlavourReponse(filDetaljer, parserFlavour));
 				}
 				return Optional.of(doValidatePDFA(filDetaljer, foundry, parser));
 			}
@@ -74,6 +80,16 @@ public class PDFAValidatorUtil {
 
 	private static float convertToMB(long size){
 		return (float) size / ONE_MB;
+	}
+
+	private static PDFAFlavour resolveFlavour(PDFAParser parser) {
+		try {
+			PDFAFlavour flavour = parser.getFlavour();
+			return flavour != null ? flavour : NO_FLAVOUR;
+		} catch (IndexOutOfBoundsException e) {
+			log.debug("Kunne ikke hente PDF/A-flavour fra parser", e);
+			return NO_FLAVOUR;
+		}
 	}
 
 	private static PDFAValidatorResponse doValidatePDFA(FilDetaljer filDetaljer, VeraPDFFoundry foundry, PDFAParser parser) throws ValidationException, IOException {
