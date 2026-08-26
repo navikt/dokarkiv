@@ -48,6 +48,7 @@ import java.util.Objects;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
@@ -416,6 +417,31 @@ public abstract class AbstractRestIT {
 		} catch (IOException e) {
 			return null;
 		}
+	}
+
+	protected void stubNaisTexasToken() {
+		stubFor(post("/nais-texas")
+			.willReturn(aResponse()
+				.withStatus(OK.value())
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withBodyFile("azure/token_response.json")));
+	}
+
+	protected void stubNaisTexasExchangeToken() {
+		stubFor(post("/nais-texas-exchange")
+			.willReturn(aResponse()
+				.withStatus(OK.value())
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withBodyFile("azure/token_response.json")));
+	}
+
+	public void stubAzure() {
+		stubNaisTexasToken();
+		stubFor(post("/azure_token")
+			.willReturn(aResponse()
+				.withStatus(OK.value())
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withBodyFile("azure/token_response.json")));
 	}
 
 	protected static void stubMsGraphGetUser(String navIdent) {

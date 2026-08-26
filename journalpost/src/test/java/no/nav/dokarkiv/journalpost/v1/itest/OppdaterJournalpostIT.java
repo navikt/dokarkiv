@@ -121,6 +121,7 @@ public class OppdaterJournalpostIT extends AbstractJournalpostIT {
 	public void setUp() {
 		super.setUp();
 		stubMsGraphGetUser(NAV_USER_ID);
+		stubNaisTexasToken();
 		OIDC_TOKEN_PERSON_USER_TEST = openAmToken(NAV_USER_ID);
 		OIDC_TOKEN_SERVICE_USER_TEST = restStsToken(SERVICE_USER_ID);
 	}

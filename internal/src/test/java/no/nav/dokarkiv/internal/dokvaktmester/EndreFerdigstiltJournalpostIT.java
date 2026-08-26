@@ -82,7 +82,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 
 	@Test
 	public void skalOppretteNySakForAnnenBruker() {
-		entraStub();
+		stubAzure();
 		pdlStub();
 
 		Sak sak = createGsak();
@@ -200,7 +200,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 
 	@Test
 	void skalBrukeNyFagsakAnnenBruker() {
-		entraStub();
+		stubAzure();
 		pdlStub();
 
 		Sak eksisterendeFagsak = createEksisterendeFagsak();
@@ -232,7 +232,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 
 	@Test
 	void skalBrukeNyFagsakAnnenBrukerOgTema() {
-		entraStub();
+		stubAzure();
 		pdlStub();
 
 		Sak eksisterendeFagsak = createEksisterendeFagsak();
@@ -264,7 +264,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 
 	@Test
 	void skalBrukeNyGenerellSakAnnenBruker() {
-		entraStub();
+		stubAzure();
 		pdlStub();
 		Sak eksisterendeGenerellSak = createEksisterendeGenerellSak();
 		Sak sak = createGsak();
@@ -295,7 +295,7 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 
 	@Test
 	void skalBrukeNyGenerellSakAnnenBrukerOgTema() {
-		entraStub();
+		stubAzure();
 		pdlStub();
 		Sak eksisterendeGenerellSak = createEksisterendeGenerellSak();
 		Sak sak = createGsak();
@@ -369,14 +369,6 @@ public class EndreFerdigstiltJournalpostIT extends AbstractInternalIT {
 		assertThat(bruker.getBrukerId()).isEqualTo(ANNEN_BRUKER_ID);
 		assertThat(bruker.getBrukerType()).isEqualTo(PERSON);
 		assertThat(bruker.getEndretKildeNavn()).isEqualTo(BEGRUNNELSE_NOKKEL);
-	}
-
-	private void entraStub() {
-		stubFor(post("/azure_token")
-				.willReturn(aResponse()
-						.withStatus(OK.value())
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile("entra/token_response.json")));
 	}
 
 	private void pdlStub() {

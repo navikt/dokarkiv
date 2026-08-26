@@ -76,6 +76,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 		stubMsGraphGetUser(NAV_IDENT_SAKSBEHANDLER);
 
 		stubAzure();
+		stubNaisTexasToken();
 		restStsToken();
 		happyAktoerIdStub();
 		stubFor(post(urlMatching("/safgraphql"))
