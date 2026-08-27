@@ -308,6 +308,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "ung-brukerdialog-api",
+      "namespace": "k9saksbehandling",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "yrkesskade-melding-mottak",
       "namespace": "yrkesskade",
       "cluster": "prod-gcp"
