@@ -471,6 +471,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "ung-brukerdialog-api",
+      "namespace": "k9saksbehandling",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "flex-joark-mottak",
       "namespace": "flex",
       "cluster": "dev-gcp"
