@@ -23,9 +23,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.BRUKER_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.KANAL_REFERANSE_ID;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.BRUKER_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.KANAL_REFERANSE_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_UTFOERT_AV;
@@ -275,7 +275,7 @@ public abstract class AbstractAdminIT extends AbstractRestIT {
 	}
 
 	protected Journalpost createUniqueJournalpostWithHoveddokument() {
-		Journalpost journalpostWithHoveddokument = createJournalpostWithHoveddokument();
+		Journalpost journalpostWithHoveddokument = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostWithHoveddokument.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
 		return journalpostWithHoveddokument;
 	}

@@ -2,6 +2,14 @@ package no.nav.dokarkiv.safintern.journalstatus;
 
 import com.blazebit.persistence.DefaultKeyset;
 import com.blazebit.persistence.DefaultKeysetPage;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -20,19 +28,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
-
 import static no.nav.dokarkiv.core.CoreConfig.ZONEID_UTC;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjon;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjonForJournalpostWithRekkefoelge;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostForSakId;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithoutSak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,10 +55,10 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	public void shouldPaginateResultsCoherentlyAndIdempotently() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost utgaattJournalpost1 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost utgaattJournalpost1 = createJournalpostForSakId(sakId);
 		utgaattJournalpost1.setJournalstatus(JournalStatusCode.U);
 		setSkjermingVedlegg(utgaattJournalpost1);
-		Journalpost utgaattJournalpost2 = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost utgaattJournalpost2 = createJournalpostForSakId(sakId);
 		utgaattJournalpost2.setJournalstatus(JournalStatusCode.U);
 		utgaattJournalpost2.setKanalReferanseId("REFERANSE_ID_2");
 		setSkjermingVedlegg(utgaattJournalpost2);
@@ -90,7 +90,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	public void shouldPaginateResultsCorrectlyForVariousPagesizes() {
 
 		IntStream.range(0, 400).mapToObj(i -> {
-			var jp = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+			var jp = createJournalpostWithoutSak();
 			jp.setKanalReferanseId("kanalref" + i);
 			jp.setJournalstatus(JournalStatusCode.U);
 			return jp;
@@ -146,10 +146,10 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	public void shouldFindJournalpostWithJournalstatusU() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost utgaattJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost utgaattJournalpost = createJournalpostForSakId(sakId);
 		utgaattJournalpost.setJournalstatus(JournalStatusCode.U);
 		setSkjermingVedlegg(utgaattJournalpost);
-		Journalpost ferdigstiltJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost ferdigstiltJournalpost = createJournalpostForSakId(sakId);
 		ferdigstiltJournalpost.setKanalReferanseId("REFERANSE_ID_2");
 		journalpostTestRepository.persist(utgaattJournalpost);
 		journalpostTestRepository.persist(ferdigstiltJournalpost);
@@ -167,10 +167,10 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	public void shouldFindJournalpostWithJournalstatusUB() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost ukjentbrukerJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost ukjentbrukerJournalpost = createJournalpostForSakId(sakId);
 		ukjentbrukerJournalpost.setJournalstatus(JournalStatusCode.UB);
 		setSkjermingVedlegg(ukjentbrukerJournalpost);
-		Journalpost ferdigstiltJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost ferdigstiltJournalpost = createJournalpostForSakId(sakId);
 		ferdigstiltJournalpost.setKanalReferanseId("REFERANSE_ID_2");
 		journalpostTestRepository.persist(ukjentbrukerJournalpost);
 		journalpostTestRepository.persist(ferdigstiltJournalpost);
@@ -188,10 +188,10 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	public void shouldReturnVedleggOrderedByRekkefoelgeAndRelasjonId() throws JSONException {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost journalpost = createJournalpostForSakId(sakId);
 		journalpost.setJournalstatus(JournalStatusCode.U);
-		createDokumentInfoVedleggRelasjon(journalpost, 2);
-		createDokumentInfoVedleggRelasjon(journalpost, 1);
+		createDokumentInfoVedleggRelasjonForJournalpostWithRekkefoelge(journalpost, 2);
+		createDokumentInfoVedleggRelasjonForJournalpostWithRekkefoelge(journalpost, 1);
 		setSkjermingVedlegg(journalpost);
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();

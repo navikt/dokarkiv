@@ -58,8 +58,8 @@ import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_H
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_MELDING_HEADER;
 import static no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService.AKSJONS_LOGG_UTFOERT_AV_HEADER;
 import static no.nav.dokarkiv.core.security.SporingHandlerInterceptor.ISSUER_AZUREV2;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.OPPRETTET_KILDE_NAVN;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.generateInnsynWithDescription;
+import static no.nav.dokarkiv.core.util.TestdataFactory.OPPRETTET_KILDE_NAVN;
+import static no.nav.dokarkiv.core.util.TestdataFactory.generateInnsynWithDescription;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_BRUKER;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_HJEMMEL;
 import static no.nav.dokarkiv.core.util.TestDataUtils.AKSJON_MELDING;
@@ -85,7 +85,6 @@ public abstract class AbstractRestIT {
 	protected static final String SERVICE_USER_ID = "srvjoarkadmin";
 	protected static final String SERVICEUSER_IKKE_JOARKADMIN = "srvikkejoarkadmin";
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
-	protected static final String OPPRETTET_AV_NAVN = "opprettetAvNavn";
 	protected static final String DEFAULT_CLAIM_OID = "oid";
 	protected static final String DEFAULT_CLAIM_SUB = "sub";
 	protected static final String CLAIM_AZP_NAME = "azp_name";

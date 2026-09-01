@@ -27,7 +27,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.LOCAL_DATE_TIME;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottaker;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createAvsenderMottakerPerson;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEnkelJournalpost;
+import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createEnkelJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalpostValidator.validateOppdaterteFelt;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 

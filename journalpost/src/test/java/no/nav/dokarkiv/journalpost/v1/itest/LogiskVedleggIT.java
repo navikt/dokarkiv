@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 import static java.lang.Long.parseLong;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpMethod.DELETE;
@@ -37,7 +37,7 @@ public class LogiskVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldEndreLogiskVedlegg() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 		Long logiskVedleggId = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentInfoId).getSkannetInnholdListe().iterator().next().getSkannetInnholdId();
@@ -62,7 +62,7 @@ public class LogiskVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldLeggeTilLogiskVedlegg() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 
@@ -87,7 +87,7 @@ public class LogiskVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSlettLogiskVedlegg() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 		Long logiskVedleggId = journalpost.getDokumentInfoFromJpDokInfoRelasjonerByDokumentInfoId(dokumentInfoId).getSkannetInnholdListe().iterator().next().getSkannetInnholdId();
@@ -110,7 +110,7 @@ public class LogiskVedleggIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldBulkOppdatereLogiskVedlegg() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 		commitAndStartNewTransaction();

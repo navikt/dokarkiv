@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
@@ -16,18 +19,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
-
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.DOKUMENT_INFO_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_FILUUID;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.FILDETALJER_VARIANTFORMAT;
-import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.fildetaljerSkjermingTypeVariant;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createVedleggRelasjon;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.springframework.http.HttpMethod.POST;
@@ -45,7 +44,7 @@ class SladdDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	void skalAvviseSladdingAvUskjermetDokumentMedBadRequest() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostTestRepository.persist(journalpost);
 		Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
 
@@ -66,7 +65,7 @@ class SladdDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	void skalOppretteSladdetVariantOgSkjermeArkivMedSkjermingFraRelasjon() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		JournalpostDokumentInfoRelasjon hoveddokumentRelasjon = journalpost.findHoveddokumentDokumentInfoRelasjon();
 		hoveddokumentRelasjon.getDokumentInfo().setSkjermingType(SkjermingTypeCode.ARK);
 		journalpostTestRepository.persist(journalpost);
@@ -111,16 +110,16 @@ class SladdDokumentIT extends AbstractJournalpostIT {
 
 	@Test
 	void skalSladdeDokumentSomErKnyttetTilFlereJournalposter() {
-		Journalpost journalpost1 = createJournalpostWithHoveddokument();
+		Journalpost journalpost1 = createFerdigstiltJournalpostWithHoveddokument();
 		JournalpostDokumentInfoRelasjon hoveddokumentRelasjon = journalpost1.findHoveddokumentDokumentInfoRelasjon();
 		journalpostTestRepository.persist(journalpost1);
 		DokumentInfo deltDokumentInfo = hoveddokumentRelasjon.getDokumentInfo();
 		deltDokumentInfo.setSkjermingType(SkjermingTypeCode.ARK);
 		Long dokumentInfoId = deltDokumentInfo.getDokumentInfoId();
 
-		Journalpost journalpost2 = createJournalpostWithHoveddokument();
+		Journalpost journalpost2 = createFerdigstiltJournalpostWithHoveddokument();
 		journalpost2.setKanalReferanseId("KANAL_REFERANSE_ID_2");
-		JournalpostDokumentInfoRelasjon vedleggRelasjon = no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon(journalpost2, deltDokumentInfo);
+		JournalpostDokumentInfoRelasjon vedleggRelasjon = createVedleggRelasjon(journalpost2, deltDokumentInfo);
 		vedleggRelasjon.getDokumentInfo().setSkjermingType(SkjermingTypeCode.ARK);
 		journalpostTestRepository.persist(journalpost2);
 

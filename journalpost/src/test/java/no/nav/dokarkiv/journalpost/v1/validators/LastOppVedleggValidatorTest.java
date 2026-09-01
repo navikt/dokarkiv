@@ -26,17 +26,17 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.TITTEL;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createFildetaljerOgFilMedFilnavn;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.TITTEL;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfo;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFildetaljerOgFilMedFilnavn;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createVedleggRelasjon;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createJournalpostUnderArbeid;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILNAVN_VEDLEGG;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
-import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createEnkelJournalpost;
+import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createEnkelJournalpost;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
@@ -56,7 +56,7 @@ class LastOppVedleggValidatorTest {
 
 	@Test
 	void shouldValidateJournalpostAndDokument() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(D);
 
 		assertDoesNotThrow(() -> LastOppVedleggValidator.validateJournalpostAndDokument(journalpost, DOKUMENT));
@@ -66,7 +66,7 @@ class LastOppVedleggValidatorTest {
 	@ValueSource(ints = {1, 2})
 	@NullSource
 	void shouldValidateJournalpostAndDokumentWithRekkefoelge(Integer rekkefoelge) {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		journalpost.setJournalstatus(D);
 		Dokument dokument = Dokument.builder()
 				.tittel(TITTEL)

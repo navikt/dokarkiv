@@ -11,9 +11,9 @@ import org.springframework.test.context.transaction.TestTransaction;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingHjemmelCode.ARK;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.AVBRUTT;
 import static no.nav.dokarkiv.core.domain.codes.SlettebestillingStatusCode.FERDIGSTILT;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.getDokumentInfoFromJpDokInfoRelasjoner;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostForSakId;
+import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpMethod.PATCH;
@@ -24,7 +24,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-
 
 public class SlettebestillingIT extends AbstractJournalpostIT {
 
@@ -53,7 +52,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 	public void shouldSuccesfullyCreateSeveralSlettebestillingSingleDocument() {
 		var sak = createGsak();
 		sakTestRepository.persist(sak);
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		var journalpost = createJournalpostForSakId(1L);
 		journalpostTestRepository.persist(journalpost);
 
 		commitAndStartNewTransaction();
@@ -103,7 +102,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 	public void shouldOpphevBestillSletting() {
 		var sak = createGsak();
 		sakTestRepository.persist(sak);
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		var journalpost = createJournalpostForSakId(1L);
 		journalpostTestRepository.persist(journalpost);
 
 		commitAndStartNewTransaction();
@@ -131,7 +130,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 	public void shouldReturnBadRequestWhenOpphevingFerdigstiltSlettebestilling() {
 		var sak = createGsak();
 		sakTestRepository.persist(sak);
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		var journalpost = createJournalpostForSakId(1L);
 		journalpostTestRepository.persist(journalpost);
 
 		commitAndStartNewTransaction();
@@ -162,7 +161,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 	public void shouldReturnNotFoundWhenOpphevingAlreadyAvbruttSlettebestilling() {
 		var sak = createGsak();
 		sakTestRepository.persist(sak);
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		var journalpost = createJournalpostForSakId(1L);
 		journalpostTestRepository.persist(journalpost);
 
 		commitAndStartNewTransaction();
@@ -187,7 +186,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 	public void shouldReturnBadRequestWhenBegrunnelseIsBlank() {
 		var sak = createGsak();
 		sakTestRepository.persist(sak);
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		var journalpost = createJournalpostForSakId(1L);
 		journalpostTestRepository.persist(journalpost);
 
 		commitAndStartNewTransaction();
@@ -205,7 +204,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 	public void shouldReturnBadRequestWhenHjemmelIsInvalid() {
 		var sak = createGsak();
 		sakTestRepository.persist(sak);
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		var journalpost = createJournalpostForSakId(1L);
 		journalpostTestRepository.persist(journalpost);
 
 		commitAndStartNewTransaction();
@@ -223,7 +222,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 	public void shouldReturnUnauthorizedWhenTokenIsNotOnBehalfOf() {
 		var sak = createGsak();
 		sakTestRepository.persist(sak);
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		var journalpost = createJournalpostForSakId(1L);
 		journalpostTestRepository.persist(journalpost);
 
 		commitAndStartNewTransaction();
@@ -243,7 +242,7 @@ public class SlettebestillingIT extends AbstractJournalpostIT {
 	public void shouldReturnForbiddenWhenGruppenJoarkVedlikeholdIsMissing() {
 		var sak = createGsak();
 		sakTestRepository.persist(sak);
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(1L);
+		var journalpost = createJournalpostForSakId(1L);
 		journalpostTestRepository.persist(journalpost);
 
 		commitAndStartNewTransaction();

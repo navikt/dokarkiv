@@ -20,8 +20,8 @@ import org.springframework.test.context.transaction.TestTransaction;
 import java.util.List;
 
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDummyDokumentKassert;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDummyDokumentKassert;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,7 +53,7 @@ public class UtsendingsInfoRepositoryTest {
 
 	@Test
 	public void shouldSuccessfullySaveUtsendingsinfoForJournalpost() {
-		Journalpost journalpost = createJournalpostWithHoveddokument();
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
 		FilDetaljer arkiv = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
 		DokumentFil arkivDokumentFil = arkiv.createDokumentFil();
 		dokumentFilTestRepository.persist(arkivDokumentFil);

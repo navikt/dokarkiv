@@ -20,7 +20,7 @@ import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.security.ValidateAdminConsumerAccessInterceptor.APP_NAME_WITH_NAMESPACE;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.util.TestUtil.createKasserDokumentRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,7 +35,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentForKassering() {
-		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostTestRepository.persist(createFerdigstiltJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 
@@ -75,7 +75,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalSkjermeDokumentForKasseringForStsTokenFraJoarkadmin() {
-		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostTestRepository.persist(createFerdigstiltJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
 
@@ -118,7 +118,7 @@ public class Rjoark102SIT extends AbstractAdminIT {
 
 	@Test
 	public void skalOppheveSkjermingDokumentForKassering() {
-		Journalpost journalpost = journalpostTestRepository.persist(createJournalpostWithHoveddokument());
+		Journalpost journalpost = journalpostTestRepository.persist(createFerdigstiltJournalpostWithHoveddokument());
 		DokumentInfo dokumentInfoSomSkalSkjermesSomKassert = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
 		dokumentInfoSomSkalSkjermesSomKassert.setKassert(true);

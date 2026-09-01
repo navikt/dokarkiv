@@ -14,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
+import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createEnkelJournalpost;
+import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createJournalpostForOppdatering;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT_1;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.MOTTAT_DATO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
@@ -44,7 +46,7 @@ public class JournalpostUpdaterTest {
 	@Test
 	public void shouldUpdateJournalpost() throws UgyldigAksjonsLoggException {
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
-		journalpost = TestUtils.createEnkelJournalpost();
+		journalpost = createEnkelJournalpost();
 
 		assertThat(journalpost.getBrukere(), hasSize(2));
 
@@ -60,7 +62,7 @@ public class JournalpostUpdaterTest {
 	public void shouldNotClearBrukerListeVedOppdateringAvEksisterende() throws UgyldigAksjonsLoggException {
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 
-		journalpost = TestUtils.createJournalpostForOppdatering();
+		journalpost = createJournalpostForOppdatering();
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
@@ -72,7 +74,7 @@ public class JournalpostUpdaterTest {
 		LocalDate earliest = LocalDate.of(2025, 4, 23);
 		oppdaterJournalpostRequest = TestUtils.createPutOppdaterJournalpostRequestWithDatoRetur(earliest);
 
-		journalpost = TestUtils.createEnkelJournalpost();
+		journalpost = createEnkelJournalpost();
 		assertNull(journalpost.getAntallRetur());
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
@@ -91,7 +93,7 @@ public class JournalpostUpdaterTest {
 	@Test
 	public void shouldUpdateJPMottattDatoWithNullWhenJpErInngaaendeAndRequestMottattDatoNull() throws UgyldigAksjonsLoggException {
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestUtenDatoMottat();
-		journalpost = TestUtils.createJournalpostForOppdatering();
+		journalpost = createJournalpostForOppdatering();
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
@@ -102,7 +104,7 @@ public class JournalpostUpdaterTest {
 	@Test
 	public void shouldUpdateMottattDatoWhenJpErInngaaende() throws UgyldigAksjonsLoggException {
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequestWithDatoMottat(DATO_MOTTATT_1);
-		journalpost = TestUtils.createJournalpostForOppdatering();
+		journalpost = createJournalpostForOppdatering();
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 

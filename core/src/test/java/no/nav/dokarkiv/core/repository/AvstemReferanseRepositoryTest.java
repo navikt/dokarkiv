@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.repository;
 
+import java.util.List;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,9 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import java.util.List;
-
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithoutSak;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
@@ -39,7 +38,7 @@ class AvstemReferanseRepositoryTest {
 
 	@Test
 	void shouldOnlyMatchEksternReferanseThatExists() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = createJournalpostWithoutSak();
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

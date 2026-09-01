@@ -1,6 +1,8 @@
 package no.nav.dokarkiv.safintern.journalpost;
 
 import jakarta.persistence.EntityManager;
+import java.time.LocalDate;
+import java.util.Set;
 import no.nav.dokarkiv.core.domain.codes.Fagomrade;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
@@ -24,18 +26,15 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.time.LocalDate;
-import java.util.Set;
-
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.RPO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.MottaksKanalCode.NAV_NO;
 import static no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode.POL;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.S;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.SKJERMING_TYPE_CODE;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.SKJERMING_TYPE_CODE;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFysiskpostUtsendingsInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostForSakId;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertBruker;
 import static no.nav.dokarkiv.safintern.journalpost.TestdataAsserter.assertSak;
@@ -84,7 +83,7 @@ public class SafinternJournalpostServiceTest {
 	void shouldFetch() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = createJournalpostForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(S);
 		journalpostTestRepository.persist(actualJournalpost);
 		UtsendingsInfo utsendingsInfo = createFysiskpostUtsendingsInfo(actualJournalpost);
@@ -102,7 +101,7 @@ public class SafinternJournalpostServiceTest {
 	void shouldFetchDokumenterPaths() {
 		Sak persistedSak = sakTestRepository.persist(createGsak());
 		Long sakId = persistedSak.getSakId();
-		Journalpost actualJournalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg(sakId);
+		Journalpost actualJournalpost = createJournalpostForSakId(sakId);
 		actualJournalpost.setUtsendingskanal(S);
 		setSkjermingVedlegg(actualJournalpost);
 		journalpostTestRepository.persist(actualJournalpost);

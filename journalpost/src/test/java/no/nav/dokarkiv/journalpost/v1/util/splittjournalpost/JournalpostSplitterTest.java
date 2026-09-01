@@ -1,5 +1,9 @@
 package no.nav.dokarkiv.journalpost.v1.util.splittjournalpost;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
 import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -7,18 +11,13 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
-import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostRequest.SplittDokument;
+import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostRequest;
 import org.jboss.logging.MDC;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
@@ -31,10 +30,10 @@ import static no.nav.dokarkiv.core.domain.codes.FilTypeCode.PDF;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfo;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createHoveddokumentRelasjon;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.getDokumentInfoFromJpDokInfoRelasjoner;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfo;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createHoveddokumentRelasjon;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithoutSak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static no.nav.dokarkiv.journalpost.v1.util.splittjournalpost.JournalpostSplitter.SPLITT_JOURNALPOST_FILNAVN;
@@ -59,7 +58,7 @@ class JournalpostSplitterTest {
 
 	@Test
 	void shouldSplittJournalpostMedDokumentUtenEndringer() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		var dokumentInfo = createDokumentInfo();
@@ -130,7 +129,7 @@ class JournalpostSplitterTest {
 
 	@Test
 	void shouldSplittJournalpostMedDokumentMedEndringer() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		var dokumentInfo = createDokumentInfo();
@@ -178,7 +177,7 @@ class JournalpostSplitterTest {
 
 	@Test
 	void shouldSplittJournalpostMedDokumenterMedOgUtenEndringer() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		var dokumentInfo = createDokumentInfo();
@@ -202,7 +201,7 @@ class JournalpostSplitterTest {
 	@ParameterizedTest
 	@MethodSource
 	void shouldSplittJournalpostMedDokumenterMedNyBruker(Bruker bruker) {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		var dokumentInfo = createDokumentInfo();
@@ -240,7 +239,7 @@ class JournalpostSplitterTest {
 
 	@Test
 	void shouldSplittJournalpostMedDokumenterUtenNyBruker() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		var dokumentInfo = createDokumentInfo();
@@ -261,7 +260,7 @@ class JournalpostSplitterTest {
 
 	@Test
 	void shouldSplittJournalpostMedDokumentAndRemoveJorunalfoerendeEnhet() {
-		var journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedlegg();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		var dokumentInfo = createDokumentInfo();

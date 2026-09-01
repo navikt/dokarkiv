@@ -1,5 +1,8 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.SneakyThrows;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
@@ -15,10 +18,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -36,9 +35,9 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.AVSENDER_MOTTAKER_NAVN;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createDokumentInfoVedleggRelasjon;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.AVSENDER_MOTTAKER_NAVN;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjonForJournalpost;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.AVSENDER_MOTTAKER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALPOST_ID;
@@ -84,7 +83,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("saf/safGraphQlResponseKildeJournalpostId1-happy.json")));
 
-		Long journalpostId = journalpostTestRepository.persist(createJournalpostWithHoveddokument()).getJournalpostId();
+		Long journalpostId = journalpostTestRepository.persist(createFerdigstiltJournalpostWithHoveddokument()).getJournalpostId();
 		commitAndStartNewTransaction();
 
 		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(sakstype, fagsakId, fagsaksystem, List.of()), createHeadersWithUserAndServiceUserToken());
@@ -128,9 +127,9 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 		restStsToken();
 		happyAktoerIdStub();
 
-		Journalpost journalpost = createJournalpostWithHoveddokument();
-		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjon(journalpost));
-		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjon(journalpost));
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
+		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjonForJournalpost(journalpost));
+		journalpost.addJournalpostDokumentInfoRelasjon(createDokumentInfoVedleggRelasjonForJournalpost(journalpost));
 
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 
@@ -203,7 +202,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("saf/safGraphQlResponseKildeJournalpostId1-happy.json")));
 
-		Long journalpostId = journalpostTestRepository.persist(createJournalpostWithHoveddokument()).getJournalpostId();
+		Long journalpostId = journalpostTestRepository.persist(createFerdigstiltJournalpostWithHoveddokument()).getJournalpostId();
 		commitAndStartNewTransaction();
 
 		HttpEntity<KnyttTilAnnenSakRequest> requestEntity = new HttpEntity<>(createKnyttTilAnnenSakRequestHappyPath(FAGSAK, FAGSAK_ID, FAGSAKSYSTEM, List.of(11111111L)), createHeadersWithUserAndServiceUserToken());

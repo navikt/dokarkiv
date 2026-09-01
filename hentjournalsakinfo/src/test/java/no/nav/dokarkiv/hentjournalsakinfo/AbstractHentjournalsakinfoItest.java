@@ -28,8 +28,8 @@ import tools.jackson.databind.json.JsonMapper;
 import java.util.Base64;
 import java.util.UUID;
 
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createJournalpostWithHoveddokument;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.generateInnsynWithDescription;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.generateInnsynWithDescription;
 import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -93,7 +93,7 @@ public abstract class AbstractHentjournalsakinfoItest extends AbstractRestIT {
 	}
 
 	protected Journalpost createUniqueJournalpost() {
-		Journalpost journalpostWithHoveddokument = createJournalpostWithHoveddokument();
+		Journalpost journalpostWithHoveddokument = createFerdigstiltJournalpostWithHoveddokument();
 		journalpostWithHoveddokument.setKanalReferanseId(KANAL_REFERANSE_ID + UUID.randomUUID());
 		return journalpostWithHoveddokument;
 	}

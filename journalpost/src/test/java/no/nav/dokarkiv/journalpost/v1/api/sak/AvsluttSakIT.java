@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.api.sak;
 
 import no.nav.dokarkiv.core.domain.codes.AvleveringStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.SakStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
@@ -22,10 +23,10 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.KassasjonStatusCode.KLAR_FOR_KASSASJON;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVBRUTT;
 import static no.nav.dokarkiv.core.domain.codes.SakStatusCode.AVSLUTTET;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createSakForAktoerId;
-import static no.nav.dokarkiv.core.util.TestDataGenerator.createSakForOrgNr;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createSakForAktoerId;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createSakForOrgNr;
 import static no.nav.dokarkiv.core.util.TestdataFactory.GSAK_ORGNR;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFullyPopulatedJournalpostWithHoveddokumentAndVedleggWithJournalstatusCode;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.AKTOERID;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
 import static org.assertj.core.api.Assertions.within;
@@ -232,7 +233,7 @@ public class AvsluttSakIT extends AbstractJournalpostIT {
 	}
 
 	private void persistJournalpost(long sakId, JournalStatusCode statusCode) {
-		Journalpost journalpost = createFullyPopulatedJournalpostWithHoveddokumentAndVedleggWithJournalstatusCode(sakId, statusCode);
+		Journalpost journalpost = createJournalpost(sakId, JournalpostTypeCode.U, statusCode);
 		journalpostTestRepository.persist(journalpost);
 		commitAndStartNewTransaction();
 	}
