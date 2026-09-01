@@ -30,7 +30,6 @@
   ],
   "DOKARKIV_SKJERMDOKUMENT_TILLATTEHJEMLER": "ARK,POL",
   "DOKARKIV_SECRET": "dokarkiv",
-  "DOKARKIV_VAULT": "/kv/preprod/fss/dokarkiv/teamdokumenthandtering",
   "DOKARKIV_DATABASE_POOLSIZE": "20",
   "DOKARKIV_DATABASE_PARALLEL_HINT_SUPPORT": "false",
   "SPRINGDOC_ENABLED": "true",
@@ -472,6 +471,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "ung-brukerdialog-api",
+      "namespace": "k9saksbehandling",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "flex-joark-mottak",
       "namespace": "flex",
       "cluster": "dev-gcp"
@@ -643,6 +647,11 @@
       "app": "repr-fullmakt",
       "namespace": "repr",
       "cluster": "dev-fss"
+    },
+    {
+      "app": "fullmakt",
+      "namespace": "repr",
+      "cluster": "dev-gcp"
     },
     {
       "app": "ida",
@@ -880,6 +889,16 @@
     {
       "app": "watson-admin-api",
       "namespace": "holmes",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "translatore-backend-q2",
+      "namespace": "ki-oversetter",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "im-joark",
+      "namespace": "helsearbeidsgiver",
       "cluster": "dev-gcp"
     }
   ]

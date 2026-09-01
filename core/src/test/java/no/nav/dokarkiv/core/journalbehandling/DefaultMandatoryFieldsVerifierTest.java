@@ -29,8 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Unit tests for DefaultMandatoryFieldsVerifier. Validation failures is tested
  * in the domain object tests, so we only test happy cases here.
- *
- * @author Thomas Eugen Bjørge, Visma Sirius
  */
 public class DefaultMandatoryFieldsVerifierTest {
 
@@ -94,7 +92,7 @@ public class DefaultMandatoryFieldsVerifierTest {
 						.endretAvNavn("Endret av")
 						.build())
 				.brukere(getBrukerBuilder()
-						.brukerId("01014138923")
+						.brukerId("17434424798")
 						.brukerType(BrukerTypeCode.PERSON)
 						.build())
 				.kryssReferanser(getKryssreferanseBuilder()

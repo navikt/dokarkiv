@@ -30,7 +30,7 @@ class FilMagicNumberValidatorTest {
 	}
 
 	private static Stream<Arguments> shouldReturnTrueWhenContainsValidMagicNumber() throws IOException {
-		byte[] pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_pdfa.pdf");
+		byte[] pdfFile = classpathToInputStream("pdf/pdf/453644598_skan_im_ugyldig_pdfa.pdf");
 		byte[] jpegFile = classpathToInputStream("jpeg/2021_01_06_nasjonale_tiltak_16_9.jpg");
 		byte[] pngFile = classpathToInputStream("png/2021_01_06_nasjonale_tiltak.png");
 		byte[] xlsxFile = classpathToInputStream("ooxml/test.xlsx");

@@ -22,7 +22,7 @@ import java.time.ZoneId;
 @ComponentScan
 @Configuration
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
-@EnableConfigurationProperties({ServiceuserAlias.class, DokarkivProperties.class})
+@EnableConfigurationProperties({ServiceuserAlias.class, DokarkivProperties.class, NaisProperties.class})
 @EnableAspectJAutoProxy
 @EnableResilientMethods
 public class CoreConfig {
