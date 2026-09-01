@@ -104,7 +104,7 @@ import static org.assertj.core.api.Assertions.tuple;
 @ActiveProfiles("itest")
 class SafinternJournalpostRepositoryTest {
 	private static final Integer ANTALL_RETUR = 3;
-	private static final String AVSENDER_MOTTAKER_ID = "02016126007";
+	private static final String AVSENDER_MOTTAKER_ID = "11111111111";
 	private static final String LANDKODE_NO = "NO";
 	private static final String POSTNUMMER = "postnummer";
 	private static final String POSTSTED = "poststed";

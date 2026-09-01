@@ -29,7 +29,7 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.util.TestdataFactory.BRUKER_ID;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithSak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithoutSak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.splittjournalpost.JournalpostSplitter.SPLITT_JOURNALPOST_FILNAVN;
@@ -50,7 +50,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSplittJournalpost() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 
@@ -118,7 +118,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	public void shouldSplittJournalpostWithNewDokumenter() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 
@@ -234,7 +234,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnNotFoundWhenSplittingNonExistingJournalpost() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 
@@ -258,7 +258,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnBadRequestWhenSplittingNonInngaaendeJournalpost() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpostTestRepository.persist(journalpost);
 
 		TestTransaction.flagForCommit();
@@ -279,7 +279,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnConflictWhenSplittingJournalpostWithExistingExternReferanseId() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 
@@ -302,7 +302,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 	@Test
 	void shouldReturnBadRequestWhenRequestContainsNonExistingDocument() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.setJournalposttype(I);
 		journalpostTestRepository.persist(journalpost);
 

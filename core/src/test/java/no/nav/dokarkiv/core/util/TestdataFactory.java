@@ -60,7 +60,7 @@ public class TestdataFactory {
 	public static final String OPPRETTET_KILDE_NAVN = "Opprettet kilde";
 	public static final String OPPRETTET_AV_NAVN = "Opprettet navn";
 	private static final String ENDRET_AV_NAVN = "Endret av navn";
-	private static final String AVSENDER_MOTTAKER_ID = "02016126007";
+	private static final String AVSENDER_MOTTAKER_ID = "11111111111";
 	public static final String AVSENDER_MOTTAKER_NAVN = "Jim Hopper";
 	public static final String AVSENDER_MOTTAKER_LAND = "NO";
 	public static final AvsenderMottakerIdTypeCode AVSENDER_MOTTAKER_ID_TYPE = AvsenderMottakerIdTypeCode.FNR;
@@ -120,7 +120,7 @@ public class TestdataFactory {
 		return createJournalpostForSaksrelasjon(createSaksrelasjon(sakId));
 	}
 
-	public static Journalpost createJournalpostWithSak() {
+	public static Journalpost createJournalpostWithoutSak() {
 		return createJournalpostForSaksrelasjon(null);
 	}
 

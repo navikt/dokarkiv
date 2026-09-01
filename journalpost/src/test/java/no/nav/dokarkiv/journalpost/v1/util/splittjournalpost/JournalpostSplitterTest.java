@@ -32,7 +32,7 @@ import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOV
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createHoveddokumentRelasjon;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithSak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithoutSak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.ORGNR;
@@ -58,7 +58,7 @@ class JournalpostSplitterTest {
 
 	@Test
 	void shouldSplittJournalpostMedDokumentUtenEndringer() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		var dokumentInfo = createDokumentInfo();
@@ -129,7 +129,7 @@ class JournalpostSplitterTest {
 
 	@Test
 	void shouldSplittJournalpostMedDokumentMedEndringer() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		var dokumentInfo = createDokumentInfo();
@@ -177,7 +177,7 @@ class JournalpostSplitterTest {
 
 	@Test
 	void shouldSplittJournalpostMedDokumenterMedOgUtenEndringer() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		var dokumentInfo = createDokumentInfo();
@@ -201,7 +201,7 @@ class JournalpostSplitterTest {
 	@ParameterizedTest
 	@MethodSource
 	void shouldSplittJournalpostMedDokumenterMedNyBruker(Bruker bruker) {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		var dokumentInfo = createDokumentInfo();
@@ -239,7 +239,7 @@ class JournalpostSplitterTest {
 
 	@Test
 	void shouldSplittJournalpostMedDokumenterUtenNyBruker() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		var dokumentInfo = createDokumentInfo();
@@ -260,7 +260,7 @@ class JournalpostSplitterTest {
 
 	@Test
 	void shouldSplittJournalpostMedDokumentAndRemoveJorunalfoerendeEnhet() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpost.clearJournalpostDokumentInfoRelasjoner();
 
 		var dokumentInfo = createDokumentInfo();

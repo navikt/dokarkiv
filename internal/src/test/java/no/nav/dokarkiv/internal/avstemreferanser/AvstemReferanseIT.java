@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithSak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithoutSak;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
@@ -26,9 +26,9 @@ public class AvstemReferanseIT extends AbstractInternalIT {
 
 	@Test
 	void shouldReturnNoContentWhenAllReferencesMatch() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpostTestRepository.persist(journalpost);
-		var journalpost2 = createJournalpostWithSak();
+		var journalpost2 = createJournalpostWithoutSak();
 		journalpost2.setKanalReferanseId(journalpost2.getKanalReferanseId() + "2");
 		journalpostTestRepository.persist(journalpost2);
 		TestTransaction.flagForCommit();
@@ -41,7 +41,7 @@ public class AvstemReferanseIT extends AbstractInternalIT {
 
 	@Test
 	void shouldReturnOkWhenSomeReferencesNotMatched() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
@@ -56,7 +56,7 @@ public class AvstemReferanseIT extends AbstractInternalIT {
 
 	@Test
 	void shouldBeRejectedIfNotAuthorizedWithRoleInternSkanning() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

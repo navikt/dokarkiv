@@ -32,7 +32,7 @@ import static no.nav.dokarkiv.core.CoreConfig.ZONEID_UTC;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjonForJournalpostWithRekkefoelge;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createGsak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostForSakId;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithSak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithoutSak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.setSkjermingVedlegg;
 import static no.nav.dokarkiv.safintern.SafinternConstants.ROLE_CLAIM_TILGANG;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -90,7 +90,7 @@ public class FinnJournalposterJournalstatusIT extends AbstractSafinternTest {
 	public void shouldPaginateResultsCorrectlyForVariousPagesizes() {
 
 		IntStream.range(0, 400).mapToObj(i -> {
-			var jp = createJournalpostWithSak();
+			var jp = createJournalpostWithoutSak();
 			jp.setKanalReferanseId("kanalref" + i);
 			jp.setJournalstatus(JournalStatusCode.U);
 			return jp;

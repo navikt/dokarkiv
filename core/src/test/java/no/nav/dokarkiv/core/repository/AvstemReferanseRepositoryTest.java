@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithSak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithoutSak;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
@@ -38,7 +38,7 @@ class AvstemReferanseRepositoryTest {
 
 	@Test
 	void shouldOnlyMatchEksternReferanseThatExists() {
-		var journalpost = createJournalpostWithSak();
+		var journalpost = createJournalpostWithoutSak();
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
 		TestTransaction.end();

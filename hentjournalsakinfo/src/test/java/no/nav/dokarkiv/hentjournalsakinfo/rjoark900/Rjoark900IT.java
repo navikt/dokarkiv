@@ -71,7 +71,7 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 	private static final String FINNJOURNALPOSTER_STATUS = "/hentjournalsakinfo/finnjournalposter";
 	private static final Integer ANTALL_RETUR = 3;
 	private static final String API_PSAK_ID = "90909090";
-	private static final String AVSENDER_MOTTAKER_ID = "02016126007";
+	private static final String AVSENDER_MOTTAKER_ID = "11111111111";
 	private static final String TILLEGGOPPLYSNINGER_KEY = "tillegg";
 	private static final String TILLEGGOPPLYSNINGER_VAL = "tillegg_verdi";
 

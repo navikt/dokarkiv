@@ -41,7 +41,7 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfo;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoWithMoreData;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostForSakId;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostForSaksrelasjon;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithSak;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithoutSak;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createPsakSaksrelasjon;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createVedleggRelasjon;
 import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
@@ -246,7 +246,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 
 	@Test
 	public void shouldReturnJournalpostsWithNullSaksrelasjon() {
-		Journalpost journalpost = createJournalpostWithSak();
+		Journalpost journalpost = createJournalpostWithoutSak();
 		journalpost.setJournalstatus(M);
 		journalpostTestRepository.persist(journalpost);
 		TestTransaction.flagForCommit();
@@ -310,7 +310,7 @@ public class FinnJournalposterIT extends AbstractSafinternTest {
 	public void shouldPaginateResultsCorrectlyForVariousPagesizes() {
 
 		IntStream.range(0, 400).mapToObj(i -> {
-			var jp = createJournalpostWithSak();
+			var jp = createJournalpostWithoutSak();
 			jp.setKanalReferanseId("kanalref" + i);
 			jp.setJournalstatus(JournalStatusCode.U);
 			return jp;
