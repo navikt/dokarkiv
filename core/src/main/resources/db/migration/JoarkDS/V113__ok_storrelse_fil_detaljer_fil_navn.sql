@@ -1,4 +1,4 @@
 DROP INDEX XIE1FIL_DETALJER ONLINE;
 
 ALTER TABLE t_fil_detaljer
-ALTER COLUMN fil_navn varchar2(255 char);
+MODIFY fil_navn varchar2(255 char);
