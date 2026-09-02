@@ -76,7 +76,7 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "k_ondemand_inst", length = 20)
 	private OnDemandInstansCode onDemandInstans;
 
-	@Column(name = "fil_navn", length = 200)
+	@Column(name = "fil_navn")
 	private String filnavn;
 
 	@Column(name = "batch_navn", length = 200)
