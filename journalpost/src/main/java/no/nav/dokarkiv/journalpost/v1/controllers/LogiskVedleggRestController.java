@@ -118,6 +118,7 @@ public class LogiskVedleggRestController {
 		validateTitlerLength(request.getTitler());
 
 		try {
+			log.info("titler={}", request.getTitler());
 			logiskVedleggService.bulkOppdaterLogiskVedlegg(dokumentInfoIdParsed, request);
 		} catch (ObjectOptimisticLockingFailureException | StaleObjectStateException e) {
 			throw new LogiskVedleggKanIkkeBulkOppdateresException("Kan ikke bulkOppdaterLogiskVedlegg for dokumentInfoId=" + dokumentInfoIdParsed + ". Ressursen er sannsynligvis nylig oppdatert av en annen prosess. Forsøk på nytt.", e);
