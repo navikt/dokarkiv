@@ -36,6 +36,11 @@
   "JOARK_VEDLIKEHOLD_GROUP_ID": "9732f7dd-550f-4aba-b64a-e1db5428604b",
   "AZURE_IAC_RULES": [
     {
+      "app":  "grunn-og-hjelpestonad",
+      "namespace": "grunn-og-hjelp",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "azure-token-generator",
       "namespace": "nais",
       "cluster": "dev-gcp",
