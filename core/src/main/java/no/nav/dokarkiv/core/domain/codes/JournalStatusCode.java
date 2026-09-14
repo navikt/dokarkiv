@@ -4,7 +4,7 @@ import no.nav.dokarkiv.core.stelvio.CodesTablePeriodicItem;
 
 /**
  * Enum for codes in T_K_JOURNAL_S.
- * 
+ *
  * @author Thomas Eugen Bjørge, Sirius IT
  */
 public enum JournalStatusCode implements CtiRelationship<JournalStatusCode, String> {
@@ -29,7 +29,7 @@ public enum JournalStatusCode implements CtiRelationship<JournalStatusCode, Stri
 	 */
 	R,
 	/**
-	 * Ferdig og sentral print
+	 * Ferdig og sentral distribusjon
 	 */
 	FS,
 	/**
@@ -45,15 +45,15 @@ public enum JournalStatusCode implements CtiRelationship<JournalStatusCode, Stri
 	 */
 	A,
 	/**
-	 * Mottatt   
+	 * Mottatt
 	 */
 	MO,
 	/**
-	 * Ukjent bruker 
+	 * Ukjent bruker
 	 */
 	UB,
-	/** 
-	 * Opplasting dokument 
+	/**
+	 * Opplasting dokument
 	 */
 	OD;
 
