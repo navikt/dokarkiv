@@ -16,7 +16,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Operation(
-	summary = "Skjermer et dokument, og alle journalposter dokumentet er knyttet til med mindre de aktuelle journalpostene har andre, ikke-skjermede dokumenter"
+		summary = "Skjermer et dokument",
+		description = """
+		Dokumentet kan bare skjermes når alle tilknyttede journalposter har journalstatus J, U, FS, FL, E eller UB.
+		En tilknyttet journalpost skjermes når alle dokumentene på journalposten er skjermet.
+		"""
 )
 @ApiResponses(value = {
 	@ApiResponse(responseCode = "204", description = "Dokumentet ble skjermet"),
