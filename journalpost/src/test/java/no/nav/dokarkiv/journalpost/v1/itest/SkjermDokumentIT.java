@@ -1,26 +1,34 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import java.util.List;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.ArkivElementEndring;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.exceptions.ApplicationProblemDetail;
 import no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentHjemmelCode;
 import no.nav.dokarkiv.journalpost.v1.api.skjermdokument.SkjermDokumentRequest;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.RELASJON_SKJERMING_TYPE;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.D;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createDokumentInfoVedleggRelasjonForJournalpost;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createVedleggRelasjon;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -31,6 +39,103 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 class SkjermDokumentIT extends AbstractJournalpostIT {
 
 	private static final String SKJERM_DOKUMENT = "skjermDokument";
+	private static final String SKJERMING_AVVIST_PGA_STATUS = "Dokument med dokumentInfoId=%d kan ikke skjermes fordi følgende journalposter har journalstatus som ikke tillater skjerming: %s. Tillatte statuser er [J, U, FS, FL, E, UB].";
+
+	@ParameterizedTest
+	@EnumSource(value = JournalStatusCode.class, names = {"J", "U", "UB", "FL", "FS", "E"})
+	void skalSkjermeDokumentNaarJournalpostHarEndeligStatus(JournalStatusCode journalstatus) {
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
+		journalpost.setJournalstatus(journalstatus);
+		journalpostTestRepository.persist(journalpost);
+		Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+
+		commitAndStartNewTransaction();
+
+		var request = new SkjermDokumentRequest(SkjermDokumentHjemmelCode.ARK);
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+
+		ResponseEntity<String> response = restTemplate.exchange(
+				apiDokumentInfoPath(dokumentInfoId.toString(), SKJERM_DOKUMENT), PATCH, requestEntity, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
+
+		assertThat(dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow().isSkjermet()).isTrue();
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = JournalStatusCode.class, names = {"J", "U", "UB", "FL", "FS", "E"}, mode = EXCLUDE)
+	void skalAvviseSkjermingNaarJournalpostIkkeHarEndeligStatus(JournalStatusCode journalstatus) {
+		Journalpost journalpost = createFerdigstiltJournalpostWithHoveddokument();
+		journalpost.setJournalstatus(journalstatus);
+		journalpostTestRepository.persist(journalpost);
+		Long journalpostId = journalpost.getJournalpostId();
+		Long dokumentInfoId = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+
+		commitAndStartNewTransaction();
+
+		var request = new SkjermDokumentRequest(SkjermDokumentHjemmelCode.ARK);
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+
+		ResponseEntity<ApplicationProblemDetail> response = restTemplate.exchange(
+			apiDokumentInfoPath(dokumentInfoId.toString(), SKJERM_DOKUMENT), PATCH, requestEntity, ApplicationProblemDetail.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getBody())
+				.isNotNull()
+				.extracting(ApplicationProblemDetail::getMessage)
+				.isEqualTo(SKJERMING_AVVIST_PGA_STATUS.formatted(
+					dokumentInfoId,
+					"%d (status=%s)".formatted(journalpostId, journalstatus)));
+
+		assertThat(dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow().isSkjermet()).isFalse();
+		assertThat(aksjonsLoggTestRepository.findAll()).isEmpty();
+	}
+
+	@Test
+	void skalAvviseSkjermingNaarFlereJournalposterIkkeHarEndeligStatus() {
+		Journalpost journalpostMedEndeligStatus = createFerdigstiltJournalpostWithHoveddokument();
+		journalpostTestRepository.persist(journalpostMedEndeligStatus);
+		DokumentInfo deltDokumentInfo = journalpostMedEndeligStatus.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
+		Long dokumentInfoId = deltDokumentInfo.getDokumentInfoId();
+
+		Journalpost journalpostMedStatusM = createFerdigstiltJournalpostWithHoveddokument();
+		journalpostMedStatusM.setKanalReferanseId("KANAL_REFERANSE_ID_STATUS_M");
+		journalpostMedStatusM.setJournalstatus(M);
+		createVedleggRelasjon(journalpostMedStatusM, deltDokumentInfo);
+		journalpostTestRepository.persist(journalpostMedStatusM);
+
+		Journalpost journalpostMedStatusD = createFerdigstiltJournalpostWithHoveddokument();
+		journalpostMedStatusD.setKanalReferanseId("KANAL_REFERANSE_ID_STATUS_D");
+		journalpostMedStatusD.setJournalstatus(D);
+		createVedleggRelasjon(journalpostMedStatusD, deltDokumentInfo);
+		journalpostTestRepository.persist(journalpostMedStatusD);
+
+		commitAndStartNewTransaction();
+
+		var request = new SkjermDokumentRequest(SkjermDokumentHjemmelCode.ARK);
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITH_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+
+		ResponseEntity<ApplicationProblemDetail> response = restTemplate.exchange(
+			apiDokumentInfoPath(dokumentInfoId.toString(), SKJERM_DOKUMENT), PATCH, requestEntity, ApplicationProblemDetail.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(response.getBody())
+				.isNotNull()
+				.extracting(ApplicationProblemDetail::getMessage)
+				.isEqualTo(SKJERMING_AVVIST_PGA_STATUS.formatted(
+					dokumentInfoId,
+					"%d (status=%s), %d (status=%s)".formatted(
+						journalpostMedStatusM.getJournalpostId(), M,
+						journalpostMedStatusD.getJournalpostId(), D)));
+
+		commitAndStartNewTransaction();
+
+		assertThat(dokumentInfoTestRepository.findById(dokumentInfoId).orElseThrow().isSkjermet()).isFalse();
+		assertThat(journalpostTestRepository.findById(journalpostMedEndeligStatus.getJournalpostId()).orElseThrow().isSkjermet()).isFalse();
+		assertThat(journalpostTestRepository.findById(journalpostMedStatusM.getJournalpostId()).orElseThrow().isSkjermet()).isFalse();
+		assertThat(journalpostTestRepository.findById(journalpostMedStatusD.getJournalpostId()).orElseThrow().isSkjermet()).isFalse();
+		assertThat(aksjonsLoggTestRepository.findAll()).isEmpty();
+	}
 
 	@Test
 	void skalAvviseRequestMedHjemmelPOLMedBadRequest() {
