@@ -266,6 +266,9 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
+				<excludes>
+					<exclude>**/.*.sw?</exclude>
+				</excludes>
 			</resource>
 			<resource>
 				<directory>src/main/resources/data</directory>

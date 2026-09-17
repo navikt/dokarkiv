@@ -64,7 +64,7 @@ public class Dokument {
 	@Hidden
 	@Schema(
 			description = """
-					Dokumentets kategori, for eksempel SOK (søknad), SED eller FORVALTNINGSNOTAT.
+					Dokumentets kategori, for eksempel SOK (søknad) eller SED (strukturert elektronisk dokument).
 					NB: Feltet brukes av eldre verdikjeder, men trenger ikke å settes av de nyere.
 					""",
 			example = "SOK"

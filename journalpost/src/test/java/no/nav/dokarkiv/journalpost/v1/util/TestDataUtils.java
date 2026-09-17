@@ -201,7 +201,7 @@ public class TestDataUtils {
 						.dokumenttypeId(DOKUMNETTYPE_ID2)
 						.brevkode(BREVKODE2)
 						.tittel(DOKUMENT_TITTEL2)
-						.kategori(DokumentKategoriCode.FORVALTNINGSNOTAT)
+						.kategori(DokumentKategoriCode.SED)
 						.fildetaljerListe(new HashSet<>(Arrays.asList(
 								FilDetaljer.builder().filtype(FilTypeCode.PDFA).variantFormat(VariantFormatCode.ARKIV).build(),
 								FilDetaljer.builder().filtype(FilTypeCode.PDFA).variantFormat(VariantFormatCode.SLADDET).build())))
