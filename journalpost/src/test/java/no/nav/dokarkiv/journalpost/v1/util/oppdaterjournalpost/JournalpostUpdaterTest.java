@@ -1,19 +1,27 @@
 package no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost;
 
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.exceptions.UgyldigAksjonsLoggException;
 import no.nav.dokarkiv.core.repository.BrukerRepository;
+import no.nav.dokarkiv.journalpost.v1.api.OppdaterDistribusjonsinfoRequest;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.util.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
+import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createEnkelJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createJournalpostForOppdatering;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DATO_MOTTATT_1;
@@ -110,5 +118,31 @@ public class JournalpostUpdaterTest {
 
 		assertEquals(DATO_MOTTATT_1, journalpost.getMottattDato());
 		assertEquals(JournalpostTypeCode.I, journalpost.getJournalposttype());
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = JournalStatusCode.class, names = {"FL", "FS"})
+	public void shouldSetStatusEkspedertWhenJournalstatusIsGyldig(JournalStatusCode journalStatusCode) {
+		journalpost = createEnkelJournalpost(journalStatusCode, U);
+		OppdaterDistribusjonsinfoRequest request = OppdaterDistribusjonsinfoRequest.builder()
+				.settStatusEkspedert(true)
+				.build();
+
+		updater.updateFields(journalpost, request);
+
+		assertEquals(E, journalpost.getJournalstatus());
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = JournalStatusCode.class, names = {"FL", "FS"}, mode = EnumSource.Mode.EXCLUDE)
+	public void shouldNotSetStatusEkspedertWhenJournalstatusIsUgyldig(JournalStatusCode journalStatusCode) {
+		journalpost = createEnkelJournalpost(journalStatusCode, U);
+		OppdaterDistribusjonsinfoRequest request = OppdaterDistribusjonsinfoRequest.builder()
+				.settStatusEkspedert(true)
+				.build();
+
+		updater.updateFields(journalpost, request);
+
+		assertEquals(journalStatusCode, journalpost.getJournalstatus());
 	}
 }
