@@ -36,7 +36,6 @@ import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.type.TrueFalseConverter;
 
 import java.io.Serial;
@@ -54,6 +53,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.DETACH;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.M;
@@ -61,10 +64,6 @@ import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.MO;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.OD;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.U;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.UB;
-import static org.hibernate.annotations.CascadeType.DETACH;
-import static org.hibernate.annotations.CascadeType.MERGE;
-import static org.hibernate.annotations.CascadeType.PERSIST;
-import static org.hibernate.annotations.CascadeType.REMOVE;
 
 /**
  * Inneholder metadata om en samling av dokumenter, hvilken bruker de gjelder og sakstilknytning.
@@ -204,16 +203,14 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Enumerated(EnumType.STRING)
 	private InnsynCode innsyn;
 
-	@OneToMany(mappedBy = "journalpost", fetch = FetchType.LAZY)
-	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
+	@OneToMany(mappedBy = "journalpost", fetch = FetchType.LAZY, cascade = {PERSIST, MERGE, REMOVE, DETACH})
 	private final Set<Bruker> brukere = new HashSet<>();
 
 	// Bidireksjonelle OneToOne relasjoner blir eager fetched fra Journalpost
 	@OneToOne(mappedBy = "journalpost", cascade = ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private Saksrelasjon saksrelasjon;
 
-	@OneToMany(mappedBy = "journalpost")
-	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
+	@OneToMany(mappedBy = "journalpost", cascade = {PERSIST, MERGE, REMOVE, DETACH})
 	private final Set<JournalpostDokumentInfoRelasjon> journalpostDokumentInfoRelasjoner = new HashSet<>();
 
 	@ElementCollection
@@ -222,8 +219,7 @@ public class Journalpost extends AbstractPersistentVersionedDomainObjectWithKild
 	@Column(name = "verdi", nullable = false)
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 
-	@OneToMany(mappedBy = "journalpost", fetch = FetchType.LAZY)
-	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
+	@OneToMany(mappedBy = "journalpost", fetch = FetchType.LAZY, cascade = {PERSIST, MERGE, REMOVE, DETACH})
 	private final Set<Kryssreferanse> kryssreferanser = new HashSet<>();
 
 	/**

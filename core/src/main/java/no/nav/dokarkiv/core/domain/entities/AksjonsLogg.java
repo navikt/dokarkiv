@@ -15,18 +15,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Immutable;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import static jakarta.persistence.CascadeType.DETACH;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.GenerationType.SEQUENCE;
-import static org.hibernate.annotations.CascadeType.DETACH;
-import static org.hibernate.annotations.CascadeType.MERGE;
-import static org.hibernate.annotations.CascadeType.PERSIST;
-import static org.hibernate.annotations.CascadeType.REMOVE;
 
 /**
  * Inneholder vesentlige endringer på Journalpost eller DokumentInfo.
@@ -86,8 +85,7 @@ public class AksjonsLogg {
 	@Column(name = "melding", length = 1000)
 	private String melding;
 
-	@OneToMany(mappedBy = "aksjonsLogg")
-	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
+	@OneToMany(mappedBy = "aksjonsLogg", cascade = {PERSIST, MERGE, REMOVE, DETACH})
 	@Builder.Default
 	private final Set<ArkivElementEndring> arkivElementEndringer = new HashSet<>();
 }
