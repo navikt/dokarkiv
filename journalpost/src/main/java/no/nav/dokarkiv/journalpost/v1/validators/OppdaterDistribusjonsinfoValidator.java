@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
@@ -32,7 +33,7 @@ public class OppdaterDistribusjonsinfoValidator {
 
 	private final Validator springSuppliedValidator;
 
-	private static final EnumSet<JournalStatusCode> ALLOWED_STATES_FOR_DISTRIBUTION = EnumSet.of(FS, FL);
+	private static final EnumSet<JournalStatusCode> ALLOWED_STATES_FOR_DISTRIBUTION = EnumSet.of(FS, FL, E);
 
 	public OppdaterDistribusjonsinfoValidator(Validator validator) {
 		this.springSuppliedValidator = validator;

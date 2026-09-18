@@ -20,6 +20,7 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,11 +36,14 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_JOURNALSTATUS;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.JOURNALPOST_OVERSTYR_INNSYN;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
+import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Component
 public class JournalpostUpdater {
+
+	private static final EnumSet<JournalStatusCode> JOURNALSTATUS_GYLDIG_FOR_SETT_EKSPEDERT = EnumSet.of(FL, FS);
 
 	private final BrukerRepository brukerRepository;
 	private final AvsenderMottakerUpdater avsenderMottakerUpdater;
@@ -82,7 +86,7 @@ public class JournalpostUpdater {
 		if (request.getUtsendingsKanal() != null) {
 			journalpost.setUtsendingskanal(UtsendingsKanalCode.valueOf(request.getUtsendingsKanal()));
 		}
-		if (request.getSettStatusEkspedert()) {
+		if (request.getSettStatusEkspedert() && JOURNALSTATUS_GYLDIG_FOR_SETT_EKSPEDERT.contains(journalpost.getJournalstatus())) {
 			updateJournalstatus(journalpost, tracker, E);
 		} else if (request.getTilbakestillJournalpost() != null && request.getTilbakestillJournalpost()) {
 			updateJournalstatus(journalpost, tracker, FS);
