@@ -24,7 +24,7 @@
     "https://dokarkiv.prod-fss-pub.nais.io",
     "https://dokarkiv.intern.nav.no"
   ],
-  "DOKARKIV_SKJERMDOKUMENT_TILLATTEHJEMLER": "ARK",
+  "DOKARKIV_SKJERMDOKUMENT_TILLATTEHJEMLER": "ARK,POL",
   "DOKARKIV_SECRET": "dokarkiv",
   "DOKARKIV_DATABASE_POOLSIZE": "60",
   "DOKARKIV_DATABASE_PARALLEL_HINT_SUPPORT": "true",

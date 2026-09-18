@@ -19,14 +19,13 @@ import lombok.Getter;
 import lombok.Setter;
 import no.nav.dokarkiv.core.domain.AbstractPersistentVersionedDomainObjectWithKilde;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import org.hibernate.annotations.Cascade;
 
 import java.io.Serial;
 
+import static jakarta.persistence.CascadeType.DETACH;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.GenerationType.SEQUENCE;
-import static org.hibernate.annotations.CascadeType.DETACH;
-import static org.hibernate.annotations.CascadeType.MERGE;
-import static org.hibernate.annotations.CascadeType.PERSIST;
 
 /**
  * Mange til mange relasjon mellom {@link Journalpost} og {@link DokumentInfo}
@@ -61,9 +60,8 @@ public class JournalpostDokumentInfoRelasjon extends AbstractPersistentVersioned
 	@Column(name = "k_tilkn_jp_som", nullable = false, length = 20)
 	private TilknyttetJournalpostSomCode tilknyttetJournalpostSom;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {PERSIST, MERGE, DETACH})
 	@JoinColumn(name = "dokument_info_id", nullable = false)
-	@Cascade({PERSIST, MERGE, DETACH})
 	private DokumentInfo dokumentInfo;
 
 	@JsonIgnore

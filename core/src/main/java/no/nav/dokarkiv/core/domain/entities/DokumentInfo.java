@@ -28,7 +28,6 @@ import no.nav.dokarkiv.core.domain.codes.SkjermingTypeCode;
 import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import no.nav.dokarkiv.core.exceptions.InvalidJournalpostStructureException;
-import org.hibernate.annotations.Cascade;
 
 import java.io.Serial;
 import java.time.LocalDateTime;
@@ -43,14 +42,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static jakarta.persistence.CascadeType.DETACH;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.groupingBy;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static org.hibernate.annotations.CascadeType.DETACH;
-import static org.hibernate.annotations.CascadeType.MERGE;
-import static org.hibernate.annotations.CascadeType.PERSIST;
-import static org.hibernate.annotations.CascadeType.REMOVE;
 
 /**
  * Holder rede på metadata for et dokument.
@@ -137,8 +136,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Builder.Default
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 
-	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true)
-	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
+	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true, cascade = {PERSIST, MERGE, REMOVE, DETACH})
 	@Builder.Default
 	private Set<SkannetInnhold> skannetInnholdListe = new LinkedHashSet<>();
 
@@ -147,8 +145,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	@Builder.Default
 	private Set<JournalpostDokumentInfoRelasjon> journalpostRelasjoner = new HashSet<>();
 
-	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true)
-	@Cascade({PERSIST, MERGE, DETACH})
+	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true, cascade = {PERSIST, MERGE, DETACH})
 	@Builder.Default
 	private Set<FilDetaljer> fildetaljerListe = new HashSet<>();
 

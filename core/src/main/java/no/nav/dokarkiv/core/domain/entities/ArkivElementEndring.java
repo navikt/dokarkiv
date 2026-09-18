@@ -14,16 +14,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Immutable;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.CascadeType.DETACH;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.GenerationType.SEQUENCE;
-import static org.hibernate.annotations.CascadeType.DETACH;
-import static org.hibernate.annotations.CascadeType.MERGE;
-import static org.hibernate.annotations.CascadeType.PERSIST;
-import static org.hibernate.annotations.CascadeType.REMOVE;
 
 
 /**
@@ -62,9 +61,8 @@ public class ArkivElementEndring {
 	@Column(name = "til_verdi", length = 500)
 	private String tilVerdi;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {PERSIST, MERGE, REMOVE, DETACH})
 	@JoinColumn(name = "aksjonslogg_id", nullable = false)
-	@Cascade({PERSIST, MERGE, REMOVE, DETACH})
 	private AksjonsLogg aksjonsLogg;
 
 	/**
