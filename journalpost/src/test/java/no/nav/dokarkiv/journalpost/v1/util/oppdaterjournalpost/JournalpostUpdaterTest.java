@@ -17,10 +17,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 
+import static no.nav.dokarkiv.core.CoreConfig.ZONEID_NORGE;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.E;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FL;
-import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.FS;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createEnkelJournalpost;
 import static no.nav.dokarkiv.journalpost.v1.util.TestDataUtils.createJournalpostForOppdatering;
@@ -29,9 +30,8 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.MOTTAT_DATO;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequest;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestUtenDatoMottat;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createPutOppdaterJournalpostRequestWithDatoMottat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,13 +56,13 @@ public class JournalpostUpdaterTest {
 		oppdaterJournalpostRequest = createPutOppdaterJournalpostRequest();
 		journalpost = createEnkelJournalpost();
 
-		assertThat(journalpost.getBrukere(), hasSize(2));
+		assertThat(journalpost.getBrukere()).hasSize(2);
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		assertThat(journalpost.getFagomrade().name(), is(oppdaterJournalpostRequest.getTema()));
-		assertThat(journalpost.getInnhold(), is(oppdaterJournalpostRequest.getTittel()));
-		assertThat(journalpost.getBrukere(), hasSize(1));
+		assertThat(journalpost.getFagomrade().name()).isEqualTo(oppdaterJournalpostRequest.getTema());
+		assertThat(journalpost.getInnhold()).isEqualTo(oppdaterJournalpostRequest.getTittel());
+		assertThat(journalpost.getBrukere()).hasSize(1);
 		verify(avsenderMottakerUpdaterMock).updateAvsenderMottaker(eq(journalpost), eq(oppdaterJournalpostRequest), any(ChangeTracker.class));
 	}
 
@@ -74,7 +74,7 @@ public class JournalpostUpdaterTest {
 
 		updater.updateFields(journalpost, oppdaterJournalpostRequest);
 
-		assertThat(journalpost.getBrukere(), hasSize(1));
+		assertThat(journalpost.getBrukere()).hasSize(1);
 	}
 
 	@Test
@@ -144,5 +144,22 @@ public class JournalpostUpdaterTest {
 		updater.updateFields(journalpost, request);
 
 		assertEquals(journalStatusCode, journalpost.getJournalstatus());
+	}
+
+	@Test
+	public void shouldSetStatusEkspedertAndDatoLestForEkspedertJournalpost() {
+		journalpost = createEnkelJournalpost(E, U);
+		OffsetDateTime datoLest = OffsetDateTime.now();
+		OppdaterDistribusjonsinfoRequest request = OppdaterDistribusjonsinfoRequest.builder()
+			.settStatusEkspedert(true)
+			.datoLest(datoLest)
+			.build();
+
+		assertThat(journalpost.getLestDato()).isNull();
+
+		updater.updateFields(journalpost, request);
+
+		assertEquals(E, journalpost.getJournalstatus());
+		assertThat(journalpost.getLestDato()).isCloseTo(datoLest.atZoneSameInstant(ZONEID_NORGE).toLocalDateTime(), within(100, ChronoUnit.MILLIS));
 	}
 }
