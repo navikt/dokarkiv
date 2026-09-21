@@ -18,7 +18,9 @@ import java.util.Set;
 
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConstants.FILREFERANSE_ID_KEY;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.BESTILLINGS_ID;
+import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.DOKUMENT_INNHOLD;
 import static no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark112.OpprettJournalpostArkiverDokumenterDataUtil.FILREFERANSE_GCS;
+import static no.nav.dokarkiv.core.util.Digest.sha256;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -87,7 +89,11 @@ public class OpprettJournalpostArkiverDokumenterAssertUtil {
 		assertThat(fildetaljer, is(notNullValue()));
 		assertThat(fildetaljer.getFiltype(), is(filTypeCode));
 		assertThat(fildetaljer.getVariantFormat(), is(variantFormatCode));
-		assertThat(fildetaljer.getFileContent(), is(OpprettJournalpostArkiverDokumenterDataUtil.DOKUMENT_INNHOLD.getBytes()));
+		assertThat(fildetaljer.getFileContent(), is(DOKUMENT_INNHOLD.getBytes()));
+		if(fildetaljer.hasId()) {
+			assertThat(fildetaljer.getSha256Sjekksum(), is(sha256(DOKUMENT_INNHOLD.getBytes())));
+			assertThat(fildetaljer.getFilstorrelse(), is(Integer.toString(DOKUMENT_INNHOLD.length())));
+		}
 	}
 
 	private static void assertHoveddokumentTilleggsopplysninger(Map<String, String> tilleggsopplysninger) {

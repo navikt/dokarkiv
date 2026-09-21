@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.exceptions.InvalidArgumentException;
 import org.junit.jupiter.api.Test;
 
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
+import static no.nav.dokarkiv.core.util.Digest.sha256;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -18,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  */
 public class FilDetaljerTest {
+
+	public static final byte[] FILE_CONTENT = "Test".getBytes();
 
 	@Test
 	public void shouldThrowExceptionForMissingFiltype() {
@@ -50,7 +53,7 @@ public class FilDetaljerTest {
 	public void shouldCreateDokumentFilCorrectlyForNewFilDetaljer() {
 		String kildeNavn = "Opprettet Kilde";
 		FilDetaljer filDetaljer = getFilDetaljerBuilder()
-				.fileContent("Test".getBytes())
+				.fileContent(FILE_CONTENT)
 				.filUuid(FilDetaljer.generateUuid())
 				.opprettetKildeNavn(kildeNavn)
 				.build();
@@ -65,7 +68,7 @@ public class FilDetaljerTest {
 		String kildeNavn = "Opprettet Kilde";
 		FilDetaljer filDetaljer = getFilDetaljerBuilder()
 				.fildetaljerId(10L)
-				.fileContent("Test".getBytes())
+				.fileContent(FILE_CONTENT)
 				.filUuid(FilDetaljer.generateUuid())
 				.endretKildeNavn(kildeNavn)
 				.build();
@@ -77,7 +80,7 @@ public class FilDetaljerTest {
 
 	@Test
 	public void shouldSetFilStorrelseWhenCreatingDokumentFil() {
-		byte[] fileContent = "Test".getBytes();
+		byte[] fileContent = FILE_CONTENT;
 		FilDetaljer filDetaljer = getFilDetaljerBuilder()
 				.fileContent(fileContent)
 				.filUuid(FilDetaljer.generateUuid())
@@ -88,10 +91,9 @@ public class FilDetaljerTest {
 
 	@Test
 	public void shouldNotOverwriteFilStorrelseWhenCreatingDokumentFil() {
-		byte[] fileContent = "Test".getBytes();
 		String filStorrelse = "100";
 		FilDetaljer filDetaljer = getFilDetaljerBuilder()
-				.fileContent(fileContent)
+				.fileContent(FILE_CONTENT)
 				.filstorrelse(filStorrelse)
 				.filUuid(FilDetaljer.generateUuid())
 				.build();
@@ -119,12 +121,13 @@ public class FilDetaljerTest {
 		assertThat(dokumentFil.getFil(), is(filDetaljer.getFileContent()));
 		assertThat(dokumentFil.getFilUuid(), is(filDetaljer.getFilUuid()));
 		assertThat(dokumentFil.getOpprettetKildeNavn(), is(kildeNavn));
+		assertThat(filDetaljer.getSha256Sjekksum(), is(sha256(dokumentFil.getFil())));
 	}
 
 	@Test
 	public void shouldReturnTrueWhenFileContentIsSet() {
 		FilDetaljer filDetaljer = getFilDetaljerBuilder()
-				.fileContent("Test".getBytes())
+				.fileContent(FILE_CONTENT)
 				.build();
 		assertThat(filDetaljer.hasFileContent(), is(true));
 	}

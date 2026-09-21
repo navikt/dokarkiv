@@ -34,6 +34,7 @@ import java.util.UUID;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
+import static no.nav.dokarkiv.core.util.Digest.sha256;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -97,6 +98,12 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 	@Setter(AccessLevel.NONE)
 	private SkjermingTypeCode skjermingType;
 
+	@Column(name = "sha256_sjekksum")
+	private byte[] sha256Sjekksum;
+
+	@Column(name = "ekstern_dokument_referanse_id", length = 512, unique = true)
+	private String eksternDokumentReferanseId;
+
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dokument_info_id", nullable = false)
@@ -155,6 +162,9 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 		dokumentFil.setOpprettetKildeNavn(getOpprettetKildeNavnForDokumentFil());
 		if (isBlank(this.getFilstorrelse())) {
 			this.setFilstorrelse(String.valueOf(this.getFileContent().length));
+		}
+		if(this.sha256Sjekksum == null) {
+			this.setSha256Sjekksum(sha256(this.getFileContent()));
 		}
 		return dokumentFil;
 	}
@@ -245,7 +255,7 @@ public class FilDetaljer extends AbstractPersistentVersionedDomainObjectWithKild
 			return false;
 
 		return fildetaljerId != null &&
-			   fildetaljerId.equals(other.getFildetaljerId());
+				fildetaljerId.equals(other.getFildetaljerId());
 	}
 
 	@Override

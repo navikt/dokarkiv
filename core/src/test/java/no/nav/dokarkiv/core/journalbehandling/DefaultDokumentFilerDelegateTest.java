@@ -21,6 +21,7 @@ import static no.nav.dokarkiv.core.domain.builder.DokumentInfoBuilder.getDokumen
 import static no.nav.dokarkiv.core.domain.builder.FilDetaljerBuilder.getFilDetaljerBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostBuilder.getJournalpostBuilder;
 import static no.nav.dokarkiv.core.domain.builder.JournalpostDokumentInfoRelasjonBuilder.getJournalpostDokumentInfoRelasjonBuilder;
+import static no.nav.dokarkiv.core.util.Digest.sha256;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
@@ -79,6 +80,7 @@ public class DefaultDokumentFilerDelegateTest {
 		assertThat(dokumentFil.getFil(), is(fileContent));
 		assertThat(dokumentFil.getEndretKildeNavn(), is(filDetaljer.getEndretKildeNavn()));
 		assertThat(filDetaljer.getFilstorrelse(), is(String.valueOf(fileContent.length)));
+		assertThat(filDetaljer.getSha256Sjekksum(), is(sha256(fileContent)));
 	}
 
 	@Test

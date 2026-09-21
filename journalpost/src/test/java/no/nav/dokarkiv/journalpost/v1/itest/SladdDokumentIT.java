@@ -27,6 +27,7 @@ import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createVedleggRelasjon;
+import static no.nav.dokarkiv.core.util.Digest.sha256;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.springframework.http.HttpMethod.POST;
@@ -88,6 +89,8 @@ class SladdDokumentIT extends AbstractJournalpostIT {
 		assertThat(sladdetVariant.getFiltype()).isEqualTo(FilTypeCode.PDF);
 		assertThat(sladdetVariant.getOpprettetKildeNavn()).isEqualTo(KILDENAVN_GOSYS);
 		assertThat(sladdetVariant.getChangeStamp().getCreatedBy()).isEqualTo(NAV_IDENT_SAKSBEHANDLER);
+		assertThat(sladdetVariant.getFilstorrelse()).isEqualTo(Integer.toString(SLADDET_FIL.length));
+		assertThat(sladdetVariant.getSha256Sjekksum()).containsExactly(sha256(SLADDET_FIL));
 
 		DokumentFil sladdetDokumentFil = dokumentFilTestRepository.findByFilUuid(sladdetVariant.getFilUuid());
 		assertThat(sladdetDokumentFil).isNotNull();

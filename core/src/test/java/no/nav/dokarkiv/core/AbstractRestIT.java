@@ -9,6 +9,7 @@ import no.nav.dokarkiv.core.repository.AksjonsLoggTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.FagomradeTestRepository;
+import no.nav.dokarkiv.core.repository.FilDetaljerTestRepository;
 import no.nav.dokarkiv.core.repository.InnsynTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostDokumentInfoRelasjonTestRepository;
 import no.nav.dokarkiv.core.repository.JournalpostTestRepository;
@@ -112,6 +113,8 @@ public abstract class AbstractRestIT {
 	protected JournalpostDokumentInfoRelasjonTestRepository journalpostDokumentInfoRelasjonTestRepository;
 	@Autowired
 	protected DokumentInfoTestRepository dokumentInfoTestRepository;
+	@Autowired
+	protected FilDetaljerTestRepository filDetaljerTestRepository;
 	@Autowired
 	protected TestRestTemplate restTemplate;
 	@Autowired

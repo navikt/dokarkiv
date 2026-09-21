@@ -41,6 +41,7 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_PDF;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILTYPE_XML;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_SHA256_DIGEST;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALPOST_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ARKIV;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.VARIANTFORMAT_ORIGINAL;
@@ -131,6 +132,7 @@ public class LastOppVedleggIT extends AbstractJournalpostIT {
 					assertThat(fildetaljer.getVariantFormat()).isEqualTo(ARKIV);
 					assertThat(fildetaljer.getOpprettetKildeNavn()).isEqualTo(SERVICE_USER_ID);
 					assertThat(fildetaljer.getFilstorrelse()).isEqualTo(String.valueOf(FYSISK_DOKUMENT.length));
+					assertThat(fildetaljer.getSha256Sjekksum()).contains(FYSISK_DOKUMENT_SHA256_DIGEST);
 
 					var dokumentFil = dokumentFilTestRepository.findByFilUuid(fildetaljer.getFilUuid());
 					assertThat(dokumentFil.getFil()).isEqualTo(FYSISK_DOKUMENT);

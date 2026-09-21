@@ -11,8 +11,11 @@ import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
+import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
@@ -40,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -47,6 +51,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 import static java.util.Collections.singletonList;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
@@ -55,7 +60,11 @@ import static no.nav.dokarkiv.core.domain.codes.BrukerTypeCode.ORGANISASJON;
 import static no.nav.dokarkiv.core.domain.codes.FagomradeCode.FOR;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.JournalStatusCode.J;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.ALTINN;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
+import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ORIGINAL;
 import static no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem.GSAK;
 import static no.nav.dokarkiv.core.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.core.api.Fagsaksystem.DAGPENGER;
@@ -73,11 +82,13 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_LA
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_NAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BATCHNAVN;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BREVKODE2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.BRUKER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SED;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENTKATEGORI_SOK;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL1;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.DOKUMENT_TITTEL2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAGSAK_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FAIL_AKTOER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FILNAVN;
@@ -89,6 +100,8 @@ import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FNR_2;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FNR_UGYLDIG;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_2_SHA256_DIGEST;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_SHA256_DIGEST;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.FYSISK_DOKUMENT_WITH_INVALID_MAGIC_NUMBER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.INNHOLD;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.JOURNALFOERENDE_ENHET;
@@ -115,6 +128,7 @@ import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.SKJULT_T
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -169,19 +183,34 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
 		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(5);
 
-		ArrayList<DokumentFil> dokumentFilList = Lists.newArrayList(dokumentFilTestRepository.findAll());
-		assertEquals(3, dokumentFilList.size());
-		dokumentFilList.forEach(dokumentFil -> assertNotNull(dokumentFil.getFil()));
-		assertEquals(2, dokumentFilList.stream()
-				.filter(dokumentFil -> Arrays.equals(FYSISK_DOKUMENT, dokumentFil.getFil())).count());
-		assertEquals(1, dokumentFilList.stream()
-				.filter(dokumentFil -> Arrays.equals(FYSISK_DOKUMENT_2, dokumentFil.getFil())).count());
+		DokumentInfo hovedDokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon()
+				.getDokumentInfo();
+		assertEquals(DOKUMENT_TITTEL1, hovedDokumentInfo.getTittel());
+		assertEquals(BREVKODE1, hovedDokumentInfo.getBrevkode());
+		FilDetaljer hovedDokumentOriginal = hovedDokumentInfo.findFilDetaljerByVariantFormat(ORIGINAL);
+		assertEquals(FILNAVN, hovedDokumentOriginal.getFilnavn());
+		assertEquals(FYSISK_DOKUMENT_2.length, parseInt(hovedDokumentOriginal.getFilstorrelse()));
+		assertArrayEquals(FYSISK_DOKUMENT_2_SHA256_DIGEST, hovedDokumentOriginal.getSha256Sjekksum());
+		DokumentFil hovedDokumentFilOriginal = dokumentFilTestRepository.findByFilUuid(hovedDokumentOriginal.getFilUuid());
+		assertArrayEquals(FYSISK_DOKUMENT_2, hovedDokumentFilOriginal.getFil());
+
+		FilDetaljer hovedDokumentArkiv = hovedDokumentInfo.findFilDetaljerByVariantFormat(ARKIV);
+		assertEquals(BATCHNAVN, hovedDokumentOriginal.getBatchNavn());
+		assertEquals(FYSISK_DOKUMENT.length, parseInt(hovedDokumentArkiv.getFilstorrelse()));
+		assertArrayEquals(FYSISK_DOKUMENT_SHA256_DIGEST, hovedDokumentArkiv.getSha256Sjekksum());
+		DokumentFil hovedDokumentFilArkiv = dokumentFilTestRepository.findByFilUuid(hovedDokumentArkiv.getFilUuid());
+		assertArrayEquals(FYSISK_DOKUMENT, hovedDokumentFilArkiv.getFil());
+
+		Set<JournalpostDokumentInfoRelasjon> vedleggRelasjons = journalpost.findDokumentInfoRelasjonByTilknyttetJournalpostSom(VEDLEGG);
+		DokumentInfo vedleggDokumentInfo = vedleggRelasjons.iterator().next().getDokumentInfo();
+		assertEquals(DOKUMENT_TITTEL2, vedleggDokumentInfo.getTittel());
+		assertEquals(BREVKODE2, vedleggDokumentInfo.getBrevkode());
 
 		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner())
 				.extracting(JournalpostDokumentInfoRelasjon::getTilknyttetJournalpostSom, JournalpostDokumentInfoRelasjon::getRekkefoelge)
 				.containsExactly(
-						tuple(TilknyttetJournalpostSomCode.HOVEDDOKUMENT, null),
-						tuple(TilknyttetJournalpostSomCode.VEDLEGG, 2)
+						tuple(HOVEDDOKUMENT, null),
+						tuple(VEDLEGG, 2)
 				);
 	}
 
