@@ -33,6 +33,7 @@ import static no.nav.dokarkiv.core.util.TestdataFactory.createJournalpostWithout
 import static no.nav.dokarkiv.core.util.TestdataFactory.getDokumentInfoFromJpDokInfoRelasjoner;
 import static no.nav.dokarkiv.journalpost.v1.api.BrukerIdType.FNR;
 import static no.nav.dokarkiv.journalpost.v1.util.splittjournalpost.JournalpostSplitter.SPLITT_JOURNALPOST_FILNAVN;
+import static no.nav.dokarkiv.core.util.Digest.sha256;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.springframework.http.HttpMethod.PATCH;
@@ -195,6 +196,8 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 															var filFraDokument = dokumentFilTestRepository.findByFilUuid(filDetaljer.getFilUuid());
 															var filFraRequest = varianterFraRequest.getFysiskDokument();
 
+															assertThat(filDetaljer.getFilstorrelse()).isEqualTo(Integer.toString(filFraRequest.length));
+															assertThat(filDetaljer.getSha256Sjekksum()).containsExactly(sha256(filFraRequest));
 															assertThat(filFraDokument.getFil()).isEqualTo(filFraRequest);
 														}));
 							});

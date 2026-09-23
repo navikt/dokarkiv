@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
+import static no.nav.dokarkiv.core.util.Digest.sha256;
 import static no.nav.dokarkiv.core.util.TestdataFactory.FIL;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createReservertPensjonJournalpost;
@@ -50,6 +51,9 @@ public class SettBrevdataIT extends AbstractInternalIT {
 		ResponseEntity<String> response = restTemplate.exchange(apiInternalPath(SETT_BREVDATA_PATH.formatted(journalpostId.toString()), VARIANT_FORMAT_ARKIV), POST, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(CREATED);
 
+		FilDetaljer arkivFilDetaljer = filDetaljerTestRepository.findByFilUuid(arkivFilUuid);
+		assertThat(arkivFilDetaljer.getFilstorrelse()).isEqualTo(Integer.toString(FIL.length));
+		assertThat(arkivFilDetaljer.getSha256Sjekksum()).containsExactly(sha256(FIL));
 		DokumentFil arkivDokumentFil = dokumentFilTestRepository.findByFilUuid(arkivFilUuid);
 		assertThat(arkivDokumentFil.getFil()).isEqualTo(FIL);
 		DokumentFil produksjonDokumentFil = dokumentFilTestRepository.findByFilUuid(produksjonFilUuid);
@@ -74,6 +78,9 @@ public class SettBrevdataIT extends AbstractInternalIT {
 		assertThat(arkivDokumentFil).isNull();
 		DokumentFil produksjonDokumentFil = dokumentFilTestRepository.findByFilUuid(produksjonFilUuid);
 		assertThat(produksjonDokumentFil.getFil()).isEqualTo(FIL);
+		FilDetaljer produksjonFilDetaljer = filDetaljerTestRepository.findByFilUuid(produksjonFilUuid);
+		assertThat(produksjonFilDetaljer.getFilstorrelse()).isEqualTo(Integer.toString(FIL.length));
+		assertThat(produksjonFilDetaljer.getSha256Sjekksum()).containsExactly(sha256(FIL));
 		validateJoarkOppdaterJournalLegacyMandatoryFields(journalpostId);
 	}
 
@@ -94,10 +101,15 @@ public class SettBrevdataIT extends AbstractInternalIT {
 		ResponseEntity<String> response = restTemplate.exchange(apiInternalPath(SETT_BREVDATA_PATH.formatted(journalpostId.toString()), VARIANT_FORMAT_PRODUKSJON), POST, requestEntity, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(OK);
 
+		commitAndStartNewTransaction();
+
 		DokumentFil arkivDokumentFil = dokumentFilTestRepository.findByFilUuid(arkivFilUuid);
 		assertThat(arkivDokumentFil).isNull();
 		DokumentFil produksjonDokumentFil = dokumentFilTestRepository.findByFilUuid(produksjonFilUuid);
 		assertThat(produksjonDokumentFil.getFil()).isEqualTo(OPPDATERT_FIL);
+		FilDetaljer produksjonFilDetaljer = filDetaljerTestRepository.findByFilUuid(produksjonFilUuid);
+		assertThat(produksjonFilDetaljer.getFilstorrelse()).isEqualTo(Integer.toString(OPPDATERT_FIL.length));
+		assertThat(produksjonFilDetaljer.getSha256Sjekksum()).containsExactly(sha256(OPPDATERT_FIL));
 		validateJoarkOppdaterJournalLegacyMandatoryFields(journalpostId);
 	}
 
@@ -109,6 +121,7 @@ public class SettBrevdataIT extends AbstractInternalIT {
 		Long journalpostId = journalpostTestRepository.persist(journalpost).getJournalpostId();
 		FilDetaljer filDetaljer = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().findFilDetaljerByVariantFormat(ARKIV);
 		filDetaljer.setEndretKildeNavn("itest");
+		filDetaljer.setFileContent(FIL);
 		dokumentFilTestRepository.persist(filDetaljer.createDokumentFil());
 
 		commitAndStartNewTransaction();

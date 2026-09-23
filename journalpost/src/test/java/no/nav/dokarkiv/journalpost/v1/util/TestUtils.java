@@ -34,7 +34,9 @@ import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import org.bouncycastle.crypto.digests.SHA256Digest;
 
+import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,6 +52,7 @@ import static no.nav.dokarkiv.core.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.AvsenderMottakerUpdater.DELETE_MARKER;
+import static no.nav.dokarkiv.core.util.Digest.sha256;
 
 public class TestUtils {
 
@@ -121,6 +124,8 @@ public class TestUtils {
 	public static final byte[] FYSISK_DOKUMENT = Base64.getDecoder().decode("JVBERi0xLjcNCiWhs8U=");
 	public static final byte[] FYSISK_DOKUMENT_WITH_INVALID_MAGIC_NUMBER = Base64.getDecoder().decode("/9j/4AAQSkZJRgABAQEAZA==");
 	public static final byte[] FYSISK_DOKUMENT_2 = "DOKUMENT_2".getBytes();
+	public static final byte[] FYSISK_DOKUMENT_SHA256_DIGEST = Base64.getDecoder().decode("fSQjFVJOTVTeDZh5t8s5xFd/OI9GDuUmdN3duBZnpac=");
+	public static final byte[] FYSISK_DOKUMENT_2_SHA256_DIGEST = Base64.getDecoder().decode("bD46JfLFK1JEVYb+Mrjq5mMeEYToJZiltz8dmjTaoFY=");
 	public static final byte[] XLSX_DOKUMENT = Base64.getDecoder().decode("UEsDBA==");
 	public static final String TILLEGGSOPPLYSNING_NOKKEL = "noekkel";
 	public static final String TILLEGGSOPPLYSNING_VERDI = "verdi";

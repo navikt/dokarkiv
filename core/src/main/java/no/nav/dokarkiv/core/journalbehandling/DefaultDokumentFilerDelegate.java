@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.nav.dokarkiv.core.util.Digest.sha256;
+
 @Component
 public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 
@@ -75,6 +77,7 @@ public class DefaultDokumentFilerDelegate implements DokumentFilerDelegate {
 			existingDokumentFil.setFil(filDetaljer.getFileContent());
 			existingDokumentFil.setEndretKildeNavn(filDetaljer.getEndretKildeNavn());
 			filDetaljer.setFilstorrelse(String.valueOf(filDetaljer.getFileContent().length));
+			filDetaljer.setSha256Sjekksum(sha256(filDetaljer.getFileContent()));
 		}
 	}
 

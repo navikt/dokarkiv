@@ -496,11 +496,11 @@ public class TestdataFactory {
 				.kategori(DokumentKategoriCode.B)
 				.build();
 		if (produksjonFilUuid != null) {
-			FilDetaljer produksjonFilDetaljer = createFildetaljerOgFil(dokumentInfo, FilTypeCode.RTF, VariantFormatCode.PRODUKSJON, produksjonFilUuid, null);
+			FilDetaljer produksjonFilDetaljer = createFildetaljerOgFil(dokumentInfo, FilTypeCode.RTF, VariantFormatCode.PRODUKSJON, produksjonFilUuid, null, null);
 			dokumentInfo.addFilDetaljer(produksjonFilDetaljer);
 		}
 		if (arkivFilUuid != null) {
-			FilDetaljer arkivFilDetaljer = createFildetaljerOgFil(dokumentInfo, FilTypeCode.PDF, VariantFormatCode.ARKIV, arkivFilUuid, null);
+			FilDetaljer arkivFilDetaljer = createFildetaljerOgFil(dokumentInfo, FilTypeCode.PDF, VariantFormatCode.ARKIV, arkivFilUuid, null, null);
 			dokumentInfo.addFilDetaljer(arkivFilDetaljer);
 		}
 		dokumentInfo.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
@@ -559,13 +559,17 @@ public class TestdataFactory {
 	}
 
 	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, FilTypeCode filTypeCode, VariantFormatCode variantFormatCode, String filUuid, String filnavn) {
+		return createFildetaljerOgFil(dokumentInfo, filTypeCode, variantFormatCode, filUuid, filnavn, FIL);
+	}
+
+	public static FilDetaljer createFildetaljerOgFil(DokumentInfo dokumentInfo, FilTypeCode filTypeCode, VariantFormatCode variantFormatCode, String filUuid, String filnavn, byte[] filInnhold) {
 		FilDetaljer filDetaljer = FilDetaljer.builder()
 				.dokumentInfo(dokumentInfo)
-				.fileContent(FIL)
+				.fileContent(filInnhold)
 				.filnavn(filnavn)
 				.filtype(filTypeCode)
 				.filUuid(filUuid)
-				.filstorrelse(String.valueOf(FIL.length))
+				.filstorrelse(filInnhold == null ? null : String.valueOf(FIL.length))
 				.variantFormat(variantFormatCode)
 				.build();
 		filDetaljer.setOpprettetKildeNavn(OPPRETTET_KILDE_NAVN);
