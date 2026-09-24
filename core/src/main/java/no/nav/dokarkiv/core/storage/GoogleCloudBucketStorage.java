@@ -8,8 +8,6 @@ import org.springframework.resilience.annotation.Retryable;
 
 import java.util.Optional;
 
-import static no.nav.dokarkiv.core.storage.RetryConstants.MULTIPLIER_SHORT;
-
 @Slf4j
 public class GoogleCloudBucketStorage implements BucketStorage {
 
