@@ -1,12 +1,15 @@
 package no.nav.dokarkiv.journalpost.v1.controllers;
 
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.dokumentfil.DokumentFilResponse;
 import no.nav.dokarkiv.journalpost.v1.services.LastOppDokumentFilResult;
 import no.nav.dokarkiv.journalpost.v1.services.LastOppDokumentFilService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLastOppDokumentFil;
+import no.nav.dokarkiv.journalpost.v1.validators.LastOppDokumentFilValidator;
 import no.nav.dokarkiv.journalpost.v1.validators.Sha256ContentDigest;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
@@ -20,6 +23,10 @@ import java.io.InputStream;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLastOppDokumentFil.DOCS_HEADER_CONTENT_DIGEST;
+import static no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLastOppDokumentFil.DOCS_HEADER_CONTENT_TYPE;
+import static no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLastOppDokumentFil.DOCS_HEADER_IDEMPOTENCY_KEY;
+import static no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLastOppDokumentFil.TILLATTE_MEDIA_TYPER;
 import static no.nav.dokarkiv.journalpost.v1.validators.LastOppDokumentFilValidator.validate;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -27,6 +34,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @Slf4j
 @Protected
 @RestController
+@Tag(name = "journalpostapi - dokumentFil", description = "Tjenester for DokumentFil")
 @RequestMapping("/rest/journalpostapi/v1/dokumentFil")
 public class DokumentFilController {
 
@@ -39,11 +47,11 @@ public class DokumentFilController {
 	@SwaggerLastOppDokumentFil
 	@PostMapping
 	public ResponseEntity<DokumentFilResponse> lastOppDokumentFil(
-			@Parameter(description = "Media typen til dokumentet", example = "application/pdf")
+			@Parameter(description = DOCS_HEADER_CONTENT_TYPE, example = "application/pdf", required = true)
 			@RequestHeader(value = CONTENT_TYPE) String contentType,
-			@Parameter(description = "Sha-256 digest av payload", example = "sha-256=:Ksa5C3tEwR/Yenu/e3L6UYKX04SVyYsu8Ib3h7qNOSo=:")
+			@Parameter(description = DOCS_HEADER_CONTENT_DIGEST, example = "sha-256=:Ksa5C3tEwR/Yenu/e3L6UYKX04SVyYsu8Ib3h7qNOSo=:", required = true)
 			@RequestHeader(value = "Content-Digest") String contentDigestHeader,
-			@Parameter(description = "Fagsystemets referanse", example = "41ff35f0-dae9-41f8-80b0-4137592c16ca")
+			@Parameter(description = DOCS_HEADER_IDEMPOTENCY_KEY, example = "41ff35f0-dae9-41f8-80b0-4137592c16ca", required = true, schema = @Schema(maxLength = 512))
 			@RequestHeader(value = "Idempotency-Key") String idempotencyKey,
 			InputStream requestBody) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
