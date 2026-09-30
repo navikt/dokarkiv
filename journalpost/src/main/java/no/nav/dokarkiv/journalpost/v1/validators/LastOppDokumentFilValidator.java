@@ -7,6 +7,7 @@ import java.util.Set;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.validator.EksternReferanseIdValidator.EKSTERN_REFERANSE_ID_PATTERN;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -29,16 +30,16 @@ public final class LastOppDokumentFilValidator {
 	/// @param contentType    verdien til Content-Type-headeren.
 	/// @param contentDigest  verdien til Content-Digest-headeren.
 	/// @param idempotencyKey verdien til Idempotency-Key-headeren.
-	/// @return et validert [ContentDigest].
-	public static ContentDigest validate(String contentType, String contentDigest, String idempotencyKey) {
-		validateHeaderErSatt(contentType, "Content-Type");
+	/// @return et validert [Sha256ContentDigest].
+	public static Sha256ContentDigest validate(String contentType, String contentDigest, String idempotencyKey) {
+		validateHeaderErSatt(contentType, CONTENT_TYPE);
 		validateHeaderErSatt(contentDigest, "Content-Digest");
 		validateHeaderErSatt(idempotencyKey, "Idempotency-Key");
 
 		validateContentType(contentType);
 		validateIdempotencyKey(idempotencyKey);
 
-		return ContentDigest.parse(contentDigest);
+		return Sha256ContentDigest.validateAndParse(contentDigest);
 	}
 
 	private static void validateHeaderErSatt(String verdi, String headerNavn) {

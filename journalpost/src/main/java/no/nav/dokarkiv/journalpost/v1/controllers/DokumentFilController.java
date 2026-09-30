@@ -7,7 +7,7 @@ import no.nav.dokarkiv.journalpost.v1.api.dokumentfil.DokumentFilResponse;
 import no.nav.dokarkiv.journalpost.v1.services.LastOppDokumentFilResult;
 import no.nav.dokarkiv.journalpost.v1.services.LastOppDokumentFilService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLastOppDokumentFil;
-import no.nav.dokarkiv.journalpost.v1.validators.ContentDigest;
+import no.nav.dokarkiv.journalpost.v1.validators.Sha256ContentDigest;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
@@ -47,12 +47,12 @@ public class DokumentFilController {
 			@RequestHeader(value = "Idempotency-Key") String idempotencyKey,
 			InputStream requestBody) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		ContentDigest contentDigest = validate(contentType, contentDigestHeader, idempotencyKey);
+		Sha256ContentDigest sha256ContentDigest = validate(contentType, contentDigestHeader, idempotencyKey);
 
 		log.info("lastOppDokumentFil har mottatt kall for å laste opp en dokumentFil med eksternDokumentReferanseId={}, sha256={}",
-				idempotencyKey, contentDigest.base64());
+				idempotencyKey, sha256ContentDigest.base64());
 
-		LastOppDokumentFilResult lastOppDokumentFilResult = lastOppDokumentFilService.lastOppDokumentFil(idempotencyKey, contentDigest, contentType, requestBody);
+		LastOppDokumentFilResult lastOppDokumentFilResult = lastOppDokumentFilService.lastOppDokumentFil(idempotencyKey, sha256ContentDigest, contentType, requestBody);
 
 		switch (lastOppDokumentFilResult.utfall()) {
 			case TEKNISK_RETRY ->

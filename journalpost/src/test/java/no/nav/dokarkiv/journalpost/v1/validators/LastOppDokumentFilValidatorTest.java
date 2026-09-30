@@ -7,10 +7,9 @@ import java.util.Base64;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_YAML;
 import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
 import static org.springframework.http.MediaType.TEXT_XML_VALUE;
 
@@ -22,8 +21,8 @@ class LastOppDokumentFilValidatorTest {
 
 	@Test
 	void shouldValidatePdf() {
-		ContentDigest contentDigest = LastOppDokumentFilValidator.validate(APPLICATION_PDF_VALUE, CONTENT_DIGEST, IDEMPOTENCY_KEY);
-		assertThat(contentDigest.base64()).isEqualTo(SHA256_BASE64);
+		Sha256ContentDigest sha256ContentDigest = LastOppDokumentFilValidator.validate(APPLICATION_PDF_VALUE, CONTENT_DIGEST, IDEMPOTENCY_KEY);
+		assertThat(sha256ContentDigest.base64()).isEqualTo(SHA256_BASE64);
 	}
 
 	@Test
@@ -40,7 +39,7 @@ class LastOppDokumentFilValidatorTest {
 	void shouldThrowWhenContentTypeMissing() {
 		assertThatThrownBy(() -> LastOppDokumentFilValidator.validate(null, CONTENT_DIGEST, IDEMPOTENCY_KEY))
 				.isInstanceOf(InputValideringFeiletException.class)
-				.hasMessageContaining("Content-Type");
+				.hasMessageContaining(CONTENT_TYPE);
 	}
 
 	@Test
@@ -85,7 +84,7 @@ class LastOppDokumentFilValidatorTest {
 		String contentDigest = "sha-256=:" + base64Of10Bytes + ":";
 		assertThatThrownBy(() -> LastOppDokumentFilValidator.validate(APPLICATION_PDF_VALUE, contentDigest, IDEMPOTENCY_KEY))
 				.isInstanceOf(InputValideringFeiletException.class)
-				.hasMessageContaining("32 bytes");
+				.hasMessageContaining("ugyldig format");
 	}
 
 	@Test

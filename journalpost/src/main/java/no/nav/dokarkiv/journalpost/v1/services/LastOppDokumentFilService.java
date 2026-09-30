@@ -6,8 +6,7 @@ import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.storage.BucketStorageOperations;
 import no.nav.dokarkiv.core.storage.OpplastetDokumentFil;
-import no.nav.dokarkiv.core.storage.DokarkivMellomlagerBucketStorage;
-import no.nav.dokarkiv.journalpost.v1.validators.ContentDigest;
+import no.nav.dokarkiv.journalpost.v1.validators.Sha256ContentDigest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -41,20 +40,20 @@ public class LastOppDokumentFilService {
 		this.dokarkivMellomlagerBucketStorage = dokarkivMellomlagerBucketStorage;
 	}
 
-	public LastOppDokumentFilResult lastOppDokumentFil(String idempotencyKey, ContentDigest contentDigest, String contentType, InputStream inputStream) {
-		DokumentFilOpplasting dokumentFilOpplasting = hentDokumentFilOpplasting(idempotencyKey, contentType, contentDigest);
+	public LastOppDokumentFilResult lastOppDokumentFil(String idempotencyKey, Sha256ContentDigest sha256ContentDigest, String contentType, InputStream inputStream) {
+		DokumentFilOpplasting dokumentFilOpplasting = hentDokumentFilOpplasting(idempotencyKey, contentType, sha256ContentDigest);
 		if (dokumentFilOpplasting.erOpplastet()) {
 			return LastOppDokumentFilResult.fra(TEKNISK_RETRY, dokumentFilOpplasting);
 		}
 		UUID dokumentFilId = dokumentFilOpplasting.getDokumentFilId();
-		OpplastetDokumentFil opplastetDokumentFil = lastOppOgValider(dokumentFilId, idempotencyKey, inputStream, contentType, contentDigest);
+		OpplastetDokumentFil opplastetDokumentFil = lastOppOgValider(dokumentFilId, idempotencyKey, inputStream, contentType, sha256ContentDigest);
 		DokumentFilOpplasting dokumentFilOpplastingFerdig = dokumentFilOpplastingService.ferdigstillOpplasting(dokumentFilId, opplastetDokumentFil.antallBytes());
 		return LastOppDokumentFilResult.fra(LASTET_OPP, dokumentFilOpplastingFerdig);
 	}
 
-	private DokumentFilOpplasting hentDokumentFilOpplasting(String idempotencyKey, String mediaType, ContentDigest contentDigest) {
+	private DokumentFilOpplasting hentDokumentFilOpplasting(String idempotencyKey, String mediaType, Sha256ContentDigest sha256ContentDigest) {
 		try {
-			return dokumentFilOpplastingService.behandleIdempotensOgOpprett(idempotencyKey, mediaType, contentDigest);
+			return dokumentFilOpplastingService.behandleIdempotensOgOpprett(idempotencyKey, mediaType, sha256ContentDigest);
 		} catch (DataIntegrityViolationException e) {
 			throw dokumentFilUnderOpplastingException(idempotencyKey);
 		}
@@ -65,7 +64,7 @@ public class LastOppDokumentFilService {
 	///
 	/// @throws InputValideringFeiletException hvis sha256- eller crc32c-sjekksum ikke stemmer.
 	public OpplastetDokumentFil lastOppOgValider(UUID dokumentFilId, String eksternDokumentReferanseId, InputStream payload,
-												 String contentType, ContentDigest contentDigest) {
+												 String contentType, Sha256ContentDigest sha256ContentDigest) {
 		MessageDigest sha256MessageDigest = getSha256Instance();
 		CRC32C crc32c = new CRC32C();
 
@@ -73,7 +72,7 @@ public class LastOppDokumentFilService {
 			OpplastetDokumentFil opplastetDokumentFil = dokarkivMellomlagerBucketStorage.uploadObject(dokumentFilId.toString(), digestInputStream, contentType);
 
 			byte[] beregnetSha256Sjekksum = sha256MessageDigest.digest();
-			byte[] contentDigestSha256Sjekksum = contentDigest.sha256Sjekksum();
+			byte[] contentDigestSha256Sjekksum = sha256ContentDigest.sha256Sjekksum();
 			if (!Arrays.equals(beregnetSha256Sjekksum, contentDigestSha256Sjekksum)) {
 				throw new InputValideringFeiletException(format(
 						"Beregnet sha256 sjekksum av mottatt payload stemmer ikke med Content-Digest for Idempotency-Key=%s. Beregnet=%s, Content-Digest=%s",

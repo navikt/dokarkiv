@@ -7,7 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFilOpplasting;
 import no.nav.dokarkiv.core.exceptions.DokumentFilUliktInnholdException;
 import no.nav.dokarkiv.core.exceptions.DokumentFilUnderOpplastingException;
 import no.nav.dokarkiv.core.repository.DokumentFilOpplastingRepository;
-import no.nav.dokarkiv.journalpost.v1.validators.ContentDigest;
+import no.nav.dokarkiv.journalpost.v1.validators.Sha256ContentDigest;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -40,12 +40,12 @@ public class DokumentFilOpplastingService {
 	///  - Finnes fra før: returnerer den eksisterende
 	///
 	@Transactional
-	public DokumentFilOpplasting behandleIdempotensOgOpprett(String eksternDokumentReferanseId, String mediaType, ContentDigest contentDigest) {
+	public DokumentFilOpplasting behandleIdempotensOgOpprett(String eksternDokumentReferanseId, String mediaType, Sha256ContentDigest sha256ContentDigest) {
 		if (!dokumentFilOpplastingRepository.existsByEksternDokumentReferanseId(eksternDokumentReferanseId)) {
-			return opprettNyOpplasting(eksternDokumentReferanseId, mediaType, contentDigest);
+			return opprettNyOpplasting(eksternDokumentReferanseId, mediaType, sha256ContentDigest);
 		}
 		DokumentFilOpplasting eksisterende = dokumentFilOpplastingRepository.findByEksternDokumentReferanseId(eksternDokumentReferanseId);
-		if (!eksisterende.harSammeSha256Sjekksum(contentDigest.sha256Sjekksum())) {
+		if (!eksisterende.harSammeSha256Sjekksum(sha256ContentDigest.sha256Sjekksum())) {
 			throw new DokumentFilUliktInnholdException(format(
 					"Idempotency-Key=%s er allerede brukt for opplasting av et dokument med et annet innhold sha256=%s",
 					eksternDokumentReferanseId,
@@ -63,13 +63,13 @@ public class DokumentFilOpplastingService {
 				"Idempotency-Key=%s brukes allerede av en opplasting som pågår", eksternDokumentReferanseId));
 	}
 
-	private DokumentFilOpplasting opprettNyOpplasting(String eksternDokumentReferanseId, String mediaType, ContentDigest contentDigest) {
+	private DokumentFilOpplasting opprettNyOpplasting(String eksternDokumentReferanseId, String mediaType, Sha256ContentDigest sha256ContentDigest) {
 		LocalDateTime naa = LocalDateTime.now(clock);
 		DokumentFilOpplasting dokumentFilOpplasting = new DokumentFilOpplasting(
 				UuidCreator.getTimeOrderedEpoch(),
 				eksternDokumentReferanseId,
 				mediaType,
-				contentDigest.sha256Sjekksum(),
+				sha256ContentDigest.sha256Sjekksum(),
 				MDC.get(MDC_CONSUMER_ID),
 				naa.plusMinutes(2));
 		return dokumentFilOpplastingRepository.persist(dokumentFilOpplasting);
