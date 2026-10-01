@@ -45,6 +45,7 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 	static final String JOURNALPOSTAPI_BASE_PATH = "/rest/journalpostapi/v1/";
 	static final String JOURNALPOSTAPI_JOURNALPOST_PATH = "journalpost";
 	static final String JOURNALPOSTAPI_DOKUMENTINFO_PATH = "dokumentInfo";
+	static final String JOURNALPOSTAPI_DOKUMENTFIL_PATH = "dokumentFil";
 	static final String JOURNALPOSTAPI_MOTTATTEJOURNALPOSTER_PATH = "finnMottatteJournalposter";
 	static final String INTERNAL_JOURNALPOSTAPI_BASE_PATH = "/rest/internal/journalpostapi/v1/";
 	static final String INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH = "journalpost";
@@ -95,6 +96,10 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 
 	protected static String apiMottatteJournalposterfoPath() {
 		return apiPathBuilder(JOURNALPOSTAPI_MOTTATTEJOURNALPOSTER_PATH).build().toUriString();
+	}
+
+	protected static String apiDokumentFilPath() {
+		return apiPathBuilder(JOURNALPOSTAPI_DOKUMENTFIL_PATH).build().toUriString();
 	}
 
 	protected static String apiInternalJournalpostPath(String... path) {

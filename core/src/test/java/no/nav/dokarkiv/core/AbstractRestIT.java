@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.service.SkjermingService;
 import no.nav.dokarkiv.core.repository.AksjonsLoggTestRepository;
+import no.nav.dokarkiv.core.repository.DokumentFilOpplastingTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentFilTestRepository;
 import no.nav.dokarkiv.core.repository.DokumentInfoTestRepository;
 import no.nav.dokarkiv.core.repository.FagomradeTestRepository;
@@ -128,6 +129,8 @@ public abstract class AbstractRestIT {
 	@Autowired
 	protected DokumentFilTestRepository dokumentFilTestRepository;
 	@Autowired
+	protected DokumentFilOpplastingTestRepository dokumentFilOpplastingTestRepository;
+	@Autowired
 	protected SakTestRepository sakTestRepository;
 	@Autowired
 	protected UtsendingsInfoTestRepository utsendingsInfoTestRepository;
@@ -229,6 +232,7 @@ public abstract class AbstractRestIT {
 		utsendingsInfoTestRepository.deleteAll();
 		aksjonsLoggTestRepository.deleteAll();
 		dokumentFilTestRepository.deleteAll();
+		dokumentFilOpplastingTestRepository.deleteAll();
 		journalpostDokumentInfoRelasjonTestRepository.deleteAll();
 		dokumentInfoTestRepository.deleteAll();
 		journalpostTestRepository.deleteAll();

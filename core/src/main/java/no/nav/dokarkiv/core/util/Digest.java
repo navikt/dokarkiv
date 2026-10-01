@@ -10,8 +10,12 @@ public final class Digest {
 	}
 
 	public static byte[] sha256(byte[] data) {
+		return getSha256Instance().digest(data);
+	}
+
+	public static MessageDigest getSha256Instance() {
 		try {
-			return MessageDigest.getInstance("SHA-256").digest(data);
+			return MessageDigest.getInstance("SHA-256");
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalArgumentException(e);
 		}

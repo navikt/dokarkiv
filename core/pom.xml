@@ -162,6 +162,10 @@
 			<artifactId>azure-identity</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.github.f4b6a3</groupId>
+			<artifactId>uuid-creator</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.github.gavlyukovskiy</groupId>
 			<artifactId>datasource-proxy-spring-boot-starter</artifactId>
 			<scope>test</scope>

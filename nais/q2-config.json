@@ -15,7 +15,7 @@
   "DOKARKIV_ENDPOINTS_SAF_SCOPE": "api://dev-fss.teamdokumenthandtering.saf/.default",
   "DOKARKIV_ENDPOINTS_PDL_SCOPE": "api://dev-fss.pdl.pdl-api/.default",
   "DOKARKIV_EREG_URL": "http://ereg-services.arbeidsforhold.svc.nais.local/v2/organisasjon",
-  "DOKPRODMELLOMLAGER_PROJECTID": "teamdokumenthandteri-dev-2c5a",
+  "DOKARKIVMELLOMLAGER_BUCKET": "dokarkivmellomlager-dev",
   "DOKPRODMELLOMLAGER_BUCKET": "dokprodmellomlager-dev",
   "DOKPRODMELLOMLAGER_KEYRING": "dokprodmellomlager-keyring-dev",
   "DOKPRODMELLOMLAGER_KEYID": "dokprodmellomlager-symmetric-dev",

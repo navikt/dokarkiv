@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core;
 
 import no.nav.dokarkiv.core.properties.DokarkivProperties;
+import no.nav.dokarkiv.core.properties.GoogleCloudProperties;
 import no.nav.dokarkiv.core.properties.ServiceuserAlias;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
@@ -22,7 +23,7 @@ import java.time.ZoneId;
 @ComponentScan
 @Configuration
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
-@EnableConfigurationProperties({ServiceuserAlias.class, DokarkivProperties.class, NaisProperties.class})
+@EnableConfigurationProperties({ServiceuserAlias.class, DokarkivProperties.class, NaisProperties.class, GoogleCloudProperties.class})
 @EnableAspectJAutoProxy
 @EnableResilientMethods
 public class CoreConfig {
