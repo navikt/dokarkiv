@@ -47,7 +47,7 @@ public class LastOppDokumentFilService {
 		}
 		UUID dokumentFilId = dokumentFilOpplasting.getDokumentFilId();
 		OpplastetDokumentFil opplastetDokumentFil = lastOppOgValider(dokumentFilId, idempotencyKey, inputStream, contentType, sha256ContentDigest);
-		DokumentFilOpplasting dokumentFilOpplastingFerdig = dokumentFilOpplastingService.ferdigstillOpplasting(dokumentFilId, opplastetDokumentFil.antallBytes());
+		DokumentFilOpplasting dokumentFilOpplastingFerdig = dokumentFilOpplastingService.ferdigstillOpplasting(dokumentFilId, opplastetDokumentFil);
 		return LastOppDokumentFilResult.fra(LASTET_OPP, dokumentFilOpplastingFerdig);
 	}
 

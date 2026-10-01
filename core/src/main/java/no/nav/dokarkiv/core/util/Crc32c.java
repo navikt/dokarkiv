@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.core.util;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.Base64;
 import java.util.zip.CRC32C;
 
@@ -11,6 +13,14 @@ public final class Crc32c {
 		// ingen instansiering
 	}
 
+	public static byte[] digest(byte[] data) {
+		CRC32C crc32c = new CRC32C();
+		crc32c.update(data);
+
+		int crcInt = (int) crc32c.getValue();
+		return getBytes(crcInt);
+	}
+
 	public static String base64(byte[] data) {
 		CRC32C crc32c = new CRC32C();
 		crc32c.update(data);
@@ -19,12 +29,16 @@ public final class Crc32c {
 
 	public static String base64(long crc32cValue) {
 		int crcInt = (int) crc32cValue;
-		byte[] bytes = {
+
+		return Base64.getEncoder().encodeToString(getBytes(crcInt));
+	}
+
+	private static byte @NonNull [] getBytes(int crcInt) {
+		return new byte[]{
 				(byte) (crcInt >>> 24),
 				(byte) (crcInt >>> 16),
 				(byte) (crcInt >>> 8),
 				(byte) crcInt
 		};
-		return Base64.getEncoder().encodeToString(bytes);
 	}
 }

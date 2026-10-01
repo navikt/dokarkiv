@@ -7,12 +7,14 @@ import no.nav.dokarkiv.core.domain.entities.DokumentFilOpplasting;
 import no.nav.dokarkiv.core.exceptions.DokumentFilUliktInnholdException;
 import no.nav.dokarkiv.core.exceptions.DokumentFilUnderOpplastingException;
 import no.nav.dokarkiv.core.repository.DokumentFilOpplastingRepository;
+import no.nav.dokarkiv.core.storage.OpplastetDokumentFil;
 import no.nav.dokarkiv.journalpost.v1.validators.Sha256ContentDigest;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -76,10 +78,13 @@ public class DokumentFilOpplastingService {
 	}
 
 	@Transactional
-	public DokumentFilOpplasting ferdigstillOpplasting(UUID dokumentFilId, long antallBytes) {
+	public DokumentFilOpplasting ferdigstillOpplasting(UUID dokumentFilId, OpplastetDokumentFil opplastetDokumentFil) {
 		DokumentFilOpplasting dokumentFilOpplasting = dokumentFilOpplastingRepository.findById(dokumentFilId)
 				.orElseThrow();
-		dokumentFilOpplasting.markerLastetOpp(MDC.get(MDC_CONSUMER_ID), antallBytes, LocalDateTime.now(clock));
+		dokumentFilOpplasting.markerLastetOpp(opplastetDokumentFil.antallBytes(),
+				Base64.getDecoder().decode(opplastetDokumentFil.crc32cBase64()),
+				LocalDateTime.now(clock),
+				MDC.get(MDC_CONSUMER_ID));
 		return dokumentFilOpplasting;
 	}
 }

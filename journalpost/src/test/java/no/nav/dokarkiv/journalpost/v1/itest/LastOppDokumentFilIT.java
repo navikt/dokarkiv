@@ -2,7 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.domain.entities.DokumentFilOpplasting;
 import no.nav.dokarkiv.core.storage.InMemoryBucketStorage;
-import no.nav.dokarkiv.core.util.Digest;
+import no.nav.dokarkiv.core.util.Crc32c;
 import no.nav.dokarkiv.journalpost.v1.api.dokumentfil.DokumentFilResponse;
 import no.nav.dokarkiv.journalpost.v1.api.dokumentfil.DokumentFilTilstand;
 import org.junit.jupiter.api.AfterEach;
@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -68,9 +66,10 @@ class LastOppDokumentFilIT extends AbstractJournalpostIT {
 		assertThat(dokumentFilOpplasting.getEksternDokumentReferanseId()).isEqualTo(idempotencyKey);
 		assertThat(dokumentFilOpplasting.getMediaType()).isEqualTo(APPLICATION_PDF_VALUE);
 		assertThat(dokumentFilOpplasting.getSha256Sjekksum()).containsExactly(sha256);
+		assertThat(dokumentFilOpplasting.getCrc32cSjekksum()).containsExactly(Crc32c.digest(fil));
 		assertThat(dokumentFilOpplasting.getTilstand()).isEqualTo(LASTET_OPP);
 		assertThat(dokumentFilOpplasting.getAntallBytes()).isEqualTo(fil.length);
-		assertThat(dokumentFilOpplasting.getDatoLease()).isNotNull();
+		assertThat(dokumentFilOpplasting.getDatoKlientLease()).isNotNull();
 		assertThat(dokumentFilOpplasting.getDatoOpprettet()).isNotNull();
 		assertThat(dokumentFilOpplasting.getOpprettetKildeNavn()).isEqualTo("dokarkiv-itest");
 		assertThat(dokumentFilOpplasting.getEndretKildeNavn()).isEqualTo("dokarkiv-itest");
