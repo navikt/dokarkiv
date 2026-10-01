@@ -4,6 +4,7 @@ import com.google.cloud.storage.HttpStorageOptions;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.properties.GoogleCloudProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +21,10 @@ public class DokarkivMellomlagerBucketConfiguration {
 	@Bean
 	@Lazy
 	public DokarkivMellomlagerBucketStorage dokarkivMellomlagerBucketStorage(
-			@Value("${dokarkivmellomlager.projectid}") String projectId,
+			GoogleCloudProperties googleCloudProperties,
 			@Value("${dokarkivmellomlager.bucket}") String bucket
 	) {
-		Storage storage = createStorage(projectId);
+		Storage storage = createStorage(googleCloudProperties.getProject());
 		return new DokarkivMellomlagerBucketStorage(storage, bucket);
 	}
 

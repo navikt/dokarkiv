@@ -6,10 +6,12 @@ import com.google.cloud.storage.StorageOptions;
 import com.google.crypto.tink.Aead;
 import com.google.crypto.tink.KeyTemplates;
 import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.RegistryConfiguration;
 import com.google.crypto.tink.aead.AeadConfig;
 import com.google.crypto.tink.aead.KmsEnvelopeAeadKeyManager;
 import com.google.crypto.tink.integration.gcpkms.GcpKmsClient;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dokarkiv.core.properties.GoogleCloudProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,14 +32,13 @@ public class GoogleCloudStorageConfiguration {
 	@Bean
 	@Lazy
 	public GoogleCloudBucketStorage setUpStorage(
-			@Value("${dokprodmellomlager.projectid}") String projectId,
+			GoogleCloudProperties googleCloudProperties,
 			@Value("${dokprodmellomlager.bucket}") String bucket,
 			@Value("${dokprodmellomlager.keyring}") String keyring,
 			@Value("${dokprodmellomlager.keyid}") String keyid
 	) throws Exception {
-
-		Storage storage = configureGcpStorage(projectId);
-		Aead aead = configureDecryption(projectId, keyring, keyid);
+		Storage storage = configureGcpStorage(googleCloudProperties.getProject());
+		Aead aead = configureDecryption(googleCloudProperties.getProject(), keyring, keyid);
 
 		return new GoogleCloudBucketStorage(storage, bucket, aead);
 	}
@@ -49,7 +50,7 @@ public class GoogleCloudStorageConfiguration {
 		GcpKmsClient.register(of(kekUri), empty());
 		return KeysetHandle
 				.generateNew(KmsEnvelopeAeadKeyManager.createKeyTemplate(kekUri, KeyTemplates.get("AES128_GCM")))
-				.getPrimitive(Aead.class);
+				.getPrimitive(RegistryConfiguration.get(), Aead.class);
 	}
 
 	private String getKekUri(String projectId, String keyring, String keyid) {
