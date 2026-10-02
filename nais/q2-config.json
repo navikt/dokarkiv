@@ -321,6 +321,16 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "gosys-backend-q2",
+      "namespace": "isa",
+      "cluster": "dev-gcp"
+    },
+    {
+      "app": "localauth",
+      "namespace": "isa",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "fritakagp",
       "namespace": "helsearbeidsgiver",
       "cluster": "dev-gcp"
