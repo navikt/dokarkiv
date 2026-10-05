@@ -208,6 +208,11 @@
       "cluster": "dev-fss"
     },
     {
+      "app": "dokopp",
+      "namespace": "teamdokumenthandtering",
+      "cluster": "dev-fss"
+    },
+    {
       "app": "dokprod",
       "namespace": "teamdokumenthandtering",
       "cluster": "dev-fss",
