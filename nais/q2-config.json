@@ -920,6 +920,11 @@
       "app": "im-joark",
       "namespace": "helsearbeidsgiver",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "refusjon",
+      "namespace": "helsearbeidsgiver",
+      "cluster": "dev-gcp"
     }
   ]
 }
