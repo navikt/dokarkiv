@@ -158,6 +158,10 @@
 			<artifactId>microsoft-graph</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp-jvm</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.azure</groupId>
 			<artifactId>azure-identity</artifactId>
 		</dependency>

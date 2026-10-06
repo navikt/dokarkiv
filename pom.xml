@@ -32,11 +32,13 @@
 	<properties>
 		<java.version>25</java.version>
 
-		<cxf.version>4.2.2</cxf.version>
-		<commons-collections4.version>4.5.0</commons-collections4.version>
+		<cxf.version>4.2.3</cxf.version>
+		<commons-collections4.version>4.6.0</commons-collections4.version>
 		<logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
 		<java-jwt.version>4.6.0</java-jwt.version>
-		<libraries-bom.version>26.86.0</libraries-bom.version>
+		<!-- Denne må spesifiseres for å unngå konflikt mellom ms graph og mock-oauth2-server. -->
+		<okhttp.version>5.5.0</okhttp.version>
+		<libraries-bom.version>26.90.0</libraries-bom.version>
 		<tink.version>1.23.0</tink.version>
 		<tink-gcpkms.version>1.12.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.20</blaze-persistence.version>
@@ -45,7 +47,7 @@
 		<azure-identity.version>1.18.4</azure-identity.version>
 		<uuid-creator.version>6.1.1</uuid-creator.version>
 		<!-- https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot -->
-		<springdoc-openapi-starter-webmvc-ui.version>3.1.0</springdoc-openapi-starter-webmvc-ui.version>
+		<springdoc-openapi-starter-webmvc-ui.version>3.1.1</springdoc-openapi-starter-webmvc-ui.version>
 
 		<!-- NAV -->
 		<token-support.version>6.0.11</token-support.version>
@@ -55,7 +57,7 @@
 		<!-- test -->
 		<datasource-proxy-spring-boot-starter.version>2.0.1</datasource-proxy-spring-boot-starter.version>
 		<wiremock-spring-boot.version>4.2.2</wiremock-spring-boot.version>
-		<mock-oauth2-server.version>2.3.0</mock-oauth2-server.version>
+		<mock-oauth2-server.version>6.0.4</mock-oauth2-server.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
 		<h2.version>1.4.200</h2.version>
 
@@ -229,6 +231,13 @@
 				<artifactId>wiremock-spring-boot</artifactId>
 				<version>${wiremock-spring-boot.version}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.okhttp3</groupId>
+				<artifactId>okhttp-bom</artifactId>
+				<version>${okhttp.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>no.nav.security</groupId>
