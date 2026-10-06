@@ -295,7 +295,7 @@ public class ArkiverOgJournalfoerRestController {
 				ForsoekFerdigstillJournalpostResult forsoekFerdigstillJournalpostResult = ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request);
 				String journalForendeEnhetId = opprettJournalpostResult.journalForendeEnhetId();
 
-				if (TRUE.equalsIgnoreCase(forsoekFerdigstill) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalForendeEnhetId) && MIDLERTIDIG == forsoekFerdigstillJournalpostResult.status()) {
+				if (MASKINELL_JOURNALFOERENDE_ENHET.equals(journalForendeEnhetId) && MIDLERTIDIG == forsoekFerdigstillJournalpostResult.status()) {
 					ferdigstillJournalpostService.setJournalfoerendeEnhetNull(journalpostId);
 				}
 				return ResponseEntity

@@ -57,6 +57,7 @@ public class OpprettJournalpostServiceTest {
 				.journalposttype(JournalpostType.UTGAAENDE)
 				.build();
 		Journalpost journalpostEksisterende = Journalpost.builder()
+				.journalpostId(1L)
 				.journalstatus(JournalStatusCode.J)
 				.journalposttype(JournalpostTypeCode.U)
 				.kanalReferanseId(eksternReferanseId)
