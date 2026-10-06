@@ -6,7 +6,6 @@ import no.nav.dokarkiv.core.api.Sakstype;
 import org.slf4j.MDC;
 
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Metrikker for journalpostapi
@@ -14,8 +13,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public final class JournalpostApiMetrics {
 
 	public static final String DOK_JOURNALPOSTAPI_SAKSTYPE_COUNT = "dok_journalpostapi_sakstype_count";
-	public static final String DOK_JOURNALPOSTAPI_EKSTERNREFERANSEID_IKKESATT_COUNT = "dok_journalpostapi_eksternreferanseid_ikkesatt_count";
-	public static final String DOK_JOURNALPOSTAPI_OPPDATERING_AV_AVSENDER_MED_DIGITAL_MOTTAKSKANAL_COUNT = "dok_journalpostapi_oppdatering_av_avsender_med_digital_mottakskanal_count";
 	public static final String TAG_TJENESTE = "tjeneste";
 	public static final String TAG_SAKSTYPE = "sakstype";
 	public static final String TAG_CONSUMERID = "consumerid";
@@ -44,27 +41,4 @@ public final class JournalpostApiMetrics {
 		}
 	}
 
-	// Teller for å se hvilke klienter som ikke setter eksternReferanseId
-	// Analyse for å se om vi kan sette feltet som påkrevd
-	public static void incrementEksternReferanseIdIkkeSattCounter(String eksternReferanseId, MeterRegistry meterRegistry) {
-		if (isBlank(eksternReferanseId)) {
-			String consumerId = MDC.get(MDC_CONSUMER_ID);
-
-			Counter.builder(DOK_JOURNALPOSTAPI_EKSTERNREFERANSEID_IKKESATT_COUNT)
-					.tags(TAG_CONSUMERID, consumerId)
-					.register(meterRegistry)
-					.increment();
-		}
-	}
-
-	// Teller for å se hvilke klienter som oppdaterer avsender når mottakskanal på journalpost er digital
-	// Analyse for å se om vi kan sette feltet som påkrevd
-	public static void incrementOppdateringAvAvsenderMedDigitalMottakskanalCounter(MeterRegistry meterRegistry) {
-		String consumerId = MDC.get(MDC_CONSUMER_ID);
-
-		Counter.builder(DOK_JOURNALPOSTAPI_OPPDATERING_AV_AVSENDER_MED_DIGITAL_MOTTAKSKANAL_COUNT)
-				.tags(TAG_CONSUMERID, consumerId)
-				.register(meterRegistry)
-				.increment();
-	}
 }

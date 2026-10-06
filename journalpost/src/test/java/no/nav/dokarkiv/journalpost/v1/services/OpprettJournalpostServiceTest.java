@@ -1,12 +1,12 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,14 +36,16 @@ public class OpprettJournalpostServiceTest {
 				.journalposttype(JournalpostType.INNGAAENDE)
 				.build();
 		Journalpost journalpostEksisterende = Journalpost.builder()
+				.journalpostId(1L)
+				.journalstatus(JournalStatusCode.J)
 				.journalposttype(JournalpostTypeCode.I)
 				.kanalReferanseId(eksternReferanseId)
 				.build();
 		when(journalpostRepository.existsByKanalReferanseId(eksternReferanseId)).thenReturn(true);
 		when(journalpostRepository.findByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
 		OpprettJournalpostResult result = opprettJournalpostService.opprettJournalpost(request);
-		assertTrue(result.isAlreadyOpprettet());
-		assertEquals(result.getJournalpost(), journalpostEksisterende);
+		assertTrue(result.alleredeOpprettet());
+		assertEquals(1L, result.journalpostId());
 	}
 
 	@Test
@@ -55,13 +57,14 @@ public class OpprettJournalpostServiceTest {
 				.journalposttype(JournalpostType.UTGAAENDE)
 				.build();
 		Journalpost journalpostEksisterende = Journalpost.builder()
+				.journalstatus(JournalStatusCode.J)
 				.journalposttype(JournalpostTypeCode.U)
 				.kanalReferanseId(eksternReferanseId)
 				.build();
 		when(journalpostRepository.existsByKanalReferanseId(eksternReferanseId)).thenReturn(true);
 		when(journalpostRepository.findByKanalReferanseId(eksternReferanseId)).thenReturn(Optional.of(journalpostEksisterende));
 		OpprettJournalpostResult result = opprettJournalpostService.opprettJournalpost(request);
-		assertTrue(result.isAlreadyOpprettet());
-		assertEquals(result.getJournalpost(), journalpostEksisterende);
+		assertTrue(result.alleredeOpprettet());
+		assertEquals(journalpostEksisterende.getJournalpostId(), result.journalpostId());
 	}
 }

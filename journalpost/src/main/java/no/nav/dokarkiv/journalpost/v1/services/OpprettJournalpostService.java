@@ -6,6 +6,7 @@ import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggService;
 import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
+import no.nav.dokarkiv.core.api.Sakstype;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
@@ -21,9 +22,7 @@ import no.nav.dokarkiv.core.repository.sak.SakSearchCriteria;
 import no.nav.dokarkiv.core.sporing.DefaultSporingPopulator;
 import no.nav.dokarkiv.journalpost.v1.api.Bruker;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
-import no.nav.dokarkiv.core.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiRequestMapper;
 import no.nav.dokarkiv.journalpost.v1.util.opprettjournalpost.OpprettJournalpostPDFAUtils;
 import org.slf4j.MDC;
@@ -50,12 +49,11 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAKSRELASJO
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_APPLIKASJON;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementConstants.SAK_FAGSAKNR;
 import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO.arkivElementEndringNew;
-import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
-import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.core.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.core.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.core.api.Sakstype.GENERELL_SAK;
-import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementEksternReferanseIdIkkeSattCounter;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
+import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementSakstypeCounter;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -102,14 +100,13 @@ public class OpprettJournalpostService {
 		final String eksternReferanseId = request.getEksternReferanseId();
 		boolean journalpostExists = isJournalpostExists(eksternReferanseId);
 		if (journalpostExists) {
-			Optional<Journalpost> existingJournalpost = findJournalpostByEksternReferanseId(eksternReferanseId);
-			if (existingJournalpost.isPresent()) {
-				final Journalpost journalpost = existingJournalpost.get();
-				log.warn("Journalpost med eksternReferanseId={} for kanal={} finnes fra før. Oppretter ikke ny journalpost.", eksternReferanseId, journalpost.getMottakskanal());
-				return new OpprettJournalpostResult(journalpost, true);
+			Optional<Journalpost> existingJournalpostOpt = findJournalpostByEksternReferanseId(eksternReferanseId);
+			if (existingJournalpostOpt.isPresent()) {
+				final Journalpost existingJournalpost = existingJournalpostOpt.get();
+				log.warn("Journalpost med eksternReferanseId={} for kanal={} finnes fra før. Oppretter ikke ny journalpost.", eksternReferanseId, existingJournalpost.getMottakskanal());
+				return OpprettJournalpostResult.fra(true, existingJournalpost);
 			}
 		}
-		incrementEksternReferanseIdIkkeSattCounter(eksternReferanseId, meterRegistry);
 
 		Optional<Sak> sakOptional = hentSak(request);
 		Long sakId = sakOptional.map(Sak::getSakId).orElse(null);
@@ -130,7 +127,7 @@ public class OpprettJournalpostService {
 			opprettJournalpostPDFAUtils.safeValidateAndLogPDFA(journalpost);
 		}
 
-		return new OpprettJournalpostResult(journalpost, false);
+		return OpprettJournalpostResult.fra(false, journalpost);
 	}
 
 	private Optional<Sak> hentSak(OpprettJournalpostRequest request) {
