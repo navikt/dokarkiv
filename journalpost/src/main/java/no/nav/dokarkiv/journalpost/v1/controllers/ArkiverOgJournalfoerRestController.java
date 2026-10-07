@@ -35,10 +35,10 @@ import no.nav.dokarkiv.journalpost.v1.api.lastOppVedlegg.LastOppVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJournalposttypeRequest;
 import no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJournalposttypeService;
 import no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalstatus.OppdaterJournalstatusRequest;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.DokumentInfoId;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
-import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResult;
+import no.nav.dokarkiv.journalpost.v1.services.ForsoekFerdigstillJournalpostResult;
+import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
@@ -67,7 +67,6 @@ import no.nav.dokarkiv.journalpost.v1.validators.OpprettJournalpostRequestValida
 import no.nav.security.token.support.core.api.Protected;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.security.token.support.core.jwt.JwtToken;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -83,8 +82,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -96,6 +93,9 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
 import static no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJournalposttypeValidator.validateOppdaterJournalpostTypeRequest;
 import static no.nav.dokarkiv.core.domain.validator.EksternReferanseIdValidator.validateEksternReferanseId;
+import static no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiResponseMapper.mapMedForsoekFerdigstill;
+import static no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiResponseMapper.mapUtenForsoekFerdigstill;
+import static no.nav.dokarkiv.journalpost.v1.services.ForsoekFerdigstillJournalpostResult.Status.MIDLERTIDIG;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 import static no.nav.dokarkiv.journalpost.v1.validators.LastOppVedleggValidator.validateRequest;
 import static no.nav.dokarkiv.journalpost.v1.validators.OppdaterJournalstatusValidator.validateAndParseJournalStatus;
@@ -115,8 +115,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class ArkiverOgJournalfoerRestController {
 
 	private static final String TRUE = "true";
-	private static final String MIDLERTIDIG = "MIDLERTIDIG";
-	private static final String STATUS_ENDELIG = "ENDELIG";
 	public static final String BREV_ADMIN_SCOPE = "brev_admin";
 	public static final String SCOPE = "scp";
 
@@ -135,16 +133,16 @@ public class ArkiverOgJournalfoerRestController {
 	private final TokenValidationContextHolder tokenValidationContextHolder;
 
 	public ArkiverOgJournalfoerRestController(FerdigstillJournalpostService ferdigstillJournalpostService,
-	                                          OppdaterJournalpostService oppdaterJournalpostService,
-	                                          OpprettJournalpostService opprettJournalpostService,
-	                                          OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
-	                                          FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost,
-	                                          KopierJournalpostService kopierJournalpostService,
-	                                          LastOppVedleggService lastOppVedleggService,
-	                                          OppdaterJournalposttypeService oppdaterJournalposttypeService,
-	                                          OppdaterJournalstatusService oppdaterJournalstatusService,
-	                                          SplittJournalpostService splittJournalpostService,
-	                                          TokenValidationContextHolder tokenValidationContextHolder) {
+											  OppdaterJournalpostService oppdaterJournalpostService,
+											  OpprettJournalpostService opprettJournalpostService,
+											  OppdaterDistribusjonsinfoService oppdaterDistribusjonsinfoService,
+											  FjernVedleggTilknyttetJournalpost fjernVedleggTilknyttJournalpost,
+											  KopierJournalpostService kopierJournalpostService,
+											  LastOppVedleggService lastOppVedleggService,
+											  OppdaterJournalposttypeService oppdaterJournalposttypeService,
+											  OppdaterJournalstatusService oppdaterJournalstatusService,
+											  SplittJournalpostService splittJournalpostService,
+											  TokenValidationContextHolder tokenValidationContextHolder) {
 		this.ferdigstillJournalpostService = ferdigstillJournalpostService;
 		this.oppdaterJournalpostService = oppdaterJournalpostService;
 		this.opprettJournalpostService = opprettJournalpostService;
@@ -258,9 +256,9 @@ public class ArkiverOgJournalfoerRestController {
 					name = "forsoekFerdigstill",
 					description = """
 							Angir hvorvidt tjenesten skal forsøke å ferdigstille eller ikke. Når journalposten ferdigstilles, blir den låst for senere endringer.
-
+							
 							Dersom ferdigstilling ikke lykkes, returnerer tjenesten journalpostFerdigstilt=false
-
+							
 							Journalposten blir opprettet i alle tilfeller, men kan bare ferdigstilles dersom (minst) følgende er satt på input:
 							* bruker
 							* sak
@@ -270,7 +268,7 @@ public class ArkiverOgJournalfoerRestController {
 							* avsenderMottaker.navn
 							* tittel på journalpostnivå
 							* tittel på alle dokumentene
-
+							
 							NB: Dersom dokumentene skal være mulig å distribuere via Dokdist, eller skal kunne vises til brukeren på nav.no, må i tillegg avsenderMottaker.id og avsenderMottaker.idType settes.
 							""",
 					schema = @Schema(type = "boolean", allowableValues = {"true", "false"})
@@ -290,41 +288,25 @@ public class ArkiverOgJournalfoerRestController {
 
 			OpprettJournalpostResult opprettJournalpostResult = opprettJournalpostService.opprettJournalpost(request);
 
-			List<DokumentInfoId> dokumenter = opprettJournalpostResult.getJournalpost().getJournalpostDokumentInfoRelasjoner()
-					.stream()
-					.map(journalpostDokumentInfoRelasjon -> DokumentInfoId.builder()
-							.dokumentInfoId(journalpostDokumentInfoRelasjon.getDokumentInfo()
-									.getDokumentInfoId()
-									.toString())
-							.build())
-					.toList();
+			Long journalpostId = opprettJournalpostResult.journalpostId();
+			HttpStatus httpStatus = opprettJournalpostResult.alleredeOpprettet() ? CONFLICT : CREATED;
 
-			Long journalpostId = opprettJournalpostResult.getJournalpost().getJournalpostId();
-			HttpStatus httpStatus = opprettJournalpostResult.isAlreadyOpprettet() ? CONFLICT : CREATED;
-
-			Optional<Pair<String, String>> ferdigstillResponse = Optional.empty();
 			if (TRUE.equalsIgnoreCase(forsoekFerdigstill)) {
-				ferdigstillResponse = Optional.of(ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request));
+				ForsoekFerdigstillJournalpostResult forsoekFerdigstillJournalpostResult = ferdigstillJournalpostService.forsoekFerdigstill(journalpostId, request);
+				String journalForendeEnhetId = opprettJournalpostResult.journalForendeEnhetId();
+
+				if (MASKINELL_JOURNALFOERENDE_ENHET.equals(journalForendeEnhetId) && MIDLERTIDIG == forsoekFerdigstillJournalpostResult.status()) {
+					ferdigstillJournalpostService.setJournalfoerendeEnhetNull(journalpostId);
+				}
+				return ResponseEntity
+						.status(httpStatus)
+						.body(mapMedForsoekFerdigstill(journalpostId, opprettJournalpostResult, forsoekFerdigstillJournalpostResult));
+
+			} else {
+				return ResponseEntity
+						.status(httpStatus)
+						.body(mapUtenForsoekFerdigstill(journalpostId, opprettJournalpostResult));
 			}
-
-			String journalForendeEnhetId = opprettJournalpostResult.getJournalpost().getJournalForendeEnhetId();
-			String httpResponse = ferdigstillResponse.map(Pair::getKey).orElse(null);
-
-			if (TRUE.equalsIgnoreCase(forsoekFerdigstill) && MASKINELL_JOURNALFOERENDE_ENHET.equals(journalForendeEnhetId) && MIDLERTIDIG.equals(httpResponse)) {
-				ferdigstillJournalpostService.setJournalfoerendeEnhetNull(journalpostId);
-			}
-
-			return ResponseEntity
-					.status(httpStatus)
-					.body(OpprettJournalpostResponse.builder()
-							.journalpostId(valueOf(journalpostId))
-							.journalstatus(ferdigstillResponse.map(Pair::getKey).orElse(opprettJournalpostResult.getJournalpost().getJournalstatus().name()))
-							.melding(ferdigstillResponse.map(Pair::getValue).orElse(null))
-							.journalpostferdigstilt(ferdigstillResponse.map(Pair::getKey)
-									.filter(STATUS_ENDELIG::equalsIgnoreCase)
-									.isPresent())
-							.dokumenter(dokumenter)
-							.build());
 		} catch (InputValideringFeiletException | InvalidPdfException | UgyldigInputException e) {
 			throw new ResponseStatusException(BAD_REQUEST, format("Kunne ikke opprette journalpost. %s", e.getMessage()));
 		}

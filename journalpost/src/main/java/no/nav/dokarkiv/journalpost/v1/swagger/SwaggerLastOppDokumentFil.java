@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 				
 				`Idempotency-Key` er fagsystemets egen referanse til dokumentet og brukes for å hindre at samme fil lastes opp flere ganger.
 				
-				`dokumentFilId` i responsen brukes i stedet for `fysiskDokument` i [opprettJournalpost](http://localhost:8080/swagger-ui/index.html#/journalpostapi/opprettJournalpost) \
+				`dokumentFilId` i responsen brukes i stedet for `fysiskDokument` i opprettJournalpost \
 				for å peke på dokumentet som er lastet opp med denne tjenesten.
 				""",
 		operationId = "lastOppDokumentFil"

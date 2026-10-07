@@ -20,7 +20,6 @@ import no.nav.dokarkiv.core.repository.SakRepository;
 import no.nav.dokarkiv.journalpost.v1.api.FerdigstillJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +34,8 @@ import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.FERDIGSTILL;
 import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.I;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.L;
+import static no.nav.dokarkiv.journalpost.v1.services.ForsoekFerdigstillJournalpostResult.Status.ENDELIG;
+import static no.nav.dokarkiv.journalpost.v1.services.ForsoekFerdigstillJournalpostResult.Status.MIDLERTIDIG;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateJournalfoerendeEnhet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -112,22 +113,20 @@ public class FerdigstillJournalpostService {
 		populerAksjonslogg(journalpostId, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
 	}
 
-	public Pair<String, String> forsoekFerdigstill(Long journalpostId, OpprettJournalpostRequest request) {
-		log.info(MDC.get(MDC_REQUEST_ID) + " forsøker å ferdigstille journalpost, journalpostId={}", journalpostId);
-		Pair<String, String> ferdigstillResponse;
+	public ForsoekFerdigstillJournalpostResult forsoekFerdigstill(Long journalpostId, OpprettJournalpostRequest request) {
+		log.info("{} forsøker å ferdigstille journalpost, journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostId);
 		try {
 			validateJournalfoerendeEnhet(request.getJournalfoerendeEnhet(), "journalfoerendeEnhet");
 			ferdigstill(journalpostId, request.getJournalfoerendeEnhet());
-			log.info(MDC.get(MDC_REQUEST_ID) + " har ferdigstilt journalpost, journalpostId={}", journalpostId);
-			ferdigstillResponse = Pair.of("ENDELIG", null);
+			log.info("{} har ferdigstilt journalpost, journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostId);
+			return new ForsoekFerdigstillJournalpostResult(ENDELIG, null);
 		} catch (JournalpostIkkeMidlertidigException e) {
-			log.info(MDC.get(MDC_REQUEST_ID) + " kunne ikke ferdigstille journalpost. Er endelig journalført fra før. journalpostId={}.", journalpostId);
-			ferdigstillResponse = Pair.of("ENDELIG", null);
+			log.info("{} kunne ikke ferdigstille journalpost. Er endelig journalført fra før. journalpostId={}.", MDC.get(MDC_REQUEST_ID), journalpostId);
+			return new ForsoekFerdigstillJournalpostResult(ENDELIG, null);
 		} catch (DokarkivFunctionalException e) {
-			log.info(MDC.get(MDC_REQUEST_ID) + " kunne ikke ferdigstille journalpost, journalpostId={}. {}", journalpostId, e.getMessage());
-			ferdigstillResponse = Pair.of("MIDLERTIDIG", e.getMessage());
+			log.info("{} kunne ikke ferdigstille journalpost, journalpostId={}. {}", MDC.get(MDC_REQUEST_ID), journalpostId, e.getMessage());
+			return new ForsoekFerdigstillJournalpostResult(MIDLERTIDIG, e.getMessage());
 		}
-		return ferdigstillResponse;
 	}
 
 	private void validerJournalpost(Journalpost journalpost) {
