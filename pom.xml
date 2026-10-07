@@ -43,7 +43,7 @@
 		<tink-gcpkms.version>1.12.0</tink-gcpkms.version>
 		<blaze-persistence.version>1.6.20</blaze-persistence.version>
 		<commons-io.version>2.22.0</commons-io.version>
-		<microsoft-graph.version>6.67.0</microsoft-graph.version>
+		<microsoft-graph.version>6.70.0</microsoft-graph.version>
 		<azure-identity.version>1.18.4</azure-identity.version>
 		<uuid-creator.version>6.1.1</uuid-creator.version>
 		<!-- https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot -->
