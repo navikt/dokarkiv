@@ -1,9 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.mappers;
 
-import no.nav.dokarkiv.core.consumer.ereg.EregConsumer;
-import no.nav.dokarkiv.core.consumer.ereg.EregResponse;
-import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
-import no.nav.dokarkiv.core.consumer.pdl.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -26,7 +22,6 @@ import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
 import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
-import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
@@ -35,6 +30,7 @@ import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.core.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostOppslag;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -46,8 +42,6 @@ import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
 import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
-import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.FNR;
-import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.ORGNR;
 import static no.nav.dokarkiv.core.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.core.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.core.api.Sakstype.FAGSAK;
@@ -58,23 +52,14 @@ import static org.apache.commons.lang3.StringUtils.trim;
 @Component
 public class OpprettJournalpostApiRequestMapper {
 
-	private final IdentConsumer identConsumer;
-	private final EregConsumer eregConsumer;
-
-	public OpprettJournalpostApiRequestMapper(IdentConsumer identConsumer,
-											  EregConsumer eregConsumer) {
-		this.identConsumer = identConsumer;
-		this.eregConsumer = eregConsumer;
-	}
-
-	public Journalpost map(OpprettJournalpostRequest request, Long sakId) {
+	public Journalpost map(OpprettJournalpostRequest request, Long sakId, OpprettJournalpostOppslag oppslag) {
 		Journalpost journalpost = Journalpost.builder()
 				.journalposttype(mapJournalposttype(request.getJournalposttype()))
 				.journalstatus(mapJournalstatus(request))
 				.journalForendeEnhetId(request.getJournalfoerendeEnhet())
 				.innhold(request.getTittel())
 				.fagomrade(mapTema(request))
-				.avsenderMottaker(hentNavn(request))
+				.avsenderMottaker(oppslag.avsenderMottakerNavn())
 				.avsenderMottakerId(request.getAvsenderMottaker() == null ? null : trim(request.getAvsenderMottaker().getId()))
 				.avsenderMottakerIdType(request.getAvsenderMottaker() == null ? null : mapAvsenderMottakerType(request.getAvsenderMottaker()
 						.getIdType()))
@@ -90,7 +75,7 @@ public class OpprettJournalpostApiRequestMapper {
 				.build();
 
 		addSaksrelasjon(journalpost, request, sakId);
-		addBruker(journalpost, request);
+		addBruker(journalpost, request, oppslag);
 		addJournalpostDokumentInfoRelasjon(journalpost, request);
 
 		return journalpost;
@@ -98,42 +83,6 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private static InnsynCode mapOverstyrInnsynsregler(OpprettJournalpostRequest request) {
 		return request.getOverstyrInnsynsregler() == null ? null : InnsynCode.valueOf(request.getOverstyrInnsynsregler());
-	}
-
-	private String hentNavn(OpprettJournalpostRequest request) {
-		final AvsenderMottaker avsenderMottaker = request.getAvsenderMottaker();
-		if (avsenderMottaker == null || erBrukerIdOgNavnNull(avsenderMottaker)) {
-			return null;
-		}
-
-		if (isNotBlank(avsenderMottaker.getNavn())) {
-			return avsenderMottaker.getNavn();
-		} else if (isNotBlank(avsenderMottaker.getId())) {
-			if (erAvsenderMottakerPerson(avsenderMottaker)) {
-				return hentPersonnavn(request);
-			} else if (erAvsenderMottakerOrganisasjon(avsenderMottaker)) {
-				return hentOrganisasjonsnavn(request);
-			}
-		}
-		return null;
-	}
-
-	private String hentPersonnavn(OpprettJournalpostRequest request) {
-		final AvsenderMottaker avsenderMottaker = request.getAvsenderMottaker();
-		return identConsumer.hentPersonnavn(avsenderMottaker.getId());
-	}
-
-	private String hentOrganisasjonsnavn(OpprettJournalpostRequest request) {
-		final AvsenderMottaker avsenderMottaker = request.getAvsenderMottaker();
-		EregResponse eregResponse = eregConsumer.hentOrganisasjonsnavn(avsenderMottaker.getId());
-
-		if (eregResponse == null || eregResponse.navn() == null) {
-			return null;
-		}
-
-		var navn = eregResponse.navn();
-
-		return navn.erGyldig() ? navn.sammensattnavn() : null;
 	}
 
 	private JournalpostTypeCode mapJournalposttype(JournalpostType request) {
@@ -302,17 +251,14 @@ public class OpprettJournalpostApiRequestMapper {
 				.anyMatch(fagsak -> fagsak.equals(fagsaksystem) && FAGSAK.equals(sakstype));
 	}
 
-	private void addBruker(Journalpost jp, OpprettJournalpostRequest request) {
+	private void addBruker(Journalpost jp, OpprettJournalpostRequest request, OpprettJournalpostOppslag oppslag) {
 		if (request.getBruker() != null) {
 			if (BrukerIdType.AKTOERID.equals(request.getBruker().getIdType())) {
-				try {
-					String fnr = identConsumer.hentFolkeregisterIdent(request.getBruker().getId());
+				if (!oppslag.brukerIkkeFunnet()) {
 					jp.addBruker(Bruker.builder()
-							.brukerId(fnr)
+							.brukerId(oppslag.brukerFolkeregisterIdent())
 							.brukerType(BrukerTypeCode.PERSON)
 							.build());
-				} catch (PersonIkkeFunnetException e) {
-					// Fortsett uten å opprette bruker
 				}
 			} else {
 				jp.addBruker(Bruker.builder()
@@ -387,17 +333,5 @@ public class OpprettJournalpostApiRequestMapper {
 
 	private VariantFormatCode mapVariantFormat(String variantformat) {
 		return VariantFormatCode.valueOf(variantformat);
-	}
-
-	private boolean erAvsenderMottakerPerson(AvsenderMottaker avsenderMottaker) {
-		return avsenderMottaker.getIdType() == null || FNR == avsenderMottaker.getIdType();
-	}
-
-	private boolean erBrukerIdOgNavnNull(AvsenderMottaker avsenderMottaker) {
-		return isBlank(avsenderMottaker.getNavn()) && isBlank(avsenderMottaker.getId());
-	}
-
-	private boolean erAvsenderMottakerOrganisasjon(AvsenderMottaker avsenderMottaker) {
-		return ORGNR == avsenderMottaker.getIdType();
 	}
 }
