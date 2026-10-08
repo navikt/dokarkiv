@@ -15,28 +15,11 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVe
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytJournalpostAvbrytelseIkkeTillatt;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytJournalpostJournalpostAlleredeAvbrutt;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytJournalpostJournalpostIkkeFunnet;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggDokumentAlleredeAvbrutt;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggDokumentIkkeFunnet;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggDokumentIkkeVedlegg;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggJournalpostIkkeFunnet;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytVedleggJournalpostIkkeUnderArbeid;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FeilStrukturException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FerdigstillJournalpostInneholderDokumenterUnderRedigering;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FerdigstillJournalpostJournalpostIkkeFunnet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FerdigstillJournalpostJournalpostIkkeUnderArbeid;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FjernFerdigstiltDokumentDokumentAlleredeAvbrutt;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FjernFerdigstiltDokumentDokumentAlleredeRedigerbart;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FjernFerdigstiltDokumentDokumentIkkeFunnet;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FjernFerdigstiltDokumentJournalpostIkkeFunnet;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KanIkkeFerdigstillesException;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ObjektIkkeFunnetException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.OpprettUtgaaendeJournalpostUgyldigInput;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.OpprettUtgaaendeJournalpostValideringAvVedleggFeilet;
@@ -119,8 +102,6 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 		arkiverDokumentproduksjonProvider.avbrytJournalpost(request);
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark104"}, percentiles = {0.5, 0.95})
-
 	@Override
 	public void settDatoSendt(SettDatoSendtRequest settDatoSendtRequest) {
 		throw new UnsupportedOperationException("settDatoSendt er sanert 2023-02");
@@ -135,17 +116,12 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 	}
 
 	@Override
-	public void avbrytVedlegg(AvbrytVedleggRequest request) throws AvbrytVedleggDokumentIkkeFunnet,
-			AvbrytVedleggDokumentIkkeVedlegg, AvbrytVedleggJournalpostIkkeUnderArbeid, AvbrytVedleggDokumentAlleredeAvbrutt,
-			AvbrytVedleggJournalpostIkkeFunnet {
+	public void avbrytVedlegg(AvbrytVedleggRequest request) {
 		throw new UnsupportedOperationException("avbrytVedlegg er sanert 2023-02");
 	}
 
 	@Override
-	public void fjernFerdigstiltDokument(FjernFerdigstiltDokumentRequest request)
-			throws FjernFerdigstiltDokumentDokumentIkkeFunnet, FjernFerdigstiltDokumentDokumentAlleredeAvbrutt,
-			FjernFerdigstiltDokumentJournalpostIkkeUnderArbeid, FjernFerdigstiltDokumentJournalpostIkkeFunnet,
-			FjernFerdigstiltDokumentDokumentAlleredeRedigerbart {
+	public void fjernFerdigstiltDokument(FjernFerdigstiltDokumentRequest request) {
 		throw new UnsupportedOperationException("fjernFerdigstiltDokument er sanert 2023-02");
 	}
 
@@ -159,22 +135,13 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 	}
 
 	@Override
-	public void knyttDokumentTilJournalpostSomVedlegg(KnyttDokumentTilJournalpostSomVedleggRequest request) throws
-			KnyttDokumentTilJournalpostSomVedleggDokumentTillatesIkkeGjenbrukt,
-			KnyttDokumentTilJournalpostSomVedleggEksterneVedleggIkkeTillatt,
-			KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFerdigstilt,
-			KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeFunnet,
-			KnyttDokumentTilJournalpostSomVedleggUlikeFagomraader,
-			KnyttDokumentTilJournalpostSomVedleggJournalpostIkkeUnderArbeid,
-			KnyttDokumentTilJournalpostSomVedleggDokumentIkkeFunnet {
+	public void knyttDokumentTilJournalpostSomVedlegg(KnyttDokumentTilJournalpostSomVedleggRequest request) {
 		throw new UnsupportedOperationException("knyttDokumentTilJournalpostSomVedlegg er sanert 2023-02");
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark110"}, percentiles = {0.5, 0.95})
 	@Override
 	public void settJournalpostAttributter(SettJournalpostAttributterRequest settJournalpostAttributterRequest) {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-		arkiverDokumentproduksjonProvider.settJournalpostAttributter(settJournalpostAttributterRequest);
+		throw new UnsupportedOperationException("settJournalpostAttributter er avviklet 2026-10");
 	}
 
 	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark111"}, percentiles = {0.5, 0.95})
