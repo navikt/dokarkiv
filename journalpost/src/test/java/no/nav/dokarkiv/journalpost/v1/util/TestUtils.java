@@ -1,23 +1,9 @@
 package no.nav.dokarkiv.journalpost.v1.util;
 
+import no.nav.dokarkiv.core.api.Fagsaksystem;
+import no.nav.dokarkiv.core.api.Sakstype;
 import no.nav.dokarkiv.core.consumer.ereg.EregResponse;
-import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
-import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
-import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
 import no.nav.dokarkiv.core.domain.codes.FagomradeCode;
-import no.nav.dokarkiv.core.domain.codes.FilTypeCode;
-import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
-import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.MottaksKanalCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
-import no.nav.dokarkiv.core.domain.entities.Bruker;
-import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
-import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
-import no.nav.dokarkiv.core.domain.entities.Journalpost;
-import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
-import no.nav.dokarkiv.core.domain.entities.Saksrelasjon;
-import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottaker;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
@@ -25,34 +11,26 @@ import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
-import no.nav.dokarkiv.core.api.Fagsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.OppdaterJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Sak;
-import no.nav.dokarkiv.core.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
-import org.bouncycastle.crypto.digests.SHA256Digest;
 
-import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
-import static no.nav.dokarkiv.core.domain.codes.FagsystemCode.FS22;
 import static no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType.ORGNR;
-import static no.nav.dokarkiv.core.api.Fagsaksystem.AO01;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.util.oppdaterjournalpost.AvsenderMottakerUpdater.DELETE_MARKER;
-import static no.nav.dokarkiv.core.util.Digest.sha256;
 
 public class TestUtils {
 

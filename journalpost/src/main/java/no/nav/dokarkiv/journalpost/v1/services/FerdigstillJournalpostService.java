@@ -22,6 +22,7 @@ import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostR
 import no.nav.dokarkiv.journalpost.v1.validators.FerdigstillJournalpostValidator;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class FerdigstillJournalpostService {
 		this.aksjonsLoggService = aksjonsLoggService;
 	}
 
+	@Transactional
 	public void setJournalfoerendeEnhetNull(Long journalpostId) {
 		Journalpost journalpost = journalpostRepository.findById(journalpostId)
 				.orElseThrow(() -> new JournalpostIkkeFunnetException(String.format("Kunne ikke finne journalpost med journalpostId=%s i joark", journalpostId)));
@@ -113,6 +115,7 @@ public class FerdigstillJournalpostService {
 		populerAksjonslogg(journalpostId, getArkivElementEndringer(journalpost, prevJournalstatus, prevJournalfoerendeEnhet, prevJournalfortAvNavn));
 	}
 
+	@Transactional
 	public ForsoekFerdigstillJournalpostResult forsoekFerdigstill(Long journalpostId, OpprettJournalpostRequest request) {
 		log.info("{} forsøker å ferdigstille journalpost, journalpostId={}", MDC.get(MDC_REQUEST_ID), journalpostId);
 		try {
