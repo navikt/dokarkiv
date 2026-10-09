@@ -3,7 +3,6 @@ package no.nav.dokarkiv.arkiverdokumentproduksjon;
 import jakarta.xml.ws.WebServiceContext;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggRequest;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.AvbrytJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.AvbrytVedleggRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FjernFerdigstiltDokumentRequest;
@@ -13,7 +12,9 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,11 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for ArkiverDokumentproduksjonEndpoint
- *
- * @author Joakim Bjørnstad, Visma Consulting
- */
 @ExtendWith(MockitoExtension.class)
 public class ArkiverDokumentproduksjonEndpointTest {
 
@@ -79,16 +75,6 @@ public class ArkiverDokumentproduksjonEndpointTest {
 	}
 
 	@Test
-	public void shouldDelegateToArkiverVedlegg() throws Exception {
-		when(webServiceContextMock.getUserPrincipal()).thenReturn(principalMock);
-		ArkiverVedleggRequest request = new ArkiverVedleggRequest();
-		ArkiverVedleggResponse response = new ArkiverVedleggResponse();
-		when(arkiverDokumentproduksjonProviderMock.arkiverVedlegg(request)).thenReturn(response);
-		ArkiverVedleggResponse wsResponse = endpoint.arkiverVedlegg(request);
-		assertThat(wsResponse, is(response));
-	}
-
-	@Test
 	public void shouldDelegateToProviderForAvbrytJournalpost() throws Exception {
 		when(webServiceContextMock.getUserPrincipal()).thenReturn(principalMock);
 		AvbrytJournalpostRequest request = new AvbrytJournalpostRequest();
@@ -109,6 +95,21 @@ public class ArkiverDokumentproduksjonEndpointTest {
 	@Test
 	public void shouldThrowUnsupportedExceptionForSettDatoSendt() {
 		assertThrows(UnsupportedOperationException.class, () -> endpoint.settDatoSendt(new SettDatoSendtRequest()));
+	}
+
+	@Test
+	public void shouldThrowUnsupportedExceptionForArkiverVedlegg() {
+		assertThrows(UnsupportedOperationException.class, () -> endpoint.arkiverVedlegg(new ArkiverVedleggRequest()));
+	}
+
+	@Test
+	public void shouldThrowUnsupportedExceptionForSettJournalpostAttributter() {
+		assertThrows(UnsupportedOperationException.class, () -> endpoint.settJournalpostAttributter(new SettJournalpostAttributterRequest()));
+	}
+
+	@Test
+	public void shouldThrowUnsupportedExceptionForOpprettUtgaaendeJournalpostArkiverDokument() {
+		assertThrows(UnsupportedOperationException.class, () -> endpoint.opprettUtgaaendeJournalpostArkiverDokument(new OpprettUtgaaendeJournalpostArkiverDokumentRequest()));
 	}
 
 	@Test
