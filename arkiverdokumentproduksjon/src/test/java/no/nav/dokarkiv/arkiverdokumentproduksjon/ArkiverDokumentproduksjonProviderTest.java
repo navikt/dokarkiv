@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
-import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.IllegalDocumentUpdateException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigDokumentStatusVerdiException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusOvergangException;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.exceptions.UgyldigJournalStatusVerdiException;
@@ -16,11 +15,6 @@ import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102.OppdaterJournalpostAr
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark102.OppdaterJournalpostArkiverDokumentService;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103.AvbrytJournalpostRequestTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark103.AvbrytJournalpostService;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105.ArkiverVedleggRequestMapper;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105.ArkiverVedleggRequestTo;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105.ArkiverVedleggResponseMapper;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105.ArkiverVedleggResponseTo;
-import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark105.ArkiverVedleggService;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108.FerdigstillJournalpostRequestMapper;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108.FerdigstillJournalpostRequestTo;
 import no.nav.dokarkiv.arkiverdokumentproduksjon.tjoark108.FerdigstillJournalpostService;
@@ -29,8 +23,6 @@ import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
 import no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode;
 import no.nav.dokarkiv.core.exceptions.NoJournalpostFoundException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AlleredeFerdigstiltException;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVedleggJournalpostIkkeFunnet;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVedleggJournalpostIkkeUnderArbeid;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytJournalpostAvbrytelseIkkeTillatt;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytJournalpostJournalpostAlleredeAvbrutt;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytJournalpostJournalpostIkkeFunnet;
@@ -41,8 +33,6 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.Ferdigsti
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KanIkkeFerdigstillesException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ObjektIkkeFunnetException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.UgyldigInputException;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.DokumentInfo;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.informasjon.arkivervedlegg.Journalpost;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.AvbrytJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.AvbrytVedleggRequest;
@@ -54,7 +44,9 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostArkiverDokumentResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettJournalpostResponse;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatcher;
@@ -107,15 +99,6 @@ public class ArkiverDokumentproduksjonProviderTest {
 
 	@Mock
 	private ArkiverDokumentproduksjonFaultInfoPopulator faultInfoPopulatorMock;
-
-	@Mock
-	private ArkiverVedleggService arkiverVedleggServiceMock;
-
-	@Mock
-	private ArkiverVedleggRequestMapper arkiverVedleggRequestMapperMock;
-
-	@Mock
-	private ArkiverVedleggResponseMapper arkiverVedleggResponseMapperMock;
 
 	@Mock
 	private FerdigstillJournalpostService ferdigstillJournalpostServiceMock;
@@ -220,32 +203,8 @@ public class ArkiverDokumentproduksjonProviderTest {
 	}
 
 	@Test
-	public void shouldArkiverVedlegg() throws ArkiverVedleggJournalpostIkkeFunnet, ArkiverVedleggJournalpostIkkeUnderArbeid {
-		when(arkiverVedleggRequestMapperMock.map(any())).thenReturn(new ArkiverVedleggRequestTo());
-		when(arkiverVedleggServiceMock.arkiverVedlegg(any())).thenReturn(ArkiverVedleggResponseTo.builder()
-				.dokumentInfoId(12L)
-				.journalpostId(11L)
-				.build());
-		provider.arkiverVedlegg(createArkiverVedleggRequest(JOURNALPOST_ID));
-		verify(arkiverVedleggServiceMock).arkiverVedlegg(any(ArkiverVedleggRequestTo.class));
-	}
-
-	@Test
-	public void shouldThrowExceptionIfJournalpostIsNull() throws NoJournalpostFoundException {
-		doThrow(new NoJournalpostFoundException("Journalpost not found", JOURNALPOST_ID)).when(arkiverVedleggServiceMock)
-				.arkiverVedlegg(any());
-
-		assertThrows(ArkiverVedleggJournalpostIkkeFunnet.class,
-				() -> provider.arkiverVedlegg(createArkiverVedleggRequest(null)));
-	}
-
-	@Test
-	public void shouldThrowExceptionIfJournalpostIsIkkeUnderArbeid() throws NoJournalpostFoundException, ArkiverVedleggJournalpostIkkeUnderArbeid, ArkiverVedleggJournalpostIkkeFunnet {
-		doThrow(new IllegalDocumentUpdateException("Journalpost with id: " + JOURNALPOST_ID + " can not be updated")).when(arkiverVedleggServiceMock)
-				.arkiverVedlegg(any());
-
-		assertThrows(ArkiverVedleggJournalpostIkkeUnderArbeid.class,
-				() -> provider.arkiverVedlegg(createArkiverVedleggRequest(JOURNALPOST_ID)));
+	public void shouldThrowUnsupportedOperationExceptionWhenArkiverVedlegg() {
+		assertThrows(UnsupportedOperationException.class, () -> provider.arkiverVedlegg(new ArkiverVedleggRequest()), "avviklet");
 	}
 
 	@Test
@@ -256,6 +215,16 @@ public class ArkiverDokumentproduksjonProviderTest {
 	@Test
 	public void shouldThrowUnsupportedOperationExceptionWhenFjernFerdigstiltDokument() {
 		assertThrows(UnsupportedOperationException.class, () -> provider.fjernFerdigstiltDokument(new FjernFerdigstiltDokumentRequest()), "sanert");
+	}
+
+	@Test
+	public void shouldThrowUnsupportedOperationExceptionWhenSettJournalpostAttributter() {
+		assertThrows(UnsupportedOperationException.class, () -> provider.settJournalpostAttributter(new SettJournalpostAttributterRequest()), "avviklet");
+	}
+
+	@Test
+	public void shouldThrowUnsupportedOperationExceptionWhenOpprettUtgaaendeJournalpostArkiverDokument() {
+		assertThrows(UnsupportedOperationException.class, () -> provider.opprettUtgaaendeJournalpostArkiverDokument(new OpprettUtgaaendeJournalpostArkiverDokumentRequest()), "avviklet");
 	}
 
 	@Test
@@ -308,21 +277,6 @@ public class ArkiverDokumentproduksjonProviderTest {
 		avbrytJournalpostRequest.setEndretAvNavn(endretAvNavn);
 		avbrytJournalpostRequest.setJournalpostId(journalpostId);
 		return avbrytJournalpostRequest;
-	}
-
-	private ArkiverVedleggRequest createArkiverVedleggRequest(Long journalpostId) {
-		ArkiverVedleggRequest arkiverVedleggRequest = new ArkiverVedleggRequest();
-
-		if (journalpostId != null) {
-			Journalpost journalpost = new Journalpost();
-			journalpost.setJournalpostId(journalpostId.toString());
-			journalpost.setEndretAvNavn(ENDRET_AV_NAVN);
-			journalpost.setDokumentInfo(new DokumentInfo());
-			arkiverVedleggRequest.setJournalpost(journalpost);
-		}
-		arkiverVedleggRequest.setFerdigstillDokument(false);
-
-		return arkiverVedleggRequest;
 	}
 
 	/**

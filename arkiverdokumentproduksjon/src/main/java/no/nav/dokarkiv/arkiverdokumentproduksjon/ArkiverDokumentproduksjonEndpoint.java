@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.arkiverdokumentproduksjon;
 
-import com.google.common.base.Strings;
 import io.micrometer.core.annotation.Timed;
 import jakarta.annotation.Resource;
 import jakarta.jws.HandlerChain;
@@ -10,8 +9,6 @@ import jakarta.xml.ws.soap.Addressing;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AlleredeFerdigstiltException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverDokumentproduksjonV1;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVedleggJournalpostIkkeFunnet;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ArkiverVedleggJournalpostIkkeUnderArbeid;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytJournalpostAvbrytelseIkkeTillatt;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytJournalpostJournalpostAlleredeAvbrutt;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.AvbrytJournalpostJournalpostIkkeFunnet;
@@ -21,12 +18,10 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.Ferdigsti
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.FerdigstillJournalpostJournalpostIkkeUnderArbeid;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.KanIkkeFerdigstillesException;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.ObjektIkkeFunnetException;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.OpprettUtgaaendeJournalpostUgyldigInput;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.OpprettUtgaaendeJournalpostValideringAvVedleggFeilet;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.UgyldigInputException;
+import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.AvbrytJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.ArkiverVedleggResponse;
-import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.AvbrytJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.AvbrytVedleggRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FerdigstillJournalpostRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.FjernFerdigstiltDokumentRequest;
@@ -42,11 +37,8 @@ import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.OpprettUtgaaendeJournalpostArkiverDokumentResponse;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettDatoSendtRequest;
 import no.nav.tjeneste.domene.brevogarkiv.arkiverdokumentproduksjon.v1.meldinger.SettJournalpostAttributterRequest;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static no.nav.dokarkiv.core.MDCConstants.MDC_APP_ID;
 
 /**
  * Implementation of JAX-WS-generated service interface ArkiverDokumentproduksjonV1. Bootstraps the
@@ -107,12 +99,9 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 		throw new UnsupportedOperationException("settDatoSendt er sanert 2023-02");
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark105"}, percentiles = {0.5, 0.95})
 	@Override
-	public ArkiverVedleggResponse arkiverVedlegg(ArkiverVedleggRequest arkiverVedleggRequest)
-			throws ArkiverVedleggJournalpostIkkeFunnet, ArkiverVedleggJournalpostIkkeUnderArbeid {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, DOKPROS_APPID);
-		return arkiverDokumentproduksjonProvider.arkiverVedlegg(arkiverVedleggRequest);
+	public ArkiverVedleggResponse arkiverVedlegg(ArkiverVedleggRequest arkiverVedleggRequest) {
+		throw new UnsupportedOperationException("arkiverVedlegg er avviklet 2026-10");
 	}
 
 	@Override
@@ -144,11 +133,9 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 		throw new UnsupportedOperationException("settJournalpostAttributter er avviklet 2026-10");
 	}
 
-	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark111"}, percentiles = {0.5, 0.95})
 	@Override
-	public OpprettUtgaaendeJournalpostArkiverDokumentResponse opprettUtgaaendeJournalpostArkiverDokument(OpprettUtgaaendeJournalpostArkiverDokumentRequest opprettUtgaaendeJournalpostArkiverDokumentRequest) throws OpprettUtgaaendeJournalpostUgyldigInput, OpprettUtgaaendeJournalpostValideringAvVedleggFeilet {
-		RequestContextUtil.createAndSetRequestContext(webServiceContext, findAppId());
-		return arkiverDokumentproduksjonProvider.opprettUtgaaendeJournalpostArkiverDokument(opprettUtgaaendeJournalpostArkiverDokumentRequest);
+	public OpprettUtgaaendeJournalpostArkiverDokumentResponse opprettUtgaaendeJournalpostArkiverDokument(OpprettUtgaaendeJournalpostArkiverDokumentRequest opprettUtgaaendeJournalpostArkiverDokumentRequest) {
+		throw new UnsupportedOperationException("opprettUtgaaendeJournalpostArkiverDokument er avviklet 2026-10");
 	}
 
 	@Timed(value = "dok_request", extraTags = {"process_code", "tjoark112"}, percentiles = {0.5, 0.95})
@@ -162,11 +149,6 @@ public class ArkiverDokumentproduksjonEndpoint implements ArkiverDokumentproduks
 	@Override
 	public void ping() {
 		arkiverDokumentproduksjonProvider.ping();
-	}
-
-	private String findAppId() {
-		String appId = MDC.get(MDC_APP_ID);
-		return Strings.isNullOrEmpty(appId) ? DOKPROS_APPID : appId;
 	}
 
 }
