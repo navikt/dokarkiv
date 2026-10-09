@@ -36,19 +36,16 @@ public class OpprettJournalpostOppslagService {
 	public OpprettJournalpostOppslag hentOppslag(OpprettJournalpostRequest request) {
 		String aktoerIdForSak = skalIdentifisereEllerOppretteArkivsak(request) ? hentAktoerId(request.getBruker()) : null;
 		String avsenderMottakerNavn = hentNavn(request.getAvsenderMottaker());
+		IdentOppslag folkeregisterIdent = hentFolkeregisterIdentHvisBrukerAktoerId(request);
 
-		String brukerFolkeregisterIdent = null;
-		boolean brukerIkkeFunnet = false;
-		if (request.getBruker() != null && BrukerIdType.AKTOERID.equals(request.getBruker().getIdType())) {
-			try {
-				brukerFolkeregisterIdent = identConsumer.hentFolkeregisterIdent(request.getBruker().getId());
-			} catch (PersonIkkeFunnetException e) {
-				// Hvis vi ikke har bruker så går vi videre
-				brukerIkkeFunnet = true;
-			}
-		}
+		return new OpprettJournalpostOppslag(aktoerIdForSak,
+				avsenderMottakerNavn,
+				folkeregisterIdent.ident(),
+				folkeregisterIdent.brukerIkkeFunnet());
+	}
 
-		return new OpprettJournalpostOppslag(aktoerIdForSak, avsenderMottakerNavn, brukerFolkeregisterIdent, brukerIkkeFunnet);
+	private static boolean erBrukerAktoerId(OpprettJournalpostRequest request) {
+		return request.getBruker() != null && BrukerIdType.AKTOERID.equals(request.getBruker().getIdType());
 	}
 
 	static boolean skalIdentifisereEllerOppretteArkivsak(OpprettJournalpostRequest request) {
@@ -57,6 +54,19 @@ public class OpprettJournalpostOppslagService {
 		}
 		Sakstype sakstype = request.getSak().getSakstype();
 		return (FAGSAK.equals(sakstype) || GENERELL_SAK.equals(sakstype)) && !PP01.equals(request.getSak().getFagsaksystem());
+	}
+
+	private IdentOppslag hentFolkeregisterIdentHvisBrukerAktoerId(OpprettJournalpostRequest request) {
+		if (erBrukerAktoerId(request)) {
+			try {
+				String brukerFolkeregisterIdent = identConsumer.hentFolkeregisterIdent(request.getBruker().getId());
+				return new IdentOppslag(brukerFolkeregisterIdent, false);
+			} catch (PersonIkkeFunnetException e) {
+				// Hvis vi ikke har bruker så går vi videre
+				return new IdentOppslag(null, true);
+			}
+		}
+		return new IdentOppslag(null, false);
 	}
 
 	private String hentAktoerId(Bruker bruker) {
@@ -68,7 +78,7 @@ public class OpprettJournalpostOppslagService {
 	}
 
 	private String hentNavn(AvsenderMottaker avsenderMottaker) {
-		if (avsenderMottaker == null || erBrukerIdOgNavnNull(avsenderMottaker)) {
+		if (avsenderMottaker == null || erAvsenderMottakerIdOgNavnNull(avsenderMottaker)) {
 			return null;
 		}
 
@@ -100,7 +110,7 @@ public class OpprettJournalpostOppslagService {
 		return avsenderMottaker.getIdType() == null || FNR == avsenderMottaker.getIdType();
 	}
 
-	private static boolean erBrukerIdOgNavnNull(AvsenderMottaker avsenderMottaker) {
+	private static boolean erAvsenderMottakerIdOgNavnNull(AvsenderMottaker avsenderMottaker) {
 		return isBlank(avsenderMottaker.getNavn()) && isBlank(avsenderMottaker.getId());
 	}
 

@@ -61,6 +61,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Slf4j
 public class OpprettJournalpostTransaksjonService {
 
+	public static final String UKJENT = "UKJENT";
 	private static final String APPLIKASJON_FS22 = "FS22";
 
 	private final JournalpostRepository journalpostRepository;
@@ -72,14 +73,14 @@ public class OpprettJournalpostTransaksjonService {
 	private final MeterRegistry meterRegistry;
 	private final OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils;
 
-	public OpprettJournalpostTransaksjonService(final JournalpostRepository journalpostRepository,
-												final DokumentFilRepository dokumentFilRepository,
-												final OpprettJournalpostApiRequestMapper opprettJournalpostApiRequestMapper,
-												final DefaultSporingPopulator defaultSporingPopulator,
-												final AksjonsLoggService aksjonsLoggService,
-												final HentSakerRepository hentSakerRepository,
-												final MeterRegistry meterRegistry,
-												final OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils) {
+	public OpprettJournalpostTransaksjonService(JournalpostRepository journalpostRepository,
+												DokumentFilRepository dokumentFilRepository,
+												OpprettJournalpostApiRequestMapper opprettJournalpostApiRequestMapper,
+												DefaultSporingPopulator defaultSporingPopulator,
+												AksjonsLoggService aksjonsLoggService,
+												HentSakerRepository hentSakerRepository,
+												MeterRegistry meterRegistry,
+												OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils) {
 		this.journalpostRepository = journalpostRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.opprettJournalpostApiRequestMapper = opprettJournalpostApiRequestMapper;
@@ -138,13 +139,13 @@ public class OpprettJournalpostTransaksjonService {
 			incrementSakstypeCounter(request.getSak().getSakstype(), "opprettjournalpost", meterRegistry);
 
 			if (skalIdentifisereEllerOppretteArkivsak(request)) {
-				return Optional.of(identifiserEllerOpprettArkivsak(request, oppslag.aktoerIdForSak()));
+				return Optional.of(hentEldsteEksisterendeSakEllerOpprettNy(request, oppslag.aktoerIdForSak()));
 			}
 		}
 		return Optional.empty();
 	}
 
-	private Sak identifiserEllerOpprettArkivsak(OpprettJournalpostRequest request, String aktoerId) {
+	private Sak hentEldsteEksisterendeSakEllerOpprettNy(OpprettJournalpostRequest request, String aktoerId) {
 		Sak sak = createSak(request, aktoerId);
 		List<Sak> saker = hentSakerRepository.finnSaker(SakSearchCriteria.builder()
 				.aktoerId(singletonList(sak.getAktoerId()))
@@ -212,7 +213,7 @@ public class OpprettJournalpostTransaksjonService {
 		AksjonsLoggTO aksjonsLoggTo = AksjonsLoggTO.builder()
 				.aksjon(aksjon)
 				.journalpostId(journalpostId)
-				.bruker(isNotBlank(bruker) ? bruker : OpprettJournalpostService.UKJENT)
+				.bruker(isNotBlank(bruker) ? bruker : UKJENT)
 				.melding("Journalpost " + aksjon)
 				.build();
 

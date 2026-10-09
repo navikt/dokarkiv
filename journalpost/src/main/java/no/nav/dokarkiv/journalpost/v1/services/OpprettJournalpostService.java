@@ -10,13 +10,11 @@ import java.util.Optional;
 @Service(value = "opprettNyJournalpostService")
 public class OpprettJournalpostService {
 
-	public static final String UKJENT = "UKJENT";
-
 	private final OpprettJournalpostOppslagService opprettJournalpostOppslagService;
 	private final OpprettJournalpostTransaksjonService opprettJournalpostTransaksjonService;
 
-	public OpprettJournalpostService(final OpprettJournalpostOppslagService opprettJournalpostOppslagService,
-									 final OpprettJournalpostTransaksjonService opprettJournalpostTransaksjonService) {
+	public OpprettJournalpostService(OpprettJournalpostOppslagService opprettJournalpostOppslagService,
+									 OpprettJournalpostTransaksjonService opprettJournalpostTransaksjonService) {
 		this.opprettJournalpostOppslagService = opprettJournalpostOppslagService;
 		this.opprettJournalpostTransaksjonService = opprettJournalpostTransaksjonService;
 	}
@@ -28,6 +26,6 @@ public class OpprettJournalpostService {
 		}
 
 		OpprettJournalpostOppslag oppslag = opprettJournalpostOppslagService.hentOppslag(request);
-		 return opprettJournalpostTransaksjonService.opprettJournalpost(request, oppslag);
+		return opprettJournalpostTransaksjonService.opprettJournalpost(request, oppslag);
 	}
 }
