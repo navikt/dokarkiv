@@ -17,6 +17,8 @@ public enum FagomradeCode {
 	ARP,
 	/** Arbeidsrådgivning – skjermet */
 	ARS,
+	/** Aktivitetspenger */
+	AVP,
 	/** Barnetrygd */
 	BAR,
 	/** Barnebortføring */
