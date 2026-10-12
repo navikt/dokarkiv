@@ -32,6 +32,7 @@ public class OpprettJournalpostPDFAUtils {
 		try {
 			List<PDFAValidatorResponse> responses = journalpost.findAllFilDetaljer().stream()
 					.filter(FilDetaljer::isAPdf)
+					.filter(FilDetaljer::hasFileContent)
 					.map(this::safeValidateDokumentFil)
 					.filter(Optional::isPresent)
 					.map(Optional::get)

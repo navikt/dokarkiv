@@ -11,9 +11,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
@@ -231,8 +233,24 @@ class DokumentValidatorTest {
 	}
 
 	@ParameterizedTest
-	@NullAndEmptySource
-	void shouldThrowExceptionWhenFysiskDokumentNullOrEmpty(byte[] fysiskDokument) {
+	@NullSource
+	void shouldThrowExceptionWhenFysiskDokumentNull(byte[] fysiskDokument) {
+		var dokument = dokumentBuilder
+				.dokumentvarianter(singletonList(DokumentVariant.builder()
+						.filtype(FILTYPE_PDF)
+						.fysiskDokument(fysiskDokument)
+						.variantformat(VARIANTFORMAT_ARKIV)
+						.build()))
+				.build();
+
+		assertThatExceptionOfType(InputValideringFeiletException.class)
+				.isThrownBy(() -> DokumentValidator.validateDokument(0, dokument))
+				.withMessage("dokumenter[0].dokumentvarianter[].dokumentFilId eller dokumenter[0].dokumentvarianter[].fysiskDokument må være satt");
+	}
+
+	@ParameterizedTest
+	@EmptySource
+	void shouldThrowExceptionWhenFysiskDokumentEmpty(byte[] fysiskDokument) {
 		var dokument = dokumentBuilder
 				.dokumentvarianter(singletonList(DokumentVariant.builder()
 						.filtype(FILTYPE_PDF)

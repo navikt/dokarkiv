@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.MDCConstants;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
+import no.nav.dokarkiv.core.exceptions.DokumentFilAlleredeBruktException;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
 import no.nav.dokarkiv.core.exceptions.DokumentUnderRedigeringException;
 import no.nav.dokarkiv.core.exceptions.DuplikatVedleggException;
@@ -37,18 +38,18 @@ import no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJourna
 import no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalstatus.OppdaterJournalstatusRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostResponse;
-import no.nav.dokarkiv.journalpost.v1.services.ForsoekFerdigstillJournalpostResult;
-import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.api.splittJournalpost.SplittJournalpostResponse;
 import no.nav.dokarkiv.journalpost.v1.services.FerdigstillJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.FjernVedleggTilknyttetJournalpost;
+import no.nav.dokarkiv.journalpost.v1.services.ForsoekFerdigstillJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.services.KopierJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.LastOppVedleggService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterDistribusjonsinfoService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.OppdaterJournalstatusService;
+import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostResult;
 import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.services.SplittJournalpostService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerFerdigstillJournalpost;
@@ -90,9 +91,9 @@ import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_JOURNALPOST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
+import static no.nav.dokarkiv.core.domain.validator.EksternReferanseIdValidator.validateEksternReferanseId;
 import static no.nav.dokarkiv.core.util.SafeLoggingUtil.removeUnsafeChars;
 import static no.nav.dokarkiv.journalpost.v1.api.oppdaterjournalposttype.OppdaterJournalposttypeValidator.validateOppdaterJournalpostTypeRequest;
-import static no.nav.dokarkiv.core.domain.validator.EksternReferanseIdValidator.validateEksternReferanseId;
 import static no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiResponseMapper.mapMedForsoekFerdigstill;
 import static no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiResponseMapper.mapUtenForsoekFerdigstill;
 import static no.nav.dokarkiv.journalpost.v1.services.ForsoekFerdigstillJournalpostResult.Status.MIDLERTIDIG;
@@ -105,6 +106,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_CONTENT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Tag(name = "journalpostapi", description = "Tjenester for å arkivere og journalføre i fagarkiv")
@@ -308,6 +310,8 @@ public class ArkiverOgJournalfoerRestController {
 			}
 		} catch (InputValideringFeiletException | InvalidPdfException | UgyldigInputException e) {
 			throw new ResponseStatusException(BAD_REQUEST, format("Kunne ikke opprette journalpost. %s", e.getMessage()));
+		} catch(DokumentFilAlleredeBruktException e) {
+			throw new ResponseStatusException(UNPROCESSABLE_CONTENT, format("Kunne ikke opprette journalpost. %s", e.getMessage()));
 		}
 	}
 

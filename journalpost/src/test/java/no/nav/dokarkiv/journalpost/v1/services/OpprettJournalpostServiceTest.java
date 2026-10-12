@@ -27,6 +27,8 @@ public class OpprettJournalpostServiceTest {
 	private JournalpostRepository journalpostRepository;
 	@Mock
 	private OpprettJournalpostOppslagService opprettJournalpostOppslagService;
+	@Mock
+	private OpprettJournalpostDokumentFilService opprettJournalpostDokumentFilService;
 	@InjectMocks
 	private OpprettJournalpostTransaksjonService opprettJournalpostTransaksjonService;
 
@@ -34,7 +36,7 @@ public class OpprettJournalpostServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		opprettJournalpostService = new OpprettJournalpostService(opprettJournalpostOppslagService, opprettJournalpostTransaksjonService);
+		opprettJournalpostService = new OpprettJournalpostService(opprettJournalpostOppslagService, opprettJournalpostTransaksjonService, opprettJournalpostDokumentFilService);
 	}
 
 	@Test

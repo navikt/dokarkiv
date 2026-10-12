@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 		@ApiResponse(responseCode = "401", description = "Mangler tilgang til å opprette ny journalpost. Ugyldig OIDC token. Denne feilen gis dersom tokenet ikke har riktig format eller er utgått.", content = @Content),
 		@ApiResponse(responseCode = "403", description = "Bruker mangler tilgang til å opprette journalpost på tema", content = @Content),
 		@ApiResponse(responseCode = "409", description = "Journalpost med angitt eksternReferanseId eksisterer allerede. Ingen journalpost ble opprettet."),
+		@ApiResponse(responseCode = "422", description = "En eller flere dokumentFilId er allerede brukt av en annen journalpost. Forespørselen kan ikke forsøkes på nytt.", content = @Content),
 		@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
 })
 public @interface SwaggerOpprettJournalpost {

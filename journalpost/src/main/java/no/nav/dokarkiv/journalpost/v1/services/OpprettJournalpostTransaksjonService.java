@@ -8,6 +8,7 @@ import no.nav.dokarkiv.core.aksjonslogg.AksjonsLoggTO;
 import no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
+import no.nav.dokarkiv.core.domain.entities.DokumentFilOpplasting;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
@@ -28,8 +29,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
@@ -50,6 +55,7 @@ import static no.nav.dokarkiv.core.aksjonslogg.ArkivElementEndringTO.arkivElemen
 import static no.nav.dokarkiv.core.api.Sakstype.FAGSAK;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.OPPRETT;
 import static no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode.SAKSTILKNYTNING;
+import static no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostDokumentFilService.hentDokumentFilIder;
 import static no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostOppslagService.skalIdentifisereEllerOppretteArkivsak;
 import static no.nav.dokarkiv.journalpost.v1.util.JournalpostApiMetrics.incrementSakstypeCounter;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -72,6 +78,7 @@ public class OpprettJournalpostTransaksjonService {
 	private final HentSakerRepository hentSakerRepository;
 	private final MeterRegistry meterRegistry;
 	private final OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils;
+	private final DokumentFilOpplastingService dokumentFilOpplastingService;
 
 	public OpprettJournalpostTransaksjonService(JournalpostRepository journalpostRepository,
 												DokumentFilRepository dokumentFilRepository,
@@ -80,7 +87,8 @@ public class OpprettJournalpostTransaksjonService {
 												AksjonsLoggService aksjonsLoggService,
 												HentSakerRepository hentSakerRepository,
 												MeterRegistry meterRegistry,
-												OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils) {
+												OpprettJournalpostPDFAUtils opprettJournalpostPDFAUtils,
+												DokumentFilOpplastingService dokumentFilOpplastingService) {
 		this.journalpostRepository = journalpostRepository;
 		this.dokumentFilRepository = dokumentFilRepository;
 		this.opprettJournalpostApiRequestMapper = opprettJournalpostApiRequestMapper;
@@ -89,6 +97,7 @@ public class OpprettJournalpostTransaksjonService {
 		this.hentSakerRepository = hentSakerRepository;
 		this.meterRegistry = meterRegistry;
 		this.opprettJournalpostPDFAUtils = opprettJournalpostPDFAUtils;
+		this.dokumentFilOpplastingService = dokumentFilOpplastingService;
 	}
 
 	@Transactional(readOnly = true)
@@ -110,6 +119,7 @@ public class OpprettJournalpostTransaksjonService {
 		defaultSporingPopulator.populateSporingInfo(journalpost, MDC.get(MDCConstants.MDC_USER_NAME));
 		journalpost.getJournalpostDokumentInfoRelasjoner().forEach(journalpostDokumentInfoRelasjon -> journalpostDokumentInfoRelasjon.setTilknyttetAvNavn(journalpost.getOpprettetAvNavn()));
 
+		markerDokumentFilerArkiveres(request, journalpost);
 		persistDokumentFiler(journalpost);
 
 		journalpostRepository.persist(journalpost);
@@ -177,8 +187,30 @@ public class OpprettJournalpostTransaksjonService {
 				.build();
 	}
 
+	private void markerDokumentFilerArkiveres(OpprettJournalpostRequest request, Journalpost journalpost) {
+		List<UUID> dokumentFilIder = hentDokumentFilIder(request);
+		if (dokumentFilIder.isEmpty()) {
+			return;
+		}
+
+		Map<String, DokumentFilOpplasting> opplastinger = dokumentFilOpplastingService.markerArkiveres(dokumentFilIder).values().stream()
+				.collect(Collectors.toMap(opplasting -> opplasting.getDokumentFilId().toString(), Function.identity()));
+		journalpost.findAllFilDetaljer().forEach(filDetaljer -> {
+			DokumentFilOpplasting opplasting = opplastinger.get(filDetaljer.getFilUuid());
+			if (opplasting != null) {
+				filDetaljer.setEksternDokumentReferanseId(opplasting.getEksternDokumentReferanseId());
+				filDetaljer.setFilstorrelse(String.valueOf(opplasting.getAntallBytes()));
+				filDetaljer.setSha256Sjekksum(opplasting.getSha256Sjekksum());
+			}
+		});
+	}
+
+	/// Variant med dokumentFilId har ikke fileContent. Filen ligger i dokarkivmellomlager og skal ikke lagres som DokumentFil her.
 	private void persistDokumentFiler(Journalpost journalpost) {
-		List<DokumentFil> dokumentFilList = journalpost.findAllFilDetaljer().stream().map(FilDetaljer::createDokumentFil).toList();
+		List<DokumentFil> dokumentFilList = journalpost.findAllFilDetaljer().stream()
+				.filter(FilDetaljer::hasFileContent)
+				.map(FilDetaljer::createDokumentFil)
+				.toList();
 		dokumentFilRepository.persistAll(dokumentFilList);
 	}
 
