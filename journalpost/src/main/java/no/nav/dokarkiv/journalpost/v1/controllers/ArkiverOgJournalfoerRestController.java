@@ -247,7 +247,6 @@ public class ArkiverOgJournalfoerRestController {
 		}
 	}
 
-	@Transactional
 	@PostMapping
 	@SwaggerOpprettJournalpost
 	public ResponseEntity<OpprettJournalpostResponse> opprettJournalpost(

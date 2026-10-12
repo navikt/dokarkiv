@@ -2,6 +2,7 @@ package no.nav.dokarkiv.journalpost.v1.rjoark202.util;
 
 import no.nav.dokarkiv.core.consumer.ereg.EregConsumer;
 import no.nav.dokarkiv.core.consumer.pdl.IdentConsumer;
+import no.nav.dokarkiv.core.consumer.pdl.PersonIkkeFunnetException;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -31,13 +32,13 @@ import no.nav.dokarkiv.journalpost.v1.api.Sak;
 import no.nav.dokarkiv.core.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.mappers.OpprettJournalpostApiRequestMapper;
+import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostOppslagService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -56,6 +57,7 @@ import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_L;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.MIGRERING_S;
 import static no.nav.dokarkiv.core.domain.codes.UtsendingsKanalCode.S;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
+import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AKTOER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_ORGANISASJON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_MOTTAKER_LAND;
@@ -120,13 +122,17 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Mock
 	private EregConsumer eregConsumerMock;
 
-	@InjectMocks
-	private OpprettJournalpostApiRequestMapper mapper;
+	private final OpprettJournalpostApiRequestMapper mapper = new OpprettJournalpostApiRequestMapper();
+
+	private Journalpost map(OpprettJournalpostRequest request, Long sakId) {
+		var oppslag = new OpprettJournalpostOppslagService(identConsumerMock, eregConsumerMock).hentOppslag(request);
+		return mapper.map(request, sakId, oppslag);
+	}
 
 	@Test
 	void shouldMapInngaaendeJournalpost() {
 		OpprettJournalpostRequest request = createRequest(INNGAAENDE);
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 
 		assertEquals(JournalpostTypeCode.I, jp.getJournalposttype());
 		assertEquals(JournalStatusCode.M, jp.getJournalstatus());
@@ -185,7 +191,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	void shouldMapUtgaaendeJournalpost() {
 		OpprettJournalpostRequest request = createRequest(JournalpostType.UTGAAENDE);
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 
 		assertEquals(JournalpostTypeCode.U, jp.getJournalposttype());
 		assertNull(jp.getMottakskanal());
@@ -211,7 +217,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.overstyrInnsynsregler(overstyrInnsynsregler)
 				.build();
-		Journalpost journalpost = mapper.map(request, null);
+		Journalpost journalpost = map(request, null);
 		assertEquals(expected, journalpost.getInnsyn());
 	}
 
@@ -220,8 +226,8 @@ public class OpprettJournalpostApiRequestMapperTest {
 				Arguments.of(null, null),
 				Arguments.of("VISES_MASKINELT_GODKJENT", VISES_MASKINELT_GODKJENT),
 				Arguments.of("VISES_MANUELT_GODKJENT", VISES_MANUELT_GODKJENT),
-                Arguments.of("SKJULES_BRUKERS_SIKKERHET", SKJULES_BRUKERS_SIKKERHET)
-        );
+				Arguments.of("SKJULES_BRUKERS_SIKKERHET", SKJULES_BRUKERS_SIKKERHET)
+		);
 	}
 
 	@Test
@@ -229,7 +235,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.datoMottatt(DATO_MOTTATT)
 				.build();
-		Journalpost journalpost = mapper.map(request, null);
+		Journalpost journalpost = map(request, null);
 		assertEquals(DATO_MOTTATT, journalpost.getMottattDato());
 	}
 
@@ -238,7 +244,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.datoMottatt(null)
 				.build();
-		Journalpost journalpost = mapper.map(request, null);
+		Journalpost journalpost = map(request, null);
 		assertThat(journalpost.getMottattDato()).isCloseTo(LocalDateTime.now(), within(1, MINUTES));
 	}
 
@@ -247,7 +253,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.UTGAAENDE)
 				.datoMottatt(DATO_MOTTATT)
 				.build();
-		Journalpost journalpost = mapper.map(request, null);
+		Journalpost journalpost = map(request, null);
 		assertNull(journalpost.getMottattDato());
 	}
 
@@ -256,7 +262,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		OpprettJournalpostRequest request = createMinimalRequest(JournalpostType.NOTAT)
 				.datoMottatt(DATO_MOTTATT)
 				.build();
-		Journalpost journalpost = mapper.map(request, null);
+		Journalpost journalpost = map(request, null);
 		assertNull(journalpost.getMottattDato());
 	}
 
@@ -273,7 +279,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		Journalpost journalpost = mapper.map(request, SAK_ID);
+		Journalpost journalpost = map(request, SAK_ID);
 		assertEquals(FagsystemCode.FS22, journalpost.getSaksrelasjon().getFagsystem());
 	}
 
@@ -290,7 +296,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		var exception = assertThrows(InputValideringFeiletException.class, () -> mapper.map(request, SAK_ID));
+		var exception = assertThrows(InputValideringFeiletException.class, () -> map(request, SAK_ID));
 		assertThat(exception.getMessage()).contains(
 				"""
 						Kan ikke legge saksrelasjon til journalpost. For fagsaker og generelle saker må en av følgende regler være oppfylt:
@@ -313,14 +319,12 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		Journalpost journalpost = mapper.map(request, SAK_ID);
+		Journalpost journalpost = map(request, SAK_ID);
 		assertEquals(FagsystemCode.PEN, journalpost.getSaksrelasjon().getFagsystem());
-
 	}
 
 	@Test
 	void shouldMapSaksrelasjonIfGenerellSakAndFagsaksystemNull() {
-
 		OpprettJournalpostRequest request = createMinimalRequest(INNGAAENDE)
 				.datoMottatt(DATO_MOTTATT)
 				.tema(TEMA_TIL)
@@ -332,15 +336,14 @@ public class OpprettJournalpostApiRequestMapperTest {
 						.build())
 				.build();
 
-		Journalpost journalpost = mapper.map(request, SAK_ID);
+		Journalpost journalpost = map(request, SAK_ID);
 		assertEquals(FagsystemCode.FS22, journalpost.getSaksrelasjon().getFagsystem());
-
 	}
 
 	@Test
 	void shouldMapNotat() {
 		OpprettJournalpostRequest request = createRequest(JournalpostType.NOTAT);
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 
 		assertEquals(JournalpostTypeCode.N, jp.getJournalposttype());
 		assertNull(jp.getMottakskanal());
@@ -351,7 +354,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	void shouldMapJournalfoerendeEnhet() {
 		OpprettJournalpostRequest request = createRequest(INNGAAENDE, "9999");
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 
 		assertEquals("9999", jp.getJournalForendeEnhetId());
 	}
@@ -359,21 +362,21 @@ public class OpprettJournalpostApiRequestMapperTest {
 	@Test
 	void shouldMapInngaaendeJournalpostOrganisasjon() {
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerOrganisasjon());
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 		assertEquals(ORGNR, jp.getAvsenderMottakerIdType());
 	}
 
 	@Test
 	void shouldMapInngaaendeJournalpostHelsePersonellNr() {
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerHelsepersonell());
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 		assertEquals(AvsenderMottakerIdTypeCode.HPRNR, jp.getAvsenderMottakerIdType());
 	}
 
 	@Test
 	void shouldMapInngaaendeJournalpostUtlandOrganisasjon() {
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerUtlandOrganisasjon());
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 		assertEquals(AvsenderMottakerIdTypeCode.UTL_ORG, jp.getAvsenderMottakerIdType());
 	}
 
@@ -392,25 +395,25 @@ public class OpprettJournalpostApiRequestMapperTest {
 										.build()))
 								.build()))
 				.build();
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 		assertEquals(JournalStatusCode.M, jp.getJournalstatus());
 	}
 
 	@Test
 	void shouldMapKanalMigreringSToSWhenMapJournalpost() {
-		Journalpost test = mapper.map(createMinimalRequestWithKanal(MIGRERING_S.toString()), null);
+		Journalpost test = map(createMinimalRequestWithKanal(MIGRERING_S.toString()), null);
 		assertEquals(S, test.getUtsendingskanal());
 	}
 
 	@Test
 	void shouldMapKanalMigreringLToLWhenMapJournalpost() {
-		Journalpost test = mapper.map(createMinimalRequestWithKanal(MIGRERING_L.toString()), null);
+		Journalpost test = map(createMinimalRequestWithKanal(MIGRERING_L.toString()), null);
 		assertEquals(L, test.getUtsendingskanal());
 	}
 
 	@Test
 	void shouldMapKanalCorrectlyLWhenMapJournalpost() {
-		Journalpost test = mapper.map(createMinimalRequestWithKanal(L.toString()), null);
+		Journalpost test = map(createMinimalRequestWithKanal(L.toString()), null);
 		assertEquals(L, test.getUtsendingskanal());
 	}
 
@@ -419,8 +422,36 @@ public class OpprettJournalpostApiRequestMapperTest {
 		when(identConsumerMock.hentPersonnavn(eq(AVSENDER_ID_PERSON))).thenReturn(AVSENDER_NAVN);
 
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerPersonWithoutNavnAndIdType());
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 		assertEquals(AVSENDER_NAVN, jp.getAvsenderMottaker());
+	}
+
+	@Test
+	void shouldMapBrukerWhenBrukerIdTypeAktoerId() {
+		when(identConsumerMock.hentFolkeregisterIdent(eq(AKTOER_ID))).thenReturn(BRUKER_ID_PERSON);
+
+		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
+				.bruker(Bruker.builder().id(AKTOER_ID).idType(BrukerIdType.AKTOERID).build())
+				.build();
+
+		Journalpost jp = map(request, null);
+
+		assertThat(jp.getBrukere()).hasSize(1);
+		assertEquals(BRUKER_ID_PERSON, jp.getBrukere().iterator().next().getBrukerId());
+		assertEquals(BrukerTypeCode.PERSON, jp.getBrukere().iterator().next().getBrukerType());
+	}
+
+	@Test
+	void shouldNotMapBrukerWhenBrukerIdTypeAktoerIdAndNotFoundInPdl() {
+		when(identConsumerMock.hentFolkeregisterIdent(eq(AKTOER_ID))).thenThrow(new PersonIkkeFunnetException("Fant ikke folkeregisterident for person i pdl."));
+
+		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
+				.bruker(Bruker.builder().id(AKTOER_ID).idType(BrukerIdType.AKTOERID).build())
+				.build();
+
+		Journalpost jp = map(request, null);
+
+		assertThat(jp.getBrukere()).hasSize(0);
 	}
 
 	@Test
@@ -428,7 +459,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		OpprettJournalpostRequest request = createBaseRequest(INNGAAENDE)
 				.avsenderMottaker(createAvsenderMottakerPersonWithoutIdAndNavn())
 				.build();
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 		assertNull(jp.getAvsenderMottaker());
 		assertNull(jp.getAvsenderMottakerId());
 		assertEquals(ORGNR, jp.getAvsenderMottakerIdType());
@@ -439,7 +470,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		when(identConsumerMock.hentPersonnavn(eq(AVSENDER_ID_PERSON))).thenReturn(AVSENDER_NAVN);
 
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerPersonWithoutNavn());
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 		assertEquals(AVSENDER_NAVN, jp.getAvsenderMottaker());
 	}
 
@@ -448,7 +479,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 		when(eregConsumerMock.hentOrganisasjonsnavn(eq(AVSENDER_ID_ORGANISASJON)))
 				.thenReturn(createEregResponse(AVSENDER_ID_ORGANISASJON, AVSENDER_NAVN_ORGANISASJON));
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerOrganisasjonWithoutNavn());
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 		assertEquals(AVSENDER_NAVN_ORGANISASJON, jp.getAvsenderMottaker());
 		assertEquals(AVSENDER_ID_ORGANISASJON, jp.getAvsenderMottakerId());
 	}
@@ -459,14 +490,14 @@ public class OpprettJournalpostApiRequestMapperTest {
 				.thenReturn(createEregResponseWithBruksperiode(AVSENDER_ID_ORGANISASJON, AVSENDER_NAVN_ORGANISASJON, FORTID, FORTID));
 		OpprettJournalpostRequest request = createRequestAvsenderMottaker(INNGAAENDE, createAvsenderMottakerOrganisasjonWithoutNavn());
 
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 		assertNull(jp.getAvsenderMottaker());
 	}
 
 	@Test
 	void shoulMapdokumenttypeIdWhenBrevkode4936() {
 		OpprettJournalpostRequest request = createMinimalRequestWithBrevkode(BREVKODE_4936);
-		Journalpost journalpost = mapper.map(request, null);
+		Journalpost journalpost = map(request, null);
 
 		DokumentInfo dokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 		assertEquals(BREVKODE_4936, dokumentInfo.getBrevkode());
@@ -484,7 +515,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 								.sensitivtPselv(value)
 								.build()))
 				.build();
-		Journalpost jp = mapper.map(request, null);
+		Journalpost jp = map(request, null);
 		assertEquals(jp.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getSensitivt(), value);
 	}
 
@@ -517,7 +548,7 @@ public class OpprettJournalpostApiRequestMapperTest {
 												.build()))
 								.build()
 				)).build();
-		Journalpost journalpost = mapper.map(request, null);
+		Journalpost journalpost = map(request, null);
 
 		assertThat(journalpost.getJournalpostDokumentInfoRelasjoner())
 				.extracting(JournalpostDokumentInfoRelasjon::getTilknyttetJournalpostSom, JournalpostDokumentInfoRelasjon::getRekkefoelge)

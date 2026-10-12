@@ -7,6 +7,7 @@ import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.repository.JournalpostRepository;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,8 +25,17 @@ public class OpprettJournalpostServiceTest {
 
 	@Mock
 	private JournalpostRepository journalpostRepository;
+	@Mock
+	private OpprettJournalpostOppslagService opprettJournalpostOppslagService;
 	@InjectMocks
+	private OpprettJournalpostTransaksjonService opprettJournalpostTransaksjonService;
+
 	private OpprettJournalpostService opprettJournalpostService;
+
+	@BeforeEach
+	void setUp() {
+		opprettJournalpostService = new OpprettJournalpostService(opprettJournalpostOppslagService, opprettJournalpostTransaksjonService);
+	}
 
 	@Test
 	public void opprettDuplikatJournalpostTest() {

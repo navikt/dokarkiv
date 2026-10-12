@@ -1,6 +1,5 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
-import com.google.common.collect.Lists;
 import no.nav.dokarkiv.core.datautil.SakTestDataProvider;
 import no.nav.dokarkiv.core.domain.codes.AksjonsTypeCode;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
@@ -10,8 +9,6 @@ import no.nav.dokarkiv.core.domain.codes.FagsystemCode;
 import no.nav.dokarkiv.core.domain.codes.InnsynCode;
 import no.nav.dokarkiv.core.domain.codes.JournalStatusCode;
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
-import no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode;
-import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.AksjonsLogg;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
@@ -39,7 +36,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +69,7 @@ import static no.nav.dokarkiv.core.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.INNGAAENDE;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.NOTAT;
 import static no.nav.dokarkiv.journalpost.v1.api.JournalpostType.UTGAAENDE;
-import static no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostService.UKJENT;
+import static no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostTransaksjonService.UKJENT;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AKTOER_ID;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.ARKIVSAKSNUMMER;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.AVSENDER_ID_PERSON;
@@ -179,9 +175,9 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(1);
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(5);
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.getFirst().getUtfoertAv());
+		assertEquals(OPPRETT, aksjonsLoggList.getFirst().getAksjon());
+		assertThat(aksjonsLoggList.getFirst().getArkivElementEndringer()).hasSize(5);
 
 		DokumentInfo hovedDokumentInfo = journalpost.findHoveddokumentDokumentInfoRelasjon()
 				.getDokumentInfo();
@@ -233,10 +229,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(1);
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.getFirst().getUtfoertAv());
 
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(4);
+		assertEquals(OPPRETT, aksjonsLoggList.getFirst().getAksjon());
+		assertThat(aksjonsLoggList.getFirst().getArkivElementEndringer()).hasSize(4);
 	}
 
 	@Test
@@ -257,10 +253,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(1);
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.getFirst().getUtfoertAv());
 
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(3);
+		assertEquals(OPPRETT, aksjonsLoggList.getFirst().getAksjon());
+		assertThat(aksjonsLoggList.getFirst().getArkivElementEndringer()).hasSize(3);
 	}
 
 	@Test
@@ -281,9 +277,9 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(1);
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(5);
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.getFirst().getUtfoertAv());
+		assertEquals(OPPRETT, aksjonsLoggList.getFirst().getAksjon());
+		assertThat(aksjonsLoggList.getFirst().getArkivElementEndringer()).hasSize(5);
 	}
 
 	@Test
@@ -304,9 +300,9 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(1);
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(5);
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.getFirst().getUtfoertAv());
+		assertEquals(OPPRETT, aksjonsLoggList.getFirst().getAksjon());
+		assertThat(aksjonsLoggList.getFirst().getArkivElementEndringer()).hasSize(5);
 	}
 
 	@Test
@@ -327,7 +323,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 		assertNull(response.getBody().getMelding());
 		assertTrue(response.getBody().isJournalpostferdigstilt());
 		assertNotNull(response.getBody().getDokumenter());
-		assertNotNull(response.getBody().getDokumenter().get(0).getDokumentInfoId());
+		assertNotNull(response.getBody().getDokumenter().getFirst().getDokumentInfoId());
 
 		Journalpost journalpost = journalpostTestRepository.findAll().iterator().next();
 		assertNotNull(journalpost.getJournalpostId());
@@ -337,10 +333,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertEquals(2, aksjonsLoggList.size());
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(6);
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.getFirst().getUtfoertAv());
+		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.getFirst().getBruker());
+		assertEquals(OPPRETT, aksjonsLoggList.getFirst().getAksjon());
+		assertThat(aksjonsLoggList.getFirst().getArkivElementEndringer()).hasSize(6);
 
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(1).getBruker());
@@ -374,10 +370,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(2);
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(6);
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.getFirst().getUtfoertAv());
+		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.getFirst().getBruker());
+		assertEquals(OPPRETT, aksjonsLoggList.getFirst().getAksjon());
+		assertThat(aksjonsLoggList.getFirst().getArkivElementEndringer()).hasSize(6);
 
 		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(1).getUtfoertAv());
 		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(1).getBruker());
@@ -482,10 +478,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(2);
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.getFirst().getUtfoertAv());
 
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(4);
+		assertEquals(OPPRETT, aksjonsLoggList.getFirst().getAksjon());
+		assertThat(aksjonsLoggList.getFirst().getArkivElementEndringer()).hasSize(4);
 
 		assertEquals(SAKSTILKNYTNING, aksjonsLoggList.get(1).getAksjon());
 		assertThat(aksjonsLoggList.get(1).getArkivElementEndringer()).hasSize(3);
@@ -587,10 +583,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(2);
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.getFirst().getUtfoertAv());
 
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(4);
+		assertEquals(OPPRETT, aksjonsLoggList.getFirst().getAksjon());
+		assertThat(aksjonsLoggList.getFirst().getArkivElementEndringer()).hasSize(4);
 
 		assertEquals(SAKSTILKNYTNING, aksjonsLoggList.get(1).getAksjon());
 		assertThat(aksjonsLoggList.get(1).getArkivElementEndringer()).hasSize(4);
@@ -629,7 +625,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(2);
-		assertEquals(FNR, aksjonsLoggList.get(0).getBruker());
+		assertEquals(FNR, aksjonsLoggList.getFirst().getBruker());
 	}
 
 	@Test
@@ -734,7 +730,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(2);
-		assertEquals(UKJENT, aksjonsLoggList.get(0).getBruker());
+		assertEquals(UKJENT, aksjonsLoggList.getFirst().getBruker());
 	}
 
 	@Test
@@ -787,7 +783,7 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(2);
-		assertEquals(BRUKER_ID_ORGANISASJON, aksjonsLoggList.get(0).getBruker());
+		assertEquals(BRUKER_ID_ORGANISASJON, aksjonsLoggList.getFirst().getBruker());
 	}
 
 	@Test
@@ -866,10 +862,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(1);
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(5);
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.getFirst().getUtfoertAv());
+		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.getFirst().getBruker());
+		assertEquals(OPPRETT, aksjonsLoggList.getFirst().getAksjon());
+		assertThat(aksjonsLoggList.getFirst().getArkivElementEndringer()).hasSize(5);
 	}
 
 	@Test
@@ -921,10 +917,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(1);
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(5);
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.getFirst().getUtfoertAv());
+		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.getFirst().getBruker());
+		assertEquals(OPPRETT, aksjonsLoggList.getFirst().getAksjon());
+		assertThat(aksjonsLoggList.getFirst().getArkivElementEndringer()).hasSize(5);
 	}
 
 	@Test
@@ -1069,10 +1065,10 @@ public class OpprettJournalpostIT extends AbstractJournalpostIT {
 
 		List<AksjonsLogg> aksjonsLoggList = aksjonsLoggTestRepository.findAll();
 		assertThat(aksjonsLoggList).hasSize(1);
-		assertEquals(SERVICE_USER_ID, aksjonsLoggList.get(0).getUtfoertAv());
-		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.get(0).getBruker());
-		assertEquals(OPPRETT, aksjonsLoggList.get(0).getAksjon());
-		assertThat(aksjonsLoggList.get(0).getArkivElementEndringer()).hasSize(6);
+		assertEquals(SERVICE_USER_ID, aksjonsLoggList.getFirst().getUtfoertAv());
+		assertEquals(BRUKER_ID_PERSON, aksjonsLoggList.getFirst().getBruker());
+		assertEquals(OPPRETT, aksjonsLoggList.getFirst().getAksjon());
+		assertThat(aksjonsLoggList.getFirst().getArkivElementEndringer()).hasSize(6);
 	}
 
 	@Test
