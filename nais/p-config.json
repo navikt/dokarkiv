@@ -810,6 +810,11 @@
       "app": "tiltak-tilsagnsbrev",
       "namespace": "arbeidsgiver",
       "cluster": "prod-fss"
+    },
+    {
+      "app": "watson-admin-api",
+      "namespace": "holmes",
+      "cluster": "prod-gcp"
     }
   ]
 }
