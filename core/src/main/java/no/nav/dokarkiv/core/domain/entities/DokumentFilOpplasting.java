@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -19,6 +20,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 
+import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.ARKIVERES;
+import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.ARKIVERT;
 import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.LASTER_OPP;
 import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.LASTET_OPP;
 
@@ -47,6 +50,7 @@ public class DokumentFilOpplasting {
 	@Column(name = "media_type", nullable = false, length = 128)
 	private String mediaType;
 
+	@Setter
 	@Enumerated(EnumType.STRING)
 	@Column(name = "tilstand", nullable = false, length = 128)
 	private DokumentFilOpplastingTilstand tilstand;
@@ -112,15 +116,31 @@ public class DokumentFilOpplasting {
 		this.endretKildeNavn = endretKildeNavn;
 	}
 
+	/// Markerer at dokumentFilen skal arkiveres til {@link DokumentFil} tabellen
+	///
+	/// @throws IllegalStateException hvis tilstand ikke er LASTET_OPP.
+	public void markerArkiveres(String endretKildeNavn) {
+		if (!erLastetOpp()) {
+			throw new IllegalStateException(String.format("dokumentFilId=%s kan ikke arkiveres med tilstand=%s", dokumentFilId, tilstand));
+		}
+		this.tilstand = ARKIVERES;
+		this.endretKildeNavn = endretKildeNavn;
+	}
+
 	public boolean harSammeSha256Sjekksum(byte[] annenSha256Sjekksum) {
 		return Arrays.equals(this.sha256Sjekksum, annenSha256Sjekksum);
 	}
 
-	public boolean erOpplastet() {
-		return this.tilstand != LASTER_OPP;
-	}
-
 	public boolean erUnderOpplasting() {
 		return this.tilstand == LASTER_OPP;
+	}
+
+	public boolean erLastetOpp() {
+		return this.tilstand == LASTET_OPP;
+	}
+
+	/// `true` hvis dokumentfilen allerede er brukt av en journalpost.
+	public boolean erBruktAvJournalpost() {
+		return this.tilstand == ARKIVERES || this.tilstand == ARKIVERT;
 	}
 }

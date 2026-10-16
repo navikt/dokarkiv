@@ -1,5 +1,7 @@
 package no.nav.dokarkiv.journalpost.v1.mappers;
 
+import no.nav.dokarkiv.core.api.Fagsaksystem;
+import no.nav.dokarkiv.core.api.Sakstype;
 import no.nav.dokarkiv.core.domain.codes.AvsenderMottakerIdTypeCode;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
 import no.nav.dokarkiv.core.domain.codes.DokumentKategoriCode;
@@ -25,9 +27,8 @@ import no.nav.dokarkiv.journalpost.v1.api.Arkivsaksystem;
 import no.nav.dokarkiv.journalpost.v1.api.AvsenderMottakerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.BrukerIdType;
 import no.nav.dokarkiv.journalpost.v1.api.Dokument;
-import no.nav.dokarkiv.core.api.Fagsaksystem;
+import no.nav.dokarkiv.journalpost.v1.api.DokumentVariant;
 import no.nav.dokarkiv.journalpost.v1.api.JournalpostType;
-import no.nav.dokarkiv.core.api.Sakstype;
 import no.nav.dokarkiv.journalpost.v1.api.Tilleggsopplysning;
 import no.nav.dokarkiv.journalpost.v1.api.opprettjournalpost.OpprettJournalpostRequest;
 import no.nav.dokarkiv.journalpost.v1.services.OpprettJournalpostOppslag;
@@ -40,11 +41,11 @@ import java.util.stream.Collectors;
 
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
-import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static no.nav.dokarkiv.core.api.Fagsaksystem.PP01;
 import static no.nav.dokarkiv.core.api.Sakstype.ARKIVSAK;
 import static no.nav.dokarkiv.core.api.Sakstype.FAGSAK;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.HOVEDDOKUMENT;
+import static no.nav.dokarkiv.core.domain.codes.TilknyttetJournalpostSomCode.VEDLEGG;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.trim;
@@ -301,15 +302,7 @@ public class OpprettJournalpostApiRequestMapper {
 
 		if (dokument.getDokumentvarianter() != null) {
 			dokument.getDokumentvarianter().forEach(
-					dokumentVariant -> dokumentInfo.addFilDetaljer(FilDetaljer.builder()
-							.filtype(mapFilType(dokumentVariant.getFiltype()))
-							.variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
-							.filUuid(FilDetaljer.generateUuid())
-							.fileContent(dokumentVariant.getFysiskDokument())
-							.filnavn(dokumentVariant.getFilnavn())
-							.dokumentInfo(dokumentInfo)
-							.batchNavn(dokumentVariant.getBatchnavn())
-							.build()));
+					dokumentVariant -> mapFilDetaljer(dokumentVariant, dokumentInfo));
 		}
 
 		JournalpostDokumentInfoRelasjon relasjon = JournalpostDokumentInfoRelasjon.builder()
@@ -325,6 +318,32 @@ public class OpprettJournalpostApiRequestMapper {
 		}
 
 		jp.addJournalpostDokumentInfoRelasjon(relasjon);
+	}
+
+	private void mapFilDetaljer(DokumentVariant dokumentVariant, DokumentInfo dokumentInfo) {
+
+		if (dokumentVariant.getDokumentFilId() != null) {
+			dokumentInfo.addFilDetaljer(FilDetaljer.builder()
+					.filUuid(dokumentVariant.getDokumentFilId().toString())
+					.filtype(mapFilType(dokumentVariant.getFiltype()))
+					.variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
+					.filnavn(dokumentVariant.getFilnavn())
+					.dokumentInfo(dokumentInfo)
+					.batchNavn(dokumentVariant.getBatchnavn())
+					.build());
+		} else if (dokumentVariant.getFysiskDokument() != null) {
+			dokumentInfo.addFilDetaljer(FilDetaljer.builder()
+					.filUuid(FilDetaljer.generateUuid())
+					.filtype(mapFilType(dokumentVariant.getFiltype()))
+					.variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
+					.fileContent(dokumentVariant.getFysiskDokument())
+					.filnavn(dokumentVariant.getFilnavn())
+					.dokumentInfo(dokumentInfo)
+					.batchNavn(dokumentVariant.getBatchnavn())
+					.build());
+		} else {
+			throw new InputValideringFeiletException("dokumentFilId eller fysiskDokument må være satt");
+		}
 	}
 
 	private FilTypeCode mapFilType(String filtype) {
