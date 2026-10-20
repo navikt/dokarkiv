@@ -75,9 +75,9 @@
       "cluster": "dev-fss"
     },
     {
-      "app": "familie-integrasjoner-q1",
+      "app": "familie-integrasjoner",
       "namespace": "teamfamilie",
-      "cluster": "dev-fss"
+      "cluster": "dev-gcp"
     },
     {
       "app": "arbeid-og-inntekt",

@@ -68,16 +68,6 @@
       "cluster": "dev-fss"
     },
     {
-      "app": "familie-integrasjoner",
-      "namespace": "teamfamilie",
-      "cluster": "dev-fss"
-    },
-    {
-      "app": "familie-integrasjoner-q1",
-      "namespace": "teamfamilie",
-      "cluster": "dev-fss"
-    },
-    {
       "app": "omsorgspenger-journalforing",
       "namespace": "omsorgspenger",
       "cluster": "dev-gcp"

@@ -62,6 +62,11 @@
       "cluster": "prod-fss"
     },
     {
+      "app": "familie-integrasjoner",
+      "namespace": "teamfamilie",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "omsorgspenger-journalforing",
       "namespace": "omsorgspenger",
       "cluster": "prod-gcp"
