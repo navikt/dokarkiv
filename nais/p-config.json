@@ -714,11 +714,6 @@
     {
       "app": "su-se-bakover",
       "namespace": "supstonad",
-      "cluster": "prod-fss"
-    },
-    {
-      "app": "su-se-bakover",
-      "namespace": "supstonad",
       "cluster": "prod-gcp"
     },
     {
