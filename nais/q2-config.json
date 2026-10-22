@@ -925,6 +925,11 @@
       "app": "refusjon",
       "namespace": "helsearbeidsgiver",
       "cluster": "dev-gcp"
+    },
+    {
+      "app": "inst2-q2",
+      "namespace": "team-rocket",
+      "cluster": "dev-fss"
     }
   ]
 }
