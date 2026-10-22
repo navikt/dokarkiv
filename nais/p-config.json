@@ -816,7 +816,6 @@
       "namespace": "holmes",
       "cluster": "prod-gcp"
     },
-    
     {
       "app": "inst2",
       "namespace": "team-rocket",
