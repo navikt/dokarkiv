@@ -321,29 +321,32 @@ public class OpprettJournalpostApiRequestMapper {
 	}
 
 	private void mapFilDetaljer(DokumentVariant dokumentVariant, DokumentInfo dokumentInfo) {
-
-		if (dokumentVariant.getDokumentFilId() != null) {
-			dokumentInfo.addFilDetaljer(FilDetaljer.builder()
+		FilDetaljer.FilDetaljerBuilder fildetaljerBuilder = FilDetaljer.builder()
+				.variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
+				.filtype(mapFilType(dokumentVariant.getFiltype()))
+				.filnavn(dokumentVariant.getFilnavn())
+				.dokumentInfo(dokumentInfo)
+				.batchNavn(dokumentVariant.getBatchnavn());
+		if (erLagretIBucket(dokumentVariant)) {
+			dokumentInfo.addFilDetaljer(fildetaljerBuilder
 					.filUuid(dokumentVariant.getDokumentFilId().toString())
-					.filtype(mapFilType(dokumentVariant.getFiltype()))
-					.variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
-					.filnavn(dokumentVariant.getFilnavn())
-					.dokumentInfo(dokumentInfo)
-					.batchNavn(dokumentVariant.getBatchnavn())
 					.build());
-		} else if (dokumentVariant.getFysiskDokument() != null) {
-			dokumentInfo.addFilDetaljer(FilDetaljer.builder()
+		} else if (lagresIJoark(dokumentVariant)) {
+			dokumentInfo.addFilDetaljer(fildetaljerBuilder
 					.filUuid(FilDetaljer.generateUuid())
-					.filtype(mapFilType(dokumentVariant.getFiltype()))
-					.variantFormat(mapVariantFormat(dokumentVariant.getVariantformat()))
 					.fileContent(dokumentVariant.getFysiskDokument())
-					.filnavn(dokumentVariant.getFilnavn())
-					.dokumentInfo(dokumentInfo)
-					.batchNavn(dokumentVariant.getBatchnavn())
 					.build());
 		} else {
 			throw new InputValideringFeiletException("dokumentFilId eller fysiskDokument må være satt");
 		}
+	}
+
+	private boolean lagresIJoark(DokumentVariant dokumentVariant) {
+		return dokumentVariant.getFysiskDokument() != null;
+	}
+
+	private boolean erLagretIBucket(DokumentVariant dokumentVariant) {
+		return dokumentVariant.getDokumentFilId() != null;
 	}
 
 	private FilTypeCode mapFilType(String filtype) {

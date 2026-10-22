@@ -31,7 +31,7 @@ public class OpprettJournalpostService {
 		}
 
 		Set<UUID> dokumentFilIds = opprettJournalpostDokumentFilService.validerDokumentFiler(request);
-		opprettJournalpostDokumentFilService.holdDokumentFiler(dokumentFilIds);
+		opprettJournalpostDokumentFilService.hindreSlettingAvDokumentFiler(dokumentFilIds);
 		OpprettJournalpostOppslag oppslag = opprettJournalpostOppslagService.hentOppslag(request);
 
 		return opprettJournalpostTransaksjonService.opprettJournalpost(request, oppslag);

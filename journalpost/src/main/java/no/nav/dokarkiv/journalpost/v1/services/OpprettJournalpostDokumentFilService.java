@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand;
 import no.nav.dokarkiv.core.domain.entities.DokumentFilOpplasting;
 import no.nav.dokarkiv.core.exceptions.DokumentFilAlleredeBruktException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
@@ -44,8 +43,8 @@ public class OpprettJournalpostDokumentFilService {
 	}
 
 	/// @throws DokumentFilAlleredeBruktException (422) hvis en eller flere `dokumentFilId` allerede er brukt av en journalpost.
-	/// Meldingen lister likevel alle feil.
-	/// @throws InputValideringFeiletException hvis en eller flere `dokumentFilId` er ugyldige.
+	///                                                                                     Meldingen lister likevel alle feil.
+	/// @throws InputValideringFeiletException    hvis en eller flere `dokumentFilId` er ugyldige.
 	public Set<UUID> validerDokumentFiler(OpprettJournalpostRequest request) {
 		List<UUID> dokumentFilIder = hentDokumentFilIder(request);
 		if (dokumentFilIder.isEmpty()) {
@@ -55,27 +54,23 @@ public class OpprettJournalpostDokumentFilService {
 		validerIngenDuplikater(dokumentFilIder);
 
 		Set<UUID> unikeDokumentFilIder = Set.copyOf(dokumentFilIder);
-		Map<UUID, List<String>> feil = new TreeMap<>();
-		boolean alleredeBrukt = validerTilstand(unikeDokumentFilIder, feil);
-		validerFinnesIDokarkivMellomlager(unikeDokumentFilIder, feil);
-
-		if (!feil.isEmpty()) {
-			String feilmelding = format("Ugyldige dokumentFilId: %s", feil.entrySet().stream()
-					.map(entry -> format("%s (%s)", entry.getKey(), String.join("; ", entry.getValue())))
-					.collect(Collectors.joining(", ")));
-			log.warn(feilmelding);
-			throw alleredeBrukt ? new DokumentFilAlleredeBruktException(feilmelding) : new InputValideringFeiletException(feilmelding);
-		}
+		validerTilstand(unikeDokumentFilIder);
+		validerFinnesIDokarkivMellomlager(unikeDokumentFilIder);
 		return unikeDokumentFilIder;
 	}
 
+	private static String formatterFeilmelding(Map<UUID, List<String>> feil) {
+		return format("Ugyldige dokumentFilId: %s", feil.entrySet().stream()
+				.map(entry -> format("%s (%s)", entry.getKey(), String.join("; ", entry.getValue())))
+				.collect(Collectors.joining(", ")));
+	}
 
-	public void holdDokumentFiler(Set<UUID> unikeDokumentFilIder) {
-		int hold = dokarkivMellomlagerBucketStorage.holdObjects(unikeDokumentFilIder.stream()
+	public void hindreSlettingAvDokumentFiler(Set<UUID> dokumentFilIder) {
+		int antallDokumentFiler = dokarkivMellomlagerBucketStorage.holdObjects(dokumentFilIder.stream()
 				.map(UUID::toString)
 				.toList());
 
-		log.info("Satt hold på {} dokumentFiler i bucket", hold);
+		log.info("Hindrer sletting av {} dokumentFiler i bucket", antallDokumentFiler);
 	}
 
 	static List<UUID> hentDokumentFilIder(OpprettJournalpostRequest request) {
@@ -101,9 +96,20 @@ public class OpprettJournalpostDokumentFilService {
 		}
 	}
 
-	/// @return `true` hvis en eller flere dokumentFiler allerede er brukt av en journalpost.
-	private boolean validerTilstand(Set<UUID> dokumentFilIder, Map<UUID, List<String>> feil) {
+	private void validerTilstand(Set<UUID> dokumentFilIder) {
+		Map<UUID, List<String>> feil = new TreeMap<>();
 		Map<UUID, DokumentFilOpplasting> opplastinger = dokumentFilOpplastingService.hentTilstander(dokumentFilIder);
+		dokumenterTilstandFeil(dokumentFilIder, feil, opplastinger);
+		if (erBruktAvJournalpost(opplastinger)) {
+			throw new DokumentFilAlleredeBruktException(formatterFeilmelding(feil));
+		}
+
+		if (!feil.isEmpty()) {
+			throw new InputValideringFeiletException(formatterFeilmelding(feil));
+		}
+	}
+
+	private static void dokumenterTilstandFeil(Set<UUID> dokumentFilIder, Map<UUID, List<String>> feil, Map<UUID, DokumentFilOpplasting> opplastinger) {
 		dokumentFilIder.forEach(dokumentFilId -> {
 			DokumentFilOpplasting dokumentFilOpplasting = opplastinger.get(dokumentFilId);
 			if (dokumentFilOpplasting == null) {
@@ -112,16 +118,24 @@ public class OpprettJournalpostDokumentFilService {
 				leggTilFeil(feil, dokumentFilId, format("har tilstand=%s, forventet %s", dokumentFilOpplasting.getTilstand(), LASTET_OPP));
 			}
 		});
+	}
+
+	private static boolean erBruktAvJournalpost(Map<UUID, DokumentFilOpplasting> opplastinger) {
 		return opplastinger.values().stream().anyMatch(DokumentFilOpplasting::erBruktAvJournalpost);
 	}
 
-	private void validerFinnesIDokarkivMellomlager(Set<UUID> dokumentFilIder, Map<UUID, List<String>> feil) {
+	private void validerFinnesIDokarkivMellomlager(Set<UUID> dokumentFilIder) {
+		Map<UUID, List<String>> feil = new TreeMap<>();
 		Set<String> finnes = dokarkivMellomlagerBucketStorage.existsObjects(dokumentFilIder.stream()
 				.map(UUID::toString)
 				.toList());
 		dokumentFilIder.stream()
 				.filter(dokumentFilId -> !finnes.contains(dokumentFilId.toString()))
 				.forEach(dokumentFilId -> leggTilFeil(feil, dokumentFilId, "finnes ikke i dokarkivmellomlager"));
+
+		if (!feil.isEmpty()) {
+			throw new InputValideringFeiletException(formatterFeilmelding(feil));
+		}
 	}
 
 	private static void leggTilFeil(Map<UUID, List<String>> feil, UUID dokumentFilId, String aarsak) {

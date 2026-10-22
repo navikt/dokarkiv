@@ -58,9 +58,8 @@ public class DokarkivMellomlagerBucketStorage implements BucketStorageOperations
 			List<BlobId> blobIds = objectNames.stream()
 					.map(objectName -> BlobId.of(bucket, objectName))
 					.toList();
-			// Batch-oppslag. Returnerer null for objekter som ikke finnes.
-			List<Blob> blobs = storage.get(blobIds);
-			return blobs.stream()
+			return storage.get(blobIds)
+					.stream()
 					.filter(Objects::nonNull)
 					.filter(Blob::exists)
 					.map(Blob::getName)
@@ -78,7 +77,6 @@ public class DokarkivMellomlagerBucketStorage implements BucketStorageOperations
 
 		List<String> objectNameListe = List.copyOf(objectNames);
 		try {
-			// Batch-oppslag. Returnerer null for objekter som ikke finnes, i samme rekkefølge som input.
 			List<Blob> blobs = storage.get(objectNameListe.stream()
 					.map(objectName -> BlobId.of(bucket, objectName))
 					.toList());
@@ -92,7 +90,7 @@ public class DokarkivMellomlagerBucketStorage implements BucketStorageOperations
 			}
 
 			List<Blob> utenHold = blobs.stream()
-					.filter(blob -> !Boolean.TRUE.equals(blob.getTemporaryHold()))
+					.filter(blob -> !blob.getTemporaryHold())
 					.toList();
 			if (utenHold.size() < blobs.size()) {
 				log.info("Hopper over {} blobs som allerede har hold i bucket", blobs.size() - utenHold.size());

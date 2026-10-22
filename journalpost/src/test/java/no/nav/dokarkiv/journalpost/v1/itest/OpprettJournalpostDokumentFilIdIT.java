@@ -242,7 +242,7 @@ public class OpprettJournalpostDokumentFilIdIT extends AbstractJournalpostIT {
 		assertEquals(CREATED, response.getStatusCode());
 		assertDokumentFilIdHold(DOKUMENT_FIL_ID_1, DOKUMENT_FIL_ID_2);
 
-		OpprettJournalpostRequest request2 = createRequest(INNGAAENDE, "9999", SAK_ID.toString(), createDokumenter());;
+		OpprettJournalpostRequest request2 = createRequest(INNGAAENDE, "9999", SAK_ID.toString(), createDokumenter());
 		HttpEntity<OpprettJournalpostRequest> requestEntity2 = new HttpEntity<>(request2, createHeadersWithServiceUserToken());
 		ResponseEntity<OpprettJournalpostResponse> response2 = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity2, OpprettJournalpostResponse.class);
 		assertEquals(CONFLICT, response2.getStatusCode());
@@ -309,7 +309,7 @@ public class OpprettJournalpostDokumentFilIdIT extends AbstractJournalpostIT {
 		assertEquals(UNPROCESSABLE_CONTENT, response.getStatusCode());
 		assertThat(response.getBody()).contains("Ugyldige dokumentFilId: "
 				+ DOKUMENT_FIL_ID_1 + " (har tilstand=ARKIVERT, forventet LASTET_OPP), "
-				+ DOKUMENT_FIL_ID_2 + " (finnes ikke; finnes ikke i dokarkivmellomlager)");
+				+ DOKUMENT_FIL_ID_2 + " (finnes ikke)");
 		assertIngenSideeffekter();
 		assertNoDokumentFilIdHold(DOKUMENT_FIL_ID_1, DOKUMENT_FIL_ID_2);
 	}
@@ -355,7 +355,7 @@ public class OpprettJournalpostDokumentFilIdIT extends AbstractJournalpostIT {
 		HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(request, createHeadersWithServiceUserToken());
 		ResponseEntity<ApplicationProblemDetail> response = restTemplate.exchange(apiJournalpostPath(FERDIGSTILL_QUERY), POST, requestEntity, ApplicationProblemDetail.class);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-		assertThat(response.getBody().getDetail()).contains("Kunne ikke opprette journalpost. Ugyldige dokumentFilId: " + DOKUMENT_FIL_ID_2 + " (finnes ikke; finnes ikke i dokarkivmellomlager)");
+		assertThat(response.getBody().getDetail()).contains("Kunne ikke opprette journalpost. Ugyldige dokumentFilId: " + DOKUMENT_FIL_ID_2 + " (finnes ikke)");
 		assertIngenSideeffekter(DOKUMENT_FIL_ID_1);
 		assertNoDokumentFilIdHold(DOKUMENT_FIL_ID_1, DOKUMENT_FIL_ID_2);
 	}

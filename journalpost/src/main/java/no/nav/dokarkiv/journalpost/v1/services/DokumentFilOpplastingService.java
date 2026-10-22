@@ -2,7 +2,6 @@ package no.nav.dokarkiv.journalpost.v1.services;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand;
 import no.nav.dokarkiv.core.domain.entities.DokumentFilOpplasting;
 import no.nav.dokarkiv.core.exceptions.DokumentFilAlleredeBruktException;
 import no.nav.dokarkiv.core.exceptions.DokumentFilUliktInnholdException;
@@ -79,18 +78,30 @@ public class DokumentFilOpplastingService {
 	/// Sjekker tilstand på nytt i tilfelle den er endret siden validering. Samtidige oppdateringer stoppes av `@Version`.
 	///
 	/// @throws DokumentFilAlleredeBruktException hvis en eller flere dokumentFiler allerede er brukt av en journalpost.
-	/// @throws InputValideringFeiletException hvis en eller flere dokumentFiler ikke finnes eller ikke har tilstand LASTET_OPP.
+	/// @throws InputValideringFeiletException    hvis en eller flere dokumentFiler ikke finnes eller ikke har tilstand LASTET_OPP.
 	@Transactional
 	public Map<UUID, DokumentFilOpplasting> markerArkiveres(Collection<UUID> dokumentFilIder) {
 		Map<UUID, DokumentFilOpplasting> opplastinger = dokumentFilOpplastingRepository.findAllByDokumentFilIdIn(dokumentFilIder)
 				.stream().collect(Collectors.toMap(DokumentFilOpplasting::getDokumentFilId, Function.identity()));
 
+		validerDokumentFilIdAlleredeBrukt(dokumentFilIder, opplastinger);
+
+		String endretKildeNavn = MDC.get(MDC_CONSUMER_ID);
+		opplastinger.values().forEach(dokumentFilOpplasting -> dokumentFilOpplasting.markerArkiveres(endretKildeNavn));
+		return opplastinger;
+	}
+
+	private static void validerDokumentFilIdAlleredeBrukt(Collection<UUID> dokumentFilIder, Map<UUID, DokumentFilOpplasting> opplastinger) {
 		String ugyldige = dokumentFilIder.stream()
 				.sorted()
 				.filter(dokumentFilId -> eksistererIkkeEllerIkkeLastetOpp(dokumentFilId, opplastinger))
-				.map(dokumentFilId -> format("%s (%s)", dokumentFilId, opplastinger.containsKey(dokumentFilId) ?
-						format("har tilstand=%s, forventet %s", opplastinger.get(dokumentFilId).getTilstand(), LASTET_OPP) :
-						"finnes ikke"))
+				.map(dokumentFilId -> {
+					if (opplastinger.containsKey(dokumentFilId)) {
+						return "%s (har tilstand=%s, forventet %s)".formatted(dokumentFilId, opplastinger.get(dokumentFilId).getTilstand(), LASTET_OPP);
+					} else {
+						return "%s (finnes ikke)".formatted(dokumentFilId);
+					}
+				})
 				.collect(Collectors.joining(", "));
 		if (!ugyldige.isEmpty()) {
 			String feilmelding = format("Ugyldige dokumentFilId: %s", ugyldige);
@@ -98,10 +109,6 @@ public class DokumentFilOpplastingService {
 					.anyMatch(DokumentFilOpplasting::erBruktAvJournalpost);
 			throw alleredeBrukt ? new DokumentFilAlleredeBruktException(feilmelding) : new InputValideringFeiletException(feilmelding);
 		}
-
-		String endretKildeNavn = MDC.get(MDC_CONSUMER_ID);
-		opplastinger.values().forEach(dokumentFilOpplasting -> dokumentFilOpplasting.markerArkiveres(endretKildeNavn));
-		return opplastinger;
 	}
 
 	private static boolean eksistererIkkeEllerIkkeLastetOpp(UUID dokumentFilId, Map<UUID, DokumentFilOpplasting> opplastinger) {
