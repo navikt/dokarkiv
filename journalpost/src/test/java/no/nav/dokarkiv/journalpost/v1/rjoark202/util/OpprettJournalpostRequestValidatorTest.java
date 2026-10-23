@@ -1140,13 +1140,14 @@ public class OpprettJournalpostRequestValidatorTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenFysiskDokumentNull() {
+	public void shouldThrowExceptionWhenFysiskDokumentAndDokumentFilIdNull() {
 		OpprettJournalpostRequest opprettJournalpostRequest = createMinimalRequest(INNGAAENDE)
 				.dokumenter(List.of(Dokument.builder()
 						.dokumentKategori(DOKUMENTKATEGORI_SED)
 						.dokumentvarianter(List.of(
 								DokumentVariant.builder()
 										.filtype(FILTYPE_PDF)
+										.dokumentFilId(null)
 										.fysiskDokument(null)
 										.variantformat(VARIANTFORMAT_ARKIV)
 										.build()))
@@ -1155,7 +1156,7 @@ public class OpprettJournalpostRequestValidatorTest {
 
 		assertThatExceptionOfType(InputValideringFeiletException.class)
 				.isThrownBy(() -> validator.validateRequest(opprettJournalpostRequest, FORSOEKFERDIGSTILL))
-				.withMessageContaining("dokumenter[0].dokumentvarianter[].fysiskDokument for variantformat=ARKIV må være en base64 representert fil større enn 0 bytes");
+				.withMessageContaining("dokumenter[0].dokumentvarianter[].dokumentFilId eller dokumenter[0].dokumentvarianter[].fysiskDokument må være satt");
 	}
 
 	@Test

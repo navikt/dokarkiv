@@ -42,7 +42,7 @@ public class LastOppDokumentFilService {
 
 	public LastOppDokumentFilResult lastOppDokumentFil(String idempotencyKey, Sha256ContentDigest sha256ContentDigest, String contentType, InputStream inputStream) {
 		DokumentFilOpplasting dokumentFilOpplasting = hentDokumentFilOpplasting(idempotencyKey, contentType, sha256ContentDigest);
-		if (dokumentFilOpplasting.erOpplastet()) {
+		if (!dokumentFilOpplasting.erUnderOpplasting()) {
 			return LastOppDokumentFilResult.fra(TEKNISK_RETRY, dokumentFilOpplasting);
 		}
 		UUID dokumentFilId = dokumentFilOpplasting.getDokumentFilId();

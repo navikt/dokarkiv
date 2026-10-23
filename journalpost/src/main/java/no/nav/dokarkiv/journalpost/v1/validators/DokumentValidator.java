@@ -80,8 +80,8 @@ public final class DokumentValidator {
 
 	private static void validateOneVariantFormatPerDokument(String variantFormat, List<DokumentVariant> dokumentvarianter, Dokument dokument) {
 		if (dokumentvarianter.stream()
-					.filter(dokumentVariant -> dokumentVariant.getVariantformat().equals(variantFormat))
-					.count() != 1) {
+				.filter(dokumentVariant -> dokumentVariant.getVariantformat().equals(variantFormat))
+				.count() != 1) {
 			throw new InputValideringFeiletException(format("Alle dokumenter må innholde en dokumentvariant av typen %s. %s inneholder følgende varianter: %s",
 					variantFormat,
 					dokument.getTittel(),
@@ -147,7 +147,24 @@ public final class DokumentValidator {
 					prettyPrintList("eller", VARIANTFORMAT_ARKIV_GYLDIGE_FILTYPER.stream().map(FilTypeCode::name).toArray(String[]::new)),
 					dokumentVariant.getFiltype()));
 		}
+		if (dokumentVariant.getDokumentFilId() != null) {
+			validerDokumentFilId(dokumentIdx, dokumentVariant);
+		} else if (dokumentVariant.getFysiskDokument() != null) {
+			validerFysiskDokument(dokumentIdx, dokumentVariant, variantFormat);
+		} else {
+			throw new InputValideringFeiletException(format("%s.dokumentvarianter[].dokumentFilId eller %s.dokumentvarianter[].fysiskDokument må være satt",
+					dokumentnummerPrefix(dokumentIdx), dokumentnummerPrefix(dokumentIdx)));
+		}
+	}
 
+	private static void validerDokumentFilId(Integer dokumentIdx, DokumentVariant dokumentVariant) {
+		if (dokumentVariant.getFysiskDokument() != null) {
+			throw new InputValideringFeiletException(format("%s.dokumentvarianter[].fysiskDokument kan ikke være satt hvis %s.dokumentvarianter[].dokumentFilId er satt.",
+					dokumentnummerPrefix(dokumentIdx), dokumentnummerPrefix(dokumentIdx)));
+		}
+	}
+
+	private static void validerFysiskDokument(Integer dokumentIdx, DokumentVariant dokumentVariant, String variantFormat) {
 		if (dokumentVariant.getFysiskDokument() == null || dokumentVariant.getFysiskDokument().length == 0) {
 			throw new InputValideringFeiletException(format("%s.dokumentvarianter[].fysiskDokument for variantformat=%s må være en base64 representert fil større enn 0 bytes",
 					dokumentnummerPrefix(dokumentIdx), variantFormat));
@@ -161,6 +178,11 @@ public final class DokumentValidator {
 							.withDelimiter(" ")
 							.formatHex(copyOf(dokumentVariant.getFysiskDokument(), PDF_MAGIC_NUMBER.length)),
 					dokumentVariant.getFiltype()));
+		}
+
+		if (dokumentVariant.getDokumentFilId() != null) {
+			throw new InputValideringFeiletException(format("%s.dokumentvarianter[].dokumentFilId kan ikke være satt hvis %s.dokumentvarianter[].fysiskDokument er satt.",
+					dokumentnummerPrefix(dokumentIdx), dokumentnummerPrefix(dokumentIdx)));
 		}
 	}
 

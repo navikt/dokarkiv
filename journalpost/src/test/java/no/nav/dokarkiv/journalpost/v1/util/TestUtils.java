@@ -383,39 +383,43 @@ public class TestUtils {
 	}
 
 	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet, String sakId) {
-		return createBaseRequest(journalpostType, sakId)
-				.journalfoerendeEnhet(journalfoerendeEnhet)
-				.dokumenter(Arrays.asList(
-						Dokument.builder()
-								.tittel(DOKUMENT_TITTEL1)
-								.brevkode(BREVKODE1)
-								.dokumentKategori(DOKUMENTKATEGORI_SED)
-								.dokumentvarianter(Arrays.asList(DokumentVariant.builder()
-												.filtype(FILTYPE_PDF)
-												.variantformat(VARIANTFORMAT_ARKIV)
-												.fysiskDokument(FYSISK_DOKUMENT)
-												.batchnavn(BATCHNAVN)
-												.build(),
-										DokumentVariant.builder()
-												.filtype(FILTYPE_XML)
-												.variantformat(VARIANTFORMAT_ORIGINAL)
-												.filnavn(FILNAVN)
-												.fysiskDokument(FYSISK_DOKUMENT_2)
-												.batchnavn(BATCHNAVN)
-												.build()))
-								.build(),
-						Dokument.builder()
-								.tittel(DOKUMENT_TITTEL2)
-								.brevkode(BREVKODE2)
-								.dokumentKategori(DOKUMENTKATEGORI_SED)
-								.rekkefoelge(2)
-								.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
+		return createRequest(journalpostType, journalfoerendeEnhet, sakId, Arrays.asList(
+				Dokument.builder()
+						.tittel(DOKUMENT_TITTEL1)
+						.brevkode(BREVKODE1)
+						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.dokumentvarianter(Arrays.asList(DokumentVariant.builder()
 										.filtype(FILTYPE_PDF)
 										.variantformat(VARIANTFORMAT_ARKIV)
 										.fysiskDokument(FYSISK_DOKUMENT)
 										.batchnavn(BATCHNAVN)
+										.build(),
+								DokumentVariant.builder()
+										.filtype(FILTYPE_XML)
+										.variantformat(VARIANTFORMAT_ORIGINAL)
+										.filnavn(FILNAVN)
+										.fysiskDokument(FYSISK_DOKUMENT_2)
+										.batchnavn(BATCHNAVN)
 										.build()))
+						.build(),
+				Dokument.builder()
+						.tittel(DOKUMENT_TITTEL2)
+						.brevkode(BREVKODE2)
+						.dokumentKategori(DOKUMENTKATEGORI_SED)
+						.rekkefoelge(2)
+						.dokumentvarianter(Collections.singletonList(DokumentVariant.builder()
+								.filtype(FILTYPE_PDF)
+								.variantformat(VARIANTFORMAT_ARKIV)
+								.fysiskDokument(FYSISK_DOKUMENT)
+								.batchnavn(BATCHNAVN)
 								.build()))
+						.build()));
+	}
+
+	public static OpprettJournalpostRequest createRequest(JournalpostType journalpostType, String journalfoerendeEnhet, String sakId, List<Dokument> dokumenter) {
+		return createBaseRequest(journalpostType, sakId)
+				.journalfoerendeEnhet(journalfoerendeEnhet)
+				.dokumenter(dokumenter)
 				.build();
 	}
 
