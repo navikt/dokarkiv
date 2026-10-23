@@ -42,8 +42,7 @@ public class OpprettJournalpostDokumentFilService {
 		this.dokarkivMellomlagerBucketStorage = dokarkivMellomlagerBucketStorage;
 	}
 
-	/// @throws DokumentFilAlleredeBruktException (422) hvis en eller flere `dokumentFilId` allerede er brukt av en journalpost.
-	///                                                                                     Meldingen lister likevel alle feil.
+	/// @throws DokumentFilAlleredeBruktException hvis en eller flere `dokumentFilId` allerede er brukt av en journalpost.
 	/// @throws InputValideringFeiletException    hvis en eller flere `dokumentFilId` er ugyldige.
 	public Set<UUID> validerDokumentFiler(OpprettJournalpostRequest request) {
 		List<UUID> dokumentFilIder = hentDokumentFilIder(request);
