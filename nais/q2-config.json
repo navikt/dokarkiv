@@ -872,6 +872,11 @@
       "cluster": "dev-gcp"
     },
     {
+      "app": "genie",
+      "namespace": "infotek",
+      "cluster": "dev-gcp"
+    },
+    {
       "app": "journey",
       "namespace": "tsm",
       "cluster": "dev-gcp"
