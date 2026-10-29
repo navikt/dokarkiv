@@ -37,7 +37,7 @@
 		<logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
 		<java-jwt.version>4.6.2</java-jwt.version>
 		<!-- Denne må spesifiseres for å unngå konflikt mellom ms graph og mock-oauth2-server. -->
-		<okhttp.version>5.5.0</okhttp.version>
+		<okhttp.version>5.5.1</okhttp.version>
 		<libraries-bom.version>26.90.0</libraries-bom.version>
 		<tink.version>1.24.0</tink.version>
 		<tink-gcpkms.version>1.12.0</tink-gcpkms.version>
