@@ -1,0 +1,12 @@
+name: Rebuild and release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rebuild-and-release:
+    permissions:
+      contents: read
+      id-token: write
+    uses: navikt/dok-workflows/.github/workflows/rebuild-and-release.yml@main
+    secrets: inherit
