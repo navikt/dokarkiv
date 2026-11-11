@@ -25,13 +25,21 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 import static java.lang.String.format;
-import static no.nav.dokarkiv.core.MDCConstants.*;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_REQUEST_ID;
+import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_ID;
 import static no.nav.dokarkiv.journalpost.v1.validators.CommonValidator.validateIdAndParse;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -41,90 +49,90 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @RequestMapping("/rest/journalpostapi/v1/journalpost")
 public class JournalpostEksternProtectedRestController {
 
-    private final KnyttTilAnnenSakValidator knyttTilAnnenSakValidator;
-    private final KnyttTilAnnenSakService knyttTilAnnenSakService;
+	private final KnyttTilAnnenSakValidator knyttTilAnnenSakValidator;
+	private final KnyttTilAnnenSakService knyttTilAnnenSakService;
 
-    private final TilknyttVedleggService tilknyttVedleggService;
+	private final TilknyttVedleggService tilknyttVedleggService;
 
-    public JournalpostEksternProtectedRestController(KnyttTilAnnenSakValidator knyttTilAnnenSakValidator,
-                                                     KnyttTilAnnenSakService knyttTilAnnenSakService,
-                                                     TilknyttVedleggService tilknyttVedleggService) {
-        this.knyttTilAnnenSakValidator = knyttTilAnnenSakValidator;
-        this.knyttTilAnnenSakService = knyttTilAnnenSakService;
-        this.tilknyttVedleggService = tilknyttVedleggService;
-    }
+	public JournalpostEksternProtectedRestController(KnyttTilAnnenSakValidator knyttTilAnnenSakValidator,
+													 KnyttTilAnnenSakService knyttTilAnnenSakService,
+													 TilknyttVedleggService tilknyttVedleggService) {
+		this.knyttTilAnnenSakValidator = knyttTilAnnenSakValidator;
+		this.knyttTilAnnenSakService = knyttTilAnnenSakService;
+		this.tilknyttVedleggService = tilknyttVedleggService;
+	}
 
 
-    @Transactional
-    @SwaggerRestKnyttTilAnnenSak
-    @Operation(summary = "Knytt dokumenter til ny sak.")
-    @PutMapping("/{kildeJournalpostId}/knyttTilAnnenSak")
-    @Tag(name = "journalpostapi - knyttTilAnnenSak", description = "Tjeneste for å endre sakstilknytning på en journalpost")
-    public ResponseEntity<KnyttTilAnnenSakResponse> knyttTilAnnenSak(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                                                     @Parameter(description = "Nav-Consumer-Token - Systembrukerens OIDC-token. NB: Oppgis kun dersom den NAV-ansattes token er lagt ved under Authorization") @RequestHeader(value = "Nav-Consumer-Token", required = false) String navConsumerToken,
-                                                                     @Parameter(description = "Nav-CallId - teknisk sporingsid") @RequestHeader(value = "Nav-CallId", required = false) String navCallId,
-                                                                     @Parameter(description = "ID til journalposten som det er ønskelig å kopiere", required = true) @PathVariable String kildeJournalpostId,
-                                                                     @RequestBody KnyttTilAnnenSakRequest knyttTilAnnenSakRequest) {
-        long journalpostId = validateIdAndParse(kildeJournalpostId, "kildeJournalpostId");
-        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-        try {
-            log.info("knyttTilAnnenSak har fått har fått kall for å knytte dokumenter til annen sak");
-            knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, journalpostId);
-            KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, journalpostId);
+	@Transactional
+	@SwaggerRestKnyttTilAnnenSak
+	@Operation(summary = "Knytt dokumenter til ny sak.")
+	@PutMapping("/{kildeJournalpostId}/knyttTilAnnenSak")
+	@Tag(name = "journalpostapi - knyttTilAnnenSak", description = "Tjeneste for å endre sakstilknytning på en journalpost")
+	public ResponseEntity<KnyttTilAnnenSakResponse> knyttTilAnnenSak(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationHeader,
+																	 @Parameter(description = "Nav-Consumer-Token - Systembrukerens OIDC-token. NB: Oppgis kun dersom den NAV-ansattes token er lagt ved under Authorization") @RequestHeader(value = "Nav-Consumer-Token", required = false) String navConsumerToken,
+																	 @Parameter(description = "Nav-CallId - teknisk sporingsid") @RequestHeader(value = "Nav-CallId", required = false) String navCallId,
+																	 @Parameter(description = "ID til journalposten som det er ønskelig å kopiere", required = true) @PathVariable String kildeJournalpostId,
+																	 @RequestBody KnyttTilAnnenSakRequest knyttTilAnnenSakRequest) {
+		long journalpostId = validateIdAndParse(kildeJournalpostId, "kildeJournalpostId");
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		try {
+			log.info("knyttTilAnnenSak har fått har fått kall for å knytte dokumenter til annen sak");
+			knyttTilAnnenSakValidator.validate(knyttTilAnnenSakRequest, journalpostId);
+			KnyttTilAnnenSakResponse knyttTilAnnenSakResponse = knyttTilAnnenSakService.knyttTilAnnenSak(knyttTilAnnenSakRequest, journalpostId);
 
-            log.info("knyttTilAnnenSak har knyttet til dokumenter til ny journalpost med journalpostId={}", knyttTilAnnenSakResponse.getNyJournalpostId());
+			log.info("knyttTilAnnenSak har knyttet til dokumenter til ny journalpost med journalpostId={}", knyttTilAnnenSakResponse.getNyJournalpostId());
 
-            return ResponseEntity.ok().body(knyttTilAnnenSakResponse);
-        } catch (KanIkkeFerdigstilleException e) {
-            throw new ResponseStatusException(BAD_REQUEST,
-                    format("knyttTilAnnenSak kunne ikke knytte dokumenter til annen sak for journalpostId=%s. %s", journalpostId, e.getMessage()),
-                    e);
-        } catch (DokarkivFunctionalException e) {
-            log.warn("knyttTilAnnenSak - feilet funksjonelt ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", journalpostId,
-                    e.getMessage());
-            throw e;
-        } catch (DokarkivTechnicalException e) {
-            log.warn("knyttTilAnnenSak - feilet teknisk ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", journalpostId, e
-                    .getMessage());
-            throw e;
-        }
-    }
+			return ResponseEntity.ok().body(knyttTilAnnenSakResponse);
+		} catch (KanIkkeFerdigstilleException e) {
+			throw new ResponseStatusException(BAD_REQUEST,
+					format("knyttTilAnnenSak kunne ikke knytte dokumenter til annen sak for journalpostId=%s. %s", journalpostId, e.getMessage()),
+					e);
+		} catch (DokarkivFunctionalException e) {
+			log.warn("knyttTilAnnenSak - feilet funksjonelt ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", journalpostId,
+					e.getMessage());
+			throw e;
+		} catch (DokarkivTechnicalException e) {
+			log.warn("knyttTilAnnenSak - feilet teknisk ved knytning dokumenter til annen sak for journalpostId={} med Feilmelding={}", journalpostId, e
+					.getMessage());
+			throw e;
+		}
+	}
 
-    @SwaggerRestTilknyttVedlegg
-    @ResponseBody
-    @Operation(summary = "Knytt vedlegg til journalpost")
-    @Tag(name = "journalpostapi - tilknyttVedlegg", description = "Tjeneste for å knytte vedlegg til en journalpost")
-    @PutMapping(value = "/{journalpostId}/tilknyttVedlegg")
-    public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
-            @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
-            @PathVariable String journalpostId,
-            @RequestBody TilknyttVedleggRequest request) {
-        RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
-        MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
-        long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
-        try {
-            log.info("tilknyttVedlegg har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostIdParsed);
+	@SwaggerRestTilknyttVedlegg
+	@ResponseBody
+	@Operation(summary = "Knytt vedlegg til journalpost")
+	@Tag(name = "journalpostapi - tilknyttVedlegg", description = "Tjeneste for å knytte vedlegg til en journalpost")
+	@PutMapping(value = "/{journalpostId}/tilknyttVedlegg")
+	public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
+			@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
+			@PathVariable String journalpostId,
+			@RequestBody TilknyttVedleggRequest request) {
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDCConstants.MDC_CONSUMER_ID));
+		MDC.put(MDC_REQUEST_ID, "tilknyttVedlegg");
+		long journalpostIdParsed = validateIdAndParse(journalpostId, "journalpostId");
+		try {
+			log.info("tilknyttVedlegg har mottatt kall om å legge til vedlegg på journalpostId={}", journalpostIdParsed);
 
-            List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(journalpostIdParsed, request);
+			List<FeiledeDokumenter> feiledeDokumenterList = tilknyttVedleggService.tilknyttVedlegg(journalpostIdParsed, request);
 
-            if (feiledeDokumenterList.isEmpty()) {
-                return ResponseEntity
-                        .ok()
-                        .body(TilknyttVedleggResponse.builder().build());
-            } else {
-                return ResponseEntity
-                        .status(HttpStatus.MULTI_STATUS)
-                        .body(TilknyttVedleggResponse.builder().feiledeDokumenter(feiledeDokumenterList).build());
-            }
+			if (feiledeDokumenterList.isEmpty()) {
+				return ResponseEntity
+						.ok()
+						.body(TilknyttVedleggResponse.builder().build());
+			} else {
+				return ResponseEntity
+						.status(HttpStatus.MULTI_STATUS)
+						.body(TilknyttVedleggResponse.builder().feiledeDokumenter(feiledeDokumenterList).build());
+			}
 
-        } catch (DokarkivFunctionalException e) {
-            log.warn("tilknyttVedlegg - feilet funksjonelt ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostIdParsed, e
-                    .getMessage());
-            throw e;
-        } catch (DokarkivTechnicalException e) {
-            log.error("tilknyttVedlegg - feilet teknisk ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostIdParsed, e
-                    .getMessage());
-            throw e;
-        }
-    }
+		} catch (DokarkivFunctionalException e) {
+			log.warn("tilknyttVedlegg - feilet funksjonelt ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostIdParsed, e
+					.getMessage());
+			throw e;
+		} catch (DokarkivTechnicalException e) {
+			log.error("tilknyttVedlegg - feilet teknisk ved tilknytning av vedlegg for journalpostId={}. Feilmelding={}", journalpostIdParsed, e
+					.getMessage());
+			throw e;
+		}
+	}
 }

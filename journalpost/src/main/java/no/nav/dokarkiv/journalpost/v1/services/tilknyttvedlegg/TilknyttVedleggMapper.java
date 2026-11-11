@@ -15,65 +15,65 @@ import static no.nav.dokarkiv.journalpost.v1.services.tilknyttvedlegg.TilknyttVe
 
 public class TilknyttVedleggMapper {
 
-    private static final ShallowDokumentInfoCopier DOKUMENT_INFO_COPIER = new ShallowDokumentInfoCopier();
+	private static final ShallowDokumentInfoCopier DOKUMENT_INFO_COPIER = new ShallowDokumentInfoCopier();
 
-    public static DokumentInfo mapDokumentInfoSladdet(DokumentInfo dokumentInfo, String consumerId) {
+	public static DokumentInfo mapDokumentInfoSladdet(DokumentInfo dokumentInfo, String consumerId) {
 
-        DokumentInfo dokumentInfoCopy = DOKUMENT_INFO_COPIER.copy(dokumentInfo);
-        dokumentInfoCopy.setOpprettetKildeNavn(consumerId);
-        dokumentInfoCopy.setEndretAvNavn(null);
-        dokumentInfoCopy.getTilleggsopplysninger().put(TILLEGGOPPLYSNINGER_KEY, dokumentInfo.getDokumentInfoId().toString());
+		DokumentInfo dokumentInfoCopy = DOKUMENT_INFO_COPIER.copy(dokumentInfo);
+		dokumentInfoCopy.setOpprettetKildeNavn(consumerId);
+		dokumentInfoCopy.setEndretAvNavn(null);
+		dokumentInfoCopy.getTilleggsopplysninger().put(TILLEGGOPPLYSNINGER_KEY, dokumentInfo.getDokumentInfoId().toString());
 
-        return dokumentInfoCopy;
-    }
+		return dokumentInfoCopy;
+	}
 
-    public static FilDetaljer createFildetaljerCopy(FilDetaljer filDetaljer, DokumentInfo dokumentInfo, String consumerId) {
-        FilDetaljer filDetaljerCopy = FilDetaljer.builder()
-                .dokumentInfo(dokumentInfo)
-                .fileContent(filDetaljer.getFileContent())
-                .filUuid(FilDetaljer.generateUuid())
-                .onDemandId(filDetaljer.getOnDemandId())
-                .onDemandInstans(filDetaljer.getOnDemandInstans())
-                .metaforceInstanceId(filDetaljer.getMetaforceInstanceId())
-                .filtype(filDetaljer.getFiltype())
-                .variantFormat(ARKIV)
-                .batchNavn(filDetaljer.getBatchNavn())
-                .filnavn(filDetaljer.getFilnavn())
-                .filstorrelse(filDetaljer.getFilstorrelse())
-                .build();
+	public static FilDetaljer createFildetaljerCopy(FilDetaljer filDetaljer, DokumentInfo dokumentInfo, String consumerId) {
+		FilDetaljer filDetaljerCopy = FilDetaljer.builder()
+				.dokumentInfo(dokumentInfo)
+				.fileContent(filDetaljer.getFileContent())
+				.filUuid(FilDetaljer.generateUuid())
+				.onDemandId(filDetaljer.getOnDemandId())
+				.onDemandInstans(filDetaljer.getOnDemandInstans())
+				.metaforceInstanceId(filDetaljer.getMetaforceInstanceId())
+				.filtype(filDetaljer.getFiltype())
+				.variantFormat(ARKIV)
+				.batchNavn(filDetaljer.getBatchNavn())
+				.filnavn(filDetaljer.getFilnavn())
+				.filstorrelse(filDetaljer.getFilstorrelse())
+				.build();
 
-        filDetaljerCopy.setOpprettetKildeNavn(consumerId);
+		filDetaljerCopy.setOpprettetKildeNavn(consumerId);
 
-        return filDetaljerCopy;
-    }
+		return filDetaljerCopy;
+	}
 
-    public static void addToFeiletDokumentList(List<FeiledeDokumenter> feiledeDokumenterList, ArsakKode arsakKode, DokumentVedlegg dokumentVedlegg) {
-        feiledeDokumenterList.add(FeiledeDokumenter.builder()
-                .kildeJournalpostId(dokumentVedlegg.getKildeJournalpostId().toString())
-                .dokumentInfoId(dokumentVedlegg.getDokumentInfoId())
-                .arsakKode(arsakKode)
-                .build());
-    }
+	public static void addToFeiletDokumentList(List<FeiledeDokumenter> feiledeDokumenterList, ArsakKode arsakKode, DokumentVedlegg dokumentVedlegg) {
+		feiledeDokumenterList.add(FeiledeDokumenter.builder()
+				.kildeJournalpostId(dokumentVedlegg.getKildeJournalpostId().toString())
+				.dokumentInfoId(dokumentVedlegg.getDokumentInfoId())
+				.arsakKode(arsakKode)
+				.build());
+	}
 
-    public static FilDetaljer finnSladdetFildetaljer(DokumentInfo dokumentInfo) {
-        if (dokumentInfo != null) {
-            return dokumentInfo.getFildetaljerListe().stream()
-                    .filter(filDetaljer1 -> SLADDET.equals(filDetaljer1.getVariantFormat()))
-                    .findAny()
-                    .orElse(null);
-        } else {
-            return null;
-        }
-    }
+	public static FilDetaljer finnSladdetFildetaljer(DokumentInfo dokumentInfo) {
+		if (dokumentInfo != null) {
+			return dokumentInfo.getFildetaljerListe().stream()
+					.filter(filDetaljer1 -> SLADDET.equals(filDetaljer1.getVariantFormat()))
+					.findAny()
+					.orElse(null);
+		} else {
+			return null;
+		}
+	}
 
-    public static FilDetaljer finnArkivFildetaljer(DokumentInfo dokumentInfo) {
-        if (dokumentInfo != null) {
-            return dokumentInfo.getFildetaljerListe().stream()
-                    .filter(filDetaljer1 -> ARKIV.equals(filDetaljer1.getVariantFormat()))
-                    .findAny()
-                    .orElse(null);
-        } else {
-            return null;
-        }
-    }
+	public static FilDetaljer finnArkivFildetaljer(DokumentInfo dokumentInfo) {
+		if (dokumentInfo != null) {
+			return dokumentInfo.getFildetaljerListe().stream()
+					.filter(filDetaljer1 -> ARKIV.equals(filDetaljer1.getVariantFormat()))
+					.findAny()
+					.orElse(null);
+		} else {
+			return null;
+		}
+	}
 }

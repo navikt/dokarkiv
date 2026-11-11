@@ -13,32 +13,32 @@ import java.util.List;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_USER_NAME;
 
 @Slf4j
-@Service(value = "tilknyttVedleggService")
+@Service
 public class TilknyttVedleggService {
 
-    private final TilknyttVedleggTransaksjonService tilknyttVedleggTransaksjonService;
-    private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator;
-    private final AccessLookupJournalpost accessLookupJournalpost;
-    public static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
+	private final TilknyttVedleggTransaksjonService tilknyttVedleggTransaksjonService;
+	private final TilknyttVedleggRequestValidator tilknyttVedleggRequestValidator;
+	private final AccessLookupJournalpost accessLookupJournalpost;
+	public static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
 
-    public TilknyttVedleggService(TilknyttVedleggTransaksjonService tilknyttVedleggTransaksjonService,
-                                  AccessLookupJournalpost accessLookupJournalpost) {
-        this.tilknyttVedleggTransaksjonService = tilknyttVedleggTransaksjonService;
-        this.accessLookupJournalpost = accessLookupJournalpost;
-        this.tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
-    }
+	public TilknyttVedleggService(TilknyttVedleggTransaksjonService tilknyttVedleggTransaksjonService,
+								  AccessLookupJournalpost accessLookupJournalpost) {
+		this.tilknyttVedleggTransaksjonService = tilknyttVedleggTransaksjonService;
+		this.accessLookupJournalpost = accessLookupJournalpost;
+		this.tilknyttVedleggRequestValidator = new TilknyttVedleggRequestValidator();
+	}
 
-    public List<FeiledeDokumenter> tilknyttVedlegg(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
+	public List<FeiledeDokumenter> tilknyttVedlegg(long targetJournalpostId, TilknyttVedleggRequest tilknyttVedleggRequest) {
 
-        String tilknyttetAvNavn = MDC.get(MDC_USER_NAME);
-        var request = new TilknyttVedleggRequest(tilknyttetAvNavn, tilknyttVedleggRequest.getDokument());
-        tilknyttVedleggRequestValidator.validateRequest(request);
-        var accessControlledDocuments = accessLookupJournalpost.checkDocumentsCanBeAccessedByActor(request);
-        var validatedRequest = new TilknyttVedleggRequest(tilknyttetAvNavn, accessControlledDocuments.okDocuments());
-        tilknyttVedleggRequestValidator.validateRequest(validatedRequest);
+		String tilknyttetAvNavn = MDC.get(MDC_USER_NAME);
+		var request = new TilknyttVedleggRequest(tilknyttetAvNavn, tilknyttVedleggRequest.getDokument());
+		tilknyttVedleggRequestValidator.validateRequest(request);
+		var accessControlledDocuments = accessLookupJournalpost.checkDocumentsCanBeAccessedByActor(request);
+		var validatedRequest = new TilknyttVedleggRequest(tilknyttetAvNavn, accessControlledDocuments.okDocuments());
+		tilknyttVedleggRequestValidator.validateRequest(validatedRequest);
 
-        List<FeiledeDokumenter> failedDocuments = accessControlledDocuments.failedDocuments();
-        failedDocuments.addAll(tilknyttVedleggTransaksjonService.validateAndTilknyttVedlegg(targetJournalpostId, validatedRequest));
-        return failedDocuments;
-    }
+		List<FeiledeDokumenter> failedDocuments = accessControlledDocuments.failedDocuments();
+		failedDocuments.addAll(tilknyttVedleggTransaksjonService.validateAndTilknyttVedlegg(targetJournalpostId, validatedRequest));
+		return failedDocuments;
+	}
 }
