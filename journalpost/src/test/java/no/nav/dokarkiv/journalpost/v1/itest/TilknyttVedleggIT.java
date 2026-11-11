@@ -1,23 +1,28 @@
 package no.nav.dokarkiv.journalpost.v1.itest;
 
 import no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode;
+import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentFil;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.FilDetaljer;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.JournalpostDokumentInfoRelasjon;
+import no.nav.dokarkiv.core.repository.JournalpostRepositorySkjermet;
 import no.nav.dokarkiv.journalpost.v1.api.DokumentVedlegg;
 import no.nav.dokarkiv.journalpost.v1.api.FeiledeDokumenter;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggRequest;
 import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
+import no.nav.dokarkiv.journalpost.v1.services.AccessLookupJournalpost;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.invocation.InvocationOnMock;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import java.util.ArrayList;
@@ -45,10 +50,11 @@ import static no.nav.dokarkiv.core.domain.codes.JournalpostTypeCode.U;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.ARKIV;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.PRODUKSJON;
 import static no.nav.dokarkiv.core.domain.codes.VariantFormatCode.SLADDET;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFildetaljerOgFil;
-import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
 import static no.nav.dokarkiv.core.util.TestDataUtils.KANAL_REFERANSE_ID;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
+import static no.nav.dokarkiv.core.util.TestdataFactory.createFildetaljerOgFil;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.IKKE_FUNNET;
+import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.SIKKERHETSBEGRENSNING;
 import static no.nav.dokarkiv.journalpost.v1.api.ArsakKode.UGYLDIG_STATUS;
 import static no.nav.dokarkiv.journalpost.v1.util.FunctionalMatcher.where;
 import static no.nav.dokarkiv.journalpost.v1.util.TestUtils.createDokumentVedlegg;
@@ -64,6 +70,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -77,11 +85,113 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 	private static final String UGYLDIG_JOURNALPOST = "12312312312";
 	private static final String TILLEGGOPPLYSNINGER_KEY = "DOK_ORG_DOK_INFO_ID";
 
+	@MockitoSpyBean
+	private JournalpostRepositorySkjermet journalpostRepositorySkjermet;
+
+	@MockitoSpyBean
+	private AccessLookupJournalpost accessLookupJournalpost;
+
 	@BeforeEach
 	public void setUp() {
 		super.setUp();
 		stubMsGraphGetUser(NAV_USER_ID);
 		stubAzure();
+		doAnswer(InvocationOnMock::callRealMethod)
+				.when(accessLookupJournalpost).checkDocumentsCanBeAccessedByActor(any(TilknyttVedleggRequest.class));
+	}
+
+	@Test
+	public void shouldOnlyAttachAccessApprovedDocuments() {
+		Journalpost targetJournalpost = createJournalpostArkiv(U);
+		Journalpost allowedJournalpost = createJournalpostArkiv(U);
+		allowedJournalpost.setJournalstatus(J);
+		Journalpost deniedJournalpost = createJournalpostSladdet();
+		allowedJournalpost.setFagomrade(FAR);
+		deniedJournalpost.setFagomrade(KTA);
+
+		Long targetJournalpostId = saveJournalpost(targetJournalpost).getJournalpostId();
+		Long allowedJournalpostId = saveJournalpost(allowedJournalpost).getJournalpostId();
+		Long deniedJournalpostId = saveJournalpost(deniedJournalpost).getJournalpostId();
+
+		Long allowedDokumentInfoId = allowedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+		Long deniedDokumentInfoId = deniedJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+
+		String safResponse = classpathToString("__files/saf/saf_response.json")
+				.replace("${allowedDokumentInfoId}", allowedDokumentInfoId.toString())
+				.replace("${deniedDokumentInfoId}", deniedDokumentInfoId.toString());
+		stubFor(post(urlEqualTo("/safgraphql")).willReturn(aResponse()
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withBody(safResponse)));
+
+		completeCurrentAndStartNewTransaction();
+		long antallDokumentInfo = dokumentInfoTestRepository.count();
+		long antallDokumentFiler = dokumentFilTestRepository.count();
+
+		var request = createTilknyttVedleggRequest(List.of(
+				createDokumentVedlegg(allowedJournalpostId, allowedDokumentInfoId.toString(), null),
+				createDokumentVedlegg(deniedJournalpostId, deniedDokumentInfoId.toString(), null)));
+		var requestHttpEntity = new HttpEntity<>(request, createHeadersWithUserAndServiceUserToken());
+		var response = restTemplate.exchange(
+				apiJournalpostPath(targetJournalpostId + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+		completeCurrentAndStartNewTransaction();
+
+		assertThat(response.getStatusCode(), is(MULTI_STATUS));
+		assertNotNull(response.getBody());
+		assertThat(response.getBody().getFeiledeDokumenter())
+				.singleElement().satisfies(feiletDokument -> {
+					assertEquals(deniedJournalpostId.toString(), feiletDokument.getKildeJournalpostId());
+					assertEquals(deniedDokumentInfoId.toString(), feiletDokument.getDokumentInfoId());
+					assertEquals(SIKKERHETSBEGRENSNING, feiletDokument.getArsakKode());
+				});
+		assertThat(journalpostTestRepository.findById(targetJournalpostId).orElseThrow().getJournalpostDokumentInfoRelasjoner())
+				.extracting(relasjon -> relasjon.getDokumentInfo().getDokumentInfoId())
+				.contains(allowedDokumentInfoId)
+				.doesNotContain(deniedDokumentInfoId)
+				.hasSize(2);
+		assertThat(dokumentInfoTestRepository.count()).isEqualTo(antallDokumentInfo);
+		assertThat(dokumentInfoTestRepository.count()).isEqualTo(3);
+		assertThat(dokumentFilTestRepository.count()).isEqualTo(4);
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = VariantFormatCode.class, names = {"ARKIV", "SLADDET"})
+	public void shouldNotDuplicateAttachmentsWhenRequestIsRepeated(VariantFormatCode variantFormat) {
+		Journalpost targetJournalpost = createJournalpostArkiv(U);
+		Journalpost sourceJournalpost = variantFormat == SLADDET ? createJournalpostSladdet() : createJournalpostArkiv(U);
+		sourceJournalpost.setJournalstatus(J);
+		Long targetJournalpostId = saveJournalpost(targetJournalpost).getJournalpostId();
+		Long sourceJournalpostId = saveJournalpost(sourceJournalpost).getJournalpostId();
+		Long dokumentInfoId = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo().getDokumentInfoId();
+		generateAndStubSafResponse(sourceJournalpost);
+		completeCurrentAndStartNewTransaction();
+
+		var request = createTilknyttVedleggRequest(List.of(createDokumentVedlegg(sourceJournalpostId, dokumentInfoId.toString(), null)));
+		var requestHttpEntity = new HttpEntity<>(request, createHeadersWithUserAndServiceUserToken());
+		var path = apiJournalpostPath(targetJournalpostId + TILKNYTT_VEDLEGG_PATH);
+		var firstResponse = restTemplate.exchange(path, PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+
+		completeCurrentAndStartNewTransaction();
+		assertThat(firstResponse.getStatusCode(), is(OK));
+		assertNotNull(firstResponse.getBody());
+		assertThat(firstResponse.getBody().getFeiledeDokumenter()).isEmpty();
+
+		var firstDokumentInfoIds = journalpostTestRepository.findById(targetJournalpostId).orElseThrow()
+				.getJournalpostDokumentInfoRelasjoner().stream()
+				.map(relasjon -> relasjon.getDokumentInfo().getDokumentInfoId()).toList();
+		long antallDokumentInfo = dokumentInfoTestRepository.count();
+		long antallDokumentFiler = dokumentFilTestRepository.count();
+
+		var secondResponse = restTemplate.exchange(path, PUT, requestHttpEntity, TilknyttVedleggResponse.class);
+		completeCurrentAndStartNewTransaction();
+		assertThat(secondResponse.getStatusCode(), is(OK));
+		assertNotNull(secondResponse.getBody());
+		assertThat(secondResponse.getBody().getFeiledeDokumenter()).isEmpty();
+		assertThat(journalpostTestRepository.findById(targetJournalpostId).orElseThrow().getJournalpostDokumentInfoRelasjoner())
+				.extracting(relasjon -> relasjon.getDokumentInfo().getDokumentInfoId())
+				.containsExactlyInAnyOrderElementsOf(firstDokumentInfoIds)
+				.hasSize(2);
+		assertEquals(antallDokumentInfo, dokumentInfoTestRepository.count());
+		assertEquals(antallDokumentFiler, dokumentFilTestRepository.count());
 	}
 
 	@ParameterizedTest
@@ -110,7 +220,7 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 		HttpEntity<TilknyttVedleggRequest> requestHttpEntity = new HttpEntity<>(request, headers);
 		var responseEntity = restTemplate.exchange(
-				apiJournalpostPath(targetJournalpostId + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, String.class);
+				apiJournalpostPath(targetJournalpostId + TILKNYTT_VEDLEGG_PATH), PUT, requestHttpEntity, TilknyttVedleggResponse.class);
 
 		completeCurrentAndStartNewTransaction();
 
@@ -118,6 +228,8 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 		DokumentInfo sourceDokumentInfo = sourceJournalpost.findHoveddokumentDokumentInfoRelasjon().getDokumentInfo();
 
 		assertThat(responseEntity.getStatusCode(), is(OK));
+		assertNotNull(responseEntity.getBody());
+		assertThat(responseEntity.getBody().getFeiledeDokumenter()).isEmpty();
 
 		Optional<DokumentInfo> dokumentInfoKopi = journalpostTilknyttetVedlegg.getJournalpostDokumentInfoRelasjoner()
 				.stream()
@@ -617,27 +729,27 @@ public class TilknyttVedleggIT extends AbstractJournalpostIT {
 
 	private static void generateAndStubSafResponse(Journalpost... journalposts) {
 		String response = """
+				{
+				"data": {
+				  "journalpost": {
+				    "dokumenter": [
+				""" +
+				Stream.of(journalposts)
+						.map(Journalpost::findHoveddokumentDokumentInfoRelasjon)
+						.map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
+						.map(DokumentInfo::getDokumentInfoId)
+						.map(id -> String.format("""
 								  {
-								  "data": {
-								    "journalpost": {
-								      "dokumenter": [
-								  """ +
-						  Stream.of(journalposts)
-								  .map(Journalpost::findHoveddokumentDokumentInfoRelasjon)
-								  .map(JournalpostDokumentInfoRelasjon::getDokumentInfo)
-								  .map(DokumentInfo::getDokumentInfoId)
-								  .map(id -> String.format("""
-										    {
-										    "dokumentInfoId": "%d",
-										    "dokumentvarianter": [
-										  	{
-										  	  "saksbehandlerHarTilgang": true,
-										  	  "variantformat": "ARKIV"
-										  	}
-										    ]
-										  }""", id))
-								  .collect(joining(","))
-						  + "] }}}";
+								  "dokumentInfoId": "%d",
+								  "dokumentvarianter": [
+									{
+									  "saksbehandlerHarTilgang": true,
+									  "variantformat": "ARKIV"
+									}
+								  ]
+								}""", id))
+						.collect(joining(","))
+				+ "] }}}";
 
 		stubFor(post(urlMatching("/safgraphql"))
 				.willReturn(aResponse()

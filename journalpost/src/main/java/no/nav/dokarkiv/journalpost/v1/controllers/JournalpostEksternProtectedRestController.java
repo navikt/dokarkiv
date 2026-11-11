@@ -15,7 +15,7 @@ import no.nav.dokarkiv.journalpost.v1.api.TilknyttVedleggResponse;
 import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakRequest;
 import no.nav.dokarkiv.journalpost.v1.api.knytttilannensak.KnyttTilAnnenSakResponse;
 import no.nav.dokarkiv.journalpost.v1.services.KnyttTilAnnenSakService;
-import no.nav.dokarkiv.journalpost.v1.services.TilknyttVedleggService;
+import no.nav.dokarkiv.journalpost.v1.services.tilknyttvedlegg.TilknyttVedleggService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerRestKnyttTilAnnenSak;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerRestTilknyttVedlegg;
 import no.nav.dokarkiv.journalpost.v1.validators.KnyttTilAnnenSakValidator;
@@ -68,7 +68,7 @@ public class JournalpostEksternProtectedRestController {
 	@Operation(summary = "Knytt dokumenter til ny sak.")
 	@PutMapping("/{kildeJournalpostId}/knyttTilAnnenSak")
 	@Tag(name = "journalpostapi - knyttTilAnnenSak", description = "Tjeneste for å endre sakstilknytning på en journalpost")
-		public ResponseEntity<KnyttTilAnnenSakResponse> knyttTilAnnenSak(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationHeader,
+	public ResponseEntity<KnyttTilAnnenSakResponse> knyttTilAnnenSak(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationHeader,
 																	 @Parameter(description = "Nav-Consumer-Token - Systembrukerens OIDC-token. NB: Oppgis kun dersom den NAV-ansattes token er lagt ved under Authorization") @RequestHeader(value = "Nav-Consumer-Token", required = false) String navConsumerToken,
 																	 @Parameter(description = "Nav-CallId - teknisk sporingsid") @RequestHeader(value = "Nav-CallId", required = false) String navCallId,
 																	 @Parameter(description = "ID til journalposten som det er ønskelig å kopiere", required = true) @PathVariable String kildeJournalpostId,
@@ -98,13 +98,12 @@ public class JournalpostEksternProtectedRestController {
 		}
 	}
 
-	@Transactional
 	@SwaggerRestTilknyttVedlegg
 	@ResponseBody
 	@Operation(summary = "Knytt vedlegg til journalpost")
 	@Tag(name = "journalpostapi - tilknyttVedlegg", description = "Tjeneste for å knytte vedlegg til en journalpost")
 	@PutMapping(value = "/{journalpostId}/tilknyttVedlegg")
-		public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
+	public ResponseEntity<TilknyttVedleggResponse> tilknyttVedlegg(
 			@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String auth,
 			@PathVariable String journalpostId,
 			@RequestBody TilknyttVedleggRequest request) {
