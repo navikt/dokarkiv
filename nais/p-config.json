@@ -223,6 +223,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "refusjon",
+      "namespace": "helsearbeidsgiver",
+      "cluster": "prod-gcp"
+    }
+    {
       "app": "jfr-infotrygd",
       "namespace": "isa",
       "cluster": "prod-fss"
