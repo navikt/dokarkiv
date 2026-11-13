@@ -14,6 +14,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -137,6 +138,7 @@ public class DokumentInfo extends AbstractPersistentVersionedDomainObjectWithKil
 	private Map<String, String> tilleggsopplysninger = new HashMap<>();
 
 	@OneToMany(mappedBy = "dokumentInfo", orphanRemoval = true, cascade = {PERSIST, MERGE, REMOVE, DETACH})
+	@OrderBy("vedleggNr, skannetInnholdId ASC")
 	@Builder.Default
 	private Set<SkannetInnhold> skannetInnholdListe = new LinkedHashSet<>();
 
