@@ -72,6 +72,7 @@ public final class SqlProjections {
 					fd.fil_storrelse                AS dokumenter_varianter_filstorrelse,
 					tsi.skannet_innhold_id          AS dokumenter_logiske_vedleggid,
 					tsi.vedlegg_innhold             AS dokumenter_logiske_tittel,
+					tsi.vedlegg_nr                  AS dokumenter_logiske_vedleggnummer,
 					ut.adresselinje1                AS utsendingsInfo_fysiskpostadresse_adresselinje1,
 					ut.adresselinje2                AS utsendingsInfo_fysiskpostadresse_adresselinje2,
 					ut.adresselinje3                AS utsendingsInfo_fysiskpostadresse_adresselinje3,
