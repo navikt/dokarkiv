@@ -48,7 +48,7 @@ public class OppdaterJournalstatusValidator {
 			return Stream.empty();
 		}
 		return Stream.of("Journalpost har ikke en av gyldige statuser " + VALID_STATUSES_BEFORE_CHANGE +
-				" (var " + journalpost.getJournalposttype().name() + ")");
+				" (var " + journalpost.getJournalstatus().name() + ")");
 	}
 
 	public static JournalStatusCode validateAndParseJournalStatus(String journalstatus) {
