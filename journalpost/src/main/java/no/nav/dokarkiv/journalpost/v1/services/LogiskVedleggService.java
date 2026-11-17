@@ -1,7 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.core.exceptions.DokumentInfoIkkeFunnetException;
@@ -20,7 +19,6 @@ import java.util.Optional;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 
-@Slf4j
 @Service
 public class LogiskVedleggService {
 	private final SkannetInnholdRepository skannetInnholdRepository;
@@ -71,13 +69,14 @@ public class LogiskVedleggService {
 		} else {
 			DokumentInfo dokumentInfo = findDokumentInfo(dokumentInfoId);
 			dokumentInfo.clearSkannetInnhold();
-			titler.forEach(t -> {
+			for (int i = 0; i < titler.size(); ++i) {
 				SkannetInnhold skannetInnhold = SkannetInnhold.builder()
-						.vedleggInnhold(t)
-						.build();
+					.vedleggInnhold(titler.get(i))
+					.vedleggNr(i)
+					.build();
 				skannetInnhold.setOpprettetKildeNavn(MDC.get(MDC_CONSUMER_ID));
 				dokumentInfo.addSkannetInnhold(skannetInnhold);
-			});
+			}
 		}
 	}
 

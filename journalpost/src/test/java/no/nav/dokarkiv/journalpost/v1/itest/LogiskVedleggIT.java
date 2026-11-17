@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static java.lang.Long.parseLong;
 import static no.nav.dokarkiv.core.util.TestdataFactory.createFerdigstiltJournalpostWithHoveddokument;
@@ -115,20 +116,34 @@ public class LogiskVedleggIT extends AbstractJournalpostIT {
 		Long dokumentInfoId = journalpost.getJournalpostDokumentInfoRelasjoner().iterator().next().getDokumentInfo().getDokumentInfoId();
 		commitAndStartNewTransaction();
 
-		var oppdatertLogiskeVedleggRequest = new HttpEntity<>(new BulkOppdaterLogiskVedleggRequest(List.of("Oversatt medisinsk dokument", "Journalnotat av 01.01.2026", "Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege", "Ettersending av dokumentasjon")), createHeadersWithServiceUserToken());
+		List<String> titler = IntStream.rangeClosed(1, 20)
+				.mapToObj(i -> "Logisk vedlegg " + i)
+				.toList();
+		var oppdatertLogiskeVedleggRequest = new HttpEntity<>(new BulkOppdaterLogiskVedleggRequest(titler), createHeadersWithServiceUserToken());
 		ResponseEntity<Void> oppdatertLogiskeVedleggResponse = restTemplate.exchange(apiDokumentInfoPath(dokumentInfoId.toString(), LOGISK_VEDLEGG_PATH), PUT, oppdatertLogiskeVedleggRequest, Void.class);
 		assertEquals(HttpStatus.NO_CONTENT, oppdatertLogiskeVedleggResponse.getStatusCode());
 
-		List<SkannetInnhold> oppdatertLogiskeVedlegg = skannetInnholdTestRepository.findAllByDokumentInfo(dokumentInfoTestRepository.getReferenceById(dokumentInfoId));
+		commitAndStartNewTransaction();
+
+		var oppdatertLogiskeVedlegg = dokumentInfoTestRepository.findById(dokumentInfoId)
+				.orElseThrow()
+				.getSkannetInnholdListe();
 		assertThat(oppdatertLogiskeVedlegg)
 				.extracting(SkannetInnhold::getVedleggInnhold)
-				.containsExactly("Oversatt medisinsk dokument", "Journalnotat av 01.01.2026", "Kvittering fra legekontor på konsultasjon", "Uttalelse fra lege", "Ettersending av dokumentasjon");
+				.containsExactlyElementsOf(titler);
+		assertThat(oppdatertLogiskeVedlegg)
+				.extracting(SkannetInnhold::getVedleggNr)
+				.containsExactlyElementsOf(IntStream.range(0, titler.size()).boxed().toList());
 
 		var tomLogiskVedleggRequest = new HttpEntity<>(new BulkOppdaterLogiskVedleggRequest(List.of()), createHeadersWithServiceUserToken());
 		ResponseEntity<Void> tomLogiskVedleggResponse = restTemplate.exchange(apiDokumentInfoPath(dokumentInfoId.toString(), LOGISK_VEDLEGG_PATH), PUT, tomLogiskVedleggRequest, Void.class);
 		assertEquals(HttpStatus.NO_CONTENT, tomLogiskVedleggResponse.getStatusCode());
 
-		List<SkannetInnhold> tomLogiskVedlegg = skannetInnholdTestRepository.findAllByDokumentInfo(dokumentInfoTestRepository.getReferenceById(dokumentInfoId));
-		assertThat(tomLogiskVedlegg).hasSize(0);
+		commitAndStartNewTransaction();
+
+		var tomLogiskVedlegg = dokumentInfoTestRepository.findById(dokumentInfoId)
+				.orElseThrow()
+				.getSkannetInnholdListe();
+		assertThat(tomLogiskVedlegg).isEmpty();
 	}
 }

@@ -2,6 +2,7 @@ package no.nav.dokarkiv.hentjournalsakinfo.rjoark900;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
 import no.nav.dokarkiv.core.domain.codes.BrukerTypeCode;
@@ -18,9 +19,11 @@ import no.nav.dokarkiv.core.domain.codes.VariantFormatCode;
 import no.nav.dokarkiv.core.domain.entities.DokumentInfo;
 import no.nav.dokarkiv.core.domain.entities.Journalpost;
 import no.nav.dokarkiv.core.domain.entities.Sak;
+import no.nav.dokarkiv.core.domain.entities.SkannetInnhold;
 import no.nav.dokarkiv.hentjournalsakinfo.AbstractHentjournalsakinfoItest;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.DokumentInfoDto;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.JournalpostDto;
+import no.nav.dokarkiv.hentjournalsakinfo.dto.LogiskVedleggDto;
 import no.nav.dokarkiv.hentjournalsakinfo.dto.VariantDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -243,6 +246,11 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		dokumentInfoRepository.persist(vedlegg3);
 		DokumentInfo vedlegg1 = createDokumentInfo();
 		dokumentInfoRepository.persist(vedlegg1);
+		var skannetInnhold = vedlegg1.getSkannetInnholdListe().stream()
+				.sorted(Comparator.comparing(SkannetInnhold::getSkannetInnholdId))
+				.toList();
+		skannetInnhold.get(0).setVedleggNr(1);
+		skannetInnhold.get(1).setVedleggNr(0);
 		DokumentInfo vedlegg2 = createDokumentInfo();
 		dokumentInfoRepository.persist(vedlegg2);
 		Journalpost journalpost = createUniqueJournalpost();
@@ -267,6 +275,13 @@ public class Rjoark900IT extends AbstractHentjournalsakinfoItest {
 		assertThat(journalpostDto.getDokumenter(), hasSize(5));
 		assertThat(journalpostDto.getDokumenter().get(0).getDokumentInfoId(), is(hoveddokument.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(1).getDokumentInfoId(), is(vedlegg1.getDokumentInfoId()));
+		assertThat(
+				journalpostDto.getDokumenter().get(1).getLogiske().stream()
+						.map(LogiskVedleggDto::getVedleggId)
+						.toList(),
+				is(List.of(
+						skannetInnhold.get(1).getSkannetInnholdId().toString(),
+						skannetInnhold.get(0).getSkannetInnholdId().toString())));
 		assertThat(journalpostDto.getDokumenter().get(2).getDokumentInfoId(), is(vedlegg2.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(3).getDokumentInfoId(), is(vedlegg3.getDokumentInfoId()));
 		assertThat(journalpostDto.getDokumenter().get(4).getDokumentInfoId(), is(vedlegg4.getDokumentInfoId()));
