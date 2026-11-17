@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.journalpost.v1.services;
 
+import no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand;
 import no.nav.dokarkiv.core.domain.entities.DokumentFilOpplasting;
 import no.nav.dokarkiv.journalpost.v1.api.dokumentfil.DokumentFilTilstand;
 
@@ -27,9 +28,9 @@ public record LastOppDokumentFilResult(
 				dokumentFilOpplasting.getDatoEndret());
 	}
 
-	public static DokumentFilTilstand fra(no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand dokumentFilOpplastingTilstand) {
+	public static DokumentFilTilstand fra(DokumentFilOpplastingTilstand dokumentFilOpplastingTilstand) {
 		return switch (dokumentFilOpplastingTilstand) {
-			case LASTER_OPP -> DokumentFilTilstand.LASTER_OPP;
+			case UNDER_OPPLASTING -> DokumentFilTilstand.UNDER_OPPLASTING;
 			case LASTET_OPP -> DokumentFilTilstand.LASTET_OPP;
 			case ARKIVERES -> DokumentFilTilstand.ARKIVERES;
 			case ARKIVERT -> DokumentFilTilstand.ARKIVERT;

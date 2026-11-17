@@ -59,10 +59,6 @@ public class LastOppDokumentFilService {
 		}
 	}
 
-	/// Streamer payload til dokarkivmellomlager, og validerer at både den beregnede sha256-sjekksummen og
-	/// crc32c-sjekksummen til det opplastede objektet stemmer med det som var forventet.
-	///
-	/// @throws InputValideringFeiletException hvis sha256- eller crc32c-sjekksum ikke stemmer.
 	public OpplastetDokumentFil lastOppOgValider(UUID dokumentFilId, String eksternDokumentReferanseId, InputStream payload,
 												 String contentType, Sha256ContentDigest sha256ContentDigest) {
 		MessageDigest sha256MessageDigest = getSha256Instance();

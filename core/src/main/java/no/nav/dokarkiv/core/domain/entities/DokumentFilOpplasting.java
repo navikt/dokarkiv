@@ -22,7 +22,7 @@ import java.util.UUID;
 
 import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.ARKIVERES;
 import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.ARKIVERT;
-import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.LASTER_OPP;
+import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.UNDER_OPPLASTING;
 import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.LASTET_OPP;
 
 /// Sporer opplasting av en dokumentFil til dokarkivmellomlager via LastOppDokumentfil-tjenesten.
@@ -85,6 +85,9 @@ public class DokumentFilOpplasting {
 	@Column(name = "dato_arkivert")
 	private LocalDateTime datoArkivert;
 
+	@Column(name = "forsok", nullable = false)
+	private int forsok;
+
 	public DokumentFilOpplasting(UUID dokumentFilId,
 								 String eksternDokumentReferanseId,
 								 String mediaType,
@@ -95,7 +98,7 @@ public class DokumentFilOpplasting {
 		this.eksternDokumentReferanseId = eksternDokumentReferanseId;
 		this.mediaType = mediaType;
 		this.sha256Sjekksum = sha256Sjekksum;
-		this.tilstand = LASTER_OPP;
+		this.tilstand = UNDER_OPPLASTING;
 		this.opprettetKildeNavn = opprettetKildeNavn;
 		this.datoKlientLease = datoKlientLease;
 	}
@@ -132,7 +135,7 @@ public class DokumentFilOpplasting {
 	}
 
 	public boolean erUnderOpplasting() {
-		return this.tilstand == LASTER_OPP;
+		return this.tilstand == UNDER_OPPLASTING;
 	}
 
 	public boolean erLastetOpp() {

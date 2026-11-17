@@ -315,7 +315,7 @@ public class OpprettJournalpostDokumentFilIdIT extends AbstractJournalpostIT {
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = DokumentFilOpplastingTilstand.class, names = {"LASTER_OPP", "FEILET"})
+	@EnumSource(value = DokumentFilOpplastingTilstand.class, names = {"UNDER_OPPLASTING", "FEILET"})
 	void shouldFailWithBadRequestWhenDokumentFilIdHarFeilTilstand(DokumentFilOpplastingTilstand tilstand) {
 		restStsToken();
 		lastOppDokumentFil(DOKUMENT_FIL_ID_1, EKSTERN_DOKUMENT_REFERANSE_ID_1, APPLICATION_PDF_VALUE, FYSISK_DOKUMENT, tilstand);
