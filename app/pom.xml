@@ -30,14 +30,6 @@
 		</dependency>
 		<dependency>
 			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>admin</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
-			<artifactId>arkivervariant</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>no.nav.dokarkiv</groupId>
 			<artifactId>journalpost</artifactId>
 		</dependency>
 		<dependency>

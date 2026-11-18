@@ -1,7 +1,6 @@
 package no.nav.dokarkiv;
 
 import no.nav.dokarkiv.arkiverdokumentproduksjon.ArkiverDokumentproduksjonConfig;
-import no.nav.dokarkiv.arkivervariant.ArkiverVariantConfig;
 import no.nav.dokarkiv.core.CoreConfig;
 import no.nav.dokarkiv.dokumentproduksjoninfo.DokumentproduksjonInfoConfig;
 import no.nav.dokarkiv.hentjournalsakinfo.HentJournalsakinfoConfig;
@@ -13,14 +12,12 @@ import org.springframework.context.annotation.Import;
 		DokumentproduksjonInfoConfig.class,
 		ArkiverDokumentproduksjonConfig.class,
 		HentJournalsakinfoConfig.class,
-		ArkiverVariantConfig.class,
-		AdminConfig.class,
 		JournalpostConfig.class,
 		InternalConfig.class,
 		SafinternConfig.class
 })
 public class Application {
-	public static void main(String[] args) {
+	static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 }

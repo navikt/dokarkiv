@@ -22,8 +22,6 @@
 		<module>dokumentproduksjoninfo</module>
 		<module>arkiverdokumentproduksjon</module>
 		<module>hentjournalsakinfo</module>
-		<module>arkivervariant</module>
-		<module>admin</module>
 		<module>journalpost</module>
 		<module>safintern</module>
 		<module>internal</module>
@@ -90,16 +88,6 @@
 			<dependency>
 				<groupId>no.nav.dokarkiv</groupId>
 				<artifactId>hentjournalsakinfo</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>arkivervariant</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>no.nav.dokarkiv</groupId>
-				<artifactId>admin</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

@@ -85,7 +85,6 @@ public abstract class AbstractRestIT {
 	protected static final String BEARER = "Bearer ";
 	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	protected static final String SERVICE_USER_ID = "srvjoarkadmin";
-	protected static final String SERVICEUSER_IKKE_JOARKADMIN = "srvikkejoarkadmin";
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String DEFAULT_CLAIM_OID = "oid";
 	protected static final String DEFAULT_CLAIM_SUB = "sub";
@@ -104,7 +103,7 @@ public abstract class AbstractRestIT {
 	protected static final String NAV_USER_NAME = "F_990782 E_990782";
 	protected static final String MS_USER_ID_WITH_GROUP_ACCESS = "a123c63a-9821-4637-a23d-b706e5b24809";
 	protected static final String MS_USER_ID_WITHOUT_GROUP_ACCESS = "b999c63a-9821-4637-a23d-b706e5b24809";
-	public static final String API_ADMIN_ROLE = "api_admin";
+
 	@Value("${dokarkiv.joarkvedlikeholdgroupid}")
 	protected String joarkVedlikeholdGruppeId;
 
@@ -258,20 +257,6 @@ public abstract class AbstractRestIT {
 
 	protected HttpHeaders createHeadersWithServiceUserTokenAndUserIdHeader() {
 		return createHeadersWithServiceUserTokenAndUserIdHeader(SERVICE_USER_ID, NAV_USER_ID);
-	}
-
-	protected HttpHeaders createHeadersWithServiceUserAndAksjonslogg(String servicebruker) {
-		var headers = createHeadersWithServiceUserToken(servicebruker);
-
-		headers.addAll(createAksjonslogg());
-
-		return headers;
-	}
-
-	protected HttpHeaders createHeadersWithClientCredentialAndAksjonslogg(String role) {
-		var headers = createHeadersWithServiceUserTokenAndRolesClaim(role);
-		headers.addAll(createAksjonslogg());
-		return headers;
 	}
 
 	protected HttpHeaders createAksjonslogg() {

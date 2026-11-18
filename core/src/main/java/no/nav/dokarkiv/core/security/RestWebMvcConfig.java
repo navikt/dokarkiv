@@ -56,9 +56,6 @@ public class RestWebMvcConfig implements WebMvcConfigurer {
 		registry.addInterceptor(new SporingHandlerInterceptor(tokenValidationContextHolder, multiIssuerConfiguration, meterRegistry, azureAdGraphService))
 				.addPathPatterns("/rest/**");
 
-		registry.addInterceptor(new ValidateAdminConsumerAccessInterceptor(dokarkivProperties.getJoarkVedlikeholdGroupId()))
-				.addPathPatterns("/rest/admin/**");
-
 		registry.addInterceptor(new JoarkVedlikeholdTokenClaimOnlyInterceptor(dokarkivProperties.getJoarkVedlikeholdGroupId()))
 				.addPathPatterns(
 						"/rest/journalpostapi/v1/dokumentInfo/*/bestillSletting",
