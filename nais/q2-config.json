@@ -927,11 +927,11 @@
       "app": "inst2-q2",
       "namespace": "team-rocket",
       "cluster": "dev-fss"
-    }
+    },
     {
       "app": "ccm-next",
       "namespace": "teamccm",
       "cluster": "dev-gcp"
-    },
+    }
   ]
 }
