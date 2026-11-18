@@ -62,7 +62,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(
 				request,
-				createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+				createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		var response = restTemplate.exchange(SPLITT_JOURNALPOST_PATH.formatted(journalpost.getJournalpostId()), PATCH, requestHttpEntity, SplittJournalpostResponse.class);
 
@@ -138,7 +138,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(
 				request,
-				createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+				createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		var response = restTemplate.exchange(SPLITT_JOURNALPOST_PATH.formatted(journalpost.getJournalpostId()), PATCH, requestHttpEntity, SplittJournalpostResponse.class);
 
@@ -246,7 +246,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(
 				createRequest(journalpost),
-				createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+				createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		var journalpostIdSomIkkeFinnes = 123L;
 		var response = restTemplate.exchange(SPLITT_JOURNALPOST_PATH.formatted(journalpostIdSomIkkeFinnes), PATCH, requestHttpEntity, ProblemDetail.class);
@@ -269,7 +269,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(
 				createRequest(journalpost),
-				createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+				createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		var response = restTemplate.exchange(SPLITT_JOURNALPOST_PATH.formatted(journalpost.getJournalpostId()), PATCH, requestHttpEntity, ProblemDetail.class);
 
@@ -291,7 +291,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(
 				createRequestWithExternReferanseId(journalpost, journalpost.getKanalReferanseId()),
-				createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+				createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		var response = restTemplate.exchange(SPLITT_JOURNALPOST_PATH.formatted(journalpost.getJournalpostId()), PATCH, requestHttpEntity, ProblemDetail.class);
 
@@ -317,7 +317,7 @@ public class SplittJournalpostIT extends AbstractJournalpostIT {
 
 		var requestHttpEntity = new HttpEntity<>(
 				createRequestWithDokumenter(journalpost, dokumenter),
-				createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+				createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 
 		var response = restTemplate.exchange(SPLITT_JOURNALPOST_PATH.formatted(journalpost.getJournalpostId()), PATCH, requestHttpEntity, ProblemDetail.class);
 
