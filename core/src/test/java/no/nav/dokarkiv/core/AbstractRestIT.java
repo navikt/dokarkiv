@@ -84,7 +84,7 @@ public abstract class AbstractRestIT {
 
 	protected static final String BEARER = "Bearer ";
 	protected static final String NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
-	protected static final String SERVICE_USER_ID = "srvjoarkadmin";
+	protected static final String SERVICE_USER_ID = "srvgosys";
 	protected static final String PERSON_USER_NAME = "Stasjonsmester Tidemann";
 	protected static final String DEFAULT_CLAIM_OID = "oid";
 	protected static final String DEFAULT_CLAIM_SUB = "sub";
@@ -96,7 +96,6 @@ public abstract class AbstractRestIT {
 	protected static final String SCOPES = "scp";
 	protected static final String APP_CLAIM_SUB = "a2fb96a7-5294-48ea-a1de-a30599f95eb4";
 
-	protected static final String AZP_NAME_JOARKADMIN = "dev-fss:teamdokumenthandtering:joarkadmin";
 	protected static final String KILDENAVN_GOSYS = "isa:gosys-q2";
 	protected static final String AZP_NAME_GOSYS = "dev-fss:" + KILDENAVN_GOSYS;
 	protected static final String NAV_USER_ID = "Z990782";
@@ -269,7 +268,7 @@ public abstract class AbstractRestIT {
 	}
 
 	protected HttpHeaders createHeadersWithServiceUserTokenAndRolesClaim(String role) {
-		return createHeadersWithServiceUserTokenAndRolesClaim(AZP_NAME_JOARKADMIN, role);
+		return createHeadersWithServiceUserTokenAndRolesClaim(AZP_NAME_GOSYS, role);
 	}
 
 	protected HttpHeaders createHeadersWithServiceUserTokenAndRolesClaim(String azpname, String role) {
@@ -278,6 +277,10 @@ public abstract class AbstractRestIT {
 		headers.setBearerAuth(azureTokenForClientCredentialFlow(APP_CLAIM_SUB, Map.of(ROLES, role, DEFAULT_CLAIM_OID, APP_CLAIM_SUB, CLAIM_AZP_NAME, azpname)));
 		headers.add(NAV_CALL_ID, "itest");
 		return headers;
+	}
+
+	protected HttpHeaders createHeadersWithOboToken() {
+		return createHeadersWithOboTokenWithExtraScope(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, null, "");
 	}
 
 	protected HttpHeaders createHeadersWithOboToken(String azpName, String msUserId, String... groups) {

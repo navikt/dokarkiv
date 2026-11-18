@@ -45,7 +45,7 @@ public class OppdaterJournalstatusIT extends AbstractJournalpostIT {
 		Long journalpostId = journalpost.getJournalpostId();
 		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest(statusEndresTil);
 
-		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
 		ResponseEntity<Void> response = restTemplate.exchange(url, PATCH, requestEntity, Void.class);
 
@@ -55,7 +55,7 @@ public class OppdaterJournalstatusIT extends AbstractJournalpostIT {
 		Journalpost endretJournalpost = journalpostTestRepository.findById(journalpost.getJournalpostId()).orElseThrow(RuntimeException::new);
 
 		assertEquals(NAV_USER_NAME, endretJournalpost.getEndretAvNavn());
-		assertThat(AZP_NAME_JOARKADMIN).containsIgnoringCase(endretJournalpost.getEndretKildeNavn());
+		assertThat(AZP_NAME_GOSYS).containsIgnoringCase(endretJournalpost.getEndretKildeNavn());
 		assertEquals(NAV_USER_ID, endretJournalpost.getChangeStamp().getUpdatedBy());
 		assertEquals(journalStatusResult, endretJournalpost.getJournalstatus());
 		assertThat(endretJournalpost.getChangeStamp().getUpdatedDate()).isAfter(journalpost.getChangeStamp().getCreatedDate());
@@ -88,7 +88,7 @@ public class OppdaterJournalstatusIT extends AbstractJournalpostIT {
 		Long journalpostId = journalpost.getJournalpostId();
 		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest("UKJENT_BRUKER");
 
-		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS));
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS));
 		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
 		ResponseEntity<Void> response = restTemplate.exchange(url, PATCH, requestEntity, Void.class);
 
@@ -124,7 +124,7 @@ public class OppdaterJournalstatusIT extends AbstractJournalpostIT {
 		Long journalpostId = journalpost.getJournalpostId();
 		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest("UKJENT_BRUKER");
 
-		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
 		ResponseEntity<Void> response = restTemplate.exchange(url, PATCH, requestEntity, Void.class);
 
@@ -143,7 +143,7 @@ public class OppdaterJournalstatusIT extends AbstractJournalpostIT {
 		Long journalpostId = journalpost.getJournalpostId();
 		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest("UKJENT_BRUKER");
 
-		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
 		ResponseEntity<String> response = restTemplate.exchange(url, PATCH, requestEntity, String.class);
 
@@ -163,7 +163,7 @@ public class OppdaterJournalstatusIT extends AbstractJournalpostIT {
 		Long journalpostId = journalpost.getJournalpostId();
 		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest("UKJENT_BRUKER");
 
-		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId));
 		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
 		ResponseEntity<String> response = restTemplate.exchange(url, PATCH, requestEntity, String.class);
 
@@ -182,7 +182,7 @@ public class OppdaterJournalstatusIT extends AbstractJournalpostIT {
 		Long journalpostId = journalpost.getJournalpostId();
 		OppdaterJournalstatusRequest request = new OppdaterJournalstatusRequest("BRUKJENT_UKER");
 
-		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_JOARKADMIN, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId, "Secondary-group"));
+		var requestEntity = new HttpEntity<>(request, createHeadersWithOboToken(AZP_NAME_GOSYS, MS_USER_ID_WITHOUT_GROUP_ACCESS, joarkVedlikeholdGruppeId, "Secondary-group"));
 		String url = apiJournalpostPath(journalpostId + OPPDATER_JOURNALSTATUS);
 		ResponseEntity<String> response = restTemplate.exchange(url, PATCH, requestEntity, String.class);
 

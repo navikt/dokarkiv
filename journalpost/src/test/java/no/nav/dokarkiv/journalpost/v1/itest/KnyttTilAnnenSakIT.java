@@ -106,7 +106,7 @@ public class KnyttTilAnnenSakIT extends AbstractJournalpostIT {
 		valdiateAksjonsloggELement(aksjonsLoggList.get(0), KOPIER_JOURNALPOST, journalpostId, "Z990782");
 		valdiateAksjonsloggELement(aksjonsLoggList.get(1), ENDRE_METADATA, journalpost.getJournalpostId(), "Z990782");
 		valdiateAksjonsloggELement(aksjonsLoggList.get(2), SAKSTILKNYTNING, journalpost.getJournalpostId(), "Z990782");
-		valdiateAksjonsloggELement(aksjonsLoggList.get(3), AksjonsTypeCode.FERDIGSTILL, journalpost.getJournalpostId(), "srvjoarkadmin");
+		valdiateAksjonsloggELement(aksjonsLoggList.get(3), AksjonsTypeCode.FERDIGSTILL, journalpost.getJournalpostId(), "srvgosys");
 
 		verify(exactly(1), postRequestedFor(urlEqualTo("/safgraphql"))
 				.withRequestBody(equalToJson(String.format("""
