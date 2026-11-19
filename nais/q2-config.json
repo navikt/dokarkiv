@@ -462,7 +462,8 @@
     {
       "app": "k9-fordel",
       "namespace": "k9saksbehandling",
-      "cluster": "dev-fss"
+      "cluster": "dev-fss",
+      "roles": ["finn_mottatte_journalposter"]
     },
     {
       "app": "k9-formidling",
