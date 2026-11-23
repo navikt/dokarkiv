@@ -1,0 +1,2 @@
+alter table T_DOKUMENT_FIL_OPPLASTING
+    modify (SHA256_SJEKKSUM null, CRC32C_SJEKKSUM not null);

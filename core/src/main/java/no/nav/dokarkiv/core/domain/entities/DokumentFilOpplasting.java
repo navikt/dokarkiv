@@ -25,8 +25,6 @@ import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.AR
 import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.UNDER_OPPLASTING;
 import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.LASTET_OPP;
 
-/// Sporer opplasting av en dokumentFil til dokarkivmellomlager via LastOppDokumentfil-tjenesten.
-/// Brukes til å håndtere idempotens basert på eksternDokumentReferanseId (Idempotency-Key).
 @Entity
 @Getter
 @NoArgsConstructor
@@ -41,10 +39,10 @@ public class DokumentFilOpplasting {
 	@Column(name = "ekstern_dokument_referanse_id", nullable = false, length = 512)
 	private String eksternDokumentReferanseId;
 
-	@Column(name = "sha256_sjekksum", nullable = false)
+	@Column(name = "sha256_sjekksum")
 	private byte[] sha256Sjekksum;
 
-	@Column(name = "crc32c_sjekksum")
+	@Column(name = "crc32c_sjekksum", nullable = false)
 	private byte[] crc32cSjekksum;
 
 	@Column(name = "media_type", nullable = false, length = 128)
@@ -91,13 +89,13 @@ public class DokumentFilOpplasting {
 	public DokumentFilOpplasting(UUID dokumentFilId,
 								 String eksternDokumentReferanseId,
 								 String mediaType,
-								 byte[] sha256Sjekksum,
+								 byte[] crc32cSjekksum,
 								 String opprettetKildeNavn,
 								 LocalDateTime datoKlientLease) {
 		this.dokumentFilId = dokumentFilId;
 		this.eksternDokumentReferanseId = eksternDokumentReferanseId;
 		this.mediaType = mediaType;
-		this.sha256Sjekksum = sha256Sjekksum;
+		this.crc32cSjekksum = crc32cSjekksum;
 		this.tilstand = UNDER_OPPLASTING;
 		this.opprettetKildeNavn = opprettetKildeNavn;
 		this.datoKlientLease = datoKlientLease;
@@ -105,16 +103,17 @@ public class DokumentFilOpplasting {
 
 	/// Markerer opplastingen som ferdig etter at innhold er verifisert i dokarkivmellomlager.
 	///
-	/// @param antallBytes    antall bytes som ble lastet opp.
-	/// @param crc32cSjekksum CRC32C sjekksum
-	/// @param datoLastetOpp  tidspunktet opplastingen ble ferdigstilt.
+	/// @param antallBytes     antall bytes som ble lastet opp.
+	/// @param sha256Sjekksum  SHA-256 sjekksum beregnet av payload under opplasting.
+	/// @param datoLastetOpp   tidspunktet opplastingen ble ferdigstilt.
+	/// @param endretKildeNavn kilden som ferdigstilte opplastingen.
 	public void markerLastetOpp(long antallBytes,
-								byte[] crc32cSjekksum,
+								byte[] sha256Sjekksum,
 								LocalDateTime datoLastetOpp,
 								String endretKildeNavn) {
 		this.tilstand = LASTET_OPP;
 		this.antallBytes = antallBytes;
-		this.crc32cSjekksum = crc32cSjekksum;
+		this.sha256Sjekksum = sha256Sjekksum;
 		this.datoLastetOpp = datoLastetOpp;
 		this.endretKildeNavn = endretKildeNavn;
 	}
@@ -130,8 +129,8 @@ public class DokumentFilOpplasting {
 		this.endretKildeNavn = endretKildeNavn;
 	}
 
-	public boolean harSammeSha256Sjekksum(byte[] annenSha256Sjekksum) {
-		return Arrays.equals(this.sha256Sjekksum, annenSha256Sjekksum);
+	public boolean harSammeCrc32cSjekksum(byte[] annenCrc32cSjekksum) {
+		return Arrays.equals(this.crc32cSjekksum, annenCrc32cSjekksum);
 	}
 
 	public boolean erUnderOpplasting() {

@@ -1,6 +1,7 @@
 package no.nav.dokarkiv.core.storage;
 
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,11 +24,16 @@ public class InMemoryBucketStorage implements BucketStorageOperations {
 	private final Set<String> heldObjects = ConcurrentHashMap.newKeySet();
 
 	@Override
-	public OpplastetDokumentFil uploadObject(String objectName, InputStream inputStream, String contentType) {
+	public OpplastetDokumentFil uploadObject(String objectName, InputStream inputStream, String contentType, String crc32cBase64) {
 		try {
 			byte[] bytes = inputStream.readAllBytes();
+			String beregnetCrc32c = base64(bytes);
+			if (!beregnetCrc32c.equals(crc32cBase64)) {
+				throw new InputValideringFeiletException(String.format(
+						"crc32c-sjekksum av mottatt payload stemmer ikke med Content-Digest crc32c=%s for objectName=%s", crc32cBase64, objectName));
+			}
 			objects.put(objectName, bytes);
-			return new OpplastetDokumentFil(base64(bytes), bytes.length);
+			return new OpplastetDokumentFil(beregnetCrc32c, bytes.length);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}

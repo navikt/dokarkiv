@@ -30,8 +30,8 @@ public final class LastOppDokumentFilValidator {
 	/// @param contentType    verdien til Content-Type-headeren.
 	/// @param contentDigest  verdien til Content-Digest-headeren.
 	/// @param idempotencyKey verdien til Idempotency-Key-headeren.
-	/// @return et validert [Sha256ContentDigest].
-	public static Sha256ContentDigest validate(String contentType, String contentDigest, String idempotencyKey) {
+	/// @return et validert [Crc32cContentDigest].
+	public static Crc32cContentDigest validate(String contentType, String contentDigest, String idempotencyKey) {
 		validateHeaderErSatt(contentType, CONTENT_TYPE);
 		validateHeaderErSatt(contentDigest, "Content-Digest");
 		validateHeaderErSatt(idempotencyKey, "Idempotency-Key");
@@ -39,7 +39,7 @@ public final class LastOppDokumentFilValidator {
 		validateContentType(contentType);
 		validateIdempotencyKey(idempotencyKey);
 
-		return Sha256ContentDigest.validateAndParse(contentDigest);
+		return Crc32cContentDigest.validateAndParse(contentDigest);
 	}
 
 	private static void validateHeaderErSatt(String verdi, String headerNavn) {

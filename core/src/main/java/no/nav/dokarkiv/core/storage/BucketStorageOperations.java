@@ -6,13 +6,15 @@ import java.util.Set;
 
 /// Laster opp objekter til bucket
 public interface BucketStorageOperations {
-	/// Streamer payload til bucket
+	/// Streamer payload til bucket.
 	///
-	/// @param objectName  Navn på objektet som skal opprettes i bucket. Må være en unik ID, f.eks. dokumentfilId.
-	/// @param inputStream Payloaden som skal lastes opp.
-	/// @param contentType Content-Type til payloaden.
+	/// @param objectName   Navn på objektet som skal opprettes i bucket. Må være en unik ID, f.eks. dokumentfilId.
+	/// @param inputStream  Payloaden som skal lastes opp.
+	/// @param contentType  Content-Type til payloaden.
+	/// @param crc32cBase64 Forventet crc32c-sjekksum av payloaden, base64-kodet big-endian.
 	/// @return crc32c-sjekksum og antall bytes for det opplastede objektet.
-	OpplastetDokumentFil uploadObject(String objectName, InputStream inputStream, String contentType);
+	/// @throws no.nav.dokarkiv.core.exceptions.InputValideringFeiletException hvis payload ikke matcher crc32cBase64.
+	OpplastetDokumentFil uploadObject(String objectName, InputStream inputStream, String contentType, String crc32cBase64);
 
 	/// Sjekker i ett batch-kall hvilke objectNames som eksisterer i bucket
 	///

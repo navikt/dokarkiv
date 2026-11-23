@@ -6,7 +6,7 @@ import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.storage.BucketStorageOperations;
 import no.nav.dokarkiv.core.storage.OpplastetDokumentFil;
-import no.nav.dokarkiv.journalpost.v1.validators.Sha256ContentDigest;
+import no.nav.dokarkiv.journalpost.v1.validators.Crc32cContentDigest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.UUID;
-import java.util.zip.CRC32C;
-import java.util.zip.CheckedInputStream;
 
 import static java.lang.String.format;
-import static no.nav.dokarkiv.core.util.Crc32c.base64;
 import static no.nav.dokarkiv.core.util.Digest.getSha256Instance;
 import static no.nav.dokarkiv.journalpost.v1.services.DokumentFilOpplastingService.dokumentFilUnderOpplastingException;
 import static no.nav.dokarkiv.journalpost.v1.services.LastOppDokumentFilResult.Utfall.LASTET_OPP;
@@ -40,50 +35,46 @@ public class LastOppDokumentFilService {
 		this.dokarkivMellomlagerBucketStorage = dokarkivMellomlagerBucketStorage;
 	}
 
-	public LastOppDokumentFilResult lastOppDokumentFil(String idempotencyKey, Sha256ContentDigest sha256ContentDigest, String contentType, InputStream inputStream) {
-		DokumentFilOpplasting dokumentFilOpplasting = hentDokumentFilOpplasting(idempotencyKey, contentType, sha256ContentDigest);
+	public LastOppDokumentFilResult lastOppDokumentFil(String idempotencyKey, Crc32cContentDigest crc32cContentDigest, String contentType, InputStream inputStream) {
+		DokumentFilOpplasting dokumentFilOpplasting = hentDokumentFilOpplasting(idempotencyKey, contentType, crc32cContentDigest);
 		if (!dokumentFilOpplasting.erUnderOpplasting()) {
 			return LastOppDokumentFilResult.fra(TEKNISK_RETRY, dokumentFilOpplasting);
 		}
 		UUID dokumentFilId = dokumentFilOpplasting.getDokumentFilId();
-		OpplastetDokumentFil opplastetDokumentFil = lastOppOgValider(dokumentFilId, idempotencyKey, inputStream, contentType, sha256ContentDigest);
-		DokumentFilOpplasting dokumentFilOpplastingFerdig = dokumentFilOpplastingService.ferdigstillOpplasting(dokumentFilId, opplastetDokumentFil);
+		ValidertOpplasting validertOpplasting = lastOppOgValider(dokumentFilId, idempotencyKey, inputStream, contentType, crc32cContentDigest);
+		DokumentFilOpplasting dokumentFilOpplastingFerdig = dokumentFilOpplastingService.ferdigstillOpplasting(dokumentFilId,
+				validertOpplasting.antallBytes(), validertOpplasting.sha256Sjekksum());
 		return LastOppDokumentFilResult.fra(LASTET_OPP, dokumentFilOpplastingFerdig);
 	}
 
-	private DokumentFilOpplasting hentDokumentFilOpplasting(String idempotencyKey, String mediaType, Sha256ContentDigest sha256ContentDigest) {
+	private DokumentFilOpplasting hentDokumentFilOpplasting(String idempotencyKey, String mediaType, Crc32cContentDigest crc32cContentDigest) {
 		try {
-			return dokumentFilOpplastingService.behandleIdempotensOgOpprett(idempotencyKey, mediaType, sha256ContentDigest);
+			return dokumentFilOpplastingService.behandleIdempotensOgOpprett(idempotencyKey, mediaType, crc32cContentDigest);
 		} catch (DataIntegrityViolationException e) {
 			throw dokumentFilUnderOpplastingException(idempotencyKey);
 		}
 	}
 
-	public OpplastetDokumentFil lastOppOgValider(UUID dokumentFilId, String eksternDokumentReferanseId, InputStream payload,
-												 String contentType, Sha256ContentDigest sha256ContentDigest) {
+	private ValidertOpplasting lastOppOgValider(UUID dokumentFilId, String eksternDokumentReferanseId, InputStream payload,
+												String contentType, Crc32cContentDigest crc32cContentDigest) {
 		MessageDigest sha256MessageDigest = getSha256Instance();
-		CRC32C crc32c = new CRC32C();
+		String forventetCrc32c = crc32cContentDigest.base64();
 
-		try (DigestInputStream digestInputStream = new DigestInputStream(new CheckedInputStream(payload, crc32c), sha256MessageDigest)) {
-			OpplastetDokumentFil opplastetDokumentFil = dokarkivMellomlagerBucketStorage.uploadObject(dokumentFilId.toString(), digestInputStream, contentType);
+		try (DigestInputStream digestInputStream = new DigestInputStream(payload, sha256MessageDigest)) {
+			OpplastetDokumentFil opplastetDokumentFil = dokarkivMellomlagerBucketStorage.uploadObject(dokumentFilId.toString(), digestInputStream, contentType, forventetCrc32c);
 
-			byte[] beregnetSha256Sjekksum = sha256MessageDigest.digest();
-			byte[] contentDigestSha256Sjekksum = sha256ContentDigest.sha256Sjekksum();
-			if (!Arrays.equals(beregnetSha256Sjekksum, contentDigestSha256Sjekksum)) {
+			if (!forventetCrc32c.equals(opplastetDokumentFil.crc32cBase64())) {
 				throw new InputValideringFeiletException(format(
-						"Beregnet sha256 sjekksum av mottatt payload stemmer ikke med Content-Digest for Idempotency-Key=%s. Beregnet=%s, Content-Digest=%s",
-						eksternDokumentReferanseId, Base64.getEncoder().encodeToString(beregnetSha256Sjekksum), Base64.getEncoder().encodeToString(contentDigestSha256Sjekksum)));
+						"crc32c-sjekksummen til objektet i dokarkivmellomlager stemmer ikke med Content-Digest for Idempotency-Key=%s. Dokarkivmellomlager=%s, Content-Digest=%s",
+						eksternDokumentReferanseId, opplastetDokumentFil.crc32cBase64(), forventetCrc32c));
 			}
 
-			String beregnetCrc32cSjekksum = base64(crc32c.getValue());
-			if (!beregnetCrc32cSjekksum.equals(opplastetDokumentFil.crc32cBase64())) {
-				throw new InputValideringFeiletException(format(
-						"crc32c-sjekksummen til objektet i dokarkivmellomlager stemmer ikke med det som ble beregnet lokalt for Idempotency-Key=%s", eksternDokumentReferanseId));
-			}
-
-			return opplastetDokumentFil;
+			return new ValidertOpplasting(opplastetDokumentFil.antallBytes(), sha256MessageDigest.digest());
 		} catch (IOException e) {
 			throw new DokarkivTechnicalException(format("Feilet ved lesing av payload for eksternDokumentReferanseId=%s", eksternDokumentReferanseId), e);
 		}
+	}
+
+	private record ValidertOpplasting(long antallBytes, byte[] sha256Sjekksum) {
 	}
 }

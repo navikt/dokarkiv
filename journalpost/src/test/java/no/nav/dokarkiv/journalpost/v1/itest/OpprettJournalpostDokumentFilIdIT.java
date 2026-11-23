@@ -397,7 +397,7 @@ public class OpprettJournalpostDokumentFilIdIT extends AbstractJournalpostIT {
 
 	private void lastOppDokumentFil(UUID uuid, String eksternDokumentReferanseId, String mediaType, byte[] fysiskDokument, DokumentFilOpplastingTilstand tilstand) {
 		dokumentFilOpplastingLastetOpp(uuid, eksternDokumentReferanseId, mediaType, fysiskDokument, tilstand);
-		dokarkivMellomlagerBucketStorage.uploadObject(uuid.toString(), new ByteArrayInputStream(fysiskDokument), mediaType);
+		dokarkivMellomlagerBucketStorage.uploadObject(uuid.toString(), new ByteArrayInputStream(fysiskDokument), mediaType, Crc32c.base64(fysiskDokument));
 	}
 
 	private void dokumentFilOpplastingLastetOpp(UUID uuid, String eksternDokumentReferanseId, String mediaType, byte[] fysiskDokument) {
@@ -409,11 +409,11 @@ public class OpprettJournalpostDokumentFilIdIT extends AbstractJournalpostIT {
 				uuid,
 				eksternDokumentReferanseId,
 				mediaType,
-				sha256(fysiskDokument),
+				Crc32c.digest(fysiskDokument),
 				"itest",
 				LocalDateTime.now()
 		);
-		dokumentFilOpplasting.markerLastetOpp(fysiskDokument.length, Crc32c.digest(fysiskDokument), LocalDateTime.now(), "itest");
+		dokumentFilOpplasting.markerLastetOpp(fysiskDokument.length, sha256(fysiskDokument), LocalDateTime.now(), "itest");
 		dokumentFilOpplasting.setTilstand(tilstand);
 		dokumentFilOpplastingTestRepository.persist(dokumentFilOpplasting);
 		commitAndStartNewTransaction();

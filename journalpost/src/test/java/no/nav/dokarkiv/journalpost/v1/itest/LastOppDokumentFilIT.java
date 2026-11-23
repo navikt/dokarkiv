@@ -45,7 +45,8 @@ class LastOppDokumentFilIT extends AbstractJournalpostIT {
 		byte[] fil = DOKUMENT_FIL_PAYLOAD;
 		String idempotencyKey = UUID.randomUUID().toString();
 		byte[] sha256 = sha256(fil);
-		var headers = lagHeadere(idempotencyKey, sha256);
+		byte[] crc32c = Crc32c.digest(fil);
+		var headers = lagHeadere(idempotencyKey, crc32c);
 		var requestEntity = new HttpEntity<>(fil, headers);
 
 		var result = restTemplate.exchange(apiDokumentFilPath(), POST, requestEntity, DokumentFilResponse.class);
@@ -57,6 +58,7 @@ class LastOppDokumentFilIT extends AbstractJournalpostIT {
 		assertThat(dokumentFilResponse.getEksternDokumentReferanseId()).isEqualTo(idempotencyKey);
 		assertThat(dokumentFilResponse.getMediaType()).isEqualTo(APPLICATION_PDF_VALUE);
 		assertThat(dokumentFilResponse.getSha256Sjekksum()).containsExactly(sha256);
+		assertThat(dokumentFilResponse.getCrc32cSjekksum()).containsExactly(crc32c);
 		assertThat(dokumentFilResponse.getTilstand()).isEqualTo(DokumentFilTilstand.LASTET_OPP);
 		assertThat(dokumentFilResponse.getDatoOpprettet()).isNotNull();
 		assertThat(dokumentFilResponse.getDatoSistEndret()).isNotNull();
@@ -66,7 +68,7 @@ class LastOppDokumentFilIT extends AbstractJournalpostIT {
 		assertThat(dokumentFilOpplasting.getEksternDokumentReferanseId()).isEqualTo(idempotencyKey);
 		assertThat(dokumentFilOpplasting.getMediaType()).isEqualTo(APPLICATION_PDF_VALUE);
 		assertThat(dokumentFilOpplasting.getSha256Sjekksum()).containsExactly(sha256);
-		assertThat(dokumentFilOpplasting.getCrc32cSjekksum()).containsExactly(Crc32c.digest(fil));
+		assertThat(dokumentFilOpplasting.getCrc32cSjekksum()).containsExactly(crc32c);
 		assertThat(dokumentFilOpplasting.getTilstand()).isEqualTo(LASTET_OPP);
 		assertThat(dokumentFilOpplasting.getAntallBytes()).isEqualTo(fil.length);
 		assertThat(dokumentFilOpplasting.getDatoKlientLease()).isNotNull();
@@ -79,7 +81,7 @@ class LastOppDokumentFilIT extends AbstractJournalpostIT {
 	@Test
 	void shouldReturnBadRequestWhenContentDigestIsMissing() {
 		byte[] fil = DOKUMENT_FIL_PAYLOAD;
-		var headers = lagHeadere(UUID.randomUUID().toString(), sha256(fil));
+		var headers = lagHeadere(UUID.randomUUID().toString(), Crc32c.digest(fil));
 		headers.remove("Content-Digest");
 		var requestEntity = new HttpEntity<>(fil, headers);
 
@@ -92,7 +94,7 @@ class LastOppDokumentFilIT extends AbstractJournalpostIT {
 	@Test
 	void shouldReturnBadRequestWhenContentTypeIsNotSupported() {
 		byte[] fil = DOKUMENT_FIL_PAYLOAD;
-		var headers = lagHeadere(UUID.randomUUID().toString(), sha256(fil));
+		var headers = lagHeadere(UUID.randomUUID().toString(), Crc32c.digest(fil));
 		headers.setContentType(MediaType.APPLICATION_YAML);
 		var requestEntity = new HttpEntity<>(fil, headers);
 
@@ -105,7 +107,7 @@ class LastOppDokumentFilIT extends AbstractJournalpostIT {
 	@Test
 	void shouldReturnBadRequestWhenIdempotencyKeyIsMissing() {
 		byte[] fil = DOKUMENT_FIL_PAYLOAD;
-		var headers = lagHeadere(UUID.randomUUID().toString(), sha256(fil));
+		var headers = lagHeadere(UUID.randomUUID().toString(), Crc32c.digest(fil));
 		headers.remove("Idempotency-Key");
 		var requestEntity = new HttpEntity<>(fil, headers);
 
@@ -116,25 +118,37 @@ class LastOppDokumentFilIT extends AbstractJournalpostIT {
 	}
 
 	@Test
-	void shouldReturnBadRequestWhenSha256DoesNotMatchPayload() {
+	void shouldReturnBadRequestWhenContentDigestIsSha256() {
 		byte[] fil = DOKUMENT_FIL_PAYLOAD;
-		byte[] annenFil = "Et helt annet innhold".getBytes();
-		var headers = lagHeadere("01a0ec79-f596-76e9-8e73-706f18ecde4d", sha256(annenFil));
+		var headers = lagHeadere(UUID.randomUUID().toString(), Crc32c.digest(fil));
+		headers.set("Content-Digest", "sha-256=:" + Base64.getEncoder().encodeToString(sha256(fil)) + ":");
 		var requestEntity = new HttpEntity<>(fil, headers);
 
 		var result = restTemplate.exchange(apiDokumentFilPath(), POST, requestEntity, String.class);
 
 		assertThat(result.getStatusCode()).isEqualTo(BAD_REQUEST);
-		assertThat(result.getBody()).contains("Beregnet sha256 sjekksum av mottatt payload stemmer ikke med Content-Digest for Idempotency-Key=01a0ec79-f596-76e9-8e73-706f18ecde4d. " +
-				"Beregnet=bJfpLzsndupFnI5aebT64uqZIOYfr4N9Ubj4QrMSpwE=, " +
-				"Content-Digest=+dPSLH8jNb8QVVwwTdcxyNn41RTF+GEHnq0wEzZCIcc=");
+		assertThat(result.getBody()).contains("har ugyldig format. Forventet format er crc32c=");
+		assertThat(dokumentFilOpplastingTestRepository.findAll()).isEmpty();
+	}
+
+	@Test
+	void shouldReturnBadRequestWhenCrc32cDoesNotMatchPayload() {
+		byte[] fil = DOKUMENT_FIL_PAYLOAD;
+		byte[] annenFil = "Et helt annet innhold".getBytes();
+		var headers = lagHeadere("01a0ec79-f596-76e9-8e73-706f18ecde4d", Crc32c.digest(annenFil));
+		var requestEntity = new HttpEntity<>(fil, headers);
+
+		var result = restTemplate.exchange(apiDokumentFilPath(), POST, requestEntity, String.class);
+
+		assertThat(result.getStatusCode()).isEqualTo(BAD_REQUEST);
+		assertThat(result.getBody()).contains("crc32c-sjekksum av mottatt payload stemmer ikke med Content-Digest crc32c=" + Crc32c.base64(annenFil));
 	}
 
 	@Test
 	void shouldReturnCreatedForIdempotentRetryOfSameFile() {
 		byte[] fil = DOKUMENT_FIL_PAYLOAD;
 		String idempotencyKey = UUID.randomUUID().toString();
-		var headers = lagHeadere(idempotencyKey, sha256(fil));
+		var headers = lagHeadere(idempotencyKey, Crc32c.digest(fil));
 
 		var result1 = restTemplate.exchange(apiDokumentFilPath(), POST, new HttpEntity<>(fil, headers), DokumentFilResponse.class);
 		assertThat(result1.getStatusCode()).isEqualTo(CREATED);
@@ -152,11 +166,11 @@ class LastOppDokumentFilIT extends AbstractJournalpostIT {
 		byte[] fil = DOKUMENT_FIL_PAYLOAD;
 		String idempotencyKey = "7d5002a9-e6cf-4453-acf0-05be1c178360";
 		var naa = java.time.LocalDateTime.now();
-		var dokumentFilOpplasting = new DokumentFilOpplasting(UUID.randomUUID(), idempotencyKey, APPLICATION_PDF_VALUE, sha256(fil), "itest", naa.plusMinutes(2));
+		var dokumentFilOpplasting = new DokumentFilOpplasting(UUID.randomUUID(), idempotencyKey, APPLICATION_PDF_VALUE, Crc32c.digest(fil), "itest", naa.plusMinutes(2));
 		dokumentFilOpplastingTestRepository.persist(dokumentFilOpplasting);
 		commitAndStartNewTransaction();
 
-		var headers = lagHeadere(idempotencyKey, sha256(fil));
+		var headers = lagHeadere(idempotencyKey, Crc32c.digest(fil));
 		var result = restTemplate.exchange(apiDokumentFilPath(), POST, new HttpEntity<>(fil, headers), String.class);
 
 		assertThat(result.getStatusCode()).isEqualTo(CONFLICT);
@@ -169,21 +183,21 @@ class LastOppDokumentFilIT extends AbstractJournalpostIT {
 		byte[] annenFil = "Et helt annet innhold enn forrige gang".getBytes();
 		String idempotencyKey = "c999c42d-2125-4256-873a-ab205029584c";
 		var naa = java.time.LocalDateTime.now();
-		var dokumentFilOpplasting = new DokumentFilOpplasting(UUID.randomUUID(), idempotencyKey, APPLICATION_PDF_VALUE, sha256(annenFil), "itest", naa.plusMinutes(2));
+		var dokumentFilOpplasting = new DokumentFilOpplasting(UUID.randomUUID(), idempotencyKey, APPLICATION_PDF_VALUE, Crc32c.digest(annenFil), "itest", naa.plusMinutes(2));
 		dokumentFilOpplastingTestRepository.persist(dokumentFilOpplasting);
 		commitAndStartNewTransaction();
 
-		var headers = lagHeadere(idempotencyKey, sha256(fil));
+		var headers = lagHeadere(idempotencyKey, Crc32c.digest(fil));
 		var result = restTemplate.exchange(apiDokumentFilPath(), POST, new HttpEntity<>(fil, headers), String.class);
 
 		assertThat(result.getStatusCode()).isEqualTo(UNPROCESSABLE_CONTENT);
-		assertThat(result.getBody()).contains("Idempotency-Key=c999c42d-2125-4256-873a-ab205029584c er allerede brukt for opplasting av et dokument med et annet innhold sha256=mihUuA==");
+		assertThat(result.getBody()).contains("Idempotency-Key=c999c42d-2125-4256-873a-ab205029584c er allerede brukt for opplasting av et dokument med et annet innhold crc32c=" + Crc32c.base64(annenFil));
 	}
 
-	private HttpHeaders lagHeadere(String idempotencyKey, byte[] sha256) {
+	private HttpHeaders lagHeadere(String idempotencyKey, byte[] crc32c) {
 		HttpHeaders headers = createHeadersWithClientCredentialToken();
 		headers.setContentType(APPLICATION_PDF);
-		headers.set("Content-Digest", "sha-256=:" + Base64.getEncoder().encodeToString(sha256) + ":");
+		headers.set("Content-Digest", "crc32c=:" + Base64.getEncoder().encodeToString(crc32c) + ":");
 		headers.set("Idempotency-Key", idempotencyKey);
 		return headers;
 	}
