@@ -53,7 +53,7 @@
 		<dok-legacy-tjenestespesifikasjoner.version>44-7d14e70</dok-legacy-tjenestespesifikasjoner.version>
 
 		<!-- test -->
-		<datasource-proxy-spring-boot-starter.version>2.0.1</datasource-proxy-spring-boot-starter.version>
+		<datasource-proxy-spring-boot-starter.version>2.1.0</datasource-proxy-spring-boot-starter.version>
 		<wiremock-spring-boot.version>4.4.3</wiremock-spring-boot.version>
 		<mock-oauth2-server.version>6.1.5</mock-oauth2-server.version>
 		<!-- h2 2.x+ er ikke kompatibel med noen av custom spørringene -->
