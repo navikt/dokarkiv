@@ -208,6 +208,11 @@
       "cluster": "prod-gcp"
     },
     {
+      "app": "gosys-backend",
+      "namespace": "isa",
+      "cluster": "prod-gcp"
+    },
+    {
       "app": "asynkron",
       "namespace": "farskapsportal",
       "cluster": "prod-gcp"
