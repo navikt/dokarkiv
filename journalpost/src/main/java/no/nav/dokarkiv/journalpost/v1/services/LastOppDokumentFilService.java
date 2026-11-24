@@ -58,16 +58,9 @@ public class LastOppDokumentFilService {
 	private ValidertOpplasting lastOppOgValider(UUID dokumentFilId, String eksternDokumentReferanseId, InputStream payload,
 												String contentType, Crc32cContentDigest crc32cContentDigest) {
 		MessageDigest sha256MessageDigest = getSha256Instance();
-		String forventetCrc32c = crc32cContentDigest.base64();
 
 		try (DigestInputStream digestInputStream = new DigestInputStream(payload, sha256MessageDigest)) {
-			OpplastetDokumentFil opplastetDokumentFil = dokarkivMellomlagerBucketStorage.uploadObject(dokumentFilId.toString(), digestInputStream, contentType, forventetCrc32c);
-
-			if (!forventetCrc32c.equals(opplastetDokumentFil.crc32cBase64())) {
-				throw new InputValideringFeiletException(format(
-						"crc32c-sjekksummen til objektet i dokarkivmellomlager stemmer ikke med Content-Digest for Idempotency-Key=%s. Dokarkivmellomlager=%s, Content-Digest=%s",
-						eksternDokumentReferanseId, opplastetDokumentFil.crc32cBase64(), forventetCrc32c));
-			}
+			OpplastetDokumentFil opplastetDokumentFil = dokarkivMellomlagerBucketStorage.uploadObject(dokumentFilId.toString(), digestInputStream, contentType, crc32cContentDigest.base64());
 
 			return new ValidertOpplasting(opplastetDokumentFil.antallBytes(), sha256MessageDigest.digest());
 		} catch (IOException e) {

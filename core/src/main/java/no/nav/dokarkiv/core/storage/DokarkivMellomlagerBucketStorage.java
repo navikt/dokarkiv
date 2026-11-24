@@ -1,5 +1,6 @@
 package no.nav.dokarkiv.core.storage;
 
+import com.google.api.client.http.HttpResponseException;
 import com.google.cloud.BatchResult;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
@@ -54,7 +55,7 @@ public class DokarkivMellomlagerBucketStorage implements BucketStorageOperations
 		} catch (StorageException e) {
 			if (erCrc32cMismatch(e)) {
 				throw new InputValideringFeiletException(String.format(
-						"crc32c-sjekksum av mottatt payload stemmer ikke med Content-Digest crc32c=%s for objectName=%s", crc32cBase64, objectName));
+						"crc32c-sjekksum av mottatt payload stemmer ikke med Content-Digest crc32c=%s for objectName=%s", crc32cBase64, objectName), e.getCause());
 			}
 			throw new DokarkivTechnicalException(String.format("Feilet ved opplasting av dokument med objectName=%s til dokarkivmellomlager.", objectName), e);
 		} catch (IOException | RuntimeException e) {
@@ -63,9 +64,11 @@ public class DokarkivMellomlagerBucketStorage implements BucketStorageOperations
 	}
 
 	private static boolean erCrc32cMismatch(StorageException e) {
-		return e.getCode() == HTTP_BAD_REQUEST
-				&& e.getMessage() != null
-				&& e.getMessage().toLowerCase(Locale.ROOT).contains("crc32c");
+		if(e.getCause() instanceof HttpResponseException httpResponseException) {
+			return httpResponseException.getStatusCode() == HTTP_BAD_REQUEST
+					&& httpResponseException.getMessage().toLowerCase(Locale.ROOT).contains("crc32c");
+		}
+		return false;
 	}
 
 	@Override
@@ -110,7 +113,7 @@ public class DokarkivMellomlagerBucketStorage implements BucketStorageOperations
 			}
 
 			List<Blob> utenHold = blobs.stream()
-					.filter(blob -> !blob.getTemporaryHold())
+					.filter(blob -> blob.getTemporaryHold() == null || !blob.getTemporaryHold())
 					.toList();
 			if (utenHold.size() < blobs.size()) {
 				log.info("Hopper over {} blobs som allerede har hold i bucket", blobs.size() - utenHold.size());

@@ -10,4 +10,7 @@ public class InputValideringFeiletException extends DokarkivFunctionalException 
 		super(message);
 	}
 
+	public InputValideringFeiletException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

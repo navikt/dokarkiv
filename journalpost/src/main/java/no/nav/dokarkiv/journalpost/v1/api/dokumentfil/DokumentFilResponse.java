@@ -28,11 +28,14 @@ public class DokumentFilResponse {
 	@Schema(description = "Mediatype for dokumentet", example = APPLICATION_PDF_VALUE, requiredMode = REQUIRED)
 	private String mediaType;
 
-	@Schema(description = "Crc32c sjekksum av dokumentet (big-endian), base64-kodet", example = "mihUuA==", requiredMode = REQUIRED)
-	private byte[] crc32cSjekksum;
+	@Schema(description = "Crc32c sjekksum av dokumentet, big-endian base64-kodet", example = "mihUuA==", requiredMode = REQUIRED)
+	private byte[] crc32c;
 
 	@Schema(description = "Sha256 sjekksum av dokumentet beregnet av dokarkiv, base64-kodet", example = "ldiZGMZRiYNtkuGx/ee3q62DuQLPUzMimcEc0rv9R4o=")
-	private byte[] sha256Sjekksum;
+	private byte[] sha256;
+
+	@Schema(description = "Størrelse på dokumentet i antall bytes", example = "48867924")
+	private long stoerrelse;
 
 	@Schema(description = "Hvilken tilstand dokumentopplastingen har", example = "LASTET_OPP", requiredMode = REQUIRED)
 	private DokumentFilTilstand tilstand;
@@ -48,8 +51,9 @@ public class DokumentFilResponse {
 				.dokumentFilId(lastOppDokumentFilResult.dokumentFilId())
 				.eksternDokumentReferanseId(lastOppDokumentFilResult.eksternDokumentReferanseId())
 				.mediaType(lastOppDokumentFilResult.mediaType())
-				.sha256Sjekksum(lastOppDokumentFilResult.sha256Sjekksum())
-				.crc32cSjekksum(lastOppDokumentFilResult.crc32cSjekksum())
+				.sha256(lastOppDokumentFilResult.sha256())
+				.crc32c(lastOppDokumentFilResult.crc32c())
+				.stoerrelse(lastOppDokumentFilResult.stoerrelse())
 				.tilstand(lastOppDokumentFilResult.tilstand())
 				.datoOpprettet(lastOppDokumentFilResult.datoOpprettet())
 				.datoSistEndret(lastOppDokumentFilResult.datoSistEndret())

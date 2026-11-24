@@ -57,8 +57,9 @@ class LastOppDokumentFilIT extends AbstractJournalpostIT {
 		assertThat(dokumentFilId).isNotNull();
 		assertThat(dokumentFilResponse.getEksternDokumentReferanseId()).isEqualTo(idempotencyKey);
 		assertThat(dokumentFilResponse.getMediaType()).isEqualTo(APPLICATION_PDF_VALUE);
-		assertThat(dokumentFilResponse.getSha256Sjekksum()).containsExactly(sha256);
-		assertThat(dokumentFilResponse.getCrc32cSjekksum()).containsExactly(crc32c);
+		assertThat(dokumentFilResponse.getSha256()).containsExactly(sha256);
+		assertThat(dokumentFilResponse.getCrc32c()).containsExactly(crc32c);
+		assertThat(dokumentFilResponse.getStoerrelse()).isEqualTo(DOKUMENT_FIL_PAYLOAD.length);
 		assertThat(dokumentFilResponse.getTilstand()).isEqualTo(DokumentFilTilstand.LASTET_OPP);
 		assertThat(dokumentFilResponse.getDatoOpprettet()).isNotNull();
 		assertThat(dokumentFilResponse.getDatoSistEndret()).isNotNull();

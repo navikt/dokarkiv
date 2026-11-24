@@ -15,9 +15,6 @@ import java.util.stream.Collectors;
 
 import static no.nav.dokarkiv.core.util.Crc32c.base64;
 
-/// Test-implementasjon av [BucketStorageOperations] som lagrer objekter i minnet
-/// og beregner crc32c på samme måte som Google Cloud Storage ville gjort. Brukes i integrasjonstester
-/// i stedet for en ekte GCS-bucket.
 public class InMemoryBucketStorage implements BucketStorageOperations {
 
 	private final Map<String, byte[]> objects = new ConcurrentHashMap<>();

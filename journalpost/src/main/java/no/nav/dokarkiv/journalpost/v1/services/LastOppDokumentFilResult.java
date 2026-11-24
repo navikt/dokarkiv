@@ -12,8 +12,9 @@ public record LastOppDokumentFilResult(
 		UUID dokumentFilId,
 		String eksternDokumentReferanseId,
 		String mediaType,
-		byte[] sha256Sjekksum,
-		byte[] crc32cSjekksum,
+		byte[] crc32c,
+		byte[] sha256,
+		long stoerrelse,
 		DokumentFilTilstand tilstand,
 		LocalDateTime datoOpprettet,
 		LocalDateTime datoSistEndret
@@ -23,8 +24,9 @@ public record LastOppDokumentFilResult(
 				dokumentFilOpplasting.getDokumentFilId(),
 				dokumentFilOpplasting.getEksternDokumentReferanseId(),
 				dokumentFilOpplasting.getMediaType(),
-				dokumentFilOpplasting.getSha256Sjekksum(),
 				dokumentFilOpplasting.getCrc32cSjekksum(),
+				dokumentFilOpplasting.getSha256Sjekksum(),
+				dokumentFilOpplasting.getAntallBytes(),
 				fra(dokumentFilOpplasting.getTilstand()),
 				dokumentFilOpplasting.getDatoOpprettet(),
 				dokumentFilOpplasting.getDatoEndret());
