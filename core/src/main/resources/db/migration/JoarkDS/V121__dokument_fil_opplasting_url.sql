@@ -1,0 +1,2 @@
+alter table T_DOKUMENT_FIL_OPPLASTING
+    add (OPPLASTING_URL varchar2(4000));

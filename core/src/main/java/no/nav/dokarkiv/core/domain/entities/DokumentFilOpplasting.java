@@ -70,6 +70,9 @@ public class DokumentFilOpplasting {
 	@Column(name = "dato_klient_lease", nullable = false)
 	private LocalDateTime datoKlientLease;
 
+	@Column(name = "opplasting_url", length = 4000)
+	private String opplastingUrl;
+
 	@Version
 	@Column(name = "versjon", nullable = false)
 	private int versjon;
@@ -92,6 +95,17 @@ public class DokumentFilOpplasting {
 								 byte[] crc32cSjekksum,
 								 String opprettetKildeNavn,
 								 LocalDateTime datoKlientLease) {
+		this(dokumentFilId, eksternDokumentReferanseId, mediaType, crc32cSjekksum, opprettetKildeNavn, datoKlientLease, null, null);
+	}
+
+	public DokumentFilOpplasting(UUID dokumentFilId,
+								 String eksternDokumentReferanseId,
+								 String mediaType,
+								 byte[] crc32cSjekksum,
+								 String opprettetKildeNavn,
+								 LocalDateTime datoKlientLease,
+								 String opplastingUrl,
+								 Long antallBytes) {
 		this.dokumentFilId = dokumentFilId;
 		this.eksternDokumentReferanseId = eksternDokumentReferanseId;
 		this.mediaType = mediaType;
@@ -99,14 +113,10 @@ public class DokumentFilOpplasting {
 		this.tilstand = UNDER_OPPLASTING;
 		this.opprettetKildeNavn = opprettetKildeNavn;
 		this.datoKlientLease = datoKlientLease;
+		this.antallBytes = antallBytes;
+		this.opplastingUrl = opplastingUrl;
 	}
 
-	/// Markerer opplastingen som ferdig etter at innhold er verifisert i dokarkivmellomlager.
-	///
-	/// @param antallBytes     antall bytes som ble lastet opp.
-	/// @param sha256Sjekksum  SHA-256 sjekksum beregnet av payload under opplasting.
-	/// @param datoLastetOpp   tidspunktet opplastingen ble ferdigstilt.
-	/// @param endretKildeNavn kilden som ferdigstilte opplastingen.
 	public void markerLastetOpp(long antallBytes,
 								byte[] sha256Sjekksum,
 								LocalDateTime datoLastetOpp,
@@ -118,9 +128,6 @@ public class DokumentFilOpplasting {
 		this.endretKildeNavn = endretKildeNavn;
 	}
 
-	/// Markerer at dokumentFilen skal arkiveres til {@link DokumentFil} tabellen
-	///
-	/// @throws IllegalStateException hvis tilstand ikke er LASTET_OPP.
 	public void markerArkiveres(String endretKildeNavn) {
 		if (!erLastetOpp()) {
 			throw new IllegalStateException(String.format("dokumentFilId=%s kan ikke arkiveres med tilstand=%s", dokumentFilId, tilstand));
@@ -141,7 +148,6 @@ public class DokumentFilOpplasting {
 		return this.tilstand == LASTET_OPP;
 	}
 
-	/// `true` hvis dokumentfilen allerede er brukt av en journalpost.
 	public boolean erBruktAvJournalpost() {
 		return this.tilstand == ARKIVERES || this.tilstand == ARKIVERT;
 	}

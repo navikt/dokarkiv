@@ -42,20 +42,20 @@ public final class LastOppDokumentFilValidator {
 		return Crc32cContentDigest.validateAndParse(contentDigest);
 	}
 
-	private static void validateHeaderErSatt(String verdi, String headerNavn) {
+	static void validateHeaderErSatt(String verdi, String headerNavn) {
 		if (isBlank(verdi)) {
 			throw new InputValideringFeiletException(format("Header %s må være satt", headerNavn));
 		}
 	}
 
-	private static void validateContentType(String contentType) {
+	static void validateContentType(String contentType) {
 		if (!TILLATTE_CONTENT_TYPES.contains(contentType)) {
 			throw new InputValideringFeiletException(format(
 					"Header Content-Type=%s er ikke støttet. Må være en av %s", contentType, TILLATTE_CONTENT_TYPES));
 		}
 	}
 
-	private static void validateIdempotencyKey(String idempotencyKey) {
+	static void validateIdempotencyKey(String idempotencyKey) {
 		if (idempotencyKey.length() > IDEMPOTENCY_KEY_MAX_LENGTH) {
 			throw new InputValideringFeiletException(format(
 					"Header Idempotency-Key kan ikke være over %d tegn. Mottatt lengde=%d", IDEMPOTENCY_KEY_MAX_LENGTH, idempotencyKey.length()));

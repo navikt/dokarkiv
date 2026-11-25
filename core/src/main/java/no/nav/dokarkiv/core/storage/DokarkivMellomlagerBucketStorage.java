@@ -5,6 +5,7 @@ import com.google.cloud.BatchResult;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.HttpMethod;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.Storage.BlobTargetOption;
 import com.google.cloud.storage.Storage.BlobWriteOption;
@@ -13,12 +14,14 @@ import com.google.cloud.storage.StorageException;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
+import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +29,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 /// Laster opp dokumentfiler til dokarkivmellomlager i Google Cloud Storage.
 @Slf4j
@@ -64,11 +69,32 @@ public class DokarkivMellomlagerBucketStorage implements BucketStorageOperations
 	}
 
 	private static boolean erCrc32cMismatch(StorageException e) {
-		if(e.getCause() instanceof HttpResponseException httpResponseException) {
+		if (e.getCause() instanceof HttpResponseException httpResponseException) {
 			return httpResponseException.getStatusCode() == HTTP_BAD_REQUEST
 					&& httpResponseException.getMessage().toLowerCase(Locale.ROOT).contains("crc32c");
 		}
 		return false;
+	}
+
+	@Override
+	public SignertOpplasting signertOpplasting(String objectName, String contentType, String crc32cBase64, long antallBytes, long varighetSekunder) {
+		try {
+			BlobInfo blobInfo = BlobInfo.newBuilder(bucket, objectName)
+					.setContentType(contentType)
+					.build();
+			java.net.URL url = storage.signUrl(blobInfo,
+					varighetSekunder,
+					SECONDS,
+					Storage.SignUrlOption.withV4Signature(),
+					Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
+					Storage.SignUrlOption.withContentType(),
+					Storage.SignUrlOption.withExtHeaders(Map.of(
+							"x-goog-hash", "crc32c=" + crc32cBase64,
+							CONTENT_TYPE, String.valueOf(antallBytes))));
+			return new SignertOpplasting(url.toURI());
+		} catch (RuntimeException | java.net.URISyntaxException e) {
+			throw new DokarkivTechnicalException(String.format("Feilet ved generering av signert opplastings-URL for objectName=%s", objectName), e);
+		}
 	}
 
 	@Override

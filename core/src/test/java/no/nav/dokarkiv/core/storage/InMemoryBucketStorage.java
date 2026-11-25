@@ -37,6 +37,11 @@ public class InMemoryBucketStorage implements BucketStorageOperations {
 	}
 
 	@Override
+	public SignertOpplasting signertOpplasting(String objectName, String contentType, String crc32cBase64, long antallBytes, long varighetSekunder) {
+		return new SignertOpplasting(java.net.URI.create("https://storage.test.invalid/" + objectName));
+	}
+
+	@Override
 	public Set<String> existsObjects(Collection<String> objectNames) {
 		return objectNames.stream()
 				.filter(objects::containsKey)

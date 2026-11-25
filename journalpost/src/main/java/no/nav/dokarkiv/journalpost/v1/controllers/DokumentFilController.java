@@ -6,14 +6,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.stelvio.RequestContextUtil;
 import no.nav.dokarkiv.journalpost.v1.api.dokumentfil.DokumentFilResponse;
+import no.nav.dokarkiv.journalpost.v1.api.dokumentfil.InitierDokumentFilOpplastingRequest;
+import no.nav.dokarkiv.journalpost.v1.api.dokumentfil.InitierDokumentFilOpplastingResponse;
+import no.nav.dokarkiv.journalpost.v1.services.InitierDokumentFilOpplastingResult;
+import no.nav.dokarkiv.journalpost.v1.services.InitierDokumentFilOpplastingService;
 import no.nav.dokarkiv.journalpost.v1.services.LastOppDokumentFilResult;
 import no.nav.dokarkiv.journalpost.v1.services.LastOppDokumentFilService;
+import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerInitierDokumentFilOpplasting;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLastOppDokumentFil;
 import no.nav.dokarkiv.journalpost.v1.validators.Crc32cContentDigest;
+import no.nav.dokarkiv.journalpost.v1.validators.InitierDokumentFilOpplastingValidator;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,13 +40,16 @@ import static org.springframework.http.HttpStatus.CREATED;
 @Protected
 @RestController
 @Tag(name = "journalpostapi - dokumentFil", description = "Tjenester for DokumentFil")
-@RequestMapping("/rest/journalpostapi/v1/dokumentFil")
+@RequestMapping({"/rest/journalpostapi/v1/dokumentFil"})
 public class DokumentFilController {
 
 	private final LastOppDokumentFilService lastOppDokumentFilService;
+	private final InitierDokumentFilOpplastingService initierDokumentFilOpplastingService;
 
-	public DokumentFilController(LastOppDokumentFilService lastOppDokumentFilService) {
+	public DokumentFilController(LastOppDokumentFilService lastOppDokumentFilService,
+								  InitierDokumentFilOpplastingService initierDokumentFilOpplastingService) {
 		this.lastOppDokumentFilService = lastOppDokumentFilService;
+		this.initierDokumentFilOpplastingService = initierDokumentFilOpplastingService;
 	}
 
 	@SwaggerLastOppDokumentFil
@@ -72,4 +82,30 @@ public class DokumentFilController {
 		return ResponseEntity.status(CREATED)
 				.body(DokumentFilResponse.fra(lastOppDokumentFilResult));
 	}
+
+	@SwaggerInitierDokumentFilOpplasting
+	@PostMapping("/opplasting")
+	public ResponseEntity<InitierDokumentFilOpplastingResponse> initierDokumentFilOpplasting(
+			@Parameter(description = DOCS_HEADER_IDEMPOTENCY_KEY, example = "41ff35f0-dae9-41f8-80b0-4137592c16ca", required = true, schema = @Schema(maxLength = 512))
+			@RequestHeader(value = "Idempotency-Key") String idempotencyKey,
+			@RequestBody InitierDokumentFilOpplastingRequest request) {
+		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
+		var validertRequest = InitierDokumentFilOpplastingValidator.validate(idempotencyKey, request);
+		log.info("initierDokumentFilOpplasting gjør klar en signert url for eksternDokumentReferanseId={}, crc32c={}",
+				idempotencyKey, validertRequest.crc32c().base64());
+
+		InitierDokumentFilOpplastingResult result = initierDokumentFilOpplastingService.initierDokumentFilOpplasting(validertRequest);
+
+		switch (result.utfall()) {
+			case TEKNISK_RETRY ->
+					log.info("initierDokumentFilOpplasting mottok et nettverk-retry for initiert opplasting med eksternDokumentReferanseId={}, dokumentFilId={}",
+							result.eksternDokumentReferanseId(), result.dokumentFilId());
+			case SIGNERT_URL_PRODUSERT ->
+					log.info("initierDokumentFilOpplasting har produsert signert url for eksternDokumentReferanseId={}, dokumentFilId={}",
+							result.eksternDokumentReferanseId(), result.dokumentFilId());
+		}
+		return ResponseEntity.status(CREATED)
+				.body(InitierDokumentFilOpplastingResponse.fra(result));
+	}
+
 }
