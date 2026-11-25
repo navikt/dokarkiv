@@ -15,14 +15,15 @@ import static org.springframework.http.MediaType.TEXT_XML_VALUE;
 
 class LastOppDokumentFilValidatorTest {
 
-	private static final String SHA256_BASE64 = Base64.getEncoder().encodeToString("a".repeat(32).getBytes());
-	private static final String CONTENT_DIGEST = "sha-256=:" + SHA256_BASE64 + ":";
+	private static final String CRC32C_BASE64 = Base64.getEncoder().encodeToString(new byte[]{(byte) 0x9a, 0x28, 0x54, (byte) 0xb8});
+	private static final String CONTENT_DIGEST = "crc32c=:" + CRC32C_BASE64 + ":";
 	private static final String IDEMPOTENCY_KEY = "41ff35f0-dae9-41f8-80b0-4137592c16ca";
 
 	@Test
 	void shouldValidatePdf() {
-		Sha256ContentDigest sha256ContentDigest = LastOppDokumentFilValidator.validate(APPLICATION_PDF_VALUE, CONTENT_DIGEST, IDEMPOTENCY_KEY);
-		assertThat(sha256ContentDigest.base64()).isEqualTo(SHA256_BASE64);
+		Crc32cContentDigest crc32cContentDigest = LastOppDokumentFilValidator.validate(APPLICATION_PDF_VALUE, CONTENT_DIGEST, IDEMPOTENCY_KEY);
+		assertThat(crc32cContentDigest.base64()).isEqualTo(CRC32C_BASE64);
+		assertThat(crc32cContentDigest.crc32c()).containsExactly((byte) 0x9a, 0x28, 0x54, (byte) 0xb8);
 	}
 
 	@Test
@@ -65,15 +66,23 @@ class LastOppDokumentFilValidatorTest {
 
 	@Test
 	void shouldThrowWhenContentDigestHasWrongAlgorithm() {
-		String contentDigest = "sha-512=:" + SHA256_BASE64 + ":";
+		String contentDigest = "crc32=:" + CRC32C_BASE64 + ":";
 		assertThatThrownBy(() -> LastOppDokumentFilValidator.validate(APPLICATION_PDF_VALUE, contentDigest, IDEMPOTENCY_KEY))
 				.isInstanceOf(InputValideringFeiletException.class)
 				.hasMessageContaining("Content-Digest");
 	}
 
 	@Test
+	void shouldThrowWhenContentDigestIsSha256() {
+		String contentDigest = "sha-256=:" + Base64.getEncoder().encodeToString("a".repeat(32).getBytes()) + ":";
+		assertThatThrownBy(() -> LastOppDokumentFilValidator.validate(APPLICATION_PDF_VALUE, contentDigest, IDEMPOTENCY_KEY))
+				.isInstanceOf(InputValideringFeiletException.class)
+				.hasMessageContaining("Forventet format er crc32c=");
+	}
+
+	@Test
 	void shouldThrowWhenContentDigestHasInvalidBase64() {
-		String contentDigest = "sha-256=:not-valid-base64!!:";
+		String contentDigest = "crc32c=:mi!U-A==:";
 		assertThatThrownBy(() -> LastOppDokumentFilValidator.validate(APPLICATION_PDF_VALUE, contentDigest, IDEMPOTENCY_KEY))
 				.isInstanceOf(InputValideringFeiletException.class);
 	}
@@ -81,7 +90,7 @@ class LastOppDokumentFilValidatorTest {
 	@Test
 	void shouldThrowWhenContentDigestHasWrongDecodedLength() {
 		String base64Of10Bytes = Base64.getEncoder().encodeToString("a".repeat(10).getBytes());
-		String contentDigest = "sha-256=:" + base64Of10Bytes + ":";
+		String contentDigest = "crc32c=:" + base64Of10Bytes + ":";
 		assertThatThrownBy(() -> LastOppDokumentFilValidator.validate(APPLICATION_PDF_VALUE, contentDigest, IDEMPOTENCY_KEY))
 				.isInstanceOf(InputValideringFeiletException.class)
 				.hasMessageContaining("ugyldig format");

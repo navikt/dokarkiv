@@ -8,8 +8,7 @@ import no.nav.dokarkiv.core.exceptions.DokumentFilUliktInnholdException;
 import no.nav.dokarkiv.core.exceptions.DokumentFilUnderOpplastingException;
 import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 import no.nav.dokarkiv.core.repository.DokumentFilOpplastingRepository;
-import no.nav.dokarkiv.core.storage.OpplastetDokumentFil;
-import no.nav.dokarkiv.journalpost.v1.validators.Sha256ContentDigest;
+import no.nav.dokarkiv.journalpost.v1.validators.Crc32cContentDigest;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,6 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static no.nav.dokarkiv.core.MDCConstants.MDC_CONSUMER_ID;
 import static no.nav.dokarkiv.core.domain.codes.DokumentFilOpplastingTilstand.LASTET_OPP;
-import static no.nav.dokarkiv.core.util.Crc32c.base64;
 
 @Slf4j
 @Component
@@ -43,22 +41,22 @@ public class DokumentFilOpplastingService {
 
 	/// Slår opp eksternDokumentReferanseId og håndterer idempotens:
 	///
-	///  - Finnes ikke fra før: oppretter og lagrer en ny [DokumentFilOpplasting] med tilstand LASTER_OPP.
-	///  - Finnes fra før med annet sha256Sjekksum: kaster [DokumentFilUliktInnholdException] (422).
-	///  - Finnes fra før med samme sha256Sjekksum og tilstand LASTER_OPP: kaster [DokumentFilUnderOpplastingException] (409).
+	///  - Finnes ikke fra før: oppretter og lagrer en ny [DokumentFilOpplasting] med tilstand UNDER_OPPLASTING.
+	///  - Finnes fra før med annet crc32cSjekksum: kaster [DokumentFilUliktInnholdException] (422).
+	///  - Finnes fra før med samme crc32cSjekksum og tilstand UNDER_OPPLASTING: kaster [DokumentFilUnderOpplastingException] (409).
 	///  - Finnes fra før: returnerer den eksisterende
 	///
 	@Transactional
-	public DokumentFilOpplasting behandleIdempotensOgOpprett(String eksternDokumentReferanseId, String mediaType, Sha256ContentDigest sha256ContentDigest) {
+	public DokumentFilOpplasting behandleIdempotensOgOpprett(String eksternDokumentReferanseId, String mediaType, Crc32cContentDigest crc32cContentDigest) {
 		if (!dokumentFilOpplastingRepository.existsByEksternDokumentReferanseId(eksternDokumentReferanseId)) {
-			return opprettNyOpplasting(eksternDokumentReferanseId, mediaType, sha256ContentDigest);
+			return opprettNyOpplasting(eksternDokumentReferanseId, mediaType, crc32cContentDigest);
 		}
 		DokumentFilOpplasting eksisterende = dokumentFilOpplastingRepository.findByEksternDokumentReferanseId(eksternDokumentReferanseId);
-		if (!eksisterende.harSammeSha256Sjekksum(sha256ContentDigest.sha256Sjekksum())) {
+		if (!eksisterende.harSammeCrc32cSjekksum(crc32cContentDigest.crc32c())) {
 			throw new DokumentFilUliktInnholdException(format(
-					"Idempotency-Key=%s er allerede brukt for opplasting av et dokument med et annet innhold sha256=%s",
+					"Idempotency-Key=%s er allerede brukt for opplasting av et dokument med et annet innhold crc32c=%s",
 					eksternDokumentReferanseId,
-					base64(eksisterende.getSha256Sjekksum())));
+					Base64.getEncoder().encodeToString(eksisterende.getCrc32cSjekksum())));
 		}
 
 		if (eksisterende.erUnderOpplasting()) {
@@ -120,24 +118,24 @@ public class DokumentFilOpplastingService {
 				"Idempotency-Key=%s brukes allerede av en opplasting som pågår", eksternDokumentReferanseId));
 	}
 
-	private DokumentFilOpplasting opprettNyOpplasting(String eksternDokumentReferanseId, String mediaType, Sha256ContentDigest sha256ContentDigest) {
+	private DokumentFilOpplasting opprettNyOpplasting(String eksternDokumentReferanseId, String mediaType, Crc32cContentDigest crc32cContentDigest) {
 		LocalDateTime naa = LocalDateTime.now(clock);
 		DokumentFilOpplasting dokumentFilOpplasting = new DokumentFilOpplasting(
 				UuidCreator.getTimeOrderedEpoch(),
 				eksternDokumentReferanseId,
 				mediaType,
-				sha256ContentDigest.sha256Sjekksum(),
+				crc32cContentDigest.crc32c(),
 				MDC.get(MDC_CONSUMER_ID),
 				naa.plusMinutes(2));
 		return dokumentFilOpplastingRepository.persist(dokumentFilOpplasting);
 	}
 
 	@Transactional
-	public DokumentFilOpplasting ferdigstillOpplasting(UUID dokumentFilId, OpplastetDokumentFil opplastetDokumentFil) {
+	public DokumentFilOpplasting ferdigstillOpplasting(UUID dokumentFilId, long antallBytes, byte[] sha256Sjekksum) {
 		DokumentFilOpplasting dokumentFilOpplasting = dokumentFilOpplastingRepository.findById(dokumentFilId)
 				.orElseThrow();
-		dokumentFilOpplasting.markerLastetOpp(opplastetDokumentFil.antallBytes(),
-				Base64.getDecoder().decode(opplastetDokumentFil.crc32cBase64()),
+		dokumentFilOpplasting.markerLastetOpp(antallBytes,
+				sha256Sjekksum,
 				LocalDateTime.now(clock),
 				MDC.get(MDC_CONSUMER_ID));
 		return dokumentFilOpplasting;

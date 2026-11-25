@@ -9,7 +9,7 @@ import no.nav.dokarkiv.journalpost.v1.api.dokumentfil.DokumentFilResponse;
 import no.nav.dokarkiv.journalpost.v1.services.LastOppDokumentFilResult;
 import no.nav.dokarkiv.journalpost.v1.services.LastOppDokumentFilService;
 import no.nav.dokarkiv.journalpost.v1.swagger.SwaggerLastOppDokumentFil;
-import no.nav.dokarkiv.journalpost.v1.validators.Sha256ContentDigest;
+import no.nav.dokarkiv.journalpost.v1.validators.Crc32cContentDigest;
 import no.nav.security.token.support.core.api.Protected;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
@@ -47,18 +47,18 @@ public class DokumentFilController {
 	public ResponseEntity<DokumentFilResponse> lastOppDokumentFil(
 			@Parameter(description = DOCS_HEADER_CONTENT_TYPE, example = "application/pdf", required = true)
 			@RequestHeader(value = CONTENT_TYPE) String contentType,
-			@Parameter(description = DOCS_HEADER_CONTENT_DIGEST, example = "sha-256=:Ksa5C3tEwR/Yenu/e3L6UYKX04SVyYsu8Ib3h7qNOSo=:", required = true)
+			@Parameter(description = DOCS_HEADER_CONTENT_DIGEST, example = "crc32c=:mihUuA==:", required = true)
 			@RequestHeader(value = "Content-Digest") String contentDigestHeader,
 			@Parameter(description = DOCS_HEADER_IDEMPOTENCY_KEY, example = "41ff35f0-dae9-41f8-80b0-4137592c16ca", required = true, schema = @Schema(maxLength = 512))
 			@RequestHeader(value = "Idempotency-Key") String idempotencyKey,
 			InputStream requestBody) {
 		RequestContextUtil.createAndSetUsername(MDC.get(MDC_USER_ID), MDC.get(MDC_CONSUMER_ID));
-		Sha256ContentDigest sha256ContentDigest = validate(contentType, contentDigestHeader, idempotencyKey);
+		Crc32cContentDigest crc32cContentDigest = validate(contentType, contentDigestHeader, idempotencyKey);
 
-		log.info("lastOppDokumentFil har mottatt kall for å laste opp en dokumentFil med eksternDokumentReferanseId={}, sha256={}",
-				idempotencyKey, sha256ContentDigest.base64());
+		log.info("lastOppDokumentFil har mottatt kall for å laste opp en dokumentFil med eksternDokumentReferanseId={}, crc32c={}",
+				idempotencyKey, crc32cContentDigest.base64());
 
-		LastOppDokumentFilResult lastOppDokumentFilResult = lastOppDokumentFilService.lastOppDokumentFil(idempotencyKey, sha256ContentDigest, contentType, requestBody);
+		LastOppDokumentFilResult lastOppDokumentFilResult = lastOppDokumentFilService.lastOppDokumentFil(idempotencyKey, crc32cContentDigest, contentType, requestBody);
 
 		switch (lastOppDokumentFilResult.utfall()) {
 			case TEKNISK_RETRY ->

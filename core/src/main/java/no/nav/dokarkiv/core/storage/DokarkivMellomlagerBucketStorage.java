@@ -1,25 +1,31 @@
 package no.nav.dokarkiv.core.storage;
 
+import com.google.api.client.http.HttpResponseException;
 import com.google.cloud.BatchResult;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.Storage.BlobTargetOption;
+import com.google.cloud.storage.Storage.BlobWriteOption;
 import com.google.cloud.storage.StorageBatch;
 import com.google.cloud.storage.StorageException;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dokarkiv.core.exceptions.DokarkivTechnicalException;
+import no.nav.dokarkiv.core.exceptions.InputValideringFeiletException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 
 /// Laster opp dokumentfiler til dokarkivmellomlager i Google Cloud Storage.
 @Slf4j
@@ -37,15 +43,32 @@ public class DokarkivMellomlagerBucketStorage implements BucketStorageOperations
 	}
 
 	@Override
-	public OpplastetDokumentFil uploadObject(String objectName, InputStream inputStream, String contentType) {
+	public OpplastetDokumentFil uploadObject(String objectName, InputStream inputStream, String contentType, String crc32cBase64) {
 		try {
 			BlobId blobId = BlobId.of(bucket, objectName);
-			BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(contentType).build();
-			Blob blob = storage.createFrom(blobInfo, inputStream);
+			BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+					.setContentType(contentType)
+					.setCrc32c(crc32cBase64)
+					.build();
+			Blob blob = storage.createFrom(blobInfo, inputStream, BlobWriteOption.crc32cMatch());
 			return new OpplastetDokumentFil(blob.getCrc32c(), blob.getSize());
+		} catch (StorageException e) {
+			if (erCrc32cMismatch(e)) {
+				throw new InputValideringFeiletException(String.format(
+						"crc32c-sjekksum av mottatt payload stemmer ikke med Content-Digest crc32c=%s for objectName=%s", crc32cBase64, objectName), e.getCause());
+			}
+			throw new DokarkivTechnicalException(String.format("Feilet ved opplasting av dokument med objectName=%s til dokarkivmellomlager.", objectName), e);
 		} catch (IOException | RuntimeException e) {
 			throw new DokarkivTechnicalException(String.format("Feilet ved opplasting av dokument med objectName=%s til dokarkivmellomlager.", objectName), e);
 		}
+	}
+
+	private static boolean erCrc32cMismatch(StorageException e) {
+		if(e.getCause() instanceof HttpResponseException httpResponseException) {
+			return httpResponseException.getStatusCode() == HTTP_BAD_REQUEST
+					&& httpResponseException.getMessage().toLowerCase(Locale.ROOT).contains("crc32c");
+		}
+		return false;
 	}
 
 	@Override
@@ -90,7 +113,7 @@ public class DokarkivMellomlagerBucketStorage implements BucketStorageOperations
 			}
 
 			List<Blob> utenHold = blobs.stream()
-					.filter(blob -> !blob.getTemporaryHold())
+					.filter(blob -> blob.getTemporaryHold() == null || !blob.getTemporaryHold())
 					.toList();
 			if (utenHold.size() < blobs.size()) {
 				log.info("Hopper over {} blobs som allerede har hold i bucket", blobs.size() - utenHold.size());

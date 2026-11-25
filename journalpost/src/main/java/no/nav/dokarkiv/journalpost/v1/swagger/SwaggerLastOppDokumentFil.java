@@ -24,6 +24,9 @@ import java.lang.annotation.Target;
 				
 				Krever headerne `Content-Type`, `Content-Digest` og `Idempotency-Key`.
 				
+				`Content-Digest` må være en crc32c-sjekksum av payload på formatet `crc32c=:<base64-kodet crc32c big-endian>:`. \
+				Sjekksummen valideres mot innholdet som lagres.
+				
 				`Idempotency-Key` er fagsystemets egen referanse til dokumentet og brukes for å hindre at samme fil lastes opp flere ganger.
 				
 				`dokumentFilId` i responsen brukes i stedet for `fysiskDokument` i opprettJournalpost \
@@ -40,7 +43,7 @@ import java.lang.annotation.Target;
 						schema = @Schema(implementation = DokumentFilResponse.class)
 				)
 		),
-		@ApiResponse(responseCode = "400", description = "Requesten mangler påkrevde headere, headerne har ugyldig format eller dokumentets `Content-Digest` matcher ikke innholdet i payload.",
+		@ApiResponse(responseCode = "400", description = "Requesten mangler påkrevde headere, headerne har ugyldig format eller crc32c i `Content-Digest` matcher ikke innholdet i payload.",
 				content = @Content(mediaType = "application/json",
 						schema = @Schema(implementation = ApplicationProblemDetail.class)
 				)
@@ -68,6 +71,6 @@ import java.lang.annotation.Target;
 public @interface SwaggerLastOppDokumentFil {
 	String TILLATTE_MEDIA_TYPER = "application/pdf, text/xml, application/xml, application/json";
 	String DOCS_HEADER_CONTENT_TYPE = "Media typen til dokumentet. Må være en av: " + TILLATTE_MEDIA_TYPER;
-	String DOCS_HEADER_CONTENT_DIGEST = "Sha-256 digest av payload";
+	String DOCS_HEADER_CONTENT_DIGEST = "Crc32c digest av payload. Format: crc32c=:<base64-kodet crc32c big-endian>:";
 	String DOCS_HEADER_IDEMPOTENCY_KEY = "Fagsystemets referanse. Maks 512 tegn";
 }
