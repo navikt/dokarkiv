@@ -102,6 +102,10 @@ public abstract class AbstractJournalpostIT extends AbstractRestIT {
 		return apiPathBuilder(JOURNALPOSTAPI_DOKUMENTFIL_PATH).build().toUriString();
 	}
 
+	protected static String apiDokumentFilPath(String... path) {
+		return apiPathBuilder(JOURNALPOSTAPI_DOKUMENTFIL_PATH).pathSegment(path).build().toUriString();
+	}
+
 	protected static String apiInternalJournalpostPath(String... path) {
 		return apiInternalPathBuilder(INTERNAL_JOURNALPOSTAPI_JOURNALPOST_PATH).pathSegment(path).build().toUriString();
 	}

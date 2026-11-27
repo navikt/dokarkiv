@@ -16,6 +16,9 @@ public interface BucketStorageOperations {
 	/// @throws no.nav.dokarkiv.core.exceptions.InputValideringFeiletException hvis payload ikke matcher crc32cBase64.
 	OpplastetDokumentFil uploadObject(String objectName, InputStream inputStream, String contentType, String crc32cBase64);
 
+	/// Oppretter en kortlivet signert URL for direkte PUT til et objekt.
+	SignertOpplasting signertOpplasting(String objectName, String contentType, String crc32cBase64, long antallBytes, long varighetSekunder);
+
 	/// Sjekker i ett batch-kall hvilke objectNames som eksisterer i bucket
 	///
 	/// @param objectNames navn på objektene som skal sjekkes.
